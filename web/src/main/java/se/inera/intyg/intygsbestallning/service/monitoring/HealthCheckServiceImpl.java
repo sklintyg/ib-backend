@@ -30,7 +30,6 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.cache.metrics.CacheStatisticsService;
 import se.inera.intyg.infra.cache.metrics.model.CacheStatistics;
 import se.inera.intyg.intygsbestallning.service.monitoring.dto.HealthStatus;
-import se.riv.itintegration.monitoring.v1.PingForConfigurationResponseType;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;

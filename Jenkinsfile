@@ -1,49 +1,38 @@
-#!groovy
-
-def buildVersion = "1.0.0.${BUILD_NUMBER}"
-def infraVersion = "3.6.0.+"
-
-stage('checkout') {
-    node {
-        git url: "https://github.com/sklintyg/ib-backend.git", branch: GIT_BRANCH
-        util.run { checkout scm }
+pipeline {
+    environment {
+        buildVersion = "1.0.0.${BUILD_NUMBER}"
+        infraVersion = "3.6.0.+"
     }
-}
 
-stage('build') {
-    node {
-        try {
-            shgradle "--refresh-dependencies clean build testReport sonarqube -PcodeQuality -DbuildVersion=${buildVersion} -DinfraVersion=${infraVersion}"
-        } finally {
-            publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'build/reports/allTests', \
-                reportFiles: 'index.html', reportName: 'JUnit results'
+    agent any //TODO: this should later be replaced with a gradle-docker-image
+
+    stages {
+
+        stage('build') {
+            steps {
+                shgradle "--refresh-dependencies clean build testReport sonarqube -PcodeQuality " +
+                         "-DbuildVersion=" + buildVersion + " -DinfraVersion=" + infraVersion
+            }
+            post {
+                always {
+                    publishHTML target: [
+                        allowMissing: true,
+                        alwaysLinkToLastBuild: true,
+                        keepAll: true,
+                        reportDir: 'build/reports/allTests',
+                        reportFiles: 'index.html',
+                        reportName: 'JUnit results'
+                    ]
+                }
+            }
+        }
+
+        stage('tag and upload') {
+            steps {
+                shgradle "uploadArchives tagRelease " +
+                         "-DbuildVersion=" + buildVersion + " -DinfraVersion=" + infraVersion
+            }
         }
     }
 }
 
-stage('deploy') {
-    node {
-        util.run {
-            ansiblePlaybook extraVars: [version: buildVersion, ansible_ssh_port: "22", deploy_from_repo: "false"], \
-                installation: 'ansible-yum', inventory: 'ansible/inventory/rehabstod/test', playbook: 'ansible/deploy.yml'
-            util.waitForServer('https://intygsbestallning.inera.nordicmedtest.se/version.jsp')
-        }
-    }
-}
-
-stage('restAssured') {
-    node {
-        try {
-            shgradle "restAssuredTest -DbaseUrl=http://intygsbestallning.inera.nordicmedtest.se/ -DbuildVersion=${buildVersion} -DinfraVersion=${infraVersion}"
-        } finally {
-            publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'web/build/reports/tests/restAssuredTest', \
-                reportFiles: 'index.html', reportName: 'RestAssured results'
-        }
-    }
-}
-
-stage('tag and upload') {
-    node {
-        shgradle "uploadArchives tagRelease -DbuildVersion=${buildVersion} -DinfraVersion=${infraVersion}"
-    }
-}
