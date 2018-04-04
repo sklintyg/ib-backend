@@ -54,7 +54,7 @@ public class IbUnitChangeService {
 
                 boolean hasSystemRoleForSelectedUnit = enhetIdList.stream().anyMatch(s -> s.equals(enhetId));
                 if (hasSystemRoleForSelectedUnit || hasImplicitAccessToSubUnit(user, enhetIdList)) {
-                    updateUsersRoleTo(user, AuthoritiesConstants.ROLE_KOORDINATOR);
+                    updateUsersRoleTo(user, AuthoritiesConstants.ROLE_FMU_VARDADMIN);
                 } else {
                     // If no systemRole for this unit, we must change back to ROLE_LAKARE.
                     updateUsersRoleTo(user, AuthoritiesConstants.ROLE_LAKARE);

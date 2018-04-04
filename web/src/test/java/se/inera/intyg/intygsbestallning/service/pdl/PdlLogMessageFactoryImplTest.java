@@ -125,7 +125,7 @@ public class PdlLogMessageFactoryImplTest {
     @Test
     public void testBuildLogMessageForIckeLakare() {
         IbUser rehabstodUser = TestDataGen.buildRehabStodUser(false);
-        rehabstodUser.setRoles(ImmutableMap.of(AuthoritiesConstants.ROLE_KOORDINATOR, new Role()));
+        rehabstodUser.setRoles(ImmutableMap.of(AuthoritiesConstants.ROLE_FMU_VARDADMIN, new Role()));
         PdlLogMessage pdlLogMessage = testee.buildLogMessage(TestDataGen.buildSjukfallList(5),
             ActivityType.PRINT, ResourceType.RESOURCE_TYPE_OVERSIKT_SJUKFALL, rehabstodUser);
         assertEquals("Rehabkoordinator", pdlLogMessage.getUserTitle());

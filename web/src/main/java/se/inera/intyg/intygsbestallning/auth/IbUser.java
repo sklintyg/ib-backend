@@ -118,7 +118,7 @@ public class IbUser extends IntygUser implements Serializable {
         }
 
         // Case 2: Koordinator should get ALL
-        if (roles.containsKey(AuthoritiesConstants.ROLE_KOORDINATOR)) {
+        if (roles.containsKey(AuthoritiesConstants.ROLE_FMU_VARDADMIN)) {
             return Urval.ALL;
         }
 

@@ -26,17 +26,11 @@ import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.integration.hsa.model.UserCredentials;
-import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.security.siths.BaseSakerhetstjanstAssertion;
 import se.inera.intyg.infra.security.siths.BaseUserDetailsService;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
-import se.inera.intyg.intygsbestallning.auth.exceptions.MissingUnitWithRehabSystemRoleException;
-import se.inera.intyg.intygsbestallning.auth.util.SystemRolesParser;
-import se.inera.intyg.intygsbestallning.persistence.model.AnvandarPreference;
 import se.inera.intyg.intygsbestallning.persistence.repository.AnvandarPreferenceRepository;
-
-import java.util.List;
 
 /**
  * @author andreaskaltenbach
@@ -46,13 +40,11 @@ public class IbUserDetailsService extends BaseUserDetailsService implements SAML
 
     private static final Logger LOG = LoggerFactory.getLogger(IbUserDetailsService.class);
 
-    public static final String PDL_CONSENT_GIVEN = "user_pdl_consent_given";
-
     @Autowired
     private AnvandarPreferenceRepository anvandarPreferenceRepository;
 
     @Autowired
-    private IbUnitChangeService rehabstodUnitChangeService;
+    private IbUnitChangeService ibUnitChangeService;
 
     // =====================================================================================
     // ~ Protected scope
@@ -62,21 +54,16 @@ public class IbUserDetailsService extends BaseUserDetailsService implements SAML
     protected IbUser buildUserPrincipal(SAMLCredential credential) {
         // All rehab customization is done in the overridden decorateXXX methods, so just return a new rehabuser
         IntygUser intygUser = super.buildUserPrincipal(credential);
-        IbUser rehabstodUser = new IbUser(intygUser, isPdlConsentGiven(intygUser.getHsaId()), intygUser.isLakare());
+        IbUser ibUser = new IbUser(intygUser, false, intygUser.isLakare());
 
         // INTYG-5068: Explicitly changing vardenhet on session creation to possibly appyl REHABKOORDINATOR role for
         // this unit in case the user is LAKARE and has systemRole Rehab- for the current unit.
         // This is only performed if there were a unit selected, e.g. user only has access to a single unit.
-        if (rehabstodUser.getValdVardenhet() != null) {
-            rehabstodUnitChangeService.changeValdVardenhet(rehabstodUser.getValdVardenhet().getId(), rehabstodUser);
+        if (ibUser.getValdVardenhet() != null) {
+            ibUnitChangeService.changeValdVardenhet(ibUser.getValdVardenhet().getId(), ibUser);
         }
 
-        return rehabstodUser;
-    }
-
-    private boolean isPdlConsentGiven(String hsaId) {
-        AnvandarPreference pdlConsentGiven = anvandarPreferenceRepository.findByHsaIdAndKey(hsaId, PDL_CONSENT_GIVEN);
-        return pdlConsentGiven != null && Boolean.valueOf(pdlConsentGiven.getValue());
+        return ibUser;
     }
 
     @Override
@@ -96,17 +83,11 @@ public class IbUserDetailsService extends BaseUserDetailsService implements SAML
     @Override
     protected void decorateIntygUserWithSystemRoles(IntygUser intygUser, UserCredentials userCredentials) {
         super.decorateIntygUserWithSystemRoles(intygUser, userCredentials);
-
-        if (intygUser.getRoles().containsKey(AuthoritiesConstants.ROLE_KOORDINATOR)) {
-            // ROLE_KOORDINATOR must have a matching systemrole for each unit, or else it's removed
-            removeEnheterMissingRehabKoordinatorRole(intygUser.getVardgivare(), intygUser.getSystemRoles(), intygUser.getHsaId());
-        }
-
     }
 
     @Override
     protected String getDefaultRole() {
-        return AuthoritiesConstants.ROLE_KOORDINATOR;
+        return AuthoritiesConstants.ROLE_FMU_VARDADMIN;
     }
 
     @Override
@@ -114,26 +95,5 @@ public class IbUserDetailsService extends BaseUserDetailsService implements SAML
         return super.getAssertion(assertion);
     }
 
-    void removeEnheterMissingRehabKoordinatorRole(List<Vardgivare> authorizedVardgivare, List<String> systemRoles, String hsaId) {
-        long unitsBefore = authorizedVardgivare.stream().mapToInt(vg -> vg.getVardenheter().size()).sum();
-
-        // Get a clean list of enhetsId's that user is authorized to use rehab for
-        List<String> rehabAuthorizedEnhetIds = SystemRolesParser.parseEnhetsIdsFromSystemRoles(systemRoles);
-
-        // remove all vardeneheter that's not present in whitelist
-        authorizedVardgivare.stream().forEach(vg -> vg.getVardenheter().removeIf(ve -> !rehabAuthorizedEnhetIds.contains(ve.getId())));
-
-        // Also, any vardgivare with no vardenheter left should be removed for the default selection mechanism to work
-        authorizedVardgivare.removeIf(vg -> vg.getVardenheter().size() < 1);
-
-        long unitsAfter = authorizedVardgivare.stream().mapToInt(vg -> vg.getVardenheter().size()).sum();
-
-        LOG.debug("removeEnheterMissingRehabKoordinatorRole rehabauthorized units are: [" + String.join(",", rehabAuthorizedEnhetIds)
-                + "]. User units before filtering: " + unitsBefore + ", after: " + unitsAfter);
-
-        if (unitsAfter < 1) {
-            throw new MissingUnitWithRehabSystemRoleException(hsaId);
-        }
-    }
 
 }

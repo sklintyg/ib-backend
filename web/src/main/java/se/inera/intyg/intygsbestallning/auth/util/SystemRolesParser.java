@@ -30,10 +30,12 @@ import java.util.regex.Pattern;
  */
 public final class SystemRolesParser {
 
-    public static final String HSA_SYSTEMROLE_REHAB_UNIT_PREFIX = "INTYG;Rehab-";
+    public static final String HSA_SYSTEMROLE_FMU_VARDADMIN_UNIT_PREFIX = "INTYG;FMU-VARDADMIN-";
+    public static final String HSA_SYSTEMROLE_FMU_SAMORDNARE_CAREGIVER_PREFIX = "INTYG;FMU-SAMORDNARE-";
 
     // The part after prefix is assumed to be a hsa-enhetsid, this will be extracted and compared.
-    private static final Pattern HSA_SYSTEMROLE_REHAB_UNIT_PATTERN = Pattern.compile("^" + HSA_SYSTEMROLE_REHAB_UNIT_PREFIX + "(.*)");
+    private static final Pattern HSA_SYSTEMROLE_FMU_VARDADMIN_UNIT_PATTERN = Pattern.compile("^" + HSA_SYSTEMROLE_FMU_VARDADMIN_UNIT_PREFIX + "(.*)");
+    private static final Pattern HSA_SYSTEMROLE_FMU_SAMORDNARE_CAREGIVER_PATTERN = Pattern.compile("^" + HSA_SYSTEMROLE_FMU_SAMORDNARE_CAREGIVER_PREFIX + "(.*)");
 
     private SystemRolesParser() {
 
@@ -43,7 +45,7 @@ public final class SystemRolesParser {
      * Parses supplied systemRoles into careUnitId's.
      *
      * @param systemRoles
-     *      List of systemRoles, e.g. "Rehab-[careUnitId]"
+     *      List of systemRoles, e.g. "FMU-VARDADMIN-[careUnitId]"
      * @return
      *      List of careUnitIds.
      */
@@ -53,7 +55,29 @@ public final class SystemRolesParser {
             return idList;
         }
         for (String s : systemRoles) {
-            Matcher matcher = HSA_SYSTEMROLE_REHAB_UNIT_PATTERN.matcher(s);
+            Matcher matcher = HSA_SYSTEMROLE_FMU_VARDADMIN_UNIT_PATTERN.matcher(s);
+            if (matcher.find()) {
+                idList.add(matcher.group(1));
+            }
+        }
+        return idList;
+    }
+
+    /**
+     * Parses supplied systemRoles into careUnitId's.
+     *
+     * @param systemRoles
+     *      List of systemRoles, e.g. "FMU-SAMORDNARE-[careGiverId]"
+     * @return
+     *      List of careUnitIds.
+     */
+    public static List<String> parseCaregiverIdsFromSystemRoles(List<String> systemRoles) {
+        List<String> idList = new ArrayList<>();
+        if (systemRoles == null) {
+            return idList;
+        }
+        for (String s : systemRoles) {
+            Matcher matcher = HSA_SYSTEMROLE_FMU_SAMORDNARE_CAREGIVER_PATTERN.matcher(s);
             if (matcher.find()) {
                 idList.add(matcher.group(1));
             }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="sv" id="ng-app" ng-app="rhsWelcomeApp">
+<html lang="sv" id="ng-app" ng-app="ibWelcomeApp">
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -22,8 +22,8 @@
 
 <script type="text/javascript">
 
-  angular.module('rhsWelcomeApp', [
-    'rhsWelcomeApp.controllers'
+  angular.module('ibWelcomeApp', [
+    'ibWelcomeApp.controllers'
   ]);
 
   var validProperties = [
@@ -36,7 +36,7 @@
       'befattningsKod',
       'forskrivarKod'];
 
-  angular.module('rhsWelcomeApp.controllers', []).controller('welcomeController',
+  angular.module('ibWelcomeApp.controllers', []).controller('welcomeController',
     ['$scope', '$http', '$log', function($scope, $http, $log) {
 
       function _fetchHsaPersons() {
@@ -107,7 +107,7 @@
                 return false;
               }
               //  - identity allowed in applications are false
-              return _filterLoginIdentity(item.fakeProperties.allowedInApplications, "RS");
+              return _filterLoginIdentity(item.fakeProperties.allowedInApplications, "IB");
             })
             .sort(function(a, b) {
               // Sort entries by displayOrder

@@ -40,7 +40,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static se.inera.intyg.intygsbestallning.auth.util.SystemRolesParser.HSA_SYSTEMROLE_REHAB_UNIT_PREFIX;
+import static se.inera.intyg.intygsbestallning.auth.util.SystemRolesParser.HSA_SYSTEMROLE_FMU_VARDADMIN_UNIT_PREFIX;
 
 /**
  * @author marced on 01/03/16.
@@ -75,7 +75,7 @@ public class IbUserTest {
     @Test
     public void testGetUrvalRehabKoordinator() throws Exception {
         IbUser user = new IbUser("HSA1111", "Per Nilsson", false);
-        user.setRoles(ImmutableMap.of(AuthoritiesConstants.ROLE_KOORDINATOR, new Role()));
+        user.setRoles(ImmutableMap.of(AuthoritiesConstants.ROLE_FMU_VARDADMIN, new Role()));
 
         assertEquals(Urval.ALL, user.getUrval());
     }
@@ -109,20 +109,20 @@ public class IbUserTest {
 
     @Test
     public void testRoleSwitchPossibleForDoctorWithMatchingSystemRole() {
-        IbUser user = setupRehabstodUserWithSystemRoles(true, new ArrayList<>(), HSA_SYSTEMROLE_REHAB_UNIT_PREFIX + ENHET_1);
+        IbUser user = setupRehabstodUserWithSystemRoles(true, new ArrayList<>(), HSA_SYSTEMROLE_FMU_VARDADMIN_UNIT_PREFIX + ENHET_1);
         assertTrue(user.isRoleSwitchPossible());
     }
 
     @Test
     public void testRoleSwitchNotPossibleForDoctorWithoutMatchingSystemRole() {
         IbUser user = setupRehabstodUserWithSystemRoles(true, new ArrayList<>(),
-                HSA_SYSTEMROLE_REHAB_UNIT_PREFIX + "some-other-unit-id");
+                HSA_SYSTEMROLE_FMU_VARDADMIN_UNIT_PREFIX + "some-other-unit-id");
         assertFalse(user.isRoleSwitchPossible());
     }
 
     @Test
     public void testRoleSwitchNotPossibleForNonDoctorWithMatchingSystemRole() {
-        IbUser user = setupRehabstodUserWithSystemRoles(false, new ArrayList<>(), HSA_SYSTEMROLE_REHAB_UNIT_PREFIX + ENHET_1);
+        IbUser user = setupRehabstodUserWithSystemRoles(false, new ArrayList<>(), HSA_SYSTEMROLE_FMU_VARDADMIN_UNIT_PREFIX + ENHET_1);
         assertFalse(user.isRoleSwitchPossible());
     }
 

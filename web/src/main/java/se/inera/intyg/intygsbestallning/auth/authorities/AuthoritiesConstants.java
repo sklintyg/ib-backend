@@ -35,9 +35,8 @@ public final class AuthoritiesConstants {
 
     // Known roles (these roles are copied from authorities.yaml which is the master authorities configuration)
     public static final String ROLE_LAKARE = "LAKARE";
-    public static final String ROLE_KOORDINATOR = "REHABKOORDINATOR";
-
-    public static final String FEATURE_SRS = "SRS";
+    public static final String ROLE_FMU_VARDADMIN = "FMU_VARDADMIN";
+    public static final String ROLE_FMU_SAMORDNARE = "FMU_SAMORDNARE";
 
 
     // constructors

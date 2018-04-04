@@ -57,7 +57,6 @@ import se.inera.intyg.infra.security.exception.HsaServiceException;
 import se.inera.intyg.infra.security.exception.MissingMedarbetaruppdragException;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesValidator;
-import se.inera.intyg.intygsbestallning.auth.exceptions.MissingUnitWithRehabSystemRoleException;
 import se.inera.intyg.intygsbestallning.auth.util.SystemRolesParser;
 import se.inera.intyg.intygsbestallning.persistence.model.AnvandarPreference;
 import se.inera.intyg.intygsbestallning.persistence.repository.AnvandarPreferenceRepository;
@@ -76,10 +75,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -173,11 +169,10 @@ public class IbUserDetailsServiceTest {
         // then
         IntygUser rehabstodUser = (IntygUser) userDetailsService.loadUserBySAML(samlCredential);
 
-        AUTHORITIES_VALIDATOR.given(rehabstodUser).roles(AuthoritiesConstants.ROLE_KOORDINATOR).orThrow();
-        assertEquals(3, rehabstodUser.getTotaltAntalVardenheter());
-        assertNotNull("A default vardenhet should have been selected", rehabstodUser.getValdVardenhet());
-        assertEquals(ENHET_HSAID_2 + " should have been selected as valdVardgivare", ENHET_HSAID_2,
-                rehabstodUser.getValdVardenhet().getId());
+        AUTHORITIES_VALIDATOR.given(rehabstodUser).roles(AuthoritiesConstants.ROLE_FMU_VARDADMIN).orThrow();
+        assertEquals(4, rehabstodUser.getTotaltAntalVardenheter());
+        assertNull(rehabstodUser.getValdVardenhet());
+
     }
 
     @Test
@@ -201,7 +196,7 @@ public class IbUserDetailsServiceTest {
         // then
         IntygUser rehabstodUser = (IntygUser) userDetailsService.loadUserBySAML(samlCredential);
 
-        AUTHORITIES_VALIDATOR.given(rehabstodUser).roles(AuthoritiesConstants.ROLE_KOORDINATOR).orThrow();
+        AUTHORITIES_VALIDATOR.given(rehabstodUser).roles(AuthoritiesConstants.ROLE_FMU_VARDADMIN).orThrow();
         assertEquals(1, rehabstodUser.getTotaltAntalVardenheter());
         assertEquals(ENHET_HSAID_2 + " should have been selected as valdVardgivare", ENHET_HSAID_2,
                 rehabstodUser.getValdVardenhet().getId());
@@ -232,34 +227,34 @@ public class IbUserDetailsServiceTest {
         // then
         IntygUser rehabstodUser = (IntygUser) userDetailsService.loadUserBySAML(samlCredential);
 
-        AUTHORITIES_VALIDATOR.given(rehabstodUser).roles(AuthoritiesConstants.ROLE_KOORDINATOR).orThrow();
+        AUTHORITIES_VALIDATOR.given(rehabstodUser).roles(AuthoritiesConstants.ROLE_FMU_VARDADMIN).orThrow();
         assertEquals(2, rehabstodUser.getTotaltAntalVardenheter());
         assertEquals(ENHET_HSAID_2 + " should have been selected as valdVardgivare", ENHET_HSAID_2,
                 rehabstodUser.getValdVardenhet().getId());
     }
 
-    @Test(expected = MissingUnitWithRehabSystemRoleException.class)
-    public void assertThrowsExceptionWhenNoMatchingSystemRole() throws Exception {
-        // given
-        SAMLCredential samlCredential = createSamlCredential("saml-assertion-uppdragslos.xml");
-        setupCallToAuthorizedEnheterForHosPerson();
-        setupCallToGetHsaPersonInfoNonDoctor();
-
-        // then
-        userDetailsService.loadUserBySAML(samlCredential);
-
-    }
-
-    @Test(expected = MissingUnitWithRehabSystemRoleException.class)
-    public void assertNoRoleWhenUserHasTitleLakareButNoSystemRoles() throws Exception {
-        // given
-        SAMLCredential samlCredential = createSamlCredential("saml-assertion-uppdragslos.xml");
-        setupCallToAuthorizedEnheterForHosPerson();
-        setupCallToGetHsaPersonInfoNonDoctor("Läkare");
-
-        // then
-        userDetailsService.loadUserBySAML(samlCredential);
-    }
+//    @Test(expected = MissingUnitWithRehabSystemRoleException.class)
+//    public void assertThrowsExceptionWhenNoMatchingSystemRole() throws Exception {
+//        // given
+//        SAMLCredential samlCredential = createSamlCredential("saml-assertion-uppdragslos.xml");
+//        setupCallToAuthorizedEnheterForHosPerson();
+//        setupCallToGetHsaPersonInfoNonDoctor();
+//
+//        // then
+//        userDetailsService.loadUserBySAML(samlCredential);
+//
+//    }
+//
+//    @Test(expected = MissingUnitWithRehabSystemRoleException.class)
+//    public void assertNoRoleWhenUserHasTitleLakareButNoSystemRoles() throws Exception {
+//        // given
+//        SAMLCredential samlCredential = createSamlCredential("saml-assertion-uppdragslos.xml");
+//        setupCallToAuthorizedEnheterForHosPerson();
+//        setupCallToGetHsaPersonInfoNonDoctor("Läkare");
+//
+//        // then
+//        userDetailsService.loadUserBySAML(samlCredential);
+//    }
 
     @Test(expected = GenericAuthenticationException.class)
     public void testGenericAuthenticationExceptionIsThrownWhenNoSamlCredentialsGiven() throws Exception {
@@ -329,7 +324,7 @@ public class IbUserDetailsServiceTest {
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-uppdragslos.xml");
         IntygUser rehabstodUser = (IntygUser) userDetailsService.loadUserBySAML(samlCredential);
 
-        AUTHORITIES_VALIDATOR.given(rehabstodUser).roles(AuthoritiesConstants.ROLE_KOORDINATOR).orThrow();
+        AUTHORITIES_VALIDATOR.given(rehabstodUser).roles(AuthoritiesConstants.ROLE_FMU_VARDADMIN).orThrow();
 
     }
 
@@ -349,100 +344,16 @@ public class IbUserDetailsServiceTest {
                 rehabstodUser.getValdVardenhet());
     }
 
-    @Test
-    public void testRemoveEnheterMissingRehabKoordinatorRole() {
-        // Arrange
-        Vardgivare vardgivare1 = new Vardgivare(VARDGIVARE_HSAID, "IFV Testlandsting");
-        Vardenhet enhet1 = new Vardenhet(ENHET_HSAID_1, "Skall bort");
-        vardgivare1.getVardenheter().add(enhet1);
-        Vardenhet enhet2 = new Vardenhet(ENHET_HSAID_2, "Skall vara kvar");
-        vardgivare1.getVardenheter().add(enhet2);
-
-        Vardgivare vardgivare2 = new Vardgivare(VARDGIVARE_HSAID2, "IFV Annat");
-        Vardenhet enhet21 = new Vardenhet(ENHET_HSAID_21, "VårdEnhet22A");
-        Vardenhet enhet22 = new Vardenhet(ENHET_HSAID_22, "Skall bort med");
-        Vardenhet enhet23 = new Vardenhet(ENHET_HSAID_23, "Vårdenhet 23");
-        vardgivare2.getVardenheter().addAll(Arrays.asList(enhet21, enhet22, enhet23));
-
-        List<HsaSystemRoleType> systemRoles = buildSystemRoles();
-
-        List<Vardgivare> original = Arrays.asList(vardgivare1, vardgivare2);
-
-        // Test
-        userDetailsService.removeEnheterMissingRehabKoordinatorRole(original,
-                systemRoles.stream().map(rt -> rt.getRole()).collect(Collectors.toList()),
-                "userHsaId");
-
-        // Verify
-        assertTrue(original.contains(vardgivare1));
-        assertFalse(vardgivare1.getVardenheter().contains(enhet1));
-        assertTrue(vardgivare1.getVardenheter().contains(enhet2));
-
-        assertTrue(original.contains(vardgivare2));
-        assertTrue(vardgivare2.getVardenheter().contains(enhet21));
-        assertFalse(vardgivare2.getVardenheter().contains(enhet22));
-        assertTrue(vardgivare2.getVardenheter().contains(enhet23));
-
-    }
-
     private List<HsaSystemRoleType> buildSystemRoles() {
-        return Arrays.asList(SystemRolesParser.HSA_SYSTEMROLE_REHAB_UNIT_PREFIX + ENHET_HSAID_2,
-                SystemRolesParser.HSA_SYSTEMROLE_REHAB_UNIT_PREFIX + ENHET_HSAID_21,
-                SystemRolesParser.HSA_SYSTEMROLE_REHAB_UNIT_PREFIX + ENHET_HSAID_23)
+        return Arrays.asList(SystemRolesParser.HSA_SYSTEMROLE_FMU_VARDADMIN_UNIT_PREFIX + ENHET_HSAID_2,
+                SystemRolesParser.HSA_SYSTEMROLE_FMU_VARDADMIN_UNIT_PREFIX + ENHET_HSAID_21,
+                SystemRolesParser.HSA_SYSTEMROLE_FMU_VARDADMIN_UNIT_PREFIX + ENHET_HSAID_23)
                 .stream()
                 .map(s -> {
                     HsaSystemRoleType hsaSystemRole = new HsaSystemRoleType();
                     hsaSystemRole.setRole(s);
                     return hsaSystemRole;
                 }).collect(Collectors.toList());
-    }
-
-    @Test
-    public void testRemoveEnheterMissingRehabKoordinatorRoleRemovedEmptyVardgivare() {
-        // Arrange
-        Vardgivare vardgivare1 = new Vardgivare(VARDGIVARE_HSAID, "IFV Testlandsting - skall bort");
-        Vardenhet enhet1 = new Vardenhet(ENHET_HSAID_1, "Skall bort");
-        vardgivare1.getVardenheter().add(enhet1);
-        Vardenhet enhet2 = new Vardenhet(ENHET_HSAID_2, "Skall bort den med");
-        vardgivare1.getVardenheter().add(enhet2);
-
-        Vardgivare vardgivare2 = new Vardgivare(VARDGIVARE_HSAID2, "IFV Annat");
-        Vardenhet enhet21 = new Vardenhet(ENHET_HSAID_21, "VårdEnhet22A");
-        Vardenhet enhet22 = new Vardenhet(ENHET_HSAID_22, "Skall bort med");
-
-        vardgivare2.getVardenheter().addAll(Arrays.asList(enhet21, enhet22));
-
-        List<String> systemRoles = Arrays.asList(
-                SystemRolesParser.HSA_SYSTEMROLE_REHAB_UNIT_PREFIX + ENHET_HSAID_21,
-                SystemRolesParser.HSA_SYSTEMROLE_REHAB_UNIT_PREFIX + ENHET_HSAID_23);
-
-        List<Vardgivare> original = new ArrayList<>(Arrays.asList(vardgivare1, vardgivare2));
-
-        // Test
-        userDetailsService.removeEnheterMissingRehabKoordinatorRole(original, systemRoles, "userHsaId");
-
-        // Verify
-        assertFalse(original.contains(vardgivare1));
-        assertTrue(original.contains(vardgivare2));
-        assertTrue(vardgivare2.getVardenheter().contains(enhet21));
-        assertFalse(vardgivare2.getVardenheter().contains(enhet22));
-
-    }
-
-    @Test(expected = MissingUnitWithRehabSystemRoleException.class)
-    public void testRemoveEnheterMissingRehabKoordinatorRoleRemoveAllThrowsException() {
-        // Arrange
-        Vardgivare vardgivare1 = new Vardgivare(VARDGIVARE_HSAID, "IFV Testlandsting");
-        Vardenhet enhet1 = new Vardenhet(ENHET_HSAID_1, "Skall bort");
-        vardgivare1.getVardenheter().add(enhet1);
-
-        List<String> systemRoles = Arrays.asList(SystemRolesParser.HSA_SYSTEMROLE_REHAB_UNIT_PREFIX + ENHET_HSAID_2);
-
-        List<Vardgivare> original = new ArrayList<>(Arrays.asList(vardgivare1));
-
-        // Act
-        userDetailsService.removeEnheterMissingRehabKoordinatorRole(original, systemRoles, "userHsaId");
-
     }
 
     private SAMLCredential createSamlCredential(String filename) throws Exception {

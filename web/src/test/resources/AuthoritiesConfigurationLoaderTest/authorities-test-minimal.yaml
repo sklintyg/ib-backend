@@ -20,7 +20,8 @@ knownPrivileges: []
 # De roller som systemet har
 knownRoles:
   - &kr010 LAKARE
-  - &kr020 REHABKOORDINATOR
+  - &kr020 FMU_VARDADMIN
+  - &kr030 FMU_SAMORDNARE
 
 # ====================================================================================================
 #   Definitioner av ingångar, roller, privilegier, yrkesroller och befattnings-/gruppförskrivarkoder
@@ -37,11 +38,18 @@ roles:
   - &r010
     name: *kr010 # LAKARE
     desc: Läkare
-    privileges: []
+    privileges:
+      - *p010 # VISA_SJUKFALL
   - &r020
-    name: *kr020 # REHABKOORDINATOR
-    desc: Rehabkoordinator
-    privileges: []
+    name: *kr020 # FMU_VARDADMIN
+    desc: FMU Vårdadministratör
+    privileges:
+      - *p010 # VISA_SJUKFALL
+  - &r030
+    name: *kr030 # FMU_SAMORDNARE
+    desc: FMU Samordnare
+    privileges:
+      - *p010 # VISA_SJUKFALL
 
 # Legitimerade yrkesroller
 titles:
