@@ -13,12 +13,12 @@ pipeline {
             steps {
                 shgradle "--refresh-dependencies clean build testReport sonarqube -PcodeQuality -DbuildVersion=${buildVersion} -DinfraVersion=${infraVersion}"
             }
-        }
 
-        post {
-            always {
-                publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'build/reports/allTests', \
+            post {
+                always {
+                    publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'build/reports/allTests', \
                                 reportFiles: 'index.html', reportName: 'JUnit results'
+                }
             }
         }
 
