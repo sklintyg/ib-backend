@@ -16,8 +16,14 @@ pipeline {
 
             post {
                 always {
-                    publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'build/reports/allTests', \
-                                reportFiles: 'index.html', reportName: 'JUnit results'
+                    publishHTML target: [
+                        allowMissing: true,
+                        alwaysLinkToLastBuild: true,
+                        keepAll: true,
+                        reportDir: 'build/reports/allTests',
+                        reportFiles: 'index.html',
+                        reportName: 'JUnit results'
+                    ]
                 }
             }
         }
