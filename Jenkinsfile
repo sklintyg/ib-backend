@@ -5,7 +5,7 @@ pipeline {
         infraVersion = "3.6.0.+"
     }
 
-    agent any
+    agent any //TODO: this should later be replaced with a gradle-docker-image
 
     stages {
 
@@ -30,7 +30,7 @@ pipeline {
 
         stage('tag and upload') {
             steps {
-                shgradle "uploadArchives tagRelease -DbuildVersion=${buildVersion} -DinfraVersion=${infraVersion}"
+                shgradle "uploadArchives tagRelease -DbuildVersion=" + buildVersion + " -DinfraVersion=${infraVersion}"
             }
         }
     }
