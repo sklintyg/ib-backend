@@ -9,7 +9,7 @@
 <meta name="ROBOTS" content="nofollow, noindex" />
 <meta name="viewport" content="width=device-width, initial-scale=1">
   
-<title>Rehabstöd Version</title>
+<title>Intygsbeställning Version</title>
 
 <!-- build:css({build/.tmp,src/main/webapp}) app/app.css -->
 <!-- injector:css -->

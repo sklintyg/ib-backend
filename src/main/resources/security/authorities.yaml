@@ -49,7 +49,7 @@ knownIntygstyper: []
 
 # De rättigheter som systemet har
 knownPrivileges:
-  - &p010 VISA_SJUKFALL
+  - &kp010 VISA_SJUKFALL
 
 # De roller som systemet har
 knownRoles:
@@ -65,7 +65,12 @@ knownRoles:
 requestOrigins: []
 
 # Rättigheter
-privileges: []
+privileges:
+  - &p010
+      name: *kp010
+      desc: Signera intyg
+      intygstyper: # Implicit alla
+      requestOrigins: # Implicit alla
 
 # Roller
 roles:

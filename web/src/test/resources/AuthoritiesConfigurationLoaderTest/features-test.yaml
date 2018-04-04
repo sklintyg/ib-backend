@@ -6,7 +6,7 @@ knownIntygstyper: []
 knownFeatures:
   - &kf010 SRS
 
-# Aktiverade features i Rehabstöd
+# Aktiverade features i Intygsbeställning
 features:
   - &f010
     name: *kf010
