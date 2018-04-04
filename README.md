@@ -7,7 +7,7 @@ Vi använder Gradle för att bygga applikationerna.
 
 Börja med att skapa en lokal klon av källkodsrepositoryt:
 
-    $ git clone https://github.com/sklintyg/rehabstod.git
+    $ git clone https://github.com/sklintyg/ib-backend.git
 
 Efter att man har klonat repository navigera till den klonade katalogen ib-backend och kör följande kommando:
 
