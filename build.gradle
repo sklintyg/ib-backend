@@ -1,0 +1,100 @@
+plugins {
+    id "se.inera.intyg.plugin.common" version "1.0.62" apply false
+    id "org.akhikhl.gretty" version "1.4.2" apply false
+    id "com.moowork.node" version "1.1.1" apply false
+}
+
+ext {
+    intygInfraVersion = System.properties['infraVersion'] ?: '0-SNAPSHOT'
+
+    ibSchemaVersion = "1.0.7"
+    monitoringSchemaVersion = "1.0.0.3"
+    internalMonitoringSchemaVersion = "1.0.2"
+
+    schemasContractVersion = "2.1.6"
+
+    activemqVersion = "5.13.0"
+    commonsCodecVersion = "1.10"
+    commonsIoVersion = "2.4"
+    commonsLang3Version = "3.1"
+    commonsLangVersion = "2.6"
+    cxfVersion = "3.1.3"
+    googleGuavaVersion = "18.0"
+    h2Version = "1.3.171"
+    hibernateEntityManagerVersion = "4.3.11.Final"
+    hibernateJpaVersion = "1.0.0.Final"
+    hikariCPVersion = "2.3.5"
+    itextVersion = "5.5.8"
+    jacksonVersion = "2.5.1"
+    javaxJmsVersion = "1.1-rev-1"
+    javaxMailVersion = "1.5.2"
+    javaxServletVersion = "3.1.0"
+    jaxb2Version = "0.9.5"
+    jsonSimpleVersion = "1.1.1"
+    jstlVersion = "1.2"
+    liquibaseVersion = "3.3.1"
+    logbackVersion = "1.0.13"
+    mysqlVersion = "5.1.40"
+    poiVersion = "3.13"
+    restAssuredVersion = "2.9.0"
+    slf4jVersion = "1.7.10"
+    springContextVersion = "4.2.2.RELEASE"
+    springDataJpaVersion = "1.9.0.RELEASE"
+    springSecurityExtensionsVersion = "1.0.1.RELEASE"
+    springSecurityVersion = "4.0.3.RELEASE"
+    springWsCoreVersion = "2.2.2.RELEASE"
+    usertypeVersion = "5.0.0.GA"
+    wsdl4jVersion = "1.6.3"
+
+    aspectjWeaverVersion = "1.6.11"
+    hamcrestVersion = "1.3"
+    junitVersion = "4.12"
+    mockitoAllVersion = "1.10.19"
+    powermockFullVersion = "1.6.4"
+    unitilsCoreVersion = "3.3"
+}
+
+allprojects {
+    apply plugin: 'se.inera.intyg.plugin.common'
+    apply plugin: 'maven'
+    apply plugin: 'idea'
+
+    repositories {
+        mavenLocal()
+        maven { url "https://build-inera.nordicmedtest.se/nexus/repository/releases/" }
+        maven { url "http://repo.maven.apache.org/maven2" }
+    }
+
+    dependencies {
+        compile "ch.qos.logback:logback-classic:${logbackVersion}"
+        compile "org.slf4j:slf4j-api:${slf4jVersion}"
+
+        testCompile 'junit:junit:4.+'
+        testCompile "org.mockito:mockito-core:${mockitoAllVersion}"
+    }
+
+    group = 'se.inera.intyg.intygsbestallning'
+    version = System.properties['buildVersion'] ?: '0-SNAPSHOT'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    task createVersionPropertyFile(type: VersionPropertyFileTask)
+
+    uploadArchives.repositories.mavenDeployer {
+        repository(url: "https://build-inera.nordicmedtest.se/nexus/repository/releases/") {
+            authentication(userName: System.properties['nexusUsername'], password: System.properties['nexusPassword'])
+        }
+    }
+
+    [install.repositories.mavenInstaller, uploadArchives.repositories.mavenDeployer]*.pom*.whenConfigured { pom ->
+        pom.dependencies.findAll {dep -> dep.groupId == 'se.inera.intyg.infra'}.each {
+            it.version = se.inera.intyg.IntygPluginKt.findResolvedVersion(project, 'se.inera.intyg.infra')
+        }
+    }
+}
+
+task tagRelease(type: TagReleaseTask)
+
+def environment = project.findProperty('env') ?: "local"
+se.inera.intyg.IntygPluginKt.addProjectPropertiesFromFile(project, file("$rootDir/env-properties/${environment}/settings.properties"))

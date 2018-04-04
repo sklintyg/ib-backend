@@ -1,0 +1,16 @@
+pluginManagement {
+    repositories {
+        maven { url "https://build-inera.nordicmedtest.se/nexus/repository/releases/" }
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = 'ib-backend'
+
+include ':web', ':common', ':persistence', ':ib-liquibase-runner'
+
+project(':web').name = 'ib-web'
+project(':common').name = 'ib-common'
+project(':persistence').name = 'ib-persistence'
+project(':ib-liquibase-runner').projectDir = "$rootDir/tools/liquibase-runner" as File
+

@@ -1,0 +1,21 @@
+dependencies {
+    compile "se.inera.intyg.infra:log-messages:${intygInfraVersion}"
+
+    compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
+    compile "com.google.guava:guava:${googleGuavaVersion}"
+    compile "com.sun.mail:javax.mail:${javaxMailVersion}"
+    compile "commons-codec:commons-codec:${commonsCodecVersion}"
+    compile "commons-io:commons-io:${commonsIoVersion}"
+    compile "javax.mail:javax.mail-api:${javaxMailVersion}"
+    compile "javax.servlet:javax.servlet-api:${javaxServletVersion}"
+    compile "org.apache.cxf:cxf-rt-frontend-jaxrs:${cxfVersion}"
+    compile "org.apache.cxf:cxf-rt-transports-http:${cxfVersion}"
+    compile "org.springframework:spring-context-support:${springContextVersion}"
+    compile "org.springframework:spring-webmvc:${springContextVersion}"
+
+    testCompile "junit:junit:${junitVersion}"
+    testCompile "org.mockito:mockito-all:${mockitoAllVersion}"
+    testCompile "org.aspectj:aspectjweaver:${aspectjWeaverVersion}"
+    testCompile "org.springframework:spring-test:${springContextVersion}"
+}
