@@ -18,21 +18,19 @@
  */
 package se.inera.intyg.intygsbestallning.web.integration;
 
-import application.riv.intygsbestallning.certificate.order._1.IIType;
 import application.riv.intygsbestallning.certificate.order._1.ResultCodeType;
 import application.riv.intygsbestallning.certificate.order._1.ResultType;
 import com.google.common.base.Preconditions;
 import org.apache.cxf.annotations.SchemaValidation;
-import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.rivtabp21.v1.RequestHealthcarePerformerForAssessmentResponderInterface;
-import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentResponseType;
-import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentType;
+import se.riv.intygsbestallning.certificate.order.updateorder.rivtabp21.v1.UpdateOrderResponderInterface;
+import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderResponseType;
+import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
 
 @SchemaValidation
-public class ResponderImpl implements RequestHealthcarePerformerForAssessmentResponderInterface {
+public class UpdateOrderResponderImpl implements UpdateOrderResponderInterface {
 
     @Override
-    public RequestHealthcarePerformerForAssessmentResponseType requestHealthcarePerformerForAssessment(
-            final String logicalAddress, final RequestHealthcarePerformerForAssessmentType request) {
+    public UpdateOrderResponseType updateOrder(final String logicalAddress, final UpdateOrderType request) {
 
         Preconditions.checkArgument(null != logicalAddress);
         Preconditions.checkArgument(null != request);
@@ -40,19 +38,16 @@ public class ResponderImpl implements RequestHealthcarePerformerForAssessmentRes
         return createDummyResponse();
     }
 
-    private RequestHealthcarePerformerForAssessmentResponseType createDummyResponse() {
-        RequestHealthcarePerformerForAssessmentResponseType response = new RequestHealthcarePerformerForAssessmentResponseType();
+    private UpdateOrderResponseType createDummyResponse() {
 
         ResultType resultType = new ResultType();
         resultType.setResultCode(ResultCodeType.OK);
+        resultType.setLogId("DUMMY_LOG_ID");
+        resultType.setResultText("DUMMY_RESULT_TEXT");
 
-        IIType iiType = new IIType();
-        iiType.setExtension("DUMMY_EXTENSION");
-        iiType.setRoot("DUMMY_ROOT");
+        UpdateOrderResponseType updateOrderResponseType = new UpdateOrderResponseType();
+        updateOrderResponseType.setResult(resultType);
 
-        response.setAssessmentId(iiType);
-        response.setResult(resultType);
-
-        return response;
+        return updateOrderResponseType;
     }
 }
