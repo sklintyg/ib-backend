@@ -150,6 +150,11 @@ public class IbUser extends IntygUser implements Serializable {
         return true;
     }
 
+    @Override
+    public String getSelectedMedarbetarUppdragNamn() {
+        return null;
+    }
+
     public List<IbVardgivare> getSystemAuthorities() {
         return systemAuthorities;
     }

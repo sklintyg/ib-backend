@@ -33,14 +33,12 @@ import se.inera.intyg.infra.logmessages.PdlLogMessage;
 import se.inera.intyg.infra.logmessages.ResourceType;
 import se.inera.intyg.intygsbestallning.common.integration.json.CustomObjectMapper;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
-import se.inera.intyg.intygsbestallning.web.model.SjukfallEnhet;
-import se.inera.intyg.intygsbestallning.web.model.SjukfallPatient;
 
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
-import java.util.List;
+import java.util.Arrays;
 
 /**
  * Implementation of service for logging user actions according to PDL requirements.
@@ -71,25 +69,15 @@ public class LogServiceImpl implements LogService {
         }
     }
 
-    @Override
-    public void logSjukfallData(List<SjukfallEnhet> sjukfallList, ActivityType activityType, ResourceType resourceType) {
-        if (sjukfallList == null || sjukfallList.isEmpty()) {
-            LOG.debug("No sjukfall in resource list for PDL logging, not logging.");
-            return;
-        }
-        PdlLogMessage pdlLogMessage =
-            pdlLogMessageFactory.buildLogMessage(sjukfallList, activityType, resourceType, userService.getUser());
-        send(pdlLogMessage);
-    }
 
     @Override
-    public void logSjukfallData(SjukfallPatient sjukfallPatient, ActivityType activityType, ResourceType resourceType) {
+    public void logSjukfallData(Object sjukfallPatient, ActivityType activityType, ResourceType resourceType) {
         if (sjukfallPatient == null) {
             LOG.debug("No sjukfall for PDL logging, not logging.");
             return;
         }
         PdlLogMessage pdlLogMessage =
-            pdlLogMessageFactory.buildLogMessage(sjukfallPatient, activityType, resourceType, userService.getUser());
+            pdlLogMessageFactory.buildLogMessage(Arrays.asList(sjukfallPatient), activityType, resourceType, userService.getUser());
         send(pdlLogMessage);
     }
 

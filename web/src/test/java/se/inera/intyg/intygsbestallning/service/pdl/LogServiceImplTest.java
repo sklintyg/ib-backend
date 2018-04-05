@@ -27,10 +27,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.jms.core.JmsTemplate;
 import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.infra.logmessages.ResourceType;
+import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
-
-import java.util.ArrayList;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -57,10 +56,12 @@ public class LogServiceImplTest {
     private LogServiceImpl testee;
 
     @Test
-    public void testNoLogMessageSentWhenSjukfallListIsEmpty() {
-        when(userService.getUser()).thenReturn(TestDataGen.buildIBVardadminUser());
-        testee.logSjukfallData(new ArrayList<>(),
+    public void testLogMessageSentWhenSjukfallListIsEmpty() {
+        IbUser user = TestDataGen.buildIBVardadminUser();
+        user.changeValdVardenhet("ve11");
+        when(userService.getUser()).thenReturn(user);
+        testee.logSjukfallData(new String(""),
             ActivityType.READ, ResourceType.RESOURCE_TYPE_OVERSIKT_SJUKFALL);
-        verify(template, times(0)).send(any());
+        verify(template, times(1)).send(any());
     }
 }

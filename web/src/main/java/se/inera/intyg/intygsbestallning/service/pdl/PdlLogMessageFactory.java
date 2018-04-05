@@ -22,8 +22,6 @@ import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.infra.logmessages.PdlLogMessage;
 import se.inera.intyg.infra.logmessages.ResourceType;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
-import se.inera.intyg.intygsbestallning.web.model.SjukfallEnhet;
-import se.inera.intyg.intygsbestallning.web.model.SjukfallPatient;
 
 import java.util.List;
 
@@ -32,12 +30,7 @@ import java.util.List;
  */
 public interface PdlLogMessageFactory {
 
-    PdlLogMessage buildLogMessage(List<SjukfallEnhet> sjukfallList,
-                                  ActivityType activityType,
-                                  ResourceType resourceType,
-                                  IbUser ibUser);
-
-    PdlLogMessage buildLogMessage(SjukfallPatient sjukfallPatient,
+    PdlLogMessage buildLogMessage(List<Object> sjukfallList,
                                   ActivityType activityType,
                                   ResourceType resourceType,
                                   IbUser ibUser);

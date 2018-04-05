@@ -27,15 +27,11 @@ import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.IbUserDetailsService;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.util.SystemRolesParser;
-import se.inera.intyg.intygsbestallning.web.model.Gender;
-import se.inera.intyg.intygsbestallning.web.model.Lakare;
-import se.inera.intyg.intygsbestallning.web.model.Patient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Helper base class, provides data setup for tests.
@@ -55,18 +51,6 @@ public final class TestDataGen {
 
     // CHECKSTYLE:OFF MagicNumber
 
-
-    public static List<String> buildLakare() {
-        List<Lakare> lakare = new ArrayList<>();
-        lakare.add(createLakare("IFV1239877878-1049", "Jan Nilsson"));
-        lakare.add(createLakare("IFV1239877878-1255", "Ove Mört"));
-
-        return lakare.stream().map(l -> l.getNamn()).collect(Collectors.toList());
-    }
-
-    public static Lakare createLakare(String lakareId, String lakareNamn) {
-        return new Lakare(lakareId, lakareNamn);
-    }
 
     public static List<String> buildDiagnosGrupper() {
         List<String> diagnosGrupper = new ArrayList<>();
@@ -92,19 +76,10 @@ public final class TestDataGen {
     }
 
 
-
-
-    public static Patient buildPatient() {
-        Patient patient = new Patient("19121212-1212", "Tolvan Tolvansson");
-        patient.setAlder(54);
-        patient.setKon(Gender.M);
-        return patient;
-    }
-
     public static IbUser buildIBVardadminUser() {
         IbUser user = new IbUser(USER_HSA_ID, USER_NAME);
         user.setMiuNamnPerEnhetsId(buildMiUPerEnhetsIdMap());
-        user.setTitel("Överläkare");
+        user.setTitel("Vårdadministratör");
         Role r = new Role();
         r.setName(AuthoritiesConstants.ROLE_FMU_VARDADMIN);
         user.setRoles(ImmutableMap.of(AuthoritiesConstants.ROLE_FMU_VARDADMIN, r));
