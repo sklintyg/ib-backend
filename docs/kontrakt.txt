@@ -1,0 +1,28 @@
+┍━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┯━━━━━━━━━━━┑
+│ Kontrakt                                │ Roll      │
+├─────────────────────────────────────────┼───────────┤
+│ RequestHealthCarePerformerForAssessment │ Responder │
+│                                         │           │
+│ RespondToPerformerRequest               │ Client    │
+│                                         │           │
+│ OrderMedicalAssessment                  │ Responder │
+│                                         │           │
+│ UpdateOrder                             │ Responder │
+│                                         │           │
+│ UpdateAssessment                        │ Client    │
+│                                         │           │
+│ ReportDeviation (från vården)           │ Client    │
+│                                         │           │
+│ ReportDeviation (från myndighet)        │ Responder │
+│                                         │           │
+│ ReportCertificateReceival               │ Responder │
+│                                         │           │
+│ ReportCareContact                       │ Client    │
+│                                         │           │
+│ ReportSupplementReceival                │ Responder │
+│                                         │           │
+│ ReportContinuationDecision              │ Responder │
+│                                         │           │
+│ RequestMedicalCertificateSupplement     │ Responder │
+│                                         │           │
+┕━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┷━━━━━━━━━━━┙
