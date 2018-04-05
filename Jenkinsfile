@@ -10,8 +10,8 @@ pipeline {
 
         stage('build') {
             steps {
-                shgradle "--refresh-dependencies clean build testReport sonarqube " +
-                         "-PcodeQuality -DbuildVersion=" + buildVersion + " -DinfraVersion=" + infraVersion
+                shgradle "--refresh-dependencies clean build testReport sonarqube -PcodeQuality " +
+                         "-DbuildVersion=" + buildVersion + " -DinfraVersion=" + infraVersion
             }
             post {
                 always {
@@ -29,7 +29,8 @@ pipeline {
 
         stage('tag and upload') {
             steps {
-                shgradle "uploadArchives tagRelease -DbuildVersion=" + buildVersion + " -DinfraVersion=" + infraVersion
+                shgradle "uploadArchives tagRelease " +
+                         "-DbuildVersion=" + buildVersion + " -DinfraVersion=" + infraVersion
             }
         }
     }
