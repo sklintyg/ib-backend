@@ -37,7 +37,10 @@ import java.util.Map;
  * Created by pebe on 2015-09-07.
  */
 @Configuration
-@ComponentScan("se.inera.intyg.intygsbestallning.service, se.inera.intyg.intygsbestallning.auth, se.inera.intyg.intygsbestallning.common.service")
+@ComponentScan({
+        "se.inera.intyg.intygsbestallning.service",
+        "se.inera.intyg.intygsbestallning.auth",
+        "se.inera.intyg.intygsbestallning.common.service"})
 @EnableScheduling
 public class ServiceConfig {
 

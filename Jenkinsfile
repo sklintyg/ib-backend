@@ -1,5 +1,4 @@
 pipeline {
-
     environment {
         buildVersion = "1.0.0.${BUILD_NUMBER}"
         infraVersion = "3.6.0.+"
@@ -11,9 +10,9 @@ pipeline {
 
         stage('build') {
             steps {
-                shgradle "--refresh-dependencies clean build testReport sonarqube -PcodeQuality -DbuildVersion=" + buildVersion + " -DinfraVersion=" + infraVersion
+                shgradle "--refresh-dependencies clean build testReport sonarqube " +
+                         "-PcodeQuality -DbuildVersion=" + buildVersion + " -DinfraVersion=" + infraVersion
             }
-
             post {
                 always {
                     publishHTML target: [

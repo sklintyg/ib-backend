@@ -34,8 +34,10 @@ public final class SystemRolesParser {
     public static final String HSA_SYSTEMROLE_FMU_SAMORDNARE_CAREGIVER_PREFIX = "INTYG;FMU-SAMORDNARE-";
 
     // The part after prefix is assumed to be a hsa-enhetsid, this will be extracted and compared.
-    private static final Pattern HSA_SYSTEMROLE_FMU_VARDADMIN_UNIT_PATTERN = Pattern.compile("^" + HSA_SYSTEMROLE_FMU_VARDADMIN_UNIT_PREFIX + "(.*)");
-    private static final Pattern HSA_SYSTEMROLE_FMU_SAMORDNARE_CAREGIVER_PATTERN = Pattern.compile("^" + HSA_SYSTEMROLE_FMU_SAMORDNARE_CAREGIVER_PREFIX + "(.*)");
+    private static final Pattern HSA_SYSTEMROLE_FMU_VARDADMIN_UNIT_PATTERN =
+            Pattern.compile("^" + HSA_SYSTEMROLE_FMU_VARDADMIN_UNIT_PREFIX + "(.*)");
+    private static final Pattern HSA_SYSTEMROLE_FMU_SAMORDNARE_CAREGIVER_PATTERN =
+            Pattern.compile("^" + HSA_SYSTEMROLE_FMU_SAMORDNARE_CAREGIVER_PREFIX + "(.*)");
 
     private SystemRolesParser() {
 
