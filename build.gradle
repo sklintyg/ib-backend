@@ -7,10 +7,8 @@ plugins {
 ext {
     intygInfraVersion = System.properties['infraVersion'] ?: '0-SNAPSHOT'
 
-    ibSchemaVersion = "1.0.7"
     monitoringSchemaVersion = "1.0.0.3"
     internalMonitoringSchemaVersion = "1.0.2"
-
     schemasContractVersion = "2.1.6"
     intygsbestallningCertificateOrderSchemasVersion = "1.0-RC2"
 
