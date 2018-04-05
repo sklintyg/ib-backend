@@ -18,16 +18,15 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api;
 
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import se.inera.intyg.infra.dynamiclink.model.DynamicLink;
 import se.inera.intyg.infra.dynamiclink.service.DynamicLinkService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetConfigResponse;
+
+import java.util.Map;
 
 /**
  * Created by marced on 2016-02-09.
@@ -36,8 +35,6 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetConfigResponse
 @RequestMapping("/api/config")
 public class ConfigController {
 
-    private static final String STATISTIK_SJUNET_HOST_URL = "statistik.sjunet.host.url";
-    private static final String WEBCERT_VIEW_INTYG_URL_TEMPLATE = "webcert.view.urltemplate";
     private static final String PROJECT_VERSION_PROPERTY = "project.version";
 
     @Autowired
@@ -52,9 +49,6 @@ public class ConfigController {
 
     @RequestMapping(value = "")
     public GetConfigResponse getConfig() {
-        if (!env.containsProperty(STATISTIK_SJUNET_HOST_URL)) {
-            throw new IllegalStateException("Missing property '" + STATISTIK_SJUNET_HOST_URL + "'");
-        }
         return new GetConfigResponse(env.getProperty(PROJECT_VERSION_PROPERTY));
     }
 

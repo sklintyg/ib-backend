@@ -43,7 +43,7 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
         given().expect().statusCode(OK).when().get(USER_API_ENDPOINT).
                 then().
-                body(matchesJsonSchemaInClasspath("jsonschema/rhs-user-response-schema.json")).
+                body(matchesJsonSchemaInClasspath("jsonschema/ib-user-response-schema.json")).
                 body("hsaId", equalTo(DEFAULT_LAKARE.getHsaId())).
                 body("valdVardenhet.id", equalTo(DEFAULT_LAKARE.getEnhetId())).
                 body("namn", equalTo(DEFAULT_LAKARE_NAME));
@@ -62,7 +62,7 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
                 .when()
                 .get(USER_API_ENDPOINT)
                 .then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/rhs-user-response-schema.json"))
+                .body(matchesJsonSchemaInClasspath("jsonschema/ib-user-response-schema.json"))
                 .body("hsaId", equalTo("eva"))
                 .body("valdVardgivare", equalTo(null))
                 .body("valdVardenhet", equalTo(null));
@@ -98,7 +98,7 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
                 .body(changeRequest).when().post(USER_API_ENDPOINT + "/andraenhet")
                 .then()
                 .statusCode(OK)
-                .body(matchesJsonSchemaInClasspath("jsonschema/rhs-user-response-schema.json"))
+                .body(matchesJsonSchemaInClasspath("jsonschema/ib-user-response-schema.json"))
                 .body("valdVardenhet.id", equalTo(vardEnhetToChangeTo));
     }
 

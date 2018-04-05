@@ -49,7 +49,7 @@ public class ApplicationInitializer implements WebApplicationInitializer {
                 PuConfiguration.class, PuCacheConfiguration.class,
                 ServiceConfig.class,
                 JmsConfig.class, NTjPPingConfig.class, SecurityConfig.class,
-                SjukfallConfig.class, EmployeeNameCacheConfig.class, DynamicLinkConfig.class, PersistenceConfigJndi.class,
+                EmployeeNameCacheConfig.class, DynamicLinkConfig.class, PersistenceConfigJndi.class,
                 PersistenceConfigDev.class);
 
         servletContext.addListener(new ContextLoaderListener(appContext));

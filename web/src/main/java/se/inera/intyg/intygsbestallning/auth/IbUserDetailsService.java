@@ -69,6 +69,8 @@ public class IbUserDetailsService extends BaseUserDetailsService implements SAML
         if (ibUser.getSystemAuthorities().size() == 0) {
             throw new MissingIBSystemRoleException(ibUser.getHsaId());
         }
+
+        // If only a single possible entity to select as loggedInAt, do that...
         return ibUser;
     }
 
@@ -96,6 +98,7 @@ public class IbUserDetailsService extends BaseUserDetailsService implements SAML
 
         List<Vardgivare> vardgivareWithMedarbetaruppdrag = user.getVardgivare();
 
+
         List<IbVardgivare> authSystemTree = new ArrayList<>();
 
         // First, the easy part. Add any VG where the VE has systemRole and the VG does NOT have systemRole.
@@ -120,20 +123,20 @@ public class IbUserDetailsService extends BaseUserDetailsService implements SAML
 
             for (Vardenhet ve : vg.getVardenheter()) {
                 if (fmuVardadminCareUnitIds.contains(ve.getId())) {
-                    IbVardenhet ibVardenhet = new IbVardenhet(ve.getId(), ve.getNamn());
+
                     // Make sure the VG is added as non-samordnare VG if not present
                     IbVardgivare ibVardgivareForVardadmin = new IbVardgivare(vg.getId(), vg.getNamn(), false);
                     if (!authSystemTree.contains(ibVardgivareForVardadmin)) {
                         // Add the VE...
 
-                        ibVardgivareForVardadmin.getVardenheter().add(ibVardenhet);
+                        ibVardgivareForVardadmin.getVardenheter().add(new IbVardenhet(ve.getId(), ve.getNamn(), ibVardgivareForVardadmin));
 
                         authSystemTree.add(ibVardgivareForVardadmin);
                     } else {
                         // Find the existing entry.
                         for (IbVardgivare existingIbVardgivare : authSystemTree) {
                             if (existingIbVardgivare.getId().equalsIgnoreCase(vg.getId())) {
-                                existingIbVardgivare.getVardenheter().add(ibVardenhet);
+                                existingIbVardgivare.getVardenheter().add(new IbVardenhet(ve.getId(), ve.getNamn(), existingIbVardgivare));
                             }
                         }
                     }

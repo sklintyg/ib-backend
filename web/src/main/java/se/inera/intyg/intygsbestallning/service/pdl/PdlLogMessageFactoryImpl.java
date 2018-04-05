@@ -20,7 +20,6 @@ package se.inera.intyg.intygsbestallning.service.pdl;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.infra.logmessages.ActivityPurpose;
 import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.infra.logmessages.Enhet;
@@ -30,6 +29,9 @@ import se.inera.intyg.infra.logmessages.PdlResource;
 import se.inera.intyg.infra.logmessages.ResourceType;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
+import se.inera.intyg.intygsbestallning.auth.model.IbSelectableHsaEntity;
+import se.inera.intyg.intygsbestallning.auth.model.IbVardenhet;
+import se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.LogUser;
 import se.inera.intyg.intygsbestallning.web.model.PatientData;
 import se.inera.intyg.intygsbestallning.web.model.SjukfallEnhet;
@@ -149,16 +151,28 @@ public class PdlLogMessageFactoryImpl implements PdlLogMessageFactory {
     }
 
     private LogUser getLogUser(IbUser user) {
-        SelectableVardenhet valdVardgivare = user.getValdVardgivare();
-        SelectableVardenhet valdVardenhet = user.getValdVardenhet();
+        IbSelectableHsaEntity loggedInAt = user.getCurrentlyLoggedInAt();
 
-        return new LogUser.Builder(user.getHsaId(), valdVardenhet.getId(), valdVardgivare.getId())
-                .userName(user.getNamn())
-                .userAssignment(user.getSelectedMedarbetarUppdragNamn())
-                .userTitle(resolveUserTitle(user))
-                .enhetsNamn(valdVardenhet.getNamn())
-                .vardgivareNamn(valdVardgivare.getNamn())
-                .build();
+        if (loggedInAt.getType() == SelectableHsaEntityType.VE) {
+            IbVardenhet ve = (IbVardenhet) loggedInAt;
+            return new LogUser.Builder(user.getHsaId(), ve.getId(), ve.getParentId())
+                    .userName(user.getNamn())
+                    .userAssignment(user.getSelectedMedarbetarUppdragNamn())
+                    .userTitle(resolveUserTitle(user))
+                    .enhetsNamn(ve.getName())
+                    .vardgivareNamn(ve.getParentName())
+                    .build();
+        } else {
+            return new LogUser.Builder(user.getHsaId(), null, loggedInAt.getId())
+                    .userName(user.getNamn())
+                    .userAssignment(user.getSelectedMedarbetarUppdragNamn())
+                    .userTitle(resolveUserTitle(user))
+                    .enhetsNamn(null)
+                    .vardgivareNamn(loggedInAt.getName())
+                    .build();
+        }
+
+
     }
 
     /**

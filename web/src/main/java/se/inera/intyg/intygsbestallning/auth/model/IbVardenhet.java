@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.intygsbestallning.auth.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Objects;
 
 public class IbVardenhet implements IbSelectableHsaEntity {
@@ -25,12 +27,15 @@ public class IbVardenhet implements IbSelectableHsaEntity {
     private String id;
     private String name;
 
-    public IbVardenhet() {
+    private IbVardgivare parent;
+
+    private IbVardenhet() {
     }
 
-    public IbVardenhet(String id, String name) {
+    public IbVardenhet(String id, String name, IbVardgivare parent) {
         this.id = id;
         this.name = name;
+        this.parent = parent;
     }
 
     @Override
@@ -56,6 +61,17 @@ public class IbVardenhet implements IbSelectableHsaEntity {
         this.name = name;
     }
 
+    @JsonIgnore
+    public IbVardgivare getParent() {
+        return parent;
+    }
+
+    public void setParent(IbVardgivare parent) {
+        this.parent = parent;
+    }
+
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -72,5 +88,19 @@ public class IbVardenhet implements IbSelectableHsaEntity {
     public int hashCode() {
 
         return Objects.hash(id);
+    }
+
+    public String getParentId() {
+        if (this.parent != null) {
+            return this.parent.getId();
+        }
+        return null;
+    }
+
+    public String getParentName() {
+        if (this.parent != null) {
+            return this.parent.getName();
+        }
+        return null;
     }
 }

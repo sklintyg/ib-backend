@@ -24,22 +24,11 @@ import se.inera.intyg.infra.security.common.model.IntygUser;
 
 /**
  * Utility class that makes it easy to express and enforce authority constraint rules in backend code.
- * Example usage could be:
- *
- * <pre>
- * authoritiesValidator.given(user, &quot;fk7263&quot;).
- *         features(&quot;HANTERA_UTKAST&quot;).
- *         roles(AuthoritiesConstants.ROLE_LAKARE, AuthoritiesConstants.ROLE_PRIVATLAKARE).
- *         notOrigins(RehabstodUserOriginType.UTHOPP).
- *         privilege(&quot;SkrivIntyg&quot;);
- * </pre>
- * <p/>
- * Created by marced on 14/12/15.
  */
 public final class AuthoritiesValidator {
 
     /**
-     * Create a expectation context with just a user and no intygstyp, i.e intygstyp doesnt' matter in validations.
+     * Create a expectation context with just a user.
      *
      * @param user
      * @return

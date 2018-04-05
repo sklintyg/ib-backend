@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Defines the transport model of an authenticated IB user model, e.g returned by /api/user",
+  "properties": {
+    "hsaId": {
+      "type": "string"
+    },
+    "namn": {
+      "type": "string"
+    },
+    "titel": {
+      "type": "string"
+    },
+    "authenticationScheme": {
+      "type": "string"
+    },
+
+    "vardgivare": {
+      "additionalItems": false,
+      "items": {},
+      "minItems": 1,
+      "type": "array"
+    },
+    "roles": {
+      "additionalProperties": true,
+      "properties": {},
+      "type": "object"
+    },
+    "totaltAntalVardenheter": {
+      "type": "integer"
+    },
+    "features": {
+      "additionalProperties": false,
+      "properties": {
+        "SRS": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "global": {
+              "type": "boolean"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "required": [
+    "hsaId",
+    "namn",
+    "titel",
+    "authenticationScheme",
+    "vardgivare",
+    "roles",
+    "totaltAntalVardenheter",
+    "features"
+  ],
+  "title": "IB transport model",
+  "type": "object",
+  "additionalProperties": false
+}

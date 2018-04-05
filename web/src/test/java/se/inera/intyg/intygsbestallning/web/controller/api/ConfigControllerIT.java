@@ -34,13 +34,13 @@ public class ConfigControllerIT extends BaseRestIntegrationTest {
     @Test
     public void testGetDynamicLinksMatchesSchema() {
         given().expect().statusCode(OK).when().get(API_ENDPOINT + "/links").then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/rhs-links-schema.json"));
+                .body(matchesJsonSchemaInClasspath("jsonschema/ib-links-schema.json"));
     }
 
     @Test
     public void testGetConfigMatchesSchema() {
         given().expect().statusCode(OK).when().get(API_ENDPOINT + "").then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/rhs-config-response-schema.json"));
+                .body(matchesJsonSchemaInClasspath("jsonschema/ib-config-response-schema.json"));
     }
 
 }

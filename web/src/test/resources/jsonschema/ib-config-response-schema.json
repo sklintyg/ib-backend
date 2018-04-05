@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Defines the transport model of a rehabstod config model, e.g returned by /api/config",
+  "description": "Defines the transport model of a IB config model, e.g returned by /api/config",
   "properties": {
     "diagnosKapitelList": {
       "additionalItems": false,
@@ -21,9 +21,7 @@
   },
   "required": [
     "diagnosKapitelList",
-    "statistikTjanstBaseUrl",
-    "version",
-    "webcertViewIntygTemplateUrl"
+    "version"
   ],
   "title": "GetConfigResponse transport model",
   "type": "object",

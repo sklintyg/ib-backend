@@ -24,20 +24,14 @@ import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
+import se.inera.intyg.intygsbestallning.auth.IbUserDetailsService;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.PrintSjukfallRequest;
-import se.inera.intyg.intygsbestallning.web.model.Diagnos;
+import se.inera.intyg.intygsbestallning.auth.util.SystemRolesParser;
 import se.inera.intyg.intygsbestallning.web.model.Gender;
 import se.inera.intyg.intygsbestallning.web.model.Lakare;
-import se.inera.intyg.intygsbestallning.web.model.LangdIntervall;
 import se.inera.intyg.intygsbestallning.web.model.Patient;
-import se.inera.intyg.intygsbestallning.web.model.SjukfallEnhet;
-import se.inera.intyg.intygsbestallning.web.model.Sortering;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,8 +39,6 @@ import java.util.stream.Collectors;
 
 /**
  * Helper base class, provides data setup for tests.
- *
- * Created by eriklupander on 2016-02-24.
  */
 public final class TestDataGen {
 
@@ -63,47 +55,6 @@ public final class TestDataGen {
 
     // CHECKSTYLE:OFF MagicNumber
 
-    public static PrintSjukfallRequest buildPrintRequest() {
-        PrintSjukfallRequest req = new PrintSjukfallRequest();
-        req.setPersonnummer(buildPersonnummerList());
-        req.setDiagnosGrupper(buildDiagnosGrupper());
-        req.setLakare(buildLakare());
-        req.setLangdIntervall(buildLangdIntervall());
-        req.setAldersIntervall(buildAlderIntervall());
-        req.setSlutdatumIntervall(buildDatumIntervall());
-        req.setMaxIntygsGlapp(5);
-        req.setSortering(buildSortering());
-        req.setShowPatientId(true);
-        return req;
-    }
-
-    public static Sortering buildSortering() {
-        Sortering sortering = new Sortering();
-        sortering.setKolumn("Namn");
-        sortering.setOrder("ASC");
-        return sortering;
-    }
-
-    public static LangdIntervall buildLangdIntervall() {
-        LangdIntervall langdIntervall = new LangdIntervall();
-        langdIntervall.setMax("90");
-        langdIntervall.setMin("30");
-        return langdIntervall;
-    }
-
-    public static LangdIntervall buildAlderIntervall() {
-        LangdIntervall langdIntervall = new LangdIntervall();
-        langdIntervall.setMax("70");
-        langdIntervall.setMin("30");
-        return langdIntervall;
-    }
-
-    public static LangdIntervall buildDatumIntervall() {
-        LangdIntervall langdIntervall = new LangdIntervall();
-        langdIntervall.setMax(LocalDate.now().plusDays(7L).format(DateTimeFormatter.ISO_DATE));
-        langdIntervall.setMin(LocalDate.now().format(DateTimeFormatter.ISO_DATE));
-        return langdIntervall;
-    }
 
     public static List<String> buildLakare() {
         List<Lakare> lakare = new ArrayList<>();
@@ -131,38 +82,17 @@ public final class TestDataGen {
         return personnummerList;
     }
 
-    public static List<SjukfallEnhet> buildSjukfallList(int num) {
-        List<SjukfallEnhet> sjukfallList = new ArrayList<>();
-        for (int a = 0; a < num; a++) {
-            sjukfallList.add(buildSjukfall());
-        }
-        return sjukfallList;
+    public static List<String> buildDefaultSystemRoles() {
+        List<String> systemRoles = new ArrayList<>();
+        systemRoles.add(SystemRolesParser.HSA_SYSTEMROLE_FMU_SAMORDNARE_CAREGIVER_PREFIX + "vg1");
+        systemRoles.add(SystemRolesParser.HSA_SYSTEMROLE_FMU_SAMORDNARE_CAREGIVER_PREFIX + "vg3");
+        systemRoles.add(SystemRolesParser.HSA_SYSTEMROLE_FMU_VARDADMIN_UNIT_PREFIX + "ve11");
+        systemRoles.add(SystemRolesParser.HSA_SYSTEMROLE_FMU_VARDADMIN_UNIT_PREFIX + "ve21");
+        return systemRoles;
     }
 
-    public static SjukfallEnhet buildSjukfall() {
-        SjukfallEnhet sf = new SjukfallEnhet();
 
-        sf.setVardGivareId(CAREGIVER_ID);
-        sf.setVardGivareNamn(CAREGIVER_NAME);
-        sf.setVardEnhetId(CAREUNIT_ID);
-        sf.setVardEnhetNamn(CAREUNIT_NAME);
 
-        Lakare lakare = new Lakare("IFV1239877878-1049", "Jan Nilsson");
-        sf.setLakare(lakare);
-
-        sf.setPatient(buildPatient());
-        sf.setDiagnos(buildDiagnos());
-        sf.setGrader(buildGrader());
-
-        sf.setAktivGrad(75);
-        sf.setDagar(65);
-        sf.setIntyg(2);
-
-        sf.setStart(LocalDate.now().minusMonths(2));
-        sf.setSlut(LocalDate.now().plusWeeks(2));
-
-        return sf;
-    }
 
     public static Patient buildPatient() {
         Patient patient = new Patient("19121212-1212", "Tolvan Tolvansson");
@@ -171,23 +101,35 @@ public final class TestDataGen {
         return patient;
     }
 
-    public static List<Integer> buildGrader() {
-        return Arrays.asList(50, 75);
-    }
-
-    public static Diagnos buildDiagnos() {
-        Diagnos diagnos = new Diagnos("J22", "J22", "diagnosnamn");
-        return diagnos;
-    }
-
     public static IbUser buildIBVardadminUser() {
         IbUser user = new IbUser(USER_HSA_ID, USER_NAME);
-        user.setValdVardenhet(buildValdVardenhet(CAREUNIT_ID, CAREUNIT_NAME));
-        user.setValdVardgivare(buildValdGivare(CAREGIVER_ID, CAREGIVER_NAME));
         user.setMiuNamnPerEnhetsId(buildMiUPerEnhetsIdMap());
         user.setTitel("Överläkare");
-        user.setRoles(ImmutableMap.of(AuthoritiesConstants.ROLE_FMU_VARDADMIN, new Role()));
+        Role r = new Role();
+        r.setName(AuthoritiesConstants.ROLE_FMU_VARDADMIN);
+        user.setRoles(ImmutableMap.of(AuthoritiesConstants.ROLE_FMU_VARDADMIN, r));
+        user.setSystemRoles(buildDefaultSystemRoles());
+        user.setVardgivare(buildDefaultVardgivareTree());
+        new IbUserDetailsService().buildSystemAuthoritiesTree(user);
         return user;
+    }
+
+    public static  List<Vardgivare> buildDefaultVardgivareTree() {
+        Vardgivare vg1 = new Vardgivare("vg1", "vg1");
+        Vardenhet ve11 = new Vardenhet("ve11", "ve11");
+        vg1.getVardenheter().add(ve11);
+
+        Vardgivare vg2 = new Vardgivare("vg2", "vg2");
+        Vardenhet ve21 = new Vardenhet("ve21", "ve21");
+        vg2.getVardenheter().add(ve21);
+
+        Vardgivare vg4 = new Vardgivare("vg4", "vg4");
+
+        List<Vardgivare> vardgivare = new ArrayList<>();
+        vardgivare.add(vg1);
+        vardgivare.add(vg2);
+        vardgivare.add(vg4);
+        return vardgivare;
     }
 
     private static Map<String, String> buildMiUPerEnhetsIdMap() {

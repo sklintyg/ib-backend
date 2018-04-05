@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.intygsbestallning.auth;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.intygsbestallning.auth.model.IbSelectableHsaEntity;
@@ -35,7 +37,11 @@ import static se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConst
 import static se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants.ROLE_FMU_VARDADMIN;
 
 /**
- * @author pebe on 2015-08-11.
+ * The IB user overrides a lot of the default behaviour. Since users can be logged in on both Vårdgivare and on Vårdenhet
+ * where the VG level doesn't require a Medarbetaruppdrag (IB uses system roles), some data structures are quite
+ * unused while others have been added.
+ *
+ * @author eriklupander
  */
 public class IbUser extends IntygUser implements Serializable {
 
@@ -78,21 +84,20 @@ public class IbUser extends IntygUser implements Serializable {
      */
     public IbUser(IntygUser intygUser) {
         super(intygUser.getHsaId());
-        this.privatLakareAvtalGodkand = intygUser.isPrivatLakareAvtalGodkand();
         this.personId = intygUser.getPersonId();
 
         this.namn = intygUser.getNamn();
         this.titel = intygUser.getTitel();
-        this.forskrivarkod = intygUser.getForskrivarkod();
+//        this.forskrivarkod = intygUser.getForskrivarkod();
         this.authenticationScheme = intygUser.getAuthenticationScheme();
         this.vardgivare = intygUser.getVardgivare();
-        this.befattningar = intygUser.getBefattningar();
-        this.specialiseringar = intygUser.getSpecialiseringar();
-        this.legitimeradeYrkesgrupper = intygUser.getLegitimeradeYrkesgrupper();
+//        this.befattningar = intygUser.getBefattningar();
+//        this.specialiseringar = intygUser.getSpecialiseringar();
+//        this.legitimeradeYrkesgrupper = intygUser.getLegitimeradeYrkesgrupper();
         this.systemRoles = intygUser.getSystemRoles();
 
-        this.valdVardenhet = intygUser.getValdVardenhet();
-        this.valdVardgivare = intygUser.getValdVardgivare();
+    //    this.valdVardenhet = intygUser.getValdVardenhet();
+    //    this.valdVardgivare = intygUser.getValdVardgivare();
         this.authenticationMethod = intygUser.getAuthenticationMethod();
 
         this.features = intygUser.getFeatures();
@@ -114,6 +119,7 @@ public class IbUser extends IntygUser implements Serializable {
         // count all hasid's in the datastructure
         return (int) getVardgivare().stream().flatMap(vg -> vg.getHsaIds().stream()).count();
     }
+
 
     /**
      * For IB, we select from the systemAuthorities tree rather than the traditional VG -> VE -> E tree.
@@ -170,6 +176,37 @@ public class IbUser extends IntygUser implements Serializable {
 
     public void setStoredActivities(Map<String, List<PDLActivityEntry>> storedActivities) {
         this.storedActivities = storedActivities;
+    }
+
+    // Overridden stuff not used by IB
+    @Override
+    @JsonIgnore
+    public SelectableVardenhet getValdVardgivare() {
+        return null;
+    }
+
+    @Override
+    @JsonIgnore
+    public SelectableVardenhet getValdVardenhet() {
+        return null;
+    }
+
+    @Override
+    @JsonIgnore
+    public List<String> getSpecialiseringar() {
+        return new ArrayList<>();
+    }
+
+    @Override
+    @JsonIgnore
+    public List<String> getBefattningar() {
+        return new ArrayList<>();
+    }
+
+    @Override
+    @JsonIgnore
+    public List<String> getLegitimeradeYrkesgrupper() {
+        return new ArrayList<>();
     }
 
     // private scope
