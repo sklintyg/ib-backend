@@ -18,11 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.auth;
 
-import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.Attribute;
 import org.opensaml.saml2.core.AuthnContext;
@@ -38,12 +33,17 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 /**
  * Created by eriklupander on 2015-06-16.
  */
 public abstract class BaseFakeAuthenticationProvider implements AuthenticationProvider {
 
-    public static final String FAKE_AUTHENTICATION_SITHS_CONTEXT_REF = "urn:inera:rehabstod:siths:fake";
+    public static final String FAKE_AUTHENTICATION_SITHS_CONTEXT_REF = "urn:inera:intygsbestallning:siths:fake";
 
     private static DocumentBuilder documentBuilder;
 

@@ -35,7 +35,8 @@ import static org.junit.Assert.assertTrue;
 public class AuthExpectationSpecImplTest {
 
     private static final String LAKARE = "LAKARE";
-    IntygUser user = new IbUser("11111", "Dr Doctor", true);
+
+    private IntygUser user = new IbUser("11111", "Dr Doctor");
 
     @Before
     public void setUp() throws Exception {

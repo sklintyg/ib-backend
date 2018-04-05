@@ -26,11 +26,22 @@ import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.integration.hsa.model.UserCredentials;
+import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
+import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.security.siths.BaseSakerhetstjanstAssertion;
 import se.inera.intyg.infra.security.siths.BaseUserDetailsService;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
+import se.inera.intyg.intygsbestallning.auth.exceptions.MissingIBSystemRoleException;
+import se.inera.intyg.intygsbestallning.auth.model.IbVardenhet;
+import se.inera.intyg.intygsbestallning.auth.model.IbVardgivare;
+import se.inera.intyg.intygsbestallning.auth.util.SystemRolesParser;
 import se.inera.intyg.intygsbestallning.persistence.repository.AnvandarPreferenceRepository;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author andreaskaltenbach
@@ -43,9 +54,6 @@ public class IbUserDetailsService extends BaseUserDetailsService implements SAML
     @Autowired
     private AnvandarPreferenceRepository anvandarPreferenceRepository;
 
-    @Autowired
-    private IbUnitChangeService ibUnitChangeService;
-
     // =====================================================================================
     // ~ Protected scope
     // =====================================================================================
@@ -54,15 +62,13 @@ public class IbUserDetailsService extends BaseUserDetailsService implements SAML
     protected IbUser buildUserPrincipal(SAMLCredential credential) {
         // All rehab customization is done in the overridden decorateXXX methods, so just return a new rehabuser
         IntygUser intygUser = super.buildUserPrincipal(credential);
-        IbUser ibUser = new IbUser(intygUser, false, intygUser.isLakare());
+        IbUser ibUser = new IbUser(intygUser);
 
-        // INTYG-5068: Explicitly changing vardenhet on session creation to possibly appyl REHABKOORDINATOR role for
-        // this unit in case the user is LAKARE and has systemRole Rehab- for the current unit.
-        // This is only performed if there were a unit selected, e.g. user only has access to a single unit.
-        if (ibUser.getValdVardenhet() != null) {
-            ibUnitChangeService.changeValdVardenhet(ibUser.getValdVardenhet().getId(), ibUser);
+        buildSystemAuthoritiesTree(ibUser);
+
+        if (ibUser.getSystemAuthorities().size() == 0) {
+            throw new MissingIBSystemRoleException(ibUser.getHsaId());
         }
-
         return ibUser;
     }
 
@@ -73,6 +79,93 @@ public class IbUserDetailsService extends BaseUserDetailsService implements SAML
         if (getTotaltAntalVardenheterExcludingMottagningar(intygUser) == 1) {
             super.decorateIntygUserWithDefaultVardenhet(intygUser);
         }
+    }
+
+    /**
+     * Builds a tree of caregivers and careunits where the user has either SAMORDNARE or VARDADM roles
+     * and assigns it to the user principal. Is based on the vardgivare and systemRoles so those must
+     * have been populated prior to calling this method.
+     *
+     * @param user
+     */
+    public void buildSystemAuthoritiesTree(IbUser user) {
+
+        // Takes standard vardgivare + systemRoles.
+        List<String> fmuVardadminCareUnitIds = SystemRolesParser.parseEnhetsIdsFromSystemRoles(user.getSystemRoles());
+        List<String> samordnareCareGiverIds = SystemRolesParser.parseCaregiverIdsFromSystemRoles(user.getSystemRoles());
+
+        List<Vardgivare> vardgivareWithMedarbetaruppdrag = user.getVardgivare();
+
+        List<IbVardgivare> authSystemTree = new ArrayList<>();
+
+        // First, the easy part. Add any VG where the VE has systemRole and the VG does NOT have systemRole.
+        for (Vardgivare vg : vardgivareWithMedarbetaruppdrag) {
+
+            // If the VG is also a Samordnare... add!
+            if (samordnareCareGiverIds.contains(vg.getId())) {
+                IbVardgivare ibVardgivare = new IbVardgivare(vg.getId(), vg.getNamn(), true);
+                if (!authSystemTree.contains(ibVardgivare)) {
+                    authSystemTree.add(ibVardgivare);
+
+                } else {
+                    // If it exists, we must update it to samordnare if not already so.
+                    for (IbVardgivare ibVg : authSystemTree) {
+                        if (ibVg.getId().equalsIgnoreCase(vg.getId()) && !ibVg.isSamordnare()) {
+                            ibVg.setSamordnare(true);
+                        }
+                    }
+                }
+            }
+            // Done handling adding or updating root IbVG
+
+            for (Vardenhet ve : vg.getVardenheter()) {
+                if (fmuVardadminCareUnitIds.contains(ve.getId())) {
+                    IbVardenhet ibVardenhet = new IbVardenhet(ve.getId(), ve.getNamn());
+                    // Make sure the VG is added as non-samordnare VG if not present
+                    IbVardgivare ibVardgivareForVardadmin = new IbVardgivare(vg.getId(), vg.getNamn(), false);
+                    if (!authSystemTree.contains(ibVardgivareForVardadmin)) {
+                        // Add the VE...
+
+                        ibVardgivareForVardadmin.getVardenheter().add(ibVardenhet);
+
+                        authSystemTree.add(ibVardgivareForVardadmin);
+                    } else {
+                        // Find the existing entry.
+                        for (IbVardgivare existingIbVardgivare : authSystemTree) {
+                            if (existingIbVardgivare.getId().equalsIgnoreCase(vg.getId())) {
+                                existingIbVardgivare.getVardenheter().add(ibVardenhet);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Finally, we need to add any "free" samrodnings-VG not already present. These can NOT have a VE as
+            // those would already have been added in the section above.
+            for (String ibVgId : samordnareCareGiverIds) {
+                IbVardgivare ibVardgivare = new IbVardgivare(ibVgId, ibVgId, true); // TODO must fetch name from HSA!!
+                if (!authSystemTree.contains(ibVardgivare)) {
+                    authSystemTree.add(ibVardgivare);
+                }
+            }
+
+            // Sort VG by name...
+            authSystemTree = authSystemTree.stream().sorted(Comparator.comparing(IbVardgivare::getName)).collect(Collectors.toList());
+
+            // Sort underlying VE by name..
+            authSystemTree.forEach(vgg -> vgg.setVardenheter(
+                    vgg.getVardenheter().stream().sorted(Comparator.comparing(IbVardenhet::getName)).collect(Collectors.toList())));
+
+            user.setSystemAuthorities(authSystemTree);
+        }
+
+        // Real careful here...
+        // We may add either:
+        // Vårdgivare that has at least one child VE for which there is a VARDADMIN systemRole.
+        // or
+        // Any vårdgivare we have careGiverId from a systemRole for. These do not require Medarbetaruppdrag V&B so we
+        // basically need to fetch them seperately...
+
     }
 
     private int getTotaltAntalVardenheterExcludingMottagningar(IntygUser intygUser) {
@@ -94,6 +187,5 @@ public class IbUserDetailsService extends BaseUserDetailsService implements SAML
     protected BaseSakerhetstjanstAssertion getAssertion(Assertion assertion) {
         return super.getAssertion(assertion);
     }
-
 
 }

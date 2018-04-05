@@ -18,20 +18,21 @@
  */
 package se.inera.intyg.intygsbestallning.auth;
 
-import se.inera.intyg.infra.integration.hsa.model.AbstractVardenhet;
-import se.inera.intyg.infra.integration.hsa.model.Mottagning;
-import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
-import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.common.model.IntygUser;
-import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Role;
+import se.inera.intyg.intygsbestallning.auth.model.IbSelectableHsaEntity;
+import se.inera.intyg.intygsbestallning.auth.model.IbVardenhet;
+import se.inera.intyg.intygsbestallning.auth.model.IbVardgivare;
 import se.inera.intyg.intygsbestallning.auth.pdl.PDLActivityEntry;
-import se.inera.intyg.intygsbestallning.auth.util.SystemRolesParser;
-import se.inera.intyg.intygsbestallning.service.Urval;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants.ROLE_FMU_SAMORDNARE;
+import static se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants.ROLE_FMU_VARDADMIN;
 
 /**
  * @author pebe on 2015-08-11.
@@ -40,21 +41,25 @@ public class IbUser extends IntygUser implements Serializable {
 
     private static final long serialVersionUID = 8711015219408194075L;
 
+    // Tree for handling which VG and VE the user has access to as VARDADMIN or SAMORDNARE
+    private List<IbVardgivare> systemAuthorities = new ArrayList<>();
+
+    // An IB-user must always have a current role and a current IbSelectableHsaEntity
+    private Role currentRole;
+
+    private IbSelectableHsaEntity currentlyLoggedInAt;
+
     // Handles PDL logging state
     private Map<String, List<PDLActivityEntry>> storedActivities;
-
-    private boolean pdlConsentGiven = false;
-    private boolean isLakare = false;
 
     /**
      * Typically used by unit tests.
      */
-    public IbUser(String hsaId, String namn, boolean isLakare) {
+    public IbUser(String hsaId, String namn) {
         super(hsaId);
         this.storedActivities = new HashMap<>();
         this.hsaId = hsaId;
         this.namn = namn;
-        this.isLakare = isLakare;
     }
 
     /**
@@ -67,14 +72,11 @@ public class IbUser extends IntygUser implements Serializable {
      * changing units without losing the original "isLakare" information. See INTYG-5068.
      *
      * @param intygUser
-     *      User principal, typically constructed in the {@link org.springframework.security.saml.userdetails.SAMLUserDetailsService}
-     *      implementor.
-     * @param pdlConsentGiven
-     *      Whether the user has given PDL logging consent.
-     * @param isLakare
-     *      Wheter the user is LAKARE or not. Immutable once set.
+     *            User principal, typically constructed in the
+     *            {@link org.springframework.security.saml.userdetails.SAMLUserDetailsService}
+     *            implementor.
      */
-    public IbUser(IntygUser intygUser, boolean pdlConsentGiven, boolean isLakare) {
+    public IbUser(IntygUser intygUser) {
         super(intygUser.getHsaId());
         this.privatLakareAvtalGodkand = intygUser.isPrivatLakareAvtalGodkand();
         this.personId = intygUser.getPersonId();
@@ -101,37 +103,10 @@ public class IbUser extends IntygUser implements Serializable {
         this.storedActivities = new HashMap<>();
 
         this.miuNamnPerEnhetsId = intygUser.getMiuNamnPerEnhetsId();
-        this.pdlConsentGiven = pdlConsentGiven;
-
-        this.isLakare = isLakare;
-    }
-
-    public Urval getUrval() {
-        // If we dont have a role, we can't decide which urval change is allowed, so..
-        if (roles == null) {
-            return null;
-        }
-
-        // Case 1: Lakare should get ISSUED_BY_ME
-        if (roles.containsKey(AuthoritiesConstants.ROLE_LAKARE)) {
-            return Urval.ISSUED_BY_ME;
-        }
-
-        // Case 2: Koordinator should get ALL
-        if (roles.containsKey(AuthoritiesConstants.ROLE_FMU_VARDADMIN)) {
-            return Urval.ALL;
-        }
-
-       return null;
     }
 
     public Map<String, List<PDLActivityEntry>> getStoredActivities() {
         return storedActivities;
-    }
-
-
-    public Urval getDefaultUrval() {
-        return roles.containsKey(AuthoritiesConstants.ROLE_LAKARE) ? Urval.ISSUED_BY_ME : Urval.ALL;
     }
 
     @Override
@@ -140,69 +115,61 @@ public class IbUser extends IntygUser implements Serializable {
         return (int) getVardgivare().stream().flatMap(vg -> vg.getHsaIds().stream()).count();
     }
 
-
-
-
     /**
-     * If the currently selected vardenhet is not null and is an underenhet/mottagning, this method returns true.
+     * For IB, we select from the systemAuthorities tree rather than the traditional VG -> VE -> E tree.
      *
-     * @return true if UE, false if not.
+     * We also sets the currentRole based on the selection.
+     *
+     * @param vgOrVeHsaId
+     * @return
      */
-    public boolean isValdVardenhetMottagning() {
-        if (valdVardenhet == null) {
-            return false;
-        }
-
-        for (Vardgivare vg : vardgivare) {
-            for (Vardenhet ve : vg.getVardenheter()) {
-                if (ve.getId().equals(valdVardenhet.getId())) {
-                    return false;
-                }
-                for (Mottagning m : ve.getMottagningar()) {
-                    if (m.getId().equals(valdVardenhet.getId())) {
-                        return true;
-                    }
+    @Override
+    public boolean changeValdVardenhet(String vgOrVeHsaId) {
+        // FOR IB, we ignore the original HSA VG->VE tree, all authority is managed through the custom systemAuthorities tree.
+        for (IbVardgivare ibVg : systemAuthorities) {
+            if (ibVg.getId().equalsIgnoreCase(vgOrVeHsaId)) {
+                this.currentlyLoggedInAt = ibVg;
+                this.currentRole = this.roles.get(ROLE_FMU_SAMORDNARE);
+                return true;
+            }
+            for (IbVardenhet ibVardenhet : ibVg.getVardenheter()) {
+                if (ibVardenhet.getId().equalsIgnoreCase(vgOrVeHsaId)) {
+                    this.currentlyLoggedInAt = ibVardenhet;
+                    this.currentRole = this.roles.get(ROLE_FMU_VARDADMIN);
+                    return true;
                 }
             }
         }
-        return false;
+
+        return true;
     }
 
-    public boolean isPdlConsentGiven() {
-        return pdlConsentGiven;
+    public List<IbVardgivare> getSystemAuthorities() {
+        return systemAuthorities;
     }
 
-    public void setPdlConsentGiven(boolean pdlConsentGiven) {
-        this.pdlConsentGiven = pdlConsentGiven;
+    public void setSystemAuthorities(List<IbVardgivare> systemAuthorities) {
+        this.systemAuthorities = systemAuthorities;
     }
 
-    /**
-     * In rehabstöd, isLakare is an immutable field that must be set when logging in. This is due to us
-     * sometimes changing the ROLE of a doctor to be a Rehabkoordinator based on systemRoles.
-     *
-     * @return
-     *      true if doctor, false if not.
-     */
-    @Override
-    public boolean isLakare() {
-        return isLakare;
+    public Role getCurrentRole() {
+        return currentRole;
     }
 
-    /**
-     * Returns true if the user is a doctor and at least one vardenhet Id matches an Intyg;Rehab-[enhetId] systemRole.
-     */
-    public boolean isRoleSwitchPossible() {
-        if (!isLakare()) {
-            return false;
-        }
+    public void setCurrentRole(Role currentRole) {
+        this.currentRole = currentRole;
+    }
 
-        // Check if this doctor has a
-        return this.vardgivare.stream()
-                .flatMap(vg -> vg.getVardenheter().stream())
-                .map(AbstractVardenhet::getId)
-                .anyMatch(enhetId -> SystemRolesParser.parseEnhetsIdsFromSystemRoles(systemRoles).stream()
-                        .anyMatch(systemRoleEnhetId -> systemRoleEnhetId.equals(enhetId))
-        );
+    public IbSelectableHsaEntity getCurrentlyLoggedInAt() {
+        return currentlyLoggedInAt;
+    }
+
+    public void setCurrentlyLoggedInAt(IbSelectableHsaEntity currentlyLoggedInAt) {
+        this.currentlyLoggedInAt = currentlyLoggedInAt;
+    }
+
+    public void setStoredActivities(Map<String, List<PDLActivityEntry>> storedActivities) {
+        this.storedActivities = storedActivities;
     }
 
     // private scope

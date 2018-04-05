@@ -19,6 +19,7 @@
 package se.inera.intyg.intygsbestallning.auth;
 
 import org.apache.cxf.staxutils.StaxUtils;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -50,6 +51,7 @@ import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.authorities.bootstrap.SecurityConfigurationLoader;
 import se.inera.intyg.infra.security.common.exception.GenericAuthenticationException;
 import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOrigin;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.infra.security.common.service.AuthenticationLogger;
@@ -57,6 +59,7 @@ import se.inera.intyg.infra.security.exception.HsaServiceException;
 import se.inera.intyg.infra.security.exception.MissingMedarbetaruppdragException;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.intygsbestallning.auth.model.IbVardgivare;
 import se.inera.intyg.intygsbestallning.auth.util.SystemRolesParser;
 import se.inera.intyg.intygsbestallning.persistence.model.AnvandarPreference;
 import se.inera.intyg.intygsbestallning.persistence.repository.AnvandarPreferenceRepository;
@@ -75,7 +78,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -124,9 +129,6 @@ public class IbUserDetailsServiceTest {
     @Mock
     private AnvandarPreferenceRepository anvandarPreferenceRepository;
 
-    @Mock
-    private IbUnitChangeService rehabstodUnitChangeService;
-
     @BeforeClass
     public static void setupAuthoritiesConfiguration() throws Exception {
 
@@ -167,11 +169,11 @@ public class IbUserDetailsServiceTest {
         setupCallToGetHsaPersonInfoNonDoctor();
 
         // then
-        IntygUser rehabstodUser = (IntygUser) userDetailsService.loadUserBySAML(samlCredential);
+        IntygUser ibUser = (IntygUser) userDetailsService.loadUserBySAML(samlCredential);
 
-        AUTHORITIES_VALIDATOR.given(rehabstodUser).roles(AuthoritiesConstants.ROLE_FMU_VARDADMIN).orThrow();
-        assertEquals(4, rehabstodUser.getTotaltAntalVardenheter());
-        assertNull(rehabstodUser.getValdVardenhet());
+        AUTHORITIES_VALIDATOR.given(ibUser).roles(AuthoritiesConstants.ROLE_FMU_VARDADMIN).orThrow();
+        assertEquals(4, ibUser.getTotaltAntalVardenheter());
+        assertNull(ibUser.getValdVardenhet());
 
     }
 
@@ -194,12 +196,12 @@ public class IbUserDetailsServiceTest {
         setupCallToGetHsaPersonInfoNonDoctor();
 
         // then
-        IntygUser rehabstodUser = (IntygUser) userDetailsService.loadUserBySAML(samlCredential);
+        IntygUser ibUser = (IntygUser) userDetailsService.loadUserBySAML(samlCredential);
 
-        AUTHORITIES_VALIDATOR.given(rehabstodUser).roles(AuthoritiesConstants.ROLE_FMU_VARDADMIN).orThrow();
-        assertEquals(1, rehabstodUser.getTotaltAntalVardenheter());
+        AUTHORITIES_VALIDATOR.given(ibUser).roles(AuthoritiesConstants.ROLE_FMU_VARDADMIN).orThrow();
+        assertEquals(1, ibUser.getTotaltAntalVardenheter());
         assertEquals(ENHET_HSAID_2 + " should have been selected as valdVardgivare", ENHET_HSAID_2,
-                rehabstodUser.getValdVardenhet().getId());
+                ibUser.getValdVardenhet().getId());
     }
 
     @Test
@@ -225,36 +227,14 @@ public class IbUserDetailsServiceTest {
         setupCallToGetHsaPersonInfoNonDoctor();
 
         // then
-        IntygUser rehabstodUser = (IntygUser) userDetailsService.loadUserBySAML(samlCredential);
+        IntygUser ibUser = (IntygUser) userDetailsService.loadUserBySAML(samlCredential);
 
-        AUTHORITIES_VALIDATOR.given(rehabstodUser).roles(AuthoritiesConstants.ROLE_FMU_VARDADMIN).orThrow();
-        assertEquals(2, rehabstodUser.getTotaltAntalVardenheter());
+        AUTHORITIES_VALIDATOR.given(ibUser).roles(AuthoritiesConstants.ROLE_FMU_VARDADMIN).orThrow();
+        assertEquals(2, ibUser.getTotaltAntalVardenheter());
         assertEquals(ENHET_HSAID_2 + " should have been selected as valdVardgivare", ENHET_HSAID_2,
-                rehabstodUser.getValdVardenhet().getId());
+                ibUser.getValdVardenhet().getId());
     }
 
-//    @Test(expected = MissingUnitWithRehabSystemRoleException.class)
-//    public void assertThrowsExceptionWhenNoMatchingSystemRole() throws Exception {
-//        // given
-//        SAMLCredential samlCredential = createSamlCredential("saml-assertion-uppdragslos.xml");
-//        setupCallToAuthorizedEnheterForHosPerson();
-//        setupCallToGetHsaPersonInfoNonDoctor();
-//
-//        // then
-//        userDetailsService.loadUserBySAML(samlCredential);
-//
-//    }
-//
-//    @Test(expected = MissingUnitWithRehabSystemRoleException.class)
-//    public void assertNoRoleWhenUserHasTitleLakareButNoSystemRoles() throws Exception {
-//        // given
-//        SAMLCredential samlCredential = createSamlCredential("saml-assertion-uppdragslos.xml");
-//        setupCallToAuthorizedEnheterForHosPerson();
-//        setupCallToGetHsaPersonInfoNonDoctor("Läkare");
-//
-//        // then
-//        userDetailsService.loadUserBySAML(samlCredential);
-//    }
 
     @Test(expected = GenericAuthenticationException.class)
     public void testGenericAuthenticationExceptionIsThrownWhenNoSamlCredentialsGiven() throws Exception {
@@ -322,27 +302,141 @@ public class IbUserDetailsServiceTest {
         setupCallToGetHsaPersonInfoNonDoctor("Läkare");
 
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-uppdragslos.xml");
-        IntygUser rehabstodUser = (IntygUser) userDetailsService.loadUserBySAML(samlCredential);
+        IntygUser ibUser = (IntygUser) userDetailsService.loadUserBySAML(samlCredential);
 
-        AUTHORITIES_VALIDATOR.given(rehabstodUser).roles(AuthoritiesConstants.ROLE_FMU_VARDADMIN).orThrow();
+        AUTHORITIES_VALIDATOR.given(ibUser).roles(AuthoritiesConstants.ROLE_FMU_VARDADMIN).orThrow();
 
     }
 
     @Test
-    public void testLakareWithNoSystemRolesKeepsAllUnits() throws Exception {
-        UserCredentials userCredz = new UserCredentials();
-        when(hsaOrganizationsService.getAuthorizedEnheterForHosPerson(PERSONAL_HSAID))
-                .thenReturn(new UserAuthorizationInfo(userCredz, buildVardgivareList(), buildMiuPerCareUnitMap()));
-        setupCallToGetHsaPersonInfo("Läkare");
+    public void testBuildAuthTreeFromPreparedSystemRoles() {
+        IbUser ibUser =  prepareUserForSelectTest();
 
-        SAMLCredential samlCredential = createSamlCredential("saml-assertion-uppdragslos.xml");
-        IntygUser rehabstodUser = (IntygUser) userDetailsService.loadUserBySAML(samlCredential);
 
-        AUTHORITIES_VALIDATOR.given(rehabstodUser).roles(AuthoritiesConstants.ROLE_LAKARE).orThrow();
-        assertEquals(4, rehabstodUser.getTotaltAntalVardenheter());
-        assertNull("No default vardenenhet should have been selected since user have more than 1 available unit",
-                rehabstodUser.getValdVardenhet());
+        // First, the "normal" tree based on HSA medarbetaruppdrag.
+
+
+
+
+        // Assert that we have an expected tree
+        List<IbVardgivare> sa = ibUser.getSystemAuthorities();
+        assertEquals(3, sa.size()); // Three VG
+
+        assertEquals("vg1", sa.get(0).getId());
+        assertEquals(1, sa.get(0).getVardenheter().size());
+        assertTrue(sa.get(0).isSamordnare());
+        assertEquals("ve11", sa.get(0).getVardenheter().get(0).getId());
+
+        assertEquals("vg2", sa.get(1).getId());
+        assertEquals(1, sa.get(1).getVardenheter().size());
+        assertFalse(sa.get(1).isSamordnare());
+        assertEquals("ve21", sa.get(1).getVardenheter().get(0).getId());
+
+        assertEquals("vg3", sa.get(2).getId());
+        assertEquals(0, sa.get(2).getVardenheter().size());
+        assertTrue(sa.get(2).isSamordnare());
+
     }
+
+    @Test
+    public void testSelectVG1() {
+        IbUser ibUser = prepareUserForSelectTest();
+        ibUser.changeValdVardenhet("vg1");
+        assertEquals(AuthoritiesConstants.ROLE_FMU_SAMORDNARE, ibUser.getCurrentRole().getName());
+        assertEquals("vg1", ibUser.getCurrentlyLoggedInAt().getName());
+    }
+
+    @Test
+    public void testSelectVE11() {
+        IbUser ibUser = prepareUserForSelectTest();
+        ibUser.changeValdVardenhet("ve11");
+        assertEquals(AuthoritiesConstants.ROLE_FMU_VARDADMIN, ibUser.getCurrentRole().getName());
+        assertEquals("ve11", ibUser.getCurrentlyLoggedInAt().getName());
+    }
+
+    @Test
+    public void testSelectVE21() {
+        IbUser ibUser = prepareUserForSelectTest();
+        ibUser.changeValdVardenhet("ve21");
+        assertEquals(AuthoritiesConstants.ROLE_FMU_VARDADMIN, ibUser.getCurrentRole().getName());
+        assertEquals("ve21", ibUser.getCurrentlyLoggedInAt().getName());
+    }
+
+    @Test
+    public void testSelectVG3() {
+        IbUser ibUser = prepareUserForSelectTest();
+        ibUser.changeValdVardenhet("vg3");
+        assertEquals(AuthoritiesConstants.ROLE_FMU_SAMORDNARE, ibUser.getCurrentRole().getName());
+        assertEquals("vg3", ibUser.getCurrentlyLoggedInAt().getName());
+    }
+
+
+    // Prepare systemRoles and VG->VE tree:
+    // SAM VG1 -> VDM VE11
+    // VG2 -> VDM VE21
+    // SAM VG3          <-- NOT IN MIU
+    // VG4 -> VE41      <-- NO SYSTEMROLES HERE!!
+
+    private IbUser prepareUserForSelectTest() {
+        IbUser ibUser = new IbUser("id", "name");
+        ibUser.setRoles(buildIbRoles());
+        buildDefaultIbUserSystemRolesAndTree(ibUser);
+        userDetailsService.buildSystemAuthoritiesTree(ibUser);
+        return ibUser;
+    }
+
+
+    private Map<String, Role> buildIbRoles() {
+        Map<String, Role> ibRoles = new HashMap<>();
+        Role r = new Role();
+        r.setName(AuthoritiesConstants.ROLE_FMU_SAMORDNARE);
+        ibRoles.put(AuthoritiesConstants.ROLE_FMU_SAMORDNARE, r);
+
+        Role r2 = new Role();
+        r2.setName(AuthoritiesConstants.ROLE_FMU_VARDADMIN);
+        ibRoles.put(AuthoritiesConstants.ROLE_FMU_VARDADMIN, r2);
+
+        return ibRoles;
+    }
+
+    private void buildDefaultIbUserSystemRolesAndTree(IbUser ibUser) {
+        List<Vardgivare> vardgivare = buildDefaultVardgivareTree();
+        ibUser.setVardgivare(vardgivare);
+
+        // Next, prepare systemroles.
+        List<String> systemRoles = buildDefaultSystemRoles();
+        ibUser.setSystemRoles(systemRoles);
+    }
+
+    @NotNull
+    private List<String> buildDefaultSystemRoles() {
+        List<String> systemRoles = new ArrayList<>();
+        systemRoles.add(SystemRolesParser.HSA_SYSTEMROLE_FMU_SAMORDNARE_CAREGIVER_PREFIX + "vg1");
+        systemRoles.add(SystemRolesParser.HSA_SYSTEMROLE_FMU_SAMORDNARE_CAREGIVER_PREFIX + "vg3");
+        systemRoles.add(SystemRolesParser.HSA_SYSTEMROLE_FMU_VARDADMIN_UNIT_PREFIX + "ve11");
+        systemRoles.add(SystemRolesParser.HSA_SYSTEMROLE_FMU_VARDADMIN_UNIT_PREFIX + "ve21");
+        return systemRoles;
+    }
+
+    @NotNull
+    private List<Vardgivare> buildDefaultVardgivareTree() {
+        Vardgivare vg1 = new Vardgivare("vg1", "vg1");
+        Vardenhet ve11 = new Vardenhet("ve11", "ve11");
+        vg1.getVardenheter().add(ve11);
+
+        Vardgivare vg2 = new Vardgivare("vg2", "vg2");
+        Vardenhet ve21 = new Vardenhet("ve21", "ve21");
+        vg2.getVardenheter().add(ve21);
+
+        Vardgivare vg4 = new Vardgivare("vg4", "vg4");
+
+        List<Vardgivare> vardgivare = new ArrayList<>();
+        vardgivare.add(vg1);
+        vardgivare.add(vg2);
+        vardgivare.add(vg4);
+        return vardgivare;
+    }
+
 
     private List<HsaSystemRoleType> buildSystemRoles() {
         return Arrays.asList(SystemRolesParser.HSA_SYSTEMROLE_FMU_VARDADMIN_UNIT_PREFIX + ENHET_HSAID_2,
@@ -358,7 +452,7 @@ public class IbUserDetailsServiceTest {
 
     private SAMLCredential createSamlCredential(String filename) throws Exception {
         Document doc = StaxUtils.read(new StreamSource(new ClassPathResource(
-                "RehabstodUserDetailsServiceTest/" + filename).getInputStream()));
+                "IBUserDetailsServiceTest/" + filename).getInputStream()));
         UnmarshallerFactory unmarshallerFactory = Configuration.getUnmarshallerFactory();
         Unmarshaller unmarshaller = unmarshallerFactory.getUnmarshaller(Assertion.DEFAULT_ELEMENT_NAME);
 

@@ -63,7 +63,7 @@ public class SessionStatusControllerTest {
         when(request.getSession((false))).thenReturn(session);
         when(session.getAttribute(anyString())).thenReturn(context);
         when(context.getAuthentication()).thenReturn(authentication);
-        when(authentication.getPrincipal()).thenReturn(new IbUser("test", "test", true));
+        when(authentication.getPrincipal()).thenReturn(new IbUser("test", "test"));
 
         // Act
         final GetSessionStatusResponse sessionStatus = controller.getSessionStatus(request);

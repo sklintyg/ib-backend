@@ -35,11 +35,11 @@ public interface PdlLogMessageFactory {
     PdlLogMessage buildLogMessage(List<SjukfallEnhet> sjukfallList,
                                   ActivityType activityType,
                                   ResourceType resourceType,
-                                  IbUser rehabstodUser);
+                                  IbUser ibUser);
 
     PdlLogMessage buildLogMessage(SjukfallPatient sjukfallPatient,
                                   ActivityType activityType,
                                   ResourceType resourceType,
-                                  IbUser rehabstodUser);
+                                  IbUser ibUser);
 
 }

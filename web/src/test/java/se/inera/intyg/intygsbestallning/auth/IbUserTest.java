@@ -18,13 +18,9 @@
  */
 package se.inera.intyg.intygsbestallning.auth;
 
-import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
-import se.inera.intyg.infra.security.common.model.Role;
-import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
-import se.inera.intyg.intygsbestallning.service.Urval;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,11 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static se.inera.intyg.intygsbestallning.auth.util.SystemRolesParser.HSA_SYSTEMROLE_FMU_VARDADMIN_UNIT_PREFIX;
 
 /**
  * @author marced on 01/03/16.
@@ -58,46 +50,8 @@ public class IbUserTest {
     private static final String ENHET_2_NAME = "En annan enhet";
 
     @Test
-    public void testGetUrvalWithoutRole() throws Exception {
-        IbUser user = new IbUser("HSA1111", "Per Nilsson", false);
-
-        assertNull(user.getUrval());
-    }
-
-    @Test
-    public void testGetUrvalLakare() throws Exception {
-        IbUser user = new IbUser("HSA1111", "Per Nilsson", true);
-        user.setRoles(ImmutableMap.of(AuthoritiesConstants.ROLE_LAKARE, new Role()));
-
-        assertEquals(Urval.ISSUED_BY_ME, user.getUrval());
-    }
-
-    @Test
-    public void testGetUrvalRehabKoordinator() throws Exception {
-        IbUser user = new IbUser("HSA1111", "Per Nilsson", false);
-        user.setRoles(ImmutableMap.of(AuthoritiesConstants.ROLE_FMU_VARDADMIN, new Role()));
-
-        assertEquals(Urval.ALL, user.getUrval());
-    }
-
-    @Test
-    public void testChangeValdVardenhet() throws Exception {
-        IbUser user = new IbUser("HSA1111", "Per Nilsson", true);
-        user.setVardgivare(buildVardgivare(VG_1, VG_1_NAME));
-
-        assertEquals(1, user.getVardgivare().size());
-        assertNull(user.getValdVardgivare());
-        assertNull(user.getValdVardenhet());
-        user.setValdVardgivare(user.getVardgivare().get(0));
-
-        assertTrue(user.changeValdVardenhet(ENHET_1));
-        assertFalse(user.changeValdVardenhet("dummyid"));
-        assertFalse(user.changeValdVardenhet(null));
-    }
-
-    @Test
     public void testGetTotaltAntalVardenheter() throws Exception {
-        IbUser user = new IbUser("HSA1111", "Per Nilsson", true);
+        IbUser user = new IbUser("HSA1111", "Per Nilsson");
         List<Vardgivare> vgList = new ArrayList<>();
         vgList.addAll(buildVardgivare(VG_1, VG_1_NAME));
         vgList.addAll(buildVardgivare(VG_2, VG_2_NAME));
@@ -107,27 +61,8 @@ public class IbUserTest {
 
     }
 
-    @Test
-    public void testRoleSwitchPossibleForDoctorWithMatchingSystemRole() {
-        IbUser user = setupRehabstodUserWithSystemRoles(true, new ArrayList<>(), HSA_SYSTEMROLE_FMU_VARDADMIN_UNIT_PREFIX + ENHET_1);
-        assertTrue(user.isRoleSwitchPossible());
-    }
-
-    @Test
-    public void testRoleSwitchNotPossibleForDoctorWithoutMatchingSystemRole() {
-        IbUser user = setupRehabstodUserWithSystemRoles(true, new ArrayList<>(),
-                HSA_SYSTEMROLE_FMU_VARDADMIN_UNIT_PREFIX + "some-other-unit-id");
-        assertFalse(user.isRoleSwitchPossible());
-    }
-
-    @Test
-    public void testRoleSwitchNotPossibleForNonDoctorWithMatchingSystemRole() {
-        IbUser user = setupRehabstodUserWithSystemRoles(false, new ArrayList<>(), HSA_SYSTEMROLE_FMU_VARDADMIN_UNIT_PREFIX + ENHET_1);
-        assertFalse(user.isRoleSwitchPossible());
-    }
-
     private IbUser setupRehabstodUserWithSystemRoles(boolean isLakare, ArrayList<String> systemRoles, String e) {
-        IbUser user = new IbUser("HSA1111", "Per Nilsson", isLakare);
+        IbUser user = new IbUser("HSA1111", "Per Nilsson");
         List<Vardgivare> vgList = new ArrayList<>();
         vgList.addAll(buildVardgivare(VG_1, VG_1_NAME));
         vgList.addAll(buildVardgivare(VG_2, VG_2_NAME));
@@ -140,7 +75,7 @@ public class IbUserTest {
     @Test
     public void serializeToDisk() {
         try {
-            IbUser user = new IbUser("HSA1111", "Per Nilsson", true);
+            IbUser user = new IbUser("HSA1111", "Per Nilsson");
             user.setVardgivare(buildVardgivare(VG_1, VG_1_NAME));
 
             // Write to disk

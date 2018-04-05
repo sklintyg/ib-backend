@@ -50,7 +50,7 @@ public class LoggingSessionRegistryImplTest {
 
     @Before
     public void before() {
-        user = new IbUser("hsaId", "En Användare", false);
+        user = new IbUser("hsaId", "En Användare");
         user.setAuthenticationScheme("my:auth");
     }
 

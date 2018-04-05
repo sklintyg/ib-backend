@@ -180,13 +180,13 @@ public final class TestDataGen {
         return diagnos;
     }
 
-    public static IbUser buildRehabStodUser(boolean isLakare) {
-        IbUser user = new IbUser(USER_HSA_ID, USER_NAME, isLakare);
+    public static IbUser buildIBVardadminUser() {
+        IbUser user = new IbUser(USER_HSA_ID, USER_NAME);
         user.setValdVardenhet(buildValdVardenhet(CAREUNIT_ID, CAREUNIT_NAME));
         user.setValdVardgivare(buildValdGivare(CAREGIVER_ID, CAREGIVER_NAME));
         user.setMiuNamnPerEnhetsId(buildMiUPerEnhetsIdMap());
         user.setTitel("Överläkare");
-        user.setRoles(ImmutableMap.of(AuthoritiesConstants.ROLE_LAKARE, new Role()));
+        user.setRoles(ImmutableMap.of(AuthoritiesConstants.ROLE_FMU_VARDADMIN, new Role()));
         return user;
     }
 

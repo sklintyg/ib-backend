@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
-import se.inera.intyg.intygsbestallning.auth.IbUnitChangeService;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.persistence.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
@@ -50,14 +49,11 @@ public class UserController {
     private AnvandarPreferenceRepository anvandarPreferenceRepository;
 
     @Autowired
-    private IbUnitChangeService rehabstodUnitChangeService;
-
-    @Autowired
     private CommonAuthoritiesResolver commonAuthoritiesResolver;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public GetUserResponse getUser() {
-        IbUser user = getRehabstodUser();
+        IbUser user = getIbUser();
         return new GetUserResponse(user);
     }
 
@@ -70,14 +66,12 @@ public class UserController {
     @RequestMapping(value = "/andraenhet", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public GetUserResponse changeSelectedUnitOnUser(@RequestBody ChangeSelectedUnitRequest changeSelectedEnhetRequest) {
 
-        IbUser user = getRehabstodUser();
+        IbUser user = getIbUser();
 
         LOG.debug("Attempting to change selected unit for user '{}', currently selected unit is '{}'", user.getHsaId(),
                 user.getValdVardenhet() != null ? user.getValdVardenhet().getId() : "<null>");
 
-        //boolean changeSuccess = user.changeValdVardenhet(changeSelectedEnhetRequest.getId());
-        // INTYG-5068: Do systemRole check here for Lakare???
-        boolean changeSuccess = rehabstodUnitChangeService.changeValdVardenhet(changeSelectedEnhetRequest.getId(), user);
+        boolean changeSuccess = user.changeValdVardenhet(changeSelectedEnhetRequest.getId());
 
         if (!changeSuccess) {
             throw new AuthoritiesException(String.format("Could not change active unit: Unit '%s' is not present in the MIUs for user '%s'",
@@ -92,7 +86,7 @@ public class UserController {
         return new GetUserResponse(user);
     }
 
-    private IbUser getRehabstodUser() {
+    private IbUser getIbUser() {
         IbUser user = userService.getUser();
 
         if (user == null) {

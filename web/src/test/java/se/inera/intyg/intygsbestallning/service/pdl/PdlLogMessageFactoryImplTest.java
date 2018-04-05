@@ -32,13 +32,9 @@ import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
 import se.inera.intyg.intygsbestallning.web.model.SjukfallEnhet;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by eriklupander on 2016-03-03.
@@ -52,7 +48,7 @@ public class PdlLogMessageFactoryImplTest {
 
         // Then
         PdlLogMessage pdlLogMessage = testee.buildLogMessage(TestDataGen.buildSjukfallList(5),
-            ActivityType.READ, ResourceType.RESOURCE_TYPE_OVERSIKT_SJUKFALL, TestDataGen.buildRehabStodUser(true));
+            ActivityType.READ, ResourceType.RESOURCE_TYPE_OVERSIKT_SJUKFALL, TestDataGen.buildIBVardadminUser());
         assertNotNull(pdlLogMessage);
 
         assertEquals(ActivityType.READ, pdlLogMessage.getActivityType());
@@ -80,7 +76,7 @@ public class PdlLogMessageFactoryImplTest {
 
         // Then
         PdlLogMessage pdlLogMessage = testee.buildLogMessage(buildSjukfallListWithEmptyCareGiverName(),
-                ActivityType.READ, ResourceType.RESOURCE_TYPE_OVERSIKT_SJUKFALL, TestDataGen.buildRehabStodUser(true));
+                ActivityType.READ, ResourceType.RESOURCE_TYPE_OVERSIKT_SJUKFALL, TestDataGen.buildIBVardadminUser());
 
         assertNotNull(pdlLogMessage);
         assertEquals(1, pdlLogMessage.getPdlResourceList().size());
@@ -98,42 +94,24 @@ public class PdlLogMessageFactoryImplTest {
     public void testBuildPrintLogMessage() {
         // Then
         PdlLogMessage pdlLogMessage = testee.buildLogMessage(TestDataGen.buildSjukfallList(5),
-            ActivityType.READ, ResourceType.RESOURCE_TYPE_OVERSIKT_SJUKFALL, TestDataGen.buildRehabStodUser(true));
+            ActivityType.READ, ResourceType.RESOURCE_TYPE_OVERSIKT_SJUKFALL, TestDataGen.buildIBVardadminUser());
         assertNotNull(pdlLogMessage);
 
         assertEquals(ActivityType.READ, pdlLogMessage.getActivityType());
     }
 
     @Test
-    public void testBuildLogMessageForLakare() {
-        PdlLogMessage pdlLogMessage = testee.buildLogMessage(TestDataGen.buildSjukfallList(5),
-            ActivityType.PRINT, ResourceType.RESOURCE_TYPE_OVERSIKT_SJUKFALL, TestDataGen.buildRehabStodUser(true));
-        assertEquals("Läkare", pdlLogMessage.getUserTitle());
-    }
-
-    @Test
-    public void testBuildLogMessageForLakareHavingRehabkoordinatorRole() {
-        IbUser rehabstodUser = TestDataGen.buildRehabStodUser(true);
-        Map<String, Role> rolesMap = mock(Map.class);
-        when(rolesMap.containsKey(eq("LAKARE"))).thenReturn(false);
-        rehabstodUser.setRoles(rolesMap);
-        PdlLogMessage pdlLogMessage = testee.buildLogMessage(TestDataGen.buildSjukfallList(5),
-                ActivityType.PRINT, ResourceType.RESOURCE_TYPE_OVERSIKT_SJUKFALL, rehabstodUser);
-        assertEquals("Rehabkoordinator", pdlLogMessage.getUserTitle());
-    }
-
-    @Test
     public void testBuildLogMessageForIckeLakare() {
-        IbUser rehabstodUser = TestDataGen.buildRehabStodUser(false);
-        rehabstodUser.setRoles(ImmutableMap.of(AuthoritiesConstants.ROLE_FMU_VARDADMIN, new Role()));
+        IbUser ibUser = TestDataGen.buildIBVardadminUser();
+        ibUser.setRoles(ImmutableMap.of(AuthoritiesConstants.ROLE_FMU_VARDADMIN, new Role()));
         PdlLogMessage pdlLogMessage = testee.buildLogMessage(TestDataGen.buildSjukfallList(5),
-            ActivityType.PRINT, ResourceType.RESOURCE_TYPE_OVERSIKT_SJUKFALL, rehabstodUser);
-        assertEquals("Rehabkoordinator", pdlLogMessage.getUserTitle());
+            ActivityType.PRINT, ResourceType.RESOURCE_TYPE_OVERSIKT_SJUKFALL, ibUser);
+        assertEquals("FMU Vårdadministratör", pdlLogMessage.getUserTitle());
     }
 
     //@Test(expected = IllegalArgumentException.class)
     public void testBuildWithUnknownType() {
         testee.buildLogMessage(TestDataGen.buildSjukfallList(1),
-            ActivityType.EMERGENCY_ACCESS, ResourceType.RESOURCE_TYPE_OVERSIKT_SJUKFALL, TestDataGen.buildRehabStodUser(true));
+            ActivityType.EMERGENCY_ACCESS, ResourceType.RESOURCE_TYPE_OVERSIKT_SJUKFALL, TestDataGen.buildIBVardadminUser());
     }
 }

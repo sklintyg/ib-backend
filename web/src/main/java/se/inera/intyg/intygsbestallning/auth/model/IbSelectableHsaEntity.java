@@ -16,18 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.auth.exceptions;
+package se.inera.intyg.intygsbestallning.auth.model;
 
-import org.springframework.security.core.AuthenticationException;
+public interface IbSelectableHsaEntity {
 
-/**
- * @author marced
- */
-public class MissingUnitWithRehabSystemRoleException extends AuthenticationException {
+    String getId();
+    String getName();
+    SelectableHsaEntityType getType();
 
-    private static final long serialVersionUID = 8343532271116838815L;
-
-    public MissingUnitWithRehabSystemRoleException(String hsaId) {
-        super("User with HSA-ID " + hsaId + " does not have rehab-systemRole for ANY of the supplied units");
-    }
 }

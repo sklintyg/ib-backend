@@ -79,7 +79,7 @@
         <prop key="se.inera.intyg.infra.security.exception.MissingMedarbetaruppdragException">
           /error.jsp?reason=login.medarbetaruppdrag
         </prop>
-        <prop key="se.inera.intyg.intygsbestallning.auth.exceptions.MissingUnitWithRehabSystemRoleException">
+        <prop key="se.inera.intyg.intygsbestallning.auth.exceptions.MissingIBSystemRoleException">
           /error.jsp?reason=login.saknar-hsa-rehabroll
         </prop>
         <prop key="se.inera.intyg.infra.security.exception.HsaServiceException">

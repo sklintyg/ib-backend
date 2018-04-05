@@ -21,7 +21,6 @@ knownPrivileges:
 
 # De roller som systemet har
 knownRoles:
-  - &kr010 LAKARE
   - &kr020 FMU_VARDADMIN
   - &kr030 FMU_SAMORDNARE
 
@@ -45,11 +44,6 @@ privileges:
 
 # Roller
 roles:
-  - &r010
-    name: *kr010 # LAKARE
-    desc: Läkare
-    privileges:
-      - *p010 # VISA_SJUKFALL
   - &r020
     name: *kr020 # FMU_VARDADMIN
     desc: FMU Vårdadministratör
@@ -63,24 +57,10 @@ roles:
 
 # Legitimerade yrkesroller
 titles:
-  - title: Läkare
-    role: *r010 # LAKARE
   - title: FMU vårdadministratör
     role: *r020 # FMU_VARDADMIN
   - title: FMU samordnare
     role: *r030 # FMU_SAMORDNARE
 
 # Kombination befattningskoder och gruppförskrivarkoder
-titleCodes:
-  - titleCode: 204010
-    groupPrescriptionCode:
-    role: *r010 # LAKARE
-  - titleCode: 203090
-    groupPrescriptionCode: 9300005
-    role: *r010 # LAKARE
-  - titleCode: 203090
-    groupPrescriptionCode: 9400003
-    role: *r010 # LAKARE
-  - titleCode: 204090
-    groupPrescriptionCode: 9100009
-    role: *r010 # LAKARE
+titleCodes: []

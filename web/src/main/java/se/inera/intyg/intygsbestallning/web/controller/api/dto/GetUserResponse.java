@@ -23,7 +23,6 @@ import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
-import se.inera.intyg.intygsbestallning.service.Urval;
 
 import java.util.List;
 import java.util.Map;
@@ -48,11 +47,6 @@ public class GetUserResponse {
 
     private int totaltAntalVardenheter;
 
-    private Urval urval;
-
-    private boolean pdlConsentGiven = false;
-    private boolean roleSwitchPossible = false;
-
     private Map<String, Feature> features;
 
     public GetUserResponse(IbUser user) {
@@ -68,9 +62,6 @@ public class GetUserResponse {
         this.valdVardgivare = user.getValdVardgivare();
         this.valdVardenhet = user.getValdVardenhet();
         this.totaltAntalVardenheter = user.getTotaltAntalVardenheter();
-        this.urval = user.getUrval();
-        this.pdlConsentGiven = user.isPdlConsentGiven();
-        this.roleSwitchPossible = user.isRoleSwitchPossible();
         this.features = user.getFeatures();
     }
 
@@ -154,29 +145,6 @@ public class GetUserResponse {
         this.totaltAntalVardenheter = totaltAntalVardenheter;
     }
 
-    public Urval getUrval() {
-        return urval;
-    }
-
-    public void setUrval(Urval urval) {
-        this.urval = urval;
-    }
-
-    public boolean isPdlConsentGiven() {
-        return pdlConsentGiven;
-    }
-
-    public void setPdlConsentGiven(boolean pdlConsentGiven) {
-        this.pdlConsentGiven = pdlConsentGiven;
-    }
-
-    public boolean isRoleSwitchPossible() {
-        return roleSwitchPossible;
-    }
-
-    public void setRoleSwitchPossible(boolean roleSwitchPossible) {
-        this.roleSwitchPossible = roleSwitchPossible;
-    }
 
     public Map<String, Feature> getFeatures() {
         return features;

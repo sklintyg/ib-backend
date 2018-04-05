@@ -57,14 +57,14 @@ public abstract class BaseRestIntegrationTest {
 
     protected static final FakeCredentials DEFAULT_LAKARE = new FakeCredentials.FakeCredentialsBuilder(
         "TSTNMT2321000156-105R", "TSTNMT2321000156-105N").legitimeradeYrkesgrupper(LAKARE)
-            .pdlConsentGiven(true).build();
+            .build();
 
     protected static final FakeCredentials DEFAULT_LAKARE_NO_CONSENT = new FakeCredentials.FakeCredentialsBuilder(
             "TSTNMT2321000156-105R", "TSTNMT2321000156-105N").legitimeradeYrkesgrupper(LAKARE)
-            .pdlConsentGiven(false).build();
+            .build();
 
     protected static final FakeCredentials EVA_H_LAKARE = new FakeCredentials.FakeCredentialsBuilder(
-        "eva", "centrum-vast").legitimeradeYrkesgrupper(LAKARE).pdlConsentGiven(true).build();
+        "eva", "centrum-vast").legitimeradeYrkesgrupper(LAKARE).build();
 
     protected CustomObjectMapper objectMapper = new CustomObjectMapper();
 

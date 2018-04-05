@@ -106,7 +106,7 @@ public class IbAuthoritiesResolverTest {
         final List<Title> titles = authoritiesResolver.getTitles();
 
         // Verify
-        assertEquals(3, titles.size());
+        assertEquals(2, titles.size());
 
     }
 

@@ -30,7 +30,6 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import se.inera.intyg.infra.cache.metrics.CacheStatisticsService;
 import se.inera.intyg.infra.cache.metrics.CacheStatisticsServiceImpl;
-import se.inera.intyg.intygsbestallning.web.filters.PdlConsentGivenAssuranceFilter;
 import se.inera.intyg.intygsbestallning.web.filters.UnitSelectedAssuranceFilter;
 
 import javax.annotation.PostConstruct;
@@ -75,11 +74,6 @@ public class ApplicationConfig {
     @Bean
     public UnitSelectedAssuranceFilter unitSelectedAssuranceFilter() {
         return new UnitSelectedAssuranceFilter();
-    }
-
-    @Bean
-    public PdlConsentGivenAssuranceFilter pdlConsentGivenAssuranceFilter() {
-        return new PdlConsentGivenAssuranceFilter();
     }
 
     @Bean(name = "jacksonJsonProvider")

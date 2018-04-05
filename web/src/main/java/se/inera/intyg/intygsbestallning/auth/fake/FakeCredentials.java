@@ -18,8 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.auth.fake;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.io.Serializable;
 import java.util.List;
 
@@ -43,8 +41,6 @@ public class FakeCredentials implements Serializable {
     private List<String> legitimeradeYrkesgrupper;
     private List<String> systemRoles;
 
-    private Boolean pdlConsentGiven = null;
-
     public FakeCredentials() {
         // Needed for deserialization
     }
@@ -58,7 +54,6 @@ public class FakeCredentials implements Serializable {
         this.systemRoles = builder.systemRoles;
         this.befattningsKod = builder.befattningsKod;
         this.forskrivarKod = builder.forskrivarKod;
-        this.pdlConsentGiven = builder.pdlConsentGiven;
     }
 
     // ~ Getter and setters
@@ -96,28 +91,8 @@ public class FakeCredentials implements Serializable {
         return systemRoles;
     }
 
-    public Boolean isPdlConsentGiven() {
-        return pdlConsentGiven;
-    }
-
     // ~ Public methods
     // ~====================================================================================
-
-    @JsonIgnore
-    public boolean isLakare() {
-        if (legitimeradeYrkesgrupper == null) {
-            return false;
-        }
-        return legitimeradeYrkesgrupper.contains(LAKARE);
-    }
-
-    @JsonIgnore
-    public boolean isTandlakare() {
-        if (legitimeradeYrkesgrupper == null) {
-            return false;
-        }
-        return legitimeradeYrkesgrupper.contains(TANDLAKARE);
-    }
 
     @Override
     public String toString() {
@@ -125,7 +100,6 @@ public class FakeCredentials implements Serializable {
                 + "hsaId='" + hsaId + '\''
                 + ", fornamn='" + forNamn + '\''
                 + ", efternamn='" + efterNamn + '\''
-                + ", lakare=" + isLakare()
                 + ", systemRoles=" + "[" + (systemRoles == null ? "" : String.join(",", systemRoles)) + "]"
                 + '}';
     }
@@ -142,7 +116,6 @@ public class FakeCredentials implements Serializable {
         private String forskrivarKod;
         private List<String> legitimeradeYrkesgrupper;
         private List<String> systemRoles;
-        private Boolean pdlConsentGiven;
 
         public FakeCredentialsBuilder(String hsaId, String enhetId) {
             this.hsaId = hsaId;
@@ -186,11 +159,6 @@ public class FakeCredentials implements Serializable {
 
         public FakeCredentialsBuilder legitimeradeYrkesgrupper(List<String> legitimeradeYrkesgrupper) {
             this.legitimeradeYrkesgrupper = legitimeradeYrkesgrupper;
-            return this;
-        }
-
-        public FakeCredentialsBuilder pdlConsentGiven(Boolean pdlConsentGiven) {
-            this.pdlConsentGiven = pdlConsentGiven;
             return this;
         }
 

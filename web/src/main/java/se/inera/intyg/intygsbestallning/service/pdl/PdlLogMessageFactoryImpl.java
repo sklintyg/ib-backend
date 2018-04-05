@@ -44,8 +44,8 @@ import java.util.stream.Collectors;
 @Service
 public class PdlLogMessageFactoryImpl implements PdlLogMessageFactory {
 
-    private static final String PDL_TITEL_LAKARE = "Läkare";
-    private static final String PDL_TITEL_REHABSTOD = "Rehabkoordinator";
+    private static final String PDL_TITEL_FMU_VARDADMIN = "FMU Vårdadministratör";
+    private static final String PDL_TITEL_FMU_SAMORDNARE = "FMU Samordnare";
 
     @Value("${pdlLogging.systemId}")
     private String systemId;
@@ -57,9 +57,9 @@ public class PdlLogMessageFactoryImpl implements PdlLogMessageFactory {
     public PdlLogMessage buildLogMessage(List<SjukfallEnhet> sjukfallList,
                                          ActivityType activityType,
                                          ResourceType resourceType,
-                                         IbUser rehabstodUser) {
+                                         IbUser ibUser) {
 
-        LogUser user = getLogUser(rehabstodUser);
+        LogUser user = getLogUser(ibUser);
 
         PdlLogMessage pdlLogMessage = getLogMessage(activityType);
         populateWithCurrentUserAndCareUnit(pdlLogMessage, user);
@@ -77,9 +77,9 @@ public class PdlLogMessageFactoryImpl implements PdlLogMessageFactory {
     public PdlLogMessage buildLogMessage(SjukfallPatient sjukfallPatient,
                                          ActivityType activityType,
                                          ResourceType resourceType,
-                                         IbUser rehabstodUser) {
+                                         IbUser ibUser) {
 
-        LogUser user = getLogUser(rehabstodUser);
+        LogUser user = getLogUser(ibUser);
 
         PdlLogMessage pdlLogMessage = getLogMessage(activityType);
         populateWithCurrentUserAndCareUnit(pdlLogMessage, user);
@@ -167,8 +167,8 @@ public class PdlLogMessageFactoryImpl implements PdlLogMessageFactory {
      * REHABKOORDINATOR if user has REHABKOORDINATOR as current role and isLakare is false.
      */
     private String resolveUserTitle(IbUser user) {
-        return user.isLakare() && user.getRoles().containsKey(AuthoritiesConstants.ROLE_LAKARE)
-                ? PDL_TITEL_LAKARE : PDL_TITEL_REHABSTOD;
+        return user.getRoles().containsKey(AuthoritiesConstants.ROLE_FMU_VARDADMIN)
+                ? PDL_TITEL_FMU_VARDADMIN : PDL_TITEL_FMU_SAMORDNARE;
     }
 
     private void populateWithCurrentUserAndCareUnit(PdlLogMessage logMsg, LogUser user) {

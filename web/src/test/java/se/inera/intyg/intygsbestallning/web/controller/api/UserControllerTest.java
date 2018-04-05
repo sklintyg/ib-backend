@@ -29,7 +29,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
-import se.inera.intyg.intygsbestallning.auth.IbUnitChangeService;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ChangeSelectedUnitRequest;
@@ -37,7 +36,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.ChangeSelectedUni
 import java.util.Collections;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -51,13 +50,10 @@ public class UserControllerTest {
     public ExpectedException thrown = ExpectedException.none();
 
     @Mock
-    IbUser rehabUserMock;
+    IbUser ibUserMock;
 
     @Mock
     UserService userService;
-
-    @Mock
-    IbUnitChangeService rehabstodUnitChangeService;
 
     @Mock
     private CommonAuthoritiesResolver commonAuthoritiesResolver;
@@ -68,10 +64,10 @@ public class UserControllerTest {
     @Before
     public void before() {
         when(commonAuthoritiesResolver.getFeatures(any())).thenReturn(Collections.emptyMap());
-        when(userService.getUser()).thenReturn(rehabUserMock);
-        when(rehabUserMock.getValdVardenhet()).thenReturn(new Vardenhet("123", "enhet"));
-        when(rehabUserMock.getValdVardgivare()).thenReturn(new Vardenhet("456", "vardgivare"));
-        when(rehabstodUnitChangeService.changeValdVardenhet("123", rehabUserMock)).thenReturn(true);
+        when(userService.getUser()).thenReturn(ibUserMock);
+        when(ibUserMock.getValdVardenhet()).thenReturn(new Vardenhet("123", "enhet"));
+        when(ibUserMock.getValdVardgivare()).thenReturn(new Vardenhet("456", "vardgivare"));
+        when(ibUserMock.changeValdVardenhet(anyString())).thenReturn(true);
     }
 
     @Test
@@ -84,24 +80,21 @@ public class UserControllerTest {
     @Test
     public void testChangeEnhetSuccess() {
         ChangeSelectedUnitRequest req = new ChangeSelectedUnitRequest("123");
-        when(rehabstodUnitChangeService.changeValdVardenhet(eq(req.getId()), eq(rehabUserMock))).thenReturn(true);
 
         userController.changeSelectedUnitOnUser(req);
 
         verify(userService).getUser();
-        verify(rehabstodUnitChangeService).changeValdVardenhet(eq(req.getId()), eq(rehabUserMock));
     }
 
     @Test
     public void testChangeEnhetFails() {
+        when(ibUserMock.changeValdVardenhet(anyString())).thenReturn(false);
         ChangeSelectedUnitRequest req = new ChangeSelectedUnitRequest("123");
-        when(rehabstodUnitChangeService.changeValdVardenhet(eq(req.getId()), eq(rehabUserMock))).thenReturn(false);
-        thrown.expect(AuthoritiesException.class);
+         thrown.expect(AuthoritiesException.class);
 
         userController.changeSelectedUnitOnUser(req);
 
         verify(userService).getUser();
-        verify(rehabstodUnitChangeService).changeValdVardenhet(eq(req.getId()), eq(rehabUserMock));
 
     }
 }

@@ -16,22 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.auth.authorities;
+package se.inera.intyg.intygsbestallning.auth.exceptions;
+
+import org.springframework.security.core.AuthenticationException;
 
 /**
- * Created by mango on 25/11/15.
+ * @author marced
  */
-public final class AuthoritiesConstants {
+public class MissingIBSystemRoleException extends AuthenticationException {
 
+    private static final long serialVersionUID = 8343532271116838815L;
 
-    // Known roles (these roles are copied from authorities.yaml which is the master authorities configuration)
-    public static final String ROLE_FMU_VARDADMIN = "FMU_VARDADMIN";
-    public static final String ROLE_FMU_SAMORDNARE = "FMU_SAMORDNARE";
-
-
-    // constructors
-
-    private AuthoritiesConstants() {
+    public MissingIBSystemRoleException(String hsaId) {
+        super("User with HSA-ID " + hsaId + " does not have systemRole FMU-VARDADMIN or FMU-SAMORDNARE");
     }
-
 }

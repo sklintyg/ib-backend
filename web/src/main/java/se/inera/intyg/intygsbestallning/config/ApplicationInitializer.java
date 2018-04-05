@@ -38,8 +38,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
 import static se.inera.intyg.intygsbestallning.web.controller.api.SessionStatusController.SESSION_STATUS_CHECK_URI;
-import static se.inera.intyg.intygsbestallning.web.controller.api.SessionStatusController.SESSION_STATUS_EXTEND;
-import static se.inera.intyg.intygsbestallning.web.controller.api.SessionStatusController.SESSION_STATUS_REQUEST_MAPPING;
 
 public class ApplicationInitializer implements WebApplicationInitializer {
 
@@ -80,13 +78,13 @@ public class ApplicationInitializer implements WebApplicationInitializer {
         unitSelectedAssuranceFilter.setInitParameter("ignoredUrls", "/api/config,/api/user,/api/user/andraenhet");
 
         // pdlConsentGiven filter
-        FilterRegistration.Dynamic pdlConsentGivenAssuranceFilter = servletContext.addFilter("pdlConsentGivenAssuranceFilter",
-                DelegatingFilterProxy.class);
-        pdlConsentGivenAssuranceFilter.setInitParameter("targetFilterLifecycle", "true");
-        pdlConsentGivenAssuranceFilter.addMappingForUrlPatterns(null, false, "/api/*");
-        pdlConsentGivenAssuranceFilter.setInitParameter("ignoredUrls",
-                SESSION_STATUS_CHECK_URI + "," + SESSION_STATUS_REQUEST_MAPPING + SESSION_STATUS_EXTEND
-                        + ",/api/config,/api/user,/api/user/giveconsent,/api/sjukfall/summary,/api/stub");
+//        FilterRegistration.Dynamic pdlConsentGivenAssuranceFilter = servletContext.addFilter("pdlConsentGivenAssuranceFilter",
+//                DelegatingFilterProxy.class);
+//        pdlConsentGivenAssuranceFilter.setInitParameter("targetFilterLifecycle", "true");
+//        pdlConsentGivenAssuranceFilter.addMappingForUrlPatterns(null, false, "/api/*");
+//        pdlConsentGivenAssuranceFilter.setInitParameter("ignoredUrls",
+//                SESSION_STATUS_CHECK_URI + "," + SESSION_STATUS_REQUEST_MAPPING + SESSION_STATUS_EXTEND
+//                        + ",/api/config,/api/user,/api/user/giveconsent,/api/sjukfall/summary,/api/stub");
 
         FilterRegistration.Dynamic characterEncodingFilter = servletContext.addFilter("characterEncodingFilter",
                 CharacterEncodingFilter.class);

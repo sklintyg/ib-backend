@@ -72,9 +72,9 @@ public class SecurityConfigurationLoaderTest {
 
         assertTrue(configuration.getRequestOrigins().size() == 1);
         assertTrue(configuration.getPrivileges().size() == 1);
-        assertTrue(configuration.getRoles().size() == 3);
-        assertTrue(configuration.getTitles().size() == 3);
-        assertTrue(configuration.getTitleCodes().size() == 4);
+        assertTrue(configuration.getRoles().size() == 2);
+        assertTrue(configuration.getTitles().size() == 2);
+        assertTrue(configuration.getTitleCodes().size() == 0);
 
         // Assert that lists are of specific types
         try {
