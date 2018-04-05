@@ -63,6 +63,7 @@ dependencies {
     compile "se.riv.itintegration.monitoring:itintegration-monitoring-schemas:${monitoringSchemaVersion}"
 
     compile "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
+    compile "se.riv.intygsbestallning.certificate.order:intygsbestallning-certificate-order-schemas:${intygsbestallningCertificateOrderSchemasVersion}"
 
     compile "se.inera.intyg.infra:common-cache-metrics:${intygInfraVersion}"
     compile "se.inera.intyg.infra:dynamiclink:${intygInfraVersion}"

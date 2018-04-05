@@ -12,6 +12,7 @@ ext {
     internalMonitoringSchemaVersion = "1.0.2"
 
     schemasContractVersion = "2.1.6"
+    intygsbestallningCertificateOrderSchemasVersion = "1.0-RC2"
 
     activemqVersion = "5.13.0"
     commonsCodecVersion = "1.10"
