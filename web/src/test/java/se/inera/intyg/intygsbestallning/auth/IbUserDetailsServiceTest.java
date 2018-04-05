@@ -109,8 +109,6 @@ public class IbUserDetailsServiceTest {
     private static final String ENHET_HSAID_22 = "IFV_22";
     private static final String ENHET_HSAID_23 = "IFV_23";
 
-    private static final String TITLE_HEAD_DOCTOR = "Överläkare";
-
     @InjectMocks
     private IbUserDetailsService userDetailsService = new IbUserDetailsService();
 
@@ -155,6 +153,10 @@ public class IbUserDetailsServiceTest {
 
         AnvandarPreference anvandarPreference = new AnvandarPreference(PERSONAL_HSAID, "user_pdl_consent_given", "true");
         when(anvandarPreferenceRepository.findByHsaIdAndKey(PERSONAL_HSAID, "user_pdl_consent_given")).thenReturn(anvandarPreference);
+
+        when(hsaOrganizationsService.getVardgivareInfo("vg1")).thenReturn(new Vardgivare("vg1", "Vårdgivare 1"));
+        when(hsaOrganizationsService.getVardgivareInfo("vg3")).thenReturn(new Vardgivare("vg3", "Vårdgivare 3"));
+
     }
 
     @Test
@@ -282,8 +284,6 @@ public class IbUserDetailsServiceTest {
         IbUser ibUser =  prepareUserForSelectTest();
 
 
-        // First, the "normal" tree based on HSA medarbetaruppdrag.
-
 
 
 
@@ -312,7 +312,7 @@ public class IbUserDetailsServiceTest {
         IbUser ibUser = prepareUserForSelectTest();
         ibUser.changeValdVardenhet("vg1");
         assertEquals(AuthoritiesConstants.ROLE_FMU_SAMORDNARE, ibUser.getCurrentRole().getName());
-        assertEquals("vg1", ibUser.getCurrentlyLoggedInAt().getName());
+        assertEquals("Vårdgivare 1", ibUser.getCurrentlyLoggedInAt().getName());
     }
 
     @Test
@@ -333,10 +333,11 @@ public class IbUserDetailsServiceTest {
 
     @Test
     public void testSelectVG3() {
+        when(hsaOrganizationsService.getVardgivareInfo(anyString())).thenReturn(new Vardgivare("vg3", "Vårdgivare 3"));
         IbUser ibUser = prepareUserForSelectTest();
         ibUser.changeValdVardenhet("vg3");
         assertEquals(AuthoritiesConstants.ROLE_FMU_SAMORDNARE, ibUser.getCurrentRole().getName());
-        assertEquals("vg3", ibUser.getCurrentlyLoggedInAt().getName());
+        assertEquals("Vårdgivare 3", ibUser.getCurrentlyLoggedInAt().getName());
     }
 
 
@@ -430,7 +431,7 @@ public class IbUserDetailsServiceTest {
     }
 
     private void setupCallToGetHsaPersonInfo() {
-        setupCallToGetHsaPersonInfo(TITLE_HEAD_DOCTOR);
+        setupCallToGetHsaPersonInfo(AuthoritiesConstants.ROLE_FMU_VARDADMIN);
     }
 
     private void setupCallToGetHsaPersonInfo(String title) {

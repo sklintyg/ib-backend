@@ -90,15 +90,15 @@ public final class TestDataGen {
     }
 
     public static  List<Vardgivare> buildDefaultVardgivareTree() {
-        Vardgivare vg1 = new Vardgivare("vg1", "vg1");
+        Vardgivare vg1 = new Vardgivare("vg1", "Vårdgivare 1");
         Vardenhet ve11 = new Vardenhet("ve11", "ve11");
         vg1.getVardenheter().add(ve11);
 
-        Vardgivare vg2 = new Vardgivare("vg2", "vg2");
+        Vardgivare vg2 = new Vardgivare("vg2", "Vårdgivare 2");
         Vardenhet ve21 = new Vardenhet("ve21", "ve21");
         vg2.getVardenheter().add(ve21);
 
-        Vardgivare vg4 = new Vardgivare("vg4", "vg4");
+        Vardgivare vg4 = new Vardgivare("vg4", "Vårdgivare 4");
 
         List<Vardgivare> vardgivare = new ArrayList<>();
         vardgivare.add(vg1);

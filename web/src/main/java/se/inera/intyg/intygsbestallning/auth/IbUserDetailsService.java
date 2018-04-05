@@ -98,7 +98,6 @@ public class IbUserDetailsService extends BaseUserDetailsService implements SAML
 
         List<Vardgivare> vardgivareWithMedarbetaruppdrag = user.getVardgivare();
 
-
         List<IbVardgivare> authSystemTree = new ArrayList<>();
 
         // First, the easy part. Add any VG where the VE has systemRole and the VG does NOT have systemRole.
@@ -146,7 +145,11 @@ public class IbUserDetailsService extends BaseUserDetailsService implements SAML
             // Finally, we need to add any "free" samrodnings-VG not already present. These can NOT have a VE as
             // those would already have been added in the section above.
             for (String ibVgId : samordnareCareGiverIds) {
-                IbVardgivare ibVardgivare = new IbVardgivare(ibVgId, ibVgId, true); // TODO must fetch name from HSA!!
+
+                // Fetch name from HSA, note that this is a shallow copy without units on!
+                Vardgivare vgFromHsa = getHsaOrganizationsService().getVardgivareInfo(ibVgId);
+
+                IbVardgivare ibVardgivare = new IbVardgivare(ibVgId, vgFromHsa != null ? vgFromHsa.getNamn() : ibVgId, true);
                 if (!authSystemTree.contains(ibVardgivare)) {
                     authSystemTree.add(ibVardgivare);
                 }
