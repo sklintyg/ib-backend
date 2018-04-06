@@ -21,6 +21,8 @@ package se.inera.intyg.intygsbestallning.web.controller.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.infra.cache.metrics.model.CacheStatistics;
@@ -39,21 +41,21 @@ public class MonitoringController {
 
     private ObjectMapper objectMapper = new CustomObjectMapper();
 
-    @RequestMapping(value = "/uptime")
+    @GetMapping(path = "/uptime")
     public Response getUpTimeStatus() {
         HealthStatus status = healthCheck.checkUptime();
         String xml = buildXMLResponse(status);
         return Response.ok(xml).build();
     }
 
-    @RequestMapping(value = "/usernumber")
+    @GetMapping(path = "/usernumber")
     public Response getUpNumberOfUsers() {
         HealthStatus status = healthCheck.checkNbrOfUsers();
         String xml = buildXMLResponse(status);
         return Response.ok(xml).build();
     }
 
-    @RequestMapping(value = "/cachestats", produces = "application/json")
+    @GetMapping(path = "/cachestats", produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getCacheStatistcs() {
         try {
             CacheStatistics stats = healthCheck.getCacheStatistics();

@@ -85,6 +85,9 @@ dependencies {
     compile "org.springframework:spring-jms:${springContextVersion}"
     compile "wsdl4j:wsdl4j:${wsdl4jVersion}"
 
+    compile "io.springfox:springfox-swagger2:${swaggerVersion}"
+    compile "io.springfox:springfox-swagger-ui:${swaggerVersion}"
+
     compileOnly "javax.jms:jms-api:${javaxJmsVersion}"
     compileOnly "javax.servlet:javax.servlet-api:${javaxServletVersion}"
     compileOnly "jstl:jstl:${jstlVersion}"

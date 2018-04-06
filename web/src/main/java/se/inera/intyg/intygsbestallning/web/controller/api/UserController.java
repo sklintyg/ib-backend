@@ -22,9 +22,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
@@ -51,7 +52,7 @@ public class UserController {
     @Autowired
     private CommonAuthoritiesResolver commonAuthoritiesResolver;
 
-    @RequestMapping(value = "", method = RequestMethod.GET)
+    @GetMapping
     public GetUserResponse getUser() {
         IbUser user = getIbUser();
         return new GetUserResponse(user);
@@ -63,7 +64,7 @@ public class UserController {
      * @param changeSelectedEnhetRequest
      * @return
      */
-    @RequestMapping(value = "/andraenhet", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/andraenhet", consumes = MediaType.APPLICATION_JSON_VALUE)
     public GetUserResponse changeSelectedUnitOnUser(@RequestBody ChangeSelectedUnitRequest changeSelectedEnhetRequest) {
 
         IbUser user = getIbUser();

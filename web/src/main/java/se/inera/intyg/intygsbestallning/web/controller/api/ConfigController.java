@@ -20,6 +20,8 @@ package se.inera.intyg.intygsbestallning.web.controller.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.infra.dynamiclink.model.DynamicLink;
@@ -47,12 +49,12 @@ public class ConfigController {
     @Autowired
     private Environment env;
 
-    @RequestMapping(value = "")
+    @GetMapping
     public GetConfigResponse getConfig() {
         return new GetConfigResponse(env.getProperty(PROJECT_VERSION_PROPERTY));
     }
 
-    @RequestMapping(value = "/links", produces = "application/json")
+    @GetMapping(path = "/links", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, DynamicLink> getDynamicLinks() {
         return dynamicLinkService.getAllAsMap();
     }
