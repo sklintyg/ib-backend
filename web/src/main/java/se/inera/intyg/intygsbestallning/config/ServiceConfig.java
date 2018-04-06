@@ -19,10 +19,7 @@
 package se.inera.intyg.intygsbestallning.config;
 
 import org.apache.cxf.Bus;
-import org.apache.cxf.endpoint.EndpointImplFactory;
 import org.apache.cxf.jaxws.EndpointImpl;
-import org.apache.cxf.jaxws.support.JaxWsEndpointImplFactory;
-import org.apache.cxf.service.model.EndpointInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -37,7 +34,6 @@ import se.inera.intyg.intygsbestallning.web.responder.UpdateOrderResponderImpl;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Executor;
 
 @Configuration
 @ComponentScan({
