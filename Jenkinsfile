@@ -1,7 +1,7 @@
 pipeline {
     environment {
         buildVersion = "1.0.0.${BUILD_NUMBER}"
-        infraVersion = "3.6.0.+"
+        infraVersion = "3.7.0.+"
     }
 
     agent any //TODO: this should later be replaced with a gradle-docker-image
