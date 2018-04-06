@@ -34,13 +34,21 @@ import org.springframework.web.servlet.view.InternalResourceView;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 import se.inera.intyg.intygsbestallning.common.integration.json.CustomObjectMapper;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.util.List;
 import java.util.Properties;
 
+@EnableSwagger2
 @EnableWebMvc
 @Configuration
-@ComponentScan({ "se.inera.intyg.intygsbestallning.web", "se.inera.intyg.intygsbestallning.common.service.stub",
+@ComponentScan({
+        "se.inera.intyg.intygsbestallning.web",
+        "se.inera.intyg.intygsbestallning.common.service.stub",
         "se.inera.intyg.intygsbestallning.integration.srs.stub.api" })
 public class WebConfig extends WebMvcConfigurerAdapter {
 
@@ -68,6 +76,15 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         return viewResolver;
     }
 
+    @Bean
+    public Docket swagger() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("se.inera.intyg.intygsbestallning.web.controller.api"))
+                .paths(PathSelectors.any())
+                .build();
+    }
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         int cachePeriodInDays = SECONDS_IN_HOUR * HOURS_IN_DAY * DAYS_TO_CACHE;
@@ -77,6 +94,9 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         registry.addResourceHandler("/bower_components/**").addResourceLocations("/bower_components/");
         registry.addResourceHandler("/app/**").addResourceLocations("/app/");
         registry.addResourceHandler("/components/**").addResourceLocations("/components/");
+
+        registry.addResourceHandler("/swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
+        registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
 
     @Override

@@ -30,6 +30,7 @@ import org.springframework.web.context.support.ServletContextAttributeExporter;
 import se.inera.intyg.intygsbestallning.service.monitoring.HealthCheckService;
 import se.inera.intyg.intygsbestallning.service.monitoring.InternalPingForConfigurationResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.RequestHealthcarePerformerForAssessmentResponderImpl;
+import se.inera.intyg.intygsbestallning.web.responder.RequestMedicalCertificateSupplementResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.UpdateOrderResponderImpl;
 
 import java.util.HashMap;
@@ -77,8 +78,13 @@ public class ServiceConfig {
     }
 
     @Bean
+    public RequestMedicalCertificateSupplementResponderImpl requestMedicalCertificateSupplementResponder() {
+        return new RequestMedicalCertificateSupplementResponderImpl();
+    }
+
+    @Bean
     public EndpointImpl pingForConfigurationEndpoint() {
-        Object implementor = pingForConfigurationResponder();
+        InternalPingForConfigurationResponderImpl implementor = pingForConfigurationResponder();
         EndpointImpl endpoint = new EndpointImpl(bus, implementor);
         endpoint.publish("/internal-ping-for-configuration");
         return endpoint;
@@ -86,17 +92,25 @@ public class ServiceConfig {
 
     @Bean
     public EndpointImpl requestHealthcarePerformerForAssessmentResponderEndpoint() {
-        Object implementor = requestHealthcarePerformerForAssessmentResponder();
+        RequestHealthcarePerformerForAssessmentResponderImpl implementor = requestHealthcarePerformerForAssessmentResponder();
         EndpointImpl endpoint = new EndpointImpl(bus, implementor);
         endpoint.publish("/request-healthcare-performer-for-assessment-responder");
         return endpoint;
     }
 
     @Bean
-    public EndpointImpl updateOrderResponderEndPoint() {
-        Object implementor = updateOrderResponder();
+    public EndpointImpl updateOrderResponderEndpoint() {
+        UpdateOrderResponderImpl implementor = updateOrderResponder();
         EndpointImpl endpoint = new EndpointImpl(bus, implementor);
         endpoint.publish("/update-order-responder");
+        return endpoint;
+    }
+
+    @Bean
+    public EndpointImpl requestMedicalCertificateSupplementEndpoint() {
+        RequestMedicalCertificateSupplementResponderImpl implementor = requestMedicalCertificateSupplementResponder();
+        EndpointImpl endpoint = new EndpointImpl(bus, implementor);
+        endpoint.publish("/request-medical-certificate-supplement-responder");
         return endpoint;
     }
 }

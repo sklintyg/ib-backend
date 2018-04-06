@@ -18,17 +18,16 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetSessionStatusResponse;
 import se.inera.intyg.intygsbestallning.web.filters.SessionTimeoutFilter;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * Reports basic information about the current session status.
@@ -54,12 +53,12 @@ public class SessionStatusController {
 
     public static final String SESSION_STATUS_CHECK_URI = SESSION_STATUS_REQUEST_MAPPING + SESSION_STATUS_PING;
 
-    @RequestMapping(value = SessionStatusController.SESSION_STATUS_PING, method = RequestMethod.GET)
+    @GetMapping(path = SessionStatusController.SESSION_STATUS_PING)
     public GetSessionStatusResponse getSessionStatus(HttpServletRequest request) {
         return createStatusResponse(request);
     }
 
-    @RequestMapping(value = SessionStatusController.SESSION_STATUS_EXTEND, method = RequestMethod.GET)
+    @GetMapping(path = SessionStatusController.SESSION_STATUS_EXTEND)
     public GetSessionStatusResponse getExtendSession(HttpServletRequest request) {
         return createStatusResponse(request);
     }
