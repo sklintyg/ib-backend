@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.web.integration;
+package se.inera.intyg.intygsbestallning.web.responder;
 
 import application.riv.intygsbestallning.certificate.order._1.ResultCodeType;
 import application.riv.intygsbestallning.certificate.order._1.ResultType;

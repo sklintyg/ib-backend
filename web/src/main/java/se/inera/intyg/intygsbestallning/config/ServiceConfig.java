@@ -19,7 +19,10 @@
 package se.inera.intyg.intygsbestallning.config;
 
 import org.apache.cxf.Bus;
+import org.apache.cxf.endpoint.EndpointImplFactory;
 import org.apache.cxf.jaxws.EndpointImpl;
+import org.apache.cxf.jaxws.support.JaxWsEndpointImplFactory;
+import org.apache.cxf.service.model.EndpointInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -29,18 +32,18 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.context.support.ServletContextAttributeExporter;
 import se.inera.intyg.intygsbestallning.service.monitoring.HealthCheckService;
 import se.inera.intyg.intygsbestallning.service.monitoring.InternalPingForConfigurationResponderImpl;
+import se.inera.intyg.intygsbestallning.web.responder.RequestHealthcarePerformerForAssessmentResponderImpl;
+import se.inera.intyg.intygsbestallning.web.responder.UpdateOrderResponderImpl;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executor;
 
-/**
- * Created by pebe on 2015-09-07.
- */
 @Configuration
 @ComponentScan({
         "se.inera.intyg.intygsbestallning.service",
         "se.inera.intyg.intygsbestallning.auth",
-        "se.inera.intyg.intygsbestallning.common.service"})
+        "se.inera.intyg.intygsbestallning.common"})
 @EnableScheduling
 public class ServiceConfig {
 
@@ -68,10 +71,36 @@ public class ServiceConfig {
     }
 
     @Bean
+    public RequestHealthcarePerformerForAssessmentResponderImpl requestHealthcarePerformerForAssessmentResponder() {
+        return new RequestHealthcarePerformerForAssessmentResponderImpl();
+    }
+
+    @Bean
+    public UpdateOrderResponderImpl updateOrderResponder() {
+        return new UpdateOrderResponderImpl();
+    }
+
+    @Bean
     public EndpointImpl pingForConfigurationEndpoint() {
         Object implementor = pingForConfigurationResponder();
         EndpointImpl endpoint = new EndpointImpl(bus, implementor);
         endpoint.publish("/internal-ping-for-configuration");
+        return endpoint;
+    }
+
+    @Bean
+    public EndpointImpl requestHealthcarePerformerForAssessmentResponderEndpoint() {
+        Object implementor = requestHealthcarePerformerForAssessmentResponder();
+        EndpointImpl endpoint = new EndpointImpl(bus, implementor);
+        endpoint.publish("/request-healthcare-performer-for-assessment-responder");
+        return endpoint;
+    }
+
+    @Bean
+    public EndpointImpl updateOrderResponderEndPoint() {
+        Object implementor = updateOrderResponder();
+        EndpointImpl endpoint = new EndpointImpl(bus, implementor);
+        endpoint.publish("/update-order-responder");
         return endpoint;
     }
 }
