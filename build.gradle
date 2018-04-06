@@ -37,7 +37,7 @@ ext {
     poiVersion = "3.13"
     restAssuredVersion = "2.9.0"
     slf4jVersion = "1.7.10"
-    springContextVersion = "4.2.2.RELEASE"
+    springContextVersion = "4.3.15.RELEASE"
     springDataJpaVersion = "1.9.0.RELEASE"
     springSecurityExtensionsVersion = "1.0.1.RELEASE"
     springSecurityVersion = "4.0.3.RELEASE"
