@@ -29,6 +29,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.context.support.ServletContextAttributeExporter;
 import se.inera.intyg.intygsbestallning.service.monitoring.HealthCheckService;
 import se.inera.intyg.intygsbestallning.service.monitoring.InternalPingForConfigurationResponderImpl;
+import se.inera.intyg.intygsbestallning.web.responder.ReportSupplementReceivalResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.RequestHealthcarePerformerForAssessmentResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.RequestMedicalCertificateSupplementResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.UpdateOrderResponderImpl;
@@ -83,6 +84,11 @@ public class ServiceConfig {
     }
 
     @Bean
+    public ReportSupplementReceivalResponderImpl reportSupplementReceivalResponder() {
+        return new ReportSupplementReceivalResponderImpl();
+    }
+
+    @Bean
     public EndpointImpl pingForConfigurationEndpoint() {
         InternalPingForConfigurationResponderImpl implementor = pingForConfigurationResponder();
         EndpointImpl endpoint = new EndpointImpl(bus, implementor);
@@ -111,6 +117,14 @@ public class ServiceConfig {
         RequestMedicalCertificateSupplementResponderImpl implementor = requestMedicalCertificateSupplementResponder();
         EndpointImpl endpoint = new EndpointImpl(bus, implementor);
         endpoint.publish("/request-medical-certificate-supplement-responder");
+        return endpoint;
+    }
+
+    @Bean
+    public EndpointImpl reportSupplementReceivalResponderEndpoint() {
+        ReportSupplementReceivalResponderImpl implementor = reportSupplementReceivalResponder();
+        EndpointImpl endpoint = new EndpointImpl(bus, implementor);
+        endpoint.publish("/report-supplement-receival-responder");
         return endpoint;
     }
 }

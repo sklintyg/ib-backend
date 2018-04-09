@@ -18,21 +18,20 @@
  */
 package se.inera.intyg.intygsbestallning.web.responder;
 
-import application.riv.intygsbestallning.certificate.order._1.IIType;
 import application.riv.intygsbestallning.certificate.order._1.ResultCodeType;
 import application.riv.intygsbestallning.certificate.order._1.ResultType;
 import com.google.common.base.Preconditions;
 import org.apache.cxf.annotations.SchemaValidation;
-import se.riv.intygsbestallning.certificate.order.requestmedicalcertificatesupplement.rivtabp21.v1.RequestMedicalCertificateSupplementResponderInterface;
-import se.riv.intygsbestallning.certificate.order.requestmedicalcertificatesupplement.v1.RequestMedicalCertificateSupplementResponseType;
-import se.riv.intygsbestallning.certificate.order.requestmedicalcertificatesupplement.v1.RequestMedicalCertificateSupplementType;
+import se.riv.intygsbestallning.certificate.order.reportsupplementreceival.rivtabp21.v1.ReportSupplementReceivalResponderInterface;
+import se.riv.intygsbestallning.certificate.order.reportsupplementreceival.v1.ReportSupplementReceivalResponseType;
+import se.riv.intygsbestallning.certificate.order.reportsupplementreceival.v1.ReportSupplementReceivalType;
 
 @SchemaValidation
-public class RequestMedicalCertificateSupplementResponderImpl implements RequestMedicalCertificateSupplementResponderInterface {
+public class ReportSupplementReceivalResponderImpl implements ReportSupplementReceivalResponderInterface {
 
     @Override
-    public RequestMedicalCertificateSupplementResponseType requestMedicalCertificateSupplement(
-            final String logicalAddress, final RequestMedicalCertificateSupplementType request) {
+    public ReportSupplementReceivalResponseType reportSupplementReceival(
+            final String logicalAddress, final ReportSupplementReceivalType request) {
 
         Preconditions.checkArgument(null != logicalAddress);
         Preconditions.checkArgument(null != request);
@@ -40,20 +39,15 @@ public class RequestMedicalCertificateSupplementResponderImpl implements Request
         return createDummyResponse();
     }
 
-    private RequestMedicalCertificateSupplementResponseType createDummyResponse() {
-
-        IIType iiType = new IIType();
-        iiType.setRoot("DUMMY_ROOT");
-        iiType.setExtension("DUMMY_EXTENSION");
+    private ReportSupplementReceivalResponseType createDummyResponse() {
 
         ResultType resultType = new ResultType();
-        resultType.setResultText("DUMMY_RESULT_TEXT");
-        resultType.setLogId("DUMMY_LOG_ID");
         resultType.setResultCode(ResultCodeType.OK);
+        resultType.setLogId("DUMMY_LOG_ID");
+        resultType.setResultText("DUMMY_RESULT_TEXT");
 
-        RequestMedicalCertificateSupplementResponseType response = new RequestMedicalCertificateSupplementResponseType();
+        ReportSupplementReceivalResponseType response = new ReportSupplementReceivalResponseType();
         response.setResult(resultType);
-        response.setSupplementRequestId(iiType);
 
         return response;
     }
