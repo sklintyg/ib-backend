@@ -18,14 +18,16 @@
  */
 package se.inera.intyg.intygsbestallning.web.responder;
 
-import application.riv.intygsbestallning.certificate.order._1.ResultCodeType;
-import application.riv.intygsbestallning.certificate.order._1.ResultType;
-import com.google.common.base.Preconditions;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.springframework.stereotype.Service;
-import se.riv.intygsbestallning.certificate.order.updateorder.rivtabp21.v1.UpdateOrderResponderInterface;
+
+import com.google.common.base.Preconditions;
+
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderResponseType;
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
+import se.riv.intygsbestallning.certificate.order.updateorder.v1.rivtabp21.UpdateOrderResponderInterface;
+import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
+import se.riv.intygsbestallning.certificate.order.v1.ResultType;
 
 @Service
 @SchemaValidation

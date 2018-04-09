@@ -1,11 +1,12 @@
 package se.inera.intyg.intygsbestallning.integration.myndighet.client;
 
-import application.riv.intygsbestallning.certificate.order._1.IIType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.rivtabp21.v1.RespondToPerformerRequestResponderInterface;
+
 import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.RespondToPerformerRequestResponseType;
 import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.RespondToPerformerRequestType;
+import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.rivtabp21.RespondToPerformerRequestResponderInterface;
+import se.riv.intygsbestallning.certificate.order.v1.IIType;
 
 @Service
 public class MyndighetIntegrationClientServiceImpl implements MyndighetIntegrationClientService {

@@ -18,15 +18,17 @@
  */
 package se.inera.intyg.intygsbestallning.web.responder;
 
-import application.riv.intygsbestallning.certificate.order._1.IIType;
-import application.riv.intygsbestallning.certificate.order._1.ResultCodeType;
-import application.riv.intygsbestallning.certificate.order._1.ResultType;
-import com.google.common.base.Preconditions;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.springframework.stereotype.Service;
-import se.riv.intygsbestallning.certificate.order.requestmedicalcertificatesupplement.rivtabp21.v1.RequestMedicalCertificateSupplementResponderInterface;
+
+import com.google.common.base.Preconditions;
+
 import se.riv.intygsbestallning.certificate.order.requestmedicalcertificatesupplement.v1.RequestMedicalCertificateSupplementResponseType;
 import se.riv.intygsbestallning.certificate.order.requestmedicalcertificatesupplement.v1.RequestMedicalCertificateSupplementType;
+import se.riv.intygsbestallning.certificate.order.requestmedicalcertificatesupplement.v1.rivtabp21.RequestMedicalCertificateSupplementResponderInterface;
+import se.riv.intygsbestallning.certificate.order.v1.IIType;
+import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
+import se.riv.intygsbestallning.certificate.order.v1.ResultType;
 
 @Service
 @SchemaValidation

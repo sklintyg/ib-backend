@@ -18,14 +18,16 @@
  */
 package se.inera.intyg.intygsbestallning.web.responder;
 
-import application.riv.intygsbestallning.certificate.order._1.ResultCodeType;
-import application.riv.intygsbestallning.certificate.order._1.ResultType;
-import com.google.common.base.Preconditions;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.springframework.stereotype.Service;
-import se.riv.intygsbestallning.certificate.order.reportcontinuationdecision.rivtabp21.v1.ReportContinuationDecisionResponderInterface;
+
+import com.google.common.base.Preconditions;
+
 import se.riv.intygsbestallning.certificate.order.reportcontinuationdecision.v1.ReportContinuationDecisionResponseType;
 import se.riv.intygsbestallning.certificate.order.reportcontinuationdecision.v1.ReportContinuationDecisionType;
+import se.riv.intygsbestallning.certificate.order.reportcontinuationdecision.v1.rivtabp21.ReportContinuationDecisionResponderInterface;
+import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
+import se.riv.intygsbestallning.certificate.order.v1.ResultType;
 
 @Service
 @SchemaValidation

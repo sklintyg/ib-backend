@@ -5,7 +5,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.rivtabp21.v1.RespondToPerformerRequestResponderInterface;
+
+import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.rivtabp21.RespondToPerformerRequestResponderInterface;
 
 @Configuration
 @Profile("!ib-stub")

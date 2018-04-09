@@ -1,14 +1,15 @@
 package se.inera.intyg.intygsbestallning.integration.myndighet.stubs;
 
-import application.riv.intygsbestallning.certificate.order._1.ResultCodeType;
-import application.riv.intygsbestallning.certificate.order._1.ResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.rivtabp21.v1.RespondToPerformerRequestResponderInterface;
+
 import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.RespondToPerformerRequestResponseType;
 import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.RespondToPerformerRequestType;
+import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.rivtabp21.RespondToPerformerRequestResponderInterface;
+import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
+import se.riv.intygsbestallning.certificate.order.v1.ResultType;
 
 @Service
 @Profile({"ib-stub"})
