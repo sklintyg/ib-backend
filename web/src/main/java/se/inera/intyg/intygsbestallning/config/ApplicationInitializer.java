@@ -29,9 +29,13 @@ import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 import se.inera.intyg.infra.integration.pu.cache.PuCacheConfiguration;
+import se.inera.intyg.intygsbestallning.integration.myndighet.config.MyndighetIntegrationClientConfiguration;
+import se.inera.intyg.intygsbestallning.integration.myndighet.config.MyndighetIntegrationConfiguration;
+import se.inera.intyg.intygsbestallning.integration.myndighet.stubs.MyndighetIntegrationStubConfiguration;
 import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigDev;
 import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigJndi;
 import se.inera.intyg.intygsbestallning.web.filters.SessionTimeoutFilter;
+
 
 import javax.servlet.FilterRegistration;
 import javax.servlet.ServletException;
@@ -45,12 +49,23 @@ public class ApplicationInitializer implements WebApplicationInitializer {
     public void onStartup(javax.servlet.ServletContext servletContext) throws ServletException {
         AnnotationConfigWebApplicationContext appContext = new AnnotationConfigWebApplicationContext();
 
-        appContext.register(ApplicationConfig.class, HsaConfiguration.class,
-                PuConfiguration.class, PuCacheConfiguration.class,
+        appContext.register(
+                ApplicationConfig.class,
+                HsaConfiguration.class,
+                PuConfiguration.class,
+                PuCacheConfiguration.class,
                 ServiceConfig.class,
-                JmsConfig.class, NTjPPingConfig.class, SecurityConfig.class,
-                EmployeeNameCacheConfig.class, DynamicLinkConfig.class, PersistenceConfigJndi.class,
-                PersistenceConfigDev.class);
+                JmsConfig.class,
+                NTjPPingConfig.class,
+                SecurityConfig.class,
+                EmployeeNameCacheConfig.class,
+                DynamicLinkConfig.class,
+                PersistenceConfigJndi.class,
+                PersistenceConfigDev.class,
+                MyndighetIntegrationConfiguration.class,
+                MyndighetIntegrationClientConfiguration.class,
+                MyndighetIntegrationStubConfiguration.class
+        );
 
         servletContext.addListener(new ContextLoaderListener(appContext));
 

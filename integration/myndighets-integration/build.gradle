@@ -1,0 +1,4 @@
+dependencies {
+    compile project (":ib-common")
+    compile "se.riv.intygsbestallning.certificate.order:intygsbestallning-certificate-order-schemas:${intygsbestallningCertificateOrderSchemasVersion}"
+}

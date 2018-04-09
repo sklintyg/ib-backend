@@ -37,7 +37,7 @@ gretty {
     enableNaming = true
 
     jvmArgs = [
-               '-Dspring.profiles.active=dev,ib-it-stub,ib-srs-stub,caching-enabled',
+               '-Dspring.profiles.active=dev,ib-stub,caching-enabled',
                '-Dib.config.file=' + projectDir + '/src/main/resources/dev.properties',
                '-Dcredentials.file=' + projectDir + '/src/main/resources/dev-credentials.properties',
                '-Dib.resources.folder=/' +projectDir + '/../src/main/resources',
@@ -58,6 +58,7 @@ gretty {
 dependencies {
     compile project(":ib-common")
     compile project(":ib-persistence")
+    compile project (":ib-myndighets-integration")
 
     compile "se.riv.clinicalprocess.healthcond.monitoring:clinicalprocess-healthcond-monitoring-schemas:${internalMonitoringSchemaVersion}"
     compile "se.riv.itintegration.monitoring:itintegration-monitoring-schemas:${monitoringSchemaVersion}"
