@@ -22,10 +22,12 @@ import application.riv.intygsbestallning.certificate.order._1.ResultCodeType;
 import application.riv.intygsbestallning.certificate.order._1.ResultType;
 import com.google.common.base.Preconditions;
 import org.apache.cxf.annotations.SchemaValidation;
+import org.springframework.stereotype.Service;
 import se.riv.intygsbestallning.certificate.order.updateorder.rivtabp21.v1.UpdateOrderResponderInterface;
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderResponseType;
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
 
+@Service
 @SchemaValidation
 public class UpdateOrderResponderImpl implements UpdateOrderResponderInterface {
 

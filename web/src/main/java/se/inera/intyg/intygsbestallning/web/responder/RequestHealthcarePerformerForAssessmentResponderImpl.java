@@ -23,10 +23,12 @@ import application.riv.intygsbestallning.certificate.order._1.ResultCodeType;
 import application.riv.intygsbestallning.certificate.order._1.ResultType;
 import com.google.common.base.Preconditions;
 import org.apache.cxf.annotations.SchemaValidation;
+import org.springframework.stereotype.Service;
 import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.rivtabp21.v1.RequestHealthcarePerformerForAssessmentResponderInterface;
 import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentResponseType;
 import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentType;
 
+@Service
 @SchemaValidation
 public class RequestHealthcarePerformerForAssessmentResponderImpl
         implements RequestHealthcarePerformerForAssessmentResponderInterface {
