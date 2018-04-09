@@ -52,7 +52,6 @@
   </appender>
 
   <logger name="se.inera.intyg.intygsbestallning" level="info"/>
-  <logger name="se.inera.intyg.intygsbestallning.web.controller" level="debug"/>
 
   <root>
     <level value="info" />
