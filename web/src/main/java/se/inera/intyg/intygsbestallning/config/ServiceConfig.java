@@ -30,6 +30,7 @@ import org.springframework.web.context.support.ServletContextAttributeExporter;
 import se.inera.intyg.intygsbestallning.service.monitoring.HealthCheckService;
 import se.inera.intyg.intygsbestallning.service.monitoring.InternalPingForConfigurationResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.ReportCertificateReceivalResponderImpl;
+import se.inera.intyg.intygsbestallning.web.responder.ReportContinuationDecisionResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.ReportSupplementReceivalResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.RequestHealthcarePerformerForAssessmentResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.RequestMedicalCertificateSupplementResponderImpl;
@@ -68,6 +69,8 @@ public class ServiceConfig {
     private ReportSupplementReceivalResponderImpl reportSupplementReceivalResponder;
     @Autowired
     private ReportCertificateReceivalResponderImpl reportCertificateReceivalResponder;
+    @Autowired
+    private ReportContinuationDecisionResponderImpl reportContinuationDecisionResponder;
 
     @Bean
     public ServletContextAttributeExporter contextAttributes() {
@@ -117,6 +120,13 @@ public class ServiceConfig {
     public EndpointImpl reportCertificateReceivalResponderEndpoint() {
         EndpointImpl endpoint = new EndpointImpl(bus, reportCertificateReceivalResponder);
         endpoint.publish("/report-certificate-receival-responder");
+        return endpoint;
+    }
+
+    @Bean
+    public EndpointImpl reportContinuationDecisionResponderEndpoint() {
+        EndpointImpl endpoint = new EndpointImpl(bus, reportContinuationDecisionResponder);
+        endpoint.publish("/report-continuation-decision-responder");
         return endpoint;
     }
 }
