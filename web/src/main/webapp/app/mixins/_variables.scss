@@ -1,0 +1,100 @@
+$rs-color-01: #FFFFFF;
+$rs-color-02: #00A1B0;
+$rs-color-03: #008391;
+$rs-color-04: #212633;
+$rs-color-05: #000000;
+$rs-color-06: #EFEFEF;
+$rs-color-07: #CCCCCC;
+$rs-color-08: #999999;
+$rs-color-09: #666666;
+$rs-color-10: #333333;
+$rs-color-11: #337AB7;
+$rs-color-12: #2E6EA5;
+$rs-color-13: #286090;
+$rs-color-14: #E6E5E5;
+
+$default-border-radius: 5px;
+
+$form-group-margin-bottom: 10px;
+
+// Font
+$ib-font: Arial, sans-serif;
+$ib-font-size-h1: 24px;
+$ib-font-size-h2: 18px;
+$ib-font-size-h3: 16px;
+$ib-font-size-h4: 14px;
+
+$ib-font-size-th: 14px;
+
+// Buttons
+$ib-font-buttons: "Arial Rounded MT Bold", sans-serif;
+$ib-button-padding: 8px 20px;
+$ib-button-letter-spacing: 0.06px;
+
+$inactive-element-color: #ccc;
+$background-gray-color: #efefef;
+$background-darkergray-color: #aaa;
+
+$footer-background-color: #E5E8EE;
+$footer-text-color: #22263E;
+$footer-height: 240px;
+
+$ib-table-hover-bg: #bce4e8; //30% opacity of of specified color 00A1B0
+
+
+// Bootstrap variables (Here we override bootstraps default values with IB custom variables defined above, or just directly..)
+
+$icon-font-path: '../bower_components/bootstrap-sass/assets/fonts/bootstrap/';
+$fa-font-path: '../bower_components/font-awesome/fonts';
+
+$font-family-base: $ib-font;
+$font-size-h1: $ib-font-size-h1;
+$font-size-h2: $ib-font-size-h2;
+$font-size-h3: $ib-font-size-h3;
+$font-size-h4: $ib-font-size-h4;
+$headings-line-height:    1.5;
+
+$text-color: $rs-color-10;
+$link-color: $rs-color-03;
+$link-hover-color: $rs-color-03;
+
+$navbar-default-color:             $rs-color-10;
+$navbar-default-link-color:        $rs-color-10;
+$navbar-default-bg:                $rs-color-06;
+
+$navbar-default-link-hover-color: $rs-color-10;
+$navbar-default-link-hover-bg: $rs-color-08;
+
+$navbar-default-link-active-color: $rs-color-01;
+$navbar-default-link-active-bg: $rs-color-02;
+
+
+//Alerts overrides
+$alert-padding: 12px 16px;
+$alert-border-radius: 4px;
+
+$alert-warning-text: #9A6C41;
+$alert-warning-bg: #FFF8E4;
+$alert-warning-border: #F0E1B4;
+
+$alert-danger-text: #751723;
+$alert-danger-bg: #F2DEDE;
+$alert-danger-border: #D0021C;
+
+$alert-info-text: #000000;
+$alert-info-bg: #D9EDF7;
+$alert-info-border: #4890E2;
+
+//(we currently dont use success, but define override values anyway)
+$alert-success-text: #3C763D;
+$alert-success-bg: #DFF0D8;
+$alert-success-border: #DFF0D8;
+
+// Buttons
+$btn-default-color: $rs-color-09;
+$btn-default-bg: $rs-color-01;
+$btn-default-border: $rs-color-07;
+
+$btn-primary-color: $rs-color-01;
+$btn-primary-bg: $rs-color-11;
+$btn-primary-border: $rs-color-12;

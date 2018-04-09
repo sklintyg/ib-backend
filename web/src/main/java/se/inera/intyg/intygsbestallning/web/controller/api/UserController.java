@@ -80,9 +80,9 @@ public class UserController {
         }
 
         user.setFeatures(
-                commonAuthoritiesResolver.getFeatures(Arrays.asList(user.getValdVardenhet().getId(), user.getValdVardgivare().getId())));
+                commonAuthoritiesResolver.getFeatures(Arrays.asList(user.getCurrentlyLoggedInAt().getId())));
 
-        LOG.debug("Selected vardenhet is now '{}'", user.getValdVardenhet().getId());
+        LOG.debug("Selected unit is now '{}'", user.getCurrentlyLoggedInAt().getId());
 
         return new GetUserResponse(user);
     }

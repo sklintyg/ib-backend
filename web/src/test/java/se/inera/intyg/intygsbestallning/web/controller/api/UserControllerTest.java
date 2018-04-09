@@ -30,6 +30,8 @@ import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
+import se.inera.intyg.intygsbestallning.auth.model.IbVardenhet;
+import se.inera.intyg.intygsbestallning.auth.model.IbVardgivare;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ChangeSelectedUnitRequest;
 
@@ -65,8 +67,7 @@ public class UserControllerTest {
     public void before() {
         when(commonAuthoritiesResolver.getFeatures(any())).thenReturn(Collections.emptyMap());
         when(userService.getUser()).thenReturn(ibUserMock);
-        when(ibUserMock.getValdVardenhet()).thenReturn(new Vardenhet("123", "enhet"));
-        when(ibUserMock.getValdVardgivare()).thenReturn(new Vardenhet("456", "vardgivare"));
+        when(ibUserMock.getCurrentlyLoggedInAt()).thenReturn(new IbVardgivare("123", "enhet", true));
         when(ibUserMock.changeValdVardenhet(anyString())).thenReturn(true);
     }
 

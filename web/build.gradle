@@ -1,5 +1,6 @@
 apply plugin: 'war'
 apply plugin: 'org.akhikhl.gretty'
+apply plugin: 'com.moowork.grunt'
 
 war.rootSpec.exclude "logback.xml"
 
@@ -20,7 +21,40 @@ idea {
     }
 }
 
+grunt {
+    colors = true
+}
+
+node {
+    version = '6.11.3'
+    yarnVersion = '1.5.1'
+    download = true
+    distBaseUrl = 'https://build-inera.nordicmedtest.se/node/'
+}
+
+if (project.hasProperty('rehabstod.useMinifiedJavaScript')) {
+    war {
+        webAppDirName = 'build/webapp'
+    }
+    war.dependsOn grunt_build
+} else {
+    war.dependsOn grunt_build_no_minify
+}
+
 war.dependsOn createVersionPropertyFile
+
+task bowerInstall(type: NodeTask, dependsOn:yarn) {
+    script = file('node_modules/bower/bin/bower')
+    args = ["--config.storage.cache=${gradle.getGradleUserHomeDir()}/caches/bower/cache",
+            "--config.storage.packages=${gradle.getGradleUserHomeDir()}/caches/bower/packages",
+            "--config.storage.registry=${gradle.getGradleUserHomeDir()}/caches/bower/registry",
+            'install']
+    inputs.files file('bower.json')
+    outputs.files file('src/main/webapp/bower_components')
+}
+
+grunt_build.dependsOn bowerInstall
+grunt_build_no_minify.dependsOn bowerInstall
 
 gretty {
     contextPath = '/'
