@@ -10,7 +10,6 @@ module.exports = function(grunt) {
         connect: 'grunt-contrib-connect',
         useminPrepare: 'grunt-usemin',
         ngtemplates: 'grunt-angular-templates',
-        protractor: 'grunt-protractor-runner',
         injector: 'grunt-injector',
         configureProxies: 'grunt-connect-proxy',
         sasslint: 'grunt-sass-lint'
@@ -351,19 +350,6 @@ module.exports = function(grunt) {
             }
         },
 
-        protractor: {
-            options: {
-                configFile: 'protractor.conf.js'
-            },
-            chrome: {
-                options: {
-                    args: {
-                        browser: 'chrome'
-                    }
-                }
-            }
-        },
-
 
         // Compiles Sass to CSS
         sass: {
@@ -502,17 +488,6 @@ module.exports = function(grunt) {
                 'injector',
                 'postcss',
                 'karma'
-            ]);
-        }
-
-        else if (target === 'e2e') {
-            return grunt.task.run([
-                'injector:sass',
-                'injector',
-                'wiredep',
-                'postcss',
-                'express:dev',
-                'protractor'
             ]);
         }
 

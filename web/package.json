@@ -1,6 +1,6 @@
 {
   "name": "rehabstod",
-  "description": "Applikation för rehabstöd",
+  "description": "Applikation för intygsbeställning",
   "version": "0.0.1",
   "private": true,
   "devDependencies": {

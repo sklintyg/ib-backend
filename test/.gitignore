@@ -1,0 +1,7 @@
+.gradle
+build
+node
+node-v*
+node_modules
+debug.log
+yarn-error.log

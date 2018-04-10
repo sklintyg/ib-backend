@@ -1,0 +1,26 @@
+apply plugin: 'com.moowork.grunt'
+
+grunt {
+    colors = System.properties['gruntColors'] ? System.properties['gruntColors'].toBoolean() : true
+}
+
+node {
+    version = '6.11.3'
+    download = true
+    distBaseUrl = 'https://build-inera.nordicmedtest.se/node/'
+    workDir = projectDir
+    nodeModulesDir = projectDir
+}
+
+task cypressTest(type: NodeTask, dependsOn: [yarn] ) {
+    outputs.upToDateWhen { false }
+
+    def baseUrl = System.properties['baseUrl'] ?: "http://localhost:8990"
+
+    script = file('node_modules/cypress/bin/cypress')
+    args = ['run', '--reporter', 'mochawesome', '--reporter-options', 'inlineAssets=true,reportDir=build/test-results', '--config', 'baseUrl='+baseUrl]
+}
+
+dependencies {
+    runtime project(':ib-web')
+}
