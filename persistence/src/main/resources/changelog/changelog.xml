@@ -59,4 +59,56 @@
       <column name="HSA_ID"/>
     </createIndex>
   </changeSet>
+
+
+  <changeSet id="3" author="el">
+    <createTable tableName="UTREDNING">
+      <column name="UTREDNING_ID" type="varchar(32)">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+
+      <column name="UTREDNINGS_TYP" type="varchar(16)">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="VARDGIVARE_HSA_ID" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="INKOM_DATUM" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="BESVARAS_SENAST_DATUM" type="datetime">
+        <constraints nullable="true"/>
+      </column>
+
+      <column name="INVANARE_PERSON_ID" type="varchar(16)">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="HANDLAGGARE_NAMN" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="HANDLAGGARE_TELEFONNUMMER" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="HANDLAGGARE_EPOST" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="BEHOV_TOLK" type="boolean">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="SPRAK_TOLK" type="varchar(255)">
+        <constraints nullable="true"/>
+      </column>
+
+      <column name="STATUS" type="varchar(255)">
+        <constraints nullable="true"/>
+      </column>
+
+    </createTable>
+  </changeSet>
+
 </databaseChangeLog>

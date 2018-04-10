@@ -21,6 +21,7 @@ package se.inera.intyg.intygsbestallning.auth;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.intygsbestallning.auth.model.IbSelectableHsaEntity;
 import se.inera.intyg.intygsbestallning.auth.model.IbVardenhet;
@@ -33,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil.toMap;
 import static se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants.ROLE_FMU_SAMORDNARE;
 import static se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants.ROLE_FMU_VARDADMIN;
 
@@ -57,6 +59,10 @@ public class IbUser extends IntygUser implements Serializable {
 
     // Handles PDL logging state
     private Map<String, List<PDLActivityEntry>> storedActivities;
+
+    // All known roles. Do NOT expose!!!
+    @JsonIgnore
+    private List<Role> possibleRoles;
 
     /**
      * Typically used by unit tests.
@@ -131,23 +137,40 @@ public class IbUser extends IntygUser implements Serializable {
      */
     @Override
     public boolean changeValdVardenhet(String vgOrVeHsaId) {
+        Map<String, Role> roleMap = new HashMap<>();
+
         // FOR IB, we ignore the original HSA VG->VE tree, all authority is managed through the custom systemAuthorities tree.
         for (IbVardgivare ibVg : systemAuthorities) {
             if (ibVg.getId().equalsIgnoreCase(vgOrVeHsaId)) {
                 this.currentlyLoggedInAt = ibVg;
-                this.currentRole = this.roles.get(ROLE_FMU_SAMORDNARE);
+                this.currentRole = selectRole(possibleRoles, ROLE_FMU_SAMORDNARE);
+                roleMap.put(currentRole.getName(), currentRole);
+                this.roles = roleMap;
+                this.authorities = toMap(currentRole.getPrivileges(), Privilege::getName);
                 return true;
             }
             for (IbVardenhet ibVardenhet : ibVg.getVardenheter()) {
                 if (ibVardenhet.getId().equalsIgnoreCase(vgOrVeHsaId)) {
                     this.currentlyLoggedInAt = ibVardenhet;
-                    this.currentRole = this.roles.get(ROLE_FMU_VARDADMIN);
+                    this.currentRole = selectRole(possibleRoles, ROLE_FMU_VARDADMIN);
+                    roleMap.put(currentRole.getName(), currentRole);
+                    this.roles = roleMap;
+                    this.authorities = toMap(currentRole.getPrivileges(), Privilege::getName);
                     return true;
                 }
             }
         }
 
-        return true;
+        return false;
+    }
+
+    private Role selectRole(List<Role> roles, String roleName) {
+        for (Role r : roles) {
+            if (r.getName().equals(roleName)) {
+                return r;
+            }
+        }
+        throw new IllegalStateException("Tried to set unknown role '" + roleName + "'");
     }
 
     @Override
@@ -212,6 +235,11 @@ public class IbUser extends IntygUser implements Serializable {
     @JsonIgnore
     public List<String> getLegitimeradeYrkesgrupper() {
         return new ArrayList<>();
+    }
+
+    // Do not expose.
+    public void setPossibleRoles(List<Role> possibleRoles) {
+        this.possibleRoles = possibleRoles;
     }
 
     // private scope

@@ -68,7 +68,7 @@ public class UnitSelectedAssuranceFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         IbUser user = getUser();
-        boolean shouldNotFilterIf = user == null || user.getValdVardenhet() != null || isIgnoredUrl(request);
+        boolean shouldNotFilterIf = user == null || user.getCurrentlyLoggedInAt() != null || isIgnoredUrl(request);
         LOG.debug("shouldNotFilter " + request.getRequestURI() + " = " + shouldNotFilterIf);
         return shouldNotFilterIf;
     }

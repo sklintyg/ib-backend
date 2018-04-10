@@ -1,3 +1,36 @@
+# ====================================================================================================
+#   Konfiguration för Intygsbeställningens rollhantering
+#
+#   YAML specifikation: http://www.yaml.org/spec/1.2/spec.html
+#
+#   Kort förklaring till vissa konstruktioner i filen:
+#
+#   '-'   används för att skapa listor av värden
+#   '&'   används för att skapa ett ankare (unik nyckel)
+#   '*'   används för att peka på ett ankare, kallas också alias
+#   '<<:' används för att slå ihop och skriva över värden
+#
+#   '&' och '*' används för att undvika duplikat i en YAML-fil
+#
+#   Överskådligt exempel:
+#
+#  defaults: &defaults
+#     adapter:  postgres
+#     host:     localhost
+#
+#   development:
+#     database: myapp_development
+#     <<: *defaults
+#
+#   test:
+#     database: myapp_test
+#     <<: *defaults
+#
+#   & sets up the name of the anchor (“defaults”),
+#   << means “merge the given hash into the current one”, and
+#   * includes the named anchor (“defaults” again).
+#
+# ====================================================================================================
 ---
 version: 1.0
 released: 2015-12-18
@@ -9,58 +42,59 @@ changedby: Magnus Ekstrand
 # ====================================================================================================
 
 # De ingångar till systemet som finns
-knownRequestOrigins:
-  - &kro010 NORMAL
+knownRequestOrigins: []
 
 # De intygstyper som systemet har
 knownIntygstyper: []
 
 # De rättigheter som systemet har
 knownPrivileges:
-  - &kp010 VISA_SJUKFALL
+  - &kp010 LISTA_UTREDNINGAR
+  - &kp020 LISTA_FORFRAGNINGAR
 
 # De roller som systemet har
 knownRoles:
-  - &kr020 FMU_VARDADMIN
-  - &kr030 FMU_SAMORDNARE
+  - &kr010 FMU_VARDADMIN
+  - &kr020 FMU_SAMORDNARE
 
 # ====================================================================================================
 #   Definitioner av ingångar, roller, privilegier, yrkesroller och befattnings-/gruppförskrivarkoder
 # ====================================================================================================
 
 # Ingångar
-requestOrigins:
-  - &ro010
-    name: *kro010
-    intygstyper: # Implicit alla
+requestOrigins: []
 
 # Rättigheter
 privileges:
   - &p010
-    name: *kp010
-    desc: Visa Sjukfall
-    intygstyper: # Implicit alla
-    requestOrigins: # Implicit alla
-
+      name: *kp010
+      desc: Lista utredningar
+      intygstyper: # Implicit alla
+      requestOrigins: # Implicit alla
+  - &p020
+      name: *kp020
+      desc: Lista förfrågningar
+      intygstyper: # Implicit alla
+      requestOrigins: # Implicit alla
 # Roller
 roles:
-  - &r020
-    name: *kr020 # FMU_VARDADMIN
+  - &r010
+    name: *kr010 # FMU_VARDADMIN
     desc: FMU Vårdadministratör
     privileges:
-      - *p010 # VISA_SJUKFALL
-  - &r030
-    name: *kr030 # FMU_SAMORDNARE
+      - *p020 # LISTA_FORFRAGNINGAR
+  - &r020
+    name: *kr020 # FMU_SAMORDNARE
     desc: FMU Samordnare
     privileges:
-      - *p010 # VISA_SJUKFALL
+      - *p010 # LISTA_UTREDNINGAR
 
 # Legitimerade yrkesroller
 titles:
   - title: FMU vårdadministratör
-    role: *r020 # FMU_VARDADMIN
+    role: *r010 # FMU_VARDADMIN
   - title: FMU samordnare
-    role: *r030 # FMU_SAMORDNARE
+    role: *r020 # FMU_SAMORDNARE
 
 # Kombination befattningskoder och gruppförskrivarkoder
 titleCodes: []

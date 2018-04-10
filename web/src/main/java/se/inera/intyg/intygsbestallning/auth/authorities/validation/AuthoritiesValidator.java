@@ -22,6 +22,8 @@ import se.inera.intyg.infra.security.authorities.validation.AuthExpectationSpecI
 import se.inera.intyg.infra.security.authorities.validation.AuthExpectationSpecification;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 
+import java.util.Optional;
+
 /**
  * Utility class that makes it easy to express and enforce authority constraint rules in backend code.
  */
@@ -34,7 +36,7 @@ public final class AuthoritiesValidator {
      * @return
      */
     public AuthExpectationSpecification given(IntygUser user) {
-        return new AuthExpectationSpecImpl(user, null);
+        return new AuthExpectationSpecImpl(user, Optional.empty());
     }
 
 }

@@ -28,6 +28,9 @@ public final class AuthoritiesConstants {
     public static final String ROLE_FMU_VARDADMIN = "FMU_VARDADMIN";
     public static final String ROLE_FMU_SAMORDNARE = "FMU_SAMORDNARE";
 
+    // Privileges
+    public static final String PRIVILEGE_LISTA_UTREDNINGAR = "LISTA_UTREDNINGAR";
+    public static final String PRIVILEGE_LISTA_FORFRAGNINGAR = "LISTA_FORFRAGNINGAR";
 
     // constructors
 

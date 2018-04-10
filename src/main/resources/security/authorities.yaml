@@ -49,7 +49,8 @@ knownIntygstyper: []
 
 # De rättigheter som systemet har
 knownPrivileges:
-  - &kp010 VISA_SJUKFALL
+  - &kp010 LISTA_UTREDNINGAR
+  - &kp020 LISTA_FORFRAGNINGAR
 
 # De roller som systemet har
 knownRoles:
@@ -67,22 +68,26 @@ requestOrigins: []
 privileges:
   - &p010
       name: *kp010
-      desc: Signera intyg
+      desc: Lista utredningar
       intygstyper: # Implicit alla
       requestOrigins: # Implicit alla
-
+  - &p020
+      name: *kp020
+      desc: Lista förfrågningar
+      intygstyper: # Implicit alla
+      requestOrigins: # Implicit alla
 # Roller
 roles:
   - &r010
     name: *kr010 # FMU_VARDADMIN
     desc: FMU Vårdadministratör
     privileges:
-      - *p010 # VISA_SJUKFALL
+      - *p020 # LISTA_FORFRAGNINGAR
   - &r020
     name: *kr020 # FMU_SAMORDNARE
     desc: FMU Samordnare
     privileges:
-      - *p010 # VISA_SJUKFALL
+      - *p010 # LISTA_UTREDNINGAR
 
 # Legitimerade yrkesroller
 titles:

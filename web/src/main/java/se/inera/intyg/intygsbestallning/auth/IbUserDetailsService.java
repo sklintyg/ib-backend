@@ -37,6 +37,7 @@ import se.inera.intyg.intygsbestallning.auth.model.IbVardenhet;
 import se.inera.intyg.intygsbestallning.auth.model.IbVardgivare;
 import se.inera.intyg.intygsbestallning.auth.util.SystemRolesParser;
 import se.inera.intyg.intygsbestallning.persistence.repository.AnvandarPreferenceRepository;
+import se.riv.infrastructure.directory.v1.PersonInformationType;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -54,6 +55,7 @@ public class IbUserDetailsService extends BaseUserDetailsService implements SAML
     @Autowired
     private AnvandarPreferenceRepository anvandarPreferenceRepository;
 
+
     // =====================================================================================
     // ~ Protected scope
     // =====================================================================================
@@ -64,6 +66,7 @@ public class IbUserDetailsService extends BaseUserDetailsService implements SAML
         IntygUser intygUser = super.buildUserPrincipal(credential);
         IbUser ibUser = new IbUser(intygUser);
 
+        ibUser.setPossibleRoles(commonAuthoritiesResolver.getRoles());
         buildSystemAuthoritiesTree(ibUser);
 
         if (ibUser.getSystemAuthorities().size() == 0) {
@@ -71,7 +74,35 @@ public class IbUserDetailsService extends BaseUserDetailsService implements SAML
         }
 
         // If only a single possible entity to select as loggedInAt, do that...
+        int count = 0;
+        for (IbVardgivare vg : ibUser.getSystemAuthorities()) {
+            if (vg.isSamordnare()) {
+                count++;
+            }
+            count += vg.getVardenheter().size();
+        }
+
+        // Ugly, make something more readable...
+        if (count == 1) {
+            String oneAndOnly = ibUser.getSystemAuthorities().get(0).isSamordnare() ? ibUser.getSystemAuthorities().get(0).getId()
+                    : ibUser.getSystemAuthorities().get(0).getVardenheter().get(0).getId();
+            ibUser.changeValdVardenhet(oneAndOnly);
+        }
+
         return ibUser;
+    }
+
+    /**
+     * Overridden for IB. We cannot use "fallback" roles here so we must postpone population of this.roles.
+     *
+     * @param intygUser
+     * @param personInfo
+     * @param userCredentials
+     */
+    @Override
+    protected void decorateIntygUserWithRoleAndAuthorities(IntygUser intygUser, List<PersonInformationType> personInfo,
+                                                           UserCredentials userCredentials) {
+       // Do nothing
     }
 
     @Override

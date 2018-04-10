@@ -16,13 +16,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.integration.myndighet.config;
+package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import java.util.List;
 
-@Configuration
-@ComponentScan({"se.inera.intyg.intygsbestallning.integration.myndighet.client",
-        "se.inera.intyg.intygsbestallning.integration.myndighet.service" })
-public class MyndighetIntegrationConfiguration {
+public class GetUtredningListResponse {
+    private List<UtredningListItem> utredningar;
+
+    private GetUtredningListResponse() {
+
+    }
+
+    public GetUtredningListResponse(List<UtredningListItem> utredningar) {
+       this.utredningar = utredningar;
+    }
+
+    public List<UtredningListItem> getUtredningar() {
+        return utredningar;
+    }
+
+    public void setUtredningar(List<UtredningListItem> utredningar) {
+        this.utredningar = utredningar;
+    }
 }

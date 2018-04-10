@@ -145,7 +145,7 @@ public class IbUserDetailsServiceTest {
         MockHttpServletRequest request = mockHttpServletRequest("/any/path");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
-        ReflectionTestUtils.setField(userDetailsService, "userOrigin", Optional.of(userOrigin));
+        ReflectionTestUtils.setField(userDetailsService, "userOrigin", Optional.empty());
 
         when(hsaPersonService.getHsaPersonInfo(anyString())).thenReturn(Collections.emptyList());
         when(userOrigin.resolveOrigin(request)).thenReturn(UserOriginType.NORMAL.name());
@@ -157,6 +157,10 @@ public class IbUserDetailsServiceTest {
         when(hsaOrganizationsService.getVardgivareInfo("vg1")).thenReturn(new Vardgivare("vg1", "Vårdgivare 1"));
         when(hsaOrganizationsService.getVardgivareInfo("vg3")).thenReturn(new Vardgivare("vg3", "Vårdgivare 3"));
 
+    }
+
+    private List<Role> possiblesRoles() {
+        return AUTHORITIES_RESOLVER.getRoles();
     }
 
     @Test
@@ -283,10 +287,6 @@ public class IbUserDetailsServiceTest {
     public void testBuildAuthTreeFromPreparedSystemRoles() {
         IbUser ibUser =  prepareUserForSelectTest();
 
-
-
-
-
         // Assert that we have an expected tree
         List<IbVardgivare> sa = ibUser.getSystemAuthorities();
         assertEquals(3, sa.size()); // Three VG
@@ -350,6 +350,7 @@ public class IbUserDetailsServiceTest {
     private IbUser prepareUserForSelectTest() {
         IbUser ibUser = new IbUser("id", "name");
         ibUser.setRoles(buildIbRoles());
+        ibUser.setPossibleRoles(AUTHORITIES_RESOLVER.getRoles());
         buildDefaultIbUserSystemRolesAndTree(ibUser);
         userDetailsService.buildSystemAuthoritiesTree(ibUser);
         return ibUser;

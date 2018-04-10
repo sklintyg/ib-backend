@@ -16,13 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.integration.myndighet.config;
+package se.inera.intyg.intygsbestallning.persistence.repository;
 
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.JpaRepository;
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 
-@Configuration
-@ComponentScan({"se.inera.intyg.intygsbestallning.integration.myndighet.client",
-        "se.inera.intyg.intygsbestallning.integration.myndighet.service" })
-public class MyndighetIntegrationConfiguration {
+public interface UtredningRepository extends JpaRepository<Utredning, String> {
 }
