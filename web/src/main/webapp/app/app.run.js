@@ -19,7 +19,8 @@
 
 angular
     .module('ibApp')
-    .run(function($log, $rootScope, $state, $window, messageService, dynamicLinkService, UserProxy, UserModel, USER_DATA, LINKS, $uibModalStack, $animate) {
+    .run(function($log, $rootScope, $state, $window, messageService, dynamicLinkService, UserProxy,
+        UserModel, USER_DATA, LINKS, $uibModalStack, $animate) {
     'use strict';
 
         // For testability
