@@ -21,8 +21,11 @@ package se.inera.intyg.intygsbestallning.persistence.repository;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 
+import se.inera.intyg.intygsbestallning.persistence.model.Forfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 
 /**
@@ -33,8 +36,6 @@ public class UtredningRepositoryImpl implements UtredningRepositoryCustom {
     @PersistenceContext
     private EntityManager entityManager;
 
-
-
     @Override
     public List<Utredning> findByVardgivareHsaId(String vardgivareHsaId) {
         return entityManager
@@ -44,10 +45,31 @@ public class UtredningRepositoryImpl implements UtredningRepositoryCustom {
     }
 
     @Override
-    public List<Utredning> findForfragningarForVardenhetHsaId(String vardenhetHsaId) {
+    public List<Forfragan> findForfragningarForVardenhetHsaId(String vardenhetHsaId) {
         return entityManager
-                .createQuery("SELECT u FROM Utredning u JOIN u.forfraganList fl WHERE fl.vardenhetHsaId = :vardenhetHsaId", Utredning.class)
+                .createQuery("SELECT f FROM Utredning u JOIN u.forfraganList f WHERE f.vardenhetHsaId = :vardenhetHsaId",
+                        Forfragan.class)
                 .setParameter("vardenhetHsaId", vardenhetHsaId)
                 .getResultList();
+    }
+
+    @Override
+    public Forfragan findForfraganByIdAndVardenhet(Long forfraganId, String vardenhetHsaId) {
+        try {
+            return entityManager.createQuery(
+                    "SELECT f FROM Utredning u JOIN u.forfraganList f WHERE f.internreferens = :internreferens AND "
+                    + "f.vardenhetHsaId = :vardenhetHsaId",
+                    Forfragan.class)
+                    .setParameter("internreferens", forfraganId)
+                    .setParameter("vardenhetHsaId", vardenhetHsaId)
+                    .getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        } catch (NonUniqueResultException nure) {
+            throw new IllegalStateException(
+                    "Query for Forfragan returned multiple records, should never occur. internreferens: " + forfraganId
+                            + ", vardenhetHsaId: " + vardenhetHsaId);
+        }
+
     }
 }

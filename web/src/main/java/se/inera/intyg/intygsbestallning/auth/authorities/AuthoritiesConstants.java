@@ -31,6 +31,8 @@ public final class AuthoritiesConstants {
     // Privileges
     public static final String PRIVILEGE_LISTA_UTREDNINGAR = "LISTA_UTREDNINGAR";
     public static final String PRIVILEGE_LISTA_FORFRAGNINGAR = "LISTA_FORFRAGNINGAR";
+    public static final String PRIVILEGE_VISA_UTREDNING = "VISA_UTREDNING";
+    public static final String PRIVILEGE_VISA_FORFRAGAN = "VISA_FORFRAGAN";
 
     // constructors
 

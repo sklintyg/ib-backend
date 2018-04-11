@@ -51,6 +51,8 @@ knownIntygstyper: []
 knownPrivileges:
   - &kp010 LISTA_UTREDNINGAR
   - &kp020 LISTA_FORFRAGNINGAR
+  - &kp030 VISA_UTREDNING
+  - &kp040 VISA_FORFRAGAN
 
 # De roller som systemet har
 knownRoles:
@@ -76,6 +78,16 @@ privileges:
       desc: Lista förfrågningar
       intygstyper: # Implicit alla
       requestOrigins: # Implicit alla
+  - &p030
+      name: *kp030
+      desc: Visa utredning
+      intygstyper: # Implicit alla
+      requestOrigins: # Implicit alla
+  - &p040
+      name: *kp040
+      desc: Visa förfrågan
+      intygstyper: # Implicit alla
+      requestOrigins: # Implicit alla
 # Roller
 roles:
   - &r010
@@ -83,11 +95,13 @@ roles:
     desc: FMU Vårdadministratör
     privileges:
       - *p020 # LISTA_FORFRAGNINGAR
+      - *p040 # VISA_FORFRAGAN
   - &r020
     name: *kr020 # FMU_SAMORDNARE
     desc: FMU Samordnare
     privileges:
       - *p010 # LISTA_UTREDNINGAR
+      - *p030 # VISA_UTREDNING
 
 # Legitimerade yrkesroller
 titles:

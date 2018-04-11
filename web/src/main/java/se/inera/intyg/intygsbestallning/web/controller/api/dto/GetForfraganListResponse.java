@@ -16,11 +16,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.service.exceptions;
+package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
-public class SRSServiceException extends ServiceException {
+import java.util.List;
 
-    public SRSServiceException(String msg) {
-        super(msg);
+public class GetForfraganListResponse {
+    private List<ForfraganListItem> forfragningar;
+
+    private GetForfraganListResponse() {
+
+    }
+
+    public GetForfraganListResponse(List<ForfraganListItem> forfragningar) {
+        this.forfragningar = forfragningar;
+    }
+
+    public List<ForfraganListItem> getForfragningar() {
+        return forfragningar;
+    }
+
+    public void setForfragningar(List<ForfraganListItem> forfragningar) {
+        this.forfragningar = forfragningar;
     }
 }

@@ -58,8 +58,8 @@ public class UtredningBootstrapBean {
     private void addUtredning(Resource res) {
 
         try {
-            Utredning fragaSvar = new CustomObjectMapper().readValue(res.getInputStream(), Utredning.class);
-            utredningRepository.save(fragaSvar);
+            Utredning utredning = new CustomObjectMapper().readValue(res.getInputStream(), Utredning.class);
+            utredningRepository.save(utredning);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

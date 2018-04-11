@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import se.inera.intyg.intygsbestallning.persistence.model.Forfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 
 /**
@@ -31,5 +32,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 public interface UtredningRepositoryCustom {
     List<Utredning> findByVardgivareHsaId(String vardgivareHsaId);
 
-    List<Utredning> findForfragningarForVardenhetHsaId(String vardenhetHsaId);
+    List<Forfragan> findForfragningarForVardenhetHsaId(String vardenhetHsaId);
+
+    Forfragan findForfraganByIdAndVardenhet(Long forfraganId, String vardenhetHsaId);
 }

@@ -88,6 +88,7 @@ public class UtredningRepositoryTest {
         Forfragan forfragan = buildForfragan();
         readUtredning.getForfraganList().add(forfragan);
         readUtredning = utredningRepository.save(readUtredning);
+        logJson(readUtredning);
 
         // Assert that the updated readUtredning contains the Forfragan
         assertEquals(1, readUtredning.getForfraganList().size());

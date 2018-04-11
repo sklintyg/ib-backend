@@ -30,15 +30,15 @@ import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningListResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganListResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganResponse;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/utredning")
-public class UtredningController {
+@RequestMapping("/api/forfragan")
+public class ForfraganController {
 
     @Autowired
     private UserService userService;
@@ -49,19 +49,22 @@ public class UtredningController {
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetUtredningListResponse> getAllUtredningarForUser() {
+    public ResponseEntity<GetForfraganListResponse> getAllForfragningarForUser() {
         IbUser user = userService.getUser();
-        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_UTREDNINGAR).orThrow();
 
-        // Do a SAMORDNARE search...
-        List<UtredningListItem> utredningar = utredningService.findUtredningarByVardgivareHsaId(user.getCurrentlyLoggedInAt().getId());
-        return ResponseEntity.ok(new GetUtredningListResponse(utredningar));
+        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_FORFRAGNINGAR).orThrow();
+
+        // Utredningar där vårdenheten har en förfrågan.
+        List<ForfraganListItem> forfragningar = utredningService.findForfragningarForVardenhetHsaId(user.getCurrentlyLoggedInAt().getId());
+        return ResponseEntity.ok(new GetForfraganListResponse(forfragningar));
     }
 
-    @RequestMapping(value = "/{utredningId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetUtredningResponse> getUtredning(@PathVariable("utredningId") String utredningId) {
+    @RequestMapping(value = "/{forfraganId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GetForfraganResponse> getForfragan(@PathVariable("forfraganId") Long forfraganId) {
         IbUser user = userService.getUser();
-        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_VISA_UTREDNING).orThrow();
-        return ResponseEntity.ok(utredningService.getUtredning(utredningId, user.getCurrentlyLoggedInAt().getId()));
+        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_VISA_FORFRAGAN).orThrow();
+
+        GetForfraganResponse forfragan = utredningService.getForfragan(forfraganId, user.getCurrentlyLoggedInAt().getId());
+        return ResponseEntity.ok(forfragan);
     }
 }
