@@ -18,8 +18,18 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
+
+import org.springframework.transaction.annotation.Transactional;
+
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 
-public interface UtredningRepository extends JpaRepository<Utredning, String>, UtredningRepositoryCustom {
+/**
+ * Created by eriklupander on 2015-08-05.
+ */
+@Transactional(value = "transactionManager", readOnly = false)
+public interface UtredningRepositoryCustom {
+    List<Utredning> findByVardgivareHsaId(String vardgivareHsaId);
+
+    List<Utredning> findForfragningarForVardenhetHsaId(String vardenhetHsaId);
 }

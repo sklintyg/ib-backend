@@ -20,12 +20,15 @@ package se.inera.intyg.intygsbestallning.persistence.model;
 
 import org.hibernate.annotations.Type;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -35,7 +38,7 @@ public class Utredning {
 
     @Id
     @Column(name = "UTREDNING_ID")
-    private String forfraganId;
+    private String utredningId;
 
     @Column(name = "UTREDNINGS_TYP")
     private String utredningsTyp;
@@ -51,8 +54,14 @@ public class Utredning {
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime besvarasSenastDatum;
 
-    @Column(name = "INVANARE_PERSON_ID")
-    private String invanarePersonId;
+    @Column(name = "INVANARE_POSTORT")
+    private String invanarePostort;
+
+    @Column(name = "INVANARE_SPECIALBEHOV", nullable = true)
+    private String invanareSpecialbehov;
+
+    @OneToMany
+    private List<TidigareUtredning> invanareTidigareUtredning;
 
     @Column(name = "HANDLAGGARE_NAMN")
     private String handlaggareNamn;
@@ -69,19 +78,24 @@ public class Utredning {
     @Column(name = "SPRAK_TOLK")
     private String sprakTolk;
 
-    @OneToMany
-    private List<Comment> kommentarer;
+    @Column(name = "KOMMENTAR")
+    private String kommentar;
 
-    // Gör om till enum
-    @Column(name = "STATUS")
-    private String status;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "utredningId")
+    private List<Forfragan> forfraganList = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "utredningId")
+    private List<Handelse> handelseList = new ArrayList<>();
+
+    @OneToOne(mappedBy = "utredning", cascade = CascadeType.ALL)
+    private Bestallning bestallning;
 
     public String getUtredningId() {
-        return forfraganId;
+        return utredningId;
     }
 
-    public void setUtredningId(String forfraganId) {
-        this.forfraganId = forfraganId;
+    public void setUtredningId(String utredningId) {
+        this.utredningId = utredningId;
     }
 
     public String getUtredningsTyp() {
@@ -116,12 +130,28 @@ public class Utredning {
         this.besvarasSenastDatum = besvarasSenastDatum;
     }
 
-    public String getInvanarePersonId() {
-        return invanarePersonId;
+    public String getInvanarePostort() {
+        return invanarePostort;
     }
 
-    public void setInvanarePersonId(String invanarePersonId) {
-        this.invanarePersonId = invanarePersonId;
+    public void setInvanarePostort(String invanarePostort) {
+        this.invanarePostort = invanarePostort;
+    }
+
+    public String getInvanareSpecialbehov() {
+        return invanareSpecialbehov;
+    }
+
+    public void setInvanareSpecialbehov(String invanareSpecialbehov) {
+        this.invanareSpecialbehov = invanareSpecialbehov;
+    }
+
+    public List<TidigareUtredning> getInvanareTidigareUtredning() {
+        return invanareTidigareUtredning;
+    }
+
+    public void setInvanareTidigareUtredning(List<TidigareUtredning> invanareTidigareUtredning) {
+        this.invanareTidigareUtredning = invanareTidigareUtredning;
     }
 
     public String getHandlaggareNamn() {
@@ -164,20 +194,36 @@ public class Utredning {
         this.sprakTolk = sprakTolk;
     }
 
-    public List<Comment> getKommentarer() {
-        return kommentarer;
+    public String getKommentar() {
+        return kommentar;
     }
 
-    public void setKommentarer(List<Comment> kommentarer) {
-        this.kommentarer = kommentarer;
+    public void setKommentar(String kommentar) {
+        this.kommentar = kommentar;
     }
 
-    public String getStatus() {
-        return status;
+    public List<Forfragan> getForfraganList() {
+        return forfraganList;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setForfraganList(List<Forfragan> forfraganList) {
+        this.forfraganList = forfraganList;
+    }
+
+    public List<Handelse> getHandelseList() {
+        return handelseList;
+    }
+
+    public void setHandelseList(List<Handelse> handelseList) {
+        this.handelseList = handelseList;
+    }
+
+    public Bestallning getBestallning() {
+        return bestallning;
+    }
+
+    public void setBestallning(Bestallning bestallning) {
+        this.bestallning = bestallning;
     }
 
     @Override
@@ -190,11 +236,11 @@ public class Utredning {
         }
 
         Utredning forfragan = (Utredning) o;
-        return Objects.equals(forfraganId, forfragan.forfraganId);
+        return Objects.equals(utredningId, forfragan.utredningId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(forfraganId);
+        return Objects.hash(utredningId);
     }
 }

@@ -19,17 +19,17 @@
 
 angular
     .module('ibApp')
-    .run(function($log, $rootScope, $state, $window, messageService, dynamicLinkService, UserProxy,
-        UserModel, USER_DATA, LINKS, $uibModalStack, $animate) {
-    'use strict';
+    .run(function ($log, $rootScope, $state, $window, messageService, dynamicLinkService, UserProxy, UserModel, USER_DATA,
+                   LINKS, $uibModalStack, $animate) {
+        'use strict';
 
         // For testability
-        $window.disableAnimations = function() {
+        $window.disableAnimations = function () {
             $animate.enabled(false);
         };
 
         // Always scroll to top
-        $rootScope.$on('$stateChangeSuccess', function() {
+        $rootScope.$on('$stateChangeSuccess', function () {
             $('html, body').animate({
                 scrollTop: 0
             }, 200);
@@ -52,7 +52,7 @@ angular
 
 
         //Configure app wide routing rules
-        $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState/*, fromParams*/) {
+        $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState/*, fromParams*/) {
 
             //Close any open dialogs on state change
             $uibModalStack.dismissAll();
@@ -70,7 +70,8 @@ angular
                 _redirect($state, toState.name, event, 'app.selectunit', {}, {
                     location: false
                 });
-            } if (toState.data && angular.isFunction(toState.data.rule)) {
+            }
+            if (toState.data && angular.isFunction(toState.data.rule)) {
                 var result = toState.data.rule(fromState, toState, UserModel);
                 if (result && result.to) {
                     _redirect($state, toState.name, event, result.to, result.params, result.options);
@@ -78,13 +79,13 @@ angular
             }
         });
 
-        function _redirect($state,  originalTo, event, to, params , options) {
+        function _redirect($state, originalTo, event, to, params, options) {
             $log.debug('Overriding ' + originalTo + ' --> ' + to);
             event.preventDefault();
             $state.go(to, params, options);
         }
 
-        $rootScope.$on('$stateChangeError', function(event, toState/*, toParams, fromState, fromParams, error*/) {
+        $rootScope.$on('$stateChangeError', function (event, toState/*, toParams, fromState, fromParams, error*/) {
             $log.log('$stateChangeError');
             $log.log(toState);
         });

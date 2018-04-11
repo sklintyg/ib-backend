@@ -55,15 +55,7 @@ public class UtredningController {
     @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetUtredningListResponse> getAllUtredningarForUser() {
         IbUser user = userService.getUser();
-
-
-
-//        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-//                .features(se.inera.intyg.infra.security.common.model.AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-//                .privilege(se.inera.intyg.infra.security.common.model.AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-//                .orThrow();
-
-
+        
         // String currentHsaId = user.getCurrentlyLoggedInAt().getId();
         Role currentRole = user.getCurrentRole();
 
@@ -71,15 +63,20 @@ public class UtredningController {
         if (currentRole.getName().equals(AuthoritiesConstants.ROLE_FMU_VARDADMIN)) {
             authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_FORFRAGNINGAR).orThrow();
 
+            // Utredningar där vårdenheten har en förfrågan. Transformera hur?
+            List<Utredning> utredningar = utredningRepository.findForfragningarForVardenhetHsaId(user.getCurrentlyLoggedInAt().getId());
+            List<UtredningListItem> uliList = utredningar.stream().map(u -> convert(u)).collect(Collectors.toList());
+            return ResponseEntity.ok(new GetUtredningListResponse(uliList));
+
             // Do a VARDADMIN search for the current VÅRDENHET HSA ID for Utredningar...
         } else if (currentRole.getName().equals(AuthoritiesConstants.ROLE_FMU_SAMORDNARE)) {
             authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_UTREDNINGAR).orThrow();
             // Do a SAMORDNARE search...
+            List<Utredning> utredningar = utredningRepository.findByVardgivareHsaId(user.getCurrentlyLoggedInAt().getId());
+            List<UtredningListItem> uliList = utredningar.stream().map(u -> convert(u)).collect(Collectors.toList());
+            return ResponseEntity.ok(new GetUtredningListResponse(uliList));
         }
-
-        List<Utredning> all = utredningRepository.findAll();
-        List<UtredningListItem> listItems = all.stream().map(u -> convert(u)).collect(Collectors.toList());
-        return ResponseEntity.ok(new GetUtredningListResponse(listItems));
+        throw new IllegalStateException("Shouln't be here...");
     }
 
     @RequestMapping(value = "/{utredningId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -98,8 +95,6 @@ public class UtredningController {
         gur.setUtredningsTyp(u.getUtredningsTyp());
         gur.setBesvarasSenastDatum(u.getBesvarasSenastDatum().format(DateTimeFormatter.BASIC_ISO_DATE));
         gur.setInkomDatum(u.getInkomDatum().format(DateTimeFormatter.BASIC_ISO_DATE));
-        gur.setInvanarePersonId(u.getInvanarePersonId());
-        gur.setStatus(u.getStatus());
         gur.setVardgivareHsaId(u.getVardgivareHsaId());
 
         gur.setHandlaggareNamn(u.getHandlaggareNamn());
@@ -116,7 +111,6 @@ public class UtredningController {
         uli.setUtredningsId(u.getUtredningId());
         uli.setUtredningsTyp(u.getUtredningsTyp());
         uli.setVardgivareNamn(u.getVardgivareHsaId() + "-namnet");
-        uli.setStatus(u.getStatus());
         uli.setBesvarasSenastDatum(u.getBesvarasSenastDatum().format(DateTimeFormatter.BASIC_ISO_DATE));
         uli.setInkomDatum(u.getInkomDatum().format(DateTimeFormatter.BASIC_ISO_DATE));
         return uli;

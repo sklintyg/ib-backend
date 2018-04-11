@@ -20,95 +20,264 @@
 
 -->
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd"
-    logicalFilePath="classpath:changelog/changelog.xml">
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd"
+                   logicalFilePath="classpath:changelog/changelog.xml">
 
-  <changeSet id="1" author="el">
-    <!-- initial creation of tables -->
+    <changeSet id="1" author="el">
+        <!-- initial creation of tables -->
 
-    <createTable tableName="ANVANDARE_PREFERENCE">
-      <column name="INTERNREFERENS" type="bigint" defaultValue="0">
-        <constraints primaryKey="true" nullable="false"/>
-      </column>
-      <column name="HSA_ID" type="varchar(255)">
-        <constraints nullable="false"/>
-      </column>
-      <column name="PREF_KEY" type="varchar(255)">
-        <constraints nullable="false"/>
-      </column>
-      <column name="PREF_VALUE" type="varchar(4096)">
-        <constraints nullable="true"/>
-      </column>
-    </createTable>
+        <createTable tableName="ANVANDARE_PREFERENCE">
+            <column name="INTERNREFERENS" type="bigint" defaultValue="0">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="HSA_ID" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PREF_KEY" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PREF_VALUE" type="varchar(4096)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
 
-    <!-- Add auto incremented id column to table -->
-    <addAutoIncrement columnDataType="bigint"
-        columnName="INTERNREFERENS" incrementBy="1" startWith="1"
-        tableName="ANVANDARE_PREFERENCE"/>
+        <!-- Add auto incremented id column to table -->
+        <addAutoIncrement columnDataType="bigint"
+                          columnName="INTERNREFERENS" incrementBy="1" startWith="1"
+                          tableName="ANVANDARE_PREFERENCE"/>
 
-    <addUniqueConstraint
-        columnNames="HSA_ID, PREF_KEY"
-        constraintName="ANVANDARE_PREFERENCE_UNIQUE_CONST"
-        tableName="ANVANDARE_PREFERENCE"/>
-  </changeSet>
+        <addUniqueConstraint
+                columnNames="HSA_ID, PREF_KEY"
+                constraintName="ANVANDARE_PREFERENCE_UNIQUE_CONST"
+                tableName="ANVANDARE_PREFERENCE"/>
+    </changeSet>
 
-  <changeSet id="2" author="el">
-    <createIndex indexName="IDX_ANV_PREF_HSA_ID"
-        tableName="ANVANDARE_PREFERENCE" unique="false">
-      <column name="HSA_ID"/>
-    </createIndex>
-  </changeSet>
+    <changeSet id="2" author="el">
+        <createIndex indexName="IDX_ANV_PREF_HSA_ID"
+                     tableName="ANVANDARE_PREFERENCE" unique="false">
+            <column name="HSA_ID"/>
+        </createIndex>
+    </changeSet>
 
 
-  <changeSet id="3" author="el">
-    <createTable tableName="UTREDNING">
-      <column name="UTREDNING_ID" type="varchar(32)">
-        <constraints primaryKey="true" nullable="false"/>
-      </column>
+    <changeSet id="3" author="el">
+        <createTable tableName="UTREDNING">
+            <column name="UTREDNING_ID" type="varchar(32)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
 
-      <column name="UTREDNINGS_TYP" type="varchar(16)">
-        <constraints nullable="false"/>
-      </column>
+            <column name="UTREDNINGS_TYP" type="varchar(16)">
+                <constraints nullable="false"/>
+            </column>
 
-      <column name="VARDGIVARE_HSA_ID" type="varchar(255)">
-        <constraints nullable="false"/>
-      </column>
+            <column name="VARDGIVARE_HSA_ID" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
 
-      <column name="INKOM_DATUM" type="datetime">
-        <constraints nullable="false"/>
-      </column>
-      <column name="BESVARAS_SENAST_DATUM" type="datetime">
-        <constraints nullable="true"/>
-      </column>
+            <column name="INKOM_DATUM" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="BESVARAS_SENAST_DATUM" type="datetime">
+                <constraints nullable="true"/>
+            </column>
 
-      <column name="INVANARE_PERSON_ID" type="varchar(16)">
-        <constraints nullable="false"/>
-      </column>
+            <column name="INVANARE_POSTORT" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="INVANARE_SPECIALBEHOV" type="text">
+                <constraints nullable="true"/>
+            </column>
 
-      <column name="HANDLAGGARE_NAMN" type="varchar(255)">
-        <constraints nullable="false"/>
-      </column>
-      <column name="HANDLAGGARE_TELEFONNUMMER" type="varchar(255)">
-        <constraints nullable="false"/>
-      </column>
-      <column name="HANDLAGGARE_EPOST" type="varchar(255)">
-        <constraints nullable="false"/>
-      </column>
+            <column name="HANDLAGGARE_NAMN" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="HANDLAGGARE_TELEFONNUMMER" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="HANDLAGGARE_EPOST" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
 
-      <column name="BEHOV_TOLK" type="boolean">
-        <constraints nullable="false"/>
-      </column>
+            <column name="BEHOV_TOLK" type="boolean">
+                <constraints nullable="false"/>
+            </column>
 
-      <column name="SPRAK_TOLK" type="varchar(255)">
-        <constraints nullable="true"/>
-      </column>
+            <column name="SPRAK_TOLK" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
 
-      <column name="STATUS" type="varchar(255)">
-        <constraints nullable="true"/>
-      </column>
+            <column name="KOMMENTAR" type="text">
+                <constraints nullable="true"/>
+            </column>
 
-    </createTable>
-  </changeSet>
+        </createTable>
+
+
+        <createTable tableName="FORFRAGAN">
+            <column name="INTERNREFERENS" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="UTREDNING_ID" type="varchar(32)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="VARDENHET_HSA_ID" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="TILLDELAD_DATUM" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="BESVARAS_SENAST_DATUM" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="STATUS" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="KOMMENTAR" type="text">
+                <constraints nullable="true"/>
+            </column>
+
+        </createTable>
+
+        <addAutoIncrement columnDataType="bigint"
+                          columnName="INTERNREFERENS" incrementBy="1" startWith="1"
+                          tableName="FORFRAGAN"/>
+
+        <addForeignKeyConstraint baseColumnNames="UTREDNING_ID"
+                                 baseTableName="FORFRAGAN" constraintName="FORFRAGAN_UTREDNING_FK"
+                                 referencedColumnNames="UTREDNING_ID" referencedTableName="UTREDNING"/>
+
+        <createTable tableName="FORFRAGAN_SVAR">
+            <column name="INTERNREFERENS" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <!--
+            <column name="FORFRAGAN_ID" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            -->
+
+            <column name="SVAR_TYP" type="varchar(32)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="UTFORARE_TYP" type="varchar(32)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="UTFORARE_NAMN" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="UTFORARE_ADRESS" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="UTFORARE_POSTORT" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="UTFORARE_POSTNUMMER" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="UTFORARE_TELEFONNUMMER" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="UTFORARE_EPOST" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="KOMMENTAR" type="text">
+                <constraints nullable="true"/>
+            </column>
+
+        </createTable>
+
+        <addAutoIncrement columnDataType="bigint"
+                          columnName="INTERNREFERENS" incrementBy="1" startWith="1"
+                          tableName="FORFRAGAN_SVAR"/>
+
+        <createTable tableName="HANDELSE">
+            <column name="INTERNREFERENS" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="UTREDNING_ID" type="varchar(32)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="HANDELSE_TYP" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="SKAPAD" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="ANVANDARE" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="HANDELSE_TEXT" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="KOMMENTAR" type="text">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <addAutoIncrement columnDataType="bigint"
+                          columnName="INTERNREFERENS" incrementBy="1" startWith="1"
+                          tableName="HANDELSE"/>
+
+
+        <createTable tableName="BESTALLNING">
+            <column name="INTERNREFERENS" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="UTREDNING_ID" type="varchar(32)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="INVANARE_PERSON_ID" type="varchar(32)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="TILLDELAD_VARDENHET_HSA_ID" type="varchar(64)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="INTYG_KLART_SENAST" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="ORDER_DATUM" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="SYFTE" type="text">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="PLANERADE_AKTIVITETER" type="text">
+                <constraints nullable="true"/>
+            </column>
+            <column name="KOMMENTAR" type="text">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <addAutoIncrement columnDataType="bigint"
+                          columnName="INTERNREFERENS" incrementBy="1" startWith="1"
+                          tableName="BESTALLNING"/>
+    </changeSet>
 
 </databaseChangeLog>

@@ -237,6 +237,16 @@ public class IbUser extends IntygUser implements Serializable {
         return new ArrayList<>();
     }
 
+    /**
+     * IB users are never lakare, override this for compatibility reasons.
+     *
+     * @return false, always false...
+     */
+    @Override
+    public boolean isLakare() {
+        return false;
+    }
+
     // Do not expose.
     public void setPossibleRoles(List<Role> possibleRoles) {
         this.possibleRoles = possibleRoles;

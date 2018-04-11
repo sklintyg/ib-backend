@@ -16,10 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.persistence.repository;
+package se.inera.intyg.intygsbestallning.persistence.model;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+public enum SvarTyp {
 
-public interface UtredningRepository extends JpaRepository<Utredning, String>, UtredningRepositoryCustom {
+    ACCEPTERA, AVBOJ
+
 }
