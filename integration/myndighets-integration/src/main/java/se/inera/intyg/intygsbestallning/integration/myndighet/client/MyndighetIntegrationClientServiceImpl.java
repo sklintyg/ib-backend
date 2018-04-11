@@ -24,6 +24,10 @@ import org.springframework.stereotype.Service;
 import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.RespondToPerformerRequestResponseType;
 import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.RespondToPerformerRequestType;
 import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.rivtabp21.RespondToPerformerRequestResponderInterface;
+import se.riv.intygsbestallning.certificate.order.updateassessment.v1.UpdateAssessmentResponseType;
+import se.riv.intygsbestallning.certificate.order.updateassessment.v1.UpdateAssessmentType;
+import se.riv.intygsbestallning.certificate.order.updateassessment.v1.rivtabp21.UpdateAssessmentResponderInterface;
+import se.riv.intygsbestallning.certificate.order.v1.CVType;
 import se.riv.intygsbestallning.certificate.order.v1.IIType;
 
 @Service
@@ -31,6 +35,9 @@ public class MyndighetIntegrationClientServiceImpl implements MyndighetIntegrati
 
     @Autowired
     private RespondToPerformerRequestResponderInterface respondToPerformerRequestResponder;
+
+    @Autowired
+    private UpdateAssessmentResponderInterface updateAssessmentResponderInterface;
 
     @Override
     public RespondToPerformerRequestResponseType respondToPerformerRequest(String assessmentId) {
@@ -42,4 +49,19 @@ public class MyndighetIntegrationClientServiceImpl implements MyndighetIntegrati
 
         return respondToPerformerRequestResponder.respondToPerformerRequest("ID?", request);
     }
+
+    @Override
+    public UpdateAssessmentResponseType updateAssessment(String assessmentId, String certificateType) {
+        UpdateAssessmentType request = new UpdateAssessmentType();
+        IIType assID = new IIType();
+        assID.setExtension(assessmentId);
+        request.setAssessmentId(assID);
+
+        CVType certType = new CVType();
+        certType.setCode(certificateType);
+        request.setCertificateType(certType);
+
+        return updateAssessmentResponderInterface.updateAssessment("ID?", request);
+    }
+
 }

@@ -39,6 +39,9 @@ public class MyndighetIntegrationStubConfiguration {
     private RespondToPerformerRequestStub respondToPerformerRequestStub;
 
     @Autowired
+    private UpdateAssessmentStub updateAssessmentStub;
+
+    @Autowired
     private Bus bus;
 
     @Bean
@@ -46,6 +49,14 @@ public class MyndighetIntegrationStubConfiguration {
         Object implementor = respondToPerformerRequestStub;
         EndpointImpl endpoint = new EndpointImpl(bus, implementor);
         endpoint.publish("/respond-to-performer-request");
+        return endpoint;
+    }
+
+    @Bean
+    public EndpointImpl updateAssessment() {
+        Object implementor = updateAssessmentStub;
+        EndpointImpl endpoint = new EndpointImpl(bus, implementor);
+        endpoint.publish("/update-assessment");
         return endpoint;
     }
 

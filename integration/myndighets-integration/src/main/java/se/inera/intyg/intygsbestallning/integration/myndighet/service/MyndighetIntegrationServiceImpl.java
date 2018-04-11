@@ -33,4 +33,9 @@ public class MyndighetIntegrationServiceImpl implements MyndighetIntegrationServ
         // Do something meaningful here
         clientService.respondToPerformerRequest(id);
     }
+
+    @Override
+    public void updateAssessment(String id, String certificateType) {
+        clientService.updateAssessment(id, certificateType);
+    }
 }

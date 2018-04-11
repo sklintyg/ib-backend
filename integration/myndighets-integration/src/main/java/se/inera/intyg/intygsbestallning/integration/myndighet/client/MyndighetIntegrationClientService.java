@@ -19,7 +19,10 @@
 package se.inera.intyg.intygsbestallning.integration.myndighet.client;
 
 import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.RespondToPerformerRequestResponseType;
+import se.riv.intygsbestallning.certificate.order.updateassessment.v1.UpdateAssessmentResponseType;
 
 public interface MyndighetIntegrationClientService {
     RespondToPerformerRequestResponseType respondToPerformerRequest(String assessmentId);
+
+    UpdateAssessmentResponseType updateAssessment(String assessmentId, String certificateType);
 }
