@@ -29,6 +29,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.context.support.ServletContextAttributeExporter;
 import se.inera.intyg.intygsbestallning.service.monitoring.HealthCheckService;
 import se.inera.intyg.intygsbestallning.service.monitoring.InternalPingForConfigurationResponderImpl;
+import se.inera.intyg.intygsbestallning.web.responder.OrderMedicalAssessmentResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.ReportCertificateReceivalResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.ReportContinuationDecisionResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.ReportSupplementReceivalResponderImpl;
@@ -71,6 +72,8 @@ public class ServiceConfig {
     private ReportCertificateReceivalResponderImpl reportCertificateReceivalResponder;
     @Autowired
     private ReportContinuationDecisionResponderImpl reportContinuationDecisionResponder;
+    @Autowired
+    private OrderMedicalAssessmentResponderImpl orderMedicalAssessmentResponder;
 
     @Bean
     public ServletContextAttributeExporter contextAttributes() {
@@ -127,6 +130,13 @@ public class ServiceConfig {
     public EndpointImpl reportContinuationDecisionResponderEndpoint() {
         EndpointImpl endpoint = new EndpointImpl(bus, reportContinuationDecisionResponder);
         endpoint.publish("/report-continuation-decision-responder");
+        return endpoint;
+    }
+
+    @Bean
+    public EndpointImpl orderMedicalAssessmentResponderEndpoint() {
+        EndpointImpl endpoint = new EndpointImpl(bus, orderMedicalAssessmentResponder);
+        endpoint.publish("/order-medical-assessment-responder");
         return endpoint;
     }
 }
