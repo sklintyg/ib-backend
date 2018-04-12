@@ -15,7 +15,7 @@ dependencies {
     compile "org.springframework:spring-webmvc:${springContextVersion}"
 
     testCompile "junit:junit:${junitVersion}"
-    testCompile "org.mockito:mockito-all:${mockitoAllVersion}"
+    testCompile "org.mockito:mockito-core:${mockitoAllVersion}"
     testCompile "org.aspectj:aspectjweaver:${aspectjWeaverVersion}"
     testCompile "org.springframework:spring-test:${springContextVersion}"
 }

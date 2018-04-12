@@ -18,25 +18,22 @@
  */
 package se.inera.intyg.intygsbestallning.web.filters;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-
-/**
- * Created by marced on 10/03/16.
- */
 @RunWith(MockitoJUnitRunner.class)
 public class SessionTimeoutFilterTest {
     private static final String TEST_URI = "/test";
@@ -45,16 +42,16 @@ public class SessionTimeoutFilterTest {
     private static final int HALF_AN_HOUR = 1800;
 
     @Mock
-    HttpServletRequest request;
+    private HttpServletRequest request;
 
     @Mock
-    HttpServletResponse response;
+    private HttpServletResponse response;
 
     @Mock
-    FilterChain filterChain;
+    private FilterChain filterChain;
 
     @Mock
-    HttpSession session;
+    private HttpSession session;
 
     @Test
     public void testDoFilterInternalWillInvalidateAnExpiredSession() throws Exception {
@@ -95,7 +92,7 @@ public class SessionTimeoutFilterTest {
         when(request.getSession(false)).thenReturn(session);
         when(request.getRequestURI()).thenReturn(reportedRequestURI);
         when(session.getAttribute(eq(SessionTimeoutFilter.LAST_ACCESS_TIME_ATTRIBUTE_NAME)))
-                .thenReturn(new Long(System.currentTimeMillis() - FIVE_SECONDS_AGO));
+                .thenReturn(System.currentTimeMillis() - FIVE_SECONDS_AGO);
         when(session.getMaxInactiveInterval()).thenReturn(sessionLengthInSeconds);
 
     }

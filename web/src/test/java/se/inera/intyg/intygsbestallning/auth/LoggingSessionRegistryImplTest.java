@@ -18,18 +18,18 @@
  */
 package se.inera.intyg.intygsbestallning.auth;
 
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.intygsbestallning.service.monitoring.MonitoringLogService;
 
 import java.security.Principal;
-
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Created by marced on 13/04/16.
@@ -44,7 +44,7 @@ public class LoggingSessionRegistryImplTest {
     @InjectMocks
     private LoggingSessionRegistryImpl testee;
 
-    IbUser user;
+    private IbUser user;
 
     private Principal customPrincipal = (Principal) () -> "I'm not a real Principal";
 

@@ -25,7 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opensaml.DefaultBootstrap;
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.NameID;
@@ -81,7 +81,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.AdditionalMatchers.or;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 
 /**
@@ -147,12 +149,12 @@ public class IbUserDetailsServiceTest {
 
         ReflectionTestUtils.setField(userDetailsService, "userOrigin", Optional.empty());
 
-        when(hsaPersonService.getHsaPersonInfo(anyString())).thenReturn(Collections.emptyList());
-        when(userOrigin.resolveOrigin(request)).thenReturn(UserOriginType.NORMAL.name());
+        when(hsaPersonService.getHsaPersonInfo(or(isNull(), anyString()))).thenReturn(Collections.emptyList());
+//        when(userOrigin.resolveOrigin(request)).thenReturn(UserOriginType.NORMAL.name());
         userDetailsService.setCommonAuthoritiesResolver(AUTHORITIES_RESOLVER);
 
         AnvandarPreference anvandarPreference = new AnvandarPreference(PERSONAL_HSAID, "user_pdl_consent_given", "true");
-        when(anvandarPreferenceRepository.findByHsaIdAndKey(PERSONAL_HSAID, "user_pdl_consent_given")).thenReturn(anvandarPreference);
+//        when(anvandarPreferenceRepository.findByHsaIdAndKey(PERSONAL_HSAID, "user_pdl_consent_given")).thenReturn(anvandarPreference);
 
         when(hsaOrganizationsService.getVardgivareInfo("vg1")).thenReturn(new Vardgivare("vg1", "Vårdgivare 1"));
         when(hsaOrganizationsService.getVardgivareInfo("vg3")).thenReturn(new Vardgivare("vg3", "Vårdgivare 3"));
@@ -406,8 +408,8 @@ public class IbUserDetailsServiceTest {
     }
 
     private void setupCallToAuthorizedEnheterForHosPerson() {
-        when(hsaOrganizationsService.getAuthorizedEnheterForHosPerson(PERSONAL_HSAID))
-                .thenReturn(new UserAuthorizationInfo(new UserCredentials(), buildVardgivareList(), buildMiuPerCareUnitMap()));
+//        when(hsaOrganizationsService.getAuthorizedEnheterForHosPerson(PERSONAL_HSAID))
+//                .thenReturn(new UserAuthorizationInfo(new UserCredentials(), buildVardgivareList(), buildMiuPerCareUnitMap()));
     }
 
     private List<Vardgivare> buildVardgivareList() {

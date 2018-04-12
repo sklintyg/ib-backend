@@ -18,11 +18,16 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
@@ -31,14 +36,6 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetSessionStatusR
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
-
-/**
- * Created by marced on 09/03/16.
- */
 @RunWith(MockitoJUnitRunner.class)
 public class SessionStatusControllerTest {
 
