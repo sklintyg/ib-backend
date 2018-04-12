@@ -20,18 +20,24 @@ package se.inera.intyg.intygsbestallning.service.utredning;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Forfragan;
+import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtredning;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
+import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentType;
+import se.riv.intygsbestallning.certificate.order.v1.IIType;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +45,50 @@ public class UtredningServiceImpl implements UtredningService {
 
     @Autowired
     private UtredningRepository utredningRepository;
+
+    @Autowired
+    private HsaOrganizationsService hsaOrganizationsService;
+
+    @Override
+    public Utredning registerNewUtredning(RequestHealthcarePerformerForAssessmentType req) {
+
+        validateVardgivareExists(req);
+
+        Utredning u = new Utredning();
+
+        u.setUtredningId(UUID.randomUUID().toString());
+        u.setUtredningsTyp(req.getCertificateType().getCode());
+        u.setVardgivareHsaId(req.getCoordinatingCountyCouncilId().getExtension());
+        u.setInvanareTidigareUtredning(buildTidigareUtredningar(req.getCitizen().getEarlierAssessmentPerformer()));
+        u.setBesvarasSenastDatum(LocalDate.parse(req.getLastResponseDate(), DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay());
+        u.setBehovTolk(req.getInterpreterLanguage() != null && req.getInterpreterLanguage().getDisplayName() != null);
+        u.setSprakTolk(req.getInterpreterLanguage().getDisplayName());
+        u.setHandlaggareNamn(req.getAuthorityAdministrativeOfficial().getFullName());
+        u.setHandlaggareEpost(req.getAuthorityAdministrativeOfficial().getEmail());
+        u.setHandlaggareTelefonnummer(req.getAuthorityAdministrativeOfficial().getPhoneNumber());
+        u.setInvanarePostort(req.getCitizen().getPostalCity().getDisplayName());
+        u.setInvanareSpecialbehov(req.getCitizen().getSpecialNeeds());
+        u.setKommentar(req.getComment());
+
+        return utredningRepository.save(u);
+    }
+
+    private void validateVardgivareExists(RequestHealthcarePerformerForAssessmentType req) {
+        try {
+            hsaOrganizationsService.getVardgivareInfo(req.getCoordinatingCountyCouncilId().getExtension());
+        } catch (Exception e) {
+            throw new IbServiceException(IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
+                    "Could not verify coordinatingCountyCouncilId '" + req.getCoordinatingCountyCouncilId().getExtension() + "' with HSA");
+        }
+    }
+
+    private List<TidigareUtredning> buildTidigareUtredningar(List<IIType> earlierAssessmentPerformer) {
+        return earlierAssessmentPerformer.stream().map(ap -> {
+            TidigareUtredning tidigareUtredning = new TidigareUtredning();
+            tidigareUtredning.setTidigareUtredningId(ap.getExtension());
+            return tidigareUtredning;
+        }).collect(Collectors.toList());
+    }
 
     @Override
     public List<UtredningListItem> findUtredningarByVardgivareHsaId(String vardgivareHsaId) {

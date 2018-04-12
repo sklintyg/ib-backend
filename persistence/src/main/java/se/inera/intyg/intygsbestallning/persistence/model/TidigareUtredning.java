@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -29,8 +30,10 @@ public class TidigareUtredning {
 
     @Id
     @GeneratedValue
+    @Column(name = "INTERNREFERENS")
     private String internReferens;
 
+    @Column(name = "TIDIGARE_UTREDNING_ID")
     private String tidigareUtredningId;
 
     public String getInternReferens() {

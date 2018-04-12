@@ -278,6 +278,21 @@
         <addAutoIncrement columnDataType="bigint"
                           columnName="INTERNREFERENS" incrementBy="1" startWith="1"
                           tableName="BESTALLNING"/>
+
+        <createTable tableName="TIDIGARE_UTREDNING">
+            <column name="INTERNREFERENS" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="TIDIGARE_UTREDNING_ID" type="varchar(32)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addAutoIncrement columnDataType="bigint"
+                          columnName="INTERNREFERENS" incrementBy="1" startWith="1"
+                          tableName="TIDIGARE_UTREDNING"/>
+
     </changeSet>
 
 </databaseChangeLog>

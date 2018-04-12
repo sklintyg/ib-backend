@@ -60,8 +60,8 @@ public class Utredning {
     @Column(name = "INVANARE_SPECIALBEHOV", nullable = true)
     private String invanareSpecialbehov;
 
-    @OneToMany
-    private List<TidigareUtredning> invanareTidigareUtredning;
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<TidigareUtredning> invanareTidigareUtredning = new ArrayList<>();
 
     @Column(name = "HANDLAGGARE_NAMN")
     private String handlaggareNamn;

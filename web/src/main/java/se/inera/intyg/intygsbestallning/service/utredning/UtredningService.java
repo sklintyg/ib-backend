@@ -18,14 +18,19 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
+import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentType;
 
 import java.util.List;
 
 public interface UtredningService {
+
+    Utredning registerNewUtredning(RequestHealthcarePerformerForAssessmentType req);
+
     List<UtredningListItem> findUtredningarByVardgivareHsaId(String vardgivareHsaId);
 
     GetUtredningResponse getUtredning(String utredningId, String vardgivareHsaId);

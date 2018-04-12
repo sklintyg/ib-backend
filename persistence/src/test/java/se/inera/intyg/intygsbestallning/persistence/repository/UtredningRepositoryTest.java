@@ -37,15 +37,18 @@ import se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar;
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.HandelseTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.SvarTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtredning;
 import se.inera.intyg.intygsbestallning.persistence.model.UtforareTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 
 /**
@@ -59,8 +62,8 @@ public class UtredningRepositoryTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(UtredningRepositoryTest.class);
 
-    private static final String HSA_ID = "hsaId1";
-    public static final String ENHET_1 = "enhet-1";
+    private static final String VG_HSA_ID = "vg-1";
+    public static final String VE_HSA_ID = "enhet-1";
     public static final String VALUE_1 = "value1";
     public static final String VALUE_2 = "value2";
     public static final String KEY_2 = "key2";
@@ -74,6 +77,11 @@ public class UtredningRepositoryTest {
         // Create and save a base Utredning
         Utredning saved = buildUtredning();
 
+
+        TidigareUtredning tidigareUtredning = new TidigareUtredning();
+        tidigareUtredning.setTidigareUtredningId("tidigare-utredning-1");
+        saved.getInvanareTidigareUtredning().add(tidigareUtredning);
+
         Handelse skapad = buildHandelse();
         saved.getHandelseList().add(skapad);
         saved = utredningRepository.save(saved);
@@ -83,6 +91,7 @@ public class UtredningRepositoryTest {
         Utredning readUtredning = utredningRepository.findOne(saved.getUtredningId());
         assertEquals(saved, readUtredning);
         assertEquals(1, saved.getHandelseList().size());
+        assertEquals(1, saved.getInvanareTidigareUtredning().size());
 
         // Build a forfragan and add it to the Utredning. Call save.
         Forfragan forfragan = buildForfragan();
@@ -107,6 +116,74 @@ public class UtredningRepositoryTest {
         readUtredning.setBestallning(bestallning);
     }
 
+    @Test
+    public void testFindByVardgivareHsaId() {
+        Utredning utredning = buildUtredning();
+        utredningRepository.save(utredning);
+
+        List<Utredning> utredningar = utredningRepository.findByVardgivareHsaId(VG_HSA_ID);
+        assertEquals(1, utredningar.size());
+    }
+
+    @Test
+    public void testFindByVardgivareHsaIdUnknownId() {
+        Utredning utredning = buildUtredning();
+        utredningRepository.save(utredning);
+
+        List<Utredning> utredningar = utredningRepository.findByVardgivareHsaId("other-id");
+        assertEquals(0, utredningar.size());
+    }
+
+    @Test
+    public void testFindForfraganByVardenhetHsaId() {
+        Utredning utredning = buildUtredning();
+        utredning = utredningRepository.save(utredning);
+
+        // Add forfragan and persist.
+        Forfragan f = buildForfragan();
+        f.setUtredningId(utredning.getUtredningId());
+        utredning.getForfraganList().add(f);
+        utredningRepository.save(utredning);
+
+
+        List<Forfragan> forfragningar = utredningRepository.findForfragningarForVardenhetHsaId(VE_HSA_ID);
+        assertEquals(1, forfragningar.size());
+    }
+
+    @Test
+    public void testFindForfraganByIdAndVardenhet() {
+        Utredning utredning = buildUtredning();
+        utredning = utredningRepository.save(utredning);
+
+        // Add forfragan and persist.
+        Forfragan f = buildForfragan();
+        f.setUtredningId(utredning.getUtredningId());
+        utredning.getForfraganList().add(f);
+        utredning = utredningRepository.save(utredning);
+
+        Long forfraganId = utredning.getForfraganList().get(0).getInternreferens();
+
+        Forfragan forfragan = utredningRepository.findForfraganByIdAndVardenhet(forfraganId, VE_HSA_ID);
+        assertNotNull(forfragan);
+    }
+
+    @Test
+    public void testFindForfraganByIdAndNoneMatchingVardenhet() {
+        Utredning utredning = buildUtredning();
+        utredning = utredningRepository.save(utredning);
+
+        // Add forfragan and persist.
+        Forfragan f = buildForfragan();
+        f.setUtredningId(utredning.getUtredningId());
+        utredning.getForfraganList().add(f);
+        utredning = utredningRepository.save(utredning);
+
+        Long forfraganId = utredning.getForfraganList().get(0).getInternreferens();
+
+        Forfragan forfragan = utredningRepository.findForfraganByIdAndVardenhet(forfraganId, "other-id");
+        assertNull(forfragan);
+    }
+
     private void logJson(Utredning saved) {
         try {
             StringWriter sw = new StringWriter();
@@ -125,7 +202,7 @@ public class UtredningRepositoryTest {
         b.setKommentar("Kommentera inte mig");
         b.setPlaneradeAktiviteter("Gå på cirkus");
         b.setSyfte("Bli fin");
-        b.setTilldeladVardenhetHsaId(ENHET_1);
+        b.setTilldeladVardenhetHsaId(VE_HSA_ID);
         b.setOrderDatum(LocalDateTime.now());
         return b;
     }
@@ -148,7 +225,7 @@ public class UtredningRepositoryTest {
         utr.setBesvarasSenastDatum(LocalDateTime.now().plusDays(14));
 
         utr.setUtredningsTyp("AFS");
-        utr.setVardgivareHsaId(HSA_ID);
+        utr.setVardgivareHsaId(VG_HSA_ID);
 
         utr.setInvanarePostort("Stockholm");
         utr.setInvanareSpecialbehov("Gillar glass");
@@ -167,7 +244,7 @@ public class UtredningRepositoryTest {
         Forfragan ff = new Forfragan();
         ff.setBesvarasSenastDatum(LocalDateTime.now().plusDays(14));
         ff.setKommentar("Bered skyndsamt!");
-        ff.setVardenhetHsaId(ENHET_1);
+        ff.setVardenhetHsaId(VE_HSA_ID);
         ff.setStatus("Skapad");
         return ff;
     }
