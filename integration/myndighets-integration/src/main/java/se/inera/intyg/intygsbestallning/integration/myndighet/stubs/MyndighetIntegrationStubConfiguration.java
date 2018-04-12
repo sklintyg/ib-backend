@@ -42,22 +42,29 @@ public class MyndighetIntegrationStubConfiguration {
     private UpdateAssessmentStub updateAssessmentStub;
 
     @Autowired
+    private ReportCareContactInteractionStub reportCareContactInteractionStub;
+
+    @Autowired
     private Bus bus;
 
     @Bean
     public EndpointImpl respondToPerformerRequest() {
-        Object implementor = respondToPerformerRequestStub;
-        EndpointImpl endpoint = new EndpointImpl(bus, implementor);
+        EndpointImpl endpoint = new EndpointImpl(bus, respondToPerformerRequestStub);
         endpoint.publish("/respond-to-performer-request");
         return endpoint;
     }
 
     @Bean
     public EndpointImpl updateAssessment() {
-        Object implementor = updateAssessmentStub;
-        EndpointImpl endpoint = new EndpointImpl(bus, implementor);
+        EndpointImpl endpoint = new EndpointImpl(bus, updateAssessmentStub);
         endpoint.publish("/update-assessment");
         return endpoint;
     }
 
+    @Bean
+    public EndpointImpl reportCareContactInteractionStub() {
+        EndpointImpl endpoint = new EndpointImpl(bus, reportCareContactInteractionStub);
+        endpoint.publish("/report-care-contact-interaction-stub");
+        return endpoint;
+    }
 }
