@@ -73,7 +73,7 @@ public class UtredningRepositoryTest {
 
 
     @Test
-    public void testFindOne() {
+    public void testBuildPersistAndReadFullGraph() {
         // Create and save a base Utredning
         Utredning saved = buildUtredning();
 
@@ -114,6 +114,8 @@ public class UtredningRepositoryTest {
         // Lägg beställning
         Bestallning bestallning = buildBestallning();
         readUtredning.setBestallning(bestallning);
+        readUtredning = utredningRepository.save(readUtredning);
+        assertNotNull(readUtredning.getBestallning());
     }
 
     @Test
@@ -140,15 +142,13 @@ public class UtredningRepositoryTest {
         utredning = utredningRepository.save(utredning);
 
         // Add forfragan and persist.
-        Forfragan f = buildForfragan();
-        f.setUtredningId(utredning.getUtredningId());
-        utredning.getForfraganList().add(f);
-        utredningRepository.save(utredning);
+        updateUtredningWithForfragan(utredning);
 
 
         List<Forfragan> forfragningar = utredningRepository.findForfragningarForVardenhetHsaId(VE_HSA_ID);
         assertEquals(1, forfragningar.size());
     }
+
 
     @Test
     public void testFindForfraganByIdAndVardenhet() {
@@ -156,10 +156,7 @@ public class UtredningRepositoryTest {
         utredning = utredningRepository.save(utredning);
 
         // Add forfragan and persist.
-        Forfragan f = buildForfragan();
-        f.setUtredningId(utredning.getUtredningId());
-        utredning.getForfraganList().add(f);
-        utredning = utredningRepository.save(utredning);
+        updateUtredningWithForfragan(utredning);
 
         Long forfraganId = utredning.getForfraganList().get(0).getInternreferens();
 
@@ -173,10 +170,7 @@ public class UtredningRepositoryTest {
         utredning = utredningRepository.save(utredning);
 
         // Add forfragan and persist.
-        Forfragan f = buildForfragan();
-        f.setUtredningId(utredning.getUtredningId());
-        utredning.getForfraganList().add(f);
-        utredning = utredningRepository.save(utredning);
+        updateUtredningWithForfragan(utredning);
 
         Long forfraganId = utredning.getForfraganList().get(0).getInternreferens();
 
@@ -193,6 +187,13 @@ public class UtredningRepositoryTest {
         } catch (IOException e) {
 
         }
+    }
+
+    private void updateUtredningWithForfragan(Utredning utredning) {
+        Forfragan f = buildForfragan();
+        f.setUtredningId(utredning.getUtredningId());
+        utredning.getForfraganList().add(f);
+        utredningRepository.save(utredning);
     }
 
     private Bestallning buildBestallning() {
