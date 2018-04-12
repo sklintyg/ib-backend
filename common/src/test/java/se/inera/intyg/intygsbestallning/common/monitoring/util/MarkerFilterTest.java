@@ -25,7 +25,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
 
@@ -41,7 +41,7 @@ public class MarkerFilterTest {
 
     private static final String MARKER_NAME = "TEST_MARKER";
 
-    MarkerFilter markerFilter;
+    private MarkerFilter markerFilter;
 
     @Before
     public void before() {

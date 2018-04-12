@@ -18,6 +18,11 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,22 +30,15 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
+import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
-import se.inera.intyg.intygsbestallning.auth.model.IbVardenhet;
 import se.inera.intyg.intygsbestallning.auth.model.IbVardgivare;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ChangeSelectedUnitRequest;
 
 import java.util.Collections;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by marced on 01/02/16.
@@ -52,10 +50,10 @@ public class UserControllerTest {
     public ExpectedException thrown = ExpectedException.none();
 
     @Mock
-    IbUser ibUserMock;
+    private IbUser ibUserMock;
 
     @Mock
-    UserService userService;
+    private UserService userService;
 
     @Mock
     private CommonAuthoritiesResolver commonAuthoritiesResolver;

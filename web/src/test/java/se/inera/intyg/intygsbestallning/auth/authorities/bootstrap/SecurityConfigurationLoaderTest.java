@@ -18,12 +18,16 @@
  */
 package se.inera.intyg.intygsbestallning.auth.authorities.bootstrap;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import se.inera.intyg.infra.security.authorities.AuthoritiesConfiguration;
@@ -40,10 +44,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 //CHECKSTYLE:OFF MagicNumber
 @RunWith(MockitoJUnitRunner.class)
 public class SecurityConfigurationLoaderTest {
@@ -53,7 +53,7 @@ public class SecurityConfigurationLoaderTest {
     private static final String AUTHORITIES_CONFIGURATION_OUTPUT_FILE = "AuthoritiesConfigurationLoaderTest/authorities-output.txt";
 
     @InjectMocks
-    SecurityConfigurationLoader loader = new SecurityConfigurationLoader(AUTHORITIES_CONFIGURATION_TEST_FILE,
+    private SecurityConfigurationLoader loader = new SecurityConfigurationLoader(AUTHORITIES_CONFIGURATION_TEST_FILE,
             FEATURES_CONFIGURATION_TEST_FILE);
 
     @Before
@@ -70,19 +70,19 @@ public class SecurityConfigurationLoaderTest {
     public void loadConfigurationAndAssertTypeOfObjects() {
         AuthoritiesConfiguration configuration = loader.getAuthoritiesConfiguration();
 
-        assertTrue(configuration.getRequestOrigins().size() == 0);
-        assertTrue(configuration.getPrivileges().size() == 2);
-        assertTrue(configuration.getRoles().size() == 2);
-        assertTrue(configuration.getTitles().size() == 2);
-        assertTrue(configuration.getTitleCodes().size() == 0);
+        assertEquals(0, configuration.getRequestOrigins().size());
+        assertEquals(2, configuration.getPrivileges().size());
+        assertEquals(2, configuration.getRoles().size());
+        assertEquals(2, configuration.getTitles().size());
+        assertEquals(0, configuration.getTitleCodes().size());
 
         // Assert that lists are of specific types
         try {
-            List<RequestOrigin> requestOrigins = (List<RequestOrigin>) configuration.getRequestOrigins();
-            List<Privilege> privileges = (List<Privilege>) configuration.getPrivileges();
-            List<Role> roles = (List<Role>) configuration.getRoles();
-            List<Title> titles = (List<Title>) configuration.getTitles();
-            List<TitleCode> titleCodes = (List<TitleCode>) configuration.getTitleCodes();
+            List<RequestOrigin> requestOrigins = configuration.getRequestOrigins();
+            List<Privilege> privileges = configuration.getPrivileges();
+            List<Role> roles = configuration.getRoles();
+            List<Title> titles = configuration.getTitles();
+            List<TitleCode> titleCodes = configuration.getTitleCodes();
         } catch (Exception e) {
             fail(e.getMessage());
         }
