@@ -45,6 +45,9 @@ public class MyndighetIntegrationStubConfiguration {
     private ReportCareContactInteractionStub reportCareContactInteractionStub;
 
     @Autowired
+    private ReportDeviationInteractionStub reportDeviationInteractionStub;
+
+    @Autowired
     private Bus bus;
 
     @Bean
@@ -65,6 +68,13 @@ public class MyndighetIntegrationStubConfiguration {
     public EndpointImpl reportCareContactInteractionStub() {
         EndpointImpl endpoint = new EndpointImpl(bus, reportCareContactInteractionStub);
         endpoint.publish("/report-care-contact-interaction-stub");
+        return endpoint;
+    }
+
+    @Bean
+    public EndpointImpl reportDeviationInteractionStub() {
+        EndpointImpl endpoint = new EndpointImpl(bus, reportDeviationInteractionStub);
+        endpoint.publish("/report-deviation-interaction-stub");
         return endpoint;
     }
 }

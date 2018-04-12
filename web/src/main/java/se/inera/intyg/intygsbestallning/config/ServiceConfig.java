@@ -32,6 +32,7 @@ import se.inera.intyg.intygsbestallning.service.monitoring.InternalPingForConfig
 import se.inera.intyg.intygsbestallning.web.responder.OrderMedicalAssessmentResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.ReportCertificateReceivalResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.ReportContinuationDecisionResponderImpl;
+import se.inera.intyg.intygsbestallning.web.responder.ReportDeviationInteractionResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.ReportSupplementReceivalResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.RequestHealthcarePerformerForAssessmentResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.RequestMedicalCertificateSupplementResponderImpl;
@@ -60,20 +61,31 @@ public class ServiceConfig {
 
     @Autowired
     private InternalPingForConfigurationResponderImpl internalPingForConfigurationResponder;
+
     @Autowired
     private RequestHealthcarePerformerForAssessmentResponderImpl requestHealthcarePerformerForAssessmentResponder;
+
     @Autowired
     private UpdateOrderResponderImpl updateOrderResponder;
+
     @Autowired
     private RequestMedicalCertificateSupplementResponderImpl requestMedicalCertificateSupplementResponder;
+
     @Autowired
     private ReportSupplementReceivalResponderImpl reportSupplementReceivalResponder;
+
     @Autowired
     private ReportCertificateReceivalResponderImpl reportCertificateReceivalResponder;
+
     @Autowired
     private ReportContinuationDecisionResponderImpl reportContinuationDecisionResponder;
+
     @Autowired
     private OrderMedicalAssessmentResponderImpl orderMedicalAssessmentResponder;
+
+    @Autowired
+    private ReportDeviationInteractionResponderImpl reportDeviationInteractionResponder;
+
 
     @Bean
     public ServletContextAttributeExporter contextAttributes() {
@@ -137,6 +149,13 @@ public class ServiceConfig {
     public EndpointImpl orderMedicalAssessmentResponderEndpoint() {
         EndpointImpl endpoint = new EndpointImpl(bus, orderMedicalAssessmentResponder);
         endpoint.publish("/order-medical-assessment-responder");
+        return endpoint;
+    }
+
+    @Bean
+    public EndpointImpl reportDeviationInteractionResponderEndpoint() {
+        EndpointImpl endpoint = new EndpointImpl(bus, reportDeviationInteractionResponder);
+        endpoint.publish("/report-deviation-interaction-responder");
         return endpoint;
     }
 }
