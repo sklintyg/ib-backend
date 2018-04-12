@@ -21,9 +21,9 @@ package se.inera.intyg.intygsbestallning.web.controller.api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
@@ -48,7 +48,7 @@ public class ForfraganController {
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
-    @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetForfraganListResponse> getAllForfragningarForUser() {
         IbUser user = userService.getUser();
 
@@ -59,7 +59,7 @@ public class ForfraganController {
         return ResponseEntity.ok(new GetForfraganListResponse(forfragningar));
     }
 
-    @RequestMapping(value = "/{forfraganId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/{forfraganId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetForfraganResponse> getForfragan(@PathVariable("forfraganId") Long forfraganId) {
         IbUser user = userService.getUser();
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_VISA_FORFRAGAN).orThrow();
