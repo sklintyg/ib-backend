@@ -37,7 +37,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/utredning")
+@RequestMapping("/api/utredningar")
 public class UtredningController {
 
     @Autowired

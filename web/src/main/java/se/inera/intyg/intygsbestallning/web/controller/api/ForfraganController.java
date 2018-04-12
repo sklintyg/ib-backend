@@ -37,7 +37,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganRespo
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/forfragan")
+@RequestMapping("/api/forfragningar")
 public class ForfraganController {
 
     @Autowired
