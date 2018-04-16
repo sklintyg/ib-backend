@@ -26,15 +26,14 @@ import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.fake.FakeCredentials;
 import se.inera.intyg.intygsbestallning.common.integration.json.CustomObjectMapper;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ChangeSelectedUnitRequest;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
+import java.util.Arrays;
 
 import static com.jayway.restassured.RestAssured.given;
-import static java.util.Arrays.asList;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -49,22 +48,15 @@ public abstract class BaseRestIntegrationTest {
     private static final String USER_JSON_FORM_PARAMETER = "userJsonDisplay";
     private static final String FAKE_LOGIN_URI = "/fake";
 
-    protected static final List<String> LAKARE = asList("Läkare");
-
     protected static final String USER_API_ENDPOINT = "api/user";
-    protected static final String CHANGE_UNIT_URL = USER_API_ENDPOINT + "/andraenhet";
-    protected static final String SJUKFALLSUMMARY_API_ENDPOINT = "/api/sjukfall/summary";
 
-    protected static final FakeCredentials DEFAULT_LAKARE = new FakeCredentials.FakeCredentialsBuilder(
-        "TSTNMT2321000156-105R", "TSTNMT2321000156-105N").legitimeradeYrkesgrupper(LAKARE)
+    protected static final FakeCredentials DEFAULT_VARDADMIN
+            = new FakeCredentials.FakeCredentialsBuilder(
+        "ib-user-2", "IFV1239877878-1042")
+            .systemRoles(Arrays.asList(AuthoritiesConstants.ROLE_FMU_VARDADMIN
+                    + "-" +  "IFV1239877878-1042" ))
             .build();
 
-    protected static final FakeCredentials DEFAULT_LAKARE_NO_CONSENT = new FakeCredentials.FakeCredentialsBuilder(
-            "TSTNMT2321000156-105R", "TSTNMT2321000156-105N").legitimeradeYrkesgrupper(LAKARE)
-            .build();
-
-    protected static final FakeCredentials EVA_H_LAKARE = new FakeCredentials.FakeCredentialsBuilder(
-        "eva", "centrum-vast").legitimeradeYrkesgrupper(LAKARE).build();
 
     protected CustomObjectMapper objectMapper = new CustomObjectMapper();
 
@@ -110,22 +102,4 @@ public abstract class BaseRestIntegrationTest {
         return response.sessionId();
     }
 
-    protected void selectUnitByHsaId(String unitHsaId) {
-        ChangeSelectedUnitRequest req = new ChangeSelectedUnitRequest(unitHsaId);
-        try {
-            selectUnit(objectMapper.writeValueAsString(req));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void selectUnit(String changeUnitAsJson) throws JsonProcessingException {
-        Response response = given().contentType(ContentType.JSON).and()
-                .body(changeUnitAsJson).expect().statusCode(OK)
-                .when()
-                .post(CHANGE_UNIT_URL).then().extract().response();
-        assertNotNull(response);
-        LOG.info("Test selected unit " + changeUnitAsJson + ". Resp: " + response.statusCode());
-
-    }
 }

@@ -10,7 +10,7 @@ test {
 
 task restAssuredTest(type: Test) {
     outputs.upToDateWhen { false }
-    systemProperty "integration.tests.baseUrl", System.properties['baseUrl'] ?: "http://localhost:8790/"
+    systemProperty "integration.tests.baseUrl", System.properties['baseUrl'] ?: "http://localhost:8990/"
     include '**/*IT*'
 }
 

@@ -14,8 +14,7 @@
     "authenticationScheme": {
       "type": "string"
     },
-
-    "vardgivare": {
+    "authoritiesTree": {
       "additionalItems": false,
       "items": {},
       "minItems": 1,
@@ -26,8 +25,11 @@
       "properties": {},
       "type": "object"
     },
-    "totaltAntalVardenheter": {
-      "type": "integer"
+    "currentlyLoggedInAt": {
+      "type": "object"
+    },
+    "currentRole": {
+      "type": "object"
     },
     "features": {
       "additionalProperties": false,
@@ -62,10 +64,11 @@
     "namn",
     "titel",
     "authenticationScheme",
-    "vardgivare",
     "roles",
-    "totaltAntalVardenheter",
-    "features"
+    "features",
+    "authoritiesTree",
+    "currentRole",
+    "currentlyLoggedInAt"
   ],
   "title": "IB transport model",
   "type": "object",
