@@ -144,6 +144,7 @@ public class UtredningServiceImpl implements UtredningService {
         fli.setBesvarasSenastDatum(f.getBesvarasSenastDatum().format(DateTimeFormatter.BASIC_ISO_DATE));
         fli.setKommentar(f.getKommentar());
         fli.setStatus(f.getStatus());
+        fli.setVardenhetHsaId(f.getVardenhetHsaId());
         if (f.getTilldeladDatum() != null) {
             fli.setTilldeladDatum(f.getTilldeladDatum().format(DateTimeFormatter.BASIC_ISO_DATE));
         }

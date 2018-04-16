@@ -24,6 +24,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -61,6 +62,7 @@ public class Utredning {
     private String invanareSpecialbehov;
 
     @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "UTREDNING_ID")
     private List<TidigareUtredning> invanareTidigareUtredning = new ArrayList<>();
 
     @Column(name = "HANDLAGGARE_NAMN")

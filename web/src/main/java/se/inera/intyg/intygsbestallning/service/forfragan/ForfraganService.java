@@ -16,13 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.integration.myndighet.config;
+package se.inera.intyg.intygsbestallning.service.forfragan;
 
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganSvarRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganSvarResponse;
 
-@Configuration
-@ComponentScan({"se.inera.intyg.intygsbestallning.integration.myndighet.client",
-        "se.inera.intyg.intygsbestallning.integration.myndighet.service"})
-public class MyndighetIntegrationConfiguration {
+public interface ForfraganService {
+    ForfraganSvarResponse besvaraForfragan(Long forfraganId, ForfraganSvarRequest svarRequest);
 }

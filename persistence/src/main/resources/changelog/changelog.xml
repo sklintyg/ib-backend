@@ -120,7 +120,7 @@
             </column>
 
             <column name="UTREDNING_ID" type="varchar(32)">
-                <constraints nullable="true"/>
+                <constraints nullable="false"/>
             </column>
 
             <column name="VARDENHET_HSA_ID" type="varchar(255)">
@@ -158,11 +158,9 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
 
-            <!--
             <column name="FORFRAGAN_ID" type="bigint">
                 <constraints nullable="false"/>
             </column>
-            -->
 
             <column name="SVAR_TYP" type="varchar(32)">
                 <constraints nullable="false"/>
@@ -206,6 +204,11 @@
                           columnName="INTERNREFERENS" incrementBy="1" startWith="1"
                           tableName="FORFRAGAN_SVAR"/>
 
+        <addForeignKeyConstraint baseColumnNames="FORFRAGAN_ID"
+                                 baseTableName="FORFRAGAN_SVAR" constraintName="FORFRAGAN_SVAR_FK"
+                                 referencedColumnNames="INTERNREFERENS" referencedTableName="FORFRAGAN"/>
+
+
         <createTable tableName="HANDELSE">
             <column name="INTERNREFERENS" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
@@ -238,6 +241,11 @@
         <addAutoIncrement columnDataType="bigint"
                           columnName="INTERNREFERENS" incrementBy="1" startWith="1"
                           tableName="HANDELSE"/>
+
+        <addForeignKeyConstraint baseColumnNames="UTREDNING_ID"
+                                 baseTableName="HANDELSE" constraintName="HANDELSE_UTREDNING_FK"
+                                 referencedColumnNames="UTREDNING_ID" referencedTableName="UTREDNING"/>
+
 
 
         <createTable tableName="BESTALLNING">
@@ -279,11 +287,19 @@
                           columnName="INTERNREFERENS" incrementBy="1" startWith="1"
                           tableName="BESTALLNING"/>
 
+        <addForeignKeyConstraint baseColumnNames="UTREDNING_ID"
+                                 baseTableName="BESTALLNING" constraintName="BESTALLNING_UTREDNING_FK"
+                                 referencedColumnNames="UTREDNING_ID" referencedTableName="UTREDNING"/>
+
+
+
         <createTable tableName="TIDIGARE_UTREDNING">
             <column name="INTERNREFERENS" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-
+            <column name="UTREDNING_ID" type="varchar(32)">
+                <constraints nullable="false"/>
+            </column>
             <column name="TIDIGARE_UTREDNING_ID" type="varchar(32)">
                 <constraints nullable="false"/>
             </column>
@@ -292,6 +308,11 @@
         <addAutoIncrement columnDataType="bigint"
                           columnName="INTERNREFERENS" incrementBy="1" startWith="1"
                           tableName="TIDIGARE_UTREDNING"/>
+
+        <addForeignKeyConstraint baseColumnNames="UTREDNING_ID"
+                                 baseTableName="TIDIGARE_UTREDNING" constraintName="TIDIGARE_UTREDNING_UTREDNING_FK"
+                                 referencedColumnNames="UTREDNING_ID" referencedTableName="UTREDNING"/>
+
 
     </changeSet>
 

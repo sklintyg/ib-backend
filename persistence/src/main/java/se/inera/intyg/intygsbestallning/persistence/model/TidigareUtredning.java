@@ -31,17 +31,28 @@ public class TidigareUtredning {
     @Id
     @GeneratedValue
     @Column(name = "INTERNREFERENS")
-    private String internReferens;
+    private Long internReferens;
+
+    @Column(name = "UTREDNING_ID")
+    private String utredningId;
 
     @Column(name = "TIDIGARE_UTREDNING_ID")
     private String tidigareUtredningId;
 
-    public String getInternReferens() {
+    public Long getInternReferens() {
         return internReferens;
     }
 
-    public void setInternReferens(String internReferens) {
+    public void setInternReferens(Long internReferens) {
         this.internReferens = internReferens;
+    }
+
+    public String getUtredningId() {
+        return utredningId;
+    }
+
+    public void setUtredningId(String utredningId) {
+        this.utredningId = utredningId;
     }
 
     public String getTidigareUtredningId() {

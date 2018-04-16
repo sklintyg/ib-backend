@@ -23,14 +23,18 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.intygsbestallning.service.forfragan.ForfraganService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganSvarRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganSvarResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganResponse;
 
@@ -45,6 +49,9 @@ public class ForfraganController {
 
     @Autowired
     private UtredningService utredningService;
+
+    @Autowired
+    private ForfraganService forfraganService;
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
@@ -66,5 +73,14 @@ public class ForfraganController {
 
         GetForfraganResponse forfragan = utredningService.getForfragan(forfraganId, user.getCurrentlyLoggedInAt().getId());
         return ResponseEntity.ok(forfragan);
+    }
+
+    @PostMapping(path = "/{forfragan}/besvara", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ForfraganSvarResponse> besvaraForfragan(@PathVariable("forfraganId") Long forfraganId,
+            ForfraganSvarRequest request) {
+        IbUser user = userService.getUser();
+        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_VISA_FORFRAGAN).orThrow();
+        ForfraganSvarResponse response = forfraganService.besvaraForfragan(forfraganId, request);
+        return ResponseEntity.ok(response);
     }
 }

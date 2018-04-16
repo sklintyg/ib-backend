@@ -28,8 +28,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 @Configuration
-@ComponentScan({ "se.inera.intyg.intygsbestallning.integration.myndighet.stubs" })
-@Profile({"ib-stub" })
+@ComponentScan("se.inera.intyg.intygsbestallning.integration.myndighet.stubs")
+@Profile({"dev", "ib-stub" })
 public class MyndighetIntegrationStubConfiguration {
 
     @Autowired

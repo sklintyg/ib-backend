@@ -40,7 +40,7 @@ public class Forfragan {
     @Column(name = "INTERNREFERENS", nullable = false)
     private Long internreferens;
 
-    @Column(name = "UTREDNING_ID", nullable = true)
+    @Column(name = "UTREDNING_ID")
     private String utredningId;
 
     @Column(name = "VARDENHET_HSA_ID", nullable = false)
@@ -60,8 +60,8 @@ public class Forfragan {
     @Column(name = "KOMMENTAR", nullable = true)
     private String kommentar;
 
-    @OneToOne(optional = true, cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn
+    @OneToOne(cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn(name = "FORFRAGAN_ID")
     private ForfraganSvar forfraganSvar;
 
 

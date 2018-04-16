@@ -16,64 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.persistence.model;
+package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+public class ForfraganSvarRequest {
 
-@Entity
-@Table(name = "FORFRAGAN_SVAR")
-public class ForfraganSvar {
-
-    @Id
-    @GeneratedValue
-    @Column(name = "INTERNREFERENS")
-    private Long internReferens;
-
-    @Column(name = "FORFRAGAN_ID", nullable = false)
     private Long forfraganId;
+    private String svarTyp;
+    private String utforareTyp;
 
-    @Column(name = "SVAR_TYP", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private SvarTyp svarTyp;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "UTFORARE_TYP", nullable = false)
-    private UtforareTyp utforareTyp;
-
-    @Column(name = "UTFORARE_NAMN", nullable = false)
     private String utforareNamn;
 
-    @Column(name = "UTFORARE_ADRESS", nullable = false)
     private String utforareAdress;
 
-    @Column(name = "UTFORARE_POSTNUMMER", nullable = false)
     private String utforarePostnr;
 
-    @Column(name = "UTFORARE_POSTORT", nullable = false)
     private String utforarePostort;
 
-    @Column(name = "UTFORARE_TELEFONNUMMER")
     private String utforareTelefon;
 
-    @Column(name = "UTFORARE_EPOST")
     private String utforareEpost;
 
-    @Column(name = "KOMMENTAR")
     private String kommentar;
-
-    public Long getInternReferens() {
-        return internReferens;
-    }
-
-    public void setInternReferens(Long internReferens) {
-        this.internReferens = internReferens;
-    }
 
     public Long getForfraganId() {
         return forfraganId;
@@ -83,27 +46,19 @@ public class ForfraganSvar {
         this.forfraganId = forfraganId;
     }
 
-    public SvarTyp getSvarTyp() {
+    public String getSvarTyp() {
         return svarTyp;
     }
 
-    public void setSvarTyp(SvarTyp svarTyp) {
+    public void setSvarTyp(String svarTyp) {
         this.svarTyp = svarTyp;
     }
 
-    public String getKommentar() {
-        return kommentar;
-    }
-
-    public void setKommentar(String kommentar) {
-        this.kommentar = kommentar;
-    }
-
-    public UtforareTyp getUtforareTyp() {
+    public String getUtforareTyp() {
         return utforareTyp;
     }
 
-    public void setUtforareTyp(UtforareTyp utforareTyp) {
+    public void setUtforareTyp(String utforareTyp) {
         this.utforareTyp = utforareTyp;
     }
 
@@ -153,5 +108,13 @@ public class ForfraganSvar {
 
     public void setUtforareEpost(String utforareEpost) {
         this.utforareEpost = utforareEpost;
+    }
+
+    public String getKommentar() {
+        return kommentar;
+    }
+
+    public void setKommentar(String kommentar) {
+        this.kommentar = kommentar;
     }
 }

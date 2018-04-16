@@ -1,0 +1,58 @@
+{
+  "utredningId": "utredning-bootstrap-3",
+  "utredningsTyp": "AFS",
+  "vardgivareHsaId": "IFV1239877878-1041",
+  "inkomDatum": "2018-04-12T10:07:12.125",
+  "besvarasSenastDatum": "2018-04-26T10:07:12.127",
+  "invanarePostort": "Stockholm",
+  "invanareSpecialbehov": "Gillar glass",
+  "invanareTidigareUtredning": [
+    {
+      "internReferens": "1",
+      "utredningId": "utredning-bootstrap-3",
+      "tidigareUtredningId": "tidigare-utredning-1"
+    }
+  ],
+  "handlaggareNamn": "Hanna Handläggarsson",
+  "handlaggareTelefonnummer": "031-9999999",
+  "handlaggareEpost": "epost@inera.se",
+  "behovTolk": true,
+  "sprakTolk": "sv",
+  "kommentar": "Detta är en kommentar",
+  "forfraganList": [
+    {
+      "internreferens": 1,
+      "utredningId": "utredning-bootstrap-3",
+      "vardenhetHsaId": "IFV1239877878-1042",
+      "tilldeladDatum": null,
+      "besvarasSenastDatum": "2018-04-26T10:07:12.396",
+      "status": "Skapad",
+      "kommentar": "Bered skyndsamt!",
+      "forfraganSvar": {
+        "internReferens": 1,
+        "forfraganId": 1,
+        "svarTyp": "ACCEPTERA",
+        "utforareTyp": "ENHET",
+        "utforareNamn": "Utförarenheten",
+        "utforareAdress": "Utförarvägen 1",
+        "utforarePostnr": "12345",
+        "utforarePostort": "Utförhult",
+        "utforareTelefon": "123-123412",
+        "utforareEpost": "utforare@inera.se",
+        "kommentar": "Bered skyndsamt!"
+      }
+    }
+  ],
+  "handelseList": [
+    {
+      "internreferens": 1,
+      "utredningId": "utredning-bootstrap-3",
+      "handelseTyp": "FORFRAGAN_MOTTAGEN",
+      "skapad": "2018-04-12T10:07:12.127",
+      "anvandare": "Kotte Korv",
+      "handelseText": "Utredning skapades",
+      "kommentar": "Detta är en kommentar"
+    }
+  ],
+  "bestallning": null
+}
