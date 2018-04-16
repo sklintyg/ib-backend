@@ -36,44 +36,53 @@ public class MyndighetIntegrationStubConfiguration {
     private ApplicationContext applicationContext;
 
     @Autowired
-    private RespondToPerformerRequestStub respondToPerformerRequestStub;
-
-    @Autowired
-    private UpdateAssessmentStub updateAssessmentStub;
-
-    @Autowired
-    private ReportCareContactInteractionStub reportCareContactInteractionStub;
-
-    @Autowired
-    private ReportDeviationInteractionStub reportDeviationInteractionStub;
-
-    @Autowired
     private Bus bus;
 
     @Bean
+    public RespondToPerformerRequestStub respondToPerformerRequestStub() {
+        return new RespondToPerformerRequestStub();
+    }
+
+    @Bean
+    public UpdateAssessmentStub updateAssessmentStub() {
+        return new UpdateAssessmentStub();
+    }
+
+    @Bean
+    public ReportCareContactInteractionStub reportCareContactInteractionStub() {
+        return new ReportCareContactInteractionStub();
+    }
+
+    @Bean
+    public ReportDeviationInteractionStub reportDeviationInteractionStub() {
+        return new ReportDeviationInteractionStub();
+    }
+
+
+    @Bean
     public EndpointImpl respondToPerformerRequest() {
-        EndpointImpl endpoint = new EndpointImpl(bus, respondToPerformerRequestStub);
+        EndpointImpl endpoint = new EndpointImpl(bus, respondToPerformerRequestStub());
         endpoint.publish("/respond-to-performer-request");
         return endpoint;
     }
 
     @Bean
     public EndpointImpl updateAssessment() {
-        EndpointImpl endpoint = new EndpointImpl(bus, updateAssessmentStub);
+        EndpointImpl endpoint = new EndpointImpl(bus, updateAssessmentStub());
         endpoint.publish("/update-assessment");
         return endpoint;
     }
 
     @Bean
-    public EndpointImpl reportCareContactInteractionStub() {
-        EndpointImpl endpoint = new EndpointImpl(bus, reportCareContactInteractionStub);
+    public EndpointImpl reportCareContactInteraction() {
+        EndpointImpl endpoint = new EndpointImpl(bus, reportCareContactInteractionStub());
         endpoint.publish("/report-care-contact-interaction-stub");
         return endpoint;
     }
 
     @Bean
-    public EndpointImpl reportDeviationInteractionStub() {
-        EndpointImpl endpoint = new EndpointImpl(bus, reportDeviationInteractionStub);
+    public EndpointImpl reportDeviationInteraction() {
+        EndpointImpl endpoint = new EndpointImpl(bus, reportDeviationInteractionStub());
         endpoint.publish("/report-deviation-interaction-stub");
         return endpoint;
     }
