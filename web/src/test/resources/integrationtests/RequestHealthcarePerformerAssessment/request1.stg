@@ -1,0 +1,71 @@
+delimiters "$", "$"
+
+request(data) ::= <<
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:itintegration:registry:1" xmlns:urn1="urn:riv-application:intygsbestallning:certificate:order:RequestHealthcarePerformerForAssessmentResponder:1" xmlns:urn2="urn:riv-application:intygsbestallning:certificate:order:1">
+   <soapenv:Header>
+      <urn:LogicalAddress>123</urn:LogicalAddress>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn1:RequestHealthcarePerformerForAssessment>
+         <urn1:certificateType>
+            <urn2:code>AFU</urn2:code>
+            <urn2:codeSystem></urn2:codeSystem>
+            <urn2:codeSystemName></urn2:codeSystemName>
+            <urn2:codeSystemVersion></urn2:codeSystemVersion>
+            <urn2:displayName>AFU</urn2:displayName>
+         </urn1:certificateType>
+         <urn1:lastResponseDate>$data.lastResponseData$</urn1:lastResponseDate>
+         <urn1:coordinatingCountyCouncilId>
+            <urn2:root></urn2:root>
+            <urn2:extension>$data.vardgivareHsaId$</urn2:extension>
+         </urn1:coordinatingCountyCouncilId>
+         <urn1:comment>$data.comment$</urn1:comment>
+         <urn1:needForInterpreter>$data.behovTolk$</urn1:needForInterpreter>
+         <urn1:interpreterLanguage>
+            <urn2:code>$data.tolkSprakCode$</urn2:code>
+            <urn2:codeSystem></urn2:codeSystem>
+            <urn2:codeSystemName></urn2:codeSystemName>
+            <urn2:codeSystemVersion></urn2:codeSystemVersion>
+            <urn2:displayName>$data.tolkSprakName$</urn2:displayName>
+         </urn1:interpreterLanguage>
+         <urn1:authorityAdministrativeOfficial>
+            <urn2:fullName>$data.handlaggareNamn$</urn2:fullName>
+            <urn2:phoneNumber>$data.handlaggareTelefonnummer$</urn2:phoneNumber>
+            <urn2:email>$data.handlaggareEpost$</urn2:email>
+            <urn2:authority>
+               <urn2:code>FK</urn2:code>
+               <urn2:codeSystem></urn2:codeSystem>
+               <urn2:codeSystemName></urn2:codeSystemName>
+               <urn2:codeSystemVersion></urn2:codeSystemVersion>
+               <urn2:displayName>FK</urn2:displayName>
+            </urn2:authority>
+            <!--
+            <urn2:officeName>?</urn2:officeName>
+            <urn2:officeCostCenter>?</urn2:officeCostCenter>
+            <urn2:officeAddress>
+               <urn2:postalAddress>?</urn2:postalAddress>
+               <urn2:postalCode>?</urn2:postalCode>
+               <urn2:postalCity>?</urn2:postalCity>
+            </urn2:officeAddress>
+            -->
+         </urn1:authorityAdministrativeOfficial>
+         <urn1:citizen>
+            <urn2:postalCity>
+               <urn2:code></urn2:code>
+               <urn2:codeSystem></urn2:codeSystem>
+               <urn2:codeSystemName></urn2:codeSystemName>
+               <urn2:codeSystemVersion></urn2:codeSystemVersion>
+               <urn2:displayName>Stockholm</urn2:displayName>
+            </urn2:postalCity>
+            <urn2:specialNeeds>Påskgodis</urn2:specialNeeds>
+            <!--
+            <urn2:earlierAssessmentPerformer>
+               <urn2:root>?</urn2:root>
+               <urn2:extension>?</urn2:extension>
+            </urn2:earlierAssessmentPerformer>
+            -->
+         </urn1:citizen>
+      </urn1:RequestHealthcarePerformerForAssessment>
+   </soapenv:Body>
+</soapenv:Envelope>
+>>
