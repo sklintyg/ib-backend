@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.service.forfragan.ForfraganService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
@@ -59,7 +60,8 @@ public class ForfraganController {
     public ResponseEntity<GetForfraganListResponse> getAllForfragningarForUser() {
         IbUser user = userService.getUser();
 
-        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_FORFRAGNINGAR).orThrow();
+        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_FORFRAGNINGAR)
+                .orThrow(new IbAuthorizationException("User is not allowed to view the requested resource"));
 
         // Utredningar där vårdenheten har en förfrågan.
         List<ForfraganListItem> forfragningar = utredningService.findForfragningarForVardenhetHsaId(user.getCurrentlyLoggedInAt().getId());
@@ -69,7 +71,8 @@ public class ForfraganController {
     @GetMapping(path = "/{forfraganId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetForfraganResponse> getForfragan(@PathVariable("forfraganId") Long forfraganId) {
         IbUser user = userService.getUser();
-        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_VISA_FORFRAGAN).orThrow();
+        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_VISA_FORFRAGAN)
+                .orThrow(new IbAuthorizationException("User is not allowed to view the requested resource"));
 
         GetForfraganResponse forfragan = utredningService.getForfragan(forfraganId, user.getCurrentlyLoggedInAt().getId());
         return ResponseEntity.ok(forfragan);
@@ -79,7 +82,8 @@ public class ForfraganController {
     public ResponseEntity<ForfraganSvarResponse> besvaraForfragan(@PathVariable("forfraganId") Long forfraganId,
             ForfraganSvarRequest request) {
         IbUser user = userService.getUser();
-        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_VISA_FORFRAGAN).orThrow();
+        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_VISA_FORFRAGAN)
+                .orThrow(new IbAuthorizationException("User is not allowed to view the requested resource"));
         ForfraganSvarResponse response = forfraganService.besvaraForfragan(forfraganId, request);
         return ResponseEntity.ok(response);
     }

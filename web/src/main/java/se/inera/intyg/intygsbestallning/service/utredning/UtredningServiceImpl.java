@@ -21,7 +21,9 @@ package se.inera.intyg.intygsbestallning.service.utredning;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
+import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
+import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Forfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtredning;
@@ -100,12 +102,12 @@ public class UtredningServiceImpl implements UtredningService {
     public GetUtredningResponse getUtredning(String utredningId, String vardgivareHsaId) {
         Utredning utredning = utredningRepository.findOne(utredningId);
         if (utredning == null) {
-            throw new IbServiceException(IbErrorCodeEnum.NOT_FOUND, "No utredning found for id '" + utredningId + "'");
+            throw new IbNotFoundException("No utredning found for id '" + utredningId + "'");
         }
 
         // Check vårdgivare...
         if (!utredning.getVardgivareHsaId().equals(vardgivareHsaId)) {
-            throw new IbServiceException(IbErrorCodeEnum.UNAUTHORIZED, "The user is not logged in at the applicable Vårdgivare");
+            throw new IbAuthorizationException("The user is not logged in at the applicable Vårdgivare");
         }
 
         // Enrich here if necessary...
@@ -121,6 +123,9 @@ public class UtredningServiceImpl implements UtredningService {
     @Override
     public GetForfraganResponse getForfragan(Long forfraganId, String vardenhetHsaId) {
         Forfragan forfragan = utredningRepository.findForfraganByIdAndVardenhet(forfraganId, vardenhetHsaId);
+        if (forfragan == null) {
+            throw new IbNotFoundException("No Forfragan found matching ID " + forfraganId);
+        }
         return convertCompleteForfragan(forfragan);
     }
 
@@ -129,11 +134,12 @@ public class UtredningServiceImpl implements UtredningService {
     private GetForfraganResponse convertCompleteForfragan(Forfragan f) {
         GetForfraganResponse gfr = new GetForfraganResponse();
         gfr.setForfraganId(f.getInternreferens());
-        gfr.setBesvarasSenastDatum(f.getBesvarasSenastDatum().format(DateTimeFormatter.BASIC_ISO_DATE));
+        gfr.setVardenhetHsaId(f.getVardenhetHsaId());
+        gfr.setBesvarasSenastDatum(f.getBesvarasSenastDatum().format(DateTimeFormatter.ISO_LOCAL_DATE));
         gfr.setKommentar(f.getKommentar());
         gfr.setStatus(f.getStatus());
         if (f.getTilldeladDatum() != null) {
-            gfr.setTilldeladDatum(f.getTilldeladDatum().format(DateTimeFormatter.BASIC_ISO_DATE));
+            gfr.setTilldeladDatum(f.getTilldeladDatum().format(DateTimeFormatter.ISO_LOCAL_DATE));
         }
         return gfr;
     }
@@ -141,12 +147,12 @@ public class UtredningServiceImpl implements UtredningService {
     private ForfraganListItem convertForfragan(Forfragan f) {
         ForfraganListItem fli = new ForfraganListItem();
         fli.setForfraganId(f.getInternreferens());
-        fli.setBesvarasSenastDatum(f.getBesvarasSenastDatum().format(DateTimeFormatter.BASIC_ISO_DATE));
+        fli.setBesvarasSenastDatum(f.getBesvarasSenastDatum().format(DateTimeFormatter.ISO_LOCAL_DATE));
         fli.setKommentar(f.getKommentar());
         fli.setStatus(f.getStatus());
         fli.setVardenhetHsaId(f.getVardenhetHsaId());
         if (f.getTilldeladDatum() != null) {
-            fli.setTilldeladDatum(f.getTilldeladDatum().format(DateTimeFormatter.BASIC_ISO_DATE));
+            fli.setTilldeladDatum(f.getTilldeladDatum().format(DateTimeFormatter.ISO_LOCAL_DATE));
         }
         return fli;
     }
@@ -155,8 +161,8 @@ public class UtredningServiceImpl implements UtredningService {
         GetUtredningResponse gur = new GetUtredningResponse();
         gur.setUtredningsId(utredning.getUtredningId());
         gur.setUtredningsTyp(utredning.getUtredningsTyp());
-        gur.setBesvarasSenastDatum(utredning.getBesvarasSenastDatum().format(DateTimeFormatter.BASIC_ISO_DATE));
-        gur.setInkomDatum(utredning.getInkomDatum().format(DateTimeFormatter.BASIC_ISO_DATE));
+        gur.setBesvarasSenastDatum(utredning.getBesvarasSenastDatum().format(DateTimeFormatter.ISO_LOCAL_DATE));
+        gur.setInkomDatum(utredning.getInkomDatum().format(DateTimeFormatter.ISO_LOCAL_DATE));
         gur.setVardgivareHsaId(utredning.getVardgivareHsaId());
 
         gur.setHandlaggareNamn(utredning.getHandlaggareNamn());
@@ -173,8 +179,8 @@ public class UtredningServiceImpl implements UtredningService {
         uli.setUtredningsId(u.getUtredningId());
         uli.setUtredningsTyp(u.getUtredningsTyp());
         uli.setVardgivareNamn(u.getVardgivareHsaId() + "-namnet");
-        uli.setBesvarasSenastDatum(u.getBesvarasSenastDatum().format(DateTimeFormatter.BASIC_ISO_DATE));
-        uli.setInkomDatum(u.getInkomDatum().format(DateTimeFormatter.BASIC_ISO_DATE));
+        uli.setBesvarasSenastDatum(u.getBesvarasSenastDatum().format(DateTimeFormatter.ISO_LOCAL_DATE));
+        uli.setInkomDatum(u.getInkomDatum().format(DateTimeFormatter.ISO_LOCAL_DATE));
         return uli;
     }
 }

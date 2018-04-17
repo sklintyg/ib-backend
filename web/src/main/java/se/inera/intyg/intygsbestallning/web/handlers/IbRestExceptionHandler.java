@@ -18,8 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.web.handlers;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -27,13 +25,39 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
+import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+
+import javax.servlet.http.HttpServletRequest;
 
 @ControllerAdvice
 public class IbRestExceptionHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(IbRestExceptionHandler.class);
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseBody
+    public IbRestExceptionResponse authorizationExceptionHandler(HttpServletRequest request, IbAuthorizationException e) {
+        LOG.warn("Authorization exception occured! Internal error code: {} Error message: {}", e.getErrorCode(),
+                e.getMessage());
+        IbRestExceptionResponse response =
+                new IbRestExceptionResponse(e.getErrorCode(), e.getMessage());
+        return response;
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public IbRestExceptionResponse notFoundExceptionHandler(HttpServletRequest request, IbNotFoundException e) {
+        LOG.warn("Not found exception occured! Internal error code: {} Error message: {}", e.getErrorCode(),
+                e.getMessage());
+        IbRestExceptionResponse response =
+                new IbRestExceptionResponse(e.getErrorCode(), e.getMessage());
+        return response;
+    }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

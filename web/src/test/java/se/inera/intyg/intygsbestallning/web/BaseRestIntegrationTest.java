@@ -57,6 +57,20 @@ public abstract class BaseRestIntegrationTest {
                     + "-" +  "IFV1239877878-1042" ))
             .build();
 
+    protected static final FakeCredentials DEFAULT_SAMORDNARE
+            = new FakeCredentials.FakeCredentialsBuilder(
+            "ib-user-1", "IFV1239877878-1042")
+            .systemRoles(Arrays.asList(AuthoritiesConstants.ROLE_FMU_SAMORDNARE
+                    + "-" +  "IFV1239877878-1041" ))
+            .build();
+
+    protected static final FakeCredentials OTHER_SAMORDNARE
+            = new FakeCredentials.FakeCredentialsBuilder(
+            "ib-user-4", "IFV1239877878-1045")
+            .systemRoles(Arrays.asList(AuthoritiesConstants.ROLE_FMU_SAMORDNARE
+                    + "-" +  "IFV1239877878-1043" ))
+            .build();
+
 
     protected CustomObjectMapper objectMapper = new CustomObjectMapper();
 

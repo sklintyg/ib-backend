@@ -25,29 +25,29 @@ import se.inera.intyg.intygsbestallning.web.BaseRestIntegrationTest;
 
 import static com.jayway.restassured.RestAssured.given;
 
-public class ForfraganControllerIT extends BaseRestIntegrationTest {
+public class UtredningControllerIT extends BaseRestIntegrationTest {
 
-    private static final String FORFRAGAN_API_ENDPOINT = "/api/forfragningar" ;
+    private static final String UTREDNING_API_ENDPOINT = "/api/utredningar" ;
 
     @Test
-    public void testListForfragningar() {
-        RestAssured.sessionId = getAuthSession(DEFAULT_VARDADMIN);
-        given().expect().statusCode(OK).when().get(FORFRAGAN_API_ENDPOINT)
+    public void testListUtredningar() {
+        RestAssured.sessionId = getAuthSession(DEFAULT_SAMORDNARE);
+        given().expect().statusCode(OK).when().get(UTREDNING_API_ENDPOINT)
         .then()
-                .body("forfragningar", Matchers.notNullValue());
+                .body("utredningar", Matchers.notNullValue());
     }
 
     @Test
-    public void testGetForfraganById() {
-        RestAssured.sessionId = getAuthSession(DEFAULT_VARDADMIN);
-        given().expect().statusCode(OK).when().get(FORFRAGAN_API_ENDPOINT + "/1")
+    public void testGetUtredningById() {
+        RestAssured.sessionId = getAuthSession(DEFAULT_SAMORDNARE);
+        given().expect().statusCode(OK).when().get(UTREDNING_API_ENDPOINT + "/utredning-bootstrap-1")
         .then()
-                .body("forfraganId", Matchers.is(1));
+                .body("utredningsId", Matchers.is("utredning-bootstrap-1"));
     }
 
     @Test
-    public void testGetForfraganByIdReturns404WhenNotExistss() {
-        RestAssured.sessionId = getAuthSession(DEFAULT_VARDADMIN);
-        given().expect().statusCode(404).when().get(FORFRAGAN_API_ENDPOINT + "/999191919");
+    public void testGetUtredningByIdUnauthorized() {
+        RestAssured.sessionId = getAuthSession(OTHER_SAMORDNARE);
+        given().expect().statusCode(403).when().get(UTREDNING_API_ENDPOINT + "/utredning-bootstrap-1");
     }
 }

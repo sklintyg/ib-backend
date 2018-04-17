@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningListResponse;
@@ -51,7 +52,8 @@ public class UtredningController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetUtredningListResponse> getAllUtredningarForUser() {
         IbUser user = userService.getUser();
-        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_UTREDNINGAR).orThrow();
+        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_UTREDNINGAR)
+                .orThrow(new IbAuthorizationException("User is not allowed to view the requested resource"));
 
         // Do a SAMORDNARE search...
         List<UtredningListItem> utredningar = utredningService.findUtredningarByVardgivareHsaId(user.getCurrentlyLoggedInAt().getId());
@@ -61,7 +63,8 @@ public class UtredningController {
     @GetMapping(path = "/{utredningId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetUtredningResponse> getUtredning(@PathVariable("utredningId") String utredningId) {
         IbUser user = userService.getUser();
-        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_VISA_UTREDNING).orThrow();
+        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_VISA_UTREDNING)
+                .orThrow(new IbAuthorizationException("User is not allowed to view the requested resource"));
         return ResponseEntity.ok(utredningService.getUtredning(utredningId, user.getCurrentlyLoggedInAt().getId()));
     }
 }
