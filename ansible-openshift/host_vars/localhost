@@ -5,7 +5,7 @@ environment_name: "demo"
 config_etc_folder: "{{ config_folder }}/{{ environment_name }}"
 
 # Spring profiles
-profiles: test,rhs-security-test,testability-api,caching-enabled,wc-hsa-stub,wc-pu-stub
+profiles: dev,caching-enabled,ib-stub
 
 tomcat7_user: ine-app
 tomcat7_group: ine-app
