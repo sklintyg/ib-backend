@@ -18,19 +18,19 @@
  */
 package se.inera.intyg.intygsbestallning.web.responder;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.util.Objects.isNull;
+
 import com.google.common.base.Preconditions;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.intygsbestallning.common.util.ResutTypeUtil;
+import se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
 import se.riv.intygsbestallning.certificate.order.endassessment.v1.EndAssessmentResponseType;
 import se.riv.intygsbestallning.certificate.order.endassessment.v1.EndAssessmentType;
 import se.riv.intygsbestallning.certificate.order.endassessment.v1.rivtabp21.EndAssessmentResponderInterface;
-
-import static com.google.common.base.Strings.isNullOrEmpty;
-import static java.util.Objects.isNull;
 
 @Service
 @SchemaValidation
@@ -48,7 +48,7 @@ public class EndAssessmentResponderImpl implements EndAssessmentResponderInterfa
         utredningService.endUtredning(EndUtredningRequest.from(endAssessmentType));
 
         EndAssessmentResponseType response = new EndAssessmentResponseType();
-        response.setResult(ResutTypeUtil.ok());
+        response.setResult(ResultTypeUtil.ok());
         return response;
     }
 }

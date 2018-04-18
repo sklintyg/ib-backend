@@ -16,17 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.service.forfragan;
+package se.inera.intyg.intygsbestallning.common.util;
 
-import org.springframework.stereotype.Service;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganSvarRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganSvarResponse;
+import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
+import se.riv.intygsbestallning.certificate.order.v1.ResultType;
 
-@Service
-public class ForfraganServiceImpl implements ForfraganService {
+public final class ResultTypeUtil {
 
-    @Override
-    public ForfraganSvarResponse besvaraForfragan(Long forfraganId, ForfraganSvarRequest svarRequest) {
-        return null;
+    private ResultTypeUtil() {
     }
+
+    public static ResultType ok() {
+        ResultType result = new ResultType();
+        result.setResultCode(ResultCodeType.OK);
+        return result;
+    }
+
 }

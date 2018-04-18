@@ -55,6 +55,7 @@ ext {
     mockitoVersion = "2.16.0"
     powermockFullVersion = "1.7.3"
     unitilsCoreVersion = "3.3"
+    assertJVersion = "3.9.1"
 }
 
 allprojects {

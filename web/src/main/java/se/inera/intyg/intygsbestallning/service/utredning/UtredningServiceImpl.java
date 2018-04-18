@@ -18,6 +18,16 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
+import static java.util.Objects.isNull;
+import static java.util.stream.Collectors.toList;
+import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
+import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
+import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
+import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +44,10 @@ import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
+import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
 import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
+import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.pdl.LogService;
@@ -44,6 +56,7 @@ import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStateResolver;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
@@ -54,7 +67,6 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningRespo
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListBestallningFilter;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListBestallningFilterStatus;
-import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentType;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -66,13 +78,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static java.util.Objects.isNull;
-import static java.util.stream.Collectors.toList;
-import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
-import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 
 @Service
 @Transactional
@@ -99,11 +104,6 @@ public class UtredningServiceImpl implements UtredningService {
     private HsaOrganizationsService organizationUnitService;
 
     @Override
-    public Utredning registerNewUtredning(RequestHealthcarePerformerForAssessmentType req) {
-        return null;
-    }
-
-    @Override
     public List<UtredningListItem> findExternForfraganByLandstingHsaId(String landstingHsaId) {
         return utredningRepository.findAllByExternForfragan_LandstingHsaId(landstingHsaId)
                 .stream()
@@ -113,6 +113,20 @@ public class UtredningServiceImpl implements UtredningService {
 
     @Override
     public GetUtredningResponse getExternForfragan(String utredningId, String landstingHsaId) {
+        Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
+                () -> new IbNotFoundException("Utredning with assessmentId '" + utredningId + "' does not exist."));
+
+        if (!Objects.equals(utredning.getExternForfragan().getLandstingHsaId(), landstingHsaId)) {
+            throw new IbNotFoundException(
+                    "Utredning with assessmentId '" + utredningId + "' does not have ExternForfragan for landsting with id '"
+                            + landstingHsaId + "'");
+        }
+
+        return GetUtredningResponse.from(utredning);
+    }
+
+    @Override
+    public GetUtredningResponse getUtredning(String utredningId, String landstingHsaId) {
         Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
                 () -> new IbNotFoundException("Utredning with assessmentId '" + utredningId + "' does not exist."));
 
@@ -212,6 +226,39 @@ public class UtredningServiceImpl implements UtredningService {
         }
         utredningRepository.save(utredning);
         return utredning;
+    }
+
+    @Override
+    public Utredning registerNewUtredning(final AssessmentRequest request) {
+
+        final ExternForfragan externForfragan = anExternForfragan()
+                .withInkomDatum(LocalDateTime.now())
+                .withBesvarasSenastDatum(request.getBesvaraSenastDatum())
+                .withKommentar(request.getKommentar())
+                .withLandstingHsaId(request.getLandstingHsaId())
+                .build();
+
+        final List<TidigareUtforare> tidigareUtforareList = request.getInvanareTidigareUtforare()
+                .stream()
+                .map(u -> aTidigareUtforare()
+                        .withTidigareEnhetId(u)
+                        .build())
+                .collect(toList());
+
+        final Invanare invanare = anInvanare()
+                .withPostkod(request.getInvanarePostkod())
+                .withSarskildaBehov(request.getInvanareSarskildaBehov())
+                .withTidigareUtforare(tidigareUtforareList)
+                .build();
+
+        return utredningRepository.save(anUtredning()
+                .withUtredningId(UUID.randomUUID().toString())
+                .withUtredningsTyp(request.getUtredningsTyp())
+                .withExternForfragan(externForfragan)
+                .withInvanare(invanare)
+                .withHandlaggare(createHandlaggare(request.getBestallare()))
+                .withSprakTolk(request.getTolkSprak())
+                .build());
     }
 
     @Override

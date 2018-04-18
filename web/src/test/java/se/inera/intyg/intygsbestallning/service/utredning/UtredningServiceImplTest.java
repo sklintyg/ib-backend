@@ -62,6 +62,7 @@ import static se.inera.intyg.intygsbestallning.service.utredning.dto.OrderReques
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtredningServiceImplTest {
+
     @Mock
     private UtredningRepository utredningRepository;
 
