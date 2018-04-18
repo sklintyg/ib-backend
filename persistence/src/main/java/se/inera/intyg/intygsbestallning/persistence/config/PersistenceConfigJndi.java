@@ -41,7 +41,7 @@ public class PersistenceConfigJndi extends PersistenceConfig {
         DataSource dataSource = null;
         JndiTemplate jndi = new JndiTemplate();
         try {
-            dataSource = (DataSource) jndi.lookup("java:comp/env/jdbc/ib");
+            dataSource = (DataSource) jndi.lookup("java:comp/env/jdbc/intygsbestallning");
         } catch (NamingException e) {
         }
         return dataSource;

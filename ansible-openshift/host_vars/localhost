@@ -1,11 +1,11 @@
 ---
 
 # Configuration repository
-environment_name: "demo"
+environment_name: "openshift"
 config_etc_folder: "{{ config_folder }}/{{ environment_name }}"
 
 # Spring profiles
-profiles: dev,caching-enabled,ib-stub
+profiles: test,caching-enabled,ib-stub
 
 tomcat7_user: ine-app
 tomcat7_group: ine-app
