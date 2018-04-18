@@ -18,10 +18,9 @@
  */
 
 angular.module('ibApp')
-    .controller('IndexCtrl',
-        function($scope, UserModel) {
+    .controller('ListaForfragningarCtrl',
+        function() {
             'use strict';
 
-            $scope.role = UserModel.get().currentRole.desc;
         }
     );

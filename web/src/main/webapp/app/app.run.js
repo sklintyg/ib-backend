@@ -70,6 +70,18 @@ angular
                 _redirect($state, toState.name, event, 'app.selectunit', {}, {
                     location: false
                 });
+            } else if (UserModel.get().loggedIn && UserModel.get().currentRole && toState.name === 'app.login') {
+                // If user has a role redirect to start view for that role
+                if (UserModel.get().currentRole.name === 'FMU_SAMORDNARE') {
+                    _redirect($state, toState.name, event, 'app.samordnare.listaUtredningar', {}, {
+                        location: 'replace'
+                    });
+                }
+                else if (UserModel.get().currentRole.name === 'FMU_VARDADMIN') {
+                    _redirect($state, toState.name, event, 'app.vardadmin.listaForfragningar', {}, {
+                        location: 'replace'
+                    });
+                }
             }
             if (toState.data && angular.isFunction(toState.data.rule)) {
                 var result = toState.data.rule(fromState, toState, UserModel);

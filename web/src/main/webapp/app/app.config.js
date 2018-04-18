@@ -26,7 +26,7 @@ angular
     'use strict';
 
         // Default route is "Landing page"
-        $urlRouterProvider.otherwise('/app/index');
+        $urlRouterProvider.otherwise('/app/login');
 
         // Use /#/ syntax. True = regular / syntax
         $locationProvider.html5Mode(false);

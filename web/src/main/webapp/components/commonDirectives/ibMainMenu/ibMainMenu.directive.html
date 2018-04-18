@@ -1,0 +1,12 @@
+<div id="huvudmeny" class="navbar navbar-ib">
+
+    <ul class="nav navbar-nav">
+      <li ng-class="{active: isActive(menu.state)}" ng-repeat="menu in menuDefs">
+        <a ui-sref="{{menu.state}}"
+           id="{{menu.id}}">{{menu.label}}
+          <span id="{{menu.statNumberId}}" ng-if="menu.getStat()>0" class="badge badge__stat"
+                title="{{menu.statTooltip}}">{{menu.getStat()}}</span></a>
+      </li>
+    </ul>
+
+</div>

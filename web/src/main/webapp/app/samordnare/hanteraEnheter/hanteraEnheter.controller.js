@@ -17,20 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('ibApp').config(function($stateProvider) {
-    'use strict';
-    $stateProvider.state('app.selectunit', {
-        url: '/selectunit',
-        views: {
-            'header@': {
-                templateUrl: '/app/selectunit/selectunit.header.html'
-            },
-            'navbar@': {},
-            'app@': {
-                templateUrl: '/app/selectunit/selectunit.page.html',
-                controller: 'SelectUnitPageCtrl'
-            }
-        }
-    });
-});
+angular.module('ibApp')
+    .controller('HanteraEnheterCtrl',
+        function() {
+            'use strict';
 
+        }
+    );

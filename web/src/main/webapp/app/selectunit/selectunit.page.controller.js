@@ -28,8 +28,15 @@ angular.module('ibApp')
             $scope.onUnitSelected = function(enhet) {
                 UserProxy.changeSelectedUnit(enhet.id).then(function(updatedUserModel) {
                     UserModel.set(updatedUserModel);
-
-                    $state.go('app.index');
+                    if (updatedUserModel.currentRole.name === 'FMU_SAMORDNARE') {
+                        $state.go('app.samordnare.listaUtredningar');
+                    }
+                    else if (updatedUserModel.currentRole.name === 'FMU_VARDADMIN') {
+                        $state.go('app.vardadmin.listaForfragningar');
+                    }
+                    else {
+                        $state.go('app.selectunit');
+                    }
                 }, function() {
                     //Handle errors
                 });

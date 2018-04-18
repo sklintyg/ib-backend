@@ -1,0 +1,73 @@
+//Local variables
+
+$navbar-border-bottom-color: $ib-color-15;
+$nav-border-color: $ib-color-15;
+$navbar-collapse-border-left-color: $ib-color-13;
+
+$stat-circle-background-color: $ib-color-22;
+$stat-circle-color: $ib-color-00;
+$stat-circle-active-color: $ib-color-00;
+$stat-circle-active-background-color: $ib-color-11;
+$stat-circle-active-border-color: $ib-color-11;
+
+ib-main-menu {
+  display: block;
+  background-color: $ib-color-26;
+
+  .navbar {
+    display: flex;
+    align-items: center;
+
+    // center the entire directive, and constrain the max width
+    max-width: $ib-max-content-width;
+    margin: auto;
+
+    min-height: 0;
+    padding: 0;
+    border-radius: 0;
+    border: 0;
+  }
+
+  .navbar-ib {
+    border-color: transparent;
+    .navbar-collapse {
+      padding: 0;
+    }
+    .navbar-nav {
+      > li > a {
+        @extend %ib-typo-10;
+        color: $ib-color-00;
+        line-height: normal;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 22.5px;
+        padding: 5px 15px;
+        margin: 6px 26px;
+        text-decoration: none;
+
+        &:hover,
+        &:focus {
+          background-color: $ib-color-19;
+          border-color: $ib-color-21;
+        }
+      }
+
+      > .active > a {
+        &,
+        &:hover,
+        &:focus {
+          @extend %ib-typo-05;
+          background-color: $ib-color-21;
+        }
+      }
+    }
+  }
+
+  .badge__stat {
+    @extend %ib-typo-13;
+    margin-left: 10px;
+    background-color: $ib-color-20;
+    border-color: $ib-color-20;
+    color: $ib-color-19;
+  }
+}
