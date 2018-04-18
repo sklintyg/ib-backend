@@ -18,12 +18,13 @@
  */
 
 
-@import "mixins/variables";
+@import "mixins/ib-variables";
 @import "mixins/ib-typo";
-@import '../bower_components/bootstrap-sass/assets/stylesheets/bootstrap.scss';
+@import "mixins/bootstrap-variables-override"; // Bootstrap override variables must be loaded before bootstrap due to its !default flags
+@import '../bower_components/bootstrap-sass/assets/stylesheets/bootstrap.scss';  // Load bootstrap defaults
 @import '../bower_components/font-awesome/scss/font-awesome.scss';
 @import "../bower_components/jquery-date-range-picker/src/daterangepicker";
-@import "mixins/bootstrap-override";
+@import "mixins/bootstrap-css-override"; // CSS Override only, no bootstrap variables
 
 @import "mixins/general";
 
@@ -43,7 +44,6 @@
 @import 'vardadmin/avslutadeUtredningar/avslutadeUtredningar.page.scss';
 @import 'vardadmin/listaForfragningar/listaForfragningar.page.scss';
 @import 'vardadmin/pagaendeUtredningar/pagaendeUtredningar.page.scss';
-@import 'vendor-override.scss';
 @import 'commonDirectives/ibCookieBanner/ibCookieBanner.directive.scss';
 @import 'commonDirectives/ibMainMenu/ibMainMenu.directive.scss';
 @import 'commonDirectives/ibSpinner/ibSpinner.scss';

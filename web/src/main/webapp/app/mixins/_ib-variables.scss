@@ -1,0 +1,75 @@
+// Widths
+
+//how wide should effective content on page grow to before add spacing to sides
+$ib-max-content-width: 1440px;
+
+//colors
+$ib-color-07: #212121;
+$ib-color-08: #3C3C3C;
+$ib-color-09: #6A6A6A;
+$ib-color-22: #9A9A9A;
+$ib-color-23: #A9B2BD;
+$ib-color-15: #CDCED6;
+$ib-color-27: #D7D7DD;
+$ib-color-13: #E1E1E1;
+$ib-color-28: #E9EAED;
+$ib-color-20: #F2F2F2;
+$ib-color-24: #F5F6F7;
+$ib-color-00: #FFFFFF;
+
+$ib-color-01: #F8BFC5;
+$ib-color-04: #9A303B;
+$ib-color-11: #DA4453;
+
+$ib-color-30: #355547;
+$ib-color-16: #4C7B67;
+$ib-color-10: #37BC9B;
+$ib-color-29: #99E5D2;
+
+$ib-color-05: #765A20;
+$ib-color-12: #F6BB42;
+$ib-color-18: #FFC794;
+$ib-color-02: #FFEBBA;
+
+$ib-color-19: #292F4F;
+$ib-color-17: #3D4260;
+$ib-color-06: #003C75;
+$ib-color-26: #4B566F;
+$ib-color-14: #70748A;
+
+$ib-color-21: #496CEC;
+$ib-color-25: #8AA7F5;
+$ib-color-03: #B3E5FC;
+
+// Shadows
+$black_30: rgba(0, 0, 0, 0.3);
+$black_24: rgba(0, 0, 0, 0.24);
+$black_12: rgba(0, 0, 0, 0.12);
+
+// Glyphicon (remove when material icons are used for this)
+$glyphicon-question-sign-color: $ib-color-16;
+$glyphicon-question-sign-hover-color: $ib-color-10;
+
+// WC BOOTSTRAP TWEAK VARIABLES (UNOFFICIAL)
+
+// Button
+$btn-common-hover-background-color: $ib-color-21;
+$btn-common-hover-text-color: $ib-color-00;
+
+// Dropdown
+$dropdown-menu-box-shadow-color: $black_30;
+
+// Tables
+$table-striped-background-color-even: $ib-color-20;
+$table-striped-background-color-odd: $ib-color-00;
+$table-striped-border-radius: 4px;
+
+// Nav
+$nav-pills-color: $ib-color-00;
+$nav-pills-a-border-color: $ib-color-13;
+$nav-pills-background-color: $ib-color-16;
+$nav-pills-text-shadow-color: $black_30;
+$nav-pills-active-chevron-right-color: $ib-color-00;
+$nav-stacked-chevron-right-color: $ib-color-08;
+
+$footer-height: 240px;

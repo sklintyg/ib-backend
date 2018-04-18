@@ -1,0 +1,45 @@
+/*!
+ * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+// OFFICIAL BOOTSTRAP VARIABLES ONLY - see http://getbootstrap.com/docs/3.3/customize/#less-variables
+
+// Alerts
+$alert-info-bg: $ib-color-03;
+$alert-info-text: $ib-color-06;
+$alert-warning-bg: $ib-color-02;
+$alert-warning-text: $ib-color-05;
+$alert-danger-bg: $ib-color-01;
+$alert-danger-text: $ib-color-04;
+$alert-success-bg: $ib-color-29;
+$alert-success-text: $ib-color-30;
+
+// Buttons
+$btn-default-bg: $ib-color-00;
+$btn-default-border: $ib-color-17;
+$btn-default-color: $ib-color-17;
+
+$btn-success-bg: $ib-color-16;
+$btn-success-border: $ib-color-16;
+$btn-success-color: $ib-color-00;
+$btn-primary-bg: $ib-color-14;
+$btn-primary-border: $ib-color-14;
+$btn-primary-color: $ib-color-00;
+
+// Tooltips
+$popover-bg: $ib-color-19;

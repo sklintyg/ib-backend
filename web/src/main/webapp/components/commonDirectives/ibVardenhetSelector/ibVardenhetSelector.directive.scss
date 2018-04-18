@@ -1,8 +1,8 @@
 .ib-vardenhet-selector {
 
   .vardgivare-title {
-    @extend %ib-typo-04;
-    background: $rs-color-06;
+    @extend %ib-typo-05;
+    background: $ib-color-20;
     padding: 10px 20px;
     margin-bottom: 5px;
     margin-top: 10px;
@@ -15,13 +15,13 @@
   }
 
   .active-enhet {
-    color: $rs-color-03;
+    color: $ib-color-03;
     vertical-align: baseline;
     cursor: default;
   }
 
   .toggle-icon {
-    color: $rs-color-10;
+    color: $ib-color-10;
     cursor: pointer;
   }
 

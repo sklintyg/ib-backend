@@ -9,7 +9,7 @@
 
   .panel-title {
     cursor: pointer;
-    font-size: $ib-font-size-h4;
+    @extend %ib-typo-07;
 
     .glyphicon {
       margin-top: 3px;
