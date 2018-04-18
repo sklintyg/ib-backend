@@ -62,7 +62,7 @@ public class RequestHealthcarePerformerForAssessmentIT extends BaseRestIntegrati
 
     @After
     public void cleanup() {
-
+        // Radera?
     }
 
     @SuppressWarnings("unused")

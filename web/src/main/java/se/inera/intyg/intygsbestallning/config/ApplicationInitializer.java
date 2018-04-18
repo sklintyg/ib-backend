@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.config;
 
+import io.prometheus.client.exporter.MetricsServlet;
 import org.apache.cxf.transport.servlet.CXFServlet;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.web.WebApplicationInitializer;
@@ -118,6 +119,13 @@ public class ApplicationInitializer implements WebApplicationInitializer {
         ServletRegistration.Dynamic cxfServlet = servletContext.addServlet("services", new CXFServlet());
         cxfServlet.setLoadOnStartup(1);
         cxfServlet.addMapping("/services/*");
+
+        io.prometheus.client.hotspot.DefaultExports.initialize();
+
+        // Prometheus filter
+        ServletRegistration.Dynamic prometheusServlet = servletContext.addServlet("prometheus", new MetricsServlet());
+        prometheusServlet.setLoadOnStartup(1);
+        prometheusServlet.addMapping("/metrics/*");
 
         // Listeners for session audit logging
         servletContext.addListener(new HttpSessionEventPublisher());

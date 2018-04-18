@@ -30,6 +30,7 @@ import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
+import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.service.forfragan.ForfraganService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
@@ -56,6 +57,7 @@ public class ForfraganController {
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
+    @PrometheusTimeMethod(name = "list_all_forfragningar_duration_seconds", help = "Some helpful info here")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetForfraganListResponse> getAllForfragningarForUser() {
         IbUser user = userService.getUser();
@@ -68,6 +70,7 @@ public class ForfraganController {
         return ResponseEntity.ok(new GetForfraganListResponse(forfragningar));
     }
 
+    @PrometheusTimeMethod(name = "get_forfragan_duration_seconds", help = "Some helpful info here")
     @GetMapping(path = "/{forfraganId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetForfraganResponse> getForfragan(@PathVariable("forfraganId") Long forfraganId) {
         IbUser user = userService.getUser();
@@ -78,6 +81,7 @@ public class ForfraganController {
         return ResponseEntity.ok(forfragan);
     }
 
+    @PrometheusTimeMethod(name = "besvara_forfragan_duration_seconds", help = "Some helpful info here")
     @PostMapping(path = "/{forfragan}/besvara", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ForfraganSvarResponse> besvaraForfragan(@PathVariable("forfraganId") Long forfraganId,
             ForfraganSvarRequest request) {

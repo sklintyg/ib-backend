@@ -55,6 +55,10 @@
   <security:http security="none" pattern="/webjars/**" />
   <security:http security="none" pattern="/v2/api-docs" />
 
+  <!-- Prometheus metrics -->
+  <security:http security="none" pattern="/metrics" />
+
+
   <security:http security="none" create-session="never" pattern="/api/session-auth-check/**"/>
 
   <!-- Logger for SAML messages and events -->
