@@ -16,20 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.common.util;
+package se.inera.intyg.intygsbestallning.persistence.repository;
 
-import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
-import se.riv.intygsbestallning.certificate.order.v1.ResultType;
+import org.springframework.data.jpa.repository.JpaRepository;
+import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 
-public final class ResutTypeUtil {
-
-    private ResutTypeUtil() {
-    }
-
-    public static ResultType ok() {
-        ResultType result = new ResultType();
-        result.setResultCode(ResultCodeType.OK);
-        return result;
-    }
-
+public interface ExternForfraganRepository extends JpaRepository<ExternForfragan, Long> {
 }

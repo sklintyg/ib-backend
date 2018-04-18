@@ -19,6 +19,7 @@
 package se.inera.intyg.intygsbestallning.service.utredning;
 
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
@@ -27,13 +28,10 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganRespo
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListBestallningFilter;
-import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentType;
 
 import java.util.List;
 
 public interface UtredningService {
-
-    Utredning registerNewUtredning(RequestHealthcarePerformerForAssessmentType req);
 
     /**
      * Retrieves all {@link se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan} for a specific landsting.
@@ -42,6 +40,8 @@ public interface UtredningService {
      * @return
      */
     List<UtredningListItem> findExternForfraganByLandstingHsaId(String landstingHsaId);
+
+    GetUtredningResponse getUtredning(String utredningId, String landstingHsaId);
 
     /**
      * Retrieves the {@link se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan} for a specific UtredningId.
@@ -93,6 +93,18 @@ public interface UtredningService {
     Utredning registerNewUtredning(OrderRequest order);
 
     /**
+     * Handles the new incomming request for FMU.
+     * <p>
+     * Creates a {@link se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan}
+     * and a  {@link se.inera.intyg.intygsbestallning.persistence.model.Utredning}
+     * information is available.
+     *
+     * @param request
+     * @return
+     */
+    Utredning registerNewUtredning(AssessmentRequest request);
+
+    /**
      * Gets all ongoing bestallningar for a given vardenhet.
      *
      * @param vardenhetHsaId
@@ -107,8 +119,8 @@ public interface UtredningService {
      * @return
      */
     ListBestallningFilter buildListBestallningFilter(String vardenhetHsaId);
-    
-    
+
+
     /**
      * Ends the utredning with the reason if available.
      *

@@ -18,46 +18,47 @@
  */
 package se.inera.intyg.intygsbestallning.web.responder;
 
-import org.apache.cxf.annotations.SchemaValidation;
-import org.springframework.stereotype.Service;
+import static java.util.Objects.isNull;
+import static se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil.ok;
+import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
 
 import com.google.common.base.Preconditions;
-
+import org.apache.cxf.annotations.SchemaValidation;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
 import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentResponseType;
 import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentType;
 import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.rivtabp21.RequestHealthcarePerformerForAssessmentResponderInterface;
-import se.riv.intygsbestallning.certificate.order.v1.IIType;
-import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
-import se.riv.intygsbestallning.certificate.order.v1.ResultType;
 
 @Service
 @SchemaValidation
 public class RequestHealthcarePerformerForAssessmentResponderImpl
         implements RequestHealthcarePerformerForAssessmentResponderInterface {
 
+    @Value("${source.system.hsaid:}")
+    private String sourceSystemHsaId;
+
+    private final UtredningService utredningService;
+
+    public RequestHealthcarePerformerForAssessmentResponderImpl(final UtredningService utredningService) {
+        this.utredningService = utredningService;
+    }
+
     @Override
     public RequestHealthcarePerformerForAssessmentResponseType requestHealthcarePerformerForAssessment(
             final String logicalAddress, final RequestHealthcarePerformerForAssessmentType request) {
 
-        Preconditions.checkArgument(null != logicalAddress);
-        Preconditions.checkArgument(null != request);
+        Preconditions.checkArgument(!isNull(logicalAddress));
+        Preconditions.checkArgument(!isNull(request));
 
-        return createDummyResponse();
-    }
+        final Utredning sparadUtredning = utredningService.registerNewUtredning(AssessmentRequest.from(request));
 
-    private RequestHealthcarePerformerForAssessmentResponseType createDummyResponse() {
         RequestHealthcarePerformerForAssessmentResponseType response = new RequestHealthcarePerformerForAssessmentResponseType();
-
-        ResultType resultType = new ResultType();
-        resultType.setResultCode(ResultCodeType.OK);
-
-        IIType iiType = new IIType();
-        iiType.setExtension("DUMMY_EXTENSION");
-        iiType.setRoot("DUMMY_ROOT");
-
-        response.setAssessmentId(iiType);
-        response.setResult(resultType);
-
+        response.setResult(ok());
+        response.setAssessmentId(anII(sourceSystemHsaId, sparadUtredning.getUtredningId()));
         return response;
     }
 }

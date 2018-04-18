@@ -18,6 +18,10 @@
  */
 package se.inera.intyg.intygsbestallning.testutil;
 
+import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.aCv;
+import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
+
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
@@ -27,7 +31,12 @@ import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.IbUserDetailsService;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.util.SystemRolesParser;
+import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentType;
+import se.riv.intygsbestallning.certificate.order.v1.AddressType;
+import se.riv.intygsbestallning.certificate.order.v1.AuthorityAdministrativeOfficialType;
+import se.riv.intygsbestallning.certificate.order.v1.CitizenLimitedType;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +46,8 @@ import java.util.Map;
  * Helper base class, provides data setup for tests.
  */
 public final class TestDataGen {
+
+    public final static LocalDateTime DATE_TIME = LocalDateTime.of(2018, 11, 11, 11, 11, 11);
 
     private static final String USER_HSA_ID = "user-1";
     private static final String USER_NAME = "Läkar Läkarsson";
@@ -105,6 +116,42 @@ public final class TestDataGen {
         vardgivare.add(vg2);
         vardgivare.add(vg4);
         return vardgivare;
+    }
+
+    public static RequestHealthcarePerformerForAssessmentType createFullRequest() {
+        CitizenLimitedType citizen = new CitizenLimitedType();
+        citizen.setPostalCity(aCv("postalCity", null, null));
+        citizen.setSpecialNeeds("specialNeeds");
+        citizen.getEarlierAssessmentPerformer().addAll(ImmutableList.of(
+                anII("root", "1"),
+                anII("root", "2"),
+                anII("root", "3")));
+
+        AddressType address = new AddressType();
+        address.setPostalAddress("postalAddress");
+        address.setPostalCode("postalCode");
+        address.setPostalCity("postalCity");
+
+        AuthorityAdministrativeOfficialType authorityAdmin = new AuthorityAdministrativeOfficialType();
+        authorityAdmin.setFullName("fullName");
+        authorityAdmin.setPhoneNumber("phoneNumber");
+        authorityAdmin.setEmail("email");
+        authorityAdmin.setAuthority(aCv("authority", null, null));
+        authorityAdmin.setOfficeName("officeName");
+        authorityAdmin.setOfficeCostCenter("officeCostCenter");
+        authorityAdmin.setOfficeAddress(address);
+
+        RequestHealthcarePerformerForAssessmentType request = new RequestHealthcarePerformerForAssessmentType();
+        request.setCertificateType(aCv("AFU", null, null));
+        request.setLastResponseDate(DATE_TIME.toString());
+        request.setCoordinatingCountyCouncilId(anII("root", "coordinatingCountyCouncilId"));
+        request.setComment("comment");
+        request.setNeedForInterpreter(true);
+        request.setInterpreterLanguage(aCv("language", null, null));
+        request.setAuthorityAdministrativeOfficial(authorityAdmin);
+        request.setCitizen(citizen);
+
+        return request;
     }
 
     private static Map<String, String> buildMiUPerEnhetsIdMap() {

@@ -143,7 +143,6 @@ public class InternForfragan {
         private LocalDateTime skapadDatum;
         private String kommentar;
         private ForfraganSvar forfraganSvar;
-
         private InternForfraganBuilder() {
         }
 

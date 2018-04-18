@@ -21,6 +21,9 @@ package se.inera.intyg.intygsbestallning.service.forfragan;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganSvarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganSvarResponse;
 
-public interface ForfraganService {
-    ForfraganSvarResponse besvaraForfragan(Long forfraganId, ForfraganSvarRequest svarRequest);
+public interface ExternForfraganService {
+
+    default ForfraganSvarResponse besvaraForfragan(Long forfraganId, ForfraganSvarRequest svarRequest) {
+        return null;
+    }
 }

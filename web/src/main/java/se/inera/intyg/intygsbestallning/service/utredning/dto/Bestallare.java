@@ -86,13 +86,13 @@ public final class Bestallare {
             return new BestallareBuilder();
         }
 
-        public BestallareBuilder withFullstandigtNamn(String fullName) {
-            this.fullstandigtNamn = fullName;
+        public BestallareBuilder withFullstandigtNamn(String fullstandigtNamn) {
+            this.fullstandigtNamn = fullstandigtNamn;
             return this;
         }
 
-        public BestallareBuilder withTelefonnummer(String phoneNumber) {
-            this.telefonnummer = phoneNumber;
+        public BestallareBuilder withTelefonnummer(String telefonnummer) {
+            this.telefonnummer = telefonnummer;
             return this;
         }
 
@@ -106,8 +106,8 @@ public final class Bestallare {
             return this;
         }
 
-        public BestallareBuilder withKontor(String officeName) {
-            this.kontor = officeName;
+        public BestallareBuilder withKontor(String kontor) {
+            this.kontor = kontor;
             return this;
         }
 
@@ -116,33 +116,63 @@ public final class Bestallare {
             return this;
         }
 
-        public BestallareBuilder withAdress(String postalAddress) {
-            this.adress = postalAddress;
+        public BestallareBuilder withAdress(String adress) {
+            this.adress = adress;
             return this;
         }
 
-        public BestallareBuilder withPostkod(String postalCode) {
-            this.postkod = postalCode;
+        public BestallareBuilder withPostkod(String postkod) {
+            this.postkod = postkod;
             return this;
         }
 
-        public BestallareBuilder withStad(String postalCity) {
-            this.stad = postalCity;
+        public BestallareBuilder withStad(String stad) {
+            this.stad = stad;
             return this;
         }
 
         public Bestallare build() {
             Bestallare bestallare = new Bestallare();
             bestallare.telefonnummer = this.telefonnummer;
-            bestallare.email = this.email;
-            bestallare.stad = this.stad;
-            bestallare.postkod = this.postkod;
-            bestallare.myndighet = this.myndighet;
             bestallare.kontor = this.kontor;
-            bestallare.adress = this.adress;
-            bestallare.fullstandigtNamn = this.fullstandigtNamn;
             bestallare.kostnadsstalle = this.kostnadsstalle;
+            bestallare.postkod = this.postkod;
+            bestallare.stad = this.stad;
+            bestallare.fullstandigtNamn = this.fullstandigtNamn;
+            bestallare.email = this.email;
+            bestallare.myndighet = this.myndighet;
+            bestallare.adress = this.adress;
             return bestallare;
         }
     }
+
+    //CHECKSTYLE:OFF OperatorWrap
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final Bestallare that = (Bestallare) o;
+        return java.util.Objects.equals(fullstandigtNamn, that.fullstandigtNamn) &&
+                java.util.Objects.equals(telefonnummer, that.telefonnummer) &&
+                java.util.Objects.equals(email, that.email) &&
+                java.util.Objects.equals(myndighet, that.myndighet) &&
+                java.util.Objects.equals(kontor, that.kontor) &&
+                java.util.Objects.equals(kostnadsstalle, that.kostnadsstalle) &&
+                java.util.Objects.equals(adress, that.adress) &&
+                java.util.Objects.equals(postkod, that.postkod) &&
+                java.util.Objects.equals(stad, that.stad);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return java.util.Objects.hash(fullstandigtNamn, telefonnummer, email, myndighet, kontor, kostnadsstalle, adress, postkod, stad);
+    }
+
+    //CHECKSTYLE:ON OperatorWrap
 }

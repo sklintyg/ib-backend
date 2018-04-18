@@ -31,7 +31,7 @@ import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
-import se.inera.intyg.intygsbestallning.service.forfragan.ForfraganService;
+import se.inera.intyg.intygsbestallning.service.forfragan.ExternForfraganService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
@@ -53,7 +53,7 @@ public class ForfraganController {
     private UtredningService utredningService;
 
     @Autowired
-    private ForfraganService forfraganService;
+    private ExternForfraganService externForfraganService;
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
@@ -88,7 +88,7 @@ public class ForfraganController {
         IbUser user = userService.getUser();
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_VISA_FORFRAGAN)
                 .orThrow(new IbAuthorizationException("User is not allowed to view the requested resource"));
-        ForfraganSvarResponse response = forfraganService.besvaraForfragan(forfraganId, request);
+        ForfraganSvarResponse response = externForfraganService.besvaraForfragan(forfraganId, request);
         return ResponseEntity.ok(response);
     }
 }

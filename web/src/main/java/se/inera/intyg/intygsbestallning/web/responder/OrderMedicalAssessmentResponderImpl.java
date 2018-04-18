@@ -23,7 +23,7 @@ import org.apache.cxf.annotations.SchemaValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.intygsbestallning.common.util.ResutTypeUtil;
+import se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
@@ -65,7 +65,7 @@ public class OrderMedicalAssessmentResponderImpl implements OrderMedicalAssessme
         response.setAssessmentId(
                 anII(isNull(request.getAssessmentId()) ? sourceSystemHsaId : request.getAssessmentId().getRoot(),
                         utredning.getUtredningId()));
-        response.setResult(ResutTypeUtil.ok());
+        response.setResult(ResultTypeUtil.ok());
         return response;
     }
 }
