@@ -21,8 +21,9 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 public class ForfraganListItem {
     private Long forfraganId;
     private String vardenhetHsaId;
-    private String tilldeladDatum;
+    private String inkomDatum;
     private String besvarasSenastDatum;
+    private String planeringsDatum;
     private String status;
     private String kommentar;
 
@@ -42,12 +43,12 @@ public class ForfraganListItem {
         this.vardenhetHsaId = vardenhetHsaId;
     }
 
-    public String getTilldeladDatum() {
-        return tilldeladDatum;
+    public String getInkomDatum() {
+        return inkomDatum;
     }
 
-    public void setTilldeladDatum(String tilldeladDatum) {
-        this.tilldeladDatum = tilldeladDatum;
+    public void setInkomDatum(String inkomDatum) {
+        this.inkomDatum = inkomDatum;
     }
 
     public String getBesvarasSenastDatum() {
@@ -56,6 +57,14 @@ public class ForfraganListItem {
 
     public void setBesvarasSenastDatum(String besvarasSenastDatum) {
         this.besvarasSenastDatum = besvarasSenastDatum;
+    }
+
+    public String getPlaneringsDatum() {
+        return planeringsDatum;
+    }
+
+    public void setPlaneringsDatum(String planeringsDatum) {
+        this.planeringsDatum = planeringsDatum;
     }
 
     public String getStatus() {

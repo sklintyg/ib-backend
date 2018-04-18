@@ -1,3 +1,9 @@
 <div class="container listaUtredningar-page">
-  Lista utredningar
+
+  <utredning-filter></utredning-filter>
+
+  Sökresultat: {{utredningar.length}} av {{utredningarTotal}} beställningar
+
+  <ib-table data="utredningar" column-config="utredningarConfig"></ib-table>
+
 </div>

@@ -18,3 +18,9 @@ body {
 input[type=search]::-ms-clear {
   display: none;
 }
+
+.content-wrapper > div > .container
+{
+  width: auto;
+  max-width: $ib-max-content-width;
+}

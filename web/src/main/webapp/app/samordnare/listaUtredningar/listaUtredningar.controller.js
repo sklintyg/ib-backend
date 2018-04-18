@@ -19,8 +19,35 @@
 
 angular.module('ibApp')
     .controller('ListaUtredningarCtrl',
-        function() {
+        function($log, $scope, UtredningarProxy) {
             'use strict';
+
+            $scope.utredningarConfig = [{
+                headerKey: 'label.table.utredningar.column.id',
+                prop: 'utredningsId'
+            },{
+                headerKey: 'label.table.utredningar.column.typ',
+                prop: 'utredningsTyp'
+            },{
+                headerKey: 'label.table.utredningar.column.vardenhet',
+                prop: 'vardgivareNamn'
+            },{
+                headerKey: 'label.table.utredningar.column.fas',
+                prop: 'fas'
+            },{
+                headerKey: 'label.table.utredningar.column.slutdatumFas',
+                prop: 'slutdatumFas'
+            },{
+                headerKey: 'label.table.utredningar.column.status',
+                prop: 'status'
+            }];
+
+            UtredningarProxy.getUtredningar().then(function(data) {
+                $scope.utredningar = data.utredningar;
+                $scope.utredningarTotal = data.totalCount;
+            }, function(error) {
+                $log.error(error);
+            });
 
         }
     );

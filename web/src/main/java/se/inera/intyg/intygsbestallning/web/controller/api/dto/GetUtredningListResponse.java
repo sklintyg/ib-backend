@@ -22,13 +22,15 @@ import java.util.List;
 
 public class GetUtredningListResponse {
     private List<UtredningListItem> utredningar;
+    private int totalCount;
 
     private GetUtredningListResponse() {
 
     }
 
-    public GetUtredningListResponse(List<UtredningListItem> utredningar) {
+    public GetUtredningListResponse(List<UtredningListItem> utredningar, int totalCount) {
        this.utredningar = utredningar;
+       this.totalCount = totalCount;
     }
 
     public List<UtredningListItem> getUtredningar() {
@@ -37,5 +39,13 @@ public class GetUtredningListResponse {
 
     public void setUtredningar(List<UtredningListItem> utredningar) {
         this.utredningar = utredningar;
+    }
+
+    public int getTotalCount() {
+        return totalCount;
+    }
+
+    public void setTotalCount(int totalCount) {
+        this.totalCount = totalCount;
     }
 }

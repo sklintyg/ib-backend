@@ -23,9 +23,8 @@ public class UtredningListItem {
     private String utredningsId;
     private String utredningsTyp;
     private String vardgivareNamn;
-    private String inkomDatum;
-    private String besvarasSenastDatum;
-    private String planeringsDatum;
+    private String fas;
+    private String slutdatumFas;
     private String status;
 
     public String getUtredningsId() {
@@ -52,28 +51,20 @@ public class UtredningListItem {
         this.vardgivareNamn = vardgivareNamn;
     }
 
-    public String getInkomDatum() {
-        return inkomDatum;
+    public String getFas() {
+        return fas;
     }
 
-    public void setInkomDatum(String inkomDatum) {
-        this.inkomDatum = inkomDatum;
+    public void setFas(String fas) {
+        this.fas = fas;
     }
 
-    public String getBesvarasSenastDatum() {
-        return besvarasSenastDatum;
+    public String getSlutdatumFas() {
+        return slutdatumFas;
     }
 
-    public void setBesvarasSenastDatum(String besvarasSenastDatum) {
-        this.besvarasSenastDatum = besvarasSenastDatum;
-    }
-
-    public String getPlaneringsDatum() {
-        return planeringsDatum;
-    }
-
-    public void setPlaneringsDatum(String planeringsDatum) {
-        this.planeringsDatum = planeringsDatum;
+    public void setSlutdatumFas(String slutdatumFas) {
+        this.slutdatumFas = slutdatumFas;
     }
 
     public String getStatus() {

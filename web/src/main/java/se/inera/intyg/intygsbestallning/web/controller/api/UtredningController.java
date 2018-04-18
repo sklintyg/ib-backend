@@ -57,7 +57,7 @@ public class UtredningController {
 
         // Do a SAMORDNARE search...
         List<UtredningListItem> utredningar = utredningService.findUtredningarByVardgivareHsaId(user.getCurrentlyLoggedInAt().getId());
-        return ResponseEntity.ok(new GetUtredningListResponse(utredningar));
+        return ResponseEntity.ok(new GetUtredningListResponse(utredningar, utredningar.size()));
     }
 
     @GetMapping(path = "/{utredningId}", produces = MediaType.APPLICATION_JSON_VALUE)

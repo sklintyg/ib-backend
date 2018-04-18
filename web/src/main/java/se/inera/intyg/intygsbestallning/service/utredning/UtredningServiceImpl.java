@@ -151,9 +151,6 @@ public class UtredningServiceImpl implements UtredningService {
         fli.setKommentar(f.getKommentar());
         fli.setStatus(f.getStatus());
         fli.setVardenhetHsaId(f.getVardenhetHsaId());
-        if (f.getTilldeladDatum() != null) {
-            fli.setTilldeladDatum(f.getTilldeladDatum().format(DateTimeFormatter.ISO_LOCAL_DATE));
-        }
         return fli;
     }
 
@@ -179,8 +176,6 @@ public class UtredningServiceImpl implements UtredningService {
         uli.setUtredningsId(u.getUtredningId());
         uli.setUtredningsTyp(u.getUtredningsTyp());
         uli.setVardgivareNamn(u.getVardgivareHsaId() + "-namnet");
-        uli.setBesvarasSenastDatum(u.getBesvarasSenastDatum().format(DateTimeFormatter.ISO_LOCAL_DATE));
-        uli.setInkomDatum(u.getInkomDatum().format(DateTimeFormatter.ISO_LOCAL_DATE));
         return uli;
     }
 }

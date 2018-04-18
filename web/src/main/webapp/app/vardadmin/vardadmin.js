@@ -8,7 +8,8 @@ angular.module('ibApp').config(function($stateProvider) {
             'header@': {
                 templateUrl: '/app/header/header.html',
                 controller: 'HeaderController'
-            }
+            },
+            'footer@': {}
         }
     });
 
