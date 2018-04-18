@@ -1,0 +1,218 @@
+
+@font-face {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 300;
+  src: local('Roboto Light'), local('Roboto-Light'),
+  url('/assets/fonts/roboto/Roboto-Light.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+  url('/assets/fonts/roboto/Roboto-Light.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+@font-face {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 400;
+  src: local('Roboto'), local('Roboto-Regular'),
+  url('/assets/fonts/roboto/Roboto-Regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+  url('/assets/fonts/roboto/Roboto-Regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+@font-face {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 500;
+  src: local('Roboto Medium'), local('Roboto-Medium'),
+  url('/assets/fonts/roboto/Roboto-Medium.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+  url('/assets/fonts/roboto/Roboto-Medium.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+@font-face {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 700;
+  src: local('Roboto Bold'), local('Roboto-Bold'),
+  url('/assets/fonts/roboto/Roboto-Bold.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+  url('/assets/fonts/roboto/Roboto-Bold.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+//Font priority
+$font-0: Roboto;
+$font-1: helvetica;
+$font-2: arial;
+$font-3: sans-serif;
+
+
+@mixin font-variant-light($font-size: 14px) {
+  font-family: $font-0, $font-1, $font-2, $font-3;
+  font-size: $font-size;
+  font-weight: 300;
+}
+
+@mixin font-variant-regular($font-size: 14px) {
+  font-family: $font-0, $font-1, $font-2, $font-3;
+  font-size: $font-size;
+  font-weight: 400;
+}
+
+@mixin font-variant-medium($font-size: 14px) {
+  font-family: $font-0, $font-1, $font-2, $font-3;
+  font-size: $font-size;
+  font-weight: 500;
+}
+
+@mixin font-variant-bold($font-size: 14px) {
+  font-family: $font-0, $font-1, $font-2, $font-3;
+  font-size: $font-size;
+  font-weight: 700;
+}
+
+
+/*
+Placeholders for the typography classes.
+
+Note that the typo classes does NOT specify color or background, as this is not part of
+the ib-typo-xx specs (https://inera-certificate.atlassian.net/wiki/spaces/IT/pages/166953134/A+-+Typografi)
+
+Color and background should be specified at the extension point, eg:
+
+.vardgivare {
+      @extend %ib-typo-05;
+      color: $wc-color-09;
+ }
+
+ */
+
+%ib-typo-01 {
+  @include font-variant-light(25px);
+}
+
+%ib-typo-02 {
+  @include font-variant-medium(18px);
+}
+
+%ib-typo-03 {
+  @include font-variant-light(18px);
+}
+
+%ib-typo-04 {
+  @include font-variant-bold(18px);
+}
+
+%ib-typo-05 {
+  @include font-variant-medium(16px);
+}
+
+%ib-typo-06 {
+  @include font-variant-medium(14px);
+}
+
+%ib-typo-07 {
+  @include font-variant-regular(14px);
+}
+
+%ib-typo-08 {
+  @include font-variant-regular(14px);
+  text-decoration: underline;
+}
+
+%ib-typo-09 {
+  @include font-variant-regular(12px);
+}
+
+%ib-typo-10 {
+  @include font-variant-regular(16px);
+}
+
+%ib-typo-11 {
+  @include font-variant-regular(12px);
+  font-style: italic;
+}
+
+%ib-typo-12 {
+  @include font-variant-regular(14px);
+  font-style: italic;
+}
+
+%ib-typo-13 {
+  @include font-variant-bold(12px);
+}
+
+%ib-typo-14 {
+  @include font-variant-bold(14px);
+}
+
+//WC - Demo font styles - ONLY to be used in views/font-demo.html!
+.font-variant-light {
+  @include font-variant-light(24px);
+  font-size: inherit;
+}
+.font-variant-regular {
+  @include font-variant-regular(24px);
+  font-size: inherit;
+}
+.font-variant-medium {
+  @include font-variant-medium(24px);
+  font-size: inherit;
+}
+.font-variant-bold {
+  @include font-variant-bold(24px);
+  font-size: inherit;
+}
+//--------------------------------------
+
+%fonts {
+  font-size: 14px;
+  font-family: $font-0, $font-1, $font-2, $font-3;
+  text-align: left;
+}
+
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: url(/assets/fonts/MaterialIcons-Regular.eot); /* For IE6-8 */
+  src: local('Material Icons'),
+  local('MaterialIcons-Regular'),
+  url(/assets/fonts/MaterialIcons-Regular.woff2) format('woff2'),
+  url(/assets/fonts/MaterialIcons-Regular.woff) format('woff'),
+  url(/assets/fonts/MaterialIcons-Regular.ttf) format('truetype');
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;  /* (24px) Preferred icon size */
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+  vertical-align: middle;
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Support for IE. */
+  font-feature-settings: 'liga';
+}
+
+.material-icons.md-18 { font-size: 18px; }
+.material-icons.md-24 { font-size: 24px; }
+.material-icons.md-36 { font-size: 36px; }
+.material-icons.md-48 { font-size: 48px; }
+
+.material-icons.md-dark { color: rgba(0, 0, 0, 0.54); }
+.material-icons.md-dark.md-inactive { color: rgba(0, 0, 0, 0.26); }
+
+.material-icons.md-light { color: rgba(255, 255, 255, 1); }
+.material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
+
+
