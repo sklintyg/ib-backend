@@ -29,7 +29,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jndi.JndiTemplate;
 
 import liquibase.integration.spring.SpringLiquibase;
-import se.inera.intyg.intygsbestallning.persistence.liquibase.DbChecker;
 
 @Configuration
 @Profile("!dev")
@@ -52,8 +51,8 @@ public class PersistenceConfigJndi extends PersistenceConfig {
 
     // @Bean(name = "dbUpdate")
     // DbChecker checkDb(DataSource dataSource) {
-    //    return new DbChecker(dataSource, "changelog/changelog.xml");
-    //}
+    // return new DbChecker(dataSource, "changelog/changelog.xml");
+    // }
 
     @Bean(name = "dbUpdate")
     SpringLiquibase initDb(DataSource dataSource) {
