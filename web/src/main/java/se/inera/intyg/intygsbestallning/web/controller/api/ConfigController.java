@@ -18,8 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api;
 
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +26,11 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import se.inera.intyg.infra.dynamiclink.model.DynamicLink;
 import se.inera.intyg.infra.dynamiclink.service.DynamicLinkService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetConfigResponse;
+
+import java.util.Map;
 
 /**
  * Created by marced on 2016-02-09.
@@ -44,6 +43,7 @@ public class ConfigController {
 
     private static final String PROJECT_VERSION_PROPERTY = "project.version";
     private static final String UTREDNING_PAMINNELSE_DAGAR_PROPERTY = "ib.utredning.paminnelse.dagar";
+    private static final int PAMINNELSE_DAGAR_DEFAULT_VALUE = 10;
 
     @Autowired
     private DynamicLinkService dynamicLinkService;
@@ -59,13 +59,12 @@ public class ConfigController {
     public GetConfigResponse getConfig() {
         Integer utredningPaminnelseDagar;
         try {
-            utredningPaminnelseDagar = Integer.parseInt(env.getProperty(UTREDNING_PAMINNELSE_DAGAR_PROPERTY, ""), 10);
-        }
-        catch(NumberFormatException e) {
+            utredningPaminnelseDagar = Integer.parseInt(env.getProperty(UTREDNING_PAMINNELSE_DAGAR_PROPERTY, ""),
+                    PAMINNELSE_DAGAR_DEFAULT_VALUE);
+        } catch (NumberFormatException e) {
             LOG.error("Configuration property '{}' has not been set to integer!", UTREDNING_PAMINNELSE_DAGAR_PROPERTY);
             utredningPaminnelseDagar = 0;
         }
-
         return new GetConfigResponse(env.getProperty(PROJECT_VERSION_PROPERTY), utredningPaminnelseDagar);
     }
 
