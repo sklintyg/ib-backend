@@ -1,0 +1,17 @@
+<span ng-switch="hasHelp">
+  <a ng-switch-when="true"
+     ng-click="toggleSort()"
+     class="ib-table-head unbreakable"
+     uib-popover-html="helpText"
+     popover-trigger="mouseenter"
+     popover-placement="top"
+     popover-popup-delay="300"
+     popover-append-to-body="true">
+    {{text}} <i class="fa fa-sort"></i>
+  </a>
+  <a ng-switch-when="false"
+     ng-click="toggleSort()"
+     class="ib-table-head unbreakable">
+    {{text}} <i class="fa fa-sort"></i>
+  </a>
+</span>

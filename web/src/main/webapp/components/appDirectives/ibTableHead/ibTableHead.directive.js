@@ -25,15 +25,21 @@ angular.module('ibApp').directive('ibTableHead',
 
         return {
             restrict: 'A',
-            templateUrl: '/components/appDirectives/ibTable/ibTableHead/ibTableHead.directive.html',
+            templateUrl: '/components/appDirectives/ibTableHead/ibTableHead.directive.html',
             scope: {
                 labelKey: '@',
-                helpKey: '@'
+                helpKey: '@',
+                toggleSort: '&'
             },
             link: function($scope) {
 
                 $scope.text = messageService.getProperty($scope.labelKey);
-                $scope.helpText = messageService.getProperty($scope.helpKey);
+
+                $scope.hasHelp = false;
+                if ($scope.helpKey) {
+                    $scope.hasHelp = true;
+                    $scope.helpText = messageService.getProperty($scope.helpKey);
+                }
 
             }
         };

@@ -1,0 +1,18 @@
+
+ib-utredning-slutdatum-fas {
+
+  .icon-container {
+    display: inline-block;
+    width: 16px;
+    .material-icons {
+      font-size: 16px;
+    }
+    .slutdatumPaminnelse {
+      color: $ib-color-21;
+    }
+    .slutdatumPassed {
+      color: $ib-color-04;
+    }
+  }
+
+}

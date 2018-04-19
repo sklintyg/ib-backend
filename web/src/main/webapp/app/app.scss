@@ -27,6 +27,7 @@
 @import "mixins/bootstrap-css-override"; // CSS Override only, no bootstrap variables
 
 @import "mixins/general";
+@import "mixins/ib-table";
 
 // Component styles are injected through grunt
 // injector
@@ -45,8 +46,9 @@
 @import 'vardadmin/avslutadeUtredningar/avslutadeUtredningar.page.scss';
 @import 'vardadmin/listaForfragningar/listaForfragningar.page.scss';
 @import 'vardadmin/pagaendeUtredningar/pagaendeUtredningar.page.scss';
-@import 'appDirectives/ibTable/ibTable.directive.scss';
-@import 'appDirectives/ibTable/ibTableHead/ibTableHead.directive.scss';
+@import 'appDirectives/ibTableHead/ibTableHead.directive.scss';
+@import 'appDirectives/ibUtredningSlutdatumFas/ibUtredningSlutdatumFas.directive.scss';
+@import 'appDirectives/ibUtredningStatus/ibUtredningStatus.directive.scss';
 @import 'commonDirectives/ibCookieBanner/ibCookieBanner.directive.scss';
 @import 'commonDirectives/ibMainMenu/ibMainMenu.directive.scss';
 @import 'commonDirectives/ibSpinner/ibSpinner.scss';

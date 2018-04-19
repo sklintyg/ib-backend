@@ -44,7 +44,7 @@ var ibMessages = {
         'label.table.utredningar.column.typ': 'Utredningstyp',
         'label.table.utredningar.column.vardenhet': 'Vårdenhet',
         'label.table.utredningar.column.fas': 'Fas',
-        'label.table.utredningar.column.slutdatumFas': 'Slutdatum fas',
+        'label.table.utredningar.column.slutdatumfas': 'Slutdatum fas',
         'label.table.utredningar.column.status': 'Status'
 
     },

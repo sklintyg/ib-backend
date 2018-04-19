@@ -17,17 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('ibApp').directive('ibTable',
-    [
-        function() {
-            'use strict';
+angular.module('ibApp').directive('ibUtredningStatus',
+    function() {
+        'use strict';
 
-            return {
-                restrict: 'E',
-                templateUrl: '/components/appDirectives/ibTable/ibTable.directive.html',
-                scope: {
-                    columnConfig: '<',
-                    data: '<'
+        return {
+            restrict: 'E',
+            templateUrl: '/components/appDirectives/ibUtredningStatus/ibUtredningStatus.directive.html',
+            scope: {
+                status: '<'
+            },
+            link: function($scope) {
+                if ($scope.status === 'FORFRAGAN_INKOMMEN' || $scope.status === 'TILLDELA_UTREDNING') {
+                    $scope.kraverAtgard = true;
                 }
-            };
-        }]);
+            }
+        };
+    });

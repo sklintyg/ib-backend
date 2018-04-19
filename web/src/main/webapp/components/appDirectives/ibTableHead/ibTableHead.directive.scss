@@ -3,6 +3,7 @@
 $th-link-color: $ib-color-08;
 
 a.ib-table-head {
+  cursor: pointer;
   color: $th-link-color;
   text-decoration: none;
   &:hover, &:focus {
