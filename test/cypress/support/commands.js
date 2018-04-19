@@ -31,5 +31,10 @@ Cypress.Commands.add("login", (loginId, unitId) => {
     cy.window().should('have.property', 'disableAnimations').then((disableAnimations) => {
         disableAnimations();
     });
-    cy.get('#ib-vardenhet-selector-select-active-unit-' + unitId + '-link').click();
+    if (unitId) {
+        cy.get('#ib-vardenhet-selector-select-active-unit-' + unitId + '-link').click();
+    }
+    cy.get('#cookie-usage-consent-btn').click();
+    cy.get('#cookie-usage-consent-btn').should('not.be.visible');
+
 });

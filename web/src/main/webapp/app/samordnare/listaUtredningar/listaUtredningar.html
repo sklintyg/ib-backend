@@ -2,9 +2,9 @@
 
   <utredning-filter></utredning-filter>
 
-  Sökresultat: {{utredningar.length}} av {{utredningarTotal}} beställningar
+  <span id="samordnare-lista-utredningar-resulttext">Sökresultat: {{utredningar.length}} av {{utredningarTotal}} beställningar</span>
 
-  <table class="table table-striped ib-table-striped hidden-xs hidden-sm">
+  <table id="samordnare-lista-utredningar-table" class="table table-striped ib-table-striped">
     <thead>
       <tr>
         <th ib-table-head label-key="label.table.utredningar.column.id"></th>
@@ -29,7 +29,7 @@
     </tbody>
   </table>
 
-  <div class="col-md-12" ng-if="!utredningar.length">
+  <div id="samordnare-lista-utredningar-no-results" ng-if="!utredningar.length">
     Inget resultat hittades för den valda filtreringen. Överväg att ändra filtreringen för att utöka resultatet.
   </div>
 
