@@ -5,7 +5,7 @@ environment_name: "openshift"
 config_etc_folder: "{{ config_folder }}/{{ environment_name }}"
 
 # Spring profiles
-profiles: test,caching-enabled,ib-stub
+profiles: test,caching-enabled,ib-stub,wc-pu-stub,wc-hsa-stub
 
 tomcat7_user: ine-app
 tomcat7_group: ine-app
