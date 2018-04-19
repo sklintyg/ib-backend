@@ -18,16 +18,18 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.config;
 
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jndi.JndiTemplate;
-import se.inera.intyg.intygsbestallning.persistence.liquibase.DbChecker;
 
-import javax.naming.NamingException;
-import javax.sql.DataSource;
+import liquibase.integration.spring.SpringLiquibase;
+import se.inera.intyg.intygsbestallning.persistence.liquibase.DbChecker;
 
 @Configuration
 @Profile("!dev")
@@ -48,8 +50,16 @@ public class PersistenceConfigJndi extends PersistenceConfig {
     }
     // CHECKSTYLE:ON EmptyBlock
 
+    // @Bean(name = "dbUpdate")
+    // DbChecker checkDb(DataSource dataSource) {
+    //    return new DbChecker(dataSource, "changelog/changelog.xml");
+    //}
+
     @Bean(name = "dbUpdate")
-    DbChecker checkDb(DataSource dataSource) {
-        return new DbChecker(dataSource, "changelog/changelog.xml");
+    SpringLiquibase initDb(DataSource dataSource) {
+        SpringLiquibase springLiquibase = new SpringLiquibase();
+        springLiquibase.setDataSource(dataSource);
+        springLiquibase.setChangeLog("classpath:changelog/changelog.xml");
+        return springLiquibase;
     }
 }
