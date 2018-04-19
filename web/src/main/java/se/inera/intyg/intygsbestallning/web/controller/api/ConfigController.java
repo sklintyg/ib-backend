@@ -20,6 +20,8 @@ package se.inera.intyg.intygsbestallning.web.controller.api;
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
@@ -38,7 +40,10 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetConfigResponse
 @RequestMapping("/api/config")
 public class ConfigController {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigController.class);
+
     private static final String PROJECT_VERSION_PROPERTY = "project.version";
+    private static final String UTREDNING_PAMINNELSE_DAGAR_PROPERTY = "ib.utredning.paminnelse.dagar";
 
     @Autowired
     private DynamicLinkService dynamicLinkService;
@@ -52,7 +57,16 @@ public class ConfigController {
 
     @GetMapping
     public GetConfigResponse getConfig() {
-        return new GetConfigResponse(env.getProperty(PROJECT_VERSION_PROPERTY));
+        Integer utredningPaminnelseDagar;
+        try {
+            utredningPaminnelseDagar = Integer.parseInt(env.getProperty(UTREDNING_PAMINNELSE_DAGAR_PROPERTY, ""), 10);
+        }
+        catch(NumberFormatException e) {
+            LOG.error("Configuration property '{}' has not been set to integer!", UTREDNING_PAMINNELSE_DAGAR_PROPERTY);
+            utredningPaminnelseDagar = 0;
+        }
+
+        return new GetConfigResponse(env.getProperty(PROJECT_VERSION_PROPERTY), utredningPaminnelseDagar);
     }
 
     @GetMapping(path = "/links", produces = MediaType.APPLICATION_JSON_VALUE)

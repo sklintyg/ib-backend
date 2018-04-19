@@ -24,8 +24,11 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 public class GetConfigResponse {
     private String version;
 
-    public GetConfigResponse(String version) {
+    private Integer utredningPaminnelseDagar;
+
+    public GetConfigResponse(String version, Integer utredningPaminnelseDagar) {
         this.version = version;
+        this.utredningPaminnelseDagar = utredningPaminnelseDagar;
     }
 
     public String getVersion() {
@@ -36,4 +39,11 @@ public class GetConfigResponse {
         this.version = version;
     }
 
+    public Integer getUtredningPaminnelseDagar() {
+        return utredningPaminnelseDagar;
+    }
+
+    public void setUtredningPaminnelseDagar(Integer utredningPaminnelseDagar) {
+        this.utredningPaminnelseDagar = utredningPaminnelseDagar;
+    }
 }

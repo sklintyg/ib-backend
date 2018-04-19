@@ -4,10 +4,14 @@
   "properties": {
     "version": {
       "type": "string"
+    },
+    "utredningPaminnelseDagar": {
+      "type": "integer"
     }
   },
   "required": [
-    "version"
+    "version",
+    "utredningPaminnelseDagar"
   ],
   "title": "GetConfigResponse transport model",
   "type": "object",
