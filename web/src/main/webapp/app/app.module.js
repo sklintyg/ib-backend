@@ -24,6 +24,7 @@ angular.module('ibApp', [
     'ngSanitize',
     'ngStorage',
     'ngMessages',
+    'smoothScroll',
     'ui.router',
     'ui.bootstrap',
     'smart-table',

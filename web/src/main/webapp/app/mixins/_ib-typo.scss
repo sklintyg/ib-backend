@@ -83,7 +83,7 @@ Color and background should be specified at the extension point, eg:
  */
 
 %ib-typo-01 {
-  @include font-variant-light(25px);
+  @include font-variant-regular(10px);
 }
 
 %ib-typo-02 {

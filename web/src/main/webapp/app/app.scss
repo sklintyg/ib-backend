@@ -31,8 +31,6 @@
 
 // Component styles are injected through grunt
 // injector
-@import 'about/about.scss';
-@import 'about/subpages/faq.scss';
 @import 'error/error.scss';
 @import 'error/restErrorDialog.scss';
 @import 'footer/footer.scss';
@@ -49,6 +47,15 @@
 @import 'appDirectives/ibTableHead/ibTableHead.directive.scss';
 @import 'appDirectives/ibUtredningSlutdatumFas/ibUtredningSlutdatumFas.directive.scss';
 @import 'appDirectives/ibUtredningStatus/ibUtredningStatus.directive.scss';
+@import 'commonDirectives/ibAppHeader/ibAppHeader.directive.scss';
+@import 'commonDirectives/ibAppHeader/ibAppHeader.variables.scss';
+@import 'commonDirectives/ibAppHeader/ibHeaderActions/about/aboutDialog.template.scss';
+@import 'commonDirectives/ibAppHeader/ibHeaderActions/about/vanliga-fragor/ibFaqQuestion.directive.scss';
+@import 'commonDirectives/ibAppHeader/ibHeaderActions/about/vanliga-fragor/ibFaqToggler.directive.scss';
+@import 'commonDirectives/ibAppHeader/ibHeaderActions/ibHeaderActions.directive.scss';
+@import 'commonDirectives/ibAppHeader/ibHeaderUnit/ibChangeActiveUnitDialog.scss';
+@import 'commonDirectives/ibAppHeader/ibHeaderUnit/ibHeaderUnit.directive.scss';
+@import 'commonDirectives/ibAppHeader/ibHeaderUser/ibHeaderUser.directive.scss';
 @import 'commonDirectives/ibCookieBanner/ibCookieBanner.directive.scss';
 @import 'commonDirectives/ibMainMenu/ibMainMenu.directive.scss';
 @import 'commonDirectives/ibSpinner/ibSpinner.scss';

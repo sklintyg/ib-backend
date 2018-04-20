@@ -1,0 +1,11 @@
+<div class="ib-header-directive-container last">
+
+  <i class="header-icon icon-ib-ikon-14 icon-ib-32"></i>
+  <div class="vertical-container">
+    <!-- first item in vertical container -->
+    <div class="single-text-row-container">
+      <div class="text-nowrap vg-name" ng-if="getUser().currentlyLoggedInAt.parentName">{{getUser().currentlyLoggedInAt.parentName}}&nbsp;-&nbsp;</div>
+      <div class="truncate-when-needed ve-name">{{getUser().currentlyLoggedInAt.name}}</div>
+    </div>
+  </div>
+</div>

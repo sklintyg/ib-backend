@@ -83,6 +83,9 @@ angular.module('ibApp').factory('StringHelper',
             },
             compareSwedishString: function(asc, caseSensitive, a, b) {
                 return compareSwedishString(asc === true ? 1 : -1, caseSensitive, a, b);
+            },
+            endsWith: function (str, suffix) {
+                return angular.isString(str) && angular.isString(suffix) && str.indexOf(suffix, str.length - suffix.length) !== -1;
             }
         };
 

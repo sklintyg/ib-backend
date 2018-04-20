@@ -5,10 +5,6 @@ angular.module('ibApp').config(function($stateProvider) {
         abstract: true, // jshint ignore:line
         url: '/samordnare',
         views: {
-            'header@': {
-                templateUrl: '/app/header/header.html',
-                controller: 'HeaderController'
-            },
             'footer@': {}
         }
     });

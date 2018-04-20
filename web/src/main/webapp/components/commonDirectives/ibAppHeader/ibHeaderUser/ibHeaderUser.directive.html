@@ -1,0 +1,18 @@
+<div class="ib-header-directive-container">
+
+  <i class="header-icon material-icons md-36">person</i>
+
+  <div class="vertical-container">
+    <div class="single-text-row-container">
+      <span class="truncate-when-needed user-name logged-in" id="ib-header-user-name">{{user.namn}}</span>
+      <span class="text-nowrap" id="ib-header-user-role" ng-if="user.currentRole">&nbsp;-&nbsp;{{user.currentRole.desc}}</span>
+    </div>
+  </div>
+
+
+  <button type="button" id="expand-usermenu-btn" class="btn btn-link" ng-click="toggleMenu($event)" ng-if="menu.enabled">
+    <i class="material-icons md-24">{{menu.expanded ? 'expand_less': 'expand_more'}}</i>
+  </button>
+
+
+</div>

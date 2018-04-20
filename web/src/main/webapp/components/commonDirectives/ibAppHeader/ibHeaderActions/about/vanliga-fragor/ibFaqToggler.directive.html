@@ -1,0 +1,5 @@
+<div class="btn-group pull-right" role="group">
+  <button type="button" class="btn btn-default" ng-class="{'btn-primary active': vm.mode === true}" ng-click="toggle($event, true)">Visa alla svar</button>
+  <button type="button" class="btn btn-default" ng-class="{'btn-primary active': vm.mode === false}" ng-click="toggle($event, false)">Dölj alla svar</button>
+</div>
+<div ng-transclude></div>

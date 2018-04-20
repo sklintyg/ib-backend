@@ -1,0 +1,64 @@
+.ib-header-care-unit-dialog-window-class {
+
+  .modal-dialog {
+    width: 95vw;
+    max-width: 800px;
+  }
+  .modal-body {
+    max-height: 600px;
+    overflow-y: auto;
+    padding: 16px 16px;
+  }
+}
+
+.ib-header-care-unit-dialog-template {
+
+  .row {
+    padding: 4px 0;
+    margin: 0;
+
+    i {
+      display: inline-block;
+      width: 22px;
+    }
+
+    &.vardgivare {
+      @extend %ib-typo-05;
+      color: $ib-color-09;
+      background-color: $ib-color-20;
+      padding: 7px 0;
+      margin-top: 8px;
+    }
+
+    &.vardenhet {
+      @extend %ib-typo-06;
+      color: $ib-color-08;
+    }
+
+    &.mottagning {
+      @extend %ib-typo-07;
+      color: $ib-color-08;
+
+      button {
+        padding-left: 38px;
+      }
+    }
+
+    .enhet-stat {
+      padding: 7px 15px;
+      color: $ib-color-09;
+    }
+
+    .btn-link {
+      text-decoration: underline;
+      padding-left: 0;
+      font-weight: inherit;
+    }
+
+    .material-icons {
+      cursor: pointer;
+    }
+  }
+
+
+}

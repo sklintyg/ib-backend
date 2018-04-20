@@ -1,0 +1,124 @@
+@import '../ibAppHeader.variables.scss';
+
+//Local variables
+$ib-header-hamburger-width: 50px;
+
+ib-header-actions {
+
+  //default is to act as a growing, shrinkable flex-item, taking excessive widths
+  flex: 1 1 auto;
+  justify-content: flex-end;
+
+  @media (max-width: $ib-header-collapse-breakpoint-width) {
+    //but in compact mode, instead dont let it grow
+    flex-grow: 0;
+  }
+
+  //is a flex container that lays out the different "help" sections
+  display: flex;
+  //push all items to the right
+  justify-content: flex-end;
+
+  //base text color for this component
+  color: $ib-color-00;
+
+
+  button.action-button {
+    text-align: center;
+    @extend %ib-typo-01;
+    color: $ib-color-00;
+    background-color: transparent;
+    border: none;
+    width: 100%;
+    height: 100%;
+
+    border-width: 0 6px;
+    border-style: solid;
+    //The png contains a 12 pixel wide alpha-gradient that is sliced to left/right borders of the different directives.
+    border-image-source: url(/components/commonDirectives/ibAppHeader/divider-border.png);
+    border-image-slice: 0 50%;
+    border-image-repeat: round;
+
+    &.last {
+      border-right: none;
+    }
+
+    .material-icons {
+      padding-bottom: 4px;
+    }
+    &:hover {
+      background-color: $ib-color-21;
+      color: $ib-color-20;
+    }
+    &:active {
+      outline: none;
+    }
+  }
+
+  .ib-header-directive-container {
+    min-width: 80px;
+    padding: 0;
+    display: flex;
+    flex: 0 1 auto;
+    border: none;
+
+    &.create-account-section {
+      @extend %ib-typo-07;
+      a {
+        @extend %ib-typo-06;
+      }
+      flex: 1 5;
+      justify-content: flex-end;
+      .vertical-container {
+        align-items: flex-end;
+      }
+    }
+
+    &.hamburger-menu {
+      padding: 0;
+      flex: 0 auto;
+      min-width: 1px;
+      width: $ib-header-hamburger-width;
+      display: flex;
+      justify-content: flex-end;
+      box-shadow: none;
+
+      &.expanded {
+        //leftmost shadow
+        box-shadow: 0 -5px 8px 0 rgba(0, 0, 0, 0.32);
+      }
+
+      .btn {
+        padding: 0;
+      }
+
+    }
+
+  }
+
+  //Dropdown fo hamburgermenu is a bit special since it should be wider than the containing element (the hamburgermenu)
+  //we place it absolutely right under the ib-app-header.
+  .dropdown {
+    position: absolute;
+    z-index: 1;
+    right: 0;
+    top: $ib-header-height;
+
+    //Create a cover plate to overlay the part of the dropdowns boxshadow that overlap the hamburger menu
+    .dropshadowfixer {
+      position: absolute;
+      top: -5px;
+      right: 0;
+      width: $ib-header-hamburger-width;
+      height: 5px;
+      z-index: 1003;
+      background-color: $ib-color-17;
+
+    }
+  }
+  //Override ib-app-header style for this particular dropdown
+  .dropdown-menu {
+    box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.32);
+  }
+
+}

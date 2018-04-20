@@ -1,0 +1,35 @@
+ib-faq-question {
+
+  display: block;
+  margin-bottom: 5px;
+
+  > .panel {
+
+    &.faq-panel {
+      background-color: $ib-color-00;
+      border: 1px solid $ib-color-15;
+      border-radius: 4px;
+
+      > .panel-heading {
+        padding: 8px 9px 7px 9px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        @extend %ib-typo-14;
+        color: $ib-color-07;
+        a {
+          text-decoration: none;
+        }
+      }
+
+      > .panel-body {
+        padding: 0;
+        > .panel-content {
+          @extend %ib-typo-07;
+          color: $ib-color-07;
+          padding: 12px 27px 20px 29px;
+        }
+      }
+    }
+  }
+}

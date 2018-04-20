@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,18 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-angular.module('ibApp').config(function($stateProvider) {
+/**
+ Note: This directive is not rendered unless a valid userModel is available, so all access to $scope.userModel can skips such checks.
+ */
+angular.module('ibApp').directive('ibHeaderUser', [ 'UserModel', function(UserModel) {
     'use strict';
-    $stateProvider.state('app.selectunit', {
-        url: '/selectunit',
-        views: {
-             'navbar@': {},
-            'app@': {
-                templateUrl: '/app/selectunit/selectunit.page.html',
-                controller: 'SelectUnitPageCtrl'
-            }
-        }
-    });
-});
 
+    return {
+        restrict: 'E',
+        scope: {},
+        templateUrl: '/components/commonDirectives/ibAppHeader/ibHeaderUser/ibHeaderUser.directive.html',
+        link: function($scope) {
+
+            $scope.user = UserModel.get();
+
+        }
+    };
+} ]);

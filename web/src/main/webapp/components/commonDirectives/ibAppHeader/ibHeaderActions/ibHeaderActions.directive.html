@@ -1,0 +1,45 @@
+<!-- Settings -->
+<div class="ib-header-directive-container hidden-sm hidden-xs" ng-if="vm.showSettings">
+  <button type="button" class="action-button text-nowrap" id="settingsLinkBtn" ng-click="onSettingsClick()">
+    <i class="material-icons md-24">message</i><br>Inställningar
+  </button>
+</div>
+
+<!-- System Role -->
+<div class="ib-header-directive-container hidden-sm hidden-xs" ng-if="vm.showChangeSystemRole">
+  <button type="button" class="action-button text-nowrap" id="changeSystemRoleLinkBtn" ng-click="onChangeSystemRoleClick()">
+    <i class="material-icons md-24">swap_vertical_circle</i><br>Byt roll
+  </button>
+</div>
+
+<!-- About -->
+<div class="ib-header-directive-container hidden-sm hidden-xs" ng-if="vm.showAbout">
+  <button type="button" class="action-button text-nowrap" id="aboutLinkBtn" ng-click="onAboutClick()">
+    <i class="material-icons md-24">info</i><br>Om tjänsten
+  </button>
+</div>
+
+<!-- Logout -->
+<div class="ib-header-directive-container hidden-sm hidden-xs" ng-if="vm.showLogout">
+  <button type="button" class="action-button last text-nowrap" id="logoutLinkBtn" ng-click="onLogoutClick()">
+    <i class="material-icons md-24">lock</i><br>Logga ut
+  </button>
+</div>
+
+<!-- Hamburger menu -->
+<div class="ib-header-directive-container hamburger-menu hidden-md hidden-lg" ng-class="{'expanded' : vm.expanded}">
+  <button type="button" id="expand-help-btn" class="action-button" ng-click="toggleMenu($event)">
+    <i class="material-icons md-36">more_vert</i>
+  </button>
+</div>
+<!-- this menu cant be relatively positioned, as it should not grow the width of the menu -->
+<div uib-dropdown is-open="vm.expanded" class="hidden-md hidden-lg">
+  <div class="dropshadowfixer" ng-if="vm.expanded"></div>
+  <ul uib-dropdown-menu>
+    <li ng-if="vm.showSettings"><a href="" id="settingsLinkBtn_dropdown" ng-click="onSettingsClick()">Inställningar</a></li>
+    <li ng-if="vm.showChangeSystemRole"><a href="" id="changeSystemRoleLinkBtn_dropdown" ng-click="onChangeSystemRoleClick()">Byt roll</a></li>
+    <li ng-if="vm.showAbout"><a href="" id="aboutLinkBtn_dropdown" ng-click="onAboutClick()">Om tjänsten</a></li>
+    <li ng-if="vm.showLogout"><a href="" id="logoutLinkBtn_dropdown" ng-click="onLogoutClick()">Logga ut</a></li>
+
+  </ul>
+</div>

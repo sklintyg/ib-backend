@@ -29,8 +29,7 @@ angular.module('ibApp').config(function($stateProvider) {
                 controller: 'AppPageCtrl'
             },
             'header@': {
-                templateUrl: '/app/header/header.html',
-                controller: 'HeaderController'
+                template: '<div class="header-wrapper"><ib-app-header></ib-app-header></div>'
             },
             'navbar@': {
                 templateUrl: '/app/navbar/navbar.html',

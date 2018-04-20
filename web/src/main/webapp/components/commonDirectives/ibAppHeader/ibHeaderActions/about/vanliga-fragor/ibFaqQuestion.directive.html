@@ -1,0 +1,10 @@
+<div class="panel faq-panel">
+  <div class="panel-heading">
+    <a href ng-click="toggle()">{{::title}}</a> <a href ng-click="toggle()"><i class="material-icons md-24">{{vm.open ? 'expand_less':'expand_more'}}</i></a>
+  </div>
+  <div class="panel-body" uib-collapse="!vm.open">
+    <div class="panel-content">
+      <div ng-transclude></div>
+    </div>
+  </div>
+</div>

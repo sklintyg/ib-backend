@@ -1,0 +1,75 @@
+//Style the about dialog
+.ib-header-about-modal {
+
+  &.modal-body {
+    height: 75vh;
+    overflow-y: scroll;
+
+  }
+  .modal-header {
+    h3 {
+      @extend %ib-typo-05;
+    }
+  }
+
+  .ib-about-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .panel {
+    &.ib-about-panel {
+      @extend %ib-typo-05;
+      color: $ib-color-08;
+      background-color: $ib-color-28;
+      border: none !important;
+      border-radius: 0;
+      box-shadow: none;
+
+      h4 {
+        @extend %ib-typo-14;
+        color: $ib-color-07;
+      }
+
+      > .panel-collapse > .panel-body {
+        @extend %ib-typo-07;
+        color: $ib-color-07;
+        background-color: $ib-color-00;
+        border: none !important;
+        border-radius: 0;
+        box-shadow: none;
+        padding: 12px 9px;
+      }
+
+      > .panel-heading {
+        padding: 7px 15px;
+      }
+
+      .panel-heading {
+        + .panel-collapse > .panel-body,
+        + .panel-collapse > .list-group {
+          border: none;
+        }
+        .panel-title {
+          @extend %ib-typo-05;
+          a {
+            text-decoration: none;
+          }
+
+        }
+
+      }
+    }
+
+  }
+
+  .category h2 {
+    @extend %ib-typo-14;
+    color: $ib-color-17;
+  }
+
+
+}
+
+

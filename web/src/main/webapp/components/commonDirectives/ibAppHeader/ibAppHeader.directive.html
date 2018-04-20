@@ -1,0 +1,14 @@
+<!-- logo is so simple and not used anywhere else, so it's a built-in part of the main ib-app-header directive -->
+<div class="logo" ng-class="{'hidden-sm hidden-xs' : user.loggedIn}">
+  <div class="logo-svg"></div>
+</div>
+
+<ib-header-user ng-if="loggedIn()"></ib-header-user>
+
+
+<ib-header-unit ng-if="showUnitSection()"></ib-header-unit>
+
+
+<ib-header-actions ng-if="loggedIn()"></ib-header-actions>
+
+
