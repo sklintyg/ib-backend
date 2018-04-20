@@ -24,13 +24,13 @@
         <td>{{::row.fas}}</td>
         <td><ib-utredning-slutdatum-fas fas="::row.fas" slutdatum="::row.slutdatumFas"></ib-utredning-slutdatum-fas></td>
         <td><ib-utredning-status status="::row.status"></ib-utredning-status></td>
-        <td><button class="btn btn-primary">Visa</button></td>
+        <td><button class="btn btn-primary"><span message key="common.show"></span></button></td>
       </tr>
     </tbody>
   </table>
 
   <div id="samordnare-lista-utredningar-no-results" ng-if="!utredningar.length">
-    Inget resultat hittades för den valda filtreringen. Överväg att ändra filtreringen för att utöka resultatet.
+    <span message key="common.no.results"></span>
   </div>
 
 </div>

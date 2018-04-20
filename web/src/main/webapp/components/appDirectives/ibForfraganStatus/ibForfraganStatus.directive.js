@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -17,17 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('ibApp')
-    .controller('ListaForfragningarCtrl',
-        function($log, $scope, ForfragningarProxy) {
-            'use strict';
+angular.module('ibApp').directive('ibForfraganStatus',
+    function() {
+        'use strict';
 
-            ForfragningarProxy.getForfragningar().then(function(data) {
-                $scope.forfragningar = data.forfragningar;
-                $scope.forfragningarTotal = data.totalCount;
-            }, function(error) {
-                $log.error(error);
-            });
-
-        }
-    );
+        return {
+            restrict: 'E',
+            templateUrl: '/components/appDirectives/ibForfraganStatus/ibForfraganStatus.directive.html',
+            scope: {
+                status: '<'
+            },
+            link: function($scope) {
+                if ($scope.status === 'INKOMMEN') {
+                    $scope.kraverAtgard = true;
+                }
+            }
+        };
+    });

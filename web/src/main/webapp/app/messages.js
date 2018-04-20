@@ -36,8 +36,11 @@ var ibMessages = {
         'common.date': 'Datum',
         'common.reset': 'Återställ',
         'common.approve': 'Godkänn',
+        'common.show': 'Visa',
 
         'common.label.loading': 'Laddar',
+
+        'common.no.results': 'Inget resultat hittades för den valda filtreringen. Överväg att ändra filtreringen för att utöka resultatet.',
 
         // Lista utredningar tabell
         'label.table.utredningar.column.id': 'Id',
@@ -45,7 +48,19 @@ var ibMessages = {
         'label.table.utredningar.column.vardenhet': 'Vårdenhet',
         'label.table.utredningar.column.fas': 'Fas',
         'label.table.utredningar.column.slutdatumfas': 'Slutdatum fas',
-        'label.table.utredningar.column.status': 'Status'
+        'label.table.utredningar.column.status': 'Status',
+
+        // Lista förfrågningar tabell
+        'label.table.forfragningar.column.id': 'Id',
+        'label.table.forfragningar.column.typ': 'Utredningstyp',
+        'label.table.forfragningar.column.landsting': 'Landsting',
+        'label.table.forfragningar.column.inkommet': 'Inkommet',
+        'label.table.forfragningar.column.inkommet.tooltip': 'Avser datumet då förfrågan inkom till vårdenheten.',
+        'label.table.forfragningar.column.svarsdatum': 'Svarsdatum',
+        'label.table.forfragningar.column.svarsdatum.tooltip': 'Datum då vårdenheten senast ska svara landstinget.',
+        'label.table.forfragningar.column.planeringsdatum': 'Planeringsdatum',
+        'label.table.forfragningar.column.planeringsdatum.tooltip': 'Potentiellt slutdatum för utredningen om beställning sker idag.',
+        'label.table.forfragningar.column.status': 'Status'
 
     },
     'en': {

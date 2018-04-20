@@ -22,13 +22,15 @@ import java.util.List;
 
 public class GetForfraganListResponse {
     private List<ForfraganListItem> forfragningar;
+    private int totalCount;
 
     private GetForfraganListResponse() {
 
     }
 
-    public GetForfraganListResponse(List<ForfraganListItem> forfragningar) {
+    public GetForfraganListResponse(List<ForfraganListItem> forfragningar, int totalCount) {
         this.forfragningar = forfragningar;
+        this.totalCount = totalCount;
     }
 
     public List<ForfraganListItem> getForfragningar() {
@@ -37,5 +39,13 @@ public class GetForfraganListResponse {
 
     public void setForfragningar(List<ForfraganListItem> forfragningar) {
         this.forfragningar = forfragningar;
+    }
+
+    public int getTotalCount() {
+        return totalCount;
+    }
+
+    public void setTotalCount(int totalCount) {
+        this.totalCount = totalCount;
     }
 }

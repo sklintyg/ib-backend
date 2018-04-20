@@ -147,10 +147,9 @@ public class UtredningServiceImpl implements UtredningService {
     private ForfraganListItem convertForfragan(Forfragan f) {
         ForfraganListItem fli = new ForfraganListItem();
         fli.setForfraganId(f.getInternreferens());
+        fli.setUtredningsId(f.getUtredningId());
         fli.setBesvarasSenastDatum(f.getBesvarasSenastDatum().format(DateTimeFormatter.ISO_LOCAL_DATE));
-        fli.setKommentar(f.getKommentar());
         fli.setStatus(f.getStatus());
-        fli.setVardenhetHsaId(f.getVardenhetHsaId());
         return fli;
     }
 

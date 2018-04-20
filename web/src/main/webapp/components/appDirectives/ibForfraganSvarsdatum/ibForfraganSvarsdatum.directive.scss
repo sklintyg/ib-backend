@@ -1,0 +1,18 @@
+
+ib-forfragan-svarsdatum {
+
+  .icon-container {
+    display: inline-block;
+    width: 16px;
+    .material-icons {
+      font-size: 16px;
+    }
+    .svarsdatum-paminnelse {
+      color: $ib-color-21;
+    }
+    .svarsdatum-passed {
+      color: $ib-color-04;
+    }
+  }
+
+}

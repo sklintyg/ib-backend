@@ -43,7 +43,9 @@ public class ConfigController {
 
     private static final String PROJECT_VERSION_PROPERTY = "project.version";
     private static final String UTREDNING_PAMINNELSE_DAGAR_PROPERTY = "ib.utredning.paminnelse.dagar";
-    private static final int PAMINNELSE_DAGAR_DEFAULT_VALUE = 10;
+    private static final String FORFRAGAN_PAMINNELSE_DAGAR_PROPERTY = "ib.forfragan.paminnelse.dagar";
+    private static final int UTREDNING_PAMINNELSE_DAGAR_DEFAULT_VALUE = 5;
+    private static final int FORFRAGAN_PAMINNELSE_DAGAR_DEFAULT_VALUE = 2;
 
     @Autowired
     private DynamicLinkService dynamicLinkService;
@@ -59,13 +61,21 @@ public class ConfigController {
     public GetConfigResponse getConfig() {
         Integer utredningPaminnelseDagar;
         try {
-            utredningPaminnelseDagar = Integer.parseInt(env.getProperty(UTREDNING_PAMINNELSE_DAGAR_PROPERTY, ""),
-                    PAMINNELSE_DAGAR_DEFAULT_VALUE);
+            utredningPaminnelseDagar = Integer.parseInt(env.getProperty(UTREDNING_PAMINNELSE_DAGAR_PROPERTY, ""));
         } catch (NumberFormatException e) {
             LOG.error("Configuration property '{}' has not been set to integer!", UTREDNING_PAMINNELSE_DAGAR_PROPERTY);
-            utredningPaminnelseDagar = 0;
+            utredningPaminnelseDagar = UTREDNING_PAMINNELSE_DAGAR_DEFAULT_VALUE;
         }
-        return new GetConfigResponse(env.getProperty(PROJECT_VERSION_PROPERTY), utredningPaminnelseDagar);
+
+        Integer forfraganPaminnelseDagar;
+        try {
+            forfraganPaminnelseDagar = Integer.parseInt(env.getProperty(FORFRAGAN_PAMINNELSE_DAGAR_PROPERTY, ""));
+        } catch (NumberFormatException e) {
+            LOG.error("Configuration property '{}' has not been set to integer!", FORFRAGAN_PAMINNELSE_DAGAR_PROPERTY);
+            forfraganPaminnelseDagar = FORFRAGAN_PAMINNELSE_DAGAR_DEFAULT_VALUE;
+        }
+
+        return new GetConfigResponse(env.getProperty(PROJECT_VERSION_PROPERTY), utredningPaminnelseDagar, forfraganPaminnelseDagar);
     }
 
     @GetMapping(path = "/links", produces = MediaType.APPLICATION_JSON_VALUE)

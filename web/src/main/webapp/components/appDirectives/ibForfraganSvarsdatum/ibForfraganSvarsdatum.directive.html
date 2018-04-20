@@ -1,0 +1,19 @@
+<span class="icon-container">
+  <span ng-if="::warningSvarsdatumPaminnelsePassed"
+        uib-popover="Svarsdatum håller på att passeras."
+        popover-trigger="mouseenter"
+        popover-popup-delay="300"
+        popover-append-to-body="true"
+        popover-placement="auto top">
+    <i class="material-icons svarsdatum-paminnelse">info</i>
+  </span>
+  <span ng-if="::warningSvarsdatumPassed"
+        uib-popover="Svarsdatumet har passerats."
+        popover-trigger="mouseenter"
+        popover-popup-delay="300"
+        popover-append-to-body="true"
+        popover-placement="auto top">
+    <i class="material-icons svarsdatum-passed">warning</i>
+  </span>
+</span>
+{{svarsdatum}}

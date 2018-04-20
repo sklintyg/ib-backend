@@ -42,8 +42,11 @@
 @import 'samordnare/listaUtredningar/utredningFilter/utredningFilter.directive.scss';
 @import 'selectunit/selectunit.page.scss';
 @import 'vardadmin/avslutadeUtredningar/avslutadeUtredningar.page.scss';
+@import 'vardadmin/listaForfragningar/forfraganFilter/forfraganFilter.directive.scss';
 @import 'vardadmin/listaForfragningar/listaForfragningar.page.scss';
 @import 'vardadmin/pagaendeUtredningar/pagaendeUtredningar.page.scss';
+@import 'appDirectives/ibForfraganStatus/ibForfraganStatus.directive.scss';
+@import 'appDirectives/ibForfraganSvarsdatum/ibForfraganSvarsdatum.directive.scss';
 @import 'appDirectives/ibTableHead/ibTableHead.directive.scss';
 @import 'appDirectives/ibUtredningSlutdatumFas/ibUtredningSlutdatumFas.directive.scss';
 @import 'appDirectives/ibUtredningStatus/ibUtredningStatus.directive.scss';

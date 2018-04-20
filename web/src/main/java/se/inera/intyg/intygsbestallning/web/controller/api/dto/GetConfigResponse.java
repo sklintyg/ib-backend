@@ -25,10 +25,12 @@ public class GetConfigResponse {
     private String version;
 
     private Integer utredningPaminnelseDagar;
+    private Integer forfraganPaminnelseDagar;
 
-    public GetConfigResponse(String version, Integer utredningPaminnelseDagar) {
+    public GetConfigResponse(String version, Integer utredningPaminnelseDagar, Integer forfraganPaminnelseDagar) {
         this.version = version;
         this.utredningPaminnelseDagar = utredningPaminnelseDagar;
+        this.forfraganPaminnelseDagar = forfraganPaminnelseDagar;
     }
 
     public String getVersion() {
@@ -45,5 +47,13 @@ public class GetConfigResponse {
 
     public void setUtredningPaminnelseDagar(Integer utredningPaminnelseDagar) {
         this.utredningPaminnelseDagar = utredningPaminnelseDagar;
+    }
+
+    public Integer getForfraganPaminnelseDagar() {
+        return forfraganPaminnelseDagar;
+    }
+
+    public void setForfraganPaminnelseDagar(Integer forfraganPaminnelseDagar) {
+        this.forfraganPaminnelseDagar = forfraganPaminnelseDagar;
     }
 }

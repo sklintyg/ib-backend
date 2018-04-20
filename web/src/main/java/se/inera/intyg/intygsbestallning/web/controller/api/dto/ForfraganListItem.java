@@ -20,12 +20,13 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
 public class ForfraganListItem {
     private Long forfraganId;
-    private String vardenhetHsaId;
+    private String utredningsId;
+    private String utredningsTyp;
+    private String vardgivareNamn;
     private String inkomDatum;
     private String besvarasSenastDatum;
     private String planeringsDatum;
     private String status;
-    private String kommentar;
 
     public Long getForfraganId() {
         return forfraganId;
@@ -35,12 +36,28 @@ public class ForfraganListItem {
         this.forfraganId = forfraganId;
     }
 
-    public String getVardenhetHsaId() {
-        return vardenhetHsaId;
+    public String getUtredningsId() {
+        return utredningsId;
     }
 
-    public void setVardenhetHsaId(String vardenhetHsaId) {
-        this.vardenhetHsaId = vardenhetHsaId;
+    public void setUtredningsId(String utredningsId) {
+        this.utredningsId = utredningsId;
+    }
+
+    public String getUtredningsTyp() {
+        return utredningsTyp;
+    }
+
+    public void setUtredningsTyp(String utredningsTyp) {
+        this.utredningsTyp = utredningsTyp;
+    }
+
+    public String getVardgivareNamn() {
+        return vardgivareNamn;
+    }
+
+    public void setVardgivareNamn(String vardgivareNamn) {
+        this.vardgivareNamn = vardgivareNamn;
     }
 
     public String getInkomDatum() {
@@ -73,14 +90,6 @@ public class ForfraganListItem {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public String getKommentar() {
-        return kommentar;
-    }
-
-    public void setKommentar(String kommentar) {
-        this.kommentar = kommentar;
     }
 
 }

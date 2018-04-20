@@ -67,7 +67,7 @@ public class ForfraganController {
 
         // Utredningar där vårdenheten har en förfrågan.
         List<ForfraganListItem> forfragningar = utredningService.findForfragningarForVardenhetHsaId(user.getCurrentlyLoggedInAt().getId());
-        return ResponseEntity.ok(new GetForfraganListResponse(forfragningar));
+        return ResponseEntity.ok(new GetForfraganListResponse(forfragningar, forfragningar.size()));
     }
 
     @PrometheusTimeMethod(name = "get_forfragan_duration_seconds", help = "Some helpful info here")

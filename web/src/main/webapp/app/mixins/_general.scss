@@ -24,3 +24,8 @@ input[type=search]::-ms-clear {
   width: auto;
   max-width: $ib-max-content-width;
 }
+
+.ib-body {
+  @extend %ib-typo-07;
+  color: $ib-color-07;
+}
