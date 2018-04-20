@@ -72,20 +72,20 @@ gretty {
 
     jvmArgs = [
                '-Dspring.profiles.active=dev,ib-stub,caching-enabled',
-               '-Dib.config.file=' + projectDir + '/src/main/resources/dev.properties',
+               '-Dconfig.file=' + projectDir + '/src/main/resources/dev.properties',
                '-Dcredentials.file=' + projectDir + '/src/main/resources/dev-credentials.properties',
-               '-Dib.resources.folder=/' +projectDir + '/../src/main/resources',
+               '-Dresources.folder=/' +projectDir + '/../src/main/resources',
                '-XX:MaxPermSize=256M'
                ]
 
     /***************** Konfiguration för att köra med SITHS och HSA aktiverat lokalt. *******************/
     //    jvmArgs = [
     //            '-Dspring.profiles.active=dev,ib-security-test,ib-srs-stub',
-    //            '-Dib.config.folder=' + projectDir + '/../../ib-konfiguration/demo',
-    //            '-Dib.config.file=' + projectDir + '/../../ib-konfiguration/demo/ib.properties',
-    //            '-Dib.features.file=' + projectDir + '/../../ib-konfiguration/demo/features.properties',
+    //            '-Dconfig.folder=' + projectDir + '/../../ib-konfiguration/demo',
+    //            '-Dcofile:${ib.config.file}nfig.file=' + projectDir + '/../../ib-konfiguration/demo/ib.properties',
+    //            '-Dfeatures.file=' + projectDir + '/../../ib-konfiguration/demo/features.properties',
     //            '-Dcredentials.file=' + projectDir + '/../../ib-konfiguration/demo/credentials.properties',
-    //            '-Dib.resources.folder=/' +projectDir + '/../src/main/resources'
+    //            '-Dresources.folder=/' +projectDir + '/../src/main/resources'
     //    ]
 }
 

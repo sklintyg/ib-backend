@@ -40,7 +40,7 @@ import java.util.Arrays;
 @Configuration
 @EnablePrometheusTiming
 @PropertySource({ "classpath:default.properties",
-                  "file:${ib.config.file}",
+                  "file:${config.file}",
                   "file:${credentials.file}",
                   "classpath:version.properties"})
 @ImportResource({ "classpath:META-INF/cxf/cxf.xml", "classpath:securityContext.xml"})
