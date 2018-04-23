@@ -53,6 +53,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -96,8 +97,83 @@ public class UtredningRepositoryTest {
         Optional<Utredning> saved = utredningRepository.findById(UTREDNING_ID);
         assertTrue(saved.isPresent());
         Utredning utredning = saved.get();
+
         assertEquals(UTREDNING_ID, utredning.getUtredningId());
-        // TODO ...
+        assertEquals(UtredningsTyp.AFU, utredning.getUtredningsTyp());
+        assertEquals("sv", utredning.getSprakTolk());
+
+        Bestallning bestallning = utredning.getBestallning();
+        assertNotNull(bestallning);
+        assertNotNull(bestallning.getIntygKlartSenast());
+        assertEquals("kommentar", bestallning.getKommentar());
+        assertEquals("aktiviteter", bestallning.getPlaneradeAktiviteter());
+        assertEquals("syfte", bestallning.getSyfte());
+        assertEquals(VE_HSA_ID, bestallning.getTilldeladVardenhetHsaId());
+
+        ExternForfragan externForfragan = utredning.getExternForfragan();
+        assertNotNull(externForfragan);
+        assertEquals("avvisatKommentar", externForfragan.getAvvisatKommentar());
+        assertEquals("kommentar", externForfragan.getKommentar());
+        assertEquals(VG_HSA_ID, externForfragan.getLandstingHsaId());
+        assertNotNull(externForfragan.getAvvisatDatum());
+        assertNotNull(externForfragan.getBesvarasSenastDatum());
+        assertEquals(1, externForfragan.getInternForfraganList().size());
+
+        InternForfragan internForfragan = externForfragan.getInternForfraganList().get(0);
+        assertNotNull(internForfragan);
+        assertEquals("kommentar", internForfragan.getKommentar());
+        assertNotNull(internForfragan.getBesvarasSenastDatum());
+        assertNotNull(internForfragan.getTilldeladDatum());
+        assertNotNull(VE_HSA_ID, internForfragan.getVardenhetHsaId());
+
+        ForfraganSvar forfraganSvar = internForfragan.getForfraganSvar();
+        assertNotNull(forfraganSvar);
+        assertNotNull(forfraganSvar.getBorjaDatum());
+        assertEquals("Bered skyndsamt!", forfraganSvar.getKommentar());
+        assertEquals("Utförarvägen 1", forfraganSvar.getUtforareAdress());
+        assertEquals("utforare@inera.se", forfraganSvar.getUtforareEpost());
+        assertEquals("Utförarenheten", forfraganSvar.getUtforareNamn());
+        assertEquals("12345", forfraganSvar.getUtforarePostnr());
+        assertEquals("Utförhult", forfraganSvar.getUtforarePostort());
+        assertEquals("123-123412", forfraganSvar.getUtforareTelefon());
+        assertEquals(UtforareTyp.ENHET, forfraganSvar.getUtforareTyp());
+        assertEquals(SvarTyp.ACCEPTERA, forfraganSvar.getSvarTyp());
+
+        assertEquals(2, utredning.getHandelseList().size());
+        Handelse handelse = utredning.getHandelseList().get(0);
+        assertEquals("Kotte Korv", handelse.getAnvandare());
+        assertEquals("Utredning skapades", handelse.getHandelseText());
+        assertEquals("Detta är en kommentar", handelse.getKommentar());
+        assertEquals(HandelseTyp.FORFRAGAN_MOTTAGEN, handelse.getHandelseTyp());
+        assertNotNull(handelse.getSkapad());
+
+        assertEquals(2, utredning.getHandlingList().size());
+        Handling handling = utredning.getHandlingList().get(0);
+        assertNotNull(handling.getInkomDatum());
+        assertNotNull(handling.getSkickatDatum());
+
+        Handlaggare handlaggare = utredning.getHandlaggare();
+        assertNotNull(handlaggare);
+        assertEquals("adress", handlaggare.getAdress());
+        assertEquals("authority", handlaggare.getAuthority());
+        assertEquals("email", handlaggare.getEmail());
+        assertEquals("fullstandigtNamn", handlaggare.getFullstandigtNamn());
+        assertEquals("kontor", handlaggare.getKontor());
+        assertEquals("kontorCostCenter", handlaggare.getKontorCostCenter());
+        assertEquals("postkod", handlaggare.getPostkod());
+        assertEquals("stad", handlaggare.getStad());
+        assertEquals("telefonnummer", handlaggare.getTelefonnummer());
+
+        Invanare invanare = utredning.getInvanare();
+        assertNotNull(invanare);
+        assertEquals("bakgrund", invanare.getBakgrundNulage());
+        assertEquals("personId", invanare.getPersonId());
+        assertEquals("postkod", invanare.getPostkod());
+        assertEquals("behov", invanare.getSarskildaBehov());
+
+        assertEquals(1, invanare.getTidigareUtforare().size());
+        TidigareUtforare tu = invanare.getTidigareUtforare().get(0);
+        assertEquals(VE_HSA_ID, tu.getTidigareEnhetId());
     }
 
     private Invanare buildInvanare() {
@@ -167,17 +243,6 @@ public class UtredningRepositoryTest {
         bestallning.setSyfte("syfte");
         bestallning.setTilldeladVardenhetHsaId(VE_HSA_ID);
         return bestallning;
-    }
-
-    private void logJson(Utredning saved) {
-        try {
-            StringWriter sw = new StringWriter();
-            new CustomObjectMapper().writeValue(sw, saved);
-            LOG.info("STARTJSON");
-            LOG.info(sw.toString());
-        } catch (IOException e) {
-
-        }
     }
 
     private Handelse buildHandelse() {
