@@ -148,7 +148,6 @@ public class UtredningRepositoryTest {
 
         InternForfragan internForfragan = new InternForfragan();
         internForfragan.setVardenhetHsaId(VE_HSA_ID);
-        internForfragan.setStatus("STATUS");
         internForfragan.setBesvarasSenastDatum(LocalDateTime.now());
         internForfragan.setKommentar("kommentar");
         internForfragan.setTilldeladDatum(LocalDateTime.now());
