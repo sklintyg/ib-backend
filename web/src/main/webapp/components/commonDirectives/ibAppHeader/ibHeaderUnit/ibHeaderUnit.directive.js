@@ -56,20 +56,7 @@ angular.module('ibApp').directive('ibHeaderUnit', [ '$uibModal', 'UserModel',
             };
 
 
-            $scope.onChangeActiveUnitClick = function() {
 
-                    var changeUnitDialogInstance = $uibModal.open({
-                        templateUrl: '/components/commonDirectives/ibAppHeader/ibHeaderUnit/ibChangeActiveUnitDialog.html',
-                        controller: 'ibChangeActiveUnitDialogCtrl',
-                        size: 'md',
-                        id: 'ibChangeActiveUnitDialog',
-                        keyboard: true,
-                        windowClass: 'ib-header-care-unit-dialog-window-class'
-                    });
-                //angular > 1.5 warns if promise rejection is not handled (e.g backdrop-click == rejection)
-                changeUnitDialogInstance.result.catch(function () {}); //jshint ignore:line
-
-            };
 
         }
     };

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,10 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+angular.module('ibApp').controller(
+        'ibChangeSystemRoleDialogCtrl',
+        [ '$scope', '$rootScope', 'UserModel',
+                function($scope, $rootScope, UserModel) {
+                    'use strict';
 
-angular.module('ibApp')
-    .value('networkConfig', {
-        defaultTimeout: 30000
-    })
-    .value('moment', moment)
-    .value('THROTTLE_MILLISECONDS', 300);
+                    $scope.user = UserModel.get();
+
+                    $scope.onUnitSelected = function(enhet) {
+                        $rootScope.$emit('new-active-unit-selected', enhet);
+                    };
+
+
+                } ]);

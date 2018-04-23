@@ -37,7 +37,6 @@ angular.module('ibApp').factory('UserModel',
             data.titel = null;
 
             data.loggedIn = false;
-            data.pdlConsentGiven = false;
             data.roleSwitchPossible = false;
             return data;
         }

@@ -19,7 +19,7 @@
 
 angular.module('ibApp')
     .controller('AppPageCtrl',
-        function($scope, $rootScope, $uibModal, messageService) {
+        function($scope, $rootScope, $uibModal, $state, $log, messageService, UserProxy, UserModel) {
             'use strict';
 
             $scope.showErrorDialog = function(msgConfig) {
@@ -35,20 +35,7 @@ angular.module('ibApp')
                 });
             };
 
-            $scope.showPdlConsentDialog = function(msgConfig) {
-                $uibModal.open({
-                    windowClass: 'ib-pdlconsent-modal',
-                    templateUrl: '/app/pdlconsent/pdlconsentdialog.html',
-                    controller: 'pdlConsentDialogCtrl',
-                    size: 'md',
-                    resolve: {
-                        msgConfig: function() {
-                            return msgConfig;
-                        }
-                    }
-                });
-            };
-
+            // Eventhandler that takes care of showing rest exceptions
             var unregisterFn = $rootScope.$on('rehab.rest.exception', function(event, msgConfig) {
                  var texts = {
                      title: messageService.getProperty(msgConfig.errorTitleKey),
@@ -57,11 +44,16 @@ angular.module('ibApp')
                  $scope.showErrorDialog(texts);
              });
 
-            var unregisterFn2 = $rootScope.$on('show.pdl.consent', function(event, msgConfig) {
-                var texts = {
-                    body: messageService.getProperty(msgConfig.bodyTextKey)
-                };
-                $scope.showPdlConsentDialog(texts);
+            // Eventhandler that performs the actual switching of current unit/role regardless of where it was requested.
+            // Selection of destination view is delegated to routing rules in app.run.js
+            var unregisterFn2 = $rootScope.$on('new-active-unit-selected', function(event, newUnit) {
+                $log.debug('new-active-unit-selected: switching to unit "' + newUnit.id + '"');
+                UserProxy.changeSelectedUnit(newUnit.id).then(function(updatedUserModel) {
+                    UserModel.set(updatedUserModel);
+                    $state.go('app.login', {}, { reload : true });
+                }, function() {
+                    //Handle errors
+                });
             });
              //rootscope on event listeners aren't unregistered automatically when 'this' directives
              //scope is destroyed, so let's take care of that.

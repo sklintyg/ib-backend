@@ -2,44 +2,54 @@
   <div ng-if="showRoleSwitchMessage" class="alert alert-info">
     <span message key="{{::roleSwitchMessageKey}}"></span>
   </div>
-{{model.vardgivare}}
+
   <div ng-repeat="vg in model.vardgivare | orderBy:'name'">
-     <h4 class="vardgivare-title">
-       <a id="ib-vardenhet-selector-select-active-unit-{{vg.id}}-link" href data-ng-click="itemSelected(vg)">
-        {{::vg.name}}
-       </a>
-     </h4>
 
-    <div ng-if="vg.expanded" ng-repeat="enhet in vg.vardenheter | orderBy:'name'">
+    <!-- vg row -->
+    <div class="row vg">
+      <div class="col-xs-8">
+        <span ng-click="vg.expanded = !vg.expanded" ng-attr-id="expand-vg-{{vg.id}}" class="toggler">
+          <span ng-if="vg.vardenheter.length > 0 && vg.expanded"><i class="material-icons md-24">expand_less</i></span>
+          <span ng-if="vg.vardenheter.length > 0 && !vg.expanded"><i class="material-icons md-24">expand_more</i></span>
+        </span>
 
-      <div class="enhet">
-        <span ng-if="enhet.mottagningar.length > 0" class="toggle-icon" id="expand-enhet-{{::enhet.id}}" ng-click="enhet.expanded = ! enhet.expanded">
+        <!--  only enable selection if vg is samordnare -->
+         <span ng-if="!selectableVG(vg)">
+            <span class="plain-vg">{{::vg.name}}</span>
+         </span>
+         <a ng-if="selectableVG(vg)" id="ib-vardenhet-selector-select-active-unit-{{vg.id}}-link" href ng-click="itemSelected(vg)">
+          {{::vg.name}}
+         </a>
+         <span ng-if="vg.id == model.currentlyLoggedInAt.id"> (nuvarande) </span>
+
+      </div>
+      <div class="col-xs-4">
+        <span ng-if="vg.samordnare">Samordnare</span>
+      </div>
+    </div>
+
+    <!-- ve row(s) -->
+    <div ng-if="vg.expanded" ng-repeat="enhet in vg.vardenheter | orderBy:'name'" class="row ve">
+
+      <div class="col-xs-8">
+        <!--span ng-if="enhet.mottagningar.length > 0" class="toggle-icon" id="expand-enhet-{{::enhet.id}}" ng-click="enhet.expanded = ! enhet.expanded">
           <span class="glyphicon" ng-class="enhet.expanded ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down'"></span>
         </span>
-        <span ng-if="enhet.mottagningar.length < 1" class="glyphicon glyphicon-chevron-up glyphicon-hide"></span>
+        <span ng-if="enhet.mottagningar.length < 1" class="glyphicon glyphicon-chevron-up glyphicon-hide"></span-->
 
-        <span ng-if="enhet.id == model.valdVardenhet.id">
-          <span class="active-enhet">{{::enhet.name}}</span> (vald enhet)
+        <span ng-if="enhet.id == model.currentlyLoggedInAt.id">
+          <span class="enhet">{{::enhet.name}}</span> (nuvarande)
         </span>
-        <a
-            ng-if="enhet.id != model.valdVardenhet.id"
-            id="ib-vardenhet-selector-select-active-unit-{{enhet.id}}-link" href data-ng-click="itemSelected(enhet)">
+        <a ng-if="enhet.id != model.currentlyLoggedInAt.id" class="enhet"
+            id="ib-vardenhet-selector-select-active-unit-{{enhet.id}}-link" href ng-click="itemSelected(enhet)">
           {{enhet.name}}
         </a>
       </div>
-
-      <div
-          ng-if="enhet.expanded"
-          ng-repeat="mottagning in enhet.mottagningar | orderBy:'namn'" class="mottagning">
-        <div ng-if="mottagning.id != model.valdVardenhet.id">
-          <a id="ib-vardenhet-selector-select-active-unit-{{mottagning.id}}-link" href data-ng-click="itemSelected(mottagning)">
-            {{::mottagning.namn}}
-          </a>
-        </div>
-        <div ng-if="mottagning.id === model.valdVardenhet.id">
-          <span class="active-enhet">{{::mottagning.namn}}</span> (vald enhet)
-        </div>
+      <div class="col-xs-4">
+          <span>Vårdadministratör</span>
       </div>
+
     </div>
+
   </div>
 </div>

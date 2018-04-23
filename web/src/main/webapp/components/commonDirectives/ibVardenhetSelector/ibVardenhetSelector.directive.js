@@ -36,8 +36,13 @@ angular.module('ibApp').directive('ibVardenhetSelector', function() {
             //Create lo local copy with only required info
             var model = {};
             model.vardgivare = angular.copy($scope.user.authoritiesTree);
-            model.valdVardenhet = angular.copy($scope.user.valdVardenhet);
+            model.currentlyLoggedInAt = angular.copy($scope.user.currentlyLoggedInAt);
 
+            
+            $scope.selectableVG = function (vg) {
+                var isActiveNow = model.currentlyLoggedInAt && model.currentlyLoggedInAt.id === vg.id;
+               return vg.samordnare && !isActiveNow;
+            };
             $scope.getTotalVECount = function totaltVELevelUnits(vgs) {
                 var result = 0;
                 if (angular.isArray(vgs)) {
@@ -73,24 +78,15 @@ angular.module('ibApp').directive('ibVardenhetSelector', function() {
             var currentVG = null;
             var currentVE = null;
 
-            if (model.valdVardenhet) {
+            if (model.currentlyLoggedInAt) {
                 angular.forEach(model.vardgivare, function(vg) {
                     currentVG = vg;
                     angular.forEach(vg.vardenheter, function(ve) {
                         currentVE = ve;
-                        if (ve.id === model.valdVardenhet.id) {
+                        if (ve.id === model.currentlyLoggedInAt.id) {
                             //VE level selected, make sure it's parent VG is expanded and this VE is visible
                             currentVG.expanded = true;
                         }
-
-                        angular.forEach(ve.mottagningar, function(ue) {
-                            if (ue.id === model.valdVardenhet.id) {
-                                //UE level selected, make sure it's parent VG/VE are expanded and this UE is visible
-                                currentVG.expanded = true;
-                                currentVE.expanded = true;
-                            }
-                        });
-
                     });
 
                 });

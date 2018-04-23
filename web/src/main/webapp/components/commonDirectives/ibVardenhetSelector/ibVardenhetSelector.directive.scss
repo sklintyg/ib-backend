@@ -1,39 +1,29 @@
 .ib-vardenhet-selector {
 
-  .vardgivare-title {
+  .row > div {
+    padding-left: 0;
+
+  }
+  .vg {
     @extend %ib-typo-05;
-    background: $ib-color-20;
-    padding: 10px 20px;
-    margin-bottom: 5px;
-    margin-top: 10px;
+    color: $ib-color-09;
+    background-color: $ib-color-20;
+    margin-top: 15px;
   }
 
-  a,
-  .active-enhet {
-    padding: 5px 0;
-    display: inline-block;
-  }
-
-  .active-enhet {
-    color: $ib-color-03;
-    vertical-align: baseline;
-    cursor: default;
-  }
-
-  .toggle-icon {
-    color: $ib-color-10;
-    cursor: pointer;
+  .ve {
+    @extend %ib-typo-06;
+    color: $ib-color-08;
   }
 
   .enhet {
-    margin-left: 20px;
+    padding-left: 24px;
   }
 
-  .mottagning {
-    margin-left: 60px;
+  .toggler {
+    display: inline-block;
+    width: 20px;
+    cursor: pointer;
   }
 
-  .glyphicon-hide {
-    color: transparent;
-  }
 }

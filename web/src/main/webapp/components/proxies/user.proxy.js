@@ -37,7 +37,7 @@ angular.module('ibApp').factory('UserProxy',
             var config =  {
                 errorMessageConfig: {
                     errorTitleKey: 'server.error.changeunit.title',
-                    errorTextKey: 'server.error.default.text'
+                    errorTextKey: 'server.error.changeunit.text'
                 },
                 timeout: networkConfig.defaultTimeout
             };
@@ -60,43 +60,10 @@ angular.module('ibApp').factory('UserProxy',
             return promise.promise;
         }
 
-        function _givePdlConsent(hsaId) {
-            var promise = $q.defer();
 
-            var restPath = '/api/user/giveconsent';
-            var dto = {
-                hsaId: hsaId,
-                consentGiven: true
-            };
-
-            var config =  {
-                errorMessageConfig: {
-                    errorTitleKey: 'server.error.giveconsent.title',
-                    errorTextKey: 'server.error.default.text'
-                },
-                timeout: networkConfig.defaultTimeout
-            };
-            $http.post(restPath, dto, config).then(function(response) {
-                $log.debug(restPath + ' - success');
-
-                if (typeof response !== 'undefined') {
-                    promise.resolve(response.data);
-                } else {
-                    $log.debug('JSON response syntax error. Rejected.');
-                    promise.reject(null);
-                }
-            }, function(response) {
-                $log.error('error ' + response.status);
-                // Let calling code handle the error of no data response
-                promise.reject(response.data);
-            });
-
-            return promise.promise;
-        }
 
         // Return public API for the service
         return {
-            changeSelectedUnit: _changeSelectedUnit,
-            givePdlConsent: _givePdlConsent
+            changeSelectedUnit: _changeSelectedUnit
         };
     });

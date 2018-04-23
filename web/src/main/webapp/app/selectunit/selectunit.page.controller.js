@@ -19,39 +19,13 @@
 
 angular.module('ibApp')
     .controller('SelectUnitPageCtrl',
-        function($scope, $state, $http, UserModel, UserProxy, APP_CONFIG) {
+        function($rootScope, $scope, $state, $http, UserModel) {
             'use strict';
 
             $scope.user = UserModel.get();
-            $scope.sjunetAvailable = false;
 
             $scope.onUnitSelected = function(enhet) {
-                UserProxy.changeSelectedUnit(enhet.id).then(function(updatedUserModel) {
-                    UserModel.set(updatedUserModel);
-                    if (updatedUserModel.currentRole.name === 'FMU_SAMORDNARE') {
-                        $state.go('app.samordnare.listaUtredningar');
-                    }
-                    else if (updatedUserModel.currentRole.name === 'FMU_VARDADMIN') {
-                        $state.go('app.vardadmin.listaForfragningar');
-                    }
-                    else {
-                        $state.go('app.selectunit');
-                    }
-                }, function() {
-                    //Handle errors
-                });
+                $rootScope.$emit('new-active-unit-selected', enhet);
             };
 
-            function _testSjunetConnection() {
-                $http.get(APP_CONFIG.statistikTjanstBaseUrl + '/api/ping').then(function() {
-                        // Success
-                        $scope.sjunetAvailable = true;
-                    },
-                    function() {
-                        // Failure
-                        $scope.sjunetAvailable = false;
-                    });
-            }
-
-            _testSjunetConnection();
         });

@@ -74,12 +74,12 @@ angular
                 // If user has a role redirect to start view for that role
                 if (UserModel.get().currentRole.name === 'FMU_SAMORDNARE') {
                     _redirect($state, toState.name, event, 'app.samordnare.listaUtredningar', {}, {
-                        location: 'replace'
+                        location: 'replace', reload : true
                     });
                 }
                 else if (UserModel.get().currentRole.name === 'FMU_VARDADMIN') {
                     _redirect($state, toState.name, event, 'app.vardadmin.listaForfragningar', {}, {
-                        location: 'replace'
+                        location: 'replace',  reload : true
                     });
                 }
             }

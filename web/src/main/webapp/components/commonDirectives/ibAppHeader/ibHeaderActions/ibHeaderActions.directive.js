@@ -27,7 +27,7 @@ angular.module('ibApp').directive('ibHeaderActions',
                 templateUrl: '/components/commonDirectives/ibAppHeader/ibHeaderActions/ibHeaderActions.directive.html',
                 link: function($scope) {
 
-                    var aboutModalInstance;
+                    var aboutModalInstance, changeUnitDialogInstance;
 
                     $scope.user = UserModel.get();
 
@@ -73,6 +73,11 @@ angular.module('ibApp').directive('ibHeaderActions',
                             aboutModalInstance.close();
                             aboutModalInstance = undefined;
                         }
+                        if (changeUnitDialogInstance) {
+                            changeUnitDialogInstance.close();
+                            changeUnitDialogInstance = undefined;
+                        }
+
                     });
 
                     //Since rootscope event listeners aren't unregistered automatically when this directives
@@ -101,6 +106,21 @@ angular.module('ibApp').directive('ibHeaderActions',
                         });
                         //angular > 1.5 warns if promise rejection is not handled (e.g backdrop-click == rejection)
                         aboutModalInstance.result.catch(function () {}); //jshint ignore:line
+                    };
+
+                    $scope.onChangeSystemRoleClick = function() {
+
+                        changeUnitDialogInstance = $uibModal.open({
+                            templateUrl: '/components/commonDirectives/ibAppHeader/ibHeaderActions/ibChangeSystemRoleDialog.html',
+                            controller: 'ibChangeSystemRoleDialogCtrl',
+                            size: 'md',
+                            id: 'ibChangeSystemRoleDialog',
+                            keyboard: true,
+                            windowClass: 'ib-header-care-unit-dialog-window-class'
+                        });
+                        //angular > 1.5 warns if promise rejection is not handled (e.g backdrop-click == rejection)
+                        changeUnitDialogInstance.result.catch(function () {}); //jshint ignore:line
+
                     };
                 }
             };

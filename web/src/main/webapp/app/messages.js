@@ -42,6 +42,12 @@ var ibMessages = {
 
         'common.no.results': 'Inget resultat hittades för den valda filtreringen. Överväg att ändra filtreringen för att utöka resultatet.',
 
+        //System role
+        'systemrole.login.label': 'Välj systemroll',
+        'systemrole.login.description': 'Du har behörighet för flera systemroller. Välj det du vill logga in på nu. Du kan byta uppdrag även efter inloggning.',
+        'systemrole.change.modal.label': 'Byt systemroll / Välj enhet',
+        'systemrole.change.modal.description': 'Nedan ser du de enheter som du har behörighet till. Du ser även vilken roll som är knuten till enheten. Klicka på den enhet du vill byta till.',
+
         // Lista utredningar tabell
         'label.table.utredningar.column.id': 'Id',
         'label.table.utredningar.column.typ': 'Utredningstyp',
@@ -60,7 +66,11 @@ var ibMessages = {
         'label.table.forfragningar.column.svarsdatum.tooltip': 'Datum då vårdenheten senast ska svara landstinget.',
         'label.table.forfragningar.column.planeringsdatum': 'Planeringsdatum',
         'label.table.forfragningar.column.planeringsdatum.tooltip': 'Potentiellt slutdatum för utredningen om beställning sker idag.',
-        'label.table.forfragningar.column.status': 'Status'
+        'label.table.forfragningar.column.status': 'Status',
+
+        //Errors for reporting IO / backend error responses for REST requests
+        'server.error.changeunit.title': 'Kunde inte byta systemroll',
+        'server.error.changeunit.text': 'Försök igen eller kontakta support'
 
     },
     'en': {

@@ -6,7 +6,7 @@ angular.module('ibApp').config(function($stateProvider) {
             'navbar@': {
                 template: '<ib-main-menu/>'
             },
-            'app@': {
+            'content@app': {
                 templateUrl: '/app/samordnare/avslutadeArenden/avslutadeArenden.html',
                 controller: 'AvslutadeArendenCtrl'
             }

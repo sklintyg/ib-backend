@@ -22,8 +22,8 @@ angular.module('ibApp').config(function($stateProvider) {
     $stateProvider.state('app.selectunit', {
         url: '/selectunit',
         views: {
-             'navbar@': {},
-            'app@': {
+            'navbar@': {},
+            'content@app': {
                 templateUrl: '/app/selectunit/selectunit.page.html',
                 controller: 'SelectUnitPageCtrl'
             }
