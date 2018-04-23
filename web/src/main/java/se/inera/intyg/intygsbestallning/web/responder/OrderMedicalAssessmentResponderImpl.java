@@ -20,17 +20,23 @@ package se.inera.intyg.intygsbestallning.web.responder;
 
 import com.google.common.base.Preconditions;
 import org.apache.cxf.annotations.SchemaValidation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
 import se.riv.intygsbestallning.certificate.order.ordermedicalassessment.v1.OrderMedicalAssessmentResponseType;
 import se.riv.intygsbestallning.certificate.order.ordermedicalassessment.v1.OrderMedicalAssessmentType;
 import se.riv.intygsbestallning.certificate.order.ordermedicalassessment.v1.rivtabp21.OrderMedicalAssessmentResponderInterface;
-import se.riv.intygsbestallning.certificate.order.v1.IIType;
-import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
-import se.riv.intygsbestallning.certificate.order.v1.ResultType;
+
+import java.util.Objects;
+
+import static java.util.Objects.isNull;
 
 @Service
 @SchemaValidation
 public class OrderMedicalAssessmentResponderImpl implements OrderMedicalAssessmentResponderInterface {
+
+//    @Autowired UtredningService utredningService;
 
     @Override
     public OrderMedicalAssessmentResponseType orderMedicalAssessment(
@@ -38,25 +44,33 @@ public class OrderMedicalAssessmentResponderImpl implements OrderMedicalAssessme
 
         Preconditions.checkArgument(null != logicalAddress);
         Preconditions.checkArgument(null != request);
+        validateRequest(request);
 
-        return createDummyResponse();
+
+        // Its either AF or FK who request the assessment.
+
+        String assessmentID = request.getAssessmentId().getExtension();
+
+        // IF its AF we create whole new assessment.
+        if (isNull(assessmentID)) {
+
+        } else { // In this block we handle FK
+            // IF its FK we update forfragan
+//            utredningService.registerOrder(request);
+        }
+
+        return null;
     }
 
-    private OrderMedicalAssessmentResponseType createDummyResponse() {
-
-        IIType iiType = new IIType();
-        iiType.setExtension("DUMMY_EXTENSION");
-        iiType.setRoot("DUMMY_ROOT");
-
-        ResultType resultType = new ResultType();
-        resultType.setResultCode(ResultCodeType.OK);
-        resultType.setLogId("DUMMY_LOG_ID");
-        resultType.setResultText("DUMMY_RESULT_TEXT");
-
-        OrderMedicalAssessmentResponseType response = new OrderMedicalAssessmentResponseType();
-        response.setAssessmentId(iiType);
-        response.setResult(resultType);
-
-        return response;
+    /**
+     * Validates the request based on rules in tkb.
+     *
+     * @param request the request in to validate
+     */
+    private void validateRequest(OrderMedicalAssessmentType request) {
+        // TODO!
+        if (request.getCertificateType() == null) {
+            throw new IllegalArgumentException("Not ok!");
+        }
     }
 }

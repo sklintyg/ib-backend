@@ -18,28 +18,29 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "INVANARE")
 public class Invanare {
 
     @Id
+    @GeneratedValue
+    @Column(name = "ID")
+    private Long id;
+
     @Column(name = "PERSON_ID")
     private String personId;
-
-    // Always fetch from PU?
-//    @Column(name = "FORNAMN")
-//    private String fornamn;
-//
-//    @Column(name = "MELLANNAMN")
-//    private String mellannamn;
-//
-//    @Column(name = "EFTERNAMN")
-//    private String efternamn;
 
     @Column(name = "SARSKILDA_BEHOV")
     private String sarskildaBehov;
@@ -47,8 +48,12 @@ public class Invanare {
     @Column(name = "BAKGRUND_NULAGE")
     private String bakgrundNulage;
 
-    // tidigare vårdenheter kan plocka fram dynamiskt?
+    @Column(name = "POSTKOD")
+    private String postkod;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "INVANARE_ID", referencedColumnName = "ID", nullable = false)
+    private List<TidigareUtforare> tidigareUtforare = new ArrayList<>();
 
     public String getPersonId() {
         return personId;
@@ -72,5 +77,29 @@ public class Invanare {
 
     public void setBakgrundNulage(String bakgrundNulage) {
         this.bakgrundNulage = bakgrundNulage;
+    }
+
+    public List<TidigareUtforare> getTidigareUtforare() {
+        return tidigareUtforare;
+    }
+
+    public void setTidigareUtforare(List<TidigareUtforare> tidigareUtforare) {
+        this.tidigareUtforare = tidigareUtforare;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getPostkod() {
+        return postkod;
+    }
+
+    public void setPostkod(String postkod) {
+        this.postkod = postkod;
     }
 }

@@ -16,12 +16,39 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.persistence.repository;
+package se.inera.intyg.intygsbestallning.persistence.model;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-import se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar;
+@Entity
+@Table(name = "TIDIGARE_UTFORARE")
+public class TidigareUtforare {
 
-public interface ForfraganSvarRepository extends JpaRepository<ForfraganSvar, Long> {
+    @Id
+    @GeneratedValue
+    @Column(name = "ID")
+    private Long id;
 
+    @Column(name = "TIDIGARE_ENHET_ID")
+    private String tidigareEnhetId;
+
+    public String getTidigareEnhetId() {
+        return tidigareEnhetId;
+    }
+
+    public void setTidigareEnhetId(String tidigareEnhetId) {
+        this.tidigareEnhetId = tidigareEnhetId;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

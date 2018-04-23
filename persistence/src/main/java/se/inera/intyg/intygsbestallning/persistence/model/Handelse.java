@@ -35,11 +35,8 @@ public class Handelse {
 
     @Id
     @GeneratedValue
-    @Column(name = "INTERNREFERENS", nullable = false)
-    private Long internreferens;
-
-    @Column(name = "UTREDNING_ID", nullable = true)
-    private String utredningId;
+    @Column(name = "ID", nullable = false)
+    private Long id;
 
     @Column(name = "HANDELSE_TYP", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -58,20 +55,12 @@ public class Handelse {
     @Column(name = "KOMMENTAR", nullable = true)
     private String kommentar;
 
-    public Long getInternreferens() {
-        return internreferens;
+    public Long getId() {
+        return id;
     }
 
-    public void setInternreferens(Long internreferens) {
-        this.internreferens = internreferens;
-    }
-
-    public String getUtredningId() {
-        return utredningId;
-    }
-
-    public void setUtredningId(String utredningId) {
-        this.utredningId = utredningId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public HandelseTyp getHandelseTyp() {

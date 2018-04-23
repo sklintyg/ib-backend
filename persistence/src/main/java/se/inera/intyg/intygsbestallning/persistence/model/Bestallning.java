@@ -24,8 +24,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 
@@ -35,58 +33,35 @@ public class Bestallning {
 
     @Id
     @GeneratedValue
-    @Column(name = "INTERNREFERENS", nullable = false)
-    private Long internreferens;
-
-    @OneToOne
-    @JoinColumn(name = "UTREDNING_ID")
-    private Utredning utredning;
-
-    @Column(name = "INVANARE_PERSON_ID", nullable = true)
-    private String invanarePersonId;
+    @Column(name = "ID", nullable = false)
+    private Long id;
 
     @Column(name = "TILLDELAD_VARDENHET_HSA_ID", nullable = false)
     private String tilldeladVardenhetHsaId;
 
-    @Column(name = "INTYG_KLART_SENAST", nullable = true)
+    @Column(name = "INTYG_KLART_SENAST")
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime intygKlartSenast;
 
-    @Column(name = "ORDER_DATUM", nullable = true)
+    @Column(name = "ORDER_DATUM")
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime orderDatum;
 
-    @Column(name = "SYFTE", nullable = true)
+    @Column(name = "SYFTE")
     private String syfte;
 
-    @Column(name = "PLANERADE_AKTIVITETER", nullable = true)
+    @Column(name = "PLANERADE_AKTIVITETER")
     private String planeradeAktiviteter;
 
-    @Column(name = "KOMMENTAR", nullable = true)
+    @Column(name = "KOMMENTAR")
     private String kommentar;
 
-    public Long getInternreferens() {
-        return internreferens;
+    public Long getId() {
+        return id;
     }
 
-    public void setInternreferens(Long internreferens) {
-        this.internreferens = internreferens;
-    }
-
-    public Utredning getUtredning() {
-        return utredning;
-    }
-
-    public void setUtredning(Utredning utredning) {
-        this.utredning = utredning;
-    }
-
-    public String getInvanarePersonId() {
-        return invanarePersonId;
-    }
-
-    public void setInvanarePersonId(String invanarePersonId) {
-        this.invanarePersonId = invanarePersonId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getTilldeladVardenhetHsaId() {

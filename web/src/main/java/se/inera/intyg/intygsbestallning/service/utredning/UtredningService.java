@@ -23,6 +23,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
+import se.riv.intygsbestallning.certificate.order.ordermedicalassessment.v1.OrderMedicalAssessmentType;
 import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentType;
 
 import java.util.List;
@@ -38,4 +39,6 @@ public interface UtredningService {
     List<ForfraganListItem> findForfragningarForVardenhetHsaId(String vardenhetHsaId);
 
     GetForfraganResponse getForfragan(Long forfraganId, String vardenhetHsaId);
+
+    Utredning registerOrder(OrderMedicalAssessmentType order);
 }

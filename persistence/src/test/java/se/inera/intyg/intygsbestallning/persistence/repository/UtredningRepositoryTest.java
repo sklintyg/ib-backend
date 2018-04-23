@@ -32,24 +32,28 @@ import se.inera.intyg.intygsbestallning.common.integration.json.CustomObjectMapp
 import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigDev;
 import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigTest;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
-import se.inera.intyg.intygsbestallning.persistence.model.Forfragan;
+import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar;
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.HandelseTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
+import se.inera.intyg.intygsbestallning.persistence.model.Handling;
+import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
+import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
 import se.inera.intyg.intygsbestallning.persistence.model.SvarTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtredning;
+import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
 import se.inera.intyg.intygsbestallning.persistence.model.UtforareTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by eriklupander on 2015-08-05.
@@ -62,122 +66,108 @@ public class UtredningRepositoryTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(UtredningRepositoryTest.class);
 
+    private static final String VE_HSA_ID = "enhet-1";
     private static final String VG_HSA_ID = "vg-1";
-    public static final String VE_HSA_ID = "enhet-1";
-    public static final String VALUE_1 = "value1";
-    public static final String VALUE_2 = "value2";
-    public static final String KEY_2 = "key2";
+    private static final String UTREDNING_ID = "abc-123";
 
     @Autowired
     private UtredningRepository utredningRepository;
 
-
     @Test
     public void testBuildPersistAndReadFullGraph() {
         // Create and save a base Utredning
-        Utredning saved = buildUtredning();
+        Utredning utr = buildUtredning();
 
+        utr.setBestallning(buildBestallning());
+        utr.setExternForfragan(buildExternForfragan());
 
-        TidigareUtredning tidigareUtredning = new TidigareUtredning();
-        tidigareUtredning.setTidigareUtredningId("tidigare-utredning-1");
-        tidigareUtredning.setUtredningId(saved.getUtredningId());
-        saved.getInvanareTidigareUtredning().add(tidigareUtredning);
+        utr.getHandelseList().add(buildHandelse());
+        utr.getHandelseList().add(buildHandelse());
 
-        Handelse skapad = buildHandelse();
-        saved.getHandelseList().add(skapad);
-        saved = utredningRepository.save(saved);
-        logJson(saved);
+        utr.getHandlingList().add(buildHandling());
+        utr.getHandlingList().add(buildHandling());
 
-        // Next, load it from the DB and assert that they are equal.
-        Utredning readUtredning = utredningRepository.findOne(saved.getUtredningId());
-        assertEquals(saved, readUtredning);
-        assertEquals(1, saved.getHandelseList().size());
-        assertEquals(1, saved.getInvanareTidigareUtredning().size());
+        utr.setHandlaggare(buildHandlaggare());
 
-        // Build a forfragan and add it to the Utredning. Call save.
-        Forfragan forfragan = buildForfragan();
-        forfragan.setUtredningId(readUtredning.getUtredningId());
-        readUtredning.getForfraganList().add(forfragan);
-        readUtredning = utredningRepository.save(readUtredning);
-        logJson(readUtredning);
+        utr.setInvanare(buildInvanare());
 
-        // Assert that the updated readUtredning contains the Forfragan
-        assertEquals(1, readUtredning.getForfraganList().size());
-        assertNotNull(readUtredning.getForfraganList().get(0).getInternreferens());
-        assertEquals(readUtredning.getForfraganList().get(0).getVardenhetHsaId(), forfragan.getVardenhetHsaId());
+        utredningRepository.save(utr);
 
-        ForfraganSvar forfraganSvar = buildForfraganSvar(readUtredning.getForfraganList().get(0).getInternreferens());
-        readUtredning.getForfraganList().get(0).setForfraganSvar(forfraganSvar);
-
-        readUtredning = utredningRepository.save(readUtredning);
-        assertNotNull(readUtredning.getForfraganList().get(0).getForfraganSvar());
-        logJson(readUtredning);
-
-        // Lägg beställning
-        Bestallning bestallning = buildBestallning();
-        readUtredning.setBestallning(bestallning);
-        readUtredning = utredningRepository.save(readUtredning);
-        assertNotNull(readUtredning.getBestallning());
+        Optional<Utredning> saved = utredningRepository.findById(UTREDNING_ID);
+        assertTrue(saved.isPresent());
+        Utredning utredning = saved.get();
+        assertEquals(UTREDNING_ID, utredning.getUtredningId());
+        // TODO ...
     }
 
-    @Test
-    public void testFindByVardgivareHsaId() {
-        Utredning utredning = buildUtredning();
-        utredningRepository.save(utredning);
-
-        List<Utredning> utredningar = utredningRepository.findByVardgivareHsaId(VG_HSA_ID);
-        assertEquals(1, utredningar.size());
+    private Invanare buildInvanare() {
+        Invanare invanare = new Invanare();
+        invanare.setBakgrundNulage("bakgrund");
+        invanare.setPersonId("personId");
+        invanare.setPostkod("postkod");
+        invanare.setSarskildaBehov("behov");
+        invanare.getTidigareUtforare().add(buildTidigareUtforare());
+        return invanare;
     }
 
-    @Test
-    public void testFindByVardgivareHsaIdUnknownId() {
-        Utredning utredning = buildUtredning();
-        utredningRepository.save(utredning);
-
-        List<Utredning> utredningar = utredningRepository.findByVardgivareHsaId("other-id");
-        assertEquals(0, utredningar.size());
+    private TidigareUtforare buildTidigareUtforare() {
+        TidigareUtforare tidigareUtforare = new TidigareUtforare();
+        tidigareUtforare.setTidigareEnhetId(VE_HSA_ID);
+        return tidigareUtforare;
     }
 
-    @Test
-    public void testFindForfraganByVardenhetHsaId() {
-        Utredning utredning = buildUtredning();
-        utredning = utredningRepository.save(utredning);
-
-        // Add forfragan and persist.
-        updateUtredningWithForfragan(utredning);
-
-
-        List<Forfragan> forfragningar = utredningRepository.findForfragningarForVardenhetHsaId(VE_HSA_ID);
-        assertEquals(1, forfragningar.size());
+    private Handlaggare buildHandlaggare() {
+        Handlaggare handlaggare = new Handlaggare();
+        handlaggare.setAdress("adress");
+        handlaggare.setAuthority("authority");
+        handlaggare.setEmail("email");
+        handlaggare.setFullstandigtNamn("fullstandigtNamn");
+        handlaggare.setKontor("kontor");
+        handlaggare.setKontorCostCenter("kontorCostCenter");
+        handlaggare.setPostkod("postkod");
+        handlaggare.setStad("stad");
+        handlaggare.setTelefonnummer("telefonnummer");
+        return handlaggare;
     }
 
+    private Handling buildHandling() {
 
-    @Test
-    public void testFindForfraganByIdAndVardenhet() {
-        Utredning utredning = buildUtredning();
-        utredning = utredningRepository.save(utredning);
-
-        // Add forfragan and persist.
-        updateUtredningWithForfragan(utredning);
-
-        Long forfraganId = utredning.getForfraganList().get(0).getInternreferens();
-
-        Forfragan forfragan = utredningRepository.findForfraganByIdAndVardenhet(forfraganId, VE_HSA_ID);
-        assertNotNull(forfragan);
+        Handling handling = new Handling();
+        handling.setInkomDatum(LocalDateTime.now());
+        handling.setSkickatDatum(LocalDateTime.now());
+        return handling;
     }
 
-    @Test
-    public void testFindForfraganByIdAndNoneMatchingVardenhet() {
-        Utredning utredning = buildUtredning();
-        utredning = utredningRepository.save(utredning);
+    private ExternForfragan buildExternForfragan() {
+        ExternForfragan externForfragan = new ExternForfragan();
+        externForfragan.setLandstingHsaId(VG_HSA_ID);
+        externForfragan.setBesvarasSenastDatum(LocalDateTime.now());
+        externForfragan.setAvvisatDatum(LocalDateTime.now());
+        externForfragan.setAvvisatKommentar("avvisatKommentar");
+        externForfragan.setKommentar("kommentar");
 
-        // Add forfragan and persist.
-        updateUtredningWithForfragan(utredning);
+        InternForfragan internForfragan = new InternForfragan();
+        internForfragan.setVardenhetHsaId(VE_HSA_ID);
+        internForfragan.setStatus("STATUS");
+        internForfragan.setBesvarasSenastDatum(LocalDateTime.now());
+        internForfragan.setKommentar("kommentar");
+        internForfragan.setTilldeladDatum(LocalDateTime.now());
 
-        Long forfraganId = utredning.getForfraganList().get(0).getInternreferens();
+        internForfragan.setForfraganSvar(buildForfraganSvar());
 
-        Forfragan forfragan = utredningRepository.findForfraganByIdAndVardenhet(forfraganId, "other-id");
-        assertNull(forfragan);
+        externForfragan.getInternForfraganList().add(internForfragan);
+        return externForfragan;
+    }
+
+    private Bestallning buildBestallning() {
+        Bestallning bestallning = new Bestallning();
+        bestallning.setIntygKlartSenast(LocalDateTime.now());
+        bestallning.setKommentar("kommentar");
+        bestallning.setOrderDatum(LocalDateTime.now());
+        bestallning.setPlaneradeAktiviteter("aktiviteter");
+        bestallning.setSyfte("syfte");
+        bestallning.setTilldeladVardenhetHsaId(VE_HSA_ID);
+        return bestallning;
     }
 
     private void logJson(Utredning saved) {
@@ -189,25 +179,6 @@ public class UtredningRepositoryTest {
         } catch (IOException e) {
 
         }
-    }
-
-    private void updateUtredningWithForfragan(Utredning utredning) {
-        Forfragan f = buildForfragan();
-        f.setUtredningId(utredning.getUtredningId());
-        utredning.getForfraganList().add(f);
-        utredningRepository.save(utredning);
-    }
-
-    private Bestallning buildBestallning() {
-        Bestallning b = new Bestallning();
-        b.setIntygKlartSenast(LocalDateTime.now().plusDays(8));
-        b.setInvanarePersonId("19121212-1212");
-        b.setKommentar("Kommentera inte mig");
-        b.setPlaneradeAktiviteter("Gå på cirkus");
-        b.setSyfte("Bli fin");
-        b.setTilldeladVardenhetHsaId(VE_HSA_ID);
-        b.setOrderDatum(LocalDateTime.now());
-        return b;
     }
 
     private Handelse buildHandelse() {
@@ -223,38 +194,17 @@ public class UtredningRepositoryTest {
 
     private Utredning buildUtredning() {
         Utredning utr = new Utredning();
-        utr.setUtredningId("abc-123");
-        utr.setInkomDatum(LocalDateTime.now());
-        utr.setBesvarasSenastDatum(LocalDateTime.now().plusDays(14));
+        utr.setUtredningId(UTREDNING_ID);
 
-        utr.setUtredningsTyp("AFS");
-        utr.setVardgivareHsaId(VG_HSA_ID);
+        utr.setUtredningsTyp(UtredningsTyp.AFU);
 
-        utr.setInvanarePostort("Stockholm");
-        utr.setInvanareSpecialbehov("Gillar glass");
-
-        utr.setKommentar("Detta är en kommentar");
-        utr.setHandlaggareNamn("Hanna Handläggarsson");
-        utr.setHandlaggareEpost("epost@inera.se");
-        utr.setHandlaggareTelefonnummer("031-9999999");
-        utr.setBehovTolk(true);
         utr.setSprakTolk("sv");
 
         return utr;
     }
 
-    private Forfragan buildForfragan() {
-        Forfragan ff = new Forfragan();
-        ff.setBesvarasSenastDatum(LocalDateTime.now().plusDays(14));
-        ff.setKommentar("Bered skyndsamt!");
-        ff.setVardenhetHsaId(VE_HSA_ID);
-        ff.setStatus("Skapad");
-        return ff;
-    }
-
-    private ForfraganSvar buildForfraganSvar(Long forfraganId) {
+    private ForfraganSvar buildForfraganSvar() {
         ForfraganSvar ff = new ForfraganSvar();
-        ff.setForfraganId(forfraganId);
         ff.setSvarTyp(SvarTyp.ACCEPTERA);
         ff.setUtforareNamn("Utförarenheten");
         ff.setUtforareAdress("Utförarvägen 1");
@@ -264,6 +214,7 @@ public class UtredningRepositoryTest {
         ff.setUtforareTelefon("123-123412");
         ff.setKommentar("Bered skyndsamt!");
         ff.setUtforareTyp(UtforareTyp.ENHET);
+        ff.setBorjaDatum(LocalDate.now());
         return ff;
     }
 

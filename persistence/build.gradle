@@ -1,6 +1,8 @@
 dependencies {
     compile project(':ib-common')
 
+    compile "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
+
     compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
     compile "com.h2database:h2:${h2Version}"
     compile "com.zaxxer:HikariCP-java6:${hikariCPVersion}"

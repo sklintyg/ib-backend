@@ -25,7 +25,7 @@ import se.inera.intyg.intygsbestallning.web.BaseRestIntegrationTest;
 
 import static com.jayway.restassured.RestAssured.given;
 
-public class ForfraganControllerIT extends BaseRestIntegrationTest {
+public class InternForfraganControllerIT extends BaseRestIntegrationTest {
 
     private static final String FORFRAGAN_API_ENDPOINT = "/api/forfragningar" ;
 

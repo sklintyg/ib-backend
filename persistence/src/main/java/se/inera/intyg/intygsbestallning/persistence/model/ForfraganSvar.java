@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -25,6 +27,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "FORFRAGAN_SVAR")
@@ -32,11 +35,8 @@ public class ForfraganSvar {
 
     @Id
     @GeneratedValue
-    @Column(name = "INTERNREFERENS")
-    private Long internReferens;
-
-    @Column(name = "FORFRAGAN_ID", nullable = false)
-    private Long forfraganId;
+    @Column(name = "ID")
+    private Long id;
 
     @Column(name = "SVAR_TYP", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -67,20 +67,16 @@ public class ForfraganSvar {
     @Column(name = "KOMMENTAR")
     private String kommentar;
 
-    public Long getInternReferens() {
-        return internReferens;
+    @Column(name = "BORJA_DATUM")
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDate")
+    private LocalDate borjaDatum;
+
+    public Long getId() {
+        return id;
     }
 
-    public void setInternReferens(Long internReferens) {
-        this.internReferens = internReferens;
-    }
-
-    public Long getForfraganId() {
-        return forfraganId;
-    }
-
-    public void setForfraganId(Long forfraganId) {
-        this.forfraganId = forfraganId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public SvarTyp getSvarTyp() {
@@ -153,5 +149,13 @@ public class ForfraganSvar {
 
     public void setUtforareEpost(String utforareEpost) {
         this.utforareEpost = utforareEpost;
+    }
+
+    public LocalDate getBorjaDatum() {
+        return borjaDatum;
+    }
+
+    public void setBorjaDatum(LocalDate borjaDatum) {
+        this.borjaDatum = borjaDatum;
     }
 }

@@ -31,6 +31,7 @@ import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigTest
 import se.inera.intyg.intygsbestallning.persistence.model.AnvandarPreference;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -56,11 +57,11 @@ public class AnvandarPreferenceRepositoryTest {
     private AnvandarPreferenceRepository anvandarMetadataRepository;
 
     @Test
-    public void testFindOne() {
+    public void testFindById() {
         AnvandarPreference saved = buildAnvandarPreference(HSA_ID, KEY_1, VALUE_1);
         anvandarMetadataRepository.save(saved);
-        AnvandarPreference read = anvandarMetadataRepository.findOne(saved.getInternReferens());
-        assertEquals(saved, read);
+        Optional<AnvandarPreference> read = anvandarMetadataRepository.findById(saved.getInternReferens());
+        assertEquals(saved, read.orElse(null));
     }
 
     @Test

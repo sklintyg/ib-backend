@@ -18,17 +18,17 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
-import org.hibernate.annotations.Type;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -41,56 +41,37 @@ public class Utredning {
     @Column(name = "UTREDNING_ID")
     private String utredningId;
 
-    @Column(name = "UTREDNINGS_TYP")
-    private String utredningsTyp;
+    @Column(name = "UTREDNINGS_TYP", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private UtredningsTyp utredningsTyp;
 
-    @Column(name = "VARDGIVARE_HSA_ID")
-    private String vardgivareHsaId;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "BESTALLNING_ID")
+    private Bestallning bestallning;
 
-    @Column(name = "INKOM_DATUM")
-    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
-    private LocalDateTime inkomDatum;
-
-    @Column(name = "BESVARAS_SENAST_DATUM")
-    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
-    private LocalDateTime besvarasSenastDatum;
-
-    @Column(name = "INVANARE_POSTORT")
-    private String invanarePostort;
-
-    @Column(name = "INVANARE_SPECIALBEHOV", nullable = true)
-    private String invanareSpecialbehov;
-
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "UTREDNING_ID")
-    private List<TidigareUtredning> invanareTidigareUtredning = new ArrayList<>();
-
-    @Column(name = "HANDLAGGARE_NAMN")
-    private String handlaggareNamn;
-
-    @Column(name = "HANDLAGGARE_TELEFONNUMMER")
-    private String handlaggareTelefonnummer;
-
-    @Column(name = "HANDLAGGARE_EPOST")
-    private String handlaggareEpost;
-
-    @Column(name = "BEHOV_TOLK")
-    private boolean behovTolk;
-
+    // TODO: ENUM?
     @Column(name = "SPRAK_TOLK")
     private String sprakTolk;
 
-    @Column(name = "KOMMENTAR")
-    private String kommentar;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "EXTERN_FORFRAGAN_ID")
+    private ExternForfragan externForfragan;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "utredningId")
-    private List<Forfragan> forfraganList = new ArrayList<>();
-
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "utredningId")
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "UTREDNING_ID", referencedColumnName = "UTREDNING_ID", nullable = false)
     private List<Handelse> handelseList = new ArrayList<>();
 
-    @OneToOne(mappedBy = "utredning", cascade = CascadeType.ALL)
-    private Bestallning bestallning;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "UTREDNING_ID", referencedColumnName = "UTREDNING_ID", nullable = false)
+    private List<Handling> handlingList = new ArrayList<>();
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "HANDLAGGARE_ID")
+    private Handlaggare handlaggare;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "INVANARE_ID")
+    private Invanare invanare;
 
     public String getUtredningId() {
         return utredningId;
@@ -100,92 +81,12 @@ public class Utredning {
         this.utredningId = utredningId;
     }
 
-    public String getUtredningsTyp() {
+    public UtredningsTyp getUtredningsTyp() {
         return utredningsTyp;
     }
 
-    public void setUtredningsTyp(String utredningsTyp) {
+    public void setUtredningsTyp(UtredningsTyp utredningsTyp) {
         this.utredningsTyp = utredningsTyp;
-    }
-
-    public String getVardgivareHsaId() {
-        return vardgivareHsaId;
-    }
-
-    public void setVardgivareHsaId(String vardgivareHsaId) {
-        this.vardgivareHsaId = vardgivareHsaId;
-    }
-
-    public LocalDateTime getInkomDatum() {
-        return inkomDatum;
-    }
-
-    public void setInkomDatum(LocalDateTime inkomDatum) {
-        this.inkomDatum = inkomDatum;
-    }
-
-    public LocalDateTime getBesvarasSenastDatum() {
-        return besvarasSenastDatum;
-    }
-
-    public void setBesvarasSenastDatum(LocalDateTime besvarasSenastDatum) {
-        this.besvarasSenastDatum = besvarasSenastDatum;
-    }
-
-    public String getInvanarePostort() {
-        return invanarePostort;
-    }
-
-    public void setInvanarePostort(String invanarePostort) {
-        this.invanarePostort = invanarePostort;
-    }
-
-    public String getInvanareSpecialbehov() {
-        return invanareSpecialbehov;
-    }
-
-    public void setInvanareSpecialbehov(String invanareSpecialbehov) {
-        this.invanareSpecialbehov = invanareSpecialbehov;
-    }
-
-    public List<TidigareUtredning> getInvanareTidigareUtredning() {
-        return invanareTidigareUtredning;
-    }
-
-    public void setInvanareTidigareUtredning(List<TidigareUtredning> invanareTidigareUtredning) {
-        this.invanareTidigareUtredning = invanareTidigareUtredning;
-    }
-
-    public String getHandlaggareNamn() {
-        return handlaggareNamn;
-    }
-
-    public void setHandlaggareNamn(String handlaggareNamn) {
-        this.handlaggareNamn = handlaggareNamn;
-    }
-
-    public String getHandlaggareTelefonnummer() {
-        return handlaggareTelefonnummer;
-    }
-
-    public void setHandlaggareTelefonnummer(String handlaggareTelefonnummer) {
-        this.handlaggareTelefonnummer = handlaggareTelefonnummer;
-    }
-
-    public String getHandlaggareEpost() {
-        return handlaggareEpost;
-    }
-
-    public void setHandlaggareEpost(String handlaggareEpost) {
-        this.handlaggareEpost = handlaggareEpost;
-    }
-
-    public boolean isBehovTolk() {
-        return behovTolk;
-    }
-
-    public void setBehovTolk(boolean behovTolk) {
-        this.behovTolk = behovTolk;
     }
 
     public String getSprakTolk() {
@@ -194,22 +95,6 @@ public class Utredning {
 
     public void setSprakTolk(String sprakTolk) {
         this.sprakTolk = sprakTolk;
-    }
-
-    public String getKommentar() {
-        return kommentar;
-    }
-
-    public void setKommentar(String kommentar) {
-        this.kommentar = kommentar;
-    }
-
-    public List<Forfragan> getForfraganList() {
-        return forfraganList;
-    }
-
-    public void setForfraganList(List<Forfragan> forfraganList) {
-        this.forfraganList = forfraganList;
     }
 
     public List<Handelse> getHandelseList() {
@@ -244,5 +129,37 @@ public class Utredning {
     @Override
     public int hashCode() {
         return Objects.hash(utredningId);
+    }
+
+    public List<Handling> getHandlingList() {
+        return handlingList;
+    }
+
+    public void setHandlingList(List<Handling> handlingList) {
+        this.handlingList = handlingList;
+    }
+
+    public ExternForfragan getExternForfragan() {
+        return externForfragan;
+    }
+
+    public void setExternForfragan(ExternForfragan externForfragan) {
+        this.externForfragan = externForfragan;
+    }
+
+    public Handlaggare getHandlaggare() {
+        return handlaggare;
+    }
+
+    public void setHandlaggare(Handlaggare handlaggare) {
+        this.handlaggare = handlaggare;
+    }
+
+    public Invanare getInvanare() {
+        return invanare;
+    }
+
+    public void setInvanare(Invanare invanare) {
+        this.invanare = invanare;
     }
 }
