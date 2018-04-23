@@ -1,0 +1,14 @@
+- name: Create a Secret
+  openshift_raw:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: mysecret
+        namespace: intyg
+      type: Opaque
+      data:
+        username: "{{ 'admin' | b64encode }}"
+        password: "{{ 'foobard' | b64encode }}"
+    host: "{{ api_endpoint }}"
+    api_key: 

@@ -10,6 +10,8 @@ profiles: test,caching-enabled,ib-stub,wc-pu-stub,wc-hsa-stub
 tomcat7_user: ine-app
 tomcat7_group: ine-app
 
+# URL to OpenShift env
+api_endpoint:
 
 # DB provisioning
 database_provisioning_username: root
