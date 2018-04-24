@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Defines the transport model of a IB VardenhetPreference model, e.g returned by /api/vardenhet/preference",
+  "properties": {
+    "vardenhetHsaId": {
+      "type": "string"
+    },
+    "mottagarNamn": {
+      "type": ["string", "null"]
+    },
+    "adress": {
+      "type": ["string", "null"]
+    },
+    "postnummer": {
+      "type": ["string", "null"]
+    },
+    "postort": {
+      "type": ["string", "null"]
+    },
+    "telefonnummer": {
+      "type": ["string", "null"]
+    },
+    "epost": {
+      "type": ["string", "null"]
+    },
+    "standardsvar": {
+      "type": ["string", "null"]
+    }
+  },
+  "required": [
+    "vardenhetHsaId"
+  ],
+  "title": "VardenhetPreferenceResponse transport model",
+  "type": "object",
+  "additionalProperties": false
+}
