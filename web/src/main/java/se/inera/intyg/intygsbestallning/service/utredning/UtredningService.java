@@ -19,11 +19,11 @@
 package se.inera.intyg.intygsbestallning.service.utredning;
 
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
-import se.riv.intygsbestallning.certificate.order.ordermedicalassessment.v1.OrderMedicalAssessmentType;
 import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentType;
 
 import java.util.List;
@@ -40,5 +40,25 @@ public interface UtredningService {
 
     GetForfraganResponse getForfragan(Long forfraganId, String vardenhetHsaId);
 
-    Utredning registerOrder(OrderMedicalAssessmentType order);
+    /**
+     * Handles the new incomming order for FMU.
+     * <p>
+     * Updates all the information retrieved from the {@link se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan} if new
+     * information is available.
+     *
+     * @param order
+     * @return
+     */
+    Utredning registerOrder(OrderRequest order);
+
+    /**
+     * Registers new order for Bestallningsportalen.
+     * <p>
+     * In this case there is no {@link se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan} and all information is taken
+     * from the order.
+     *
+     * @param order
+     * @return
+     */
+    Utredning registerNewUtredning(OrderRequest order);
 }

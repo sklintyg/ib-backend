@@ -19,10 +19,7 @@
 package se.inera.intyg.intygsbestallning.persistence.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.CrudRepository;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-
-import java.util.Optional;
 
 public interface UtredningRepository extends JpaRepository<Utredning, String> {
 

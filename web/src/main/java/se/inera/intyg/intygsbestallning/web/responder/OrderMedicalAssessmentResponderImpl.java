@@ -22,13 +22,14 @@ import com.google.common.base.Preconditions;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.intygsbestallning.common.util.ResutTypeUtil;
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.riv.intygsbestallning.certificate.order.ordermedicalassessment.v1.OrderMedicalAssessmentResponseType;
 import se.riv.intygsbestallning.certificate.order.ordermedicalassessment.v1.OrderMedicalAssessmentType;
 import se.riv.intygsbestallning.certificate.order.ordermedicalassessment.v1.rivtabp21.OrderMedicalAssessmentResponderInterface;
-
-import java.util.Objects;
+import se.riv.intygsbestallning.certificate.order.v1.IIType;
 
 import static java.util.Objects.isNull;
 
@@ -36,41 +37,32 @@ import static java.util.Objects.isNull;
 @SchemaValidation
 public class OrderMedicalAssessmentResponderImpl implements OrderMedicalAssessmentResponderInterface {
 
-//    @Autowired UtredningService utredningService;
+    @Autowired
+    private UtredningService utredningService;
 
     @Override
     public OrderMedicalAssessmentResponseType orderMedicalAssessment(
             final String logicalAddress, final OrderMedicalAssessmentType request) {
 
-        Preconditions.checkArgument(null != logicalAddress);
-        Preconditions.checkArgument(null != request);
-        validateRequest(request);
+        Preconditions.checkArgument(!isNull(logicalAddress));
+        Preconditions.checkArgument(!isNull(request));
 
+        OrderRequest orderRequest = OrderRequest.fromRequest(request);
 
-        // Its either AF or FK who request the assessment.
-
-        String assessmentID = request.getAssessmentId().getExtension();
-
-        // IF its AF we create whole new assessment.
-        if (isNull(assessmentID)) {
-
-        } else { // In this block we handle FK
-            // IF its FK we update forfragan
-//            utredningService.registerOrder(request);
+        // IF its AF we create new assessment
+        Utredning utredning;
+        if (isNull(orderRequest.getUtredningId())) {
+            utredning = utredningService.registerNewUtredning(orderRequest);
+        } else {
+            utredning = utredningService.registerOrder(orderRequest);
         }
 
-        return null;
-    }
-
-    /**
-     * Validates the request based on rules in tkb.
-     *
-     * @param request the request in to validate
-     */
-    private void validateRequest(OrderMedicalAssessmentType request) {
-        // TODO!
-        if (request.getCertificateType() == null) {
-            throw new IllegalArgumentException("Not ok!");
-        }
+        OrderMedicalAssessmentResponseType response = new OrderMedicalAssessmentResponseType();
+        IIType ii = new IIType();
+        ii.setRoot("ROOT?!");
+        ii.setExtension(utredning.getUtredningId());
+        response.setAssessmentId(ii);
+        response.setResult(ResutTypeUtil.ok());
+        return response;
     }
 }

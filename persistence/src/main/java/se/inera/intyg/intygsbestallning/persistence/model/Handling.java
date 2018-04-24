@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
 import org.hibernate.annotations.Type;
@@ -49,5 +67,34 @@ public class Handling {
 
     public void setInkomDatum(LocalDateTime inkomDatum) {
         this.inkomDatum = inkomDatum;
+    }
+
+    public static final class HandlingBuilder {
+        private LocalDateTime skickatDatum;
+        private LocalDateTime inkomDatum;
+
+        private HandlingBuilder() {
+        }
+
+        public static HandlingBuilder aHandling() {
+            return new HandlingBuilder();
+        }
+
+        public HandlingBuilder withSkickatDatum(LocalDateTime skickatDatum) {
+            this.skickatDatum = skickatDatum;
+            return this;
+        }
+
+        public HandlingBuilder withInkomDatum(LocalDateTime inkomDatum) {
+            this.inkomDatum = inkomDatum;
+            return this;
+        }
+
+        public Handling build() {
+            Handling handling = new Handling();
+            handling.setSkickatDatum(skickatDatum);
+            handling.setInkomDatum(inkomDatum);
+            return handling;
+        }
     }
 }

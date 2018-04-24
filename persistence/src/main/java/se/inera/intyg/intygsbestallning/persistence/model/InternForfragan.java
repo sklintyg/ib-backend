@@ -27,7 +27,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -56,7 +55,7 @@ public class InternForfragan {
     private String kommentar;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name ="FORFRAGAN_SVAR_ID")
+    @JoinColumn(name = "FORFRAGAN_SVAR_ID")
     private ForfraganSvar forfraganSvar;
 
     public long getId() {
@@ -123,5 +122,55 @@ public class InternForfragan {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public static final class InternForfraganBuilder {
+        private String vardenhetHsaId;
+        private LocalDateTime tilldeladDatum;
+        private LocalDateTime besvarasSenastDatum;
+        private String kommentar;
+        private ForfraganSvar forfraganSvar;
+
+        private InternForfraganBuilder() {
+        }
+
+        public static InternForfraganBuilder anInternForfragan() {
+            return new InternForfraganBuilder();
+        }
+
+        public InternForfraganBuilder withVardenhetHsaId(String vardenhetHsaId) {
+            this.vardenhetHsaId = vardenhetHsaId;
+            return this;
+        }
+
+        public InternForfraganBuilder withTilldeladDatum(LocalDateTime tilldeladDatum) {
+            this.tilldeladDatum = tilldeladDatum;
+            return this;
+        }
+
+        public InternForfraganBuilder withBesvarasSenastDatum(LocalDateTime besvarasSenastDatum) {
+            this.besvarasSenastDatum = besvarasSenastDatum;
+            return this;
+        }
+
+        public InternForfraganBuilder withKommentar(String kommentar) {
+            this.kommentar = kommentar;
+            return this;
+        }
+
+        public InternForfraganBuilder withForfraganSvar(ForfraganSvar forfraganSvar) {
+            this.forfraganSvar = forfraganSvar;
+            return this;
+        }
+
+        public InternForfragan build() {
+            InternForfragan internForfragan = new InternForfragan();
+            internForfragan.setVardenhetHsaId(vardenhetHsaId);
+            internForfragan.setTilldeladDatum(tilldeladDatum);
+            internForfragan.setBesvarasSenastDatum(besvarasSenastDatum);
+            internForfragan.setKommentar(kommentar);
+            internForfragan.setForfraganSvar(forfraganSvar);
+            return internForfragan;
+        }
     }
 }

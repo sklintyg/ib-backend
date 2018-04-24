@@ -36,7 +36,7 @@ public class ForfraganSvar {
     @Id
     @GeneratedValue
     @Column(name = "ID")
-    private Long id;
+    private long id;
 
     @Column(name = "SVAR_TYP", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -71,11 +71,11 @@ public class ForfraganSvar {
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDate")
     private LocalDate borjaDatum;
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -157,5 +157,90 @@ public class ForfraganSvar {
 
     public void setBorjaDatum(LocalDate borjaDatum) {
         this.borjaDatum = borjaDatum;
+    }
+
+    public static final class ForfraganSvarBuilder {
+        private SvarTyp svarTyp;
+        private UtforareTyp utforareTyp;
+        private String utforareNamn;
+        private String utforareAdress;
+        private String utforarePostnr;
+        private String utforarePostort;
+        private String utforareTelefon;
+        private String utforareEpost;
+        private String kommentar;
+        private LocalDate borjaDatum;
+
+        private ForfraganSvarBuilder() {
+        }
+
+        public static ForfraganSvarBuilder aForfraganSvar() {
+            return new ForfraganSvarBuilder();
+        }
+
+        public ForfraganSvarBuilder withSvarTyp(SvarTyp svarTyp) {
+            this.svarTyp = svarTyp;
+            return this;
+        }
+
+        public ForfraganSvarBuilder withUtforareTyp(UtforareTyp utforareTyp) {
+            this.utforareTyp = utforareTyp;
+            return this;
+        }
+
+        public ForfraganSvarBuilder withUtforareNamn(String utforareNamn) {
+            this.utforareNamn = utforareNamn;
+            return this;
+        }
+
+        public ForfraganSvarBuilder withUtforareAdress(String utforareAdress) {
+            this.utforareAdress = utforareAdress;
+            return this;
+        }
+
+        public ForfraganSvarBuilder withUtforarePostnr(String utforarePostnr) {
+            this.utforarePostnr = utforarePostnr;
+            return this;
+        }
+
+        public ForfraganSvarBuilder withUtforarePostort(String utforarePostort) {
+            this.utforarePostort = utforarePostort;
+            return this;
+        }
+
+        public ForfraganSvarBuilder withUtforareTelefon(String utforareTelefon) {
+            this.utforareTelefon = utforareTelefon;
+            return this;
+        }
+
+        public ForfraganSvarBuilder withUtforareEpost(String utforareEpost) {
+            this.utforareEpost = utforareEpost;
+            return this;
+        }
+
+        public ForfraganSvarBuilder withKommentar(String kommentar) {
+            this.kommentar = kommentar;
+            return this;
+        }
+
+        public ForfraganSvarBuilder withBorjaDatum(LocalDate borjaDatum) {
+            this.borjaDatum = borjaDatum;
+            return this;
+        }
+
+        public ForfraganSvar build() {
+            ForfraganSvar forfraganSvar = new ForfraganSvar();
+            forfraganSvar.setSvarTyp(svarTyp);
+            forfraganSvar.setUtforareTyp(utforareTyp);
+            forfraganSvar.setUtforareNamn(utforareNamn);
+            forfraganSvar.setUtforareAdress(utforareAdress);
+            forfraganSvar.setUtforarePostnr(utforarePostnr);
+            forfraganSvar.setUtforarePostort(utforarePostort);
+            forfraganSvar.setUtforareTelefon(utforareTelefon);
+            forfraganSvar.setUtforareEpost(utforareEpost);
+            forfraganSvar.setKommentar(kommentar);
+            forfraganSvar.setBorjaDatum(borjaDatum);
+            return forfraganSvar;
+        }
     }
 }

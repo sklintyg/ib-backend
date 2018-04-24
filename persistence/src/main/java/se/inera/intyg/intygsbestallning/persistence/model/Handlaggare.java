@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
 import javax.persistence.Column;
@@ -121,5 +139,83 @@ public class Handlaggare {
 
     public void setStad(String stad) {
         this.stad = stad;
+    }
+
+    public static final class HandlaggareBuilder {
+        private String fullstandigtNamn;
+        private String telefonnummer;
+        private String email;
+        private String authority;
+        private String kontor;
+        private String kontorCostCenter;
+        private String adress;
+        private String postkod;
+        private String stad;
+
+        private HandlaggareBuilder() {
+        }
+
+        public static HandlaggareBuilder aHandlaggare() {
+            return new HandlaggareBuilder();
+        }
+
+        public HandlaggareBuilder withFullstandigtNamn(String fullstandigtNamn) {
+            this.fullstandigtNamn = fullstandigtNamn;
+            return this;
+        }
+
+        public HandlaggareBuilder withTelefonnummer(String telefonnummer) {
+            this.telefonnummer = telefonnummer;
+            return this;
+        }
+
+        public HandlaggareBuilder withEmail(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public HandlaggareBuilder withAuthority(String authority) {
+            this.authority = authority;
+            return this;
+        }
+
+        public HandlaggareBuilder withKontor(String kontor) {
+            this.kontor = kontor;
+            return this;
+        }
+
+        public HandlaggareBuilder withKontorCostCenter(String kontorCostCenter) {
+            this.kontorCostCenter = kontorCostCenter;
+            return this;
+        }
+
+        public HandlaggareBuilder withAdress(String adress) {
+            this.adress = adress;
+            return this;
+        }
+
+        public HandlaggareBuilder withPostkod(String postkod) {
+            this.postkod = postkod;
+            return this;
+        }
+
+        public HandlaggareBuilder withStad(String stad) {
+            this.stad = stad;
+            return this;
+        }
+
+        public Handlaggare build() {
+            Handlaggare handlaggare = new Handlaggare();
+            handlaggare.setFullstandigtNamn(fullstandigtNamn);
+            handlaggare.setTelefonnummer(telefonnummer);
+            handlaggare.setEmail(email);
+            handlaggare.setAuthority(authority);
+            handlaggare.setKontor(kontor);
+            handlaggare.setKontorCostCenter(kontorCostCenter);
+            handlaggare.setAdress(adress);
+            handlaggare.setPostkod(postkod);
+            handlaggare.setStad(stad);
+            return handlaggare;
+        }
     }
 }

@@ -34,7 +34,7 @@ public class Bestallning {
     @Id
     @GeneratedValue
     @Column(name = "ID", nullable = false)
-    private Long id;
+    private long id;
 
     @Column(name = "TILLDELAD_VARDENHET_HSA_ID", nullable = false)
     private String tilldeladVardenhetHsaId;
@@ -56,11 +56,11 @@ public class Bestallning {
     @Column(name = "KOMMENTAR")
     private String kommentar;
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -110,5 +110,62 @@ public class Bestallning {
 
     public void setKommentar(String kommentar) {
         this.kommentar = kommentar;
+    }
+
+    public static final class BestallningBuilder {
+        private String tilldeladVardenhetHsaId;
+        private LocalDateTime intygKlartSenast;
+        private LocalDateTime orderDatum;
+        private String syfte;
+        private String planeradeAktiviteter;
+        private String kommentar;
+
+        private BestallningBuilder() {
+        }
+
+        public static BestallningBuilder aBestallning() {
+            return new BestallningBuilder();
+        }
+
+        public BestallningBuilder withTilldeladVardenhetHsaId(String tilldeladVardenhetHsaId) {
+            this.tilldeladVardenhetHsaId = tilldeladVardenhetHsaId;
+            return this;
+        }
+
+        public BestallningBuilder withIntygKlartSenast(LocalDateTime intygKlartSenast) {
+            this.intygKlartSenast = intygKlartSenast;
+            return this;
+        }
+
+        public BestallningBuilder withOrderDatum(LocalDateTime orderDatum) {
+            this.orderDatum = orderDatum;
+            return this;
+        }
+
+        public BestallningBuilder withSyfte(String syfte) {
+            this.syfte = syfte;
+            return this;
+        }
+
+        public BestallningBuilder withPlaneradeAktiviteter(String planeradeAktiviteter) {
+            this.planeradeAktiviteter = planeradeAktiviteter;
+            return this;
+        }
+
+        public BestallningBuilder withKommentar(String kommentar) {
+            this.kommentar = kommentar;
+            return this;
+        }
+
+        public Bestallning build() {
+            Bestallning bestallning = new Bestallning();
+            bestallning.setTilldeladVardenhetHsaId(tilldeladVardenhetHsaId);
+            bestallning.setIntygKlartSenast(intygKlartSenast);
+            bestallning.setOrderDatum(orderDatum);
+            bestallning.setSyfte(syfte);
+            bestallning.setPlaneradeAktiviteter(planeradeAktiviteter);
+            bestallning.setKommentar(kommentar);
+            return bestallning;
+        }
     }
 }

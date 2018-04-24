@@ -27,7 +27,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
@@ -113,24 +112,6 @@ public class Utredning {
         this.bestallning = bestallning;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        Utredning forfragan = (Utredning) o;
-        return Objects.equals(utredningId, forfragan.utredningId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(utredningId);
-    }
-
     public List<Handling> getHandlingList() {
         return handlingList;
     }
@@ -161,5 +142,101 @@ public class Utredning {
 
     public void setInvanare(Invanare invanare) {
         this.invanare = invanare;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Utredning forfragan = (Utredning) o;
+        return Objects.equals(utredningId, forfragan.utredningId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(utredningId);
+    }
+
+    public static final class UtredningBuilder {
+        private String utredningId;
+        private UtredningsTyp utredningsTyp;
+        private Bestallning bestallning;
+        private String sprakTolk;
+        private ExternForfragan externForfragan;
+        private List<Handelse> handelseList = new ArrayList<>();
+        private List<Handling> handlingList = new ArrayList<>();
+        private Handlaggare handlaggare;
+        private Invanare invanare;
+
+        private UtredningBuilder() {
+        }
+
+        public static UtredningBuilder anUtredning() {
+            return new UtredningBuilder();
+        }
+
+        public UtredningBuilder withUtredningId(String utredningId) {
+            this.utredningId = utredningId;
+            return this;
+        }
+
+        public UtredningBuilder withUtredningsTyp(UtredningsTyp utredningsTyp) {
+            this.utredningsTyp = utredningsTyp;
+            return this;
+        }
+
+        public UtredningBuilder withBestallning(Bestallning bestallning) {
+            this.bestallning = bestallning;
+            return this;
+        }
+
+        public UtredningBuilder withSprakTolk(String sprakTolk) {
+            this.sprakTolk = sprakTolk;
+            return this;
+        }
+
+        public UtredningBuilder withExternForfragan(ExternForfragan externForfragan) {
+            this.externForfragan = externForfragan;
+            return this;
+        }
+
+        public UtredningBuilder withHandelseList(List<Handelse> handelseList) {
+            this.handelseList = handelseList;
+            return this;
+        }
+
+        public UtredningBuilder withHandlingList(List<Handling> handlingList) {
+            this.handlingList = handlingList;
+            return this;
+        }
+
+        public UtredningBuilder withHandlaggare(Handlaggare handlaggare) {
+            this.handlaggare = handlaggare;
+            return this;
+        }
+
+        public UtredningBuilder withInvanare(Invanare invanare) {
+            this.invanare = invanare;
+            return this;
+        }
+
+        public Utredning build() {
+            Utredning utredning = new Utredning();
+            utredning.setUtredningId(utredningId);
+            utredning.setUtredningsTyp(utredningsTyp);
+            utredning.setBestallning(bestallning);
+            utredning.setSprakTolk(sprakTolk);
+            utredning.setExternForfragan(externForfragan);
+            utredning.setHandelseList(handelseList);
+            utredning.setHandlingList(handlingList);
+            utredning.setHandlaggare(handlaggare);
+            utredning.setInvanare(invanare);
+            return utredning;
+        }
     }
 }

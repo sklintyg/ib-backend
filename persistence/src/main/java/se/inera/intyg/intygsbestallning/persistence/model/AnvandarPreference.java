@@ -38,7 +38,7 @@ public class AnvandarPreference {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long internReferens;
+    private long internReferens;
 
     @Column(name = "HSA_ID", nullable = false)
     private String hsaId;
@@ -59,11 +59,11 @@ public class AnvandarPreference {
         this.value = value;
     }
 
-    public Long getInternReferens() {
+    public long getInternReferens() {
         return internReferens;
     }
 
-    public void setInternReferens(Long internReferens) {
+    public void setInternReferens(long internReferens) {
         this.internReferens = internReferens;
     }
 

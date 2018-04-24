@@ -36,7 +36,7 @@ public class Handelse {
     @Id
     @GeneratedValue
     @Column(name = "ID", nullable = false)
-    private Long id;
+    private long id;
 
     @Column(name = "HANDELSE_TYP", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -55,11 +55,11 @@ public class Handelse {
     @Column(name = "KOMMENTAR", nullable = true)
     private String kommentar;
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -101,5 +101,55 @@ public class Handelse {
 
     public void setKommentar(String kommentar) {
         this.kommentar = kommentar;
+    }
+
+    public static final class HandelseBuilder {
+        private HandelseTyp handelseTyp;
+        private LocalDateTime skapad;
+        private String anvandare;
+        private String handelseText;
+        private String kommentar;
+
+        private HandelseBuilder() {
+        }
+
+        public static HandelseBuilder aHandelse() {
+            return new HandelseBuilder();
+        }
+
+        public HandelseBuilder withHandelseTyp(HandelseTyp handelseTyp) {
+            this.handelseTyp = handelseTyp;
+            return this;
+        }
+
+        public HandelseBuilder withSkapad(LocalDateTime skapad) {
+            this.skapad = skapad;
+            return this;
+        }
+
+        public HandelseBuilder withAnvandare(String anvandare) {
+            this.anvandare = anvandare;
+            return this;
+        }
+
+        public HandelseBuilder withHandelseText(String handelseText) {
+            this.handelseText = handelseText;
+            return this;
+        }
+
+        public HandelseBuilder withKommentar(String kommentar) {
+            this.kommentar = kommentar;
+            return this;
+        }
+
+        public Handelse build() {
+            Handelse handelse = new Handelse();
+            handelse.setHandelseTyp(handelseTyp);
+            handelse.setSkapad(skapad);
+            handelse.setAnvandare(anvandare);
+            handelse.setHandelseText(handelseText);
+            handelse.setKommentar(kommentar);
+            return handelse;
+        }
     }
 }

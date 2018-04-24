@@ -31,7 +31,7 @@ public class TidigareUtforare {
     @Id
     @GeneratedValue
     @Column(name = "ID")
-    private Long id;
+    private long id;
 
     @Column(name = "TIDIGARE_ENHET_ID")
     private String tidigareEnhetId;
@@ -44,11 +44,33 @@ public class TidigareUtforare {
         this.tidigareEnhetId = tidigareEnhetId;
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
+    }
+
+    public static final class TidigareUtforareBuilder {
+        private String tidigareEnhetId;
+
+        private TidigareUtforareBuilder() {
+        }
+
+        public static TidigareUtforareBuilder aTidigareUtforare() {
+            return new TidigareUtforareBuilder();
+        }
+
+        public TidigareUtforareBuilder withTidigareEnhetId(String tidigareEnhetId) {
+            this.tidigareEnhetId = tidigareEnhetId;
+            return this;
+        }
+
+        public TidigareUtforare build() {
+            TidigareUtforare tidigareUtforare = new TidigareUtforare();
+            tidigareUtforare.setTidigareEnhetId(tidigareEnhetId);
+            return tidigareUtforare;
+        }
     }
 }

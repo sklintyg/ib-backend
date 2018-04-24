@@ -25,7 +25,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +36,7 @@ public class Invanare {
     @Id
     @GeneratedValue
     @Column(name = "ID")
-    private Long id;
+    private long id;
 
     @Column(name = "PERSON_ID")
     private String personId;
@@ -87,11 +86,11 @@ public class Invanare {
         this.tidigareUtforare = tidigareUtforare;
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -101,5 +100,55 @@ public class Invanare {
 
     public void setPostkod(String postkod) {
         this.postkod = postkod;
+    }
+
+    public static final class InvanareBuilder {
+        private String personId;
+        private String sarskildaBehov;
+        private String bakgrundNulage;
+        private String postkod;
+        private List<TidigareUtforare> tidigareUtforare = new ArrayList<>();
+
+        private InvanareBuilder() {
+        }
+
+        public static InvanareBuilder anInvanare() {
+            return new InvanareBuilder();
+        }
+
+        public InvanareBuilder withPersonId(String personId) {
+            this.personId = personId;
+            return this;
+        }
+
+        public InvanareBuilder withSarskildaBehov(String sarskildaBehov) {
+            this.sarskildaBehov = sarskildaBehov;
+            return this;
+        }
+
+        public InvanareBuilder withBakgrundNulage(String bakgrundNulage) {
+            this.bakgrundNulage = bakgrundNulage;
+            return this;
+        }
+
+        public InvanareBuilder withPostkod(String postkod) {
+            this.postkod = postkod;
+            return this;
+        }
+
+        public InvanareBuilder withTidigareUtforare(List<TidigareUtforare> tidigareUtforare) {
+            this.tidigareUtforare = tidigareUtforare;
+            return this;
+        }
+
+        public Invanare build() {
+            Invanare invanare = new Invanare();
+            invanare.setPersonId(personId);
+            invanare.setSarskildaBehov(sarskildaBehov);
+            invanare.setBakgrundNulage(bakgrundNulage);
+            invanare.setPostkod(postkod);
+            invanare.setTidigareUtforare(tidigareUtforare);
+            return invanare;
+        }
     }
 }
