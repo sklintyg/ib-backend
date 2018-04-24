@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class UtredningListItem {
 
     private String utredningsId;
@@ -26,6 +28,7 @@ public class UtredningListItem {
     private String fas;
     private String slutdatumFas;
     private String status;
+    private String patientId;
 
     public String getUtredningsId() {
         return utredningsId;
@@ -73,5 +76,14 @@ public class UtredningListItem {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    @JsonIgnore
+    public String getPatientId() {
+        return patientId;
+    }
+
+    public void setPatientId(String patientId) {
+        this.patientId = patientId;
     }
 }

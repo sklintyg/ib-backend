@@ -23,16 +23,19 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.logmessages.ActivityPurpose;
 import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.infra.logmessages.Enhet;
+import se.inera.intyg.infra.logmessages.Patient;
 import se.inera.intyg.infra.logmessages.PdlLogMessage;
+import se.inera.intyg.infra.logmessages.PdlResource;
 import se.inera.intyg.infra.logmessages.ResourceType;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
-import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.model.IbSelectableHsaEntity;
 import se.inera.intyg.intygsbestallning.auth.model.IbVardenhet;
 import se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.LogUser;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by eriklupander on 2016-03-03.
@@ -50,22 +53,27 @@ public class PdlLogMessageFactoryImpl implements PdlLogMessageFactory {
     private String systemName;
 
     @Override
-    public PdlLogMessage buildLogMessage(List<Object> sjukfallList,
-                                         ActivityType activityType,
-                                         ResourceType resourceType,
-                                         IbUser ibUser) {
+    public PdlLogMessage buildLogMessage(List<UtredningListItem> utredningListItems,
+            ActivityType activityType,
+            ResourceType resourceType,
+            IbUser ibUser) {
 
         LogUser user = getLogUser(ibUser);
 
         PdlLogMessage pdlLogMessage = getLogMessage(activityType);
         populateWithCurrentUserAndCareUnit(pdlLogMessage, user);
 
+        // Add resources
+        pdlLogMessage.getPdlResourceList().addAll(
+                utredningListItems.stream()
+                        .map(uli -> buildPdlLogResource(uli, resourceType, user))
+                        .collect(Collectors.toList()));
+
         return pdlLogMessage;
     }
 
-
     private PdlLogMessage getLogMessage(ActivityType activityType) {
-        PdlLogMessage pdlLogMessage = new PdlLogMessage(ActivityType.READ, ActivityPurpose.CARE_TREATMENT);
+        PdlLogMessage pdlLogMessage = new PdlLogMessage(activityType, ActivityPurpose.CARE_TREATMENT);
         pdlLogMessage.setSystemId(systemId);
         pdlLogMessage.setSystemName(systemName);
         return pdlLogMessage;
@@ -79,26 +87,14 @@ public class PdlLogMessageFactoryImpl implements PdlLogMessageFactory {
             return new LogUser.Builder(user.getHsaId(), ve.getId(), ve.getParentId())
                     .userName(user.getNamn())
                     .userAssignment(user.getSelectedMedarbetarUppdragNamn())
-                    .userTitle(resolveUserTitle(user))
+                    .userTitle(PDL_TITEL_FMU_VARDADMIN)
                     .enhetsNamn(ve.getName())
                     .vardgivareNamn(ve.getParentName())
                     .build();
         } else {
-            return new LogUser.Builder(user.getHsaId(), null, loggedInAt.getId())
-                    .userName(user.getNamn())
-                    .userAssignment(user.getSelectedMedarbetarUppdragNamn())
-                    .userTitle(resolveUserTitle(user))
-                    .enhetsNamn(null)
-                    .vardgivareNamn(loggedInAt.getName())
-                    .build();
+            throw new IllegalStateException("There cannot be any PDL logging for Samordnare given that they should never "
+                    + "see any PDL-eligible information.");
         }
-
-
-    }
-
-    private String resolveUserTitle(IbUser user) {
-        return user.getRoles().containsKey(AuthoritiesConstants.ROLE_FMU_VARDADMIN)
-                ? PDL_TITEL_FMU_VARDADMIN : PDL_TITEL_FMU_SAMORDNARE;
     }
 
     private void populateWithCurrentUserAndCareUnit(PdlLogMessage logMsg, LogUser user) {
@@ -109,6 +105,21 @@ public class PdlLogMessageFactoryImpl implements PdlLogMessageFactory {
 
         Enhet vardenhet = new Enhet(user.getEnhetsId(), user.getEnhetsNamn(), user.getVardgivareId(), user.getVardgivareNamn());
         logMsg.setUserCareUnit(vardenhet);
+    }
+
+    private Patient getPatient(UtredningListItem uli) {
+        return new Patient(
+                uli.getPatientId().replace("-", "").replace("+", ""),
+                "");
+    }
+
+    private PdlResource buildPdlLogResource(UtredningListItem uli, ResourceType resourceType, LogUser user) {
+        PdlResource pdlResource = new PdlResource();
+        pdlResource.setPatient(getPatient(uli));
+        pdlResource.setResourceOwner(new Enhet(user.getEnhetsId(), user.getEnhetsNamn(), user.getVardgivareId(), user.getVardgivareNamn()));
+        pdlResource.setResourceType(resourceType.getResourceTypeName());
+
+        return pdlResource;
     }
 
 }

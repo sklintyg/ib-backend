@@ -29,6 +29,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Forfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtredning;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
+import se.inera.intyg.intygsbestallning.service.pdl.LogService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
@@ -50,6 +51,9 @@ public class UtredningServiceImpl implements UtredningService {
 
     @Autowired
     private HsaOrganizationsService hsaOrganizationsService;
+
+    @Autowired
+    private LogService logService;
 
     @Override
     public Utredning registerNewUtredning(RequestHealthcarePerformerForAssessmentType req) {
@@ -95,7 +99,14 @@ public class UtredningServiceImpl implements UtredningService {
     @Override
     public List<UtredningListItem> findUtredningarByVardgivareHsaId(String vardgivareHsaId) {
         List<Utredning> utredningar = utredningRepository.findByVardgivareHsaId(vardgivareHsaId);
-        return utredningar.stream().map(this::convert).collect(Collectors.toList());
+        List<UtredningListItem> dtoList = utredningar.stream().map(this::convert).collect(Collectors.toList());
+
+//        logService.logVisaUtredningLista(dtoList.stream()
+//                        .filter(uli -> uli.getPatientId() != null)
+//                        .collect(Collectors.toList()),
+//                ActivityType.READ, ResourceType.RESOURCE_TYPE_FMU_OVERSIKT);
+
+        return dtoList;
     }
 
     @Override
@@ -175,6 +186,10 @@ public class UtredningServiceImpl implements UtredningService {
         uli.setUtredningsId(u.getUtredningId());
         uli.setUtredningsTyp(u.getUtredningsTyp());
         uli.setVardgivareNamn(u.getVardgivareHsaId() + "-namnet");
+
+        if (u.getBestallning() != null && u.getBestallning().getInvanarePersonId() != null) {
+            uli.setPatientId(u.getBestallning().getInvanarePersonId());
+        }
         return uli;
     }
 }
