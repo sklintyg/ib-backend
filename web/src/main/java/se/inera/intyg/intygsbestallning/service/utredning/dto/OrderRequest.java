@@ -74,15 +74,18 @@ public final class OrderRequest {
                         .withTelefonnummer(bestallareSource.getPhoneNumber())
                         .build())
                 .withEnhetId(source.getCareUnitId().getExtension())
-                .withHandling(source.isDocumentsByPost())
+                .withHandling(!isNull(source.isDocumentsByPost()) && source.isDocumentsByPost())
                 .withInvanareBakgrund(invanareSource.getSituationBackground())
                 .withInvanareBehov(invanareSource.getSpecialNeeds())
                 .withInvanarePersonnummer(invanareSource.getPersonalIdentity().getExtension())
                 .withKommentar(source.getComment())
-                .withLastDateIntyg(LocalDate.parse(source.getLastDateForCertificateReceival()))
-                .withOrderDate(LocalDate.parse(source.getOrderDate()))
+                .withLastDateIntyg(!isNull(source.getLastDateForCertificateReceival())
+                        ? LocalDate.parse(source.getLastDateForCertificateReceival()) : null)
+                .withOrderDate(!isNull(source.getOrderDate())
+                        ? LocalDate.parse(source.getOrderDate()) : null)
                 .withSyfte(source.getPurpose())
-                .withTolkSprak(source.isNeedForInterpreter() ? source.getInterpreterLanguage().getCode() : null)
+                .withTolkSprak((!isNull(source.isNeedForInterpreter()) && source.isNeedForInterpreter())
+                        ? source.getInterpreterLanguage().getCode() : null)
                 .withUtredningId(!isNull(source.getAssessmentId()) ? source.getAssessmentId().getExtension() : null)
                 .withUtredningsTyp(UtredningsTyp.valueOf(source.getCertificateType().getCode()))
                 .build();
@@ -95,11 +98,11 @@ public final class OrderRequest {
         } catch (IllegalArgumentException iae) {
             errors.add("CertificateType is not of a known type");
         }
-        if (source.isNeedForInterpreter() && source.getInterpreterLanguage() == null) {
+        if (!isNull(source.isNeedForInterpreter()) && source.isNeedForInterpreter() && source.getInterpreterLanguage() == null) {
             errors.add("InterpreterLanguage is required when the need is declared");
         }
         // if FMU-order
-        if (isNull(source.getAssessmentId())) {
+        if (!isNull(source.getAssessmentId())) {
             if (isNull(source.getOrderDate())) {
                 errors.add("OrderDate is required when assessmentId is present");
             }

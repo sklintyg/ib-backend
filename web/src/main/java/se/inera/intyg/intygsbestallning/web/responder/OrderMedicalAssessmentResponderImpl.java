@@ -29,9 +29,9 @@ import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.riv.intygsbestallning.certificate.order.ordermedicalassessment.v1.OrderMedicalAssessmentResponseType;
 import se.riv.intygsbestallning.certificate.order.ordermedicalassessment.v1.OrderMedicalAssessmentType;
 import se.riv.intygsbestallning.certificate.order.ordermedicalassessment.v1.rivtabp21.OrderMedicalAssessmentResponderInterface;
-import se.riv.intygsbestallning.certificate.order.v1.IIType;
 
 import static java.util.Objects.isNull;
+import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
 
 @Service
 @SchemaValidation
@@ -58,10 +58,7 @@ public class OrderMedicalAssessmentResponderImpl implements OrderMedicalAssessme
         }
 
         OrderMedicalAssessmentResponseType response = new OrderMedicalAssessmentResponseType();
-        IIType ii = new IIType();
-        ii.setRoot("ROOT?!");
-        ii.setExtension(utredning.getUtredningId());
-        response.setAssessmentId(ii);
+        response.setAssessmentId(anII("ROOT?!", utredning.getUtredningId()));
         response.setResult(ResutTypeUtil.ok());
         return response;
     }
