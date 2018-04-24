@@ -31,8 +31,8 @@ public class RespondToPerformerRequestStub implements RespondToPerformerRequestR
     private static final Logger LOG = LoggerFactory.getLogger(RespondToPerformerRequestStub.class);
 
     @Override
-    public RespondToPerformerRequestResponseType respondToPerformerRequest(String id, RespondToPerformerRequestType request) {
-        LOG.info("RespondToPerformerRequestStub received request {}", id);
+    public RespondToPerformerRequestResponseType respondToPerformerRequest(String logicalAddress, RespondToPerformerRequestType request) {
+        LOG.info("RespondToPerformerRequestStub received request {}", request.getAssessmentId().getExtension());
         RespondToPerformerRequestResponseType response = new RespondToPerformerRequestResponseType();
         ResultType rt = new ResultType();
         rt.setResultCode(ResultCodeType.OK);
