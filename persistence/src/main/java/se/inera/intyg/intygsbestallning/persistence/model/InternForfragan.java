@@ -51,6 +51,10 @@ public class InternForfragan {
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime besvarasSenastDatum;
 
+    @Column(name = "INKOM_DATUM")
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
+    private LocalDateTime inkomDatum;
+
     @Column(name = "KOMMENTAR")
     private String kommentar;
 
@@ -124,10 +128,19 @@ public class InternForfragan {
         return Objects.hash(id);
     }
 
+    public LocalDateTime getInkomDatum() {
+        return inkomDatum;
+    }
+
+    public void setInkomDatum(LocalDateTime inkomDatum) {
+        this.inkomDatum = inkomDatum;
+    }
+
     public static final class InternForfraganBuilder {
         private String vardenhetHsaId;
         private LocalDateTime tilldeladDatum;
         private LocalDateTime besvarasSenastDatum;
+        private LocalDateTime inkomDatum;
         private String kommentar;
         private ForfraganSvar forfraganSvar;
 
@@ -150,6 +163,11 @@ public class InternForfragan {
 
         public InternForfraganBuilder withBesvarasSenastDatum(LocalDateTime besvarasSenastDatum) {
             this.besvarasSenastDatum = besvarasSenastDatum;
+            return this;
+        }
+
+        public InternForfraganBuilder withInkomDatum(LocalDateTime inkomDatum) {
+            this.inkomDatum = inkomDatum;
             return this;
         }
 

@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.repository;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -47,6 +48,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
@@ -70,6 +72,11 @@ public class UtredningRepositoryTest {
 
     @Autowired
     private UtredningRepository utredningRepository;
+
+    @Before
+    public void before() {
+        utredningRepository.deleteAll();
+    }
 
     @Test
     public void testBuildPersistAndReadFullGraph() {
@@ -171,6 +178,22 @@ public class UtredningRepositoryTest {
         assertEquals(1, invanare.getTidigareUtforare().size());
         TidigareUtforare tu = invanare.getTidigareUtforare().get(0);
         assertEquals(VE_HSA_ID, tu.getTidigareEnhetId());
+    }
+
+    @Test
+    public void testFindForfragningByVardenhet() {
+
+        Utredning utr = buildUtredning();
+        utr.setBestallning(buildBestallning());
+        utr.setExternForfragan(buildExternForfragan());
+
+        List<Utredning> response = utredningRepository.findAllByExternForfragan_InternForfraganList_VardenhetHsaId(VE_HSA_ID);
+        assertNotNull(response);
+        assertTrue(response.isEmpty());
+        utredningRepository.save(utr);
+        response = utredningRepository.findAllByExternForfragan_InternForfraganList_VardenhetHsaId(VE_HSA_ID);
+        assertNotNull(response);
+        assertEquals(1, response.size());
     }
 
     private Invanare buildInvanare() {

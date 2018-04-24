@@ -173,7 +173,7 @@ public final class OrderRequest {
         return atgarder;
     }
 
-    private static final class OrderRequestBuilder {
+    public static final class OrderRequestBuilder {
         private String utredningId;
         private String enhetId;
         private UtredningsTyp utredningsTyp;
@@ -192,76 +192,76 @@ public final class OrderRequest {
         private OrderRequestBuilder() {
         }
 
-        static OrderRequestBuilder anOrderRequest() {
+        public static OrderRequestBuilder anOrderRequest() {
             return new OrderRequestBuilder();
         }
 
-        OrderRequestBuilder withUtredningId(String utredningId) {
+        public OrderRequestBuilder withUtredningId(String utredningId) {
             this.utredningId = utredningId;
             return this;
         }
 
-        OrderRequestBuilder withEnhetId(String enhetId) {
+        public OrderRequestBuilder withEnhetId(String enhetId) {
             this.enhetId = enhetId;
             return this;
         }
 
-        OrderRequestBuilder withUtredningsTyp(UtredningsTyp utredningsTyp) {
+        public OrderRequestBuilder withUtredningsTyp(UtredningsTyp utredningsTyp) {
             this.utredningsTyp = utredningsTyp;
             return this;
         }
 
-        OrderRequestBuilder withBestallare(Bestallare bestallare) {
+        public OrderRequestBuilder withBestallare(Bestallare bestallare) {
             this.bestallare = bestallare;
             return this;
         }
 
-        OrderRequestBuilder withInvanarePersonnummer(String invanarePersonnummer) {
+        public OrderRequestBuilder withInvanarePersonnummer(String invanarePersonnummer) {
             this.invanarePersonnummer = invanarePersonnummer;
             return this;
         }
 
-        OrderRequestBuilder withInvanareBakgrund(String invanareBakgrund) {
+        public OrderRequestBuilder withInvanareBakgrund(String invanareBakgrund) {
             this.invanareBakgrund = invanareBakgrund;
             return this;
         }
 
-        OrderRequestBuilder withInvanareBehov(String invanareBehov) {
+        public OrderRequestBuilder withInvanareBehov(String invanareBehov) {
             this.invanareBehov = invanareBehov;
             return this;
         }
 
-        OrderRequestBuilder withSyfte(String syfte) {
+        public OrderRequestBuilder withSyfte(String syfte) {
             this.syfte = syfte;
             return this;
         }
 
-        OrderRequestBuilder withTolkSprak(String tolkSprak) {
+        public OrderRequestBuilder withTolkSprak(String tolkSprak) {
             this.tolkSprak = tolkSprak;
             return this;
         }
 
-        OrderRequestBuilder withKommentar(String kommentar) {
+        public OrderRequestBuilder withKommentar(String kommentar) {
             this.kommentar = kommentar;
             return this;
         }
 
-        OrderRequestBuilder withLastDateIntyg(LocalDate lastDateIntyg) {
+        public OrderRequestBuilder withLastDateIntyg(LocalDate lastDateIntyg) {
             this.lastDateIntyg = lastDateIntyg;
             return this;
         }
 
-        OrderRequestBuilder withOrderDate(LocalDate orderDate) {
+        public OrderRequestBuilder withOrderDate(LocalDate orderDate) {
             this.orderDate = orderDate;
             return this;
         }
 
-        OrderRequestBuilder withHandling(boolean handling) {
+        public OrderRequestBuilder withHandling(boolean handling) {
             this.handling = handling;
             return this;
         }
 
-        OrderRequestBuilder withAtgarder(String atgarder) {
+        public OrderRequestBuilder withAtgarder(String atgarder) {
             this.atgarder = atgarder;
             return this;
         }

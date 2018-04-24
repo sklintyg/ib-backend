@@ -48,7 +48,6 @@ public class Utredning {
     @JoinColumn(name = "BESTALLNING_ID")
     private Bestallning bestallning;
 
-    // TODO: ENUM?
     @Column(name = "SPRAK_TOLK")
     private String sprakTolk;
 

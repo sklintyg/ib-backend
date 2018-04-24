@@ -68,7 +68,7 @@ public final class Bestallare {
         return stad;
     }
 
-    protected static final class BestallareBuilder {
+    public static final class BestallareBuilder {
         private String fullstandigtNamn;
         private String telefonnummer;
         private String email;

@@ -41,6 +41,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.stream.Collectors.toList;
 import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
 import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
 import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
@@ -67,8 +68,12 @@ public class UtredningServiceImpl implements UtredningService {
         return null;
     }
 
-    @Override public List<ForfraganListItem> findForfragningarForVardenhetHsaId(String vardenhetHsaId) {
-        return null;
+    @Override
+    public List<ForfraganListItem> findForfragningarForVardenhetHsaId(String vardenhetHsaId) {
+        return utredningRepository.findAllByExternForfragan_InternForfraganList_VardenhetHsaId(vardenhetHsaId)
+                .stream()
+                .map(utr -> ForfraganListItem.convert(utr, vardenhetHsaId))
+                .collect(toList());
     }
 
     @Override public GetForfraganResponse getForfragan(Long forfraganId, String vardenhetHsaId) {
@@ -82,9 +87,15 @@ public class UtredningServiceImpl implements UtredningService {
 
         // Validate the state
         if (utredning.getBestallning() != null) {
-            LOG.warn("Assessment '{}' already have bestallning", utredning.getUtredningId());
+            LOG.warn("Assessment '{}' already have a bestallning", utredning.getUtredningId());
             throw new IllegalArgumentException(
                     "Cannot create a order when one already exists for assessmentId " + order.getUtredningId());
+        }
+
+        if (utredning.getExternForfragan() == null) {
+            final String message = "Utredning with assessmentId '{}' does not have an Förfrågan";
+            LOG.error(message, utredning.getUtredningId());
+            throw new IllegalArgumentException(message);
         }
 
         LOG.info("Saving new order for request '{}' with type '{}'", utredning.getUtredningId(), utredning.getUtredningsTyp());

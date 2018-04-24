@@ -341,6 +341,10 @@
             </column>
 
             <column name="BESVARAS_SENAST_DATUM" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="INKOM_DATUM" type="datetime">
                 <constraints nullable="true"/>
             </column>
 

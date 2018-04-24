@@ -21,6 +21,10 @@ package se.inera.intyg.intygsbestallning.persistence.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 
-public interface UtredningRepository extends JpaRepository<Utredning, String> {
+import java.util.List;
 
+//CHECKSTYLE:OFF MethodName
+public interface UtredningRepository extends JpaRepository<Utredning, String> {
+    List<Utredning> findAllByExternForfragan_InternForfraganList_VardenhetHsaId(String vardenhetHsaId);
 }
+//CHECKSTYLE:ON MethodName

@@ -18,8 +18,17 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
+import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+
+import java.time.format.DateTimeFormatter;
+import java.util.Objects;
+
+import static java.util.Objects.isNull;
+
 public class ForfraganListItem {
-    private Long forfraganId;
+    private static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
+
     private String utredningsId;
     private String utredningsTyp;
     private String vardgivareNamn;
@@ -28,12 +37,25 @@ public class ForfraganListItem {
     private String planeringsDatum;
     private String status;
 
-    public Long getForfraganId() {
-        return forfraganId;
-    }
-
-    public void setForfraganId(Long forfraganId) {
-        this.forfraganId = forfraganId;
+    public static ForfraganListItem convert(Utredning utredning, String vardenhetId) {
+        InternForfragan internForfragan = utredning.getExternForfragan().getInternForfraganList()
+                .stream()
+                .filter(i -> Objects.equals(i.getVardenhetHsaId(), vardenhetId))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+        return ForfraganListItemBuilder.aForfraganListItem()
+                .withBesvarasSenastDatum(!isNull(internForfragan.getBesvarasSenastDatum())
+                        ? internForfragan.getBesvarasSenastDatum().format(formatter) : null)
+                .withInkomDatum(!isNull(internForfragan.getInkomDatum())
+                        ? internForfragan.getInkomDatum().format(formatter) : null)
+                .withPlaneringsDatum(
+                        !isNull(internForfragan.getForfraganSvar()) && !isNull(internForfragan.getForfraganSvar().getBorjaDatum())
+                                ? internForfragan.getForfraganSvar().getBorjaDatum().format(formatter) : null)
+                .withStatus("TODO")
+                .withUtredningsId(utredning.getUtredningId())
+                .withUtredningsTyp(utredning.getUtredningsTyp().name())
+                .withVardgivareNamn(utredning.getExternForfragan().getLandstingHsaId())
+                .build();
     }
 
     public String getUtredningsId() {
@@ -92,5 +114,68 @@ public class ForfraganListItem {
         this.status = status;
     }
 
+    public static final class ForfraganListItemBuilder {
+        private String utredningsId;
+        private String utredningsTyp;
+        private String vardgivareNamn;
+        private String inkomDatum;
+        private String besvarasSenastDatum;
+        private String planeringsDatum;
+        private String status;
+
+        private ForfraganListItemBuilder() {
+        }
+
+        public static ForfraganListItemBuilder aForfraganListItem() {
+            return new ForfraganListItemBuilder();
+        }
+
+        public ForfraganListItemBuilder withUtredningsId(String utredningsId) {
+            this.utredningsId = utredningsId;
+            return this;
+        }
+
+        public ForfraganListItemBuilder withUtredningsTyp(String utredningsTyp) {
+            this.utredningsTyp = utredningsTyp;
+            return this;
+        }
+
+        public ForfraganListItemBuilder withVardgivareNamn(String vardgivareNamn) {
+            this.vardgivareNamn = vardgivareNamn;
+            return this;
+        }
+
+        public ForfraganListItemBuilder withInkomDatum(String inkomDatum) {
+            this.inkomDatum = inkomDatum;
+            return this;
+        }
+
+        public ForfraganListItemBuilder withBesvarasSenastDatum(String besvarasSenastDatum) {
+            this.besvarasSenastDatum = besvarasSenastDatum;
+            return this;
+        }
+
+        public ForfraganListItemBuilder withPlaneringsDatum(String planeringsDatum) {
+            this.planeringsDatum = planeringsDatum;
+            return this;
+        }
+
+        public ForfraganListItemBuilder withStatus(String status) {
+            this.status = status;
+            return this;
+        }
+
+        public ForfraganListItem build() {
+            ForfraganListItem forfraganListItem = new ForfraganListItem();
+            forfraganListItem.setUtredningsId(utredningsId);
+            forfraganListItem.setUtredningsTyp(utredningsTyp);
+            forfraganListItem.setVardgivareNamn(vardgivareNamn);
+            forfraganListItem.setInkomDatum(inkomDatum);
+            forfraganListItem.setBesvarasSenastDatum(besvarasSenastDatum);
+            forfraganListItem.setPlaneringsDatum(planeringsDatum);
+            forfraganListItem.setStatus(status);
+            return forfraganListItem;
+        }
+    }
 }
 
