@@ -35,7 +35,7 @@ public class UpdateAssessmentStub implements UpdateAssessmentResponderInterface 
     private static final long DAYS = 7L;
 
     @Override
-    public UpdateAssessmentResponseType updateAssessment(String s, UpdateAssessmentType updateAssessmentType) {
+    public UpdateAssessmentResponseType updateAssessment(String logicalAddress, UpdateAssessmentType updateAssessmentType) {
 
         LOG.info("UpdateAssessmentStub received request");
         UpdateAssessmentResponseType response = new UpdateAssessmentResponseType();
