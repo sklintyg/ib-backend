@@ -21,6 +21,7 @@ package se.inera.intyg.intygsbestallning.web.responder;
 import com.google.common.base.Preconditions;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.intygsbestallning.common.util.ResutTypeUtil;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
@@ -40,6 +41,9 @@ public class OrderMedicalAssessmentResponderImpl implements OrderMedicalAssessme
     @Autowired
     private UtredningService utredningService;
 
+    @Value("${source.system.hsaid:}")
+    private String sourceSystemHsaId;
+
     @Override
     public OrderMedicalAssessmentResponseType orderMedicalAssessment(
             final String logicalAddress, final OrderMedicalAssessmentType request) {
@@ -58,7 +62,9 @@ public class OrderMedicalAssessmentResponderImpl implements OrderMedicalAssessme
         }
 
         OrderMedicalAssessmentResponseType response = new OrderMedicalAssessmentResponseType();
-        response.setAssessmentId(anII("ROOT?!", utredning.getUtredningId()));
+        response.setAssessmentId(
+                anII(isNull(request.getAssessmentId()) ? sourceSystemHsaId : request.getAssessmentId().getRoot(),
+                        utredning.getUtredningId()));
         response.setResult(ResutTypeUtil.ok());
         return response;
     }

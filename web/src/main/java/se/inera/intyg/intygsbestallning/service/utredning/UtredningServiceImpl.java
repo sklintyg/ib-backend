@@ -77,10 +77,8 @@ public class UtredningServiceImpl implements UtredningService {
 
     @Override
     public Utredning registerOrder(OrderRequest order) {
-        // PREFACE: NO validation in this method. Already performed in controller.
-        Utredning utredning = utredningRepository.findById(order.getUtredningId())
-                .orElseThrow(
-                        () -> new IbNotFoundException("Could not find the assessment with id " + order.getUtredningId()));
+        Utredning utredning = utredningRepository.findById(order.getUtredningId()).orElseThrow(
+                () -> new IbNotFoundException("Could not find the assessment with id " + order.getUtredningId()));
 
         // Validate the state
         if (utredning.getBestallning() != null) {
@@ -144,11 +142,11 @@ public class UtredningServiceImpl implements UtredningService {
 
     private Handlaggare createHandlaggare(Bestallare source) {
         return aHandlaggare()
-                .withAuthority(source.getAuthority())
+                .withMyndighet(source.getMyndighet())
                 .withEmail(source.getEmail())
                 .withFullstandigtNamn(source.getFullstandigtNamn())
                 .withKontor(source.getKontor())
-                .withKontorCostCenter(source.getOfficeCostCenter())
+                .withKostnadsstalle(source.getKostnadsstalle())
                 .withTelefonnummer(source.getTelefonnummer())
                 .withAdress(source.getAdress())
                 .withPostkod(source.getPostkod())

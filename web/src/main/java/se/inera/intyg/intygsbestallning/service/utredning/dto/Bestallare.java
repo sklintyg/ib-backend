@@ -22,9 +22,9 @@ public final class Bestallare {
     private String fullstandigtNamn;
     private String telefonnummer;
     private String email;
-    private String authority;
+    private String myndighet;
     private String kontor;
-    private String officeCostCenter;
+    private String kostnadsstalle;
     private String adress;
     private String postkod;
     private String stad;
@@ -44,16 +44,16 @@ public final class Bestallare {
         return email;
     }
 
-    public String getAuthority() {
-        return authority;
+    public String getMyndighet() {
+        return myndighet;
     }
 
     public String getKontor() {
         return kontor;
     }
 
-    public String getOfficeCostCenter() {
-        return officeCostCenter;
+    public String getKostnadsstalle() {
+        return kostnadsstalle;
     }
 
     public String getAdress() {
@@ -72,9 +72,9 @@ public final class Bestallare {
         private String fullstandigtNamn;
         private String telefonnummer;
         private String email;
-        private String authority;
+        private String myndighet;
         private String kontor;
-        private String officeCostCenter;
+        private String kostnadsstalle;
         private String adress;
         private String postkod;
         private String stad;
@@ -101,8 +101,8 @@ public final class Bestallare {
             return this;
         }
 
-        public BestallareBuilder withAuthority(String authority) {
-            this.authority = authority;
+        public BestallareBuilder withMyndighet(String myndighet) {
+            this.myndighet = myndighet;
             return this;
         }
 
@@ -111,8 +111,8 @@ public final class Bestallare {
             return this;
         }
 
-        public BestallareBuilder withOfficeCostCenter(String officeCostCenter) {
-            this.officeCostCenter = officeCostCenter;
+        public BestallareBuilder withKostnadsstalle(String kostnadsstalle) {
+            this.kostnadsstalle = kostnadsstalle;
             return this;
         }
 
@@ -137,11 +137,11 @@ public final class Bestallare {
             bestallare.email = this.email;
             bestallare.stad = this.stad;
             bestallare.postkod = this.postkod;
-            bestallare.authority = this.authority;
+            bestallare.myndighet = this.myndighet;
             bestallare.kontor = this.kontor;
             bestallare.adress = this.adress;
             bestallare.fullstandigtNamn = this.fullstandigtNamn;
-            bestallare.officeCostCenter = this.officeCostCenter;
+            bestallare.kostnadsstalle = this.kostnadsstalle;
             return bestallare;
         }
     }

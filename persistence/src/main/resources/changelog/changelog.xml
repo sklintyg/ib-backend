@@ -180,7 +180,7 @@
                 <constraints nullable="true"/>
             </column>
 
-            <column name="AUTHORITY" type="varchar(255)">
+            <column name="MYNDIGHET" type="varchar(255)">
                 <constraints nullable="true"/>
             </column>
 
@@ -188,7 +188,7 @@
                 <constraints nullable="true"/>
             </column>
 
-            <column name="KONTOR_COST_CENTER" type="varchar(255)">
+            <column name="KOSTNADSSTALLE" type="varchar(255)">
                 <constraints nullable="true"/>
             </column>
 

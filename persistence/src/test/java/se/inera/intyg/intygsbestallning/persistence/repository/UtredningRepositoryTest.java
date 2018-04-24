@@ -28,7 +28,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
-import se.inera.intyg.intygsbestallning.common.integration.json.CustomObjectMapper;
 import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigDev;
 import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigTest;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
@@ -46,8 +45,6 @@ import se.inera.intyg.intygsbestallning.persistence.model.UtforareTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp;
 
-import java.io.IOException;
-import java.io.StringWriter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -155,11 +152,11 @@ public class UtredningRepositoryTest {
         Handlaggare handlaggare = utredning.getHandlaggare();
         assertNotNull(handlaggare);
         assertEquals("adress", handlaggare.getAdress());
-        assertEquals("authority", handlaggare.getAuthority());
+        assertEquals("authority", handlaggare.getMyndighet());
         assertEquals("email", handlaggare.getEmail());
         assertEquals("fullstandigtNamn", handlaggare.getFullstandigtNamn());
         assertEquals("kontor", handlaggare.getKontor());
-        assertEquals("kontorCostCenter", handlaggare.getKontorCostCenter());
+        assertEquals("kontorCostCenter", handlaggare.getKostnadsstalle());
         assertEquals("postkod", handlaggare.getPostkod());
         assertEquals("stad", handlaggare.getStad());
         assertEquals("telefonnummer", handlaggare.getTelefonnummer());
@@ -195,11 +192,11 @@ public class UtredningRepositoryTest {
     private Handlaggare buildHandlaggare() {
         Handlaggare handlaggare = new Handlaggare();
         handlaggare.setAdress("adress");
-        handlaggare.setAuthority("authority");
+        handlaggare.setMyndighet("authority");
         handlaggare.setEmail("email");
         handlaggare.setFullstandigtNamn("fullstandigtNamn");
         handlaggare.setKontor("kontor");
-        handlaggare.setKontorCostCenter("kontorCostCenter");
+        handlaggare.setKostnadsstalle("kontorCostCenter");
         handlaggare.setPostkod("postkod");
         handlaggare.setStad("stad");
         handlaggare.setTelefonnummer("telefonnummer");

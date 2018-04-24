@@ -41,16 +41,14 @@ public class Handlaggare {
     @Column(name = "EMAIL")
     private String email;
 
-    // TODO Enum? NAMN?!
-    @Column(name = "AUTHORITY")
-    private String authority;
+    @Column(name = "MYNDIGHET")
+    private String myndighet;
 
     @Column(name = "KONTOR")
     private String kontor;
 
-    // TODO Vad ska jag kalla denna?!
-    @Column(name = "KONTOR_COST_CENTER")
-    private String kontorCostCenter;
+    @Column(name = "KOSTNADSSTALLE")
+    private String kostnadsstalle;
 
     @Column(name = "ADRESS")
     private String adress;
@@ -93,12 +91,12 @@ public class Handlaggare {
         this.email = email;
     }
 
-    public String getAuthority() {
-        return authority;
+    public String getMyndighet() {
+        return myndighet;
     }
 
-    public void setAuthority(String authority) {
-        this.authority = authority;
+    public void setMyndighet(String myndighet) {
+        this.myndighet = myndighet;
     }
 
     public String getKontor() {
@@ -109,12 +107,12 @@ public class Handlaggare {
         this.kontor = kontor;
     }
 
-    public String getKontorCostCenter() {
-        return kontorCostCenter;
+    public String getKostnadsstalle() {
+        return kostnadsstalle;
     }
 
-    public void setKontorCostCenter(String kontorCostCenter) {
-        this.kontorCostCenter = kontorCostCenter;
+    public void setKostnadsstalle(String kostnadsstalle) {
+        this.kostnadsstalle = kostnadsstalle;
     }
 
     public String getAdress() {
@@ -145,9 +143,9 @@ public class Handlaggare {
         private String fullstandigtNamn;
         private String telefonnummer;
         private String email;
-        private String authority;
+        private String myndighet;
         private String kontor;
-        private String kontorCostCenter;
+        private String kostnadsstalle;
         private String adress;
         private String postkod;
         private String stad;
@@ -174,8 +172,8 @@ public class Handlaggare {
             return this;
         }
 
-        public HandlaggareBuilder withAuthority(String authority) {
-            this.authority = authority;
+        public HandlaggareBuilder withMyndighet(String authority) {
+            this.myndighet = authority;
             return this;
         }
 
@@ -184,8 +182,8 @@ public class Handlaggare {
             return this;
         }
 
-        public HandlaggareBuilder withKontorCostCenter(String kontorCostCenter) {
-            this.kontorCostCenter = kontorCostCenter;
+        public HandlaggareBuilder withKostnadsstalle(String kostnadsstalle) {
+            this.kostnadsstalle = kostnadsstalle;
             return this;
         }
 
@@ -209,9 +207,9 @@ public class Handlaggare {
             handlaggare.setFullstandigtNamn(fullstandigtNamn);
             handlaggare.setTelefonnummer(telefonnummer);
             handlaggare.setEmail(email);
-            handlaggare.setAuthority(authority);
+            handlaggare.setMyndighet(myndighet);
             handlaggare.setKontor(kontor);
-            handlaggare.setKontorCostCenter(kontorCostCenter);
+            handlaggare.setKostnadsstalle(kostnadsstalle);
             handlaggare.setAdress(adress);
             handlaggare.setPostkod(postkod);
             handlaggare.setStad(stad);

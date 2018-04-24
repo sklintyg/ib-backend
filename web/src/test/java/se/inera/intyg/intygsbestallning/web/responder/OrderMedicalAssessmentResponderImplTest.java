@@ -23,14 +23,19 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.util.ReflectionUtils;
+import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
+import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.riv.intygsbestallning.certificate.order.ordermedicalassessment.v1.OrderMedicalAssessmentResponseType;
 import se.riv.intygsbestallning.certificate.order.ordermedicalassessment.v1.OrderMedicalAssessmentType;
 import se.riv.intygsbestallning.certificate.order.v1.AuthorityAdministrativeOfficialType;
-import se.riv.intygsbestallning.certificate.order.v1.CVType;
 import se.riv.intygsbestallning.certificate.order.v1.CitizenType;
 import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
+
+import java.lang.reflect.Field;
+import java.util.Objects;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -55,10 +60,11 @@ public class OrderMedicalAssessmentResponderImplTest {
     public void orderMedicalAssessmentSuccessFmu() {
 
         final String utredningId = "utredningId";
+        final String utredningRoot = "utredningRoot";
         when(utredningService.registerOrder(any(OrderRequest.class))).thenReturn(anUtredning().withUtredningId(utredningId).build());
 
         OrderMedicalAssessmentType request = new OrderMedicalAssessmentType();
-        request.setAssessmentId(anII(null, utredningId));
+        request.setAssessmentId(anII(utredningRoot, utredningId));
         request.setCertificateType(aCv(AFU.name(), null, null));
         request.setAuthorityAdministrativeOfficial(new AuthorityAdministrativeOfficialType());
         request.setCareUnitId(anII(null, "enhet"));
@@ -71,7 +77,7 @@ public class OrderMedicalAssessmentResponderImplTest {
 
         assertNotNull(response);
         assertEquals(ResultCodeType.OK, response.getResult().getResultCode());
-        assertEquals("ROOT?!", response.getAssessmentId().getRoot());
+        assertEquals(utredningRoot, response.getAssessmentId().getRoot());
         assertEquals(utredningId, response.getAssessmentId().getExtension());
     }
 
@@ -79,6 +85,10 @@ public class OrderMedicalAssessmentResponderImplTest {
     public void orderMedicalAssessmentSuccessAf() {
 
         final String utredningId = "utredningId";
+        final String utredningRoot = "utredningRoot";
+        Field field = Objects.requireNonNull(ReflectionUtils.findField(OrderMedicalAssessmentResponderImpl.class, "sourceSystemHsaId"));
+        field.setAccessible(true);
+        ReflectionUtils.setField(field, responder, utredningRoot);
         when(utredningService.registerNewUtredning(any(OrderRequest.class))).thenReturn(anUtredning().withUtredningId(utredningId).build());
 
         OrderMedicalAssessmentType request = new OrderMedicalAssessmentType();
@@ -92,7 +102,20 @@ public class OrderMedicalAssessmentResponderImplTest {
 
         assertNotNull(response);
         assertEquals(ResultCodeType.OK, response.getResult().getResultCode());
-        assertEquals("ROOT?!", response.getAssessmentId().getRoot());
+        assertEquals(utredningRoot, response.getAssessmentId().getRoot());
         assertEquals(utredningId, response.getAssessmentId().getExtension());
+    }
+
+    @Test(expected = IbServiceException.class)
+    public void orderMedicalAssessmentFail() {
+        try {
+            OrderMedicalAssessmentType request = new OrderMedicalAssessmentType();
+            request.setCertificateType(aCv("NonExistingCode", null, null));
+            responder.orderMedicalAssessment("", request);
+        } catch (IbServiceException ise) {
+            assertEquals(IbErrorCodeEnum.BAD_REQUEST, ise.getErrorCode());
+            assertNotNull(ise.getMessage());
+            throw ise;
+        }
     }
 }
