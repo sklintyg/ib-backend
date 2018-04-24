@@ -111,6 +111,10 @@
                 <constraints nullable="true"/>
             </column>
 
+            <column name="UPPDATERAD_DATUM" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+
             <column name="SYFTE" type="text">
                 <constraints nullable="true"/>
             </column>

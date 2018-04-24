@@ -47,6 +47,10 @@ public class Bestallning {
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime orderDatum;
 
+    @Column(name = "UPPDATERAD_DATUM")
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
+    private LocalDateTime uppdateradDatum;
+
     @Column(name = "SYFTE")
     private String syfte;
 
@@ -86,6 +90,14 @@ public class Bestallning {
 
     public void setOrderDatum(LocalDateTime orderDatum) {
         this.orderDatum = orderDatum;
+    }
+
+    public LocalDateTime getUppdateradDatum() {
+        return uppdateradDatum;
+    }
+
+    public void setUppdateradDatum(LocalDateTime uppdateradDatum) {
+        this.uppdateradDatum = uppdateradDatum;
     }
 
     public String getSyfte() {

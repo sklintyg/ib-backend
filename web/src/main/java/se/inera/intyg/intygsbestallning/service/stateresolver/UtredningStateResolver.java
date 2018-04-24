@@ -63,12 +63,12 @@ public class UtredningStateResolver {
 
         // BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR
         Bestallning bestallning = utredning.getBestallning();
-        if (utredning.getHandlingList().size() == 0) {
+        if (utredning.getHandlingList().size() == 0 && bestallning.getUppdateradDatum() == null) {
             return UtredningStatus.BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR;
         }
 
         // BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR
-        if (utredning.getHandlingList().size() == 0 && bestallning.getOrderDatum() != null) { // TODO ÄNDRA TILL NY STÄMPEL
+        if (utredning.getHandlingList().size() == 0 && bestallning.getUppdateradDatum() != null) {
             return UtredningStatus.UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR;
         }
 

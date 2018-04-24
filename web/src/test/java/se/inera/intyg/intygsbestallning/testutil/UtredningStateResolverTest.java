@@ -99,7 +99,7 @@ public class UtredningStateResolverTest {
     public void testResolvesBestallningMottagenVantarPaHandlingar() {
         Utredning utr = buildBaseUtredning();
         utr.getExternForfragan().getInternForfraganList().add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
-        utr.setBestallning(buildBestallning());
+        utr.setBestallning(buildBestallning(null));
         utr.getHandlingList().clear();
 
         UtredningStatus status = testee.resolveStatus(utr);
@@ -109,11 +109,11 @@ public class UtredningStateResolverTest {
     }
 
     // UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR
-   // @Test TODO FIXA
+    @Test
     public void testResolvesUppdateradBestallningVantarPaHandlingar() {
         Utredning utr = buildBaseUtredning();
         utr.getExternForfragan().getInternForfraganList().add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
-        utr.setBestallning(buildBestallning());
+        utr.setBestallning(buildBestallning(LocalDateTime.now()));
         utr.getHandlingList().clear();
 
         UtredningStatus status = testee.resolveStatus(utr);
@@ -126,7 +126,7 @@ public class UtredningStateResolverTest {
     public void testResolvesHandlingarMottagnaVantaPaBesok() {
         Utredning utr = buildBaseUtredning();
         utr.getExternForfragan().getInternForfraganList().add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
-        utr.setBestallning(buildBestallning());
+        utr.setBestallning(buildBestallning(null));
         utr.getHandlingList().add(buildHandling(LocalDateTime.now(), null));
 
         UtredningStatus status = testee.resolveStatus(utr);
@@ -144,8 +144,9 @@ public class UtredningStateResolverTest {
         return h;
     }
 
-    private Bestallning buildBestallning() {
+    private Bestallning buildBestallning(LocalDateTime uppdateradDatum) {
         Bestallning b  = new Bestallning();
+        b.setUppdateradDatum(uppdateradDatum);
         return b;
     }
 
