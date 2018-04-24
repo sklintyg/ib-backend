@@ -36,9 +36,23 @@ public interface UtredningService {
 
     GetUtredningResponse getUtredning(String utredningId, String vardgivareHsaId);
 
+    /**
+     * Gets all the {@link se.inera.intyg.intygsbestallning.persistence.model.InternForfragan} for the unit with HSA-id vardenhetHsaId.
+     *
+     * @param vardenhetHsaId the HSA-id of the unit
+     * @return a list of the InternForfragan represented as a {@link ForfraganListItem}
+     */
     List<ForfraganListItem> findForfragningarForVardenhetHsaId(String vardenhetHsaId);
 
-    GetForfraganResponse getForfragan(Long forfraganId, String vardenhetHsaId);
+    /**
+     * Get the {@link se.inera.intyg.intygsbestallning.persistence.model.InternForfragan} associated with the utredningid and
+     * vardenhetHsaId as a {@link GetForfraganResponse}.
+     *
+     * @param utredningId    the id of the utredning
+     * @param vardenhetHsaId the hsaId of the vardenhet of which have received an InternForfragan
+     * @return The information of the InternForfragan
+     */
+    GetForfraganResponse getForfragan(String utredningId, String vardenhetHsaId);
 
     /**
      * Handles the new incomming order for FMU.

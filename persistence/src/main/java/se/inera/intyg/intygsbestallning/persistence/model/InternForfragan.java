@@ -51,9 +51,9 @@ public class InternForfragan {
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime besvarasSenastDatum;
 
-    @Column(name = "INKOM_DATUM")
+    @Column(name = "SKAPAD_DATUM")
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
-    private LocalDateTime inkomDatum;
+    private LocalDateTime skapadDatum;
 
     @Column(name = "KOMMENTAR")
     private String kommentar;
@@ -110,6 +110,14 @@ public class InternForfragan {
         this.forfraganSvar = forfraganSvar;
     }
 
+    public LocalDateTime getSkapadDatum() {
+        return skapadDatum;
+    }
+
+    public void setSkapadDatum(LocalDateTime skapadDatum) {
+        this.skapadDatum = skapadDatum;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -128,19 +136,11 @@ public class InternForfragan {
         return Objects.hash(id);
     }
 
-    public LocalDateTime getInkomDatum() {
-        return inkomDatum;
-    }
-
-    public void setInkomDatum(LocalDateTime inkomDatum) {
-        this.inkomDatum = inkomDatum;
-    }
-
     public static final class InternForfraganBuilder {
         private String vardenhetHsaId;
         private LocalDateTime tilldeladDatum;
         private LocalDateTime besvarasSenastDatum;
-        private LocalDateTime inkomDatum;
+        private LocalDateTime skapadDatum;
         private String kommentar;
         private ForfraganSvar forfraganSvar;
 
@@ -166,8 +166,8 @@ public class InternForfragan {
             return this;
         }
 
-        public InternForfraganBuilder withInkomDatum(LocalDateTime inkomDatum) {
-            this.inkomDatum = inkomDatum;
+        public InternForfraganBuilder withSkapadDatum(LocalDateTime skapadDatum) {
+            this.skapadDatum = skapadDatum;
             return this;
         }
 

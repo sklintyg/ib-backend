@@ -85,6 +85,10 @@
                 <constraints nullable="true"/>
             </column>
 
+            <column name="INKOM_DATUM" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+
             <column name="AVVISAT_KOMMENTAR" type="text">
                 <constraints nullable="true"/>
             </column>
@@ -344,7 +348,7 @@
                 <constraints nullable="false"/>
             </column>
 
-            <column name="INKOM_DATUM" type="datetime">
+            <column name="SKAPAD_DATUM" type="datetime">
                 <constraints nullable="true"/>
             </column>
 
@@ -371,6 +375,12 @@
                                  constraintName="INTERN_FORFRAGAN_FORFRAGAN_SVAR_FK"
                                  referencedColumnNames="ID"
                                  referencedTableName="FORFRAGAN_SVAR"/>
+
+        <createIndex tableName="INTERN_FORFRAGAN"
+                     indexName="INTERN_FORFRAGAN_VARDENHET_HSA_ID_IDX"
+                     unique="false">
+            <column name="VARDENHET_HSA_ID"/>
+        </createIndex>
 
         <createTable tableName="HANDELSE">
             <column name="ID" type="bigint">

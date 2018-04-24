@@ -18,21 +18,40 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
-public class GetForfraganResponse {
+import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 
-    private Long forfraganId;
+import java.time.format.DateTimeFormatter;
+import java.util.Objects;
+
+import static java.util.Objects.isNull;
+
+public class GetForfraganResponse {
+    private static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
+
     private String vardenhetHsaId;
     private String tilldeladDatum;
     private String besvarasSenastDatum;
     private String status;
     private String kommentar;
 
-    public Long getForfraganId() {
-        return forfraganId;
-    }
+    public static GetForfraganResponse from(Utredning utredning, String vardenhetHsaId) {
 
-    public void setForfraganId(Long forfraganId) {
-        this.forfraganId = forfraganId;
+        InternForfragan internForfragan = utredning.getExternForfragan().getInternForfraganList()
+                .stream()
+                .filter(i -> Objects.equals(i.getVardenhetHsaId(), vardenhetHsaId))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+
+        return GetForfraganResponseBuilder.aGetForfraganResponse()
+                .withBesvarasSenastDatum(!isNull(internForfragan.getBesvarasSenastDatum())
+                        ? internForfragan.getBesvarasSenastDatum().format(formatter) : null)
+                .withKommentar(internForfragan.getKommentar())
+                .withStatus("TODO")
+                .withTilldeladDatum(!isNull(internForfragan.getTilldeladDatum())
+                        ? internForfragan.getTilldeladDatum().format(formatter) : null)
+                .withVardenhetHsaId(vardenhetHsaId)
+                .build();
     }
 
     public String getVardenhetHsaId() {
@@ -73,5 +92,55 @@ public class GetForfraganResponse {
 
     public void setKommentar(String kommentar) {
         this.kommentar = kommentar;
+    }
+
+    public static final class GetForfraganResponseBuilder {
+        private String vardenhetHsaId;
+        private String tilldeladDatum;
+        private String besvarasSenastDatum;
+        private String status;
+        private String kommentar;
+
+        private GetForfraganResponseBuilder() {
+        }
+
+        public static GetForfraganResponseBuilder aGetForfraganResponse() {
+            return new GetForfraganResponseBuilder();
+        }
+
+        public GetForfraganResponseBuilder withVardenhetHsaId(String vardenhetHsaId) {
+            this.vardenhetHsaId = vardenhetHsaId;
+            return this;
+        }
+
+        public GetForfraganResponseBuilder withTilldeladDatum(String tilldeladDatum) {
+            this.tilldeladDatum = tilldeladDatum;
+            return this;
+        }
+
+        public GetForfraganResponseBuilder withBesvarasSenastDatum(String besvarasSenastDatum) {
+            this.besvarasSenastDatum = besvarasSenastDatum;
+            return this;
+        }
+
+        public GetForfraganResponseBuilder withStatus(String status) {
+            this.status = status;
+            return this;
+        }
+
+        public GetForfraganResponseBuilder withKommentar(String kommentar) {
+            this.kommentar = kommentar;
+            return this;
+        }
+
+        public GetForfraganResponse build() {
+            GetForfraganResponse getForfraganResponse = new GetForfraganResponse();
+            getForfraganResponse.setVardenhetHsaId(vardenhetHsaId);
+            getForfraganResponse.setTilldeladDatum(tilldeladDatum);
+            getForfraganResponse.setBesvarasSenastDatum(besvarasSenastDatum);
+            getForfraganResponse.setStatus(status);
+            getForfraganResponse.setKommentar(kommentar);
+            return getForfraganResponse;
+        }
     }
 }

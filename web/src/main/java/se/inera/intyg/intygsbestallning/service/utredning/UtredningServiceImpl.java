@@ -39,6 +39,7 @@ import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerfora
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import static java.util.stream.Collectors.toList;
@@ -64,8 +65,18 @@ public class UtredningServiceImpl implements UtredningService {
         return null;
     }
 
-    @Override public GetUtredningResponse getUtredning(String utredningId, String vardgivareHsaId) {
-        return null;
+    @Override
+    public GetUtredningResponse getUtredning(String utredningId, String vardgivareHsaId) {
+        Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
+                () -> new IbNotFoundException("Utredning with assessmentId '" + utredningId + "' does not exist."));
+
+        if (!Objects.equals(utredning.getExternForfragan().getLandstingHsaId(), vardgivareHsaId)) {
+            throw new IbNotFoundException(
+                    "Utredning with assessmentId '" + utredningId + "' does not have external förfrågan for landsting with id '"
+                            + vardgivareHsaId + "'");
+        }
+
+        return GetUtredningResponse.from(utredning);
     }
 
     @Override
@@ -76,8 +87,21 @@ public class UtredningServiceImpl implements UtredningService {
                 .collect(toList());
     }
 
-    @Override public GetForfraganResponse getForfragan(Long forfraganId, String vardenhetHsaId) {
-        return null;
+    @Override
+    public GetForfraganResponse getForfragan(String utredningId, String vardenhetHsaId) {
+        Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
+                () -> new IbNotFoundException("Utredning with assessmentId '" + utredningId + "' does not exist."));
+
+        boolean internForfraganExists = utredning.getExternForfragan().getInternForfraganList()
+                .stream()
+                .anyMatch(internForfragan -> Objects.equals(internForfragan.getVardenhetHsaId(), vardenhetHsaId));
+
+        if (!internForfraganExists) {
+            throw new IbNotFoundException(
+                    "Utredning with id '" + utredningId + "' does not have an InternFörfrågan for enhet with id '" + vardenhetHsaId + "'");
+        }
+
+        return GetForfraganResponse.from(utredning, vardenhetHsaId);
     }
 
     @Override

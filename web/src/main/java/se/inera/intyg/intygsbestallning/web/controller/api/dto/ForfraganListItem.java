@@ -46,8 +46,8 @@ public class ForfraganListItem {
         return ForfraganListItemBuilder.aForfraganListItem()
                 .withBesvarasSenastDatum(!isNull(internForfragan.getBesvarasSenastDatum())
                         ? internForfragan.getBesvarasSenastDatum().format(formatter) : null)
-                .withInkomDatum(!isNull(internForfragan.getInkomDatum())
-                        ? internForfragan.getInkomDatum().format(formatter) : null)
+                .withInkomDatum(!isNull(internForfragan.getSkapadDatum())
+                        ? internForfragan.getSkapadDatum().format(formatter) : null)
                 .withPlaneringsDatum(
                         !isNull(internForfragan.getForfraganSvar()) && !isNull(internForfragan.getForfraganSvar().getBorjaDatum())
                                 ? internForfragan.getForfraganSvar().getBorjaDatum().format(formatter) : null)

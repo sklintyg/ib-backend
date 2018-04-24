@@ -58,6 +58,10 @@ public class ExternForfragan {
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime avvisatDatum;
 
+    @Column(name = "INKOM_DATUM", nullable = false)
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
+    private LocalDateTime inkomDatum;
+
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "EXTERN_FORFRAGAN_ID", referencedColumnName = "ID", nullable = false)
     private List<InternForfragan> internForfraganList = new ArrayList<>();
@@ -118,12 +122,21 @@ public class ExternForfragan {
         this.id = id;
     }
 
+    public LocalDateTime getInkomDatum() {
+        return inkomDatum;
+    }
+
+    public void setInkomDatum(LocalDateTime inkomDatum) {
+        this.inkomDatum = inkomDatum;
+    }
+
     public static final class ExternForfraganBuilder {
         private String landstingHsaId;
         private LocalDateTime besvarasSenastDatum;
         private String kommentar;
         private String avvisatKommentar;
         private LocalDateTime avvisatDatum;
+        private LocalDateTime inkomDatum;
         private List<InternForfragan> internForfraganList = new ArrayList<>();
 
         private ExternForfraganBuilder() {
@@ -158,6 +171,11 @@ public class ExternForfragan {
             return this;
         }
 
+        public ExternForfraganBuilder withInkomDatum(LocalDateTime inkomDatum) {
+            this.inkomDatum = inkomDatum;
+            return this;
+        }
+
         public ExternForfraganBuilder withInternForfraganList(List<InternForfragan> internForfraganList) {
             this.internForfraganList = internForfraganList;
             return this;
@@ -171,6 +189,7 @@ public class ExternForfragan {
             externForfragan.setAvvisatKommentar(avvisatKommentar);
             externForfragan.setAvvisatDatum(avvisatDatum);
             externForfragan.setInternForfraganList(internForfraganList);
+            externForfragan.setInkomDatum(inkomDatum);
             return externForfragan;
         }
     }

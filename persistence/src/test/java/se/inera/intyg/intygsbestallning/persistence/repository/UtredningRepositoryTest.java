@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.repository;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,12 +49,23 @@ import se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
+import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handelse.HandelseBuilder.aHandelse;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
+import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
+import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 
 /**
  * Created by eriklupander on 2015-08-05.
@@ -197,109 +209,103 @@ public class UtredningRepositoryTest {
     }
 
     private Invanare buildInvanare() {
-        Invanare invanare = new Invanare();
-        invanare.setBakgrundNulage("bakgrund");
-        invanare.setPersonId("personId");
-        invanare.setPostkod("postkod");
-        invanare.setSarskildaBehov("behov");
-        invanare.getTidigareUtforare().add(buildTidigareUtforare());
-        return invanare;
+        return anInvanare()
+                .withBakgrundNulage("bakgrund")
+                .withPersonId("personId")
+                .withPostkod("postkod")
+                .withSarskildaBehov("behov")
+                .withTidigareUtforare(Collections.singletonList(buildTidigareUtforare()))
+                .build();
     }
 
     private TidigareUtforare buildTidigareUtforare() {
-        TidigareUtforare tidigareUtforare = new TidigareUtforare();
-        tidigareUtforare.setTidigareEnhetId(VE_HSA_ID);
-        return tidigareUtforare;
+        return aTidigareUtforare()
+                .withTidigareEnhetId(VE_HSA_ID)
+                .build();
     }
 
     private Handlaggare buildHandlaggare() {
-        Handlaggare handlaggare = new Handlaggare();
-        handlaggare.setAdress("adress");
-        handlaggare.setMyndighet("authority");
-        handlaggare.setEmail("email");
-        handlaggare.setFullstandigtNamn("fullstandigtNamn");
-        handlaggare.setKontor("kontor");
-        handlaggare.setKostnadsstalle("kontorCostCenter");
-        handlaggare.setPostkod("postkod");
-        handlaggare.setStad("stad");
-        handlaggare.setTelefonnummer("telefonnummer");
-        return handlaggare;
+        return aHandlaggare()
+                .withAdress("adress")
+                .withMyndighet("authority")
+                .withEmail("email")
+                .withFullstandigtNamn("fullstandigtNamn")
+                .withKontor("kontor")
+                .withKostnadsstalle("kontorCostCenter")
+                .withPostkod("postkod")
+                .withStad("stad")
+                .withTelefonnummer("telefonnummer")
+                .build();
     }
 
     private Handling buildHandling() {
-
-        Handling handling = new Handling();
-        handling.setInkomDatum(LocalDateTime.now());
-        handling.setSkickatDatum(LocalDateTime.now());
-        return handling;
+        return aHandling()
+                .withInkomDatum(LocalDateTime.now())
+                .withSkickatDatum(LocalDateTime.now())
+                .build();
     }
 
     private ExternForfragan buildExternForfragan() {
-        ExternForfragan externForfragan = new ExternForfragan();
-        externForfragan.setLandstingHsaId(VG_HSA_ID);
-        externForfragan.setBesvarasSenastDatum(LocalDateTime.now());
-        externForfragan.setAvvisatDatum(LocalDateTime.now());
-        externForfragan.setAvvisatKommentar("avvisatKommentar");
-        externForfragan.setKommentar("kommentar");
-
-        InternForfragan internForfragan = new InternForfragan();
-        internForfragan.setVardenhetHsaId(VE_HSA_ID);
-        internForfragan.setBesvarasSenastDatum(LocalDateTime.now());
-        internForfragan.setKommentar("kommentar");
-        internForfragan.setTilldeladDatum(LocalDateTime.now());
-
-        internForfragan.setForfraganSvar(buildForfraganSvar());
-
-        externForfragan.getInternForfraganList().add(internForfragan);
-        return externForfragan;
+        return anExternForfragan()
+                .withLandstingHsaId(VG_HSA_ID)
+                .withBesvarasSenastDatum(LocalDateTime.now())
+                .withAvvisatDatum(LocalDateTime.now())
+                .withAvvisatKommentar("avvisatKommentar")
+                .withKommentar("kommentar")
+                .withInkomDatum(LocalDateTime.now())
+                .withInternForfraganList(ImmutableList.of(
+                        anInternForfragan()
+                                .withForfraganSvar(buildForfraganSvar())
+                                .withVardenhetHsaId(VE_HSA_ID)
+                                .withBesvarasSenastDatum(LocalDateTime.now())
+                                .withKommentar("kommentar")
+                                .withTilldeladDatum(LocalDateTime.now())
+                                .build()))
+                .build();
     }
 
     private Bestallning buildBestallning() {
-        Bestallning bestallning = new Bestallning();
-        bestallning.setIntygKlartSenast(LocalDateTime.now());
-        bestallning.setKommentar("kommentar");
-        bestallning.setOrderDatum(LocalDateTime.now());
-        bestallning.setPlaneradeAktiviteter("aktiviteter");
-        bestallning.setSyfte("syfte");
-        bestallning.setTilldeladVardenhetHsaId(VE_HSA_ID);
-        return bestallning;
+        return aBestallning()
+                .withIntygKlartSenast(LocalDateTime.now())
+                .withKommentar("kommentar")
+                .withOrderDatum(LocalDateTime.now())
+                .withPlaneradeAktiviteter("aktiviteter")
+                .withSyfte("syfte")
+                .withTilldeladVardenhetHsaId(VE_HSA_ID)
+                .build();
     }
 
     private Handelse buildHandelse() {
-        Handelse h = new Handelse();
-        h.setAnvandare("Kotte Korv");
-        h.setHandelseText("Utredning skapades");
-        h.setHandelseTyp(HandelseTyp.FORFRAGAN_MOTTAGEN);
-        h.setSkapad(LocalDateTime.now());
-        h.setKommentar("Detta är en kommentar");
-
-        return h;
+        return aHandelse()
+                .withAnvandare("Kotte Korv")
+                .withHandelseText("Utredning skapades")
+                .withHandelseTyp(HandelseTyp.FORFRAGAN_MOTTAGEN)
+                .withSkapad(LocalDateTime.now())
+                .withKommentar("Detta är en kommentar")
+                .build();
     }
 
     private Utredning buildUtredning() {
-        Utredning utr = new Utredning();
-        utr.setUtredningId(UTREDNING_ID);
-
-        utr.setUtredningsTyp(UtredningsTyp.AFU);
-
-        utr.setSprakTolk("sv");
-
-        return utr;
+        return anUtredning()
+                .withUtredningId(UTREDNING_ID)
+                .withUtredningsTyp(UtredningsTyp.AFU)
+                .withSprakTolk("sv")
+                .build();
     }
 
     private ForfraganSvar buildForfraganSvar() {
-        ForfraganSvar ff = new ForfraganSvar();
-        ff.setSvarTyp(SvarTyp.ACCEPTERA);
-        ff.setUtforareNamn("Utförarenheten");
-        ff.setUtforareAdress("Utförarvägen 1");
-        ff.setUtforarePostnr("12345");
-        ff.setUtforarePostort("Utförhult");
-        ff.setUtforareEpost("utforare@inera.se");
-        ff.setUtforareTelefon("123-123412");
-        ff.setKommentar("Bered skyndsamt!");
-        ff.setUtforareTyp(UtforareTyp.ENHET);
-        ff.setBorjaDatum(LocalDate.now());
-        return ff;
+        return aForfraganSvar()
+                .withSvarTyp(SvarTyp.ACCEPTERA)
+                .withUtforareNamn("Utförarenheten")
+                .withUtforareAdress("Utförarvägen 1")
+                .withUtforarePostnr("12345")
+                .withUtforarePostort("Utförhult")
+                .withUtforareEpost("utforare@inera.se")
+                .withUtforareTelefon("123-123412")
+                .withKommentar("Bered skyndsamt!")
+                .withUtforareTyp(UtforareTyp.ENHET)
+                .withBorjaDatum(LocalDate.now())
+                .build();
     }
 
 }
