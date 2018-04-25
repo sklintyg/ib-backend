@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,32 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+angular.module('ibApp').directive('ibAppHeader', ['UserModel', function(UserModel) {
+    'use strict';
 
+    return {
+        restrict: 'E',
+        scope: {},
+        templateUrl: '/components/appDirectives/ibAppHeader/ibAppHeader.directive.html',
+        link: function($scope) {
 
-angular.module('ibApp').controller('SelectCareUnitCtrl',
-    function($scope, $uibModalInstance, UserModel) {
-        'use strict';
-        /**
-         * Private functions
-         */
+            $scope.user = UserModel.get();
 
+            $scope.loggedIn = function () {
+                return angular.isObject($scope.user) && $scope.user.loggedIn;
 
-        /**
-         * Exposed scope properties
-         */
-        $scope.user = UserModel.get();
+            };
 
-        /**
-         * Exposed scope interaction functions
-         */
+            $scope.showUnitSection = function () {
+                return $scope.loggedIn() && angular.isObject($scope.user.currentlyLoggedInAt);
 
-        $scope.cancel = function() {
-            $uibModalInstance.dismiss();
-        };
+            };
 
-        $scope.onSelectVardenhet = function(enhet) {
-             $uibModalInstance.close(enhet);
-
-        };
-    }
-);
+        }
+    };
+}]);

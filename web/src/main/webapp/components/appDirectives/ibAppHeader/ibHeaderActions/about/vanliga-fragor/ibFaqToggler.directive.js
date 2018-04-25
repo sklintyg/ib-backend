@@ -16,20 +16,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/**
- Note: This directive is not rendered unless a valid userModel is available, so all access to $scope.userModel can skips such checks.
- */
-angular.module('ibApp').directive('ibHeaderUser', [ 'UserModel', function(UserModel) {
+angular.module('ibApp').directive('ibFaqToggler', function() {
     'use strict';
 
     return {
         restrict: 'E',
+        transclude: true,
         scope: {},
-        templateUrl: '/components/commonDirectives/ibAppHeader/ibHeaderUser/ibHeaderUser.directive.html',
-        link: function($scope) {
+        templateUrl: '/components/appDirectives/ibAppHeader/ibHeaderActions/about/vanliga-fragor/ibFaqToggler.directive.html',
+        controller: function($scope) {
 
-            $scope.user = UserModel.get();
+            $scope.vm = {
+                mode: undefined
+            };
+
+            $scope.toggle = function($event, state) {
+                $scope.vm.mode = state;
+                $event.target.blur();
+            };
+
+            this.someChildToggledItself = function() {
+                $scope.vm.mode = undefined;
+            };
+
+            this.getGlobalState = function() {
+                return $scope.vm.mode;
+            };
 
         }
     };
-} ]);
+});

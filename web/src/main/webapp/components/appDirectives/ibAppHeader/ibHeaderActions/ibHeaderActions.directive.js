@@ -24,7 +24,7 @@ angular.module('ibApp').directive('ibHeaderActions',
             return {
                 restrict: 'E',
                 scope: {},
-                templateUrl: '/components/commonDirectives/ibAppHeader/ibHeaderActions/ibHeaderActions.directive.html',
+                templateUrl: '/components/appDirectives/ibAppHeader/ibHeaderActions/ibHeaderActions.directive.html',
                 link: function($scope) {
 
                     var aboutModalInstance, changeUnitDialogInstance;
@@ -74,7 +74,7 @@ angular.module('ibApp').directive('ibHeaderActions',
 
                     $scope.onAboutClick = function() {
                         aboutModalInstance = $uibModal.open({
-                            templateUrl: '/components/commonDirectives/ibAppHeader/ibHeaderActions/about/aboutDialog.template.html',
+                            templateUrl: '/components/appDirectives/ibAppHeader/ibHeaderActions/about/aboutDialog.template.html',
                             size: 'lg',
                             controller: function($scope, $uibModalInstance, user) {
 
@@ -99,7 +99,7 @@ angular.module('ibApp').directive('ibHeaderActions',
                     $scope.onSettingsClick = function() {
 
                         changeUnitDialogInstance = $uibModal.open({
-                            templateUrl: '/components/commonDirectives/ibAppHeader/ibHeaderActions/unit-settings/ibUnitSettingsDialog.html',
+                            templateUrl: '/components/appDirectives/ibAppHeader/ibHeaderActions/unit-settings/ibUnitSettingsDialog.html',
                             controller: 'ibUnitSettingsDialogCtrl',
                             size: 'md',
                             id: 'ibUnitSettingsDialog',
@@ -114,7 +114,7 @@ angular.module('ibApp').directive('ibHeaderActions',
                     $scope.onChangeSystemRoleClick = function() {
 
                         changeUnitDialogInstance = $uibModal.open({
-                            templateUrl: '/components/commonDirectives/ibAppHeader/ibHeaderActions/change-systemrole/ibChangeSystemRoleDialog.html',
+                            templateUrl: '/components/appDirectives/ibAppHeader/ibHeaderActions/change-systemrole/ibChangeSystemRoleDialog.html',
                             controller: 'ibChangeSystemRoleDialogCtrl',
                             size: 'md',
                             id: 'ibChangeSystemRoleDialog',
