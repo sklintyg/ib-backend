@@ -16,17 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.service.pdl;
+angular.module('ibApp').directive('ibAppHeader', ['UserModel', function(UserModel) {
+    'use strict';
 
-import se.inera.intyg.infra.logmessages.ActivityType;
-import se.inera.intyg.infra.logmessages.ResourceType;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
+    return {
+        restrict: 'E',
+        scope: {},
+        templateUrl: '/components/appDirectives/ibAppHeader/ibAppHeader.directive.html',
+        link: function($scope) {
 
-import java.util.List;
+            $scope.user = UserModel.get();
 
-/**
- * @author eriklupander on 2016-02-18.
- */
-public interface LogService {
-    void logVisaUtredningLista(List<UtredningListItem> utredningListItems, ActivityType activityType, ResourceType resourceType);
-}
+            $scope.loggedIn = function () {
+                return angular.isObject($scope.user) && $scope.user.loggedIn;
+
+            };
+
+            $scope.showUnitSection = function () {
+                return $scope.loggedIn() && angular.isObject($scope.user.currentlyLoggedInAt);
+
+            };
+
+        }
+    };
+}]);

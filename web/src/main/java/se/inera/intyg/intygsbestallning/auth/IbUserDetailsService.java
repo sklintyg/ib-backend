@@ -73,7 +73,7 @@ public class IbUserDetailsService extends BaseUserDetailsService implements SAML
             throw new MissingIBSystemRoleException(ibUser.getHsaId());
         }
 
-        // If only a single possible entity to select as loggedInAt, do that...
+        // If only a single possible entity to select as loggedInAt exists, do that...
         int count = 0;
         for (IbVardgivare vg : ibUser.getSystemAuthorities()) {
             if (vg.isSamordnare()) {
@@ -82,10 +82,16 @@ public class IbUserDetailsService extends BaseUserDetailsService implements SAML
             count += vg.getVardenheter().size();
         }
 
-        // Ugly, make something more readable...
+        // If there were a single possible entity, invoke changeValdVardenhet with the
+        // vgId or unitId to auto-select it for the user.
         if (count == 1) {
-            String oneAndOnly = ibUser.getSystemAuthorities().get(0).isSamordnare() ? ibUser.getSystemAuthorities().get(0).getId()
-                    : ibUser.getSystemAuthorities().get(0).getVardenheter().get(0).getId();
+            IbVardgivare firstSystemAuthority = ibUser.getSystemAuthorities().get(0);
+            String oneAndOnly = null;
+            if (firstSystemAuthority.isSamordnare()) {
+                oneAndOnly = firstSystemAuthority.getId();
+            } else {
+                oneAndOnly = firstSystemAuthority.getVardenheter().get(0).getId();
+            }
             ibUser.changeValdVardenhet(oneAndOnly);
         }
 

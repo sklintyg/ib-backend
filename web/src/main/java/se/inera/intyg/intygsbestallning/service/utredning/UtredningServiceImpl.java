@@ -199,5 +199,4 @@ public class UtredningServiceImpl implements UtredningService {
                 .withIntygKlartSenast(order.getLastDateIntyg().atStartOfDay())
                 .build();
     }
-
 }

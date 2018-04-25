@@ -26,7 +26,7 @@ angular.module('ibApp').directive('ibHeaderUnit', [ '$uibModal', 'UserModel',
     return {
         restrict: 'E',
         scope: {},
-        templateUrl: '/components/commonDirectives/ibAppHeader/ibHeaderUnit/ibHeaderUnit.directive.html',
+        templateUrl: '/components/appDirectives/ibAppHeader/ibHeaderUnit/ibHeaderUnit.directive.html',
         link: function($scope) {
 
 

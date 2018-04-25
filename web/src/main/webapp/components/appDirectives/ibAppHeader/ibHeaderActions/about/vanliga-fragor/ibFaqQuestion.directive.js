@@ -26,7 +26,7 @@ angular.module('ibApp').directive('ibFaqQuestion', ['smoothScroll', function(smo
         scope: {
             title: '@'
         },
-        templateUrl: '/components/commonDirectives/ibAppHeader/ibHeaderActions/about/vanliga-fragor/ibFaqQuestion.directive.html',
+        templateUrl: '/components/appDirectives/ibAppHeader/ibHeaderActions/about/vanliga-fragor/ibFaqQuestion.directive.html',
         link: function($scope, elem, attrs, ibFaqToggler) {
 
             var scrollContainerId = 'ib-about-modal-body';

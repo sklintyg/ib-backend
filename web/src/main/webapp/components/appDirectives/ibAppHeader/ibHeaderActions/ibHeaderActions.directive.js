@@ -24,7 +24,7 @@ angular.module('ibApp').directive('ibHeaderActions',
             return {
                 restrict: 'E',
                 scope: {},
-                templateUrl: '/components/commonDirectives/ibAppHeader/ibHeaderActions/ibHeaderActions.directive.html',
+                templateUrl: '/components/appDirectives/ibAppHeader/ibHeaderActions/ibHeaderActions.directive.html',
                 link: function($scope) {
 
                     var aboutModalInstance, changeUnitDialogInstance;
@@ -35,6 +35,13 @@ angular.module('ibApp').directive('ibHeaderActions',
                         return angular.isObject(user) && user.currentlyLoggedInAt &&
                             user.authoritiesTree && user.authoritiesTree.length > 1;
                     }
+
+                    function _canChangeUnitSettings(user) {
+                        return angular.isObject(user) && user.currentlyLoggedInAt &&
+                            user.currentlyLoggedInAt.type === 'VE';
+                    }
+
+
                     $scope.vm = {
                         expanded:  false
                     };
@@ -42,7 +49,7 @@ angular.module('ibApp').directive('ibHeaderActions',
                     function updateVm() {
                         $scope.vm.showAbout = $scope.user.loggedIn;
                         $scope.vm.showLogout = $scope.user.loggedIn;
-                        $scope.vm.showSettings = $scope.user.currentlyLoggedInAt;
+                        $scope.vm.showSettings = _canChangeUnitSettings($scope.user);
                         $scope.vm.showChangeSystemRole = _canChangeSystemRole($scope.user);
                     }
 
@@ -65,30 +72,9 @@ angular.module('ibApp').directive('ibHeaderActions',
 
                     // About ----------------------------------------------------------------
 
-
-                    //To make sure we close any open dialog we spawned, register a listener to state changes
-                    // so that we can make sure we close them if user navigates using browser back etc.
-                    var unregisterFn = $rootScope.$on('$stateChangeStart', function() {
-                        if (aboutModalInstance) {
-                            aboutModalInstance.close();
-                            aboutModalInstance = undefined;
-                        }
-                        if (changeUnitDialogInstance) {
-                            changeUnitDialogInstance.close();
-                            changeUnitDialogInstance = undefined;
-                        }
-
-                    });
-
-                    //Since rootscope event listeners aren't unregistered automatically when this directives
-                    //scope is destroyed, let's take care of that.
-                    // (currently this directive is used only in the wc-header which lives throughout an entire session,
-                    // so not that critical right now)
-                    $scope.$on('$destroy', unregisterFn);
-
                     $scope.onAboutClick = function() {
                         aboutModalInstance = $uibModal.open({
-                            templateUrl: '/components/commonDirectives/ibAppHeader/ibHeaderActions/about/aboutDialog.template.html',
+                            templateUrl: '/components/appDirectives/ibAppHeader/ibHeaderActions/about/aboutDialog.template.html',
                             size: 'lg',
                             controller: function($scope, $uibModalInstance, user) {
 
@@ -108,10 +94,27 @@ angular.module('ibApp').directive('ibHeaderActions',
                         aboutModalInstance.result.catch(function () {}); //jshint ignore:line
                     };
 
+
+
+                    $scope.onSettingsClick = function() {
+
+                        changeUnitDialogInstance = $uibModal.open({
+                            templateUrl: '/components/appDirectives/ibAppHeader/ibHeaderActions/unit-settings/ibUnitSettingsDialog.html',
+                            controller: 'ibUnitSettingsDialogCtrl',
+                            size: 'md',
+                            id: 'ibUnitSettingsDialog',
+                            keyboard: true,
+                            windowClass: 'ib-header-unit-settings-dialog-window-class'
+                        });
+                        //angular > 1.5 warns if promise rejection is not handled (e.g backdrop-click == rejection)
+                        changeUnitDialogInstance.result.catch(function () {}); //jshint ignore:line
+
+                    };
+
                     $scope.onChangeSystemRoleClick = function() {
 
                         changeUnitDialogInstance = $uibModal.open({
-                            templateUrl: '/components/commonDirectives/ibAppHeader/ibHeaderActions/ibChangeSystemRoleDialog.html',
+                            templateUrl: '/components/appDirectives/ibAppHeader/ibHeaderActions/change-systemrole/ibChangeSystemRoleDialog.html',
                             controller: 'ibChangeSystemRoleDialogCtrl',
                             size: 'md',
                             id: 'ibChangeSystemRoleDialog',
@@ -122,6 +125,25 @@ angular.module('ibApp').directive('ibHeaderActions',
                         changeUnitDialogInstance.result.catch(function () {}); //jshint ignore:line
 
                     };
+
+                    //To make sure we close any open dialog we spawned, register a listener to state changes
+                    // so that we can make sure we close them if user navigates using browser back etc.
+                    var unregisterFn = $rootScope.$on('$stateChangeStart', function() {
+                        if (aboutModalInstance) {
+                            aboutModalInstance.close();
+                            aboutModalInstance = undefined;
+                        }
+                        if (changeUnitDialogInstance) {
+                            changeUnitDialogInstance.close();
+                            changeUnitDialogInstance = undefined;
+                        }
+
+                    });
+                    //Since rootscope event listeners aren't unregistered automatically when this directives
+                    //scope is destroyed, let's take care of that.
+                    // (currently this directive is used only in the wc-header which lives throughout an entire session,
+                    // so not that critical right now)
+                    $scope.$on('$destroy', unregisterFn);
                 }
             };
         } ]);

@@ -1,11 +1,11 @@
-@import '../ibAppHeader.variables.scss';
+@import '../ibAppHeader.variables';
 
 //local variables
-$ib-header-unit-min-width: 150px;
+$ib-header-user-min-width: 120px;
 
-ib-header-unit {
-  //default is to act as a non-growing, shrinkable flex-item
-  flex: 0 1 auto;
+ib-header-user {
+  //default for this directive is to act as a non-growing, (aggressivly) shrinkable flex-item
+  flex: 0 3 auto;
   @media (max-width: $ib-header-collapse-breakpoint-width) {
     //but in compact mode, let it grow
     flex-grow: 1;
@@ -14,23 +14,26 @@ ib-header-unit {
   //flex items must a some sort of width applied for it to be able to shrink
   //NOTE: when using min-width:0px (no unit), scss processing optimised it by
   // removing the unit, casuing rendering errorss in IE that doesnt handle unitless min-widths in flex context. took me 6 hours to find that ugh!
-  min-width: $ib-header-unit-min-width;
+  min-width: $ib-header-user-min-width;
 
-  // but NOT a flex-container, bacause we want to be able to relativly position the menu below it when it expands..
+  // but NOT a flex-container, because we want to be able to relativly position the menu below it when it expands..
   display: block;
 
   //base text color for this component
   color: $ib-color-20;
 
-  .vg-name {
+  #ib-header-user-name {
     @extend %ib-typo-06;
+    color: $ib-color-20;
   }
-  .ve-name {
+
+  #ib-header-user-role {
     @extend %ib-typo-07;
+    color: $ib-color-20;
   }
-  .status-row {
-    @extend %ib-typo-07;
-    color: $ib-color-03;
+
+  .header-icon {
+    padding-right: 8px;
   }
 
 }

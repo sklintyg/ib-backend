@@ -16,20 +16,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package se.inera.intyg.intygsbestallning.persistence.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import org.springframework.transaction.annotation.Transactional;
+import se.inera.intyg.intygsbestallning.persistence.model.VardenhetPreference;
+
+import java.util.Optional;
+
 /**
- Note: This directive is not rendered unless a valid userModel is available, so all access to $scope.userModel can skips such checks.
+ * Created by marced on 2018-04-23.
  */
-angular.module('ibApp').directive('ibHeaderUser', [ 'UserModel', function(UserModel) {
-    'use strict';
+@Transactional(value = "transactionManager", readOnly = false)
+public interface VardenhetPreferenceRepository extends JpaRepository<VardenhetPreference, String> {
 
-    return {
-        restrict: 'E',
-        scope: {},
-        templateUrl: '/components/commonDirectives/ibAppHeader/ibHeaderUser/ibHeaderUser.directive.html',
-        link: function($scope) {
-
-            $scope.user = UserModel.get();
-
-        }
-    };
-} ]);
+    /**
+     * Finds an entity by it's hsaId.
+     * @param hsaId
+     * @return
+     * VardenhetPreference for this hsaId if exists.
+     */
+    Optional<VardenhetPreference> findByVardenhetHsaId(String hsaId);
+}

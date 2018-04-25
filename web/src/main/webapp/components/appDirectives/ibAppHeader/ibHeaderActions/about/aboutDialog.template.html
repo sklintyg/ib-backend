@@ -11,7 +11,7 @@
           <span>Om tjänsten</span> <i class="material-icons md-24">{{open.om ? 'expand_less':'expand_more'}}</i>
         </div>
       </div>
-      <div ng-include="'/components/commonDirectives/ibAppHeader/ibHeaderActions/about/about-partial.html'"></div>
+      <div ng-include="'/components/appDirectives/ibAppHeader/ibHeaderActions/about/about-partial.html'"></div>
 
     </div>
 
@@ -21,7 +21,7 @@
           <span>Support och kontaktinformation</span> <i class="material-icons md-24">{{open.support ? 'expand_less':'expand_more'}}</i>
         </div>
       </div>
-      <div ng-include="'/components/commonDirectives/ibAppHeader/ibHeaderActions/about/support-kontakt-partial-normal.html'"></div>
+      <div ng-include="'/components/appDirectives/ibAppHeader/ibHeaderActions/about/support-kontakt-partial-normal.html'"></div>
     </div>
 
     <div uib-accordion-group panel-class="ib-about-panel" is-open="open.faq">
@@ -31,7 +31,7 @@
         </div>
       </div>
       <ib-faq-toggler>
-        <div ng-include="'/components/commonDirectives/ibAppHeader/ibHeaderActions/about/vanliga-fragor/faq-normal-partial.html'"></div>
+        <div ng-include="'/components/appDirectives/ibAppHeader/ibHeaderActions/about/vanliga-fragor/faq-normal-partial.html'"></div>
       </ib-faq-toggler>
     </div>
 
@@ -41,7 +41,7 @@
           <span>Om kakor (cookies)</span> <i class="material-icons md-24">{{open.kakor ? 'expand_less':'expand_more'}}</i>
         </div>
       </div>
-      <div ng-include="'/components/commonDirectives/ibAppHeader/ibHeaderActions/about/kakor-partial.html'"></div>
+      <div ng-include="'/components/appDirectives/ibAppHeader/ibHeaderActions/about/kakor-partial.html'"></div>
     </div>
 
   </div>

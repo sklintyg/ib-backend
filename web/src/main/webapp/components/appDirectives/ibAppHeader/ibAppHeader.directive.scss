@@ -1,4 +1,4 @@
-@import 'ibAppHeader.variables.scss';
+@import 'ibAppHeader.variables';
 .header-wrapper {
   background-color: $ib-color-17;
 }
@@ -58,7 +58,7 @@ ib-app-header {
     border-width: 0 6px;
     border-style: solid;
     //The png contains a 12 pixel wide alpha-gradient that is sliced to left/right borders of the different directives.
-    border-image-source: url(/components/commonDirectives/ibAppHeader/divider-border.png);
+    border-image-source: url(/components/appDirectives/ibAppHeader/divider-border.png);
     border-image-slice: 0 50%;
     border-image-repeat: round;
     &.last {

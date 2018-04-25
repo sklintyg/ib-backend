@@ -97,6 +97,9 @@ public final class LogUser {
          * <p>
          * Se https://bitbucket.org/rivta-domains/riv.ehr.log/raw/master/docs/TKB_ehr_log.docx
          *
+         * För IB kommer vi aldrig PDL-logga för samordnare (som är inne på Vårdgivarnivå) så även här kan vi kräva
+         * samtliga tre nedan.
+         *
          * @param userId       HsaId of the logged in user.
          * @param enhetsId     HsaId of the enhet.
          * @param vardgivareId HsaId of the vardgivare.

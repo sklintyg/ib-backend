@@ -16,27 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-angular.module('ibApp').directive('ibAppHeader', ['UserModel', function(UserModel) {
+/**
+ Note: This directive is not rendered unless a valid userModel is available, so all access to $scope.userModel can skips such checks.
+ */
+angular.module('ibApp').directive('ibHeaderUser', [ 'UserModel', function(UserModel) {
     'use strict';
 
     return {
         restrict: 'E',
         scope: {},
-        templateUrl: '/components/commonDirectives/ibAppHeader/ibAppHeader.directive.html',
+        templateUrl: '/components/appDirectives/ibAppHeader/ibHeaderUser/ibHeaderUser.directive.html',
         link: function($scope) {
 
             $scope.user = UserModel.get();
 
-            $scope.loggedIn = function () {
-                return angular.isObject($scope.user) && $scope.user.loggedIn;
-
-            };
-
-            $scope.showUnitSection = function () {
-                return $scope.loggedIn() && angular.isObject($scope.user.currentlyLoggedInAt);
-
-            };
-
         }
     };
-}]);
+} ]);

@@ -48,6 +48,9 @@ var ibMessages = {
         'systemrole.change.modal.label': 'Byt systemroll / Välj enhet',
         'systemrole.change.modal.description': 'Nedan ser du de enheter som du har behörighet till. Du ser även vilken roll som är knuten till enheten. Klicka på den enhet du vill byta till.',
 
+        //Unit settings dialog
+        'unitsettings.change.modal.label': 'Enhetsinställningar',
+
         // Lista utredningar tabell
         'label.table.utredningar.column.id': 'Id',
         'label.table.utredningar.column.typ': 'Utredningstyp',

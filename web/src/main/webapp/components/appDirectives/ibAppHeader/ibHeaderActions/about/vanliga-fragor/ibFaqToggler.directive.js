@@ -23,7 +23,7 @@ angular.module('ibApp').directive('ibFaqToggler', function() {
         restrict: 'E',
         transclude: true,
         scope: {},
-        templateUrl: '/components/commonDirectives/ibAppHeader/ibHeaderActions/about/vanliga-fragor/ibFaqToggler.directive.html',
+        templateUrl: '/components/appDirectives/ibAppHeader/ibHeaderActions/about/vanliga-fragor/ibFaqToggler.directive.html',
         controller: function($scope) {
 
             $scope.vm = {

@@ -94,16 +94,10 @@ public class IbUser extends IntygUser implements Serializable {
 
         this.namn = intygUser.getNamn();
         this.titel = intygUser.getTitel();
-//        this.forskrivarkod = intygUser.getForskrivarkod();
         this.authenticationScheme = intygUser.getAuthenticationScheme();
         this.vardgivare = intygUser.getVardgivare();
-//        this.befattningar = intygUser.getBefattningar();
-//        this.specialiseringar = intygUser.getSpecialiseringar();
-//        this.legitimeradeYrkesgrupper = intygUser.getLegitimeradeYrkesgrupper();
         this.systemRoles = intygUser.getSystemRoles();
 
-    //    this.valdVardenhet = intygUser.getValdVardenhet();
-    //    this.valdVardgivare = intygUser.getValdVardgivare();
         this.authenticationMethod = intygUser.getAuthenticationMethod();
 
         this.features = intygUser.getFeatures();
