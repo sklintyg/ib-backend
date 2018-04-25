@@ -22,8 +22,6 @@ import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -33,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigDev;
 import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigTest;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
+import se.inera.intyg.intygsbestallning.persistence.model.EndReason;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar;
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
@@ -76,8 +75,6 @@ import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.Utred
 @Transactional
 public class UtredningRepositoryTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(UtredningRepositoryTest.class);
-
     private static final String VE_HSA_ID = "enhet-1";
     private static final String VG_HSA_ID = "vg-1";
     private static final String UTREDNING_ID = "abc-123";
@@ -117,6 +114,8 @@ public class UtredningRepositoryTest {
         assertEquals(UTREDNING_ID, utredning.getUtredningId());
         assertEquals(UtredningsTyp.AFU, utredning.getUtredningsTyp());
         assertEquals("sv", utredning.getSprakTolk());
+        assertNotNull(utredning.getAvbrutenDatum());
+        assertEquals(EndReason.JAV, utredning.getAvbrutenAnledning());
 
         Bestallning bestallning = utredning.getBestallning();
         assertNotNull(bestallning);
@@ -134,12 +133,14 @@ public class UtredningRepositoryTest {
         assertNotNull(externForfragan.getAvvisatDatum());
         assertNotNull(externForfragan.getBesvarasSenastDatum());
         assertEquals(1, externForfragan.getInternForfraganList().size());
+        assertNotNull(externForfragan.getInkomDatum());
 
         InternForfragan internForfragan = externForfragan.getInternForfraganList().get(0);
         assertNotNull(internForfragan);
         assertEquals("kommentar", internForfragan.getKommentar());
         assertNotNull(internForfragan.getBesvarasSenastDatum());
         assertNotNull(internForfragan.getTilldeladDatum());
+        assertNotNull(internForfragan.getSkapadDatum());
         assertNotNull(VE_HSA_ID, internForfragan.getVardenhetHsaId());
 
         ForfraganSvar forfraganSvar = internForfragan.getForfraganSvar();
@@ -287,6 +288,7 @@ public class UtredningRepositoryTest {
                                 .withBesvarasSenastDatum(LocalDateTime.now())
                                 .withKommentar("kommentar")
                                 .withTilldeladDatum(LocalDateTime.now())
+                                .withSkapadDatum(LocalDateTime.now())
                                 .build()))
                 .build();
     }
@@ -317,6 +319,8 @@ public class UtredningRepositoryTest {
                 .withUtredningId(UTREDNING_ID)
                 .withUtredningsTyp(UtredningsTyp.AFU)
                 .withSprakTolk("sv")
+                .withAvbrutenAnledning(EndReason.JAV)
+                .withAvbrutenDatum(LocalDateTime.now())
                 .build();
     }
 

@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,6 +30,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -50,6 +53,14 @@ public class Utredning {
 
     @Column(name = "SPRAK_TOLK")
     private String sprakTolk;
+
+    @Column(name = "AVBRUTEN_DATUM")
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
+    private LocalDateTime avbrutenDatum;
+
+    @Column(name = "AVBRUTEN_ANLEDNING")
+    @Enumerated(EnumType.STRING)
+    private EndReason avbrutenAnledning;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "EXTERN_FORFRAGAN_ID")
@@ -143,6 +154,22 @@ public class Utredning {
         this.invanare = invanare;
     }
 
+    public LocalDateTime getAvbrutenDatum() {
+        return avbrutenDatum;
+    }
+
+    public void setAvbrutenDatum(LocalDateTime avbrutenDatum) {
+        this.avbrutenDatum = avbrutenDatum;
+    }
+
+    public EndReason getAvbrutenAnledning() {
+        return avbrutenAnledning;
+    }
+
+    public void setAvbrutenAnledning(EndReason avbrutenAnledning) {
+        this.avbrutenAnledning = avbrutenAnledning;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -171,6 +198,8 @@ public class Utredning {
         private List<Handling> handlingList = new ArrayList<>();
         private Handlaggare handlaggare;
         private Invanare invanare;
+        private LocalDateTime avbrutenDatum;
+        private EndReason avbrutenAnledning;
 
         private UtredningBuilder() {
         }
@@ -224,6 +253,16 @@ public class Utredning {
             return this;
         }
 
+        public UtredningBuilder withAvbrutenDatum(LocalDateTime avbrutenDatum) {
+            this.avbrutenDatum = avbrutenDatum;
+            return this;
+        }
+
+        public UtredningBuilder withAvbrutenAnledning(EndReason avbrutenAnledning) {
+            this.avbrutenAnledning = avbrutenAnledning;
+            return this;
+        }
+
         public Utredning build() {
             Utredning utredning = new Utredning();
             utredning.setUtredningId(utredningId);
@@ -235,6 +274,8 @@ public class Utredning {
             utredning.setHandlingList(handlingList);
             utredning.setHandlaggare(handlaggare);
             utredning.setInvanare(invanare);
+            utredning.setAvbrutenDatum(avbrutenDatum);
+            utredning.setAvbrutenAnledning(avbrutenAnledning);
             return utredning;
         }
     }

@@ -245,6 +245,14 @@
             <column name="SPRAK_TOLK" type="varchar(255)">
                 <constraints nullable="true"/>
             </column>
+
+            <column name="AVBRUTEN_DATUM" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="AVBRUTEN_ANLEDNING" type="varchar(16)">
+                <constraints nullable="true"/>
+            </column>
         </createTable>
 
         <addForeignKeyConstraint baseTableName="UTREDNING"

@@ -28,7 +28,9 @@ import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.infra.logmessages.ResourceType;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.pdl.PDLActivityStore;
+import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
+import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
 import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
@@ -39,6 +41,7 @@ import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStateResolver;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
@@ -48,11 +51,13 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem
 import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentType;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
 import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
 import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
@@ -224,6 +229,20 @@ public class UtredningServiceImpl implements UtredningService {
 
         PDLActivityStore.addActivitiesToStore(user.getCurrentlyLoggedInAt().getId(), bestallningarToLog, activityType,
                 resourceType, user.getStoredActivities());
+    }
+
+    @Override
+    public void endUtredning(EndUtredningRequest endUtredningRequest) {
+        Utredning utredning = utredningRepository.findById(endUtredningRequest.getUtredningId()).orElseThrow(
+                () -> new IbNotFoundException("Could not find the assessment with id " + endUtredningRequest.getUtredningId()));
+
+        if (!isNull(utredning.getAvbrutenDatum())) {
+            throw new IbServiceException(IbErrorCodeEnum.ALREADY_EXISTS, "EndAssessment has already been performed for this Utredning");
+        }
+
+        utredning.setAvbrutenDatum(LocalDateTime.now());
+        utredning.setAvbrutenAnledning(endUtredningRequest.getEndReason());
+        utredningRepository.save(utredning);
     }
 
     private Invanare updateInvanareFromOrder(Invanare invanare, OrderRequest order) {

@@ -21,14 +21,19 @@ package se.inera.intyg.intygsbestallning.service.utredning;
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
+import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.persistence.model.EndReason;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStateResolver;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
@@ -42,6 +47,7 @@ import java.util.Optional;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
 import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
@@ -51,6 +57,7 @@ import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.Utred
 import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.AFU;
 import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.LIAG;
 import static se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare.BestallareBuilder.aBestallare;
+import static se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest.EndUtredningRequestBuilder.anEndUtredningRequest;
 import static se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest.OrderRequestBuilder.anOrderRequest;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -298,7 +305,7 @@ public class UtredningServiceImplTest {
     }
 
     @Test
-    public void findUtredningarByLandstingHsaId() {
+    public void testFindUtredningarByLandstingHsaId() {
         final String landstingHsaId = "landstingHsaId";
         when(utredningRepository.findAllByExternForfragan_LandstingHsaId(landstingHsaId)).thenReturn(
                 ImmutableList.of(anUtredning()
@@ -319,5 +326,66 @@ public class UtredningServiceImplTest {
         assertEquals(landstingHsaId, response.get(0).getVardgivareNamn());
         assertEquals("utredningId", response.get(0).getUtredningsId());
         assertEquals(AFU.name(), response.get(0).getUtredningsTyp());
+    }
+
+    @Test
+    public void testEndUtredningSuccess() {
+        final String utredningId = "utredningId";
+
+        when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
+                .withUtredningId(utredningId)
+                .build()));
+
+        EndUtredningRequest request = anEndUtredningRequest()
+                .withUtredningId(utredningId)
+                .withEndReason(EndReason.JAV)
+                .build();
+
+        utredningService.endUtredning(request);
+
+        ArgumentCaptor<Utredning> captor = ArgumentCaptor.forClass(Utredning.class);
+        verify(utredningRepository).save(captor.capture());
+
+        Utredning utredning = captor.getValue();
+        assertNotNull(utredning);
+        assertEquals(utredningId, utredning.getUtredningId());
+        assertNotNull(utredning.getAvbrutenDatum());
+        assertEquals(EndReason.JAV, utredning.getAvbrutenAnledning());
+    }
+
+    @Test(expected = IbNotFoundException.class)
+    public void testEndUtredningFailUtredningNotExisting() {
+        final String utredningId = "utredningId";
+
+        when(utredningRepository.findById(utredningId)).thenReturn(Optional.empty());
+
+        EndUtredningRequest request = anEndUtredningRequest()
+                .withUtredningId(utredningId)
+                .withEndReason(EndReason.JAV)
+                .build();
+
+        utredningService.endUtredning(request);
+    }
+
+    @Test(expected = IbServiceException.class)
+    public void testEndUtredningFailAlreadyEnded() {
+        final String utredningId = "utredningId";
+
+        when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
+                .withUtredningId(utredningId)
+                .withAvbrutenDatum(LocalDateTime.now())
+                .build()));
+
+        EndUtredningRequest request = anEndUtredningRequest()
+                .withUtredningId(utredningId)
+                .withEndReason(EndReason.JAV)
+                .build();
+
+        try {
+            utredningService.endUtredning(request);
+        } catch (IbServiceException ise) {
+            assertEquals(IbErrorCodeEnum.ALREADY_EXISTS, ise.getErrorCode());
+            throw ise;
+        }
     }
 }

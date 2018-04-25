@@ -29,6 +29,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.context.support.ServletContextAttributeExporter;
 import se.inera.intyg.intygsbestallning.service.monitoring.HealthCheckService;
 import se.inera.intyg.intygsbestallning.service.monitoring.InternalPingForConfigurationResponderImpl;
+import se.inera.intyg.intygsbestallning.web.responder.EndAssessmentResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.OrderMedicalAssessmentResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.ReportCertificateReceivalResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.ReportContinuationDecisionResponderImpl;
@@ -46,7 +47,7 @@ import java.util.Map;
         "se.inera.intyg.intygsbestallning.service",
         "se.inera.intyg.intygsbestallning.auth",
         "se.inera.intyg.intygsbestallning.common",
-        "se.inera.intyg.intygsbestallning.web"})
+        "se.inera.intyg.intygsbestallning.web" })
 @EnableScheduling
 public class ServiceConfig {
 
@@ -86,6 +87,8 @@ public class ServiceConfig {
     @Autowired
     private ReportDeviationInteractionResponderImpl reportDeviationInteractionResponder;
 
+    @Autowired
+    private EndAssessmentResponderImpl endAssessmentResponder;
 
     @Bean
     public ServletContextAttributeExporter contextAttributes() {
@@ -156,6 +159,13 @@ public class ServiceConfig {
     public EndpointImpl reportDeviationInteractionResponderEndpoint() {
         EndpointImpl endpoint = new EndpointImpl(bus, reportDeviationInteractionResponder);
         endpoint.publish("/report-deviation-interaction-responder");
+        return endpoint;
+    }
+
+    @Bean
+    public EndpointImpl endAssessmentResponderEndpoint() {
+        EndpointImpl endpoint = new EndpointImpl(bus, endAssessmentResponder);
+        endpoint.publish("/end-assessment-responder");
         return endpoint;
     }
 }

@@ -19,6 +19,7 @@
 package se.inera.intyg.intygsbestallning.service.utredning;
 
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
@@ -84,4 +85,11 @@ public interface UtredningService {
      * @return
      */
     List<BestallningListItem> findOngoingBestallningarForVardenhet(String vardenhetHsaId);
+
+    /**
+     * Ends the utredning with the reason if available.
+     *
+     * @param endUtredningRequest
+     */
+    void endUtredning(EndUtredningRequest endUtredningRequest);
 }
