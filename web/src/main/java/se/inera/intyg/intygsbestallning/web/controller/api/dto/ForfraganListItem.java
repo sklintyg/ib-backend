@@ -37,7 +37,7 @@ public class ForfraganListItem {
     private String planeringsDatum;
     private String status;
 
-    public static ForfraganListItem convert(Utredning utredning, String vardenhetId) {
+    public static ForfraganListItem from(Utredning utredning, String vardenhetId) {
         InternForfragan internForfragan = utredning.getExternForfragan().getInternForfraganList()
                 .stream()
                 .filter(i -> Objects.equals(i.getVardenhetHsaId(), vardenhetId))

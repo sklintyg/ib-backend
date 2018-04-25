@@ -42,7 +42,7 @@ public class OrderRequestTest {
     public void testFromRequestComplete() {
         OrderMedicalAssessmentType request = createFullRequest();
 
-        OrderRequest result = OrderRequest.fromRequest(request);
+        OrderRequest result = OrderRequest.from(request);
         assertNotNull(result);
         assertEquals("atgarder", result.getAtgarder());
         assertEquals("enhet", result.getEnhetId());
@@ -74,7 +74,7 @@ public class OrderRequestTest {
         request.setOrderDate(null);
         request.setLastDateForCertificateReceival(null);
 
-        OrderRequest result = OrderRequest.fromRequest(request);
+        OrderRequest result = OrderRequest.from(request);
         assertNotNull(result);
         assertEquals("atgarder", result.getAtgarder());
         assertEquals("enhet", result.getEnhetId());
@@ -105,7 +105,7 @@ public class OrderRequestTest {
         request.setCertificateType(aCv("notExisting", null, null));
 
         try {
-            OrderRequest.fromRequest(request);
+            OrderRequest.from(request);
         } catch (IbServiceException ise) {
             assertEquals(IbErrorCodeEnum.BAD_REQUEST, ise.getErrorCode());
             assertNotNull(ise.getMessage());
@@ -119,7 +119,7 @@ public class OrderRequestTest {
         request.setOrderDate(null);
 
         try {
-            OrderRequest.fromRequest(request);
+            OrderRequest.from(request);
         } catch (IbServiceException ise) {
             assertEquals(IbErrorCodeEnum.BAD_REQUEST, ise.getErrorCode());
             assertNotNull(ise.getMessage());
@@ -133,7 +133,7 @@ public class OrderRequestTest {
         request.setLastDateForCertificateReceival(null);
 
         try {
-            OrderRequest.fromRequest(request);
+            OrderRequest.from(request);
         } catch (IbServiceException ise) {
             assertEquals(IbErrorCodeEnum.BAD_REQUEST, ise.getErrorCode());
             assertNotNull(ise.getMessage());

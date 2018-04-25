@@ -51,7 +51,7 @@ public class OrderMedicalAssessmentResponderImpl implements OrderMedicalAssessme
         Preconditions.checkArgument(!isNull(logicalAddress));
         Preconditions.checkArgument(!isNull(request));
 
-        OrderRequest orderRequest = OrderRequest.fromRequest(request);
+        OrderRequest orderRequest = OrderRequest.from(request);
 
         // IF its AF we create new assessment
         Utredning utredning;

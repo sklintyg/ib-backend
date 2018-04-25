@@ -51,7 +51,7 @@ public final class OrderRequest {
     private OrderRequest() {
     }
 
-    public static OrderRequest fromRequest(OrderMedicalAssessmentType source) {
+    public static OrderRequest from(OrderMedicalAssessmentType source) {
         validate(source);
 
         AuthorityAdministrativeOfficialType bestallareSource = source.getAuthorityAdministrativeOfficial();

@@ -83,7 +83,7 @@ public class UtredningServiceImpl implements UtredningService {
     public List<ForfraganListItem> findForfragningarForVardenhetHsaId(String vardenhetHsaId) {
         return utredningRepository.findAllByExternForfragan_InternForfraganList_VardenhetHsaId(vardenhetHsaId)
                 .stream()
-                .map(utr -> ForfraganListItem.convert(utr, vardenhetHsaId))
+                .map(utr -> ForfraganListItem.from(utr, vardenhetHsaId))
                 .collect(toList());
     }
 
@@ -117,8 +117,8 @@ public class UtredningServiceImpl implements UtredningService {
         }
 
         if (utredning.getExternForfragan() == null) {
-            final String message = "Utredning with assessmentId '{}' does not have an Förfrågan";
-            LOG.error(message, utredning.getUtredningId());
+            final String message = "Utredning with assessmentId '" + utredning.getUtredningId() + "' does not have an Förfrågan";
+            LOG.error(message);
             throw new IllegalArgumentException(message);
         }
 
