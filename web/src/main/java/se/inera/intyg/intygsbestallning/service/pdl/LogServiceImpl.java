@@ -70,7 +70,8 @@ public class LogServiceImpl implements LogService {
 
 
     @Override
-    public void logVisaBestallningarLista(List<? extends PDLLoggable> utredningListItems, ActivityType activityType, ResourceType resourceType) {
+    public void logVisaBestallningarLista(List<? extends PDLLoggable> utredningListItems, ActivityType activityType,
+                                          ResourceType resourceType) {
         if (utredningListItems == null) {
             LOG.debug("No utredningar for PDL logging, not logging.");
             return;
