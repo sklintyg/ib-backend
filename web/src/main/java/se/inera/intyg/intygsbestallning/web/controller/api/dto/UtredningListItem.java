@@ -19,6 +19,9 @@
 package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+
+import static java.util.Objects.isNull;
 
 public class UtredningListItem {
 
@@ -29,6 +32,18 @@ public class UtredningListItem {
     private String slutdatumFas;
     private String status;
     private String patientId;
+
+    public static UtredningListItem from(Utredning utredning) {
+        return UtredningListItemBuilder.anUtredningListItem()
+                .withFas("TODO")
+                .withPatientId(utredning.getInvanare().getPersonId())
+                .withSlutdatumFas("TODO")
+                .withStatus("TODO")
+                .withUtredningsId(utredning.getUtredningId())
+                .withUtredningsTyp(utredning.getUtredningsTyp().name())
+                .withVardgivareNamn(!isNull(utredning.getExternForfragan()) ? utredning.getExternForfragan().getLandstingHsaId() : null)
+                .build();
+    }
 
     public String getUtredningsId() {
         return utredningsId;
@@ -85,5 +100,69 @@ public class UtredningListItem {
 
     public void setPatientId(String patientId) {
         this.patientId = patientId;
+    }
+
+    public static final class UtredningListItemBuilder {
+        private String utredningsId;
+        private String utredningsTyp;
+        private String vardgivareNamn;
+        private String fas;
+        private String slutdatumFas;
+        private String status;
+        private String patientId;
+
+        private UtredningListItemBuilder() {
+        }
+
+        public static UtredningListItemBuilder anUtredningListItem() {
+            return new UtredningListItemBuilder();
+        }
+
+        public UtredningListItemBuilder withUtredningsId(String utredningsId) {
+            this.utredningsId = utredningsId;
+            return this;
+        }
+
+        public UtredningListItemBuilder withUtredningsTyp(String utredningsTyp) {
+            this.utredningsTyp = utredningsTyp;
+            return this;
+        }
+
+        public UtredningListItemBuilder withVardgivareNamn(String vardgivareNamn) {
+            this.vardgivareNamn = vardgivareNamn;
+            return this;
+        }
+
+        public UtredningListItemBuilder withFas(String fas) {
+            this.fas = fas;
+            return this;
+        }
+
+        public UtredningListItemBuilder withSlutdatumFas(String slutdatumFas) {
+            this.slutdatumFas = slutdatumFas;
+            return this;
+        }
+
+        public UtredningListItemBuilder withStatus(String status) {
+            this.status = status;
+            return this;
+        }
+
+        public UtredningListItemBuilder withPatientId(String patientId) {
+            this.patientId = patientId;
+            return this;
+        }
+
+        public UtredningListItem build() {
+            UtredningListItem utredningListItem = new UtredningListItem();
+            utredningListItem.setUtredningsId(utredningsId);
+            utredningListItem.setUtredningsTyp(utredningsTyp);
+            utredningListItem.setVardgivareNamn(vardgivareNamn);
+            utredningListItem.setFas(fas);
+            utredningListItem.setSlutdatumFas(slutdatumFas);
+            utredningListItem.setStatus(status);
+            utredningListItem.setPatientId(patientId);
+            return utredningListItem;
+        }
     }
 }

@@ -56,7 +56,7 @@ public class UtredningController {
                 .orThrow(new IbAuthorizationException("User is not allowed to view the requested resource"));
 
         // Do a SAMORDNARE search...
-        List<UtredningListItem> utredningar = utredningService.findUtredningarByVardgivareHsaId(user.getCurrentlyLoggedInAt().getId());
+        List<UtredningListItem> utredningar = utredningService.findUtredningarByLandstingHsaId(user.getCurrentlyLoggedInAt().getId());
         return ResponseEntity.ok(new GetUtredningListResponse(utredningar, utredningar.size()));
     }
 

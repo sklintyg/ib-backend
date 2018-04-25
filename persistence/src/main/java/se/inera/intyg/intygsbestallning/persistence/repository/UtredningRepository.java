@@ -26,5 +26,6 @@ import java.util.List;
 //CHECKSTYLE:OFF MethodName
 public interface UtredningRepository extends JpaRepository<Utredning, String> {
     List<Utredning> findAllByExternForfragan_InternForfraganList_VardenhetHsaId(String vardenhetHsaId);
+    List<Utredning> findAllByExternForfragan_LandstingHsaId(String landstingHsaId);
 }
 //CHECKSTYLE:ON MethodName

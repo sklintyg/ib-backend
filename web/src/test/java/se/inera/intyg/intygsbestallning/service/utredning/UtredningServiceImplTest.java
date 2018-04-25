@@ -30,6 +30,7 @@ import se.inera.intyg.intygsbestallning.persistence.repository.UtredningReposito
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -289,5 +290,29 @@ public class UtredningServiceImplTest {
         final String landstingHsaId = "landstingHsaId";
         when(utredningRepository.findById(utredningId)).thenReturn(Optional.empty());
         utredningService.getUtredning(utredningId, landstingHsaId);
+    }
+
+    @Test
+    public void findUtredningarByLandstingHsaId() {
+        final String landstingHsaId = "landstingHsaId";
+        when(utredningRepository.findAllByExternForfragan_LandstingHsaId(landstingHsaId)).thenReturn(
+                ImmutableList.of(anUtredning()
+                        .withUtredningId("utredningId")
+                        .withUtredningsTyp(AFU)
+                        .withExternForfragan(anExternForfragan()
+                                .withLandstingHsaId(landstingHsaId)
+                                .build())
+                        .withInvanare(anInvanare()
+                                .withPersonId("personnummer")
+                                .build())
+                        .build()));
+
+        List<UtredningListItem> response = utredningService.findUtredningarByLandstingHsaId(landstingHsaId);
+
+        assertNotNull(response);
+        assertEquals(1, response.size());
+        assertEquals(landstingHsaId, response.get(0).getVardgivareNamn());
+        assertEquals("utredningId", response.get(0).getUtredningsId());
+        assertEquals(AFU.name(), response.get(0).getUtredningsTyp());
     }
 }

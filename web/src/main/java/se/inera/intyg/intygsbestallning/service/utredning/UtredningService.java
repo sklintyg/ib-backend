@@ -32,7 +32,7 @@ public interface UtredningService {
 
     Utredning registerNewUtredning(RequestHealthcarePerformerForAssessmentType req);
 
-    List<UtredningListItem> findUtredningarByVardgivareHsaId(String vardgivareHsaId);
+    List<UtredningListItem> findUtredningarByLandstingHsaId(String landstingHsaId);
 
     GetUtredningResponse getUtredning(String utredningId, String landstingHsaId);
 

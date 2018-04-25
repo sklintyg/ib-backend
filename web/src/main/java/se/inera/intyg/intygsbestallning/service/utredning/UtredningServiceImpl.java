@@ -41,6 +41,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
@@ -61,8 +62,12 @@ public class UtredningServiceImpl implements UtredningService {
         return null;
     }
 
-    @Override public List<UtredningListItem> findUtredningarByVardgivareHsaId(String vardgivareHsaId) {
-        return null;
+    @Override
+    public List<UtredningListItem> findUtredningarByLandstingHsaId(String landstingHsaId) {
+        return utredningRepository.findAllByExternForfragan_LandstingHsaId(landstingHsaId)
+                .stream()
+                .map(UtredningListItem::from)
+                .collect(Collectors.toList());
     }
 
     @Override

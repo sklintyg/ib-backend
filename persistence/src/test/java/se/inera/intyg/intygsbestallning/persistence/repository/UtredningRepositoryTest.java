@@ -193,7 +193,7 @@ public class UtredningRepositoryTest {
     }
 
     @Test
-    public void testFindForfragningByVardenhet() {
+    public void testFindInternalForfraganByVardenhet() {
 
         Utredning utr = buildUtredning();
         utr.setBestallning(buildBestallning());
@@ -206,6 +206,22 @@ public class UtredningRepositoryTest {
         response = utredningRepository.findAllByExternForfragan_InternForfraganList_VardenhetHsaId(VE_HSA_ID);
         assertNotNull(response);
         assertEquals(1, response.size());
+    }
+
+    @Test
+    public void testFindAllByLandstingHsaId() {
+        Utredning utr = buildUtredning();
+        utr.setBestallning(buildBestallning());
+        utr.setExternForfragan(buildExternForfragan());
+
+        List<Utredning> response = utredningRepository.findAllByExternForfragan_LandstingHsaId(VG_HSA_ID);
+        assertNotNull(response);
+        assertTrue(response.isEmpty());
+        utredningRepository.save(utr);
+        response = utredningRepository.findAllByExternForfragan_LandstingHsaId(VG_HSA_ID);
+        assertNotNull(response);
+        assertEquals(1, response.size());
+
     }
 
     private Invanare buildInvanare() {
