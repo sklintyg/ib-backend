@@ -29,8 +29,10 @@ import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,6 +41,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
 import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
 import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
@@ -239,5 +242,52 @@ public class UtredningServiceImplTest {
         assertEquals("postkod", response.getHandlaggare().getPostkod());
         assertEquals("stad", response.getHandlaggare().getStad());
         assertEquals("telefonnummer", response.getHandlaggare().getTelefonnummer());
+    }
+
+    @Test
+    public void testGetUtredningSuccess() {
+        final String utredningId = "utredningId";
+        final String landstingHsaId = "landstingHsaId";
+
+        when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
+                .withUtredningId(utredningId)
+                .withUtredningsTyp(AFU)
+                .withExternForfragan(anExternForfragan()
+                        .withLandstingHsaId(landstingHsaId)
+                        .withInkomDatum(LocalDateTime.now())
+                        .withBesvarasSenastDatum(LocalDateTime.now())
+                        .build())
+                .withInvanare(anInvanare()
+                        .build())
+                .withHandlaggare(aHandlaggare()
+                        .build())
+                .build()));
+
+        GetUtredningResponse response = utredningService.getUtredning(utredningId, landstingHsaId);
+
+        assertNotNull(response);
+        assertEquals(utredningId, response.getUtredningsId());
+        assertEquals(landstingHsaId, response.getVardgivareHsaId());
+    }
+
+    @Test(expected = IbNotFoundException.class)
+    public void testGetUtredningIncorrectLandsting() {
+        final String utredningId = "utredningId";
+        final String landstingHsaId = "landstingHsaId";
+        when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
+                .withUtredningId(utredningId)
+                .withExternForfragan(anExternForfragan()
+                        .withLandstingHsaId("wrongId")
+                        .build())
+                .build()));
+        utredningService.getUtredning(utredningId, landstingHsaId);
+    }
+
+    @Test(expected = IbNotFoundException.class)
+    public void testGetUtredningNoUtredning() {
+        final String utredningId = "utredningId";
+        final String landstingHsaId = "landstingHsaId";
+        when(utredningRepository.findById(utredningId)).thenReturn(Optional.empty());
+        utredningService.getUtredning(utredningId, landstingHsaId);
     }
 }

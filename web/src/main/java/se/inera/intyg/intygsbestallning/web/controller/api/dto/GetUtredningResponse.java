@@ -22,6 +22,8 @@ import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 
 import java.time.format.DateTimeFormatter;
 
+import static java.util.Objects.isNull;
+
 public class GetUtredningResponse {
     private static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
 
@@ -52,9 +54,12 @@ public class GetUtredningResponse {
         return GetUtredningResponseBuilder.aGetUtredningResponse()
                 .withUtredningsId(utredning.getUtredningId())
                 .withUtredningsTyp(utredning.getUtredningsTyp().name())
-                .withVardgivareHsaId(utredning.getExternForfragan().getLandstingHsaId())
-                .withInkomDatum(utredning.getExternForfragan().getInkomDatum().format(formatter))
-                .withBesvarasSenastDatum(utredning.getExternForfragan().getBesvarasSenastDatum().format(formatter))
+                .withVardgivareHsaId(!isNull(utredning.getExternForfragan())
+                        ? utredning.getExternForfragan().getLandstingHsaId() : null)
+                .withInkomDatum(!isNull(utredning.getExternForfragan())
+                        ? utredning.getExternForfragan().getInkomDatum().format(formatter) : null)
+                .withBesvarasSenastDatum(!isNull(utredning.getExternForfragan())
+                        ? utredning.getExternForfragan().getBesvarasSenastDatum().format(formatter) : null)
                 .withInvanarePersonId(utredning.getInvanare().getPersonId())
                 .withHandlaggareNamn(utredning.getHandlaggare().getFullstandigtNamn())
                 .withHandlaggareTelefonnummer(utredning.getHandlaggare().getTelefonnummer())

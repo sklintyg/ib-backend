@@ -188,6 +188,7 @@ public class InternForfragan {
             internForfragan.setBesvarasSenastDatum(besvarasSenastDatum);
             internForfragan.setKommentar(kommentar);
             internForfragan.setForfraganSvar(forfraganSvar);
+            internForfragan.setSkapadDatum(skapadDatum);
             return internForfragan;
         }
     }

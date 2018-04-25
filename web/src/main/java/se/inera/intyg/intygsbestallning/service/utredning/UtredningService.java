@@ -34,7 +34,7 @@ public interface UtredningService {
 
     List<UtredningListItem> findUtredningarByVardgivareHsaId(String vardgivareHsaId);
 
-    GetUtredningResponse getUtredning(String utredningId, String vardgivareHsaId);
+    GetUtredningResponse getUtredning(String utredningId, String landstingHsaId);
 
     /**
      * Gets all the {@link se.inera.intyg.intygsbestallning.persistence.model.InternForfragan} for the unit with HSA-id vardenhetHsaId.

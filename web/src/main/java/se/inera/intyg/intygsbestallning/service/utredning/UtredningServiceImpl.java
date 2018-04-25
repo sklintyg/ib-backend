@@ -66,14 +66,14 @@ public class UtredningServiceImpl implements UtredningService {
     }
 
     @Override
-    public GetUtredningResponse getUtredning(String utredningId, String vardgivareHsaId) {
+    public GetUtredningResponse getUtredning(String utredningId, String landstingHsaId) {
         Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
                 () -> new IbNotFoundException("Utredning with assessmentId '" + utredningId + "' does not exist."));
 
-        if (!Objects.equals(utredning.getExternForfragan().getLandstingHsaId(), vardgivareHsaId)) {
+        if (!Objects.equals(utredning.getExternForfragan().getLandstingHsaId(), landstingHsaId)) {
             throw new IbNotFoundException(
                     "Utredning with assessmentId '" + utredningId + "' does not have external förfrågan for landsting with id '"
-                            + vardgivareHsaId + "'");
+                            + landstingHsaId + "'");
         }
 
         return GetUtredningResponse.from(utredning);
