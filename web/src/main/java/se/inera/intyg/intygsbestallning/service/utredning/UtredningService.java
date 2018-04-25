@@ -34,9 +34,22 @@ public interface UtredningService {
 
     Utredning registerNewUtredning(RequestHealthcarePerformerForAssessmentType req);
 
-    List<UtredningListItem> findUtredningarByLandstingHsaId(String landstingHsaId);
+    /**
+     * Retrieves all {@link se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan} for a specific landsting.
+     *
+     * @param landstingHsaId
+     * @return
+     */
+    List<UtredningListItem> findExternForfraganByLandstingHsaId(String landstingHsaId);
 
-    GetUtredningResponse getUtredning(String utredningId, String landstingHsaId);
+    /**
+     * Retrieves the {@link se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan} for a specific UtredningId.
+     *
+     * @param utredningId
+     * @param landstingHsaId
+     * @return
+     */
+    GetUtredningResponse getExternForfragan(String utredningId, String landstingHsaId);
 
     /**
      * Gets all the {@link se.inera.intyg.intygsbestallning.persistence.model.InternForfragan} for the unit with HSA-id vardenhetHsaId.

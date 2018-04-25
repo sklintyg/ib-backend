@@ -91,7 +91,7 @@ public class UtredningServiceImpl implements UtredningService {
     }
 
     @Override
-    public List<UtredningListItem> findUtredningarByLandstingHsaId(String landstingHsaId) {
+    public List<UtredningListItem> findExternForfraganByLandstingHsaId(String landstingHsaId) {
         return utredningRepository.findAllByExternForfragan_LandstingHsaId(landstingHsaId)
                 .stream()
                 .map(u -> UtredningListItem.from(u, utredningStateResolver.resolveStatus(u)))
@@ -99,7 +99,7 @@ public class UtredningServiceImpl implements UtredningService {
     }
 
     @Override
-    public GetUtredningResponse getUtredning(String utredningId, String landstingHsaId) {
+    public GetUtredningResponse getExternForfragan(String utredningId, String landstingHsaId) {
         Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
                 () -> new IbNotFoundException("Utredning with assessmentId '" + utredningId + "' does not exist."));
 

@@ -276,7 +276,7 @@ public class UtredningServiceImplTest {
                         .build())
                 .build()));
 
-        GetUtredningResponse response = utredningService.getUtredning(utredningId, landstingHsaId);
+        GetUtredningResponse response = utredningService.getExternForfragan(utredningId, landstingHsaId);
 
         assertNotNull(response);
         assertEquals(utredningId, response.getUtredningsId());
@@ -293,7 +293,7 @@ public class UtredningServiceImplTest {
                         .withLandstingHsaId("wrongId")
                         .build())
                 .build()));
-        utredningService.getUtredning(utredningId, landstingHsaId);
+        utredningService.getExternForfragan(utredningId, landstingHsaId);
     }
 
     @Test(expected = IbNotFoundException.class)
@@ -301,7 +301,7 @@ public class UtredningServiceImplTest {
         final String utredningId = "utredningId";
         final String landstingHsaId = "landstingHsaId";
         when(utredningRepository.findById(utredningId)).thenReturn(Optional.empty());
-        utredningService.getUtredning(utredningId, landstingHsaId);
+        utredningService.getExternForfragan(utredningId, landstingHsaId);
     }
 
     @Test
@@ -319,7 +319,7 @@ public class UtredningServiceImplTest {
                                 .build())
                         .build()));
 
-        List<UtredningListItem> response = utredningService.findUtredningarByLandstingHsaId(landstingHsaId);
+        List<UtredningListItem> response = utredningService.findExternForfraganByLandstingHsaId(landstingHsaId);
 
         assertNotNull(response);
         assertEquals(1, response.size());
