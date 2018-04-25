@@ -105,7 +105,7 @@ public class UtredningServiceImpl implements UtredningService {
 
         if (!Objects.equals(utredning.getExternForfragan().getLandstingHsaId(), landstingHsaId)) {
             throw new IbNotFoundException(
-                    "Utredning with assessmentId '" + utredningId + "' does not have external förfrågan for landsting with id '"
+                    "Utredning with assessmentId '" + utredningId + "' does not have ExternForfragan for landsting with id '"
                             + landstingHsaId + "'");
         }
 
@@ -131,7 +131,7 @@ public class UtredningServiceImpl implements UtredningService {
 
         if (!internForfraganExists) {
             throw new IbNotFoundException(
-                    "Utredning with id '" + utredningId + "' does not have an InternFörfrågan for enhet with id '" + vardenhetHsaId + "'");
+                    "Utredning with id '" + utredningId + "' does not have an InternForfragan for enhet with id '" + vardenhetHsaId + "'");
         }
 
         return GetForfraganResponse.from(utredning, vardenhetHsaId);
@@ -219,7 +219,6 @@ public class UtredningServiceImpl implements UtredningService {
         }
 
         IbUser user = userService.getUser();
-
 
         List<? extends PDLLoggable> bestallningarToLog = PDLActivityStore.getActivitiesNotInStore(user.getCurrentlyLoggedInAt().getId(),
                 loggableItems, activityType, resourceType,
