@@ -32,8 +32,8 @@ import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.infra.logmessages.PdlLogMessage;
 import se.inera.intyg.infra.logmessages.ResourceType;
 import se.inera.intyg.intygsbestallning.common.integration.json.CustomObjectMapper;
+import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
 
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
@@ -70,7 +70,7 @@ public class LogServiceImpl implements LogService {
 
 
     @Override
-    public void logVisaUtredningLista(List<UtredningListItem> utredningListItems, ActivityType activityType, ResourceType resourceType) {
+    public void logVisaBestallningarLista(List<? extends PDLLoggable> utredningListItems, ActivityType activityType, ResourceType resourceType) {
         if (utredningListItems == null) {
             LOG.debug("No utredningar for PDL logging, not logging.");
             return;

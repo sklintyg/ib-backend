@@ -32,13 +32,13 @@ import se.inera.intyg.intygsbestallning.auth.model.IbSelectableHsaEntity;
 import se.inera.intyg.intygsbestallning.auth.model.IbVardenhet;
 import se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.LogUser;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
+import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by eriklupander on 2016-03-03.
+ * Created by eriklupander on 2018-04-23.
  */
 @Service
 public class PdlLogMessageFactoryImpl implements PdlLogMessageFactory {
@@ -53,7 +53,7 @@ public class PdlLogMessageFactoryImpl implements PdlLogMessageFactory {
     private String systemName;
 
     @Override
-    public PdlLogMessage buildLogMessage(List<UtredningListItem> utredningListItems,
+    public PdlLogMessage buildLogMessage(List<? extends PDLLoggable> bestallningListItems,
             ActivityType activityType,
             ResourceType resourceType,
             IbUser ibUser) {
@@ -65,7 +65,7 @@ public class PdlLogMessageFactoryImpl implements PdlLogMessageFactory {
 
         // Add resources
         pdlLogMessage.getPdlResourceList().addAll(
-                utredningListItems.stream()
+                bestallningListItems.stream()
                         .map(uli -> buildPdlLogResource(uli, resourceType, user))
                         .collect(Collectors.toList()));
 
@@ -107,15 +107,15 @@ public class PdlLogMessageFactoryImpl implements PdlLogMessageFactory {
         logMsg.setUserCareUnit(vardenhet);
     }
 
-    private Patient getPatient(UtredningListItem uli) {
+    private Patient getPatient(PDLLoggable bli) {
         return new Patient(
-                uli.getPatientId().replace("-", "").replace("+", ""),
+                bli.getPatientId().replace("-", "").replace("+", ""),
                 "");
     }
 
-    private PdlResource buildPdlLogResource(UtredningListItem uli, ResourceType resourceType, LogUser user) {
+    private PdlResource buildPdlLogResource(PDLLoggable bli, ResourceType resourceType, LogUser user) {
         PdlResource pdlResource = new PdlResource();
-        pdlResource.setPatient(getPatient(uli));
+        pdlResource.setPatient(getPatient(bli));
         pdlResource.setResourceOwner(new Enhet(user.getEnhetsId(), user.getEnhetsNamn(), user.getVardgivareId(), user.getVardgivareNamn()));
         pdlResource.setResourceType(resourceType.getResourceTypeName());
 

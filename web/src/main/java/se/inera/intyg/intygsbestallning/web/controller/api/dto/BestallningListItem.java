@@ -1,31 +1,13 @@
-/*
- * Copyright (C) 2018 Inera AB (http://www.inera.se)
- *
- * This file is part of sklintyg (https://github.com/sklintyg).
- *
- * sklintyg is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * sklintyg is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 
 import static java.util.Objects.isNull;
 
-public class UtredningListItem {
-
+public class BestallningListItem implements PDLLoggable {
+   
     private String utredningsId;
     private String utredningsTyp;
     private String vardgivareNamn;
@@ -33,13 +15,18 @@ public class UtredningListItem {
     private String slutdatumFas;
     private String status;
     private String patientId;
+    private String patientNamn;
+    private String nextActor;
 
-    public static UtredningListItem from(Utredning utredning, UtredningStatus utredningStatus) {
-        return UtredningListItemBuilder.anUtredningListItem()
+
+    public static BestallningListItem from(Utredning utredning, UtredningStatus utredningStatus, String patientNamn) {
+        return BestallningListItemBuilder.anUtredningListItem()
                 .withFas(utredningStatus.getUtredningFas().name())
                 .withPatientId(utredning.getInvanare().getPersonId())
+                .withPatientNamn(patientNamn)
                 .withSlutdatumFas("TODO")
                 .withStatus(utredningStatus.name())
+                .withNextActor(utredningStatus.getNextActor().name())
                 .withUtredningsId(utredning.getUtredningId())
                 .withUtredningsTyp(utredning.getUtredningsTyp().name())
                 .withVardgivareNamn(!isNull(utredning.getExternForfragan()) ? utredning.getExternForfragan().getLandstingHsaId() : null)
@@ -94,7 +81,6 @@ public class UtredningListItem {
         this.status = status;
     }
 
-    @JsonIgnore
     public String getPatientId() {
         return patientId;
     }
@@ -103,7 +89,23 @@ public class UtredningListItem {
         this.patientId = patientId;
     }
 
-    public static final class UtredningListItemBuilder {
+    public String getPatientNamn() {
+        return patientNamn;
+    }
+
+    public void setPatientNamn(String patientNamn) {
+        this.patientNamn = patientNamn;
+    }
+
+    public String getNextActor() {
+        return nextActor;
+    }
+
+    public void setNextActor(String nextActor) {
+        this.nextActor = nextActor;
+    }
+
+    public static final class BestallningListItemBuilder {
         private String utredningsId;
         private String utredningsTyp;
         private String vardgivareNamn;
@@ -111,59 +113,73 @@ public class UtredningListItem {
         private String slutdatumFas;
         private String status;
         private String patientId;
+        private String patientNamn;
+        private String nextActor;
 
-        private UtredningListItemBuilder() {
+        private BestallningListItemBuilder() {
         }
 
-        public static UtredningListItemBuilder anUtredningListItem() {
-            return new UtredningListItemBuilder();
+        public static BestallningListItemBuilder anUtredningListItem() {
+            return new BestallningListItemBuilder();
         }
 
-        public UtredningListItemBuilder withUtredningsId(String utredningsId) {
+        public BestallningListItemBuilder withUtredningsId(String utredningsId) {
             this.utredningsId = utredningsId;
             return this;
         }
 
-        public UtredningListItemBuilder withUtredningsTyp(String utredningsTyp) {
+        public BestallningListItemBuilder withUtredningsTyp(String utredningsTyp) {
             this.utredningsTyp = utredningsTyp;
             return this;
         }
 
-        public UtredningListItemBuilder withVardgivareNamn(String vardgivareNamn) {
+        public BestallningListItemBuilder withVardgivareNamn(String vardgivareNamn) {
             this.vardgivareNamn = vardgivareNamn;
             return this;
         }
 
-        public UtredningListItemBuilder withFas(String fas) {
+        public BestallningListItemBuilder withFas(String fas) {
             this.fas = fas;
             return this;
         }
 
-        public UtredningListItemBuilder withSlutdatumFas(String slutdatumFas) {
+        public BestallningListItemBuilder withSlutdatumFas(String slutdatumFas) {
             this.slutdatumFas = slutdatumFas;
             return this;
         }
 
-        public UtredningListItemBuilder withStatus(String status) {
+        public BestallningListItemBuilder withStatus(String status) {
             this.status = status;
             return this;
         }
 
-        public UtredningListItemBuilder withPatientId(String patientId) {
+        public BestallningListItemBuilder withPatientId(String patientId) {
             this.patientId = patientId;
             return this;
         }
 
-        public UtredningListItem build() {
-            UtredningListItem utredningListItem = new UtredningListItem();
-            utredningListItem.setUtredningsId(utredningsId);
-            utredningListItem.setUtredningsTyp(utredningsTyp);
-            utredningListItem.setVardgivareNamn(vardgivareNamn);
-            utredningListItem.setFas(fas);
-            utredningListItem.setSlutdatumFas(slutdatumFas);
-            utredningListItem.setStatus(status);
-            utredningListItem.setPatientId(patientId);
-            return utredningListItem;
+        public BestallningListItemBuilder withPatientNamn(String patientNamn) {
+            this.patientNamn = patientNamn;
+            return this;
+        }
+
+        public BestallningListItemBuilder withNextActor(String nextActor) {
+            this.nextActor = nextActor;
+            return this;
+        }
+
+        public BestallningListItem build() {
+            BestallningListItem bestallningListItem = new BestallningListItem();
+            bestallningListItem.setUtredningsId(utredningsId);
+            bestallningListItem.setUtredningsTyp(utredningsTyp);
+            bestallningListItem.setVardgivareNamn(vardgivareNamn);
+            bestallningListItem.setFas(fas);
+            bestallningListItem.setSlutdatumFas(slutdatumFas);
+            bestallningListItem.setStatus(status);
+            bestallningListItem.setPatientId(patientId);
+            bestallningListItem.setPatientNamn(patientNamn);
+            bestallningListItem.setNextActor(nextActor);
+            return bestallningListItem;
         }
     }
 }

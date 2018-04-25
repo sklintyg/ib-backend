@@ -224,6 +224,17 @@ public class UtredningRepositoryTest {
 
     }
 
+    @Test
+    public void testFindAllWithBestallningForVardenhetHsaId() {
+        Utredning utr = buildUtredning();
+        utr.setBestallning(buildBestallning());
+        utredningRepository.save(utr);
+
+        List<Utredning> resultList = utredningRepository.findAllWithBestallningForVardenhetHsaId(VE_HSA_ID);
+        assertEquals(1, resultList.size());
+        assertNotNull(resultList.get(0).getBestallning());
+    }
+
     private Invanare buildInvanare() {
         return anInvanare()
                 .withBakgrundNulage("bakgrund")

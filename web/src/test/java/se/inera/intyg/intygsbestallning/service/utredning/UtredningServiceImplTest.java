@@ -23,10 +23,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
+import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStateResolver;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
@@ -55,6 +57,9 @@ import static se.inera.intyg.intygsbestallning.service.utredning.dto.OrderReques
 public class UtredningServiceImplTest {
     @Mock
     private UtredningRepository utredningRepository;
+
+    @Spy
+    private UtredningStateResolver utredningStateResolver;
 
     @InjectMocks
     private UtredningServiceImpl utredningService;

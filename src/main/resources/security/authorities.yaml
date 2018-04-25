@@ -54,6 +54,7 @@ knownPrivileges:
   - &kp030 VISA_UTREDNING
   - &kp040 VISA_FORFRAGAN
   - &kp050 SPARA_VARDENHETPREFERENS
+  - &kp060 LISTA_BESTALLNINGAR
 
 # De roller som systemet har
 knownRoles:
@@ -94,6 +95,11 @@ privileges:
       desc: Spara vårdenhetspreferens
       intygstyper: # Implicit alla
       requestOrigins: # Implicit alla
+  - &p060
+      name: *kp060
+      desc: Lista beställningar
+      intygstyper: # Implicit alla
+      requestOrigins: # Implicit alla
 # Roller
 roles:
   - &r010
@@ -103,6 +109,7 @@ roles:
       - *p020 # LISTA_FORFRAGNINGAR
       - *p040 # VISA_FORFRAGAN
       - *p050 # SPARA_VARDENHETPREFERENS
+      - *p060 # LISTA_BESTALLNINGAR
   - &r020
     name: *kr020 # FMU_SAMORDNARE
     desc: FMU Samordnare

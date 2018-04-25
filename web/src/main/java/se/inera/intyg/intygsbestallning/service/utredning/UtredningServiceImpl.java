@@ -23,14 +23,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import se.inera.intyg.infra.integration.pu.services.PUService;
+import se.inera.intyg.infra.logmessages.ActivityType;
+import se.inera.intyg.infra.logmessages.ResourceType;
+import se.inera.intyg.intygsbestallning.auth.IbUser;
+import se.inera.intyg.intygsbestallning.auth.pdl.PDLActivityStore;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
 import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
+import se.inera.intyg.intygsbestallning.service.pdl.LogService;
+import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
+import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStateResolver;
+import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
@@ -58,7 +68,20 @@ public class UtredningServiceImpl implements UtredningService {
     @Autowired
     private UtredningRepository utredningRepository;
 
-    @Override public Utredning registerNewUtredning(RequestHealthcarePerformerForAssessmentType req) {
+    @Autowired
+    private UtredningStateResolver utredningStateResolver;
+
+    @Autowired
+    private PUService puService;
+
+    @Autowired
+    private LogService logService;
+
+    @Autowired
+    private UserService userService;
+
+    @Override
+    public Utredning registerNewUtredning(RequestHealthcarePerformerForAssessmentType req) {
         return null;
     }
 
@@ -66,7 +89,7 @@ public class UtredningServiceImpl implements UtredningService {
     public List<UtredningListItem> findUtredningarByLandstingHsaId(String landstingHsaId) {
         return utredningRepository.findAllByExternForfragan_LandstingHsaId(landstingHsaId)
                 .stream()
-                .map(UtredningListItem::from)
+                .map(u -> UtredningListItem.from(u, utredningStateResolver.resolveStatus(u)))
                 .collect(Collectors.toList());
     }
 
@@ -171,6 +194,36 @@ public class UtredningServiceImpl implements UtredningService {
         }
         utredningRepository.save(utredning);
         return utredning;
+    }
+
+    @Override
+    public List<BestallningListItem> findOngoingBestallningarForVardenhet(String vardenhetHsaId) {
+        List<BestallningListItem> bestallningListItems = utredningRepository.findAllWithBestallningForVardenhetHsaId(vardenhetHsaId)
+                .stream()
+                .map(u -> BestallningListItem.from(u, utredningStateResolver.resolveStatus(u), "patientNamn-TODO"))
+                .collect(Collectors.toList());
+
+        pdlLogList(bestallningListItems, ActivityType.READ, ResourceType.RESOURCE_TYPE_FMU);
+        return bestallningListItems;
+    }
+
+    // PDL logging. Important to only log after filtering and paging.
+    private void pdlLogList(List<? extends PDLLoggable> loggableItems, ActivityType activityType, ResourceType resourceType) {
+        if (loggableItems == null || loggableItems.size() == 0) {
+            return;
+        }
+
+        IbUser user = userService.getUser();
+
+
+        List<? extends PDLLoggable> bestallningarToLog = PDLActivityStore.getActivitiesNotInStore(user.getCurrentlyLoggedInAt().getId(),
+                loggableItems, activityType, resourceType,
+                user.getStoredActivities());
+
+        logService.logVisaBestallningarLista(bestallningarToLog, activityType, resourceType);
+
+        PDLActivityStore.addActivitiesToStore(user.getCurrentlyLoggedInAt().getId(), bestallningarToLog, activityType,
+                resourceType, user.getStoredActivities());
     }
 
     private Invanare updateInvanareFromOrder(Invanare invanare, OrderRequest order) {

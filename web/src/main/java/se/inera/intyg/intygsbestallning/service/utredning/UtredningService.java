@@ -20,6 +20,7 @@ package se.inera.intyg.intygsbestallning.service.utredning;
 
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
@@ -75,4 +76,12 @@ public interface UtredningService {
      * @return
      */
     Utredning registerNewUtredning(OrderRequest order);
+
+    /**
+     * Gets all ongoing bestallningar for a given vardenhet.
+     *
+     * @param vardenhetHsaId
+     * @return
+     */
+    List<BestallningListItem> findOngoingBestallningarForVardenhet(String vardenhetHsaId);
 }

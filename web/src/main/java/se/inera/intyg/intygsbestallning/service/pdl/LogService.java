@@ -20,7 +20,7 @@ package se.inera.intyg.intygsbestallning.service.pdl;
 
 import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.infra.logmessages.ResourceType;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
+import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
 
 import java.util.List;
 
@@ -28,5 +28,5 @@ import java.util.List;
  * @author eriklupander on 2016-02-18.
  */
 public interface LogService {
-    void logVisaUtredningLista(List<UtredningListItem> utredningListItems, ActivityType activityType, ResourceType resourceType);
+    void logVisaBestallningarLista(List<? extends PDLLoggable> bestallningListItems, ActivityType activityType, ResourceType resourceType);
 }

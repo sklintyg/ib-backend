@@ -19,6 +19,8 @@
 package se.inera.intyg.intygsbestallning.persistence.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 
 import java.util.List;
@@ -27,5 +29,8 @@ import java.util.List;
 public interface UtredningRepository extends JpaRepository<Utredning, String> {
     List<Utredning> findAllByExternForfragan_InternForfraganList_VardenhetHsaId(String vardenhetHsaId);
     List<Utredning> findAllByExternForfragan_LandstingHsaId(String landstingHsaId);
+
+    @Query("SELECT u FROM Utredning u JOIN u.bestallning b WHERE b.tilldeladVardenhetHsaId = :vardenhetHsaId")
+    List<Utredning> findAllWithBestallningForVardenhetHsaId(@Param("vardenhetHsaId") String vardenhetHsaId);
 }
 //CHECKSTYLE:ON MethodName

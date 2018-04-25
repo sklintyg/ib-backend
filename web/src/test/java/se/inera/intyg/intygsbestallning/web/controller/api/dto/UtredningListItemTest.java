@@ -20,6 +20,7 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
 import org.junit.Test;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStateResolver;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -29,6 +30,8 @@ import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.Utred
 import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.AFU;
 
 public class UtredningListItemTest {
+
+    private UtredningStateResolver utredningStateResolver = new UtredningStateResolver();
 
     @Test
     public void testFrom() {
@@ -44,13 +47,13 @@ public class UtredningListItemTest {
                         .build())
                 .build();
 
-        UtredningListItem response = UtredningListItem.from(utredning);
+        UtredningListItem response = UtredningListItem.from(utredning, utredningStateResolver.resolveStatus(utredning));
 
         assertNotNull(response);
-        assertEquals("TODO", response.getFas());
+        assertEquals("FORFRAGAN", response.getFas());
         assertEquals("personnummer", response.getPatientId());
         assertEquals("TODO", response.getSlutdatumFas());
-        assertEquals("TODO", response.getStatus());
+        assertEquals("FORFRAGAN_INKOMMEN", response.getStatus());
         assertEquals("utredningId", response.getUtredningsId());
         assertEquals(AFU.name(), response.getUtredningsTyp());
         assertEquals("landstingHsaId", response.getVardgivareNamn());

@@ -35,6 +35,8 @@ public final class AuthoritiesConstants {
     public static final String PRIVILEGE_VISA_FORFRAGAN = "VISA_FORFRAGAN";
     public static final String PRIVILEGE_SPARA_VARDENHETPREFERENS = "SPARA_VARDENHETPREFERENS";
 
+    public static final String PRIVILEGE_LISTA_BESTALLNINGAR = "LISTA_BESTALLNINGAR";
+
     // constructors
 
     private AuthoritiesConstants() {
