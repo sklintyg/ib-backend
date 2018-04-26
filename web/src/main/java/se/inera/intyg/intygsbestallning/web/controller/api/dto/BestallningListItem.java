@@ -30,9 +30,11 @@ import static java.util.Objects.isNull;
 
 public class BestallningListItem implements PDLLoggable {
 
-    public static final long DEFAULT_DAYS = 5L;
+    private static final long DEFAULT_DAYS = 5L;
+
     private String utredningsId;
     private String utredningsTyp;
+    private String vardgivareHsaId;
     private String vardgivareNamn;
     private String fas;
     private String slutdatumFas;
@@ -56,6 +58,7 @@ public class BestallningListItem implements PDLLoggable {
                 .withNextActor(utredningStatus.getNextActor().name())
                 .withUtredningsId(utredning.getUtredningId())
                 .withUtredningsTyp(utredning.getUtredningsTyp().name())
+                .withVardgivareHsaId(utredning.getExternForfragan().getLandstingHsaId())
                 .withVardgivareNamn(!isNull(utredning.getExternForfragan()) ? utredning.getExternForfragan().getLandstingHsaId() : null)
                 .build();
     }
@@ -122,6 +125,14 @@ public class BestallningListItem implements PDLLoggable {
         this.utredningsTyp = utredningsTyp;
     }
 
+    public String getVardgivareHsaId() {
+        return vardgivareHsaId;
+    }
+
+    public void setVardgivareHsaId(String vardgivareHsaId) {
+        this.vardgivareHsaId = vardgivareHsaId;
+    }
+
     public String getVardgivareNamn() {
         return vardgivareNamn;
     }
@@ -179,7 +190,7 @@ public class BestallningListItem implements PDLLoggable {
         this.nextActor = nextActor;
     }
 
-    public boolean isSlutdatumPaVagPasseras() {
+    public boolean getSlutdatumPaVagPasseras() {
         return slutdatumPaVagPasseras;
     }
 
@@ -187,7 +198,7 @@ public class BestallningListItem implements PDLLoggable {
         this.slutdatumPaVagPasseras = slutdatumPaVagPasseras;
     }
 
-    public boolean isSlutdatumPasserat() {
+    public boolean getSlutdatumPasserat() {
         return slutdatumPasserat;
     }
 
@@ -195,7 +206,7 @@ public class BestallningListItem implements PDLLoggable {
         this.slutdatumPasserat = slutdatumPasserat;
     }
 
-    public boolean isKraverAtgard() {
+    public boolean getKraverAtgard() {
         return kraverAtgard;
     }
 
@@ -203,9 +214,24 @@ public class BestallningListItem implements PDLLoggable {
         this.kraverAtgard = kraverAtgard;
     }
 
+    /**
+     * String that concatenates the searchable fields when listing this class.
+     */
+    public String toSearchString() {
+        return utredningsId + " "
+                + utredningsTyp + " "
+                + vardgivareNamn + " "
+                + fas + " "
+                + slutdatumFas + " "
+                + status + " "
+                + patientId + " "
+                + patientNamn;
+    }
+
     public static final class BestallningListItemBuilder {
         private String utredningsId;
         private String utredningsTyp;
+        private String vardgivareHsaId;
         private String vardgivareNamn;
         private String fas;
         private String slutdatumFas;
@@ -231,6 +257,11 @@ public class BestallningListItem implements PDLLoggable {
 
         public BestallningListItemBuilder withUtredningsTyp(String utredningsTyp) {
             this.utredningsTyp = utredningsTyp;
+            return this;
+        }
+
+        public BestallningListItemBuilder withVardgivareHsaId(String vardgivareHsaId) {
+            this.vardgivareHsaId = vardgivareHsaId;
             return this;
         }
 
@@ -288,6 +319,7 @@ public class BestallningListItem implements PDLLoggable {
             BestallningListItem bestallningListItem = new BestallningListItem();
             bestallningListItem.setUtredningsId(utredningsId);
             bestallningListItem.setUtredningsTyp(utredningsTyp);
+            bestallningListItem.setVardgivareHsaId(vardgivareHsaId);
             bestallningListItem.setVardgivareNamn(vardgivareNamn);
             bestallningListItem.setFas(fas);
             bestallningListItem.setSlutdatumFas(slutdatumFas);

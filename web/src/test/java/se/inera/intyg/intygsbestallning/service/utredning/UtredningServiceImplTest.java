@@ -19,6 +19,7 @@
 package se.inera.intyg.intygsbestallning.service.utredning;
 
 import com.google.common.collect.ImmutableList;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -26,27 +27,41 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.intygsbestallning.auth.IbUser;
+import se.inera.intyg.intygsbestallning.auth.model.IbVardenhet;
+import se.inera.intyg.intygsbestallning.auth.model.IbVardgivare;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.EndReason;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
+import se.inera.intyg.intygsbestallning.service.pdl.LogService;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStateResolver;
+import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListBestallningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListBestallningFilterStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
@@ -66,11 +81,22 @@ public class UtredningServiceImplTest {
     @Mock
     private UtredningRepository utredningRepository;
 
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private LogService logService;
+
     @Spy
     private UtredningStateResolver utredningStateResolver;
 
     @InjectMocks
     private UtredningServiceImpl utredningService;
+
+    @Before
+    public void setup() {
+        doNothing().when(logService).logVisaBestallningarLista(anyList(), any(), any());
+    }
 
     @Test
     public void findForfragningarForVardenhetHsaId() {
@@ -388,5 +414,105 @@ public class UtredningServiceImplTest {
             assertEquals(IbErrorCodeEnum.ALREADY_EXISTS, ise.getErrorCode());
             throw ise;
         }
+    }
+
+    @Test
+    public void testFilterListBestallningar() {
+        when(userService.getUser()).thenReturn(buildUser());
+        when(utredningRepository.findAllWithBestallningForVardenhetHsaId(anyString())).thenReturn(buildBestallningar(7));
+        List<BestallningListItem> list = utredningService.findOngoingBestallningarForVardenhet("enhet", buildFilter(ListBestallningFilterStatus.ALL));
+        assertEquals(7, list.size());
+    }
+
+    @Test
+    public void testFilterListBestallningarOrderByDesc() {
+        when(userService.getUser()).thenReturn(buildUser());
+        when(utredningRepository.findAllWithBestallningForVardenhetHsaId(anyString())).thenReturn(buildBestallningar(7));
+        List<BestallningListItem> list = utredningService.findOngoingBestallningarForVardenhet("enhet", buildFilter(ListBestallningFilterStatus.ALL, null, null, "patientId", false));
+        assertEquals(7, list.size());
+
+        // Check sort by patientId DESC
+        int startIndex = 6;
+        for (BestallningListItem bli: list) {
+            assertEquals("19121212-121" + startIndex, bli.getPatientId());
+            startIndex--;
+        }
+    }
+
+    @Test
+    public void testFilterListBestallningarWithFreeTextMatchingSingleId() {
+        when(userService.getUser()).thenReturn(buildUser());
+        when(utredningRepository.findAllWithBestallningForVardenhetHsaId(anyString())).thenReturn(buildBestallningar(7));
+        List<BestallningListItem> list = utredningService.findOngoingBestallningarForVardenhet("enhet", buildFilter(ListBestallningFilterStatus.ALL, "id-3"));
+        assertEquals(1, list.size());
+    }
+
+    @Test
+    public void testFilterListBestallningarWithUnknownVg() {
+        when(utredningRepository.findAllWithBestallningForVardenhetHsaId(anyString())).thenReturn(buildBestallningar(7));
+        List<BestallningListItem> list = utredningService.findOngoingBestallningarForVardenhet("enhet", buildFilter(ListBestallningFilterStatus.ALL, null, "vg-other"));
+        assertEquals(0, list.size());
+    }
+
+    private IbUser buildUser() {
+        IbUser user = new IbUser("user-1", "username");
+        user.setCurrentlyLoggedInAt(new IbVardenhet("enhet", "namnet", new IbVardgivare("vg", "namn", false)));
+        return user;
+    }
+
+    private List<Utredning> buildBestallningar(int num) {
+        List<Utredning> utredningList = new ArrayList<>();
+        for (int a = 0; a < num; a++) {
+            Utredning utr = anUtredning()
+                    .withUtredningsTyp(AFU)
+                    .withUtredningId("id-" + a)
+                    .withExternForfragan(anExternForfragan()
+                            .withInternForfraganList(ImmutableList.of(
+                                    anInternForfragan()
+                                            .withVardenhetHsaId("enhet")
+                                            .build()
+                            ))
+                            .withLandstingHsaId("vg-id")
+                            .build())
+                    .withBestallning(buildBestallning())
+                    .withInvanare(anInvanare().withPersonId("19121212-121" + a).build())
+                    .build();
+            utredningList.add(utr);
+        }
+        return utredningList;
+    }
+
+    private Bestallning buildBestallning() {
+        Bestallning b = new Bestallning();
+        b.setIntygKlartSenast(LocalDateTime.now().plusDays(10L));
+        b.setTilldeladVardenhetHsaId("enhet");
+        return b;
+    }
+
+    private ListBestallningRequest buildFilter(ListBestallningFilterStatus status, String freeText, String vgId, String orderBy, boolean isAsc) {
+        ListBestallningRequest req = buildFilter(status, freeText, vgId);
+        req.setOrderBy(orderBy);
+        req.setOrderByAsc(isAsc);
+        return req;
+    }
+
+    private ListBestallningRequest buildFilter(ListBestallningFilterStatus status, String freeText, String vgId) {
+        ListBestallningRequest req = buildFilter(status, freeText);
+        req.setVardgivareHsaId(vgId);
+        return req;
+    }
+
+    private ListBestallningRequest buildFilter(ListBestallningFilterStatus status, String freeText) {
+        ListBestallningRequest req = buildFilter(status);
+        req.setFreeText(freeText);
+        return req;
+    }
+
+    private ListBestallningRequest buildFilter(ListBestallningFilterStatus status) {
+        ListBestallningRequest req = new ListBestallningRequest();
+        req.setPageSize(10);
+        req.setCurrentPage(0);
+        req.setStatus(status.getId());
+        return req;
     }
 }

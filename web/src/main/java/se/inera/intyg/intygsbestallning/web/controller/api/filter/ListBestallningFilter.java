@@ -25,21 +25,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Provides possible filter values for ListBestallning.
+ */
 public class ListBestallningFilter {
 
     private List<IbVardgivare> vardgivare;
     private List<ListBestallningFilterStatus> statuses;
-    private Map<ListBestallningFilterStatus, List<UtredningStatus>> statusesMap = new HashMap<>();
+    private Map<UtredningStatus, ListBestallningFilterStatus> statusToFilterStatus = new HashMap<>();
 
     private ListBestallningFilter() {
 
     }
 
     public ListBestallningFilter(List<IbVardgivare> vardgivare, List<ListBestallningFilterStatus> statuses,
-            Map<ListBestallningFilterStatus, List<UtredningStatus>> statusesMap) {
+            Map<UtredningStatus, ListBestallningFilterStatus> statusToFilterStatus) {
         this.vardgivare = vardgivare;
         this.statuses = statuses;
-        this.statusesMap = statusesMap;
+        this.statusToFilterStatus = statusToFilterStatus;
     }
 
     public List<ListBestallningFilterStatus> getStatuses() {
@@ -50,12 +53,12 @@ public class ListBestallningFilter {
         this.statuses = statuses;
     }
 
-    public Map<ListBestallningFilterStatus, List<UtredningStatus>> getStatusesMap() {
-        return statusesMap;
+    public Map<UtredningStatus, ListBestallningFilterStatus> getStatusToFilterStatus() {
+        return statusToFilterStatus;
     }
 
-    public void setStatusesMap(Map<ListBestallningFilterStatus, List<UtredningStatus>> statusesMap) {
-        this.statusesMap = statusesMap;
+    public void setStatusToFilterStatus(Map<UtredningStatus, ListBestallningFilterStatus> statusToFilterStatus) {
+        this.statusToFilterStatus = statusToFilterStatus;
     }
 
     public List<IbVardgivare> getVardgivare() {

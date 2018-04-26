@@ -26,6 +26,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListIt
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListBestallningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListBestallningFilter;
 
@@ -108,9 +109,10 @@ public interface UtredningService {
      * Gets all ongoing bestallningar for a given vardenhet.
      *
      * @param vardenhetHsaId
+     * @param requestFilter
      * @return
      */
-    List<BestallningListItem> findOngoingBestallningarForVardenhet(String vardenhetHsaId);
+    List<BestallningListItem> findOngoingBestallningarForVardenhet(String vardenhetHsaId, ListBestallningRequest requestFilter);
 
     /**
      * Ends the utredning with the reason if available.
@@ -119,7 +121,6 @@ public interface UtredningService {
      * @return
      */
     ListBestallningFilter buildListBestallningFilter(String vardenhetHsaId);
-
 
     /**
      * Ends the utredning with the reason if available.

@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
@@ -33,6 +34,7 @@ import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetBestallningListResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListBestallningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListBestallningFilter;
 
 import java.util.List;
@@ -49,8 +51,8 @@ public class BestallningController {
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetBestallningListResponse> getBestallningarForVardenhet() {
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GetBestallningListResponse> getBestallningarForVardenhet(ListBestallningRequest requestFilter) {
         IbUser user = userService.getUser();
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_BESTALLNINGAR)
                 .orThrow(new IbAuthorizationException("User does not have required privilege LISTA_BESTALLNINGAR"));
@@ -60,7 +62,7 @@ public class BestallningController {
         }
 
         List<BestallningListItem> bestallningar = utredningService
-                .findOngoingBestallningarForVardenhet(user.getCurrentlyLoggedInAt().getId());
+                .findOngoingBestallningarForVardenhet(user.getCurrentlyLoggedInAt().getId(), requestFilter);
 
         return ResponseEntity.ok(new GetBestallningListResponse(bestallningar, bestallningar.size()));
     }
