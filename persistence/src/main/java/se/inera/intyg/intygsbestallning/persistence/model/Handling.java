@@ -22,6 +22,8 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -37,13 +39,17 @@ public class Handling {
     @Column(name = "ID")
     private long id;
 
-    @Column(name = "SKICKAT_DATUM")
+    @Column(name = "SKICKAT_DATUM", nullable = false)
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime skickatDatum;
 
     @Column(name = "INKOM_DATUM")
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime inkomDatum;
+
+    @Column(name = "URSPRUNG", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private HandlingUrsprung ursprung;
 
     public long getId() {
         return id;
@@ -69,9 +75,18 @@ public class Handling {
         this.inkomDatum = inkomDatum;
     }
 
+    public HandlingUrsprung getUrsprung() {
+        return ursprung;
+    }
+
+    public void setUrsprung(HandlingUrsprung ursprung) {
+        this.ursprung = ursprung;
+    }
+
     public static final class HandlingBuilder {
         private LocalDateTime skickatDatum;
         private LocalDateTime inkomDatum;
+        private HandlingUrsprung ursprung;
 
         private HandlingBuilder() {
         }
@@ -90,10 +105,16 @@ public class Handling {
             return this;
         }
 
+        public HandlingBuilder withUrsprung(HandlingUrsprung ursprung) {
+            this.ursprung = ursprung;
+            return this;
+        }
+
         public Handling build() {
             Handling handling = new Handling();
             handling.setSkickatDatum(skickatDatum);
             handling.setInkomDatum(inkomDatum);
+            handling.setUrsprung(ursprung);
             return handling;
         }
     }

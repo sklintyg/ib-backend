@@ -155,7 +155,7 @@
                 <constraints nullable="true"/>
             </column>
 
-            <column name="POSTKOD" type="varchar(15)">
+            <column name="POSTKOD" type="varchar(16)">
                 <constraints nullable="true"/>
             </column>
 
@@ -218,7 +218,7 @@
 
 
         <createTable tableName="UTREDNING">
-            <column name="UTREDNING_ID" type="varchar(63)">
+            <column name="UTREDNING_ID" type="varchar(64)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
 
@@ -395,7 +395,7 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
 
-            <column name="UTREDNING_ID" type="varchar(63)">
+            <column name="UTREDNING_ID" type="varchar(64)">
                 <constraints nullable="true"/>
             </column>
 
@@ -460,14 +460,17 @@
             <column name="ID" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="UTREDNING_ID" type="varchar(63)">
+            <column name="UTREDNING_ID" type="varchar(64)">
                 <constraints nullable="false"/>
             </column>
             <column name="SKICKAT_DATUM" type="datetime">
-                <constraints nullable="true"/>
+                <constraints nullable="false"/>
             </column>
             <column name="INKOM_DATUM" type="datetime">
                 <constraints nullable="true"/>
+            </column>
+            <column name="URSPRUNG" type="varchar(32)">
+                <constraints nullable="false"/>
             </column>
         </createTable>
 

@@ -38,6 +38,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.HandelseTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
+import se.inera.intyg.intygsbestallning.persistence.model.HandlingUrsprung;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
 import se.inera.intyg.intygsbestallning.persistence.model.SvarTyp;
@@ -168,6 +169,7 @@ public class UtredningRepositoryTest {
         Handling handling = utredning.getHandlingList().get(0);
         assertNotNull(handling.getInkomDatum());
         assertNotNull(handling.getSkickatDatum());
+        assertEquals(HandlingUrsprung.BESTALLNING, handling.getUrsprung());
 
         Handlaggare handlaggare = utredning.getHandlaggare();
         assertNotNull(handlaggare);
@@ -270,6 +272,7 @@ public class UtredningRepositoryTest {
         return aHandling()
                 .withInkomDatum(LocalDateTime.now())
                 .withSkickatDatum(LocalDateTime.now())
+                .withUrsprung(HandlingUrsprung.BESTALLNING)
                 .build();
     }
 
