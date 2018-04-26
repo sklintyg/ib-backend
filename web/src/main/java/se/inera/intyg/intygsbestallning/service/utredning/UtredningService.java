@@ -94,11 +94,10 @@ public interface UtredningService {
     Utredning registerNewUtredning(OrderRequest order);
 
     /**
-     * Handles the new incomming request for FMU.
+     * Handles the new incoming request for FMU.
      * <p>
-     * Creates a {@link se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan}
-     * and a  {@link se.inera.intyg.intygsbestallning.persistence.model.Utredning}
-     * information is available.
+     * Creates an {@link se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan}
+     * and an {@link se.inera.intyg.intygsbestallning.persistence.model.Utredning}.
      *
      * @param request
      * @return
