@@ -28,7 +28,7 @@ import java.time.format.DateTimeFormatter;
 
 import static java.util.Objects.isNull;
 
-public class BestallningListItem implements PDLLoggable {
+public class BestallningListItem implements PDLLoggable, FreeTextSearchable, FilterableListItem {
 
     private static final long DEFAULT_DAYS = 5L;
 
@@ -149,6 +149,7 @@ public class BestallningListItem implements PDLLoggable {
         this.fas = fas;
     }
 
+    @Override
     public String getSlutdatumFas() {
         return slutdatumFas;
     }
@@ -157,6 +158,7 @@ public class BestallningListItem implements PDLLoggable {
         this.slutdatumFas = slutdatumFas;
     }
 
+    @Override
     public String getStatus() {
         return status;
     }
@@ -217,6 +219,7 @@ public class BestallningListItem implements PDLLoggable {
     /**
      * String that concatenates the searchable fields when listing this class.
      */
+    @Override
     public String toSearchString() {
         return utredningsId + " "
                 + utredningsTyp + " "

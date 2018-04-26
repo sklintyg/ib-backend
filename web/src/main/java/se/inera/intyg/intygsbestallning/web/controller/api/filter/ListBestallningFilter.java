@@ -31,33 +31,33 @@ import java.util.Map;
 public class ListBestallningFilter {
 
     private List<IbVardgivare> vardgivare;
-    private List<ListBestallningFilterStatus> statuses;
-    private Map<UtredningStatus, ListBestallningFilterStatus> statusToFilterStatus = new HashMap<>();
+    private List<ListFilterStatus> statuses;
+    private Map<UtredningStatus, ListFilterStatus> statusToFilterStatus = new HashMap<>();
 
     private ListBestallningFilter() {
 
     }
 
-    public ListBestallningFilter(List<IbVardgivare> vardgivare, List<ListBestallningFilterStatus> statuses,
-            Map<UtredningStatus, ListBestallningFilterStatus> statusToFilterStatus) {
+    public ListBestallningFilter(List<IbVardgivare> vardgivare, List<ListFilterStatus> statuses,
+            Map<UtredningStatus, ListFilterStatus> statusToFilterStatus) {
         this.vardgivare = vardgivare;
         this.statuses = statuses;
         this.statusToFilterStatus = statusToFilterStatus;
     }
 
-    public List<ListBestallningFilterStatus> getStatuses() {
+    public List<ListFilterStatus> getStatuses() {
         return statuses;
     }
 
-    public void setStatuses(List<ListBestallningFilterStatus> statuses) {
+    public void setStatuses(List<ListFilterStatus> statuses) {
         this.statuses = statuses;
     }
 
-    public Map<UtredningStatus, ListBestallningFilterStatus> getStatusToFilterStatus() {
+    public Map<UtredningStatus, ListFilterStatus> getStatusToFilterStatus() {
         return statusToFilterStatus;
     }
 
-    public void setStatusToFilterStatus(Map<UtredningStatus, ListBestallningFilterStatus> statusToFilterStatus) {
+    public void setStatusToFilterStatus(Map<UtredningStatus, ListFilterStatus> statusToFilterStatus) {
         this.statusToFilterStatus = statusToFilterStatus;
     }
 

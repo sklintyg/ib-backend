@@ -72,7 +72,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListBestallningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListBestallningFilterStatus;
+import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -408,6 +408,7 @@ public class UtredningServiceImplTest {
                         .withUtredningsTyp(AFU)
                         .withExternForfragan(anExternForfragan()
                                 .withLandstingHsaId(landstingHsaId)
+                                .withBesvarasSenastDatum(LocalDateTime.now())
                                 .build())
                         .withInvanare(anInvanare()
                                 .withPersonId("personnummer")
@@ -418,7 +419,7 @@ public class UtredningServiceImplTest {
 
         assertNotNull(response);
         assertEquals(1, response.size());
-        assertEquals(landstingHsaId, response.get(0).getVardgivareNamn());
+        // assertEquals(landstingHsaId, response.get(0).getVardenhetNamn());
         assertEquals("utredningId", response.get(0).getUtredningsId());
         assertEquals(AFU.name(), response.get(0).getUtredningsTyp());
     }
@@ -488,7 +489,7 @@ public class UtredningServiceImplTest {
     public void testFilterListBestallningar() {
         when(userService.getUser()).thenReturn(buildUser());
         when(utredningRepository.findAllWithBestallningForVardenhetHsaId(anyString())).thenReturn(buildBestallningar(7));
-        List<BestallningListItem> list = utredningService.findOngoingBestallningarForVardenhet("enhet", buildFilter(ListBestallningFilterStatus.ALL));
+        List<BestallningListItem> list = utredningService.findOngoingBestallningarForVardenhet("enhet", buildFilter(ListFilterStatus.ALL));
         assertEquals(7, list.size());
     }
 
@@ -496,7 +497,7 @@ public class UtredningServiceImplTest {
     public void testFilterListBestallningarOrderByDesc() {
         when(userService.getUser()).thenReturn(buildUser());
         when(utredningRepository.findAllWithBestallningForVardenhetHsaId(anyString())).thenReturn(buildBestallningar(7));
-        List<BestallningListItem> list = utredningService.findOngoingBestallningarForVardenhet("enhet", buildFilter(ListBestallningFilterStatus.ALL, null, null, "patientId", false));
+        List<BestallningListItem> list = utredningService.findOngoingBestallningarForVardenhet("enhet", buildFilter(ListFilterStatus.ALL, null, null, "patientId", false));
         assertEquals(7, list.size());
 
         // Check sort by patientId DESC
@@ -511,14 +512,14 @@ public class UtredningServiceImplTest {
     public void testFilterListBestallningarWithFreeTextMatchingSingleId() {
         when(userService.getUser()).thenReturn(buildUser());
         when(utredningRepository.findAllWithBestallningForVardenhetHsaId(anyString())).thenReturn(buildBestallningar(7));
-        List<BestallningListItem> list = utredningService.findOngoingBestallningarForVardenhet("enhet", buildFilter(ListBestallningFilterStatus.ALL, "id-3"));
+        List<BestallningListItem> list = utredningService.findOngoingBestallningarForVardenhet("enhet", buildFilter(ListFilterStatus.ALL, "id-3"));
         assertEquals(1, list.size());
     }
 
     @Test
     public void testFilterListBestallningarWithUnknownVg() {
         when(utredningRepository.findAllWithBestallningForVardenhetHsaId(anyString())).thenReturn(buildBestallningar(7));
-        List<BestallningListItem> list = utredningService.findOngoingBestallningarForVardenhet("enhet", buildFilter(ListBestallningFilterStatus.ALL, null, "vg-other"));
+        List<BestallningListItem> list = utredningService.findOngoingBestallningarForVardenhet("enhet", buildFilter(ListFilterStatus.ALL, null, "vg-other"));
         assertEquals(0, list.size());
     }
 
@@ -557,26 +558,26 @@ public class UtredningServiceImplTest {
         return b;
     }
 
-    private ListBestallningRequest buildFilter(ListBestallningFilterStatus status, String freeText, String vgId, String orderBy, boolean isAsc) {
+    private ListBestallningRequest buildFilter(ListFilterStatus status, String freeText, String vgId, String orderBy, boolean isAsc) {
         ListBestallningRequest req = buildFilter(status, freeText, vgId);
         req.setOrderBy(orderBy);
         req.setOrderByAsc(isAsc);
         return req;
     }
 
-    private ListBestallningRequest buildFilter(ListBestallningFilterStatus status, String freeText, String vgId) {
+    private ListBestallningRequest buildFilter(ListFilterStatus status, String freeText, String vgId) {
         ListBestallningRequest req = buildFilter(status, freeText);
         req.setVardgivareHsaId(vgId);
         return req;
     }
 
-    private ListBestallningRequest buildFilter(ListBestallningFilterStatus status, String freeText) {
+    private ListBestallningRequest buildFilter(ListFilterStatus status, String freeText) {
         ListBestallningRequest req = buildFilter(status);
         req.setFreeText(freeText);
         return req;
     }
 
-    private ListBestallningRequest buildFilter(ListBestallningFilterStatus status) {
+    private ListBestallningRequest buildFilter(ListFilterStatus status) {
         ListBestallningRequest req = new ListBestallningRequest();
         req.setPageSize(10);
         req.setCurrentPage(0);

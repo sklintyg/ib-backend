@@ -20,10 +20,12 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
 public abstract class ListRequest {
 
-    protected int currentPage;
-    protected int pageSize;
-    protected String orderBy;
-    protected boolean orderByAsc;
+    private static final int DEFAULT_PAGE_SIZE = 10;
+
+    private int currentPage = 0;
+    private int pageSize = DEFAULT_PAGE_SIZE;
+    private String orderBy;
+    private boolean orderByAsc = false;
 
     public int getCurrentPage() {
         return currentPage;

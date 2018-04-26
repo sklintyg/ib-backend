@@ -22,6 +22,10 @@ import org.junit.Test;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStateResolver;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
@@ -44,18 +48,18 @@ public class UtredningListItemTest {
                         .build())
                 .withExternForfragan(anExternForfragan()
                         .withLandstingHsaId("landstingHsaId")
+                        .withBesvarasSenastDatum(LocalDateTime.now())
                         .build())
                 .build();
 
         UtredningListItem response = UtredningListItem.from(utredning, utredningStateResolver.resolveStatus(utredning));
 
         assertNotNull(response);
-        assertEquals("FORFRAGAN", response.getFas());
-        assertEquals("personnummer", response.getPatientId());
-        assertEquals("TODO", response.getSlutdatumFas());
-        assertEquals("FORFRAGAN_INKOMMEN", response.getStatus());
+        assertEquals("Förfrågan", response.getFas());
+        assertEquals(LocalDate.now().format(DateTimeFormatter.ISO_DATE), response.getSlutdatumFas());
+        assertEquals("Förfrågan inkommen", response.getStatus());
         assertEquals("utredningId", response.getUtredningsId());
         assertEquals(AFU.name(), response.getUtredningsTyp());
-        assertEquals("landstingHsaId", response.getVardgivareNamn());
+        // assertEquals("landstingHsaId", response.getVardenhetNamn());
     }
 }

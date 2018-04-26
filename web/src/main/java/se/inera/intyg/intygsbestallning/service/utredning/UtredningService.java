@@ -27,6 +27,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListBestallningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListBestallningFilter;
 
@@ -43,6 +44,8 @@ public interface UtredningService {
     List<UtredningListItem> findExternForfraganByLandstingHsaId(String landstingHsaId);
 
     GetUtredningResponse getUtredning(String utredningId, String landstingHsaId);
+
+    List<UtredningListItem> findExternForfraganByLandstingHsaIdWithFilter(String landstingHsaId, ListUtredningRequest request);
 
     /**
      * Retrieves the {@link se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan} for a specific UtredningId.

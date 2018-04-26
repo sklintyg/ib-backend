@@ -16,29 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.web.controller.api.filter;
+package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+public interface FilterableListItem {
+    String getSlutdatumFas();
 
-@JsonFormat(shape = JsonFormat.Shape.OBJECT)
-public enum ListBestallningFilterStatus {
-    ALL("Visa alla"),
-    KRAVER_ATGARD("Kräver åtgärd"),
-    VANTAR_ANNAN_AKTOR("Väntar på annan aktör");
+    String getStatus();
 
-    private final String id;
-    private final String label;
-
-    ListBestallningFilterStatus(String label) {
-        this.id = this.name();
-        this.label = label;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getLabel() {
-        return label;
-    }
 }

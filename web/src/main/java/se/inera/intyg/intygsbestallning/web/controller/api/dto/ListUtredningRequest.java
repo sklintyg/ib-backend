@@ -18,12 +18,12 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
-public class ListBestallningRequest extends ListRequest {
+public class ListUtredningRequest extends ListRequest {
 
     // ListFilterStatus
     private String freeText;
     private String status;
-    private String vardgivareHsaId;
+    private String fas;
     private String fromDate;
     private String toDate;
 
@@ -35,20 +35,20 @@ public class ListBestallningRequest extends ListRequest {
         this.freeText = freeText;
     }
 
+    public String getFas() {
+        return fas;
+    }
+
+    public void setFas(String fas) {
+        this.fas = fas;
+    }
+
     public String getStatus() {
         return status;
     }
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public String getVardgivareHsaId() {
-        return vardgivareHsaId;
-    }
-
-    public void setVardgivareHsaId(String vardgivareHsaId) {
-        this.vardgivareHsaId = vardgivareHsaId;
     }
 
     public String getFromDate() {

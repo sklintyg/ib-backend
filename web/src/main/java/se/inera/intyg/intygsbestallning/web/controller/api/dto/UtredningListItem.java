@@ -18,32 +18,52 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 
-import static java.util.Objects.isNull;
+import java.time.format.DateTimeFormatter;
 
-public class UtredningListItem {
+public class UtredningListItem implements FreeTextSearchable, FilterableListItem {
 
     private String utredningsId;
     private String utredningsTyp;
-    private String vardgivareNamn;
+    private String vardenhetNamn;
     private String fas;
     private String slutdatumFas;
     private String status;
-    private String patientId;
 
     public static UtredningListItem from(Utredning utredning, UtredningStatus utredningStatus) {
         return UtredningListItemBuilder.anUtredningListItem()
-                .withFas(utredningStatus.getUtredningFas().name())
-                .withPatientId(utredning.getInvanare().getPersonId())
-                .withSlutdatumFas("TODO")
-                .withStatus(utredningStatus.name())
+                .withFas(utredningStatus.getUtredningFas().getLabel())
+                .withSlutdatumFas(resolveSlutDatum(utredning, utredningStatus))
+                .withStatus(utredningStatus.getLabel())
                 .withUtredningsId(utredning.getUtredningId())
                 .withUtredningsTyp(utredning.getUtredningsTyp().name())
-                .withVardgivareNamn(!isNull(utredning.getExternForfragan()) ? utredning.getExternForfragan().getLandstingHsaId() : null)
+                .withVardenhetNamn("VE namn") // !isNull(utredning.getExternForfragan()) ?
+                                              // utredning.getExternForfragan().getLandstingHsaId() : null)
                 .build();
+    }
+
+    /**
+     * Om utredningsfas = Förfrågan är slutdatum = Utredning.förfrågan.svarsdatum.
+     * Om utredningsfas = Utredning är slutdatum = Utredning.intyg.sista datum för mottagning
+     * Om utredningsfas = Komplettering är slutdatum = Utredning.kompletteringsbegäran.komplettering.sista datum för
+     * mottagning.
+     * Om utredningsfas = Redovisa tolk så är fältet tomt.
+     */
+    private static String resolveSlutDatum(Utredning utredning, UtredningStatus utredningStatus) {
+        switch (utredningStatus.getUtredningFas()) {
+        case FORFRAGAN:
+            return utredning.getExternForfragan().getBesvarasSenastDatum().format(DateTimeFormatter.ISO_DATE);
+        case UTREDNING:
+            return utredning.getBestallning().getIntygKlartSenast().format(DateTimeFormatter.ISO_DATE);
+        case KOMPLETTERING:
+            return "TODO";
+        case REDOVISA_TOLK:
+        case AVSLUTAD:
+            return null;
+        }
+        return null;
     }
 
     public String getUtredningsId() {
@@ -62,12 +82,12 @@ public class UtredningListItem {
         this.utredningsTyp = utredningsTyp;
     }
 
-    public String getVardgivareNamn() {
-        return vardgivareNamn;
+    public String getVardenhetNamn() {
+        return vardenhetNamn;
     }
 
-    public void setVardgivareNamn(String vardgivareNamn) {
-        this.vardgivareNamn = vardgivareNamn;
+    public void setVardenhetNamn(String vardenhetNamn) {
+        this.vardenhetNamn = vardenhetNamn;
     }
 
     public String getFas() {
@@ -78,6 +98,7 @@ public class UtredningListItem {
         this.fas = fas;
     }
 
+    @Override
     public String getSlutdatumFas() {
         return slutdatumFas;
     }
@@ -86,6 +107,7 @@ public class UtredningListItem {
         this.slutdatumFas = slutdatumFas;
     }
 
+    @Override
     public String getStatus() {
         return status;
     }
@@ -94,23 +116,23 @@ public class UtredningListItem {
         this.status = status;
     }
 
-    @JsonIgnore
-    public String getPatientId() {
-        return patientId;
-    }
-
-    public void setPatientId(String patientId) {
-        this.patientId = patientId;
+    @Override
+    public String toSearchString() {
+        return utredningsId + " "
+                + utredningsTyp + " "
+                + vardenhetNamn + " "
+                + fas + " "
+                + slutdatumFas + " "
+                + status + " ";
     }
 
     public static final class UtredningListItemBuilder {
         private String utredningsId;
         private String utredningsTyp;
-        private String vardgivareNamn;
+        private String vardenhetNamn;
         private String fas;
         private String slutdatumFas;
         private String status;
-        private String patientId;
 
         private UtredningListItemBuilder() {
         }
@@ -129,8 +151,8 @@ public class UtredningListItem {
             return this;
         }
 
-        public UtredningListItemBuilder withVardgivareNamn(String vardgivareNamn) {
-            this.vardgivareNamn = vardgivareNamn;
+        public UtredningListItemBuilder withVardenhetNamn(String vardenhetNamn) {
+            this.vardenhetNamn = vardenhetNamn;
             return this;
         }
 
@@ -149,20 +171,14 @@ public class UtredningListItem {
             return this;
         }
 
-        public UtredningListItemBuilder withPatientId(String patientId) {
-            this.patientId = patientId;
-            return this;
-        }
-
         public UtredningListItem build() {
             UtredningListItem utredningListItem = new UtredningListItem();
             utredningListItem.setUtredningsId(utredningsId);
             utredningListItem.setUtredningsTyp(utredningsTyp);
-            utredningListItem.setVardgivareNamn(vardgivareNamn);
+            utredningListItem.setVardenhetNamn(vardenhetNamn);
             utredningListItem.setFas(fas);
             utredningListItem.setSlutdatumFas(slutdatumFas);
             utredningListItem.setStatus(status);
-            utredningListItem.setPatientId(patientId);
             return utredningListItem;
         }
     }
