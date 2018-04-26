@@ -49,7 +49,17 @@ var ibMessages = {
         'systemrole.change.modal.description': 'Nedan ser du de enheter som du har behörighet till. Du ser även vilken roll som är knuten till enheten. Klicka på den enhet du vill byta till.',
 
         //Unit settings dialog
-        'unitsettings.change.modal.label': 'Enhetsinställningar',
+        'unitsettings.spinner.loading': 'Hämtar standsinställningar...',
+        'unitsettings.change.modal.label': 'Standardinställningar för vårdenhet',
+        'unitsettings.change.modal.label.helpkey': 'Denna adress är den som handlingar ska skickas till som standard. Du kan alltid ändra adressen i en enskild förfrågan innan du svarar.',
+        'unitsettings.form.mottagarnamn': 'Mottagare',
+        'unitsettings.form.adress': 'Postadress',
+        'unitsettings.form.postnummer': 'Postkod',
+        'unitsettings.form.postort': 'Postort',
+        'unitsettings.form.telefonnummer': 'Telefonnummer',
+        'unitsettings.form.epost': 'Epost',
+        'unitsettings.form.standardsvar': 'Standardsvar',
+        'unitsettings.form.standardsvar.helpkey': 'Denna text visas som standardkommentar när du svarar på en förfrågan. Du kan alltid ändra kommentaren i en enskild förfrågan innan du svarar.',
 
         // Lista utredningar tabell
         'label.table.utredningar.column.id': 'Id',
@@ -73,7 +83,11 @@ var ibMessages = {
 
         //Errors for reporting IO / backend error responses for REST requests
         'server.error.changeunit.title': 'Kunde inte byta systemroll',
-        'server.error.changeunit.text': 'Försök igen eller kontakta support'
+        'server.error.changeunit.text': 'Försök igen eller kontakta support',
+        'server.error.getvardenhetpreference.title': 'Kunde inte hämta vårdenhetens uppgifter',
+        'server.error.getvardenhetpreference.text': 'Försök igen eller kontakta support',
+        'server.error.setvardenhetpreference.title': 'Kunde inte spara vårdenhetens uppgifter',
+        'server.error.setvardenhetpreference.text': 'Försök igen eller kontakta support'
 
     },
     'en': {

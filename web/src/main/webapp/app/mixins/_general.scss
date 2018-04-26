@@ -29,3 +29,31 @@ input[type=search]::-ms-clear {
   @extend %ib-typo-07;
   color: $ib-color-07;
 }
+
+//absolutely positioned element with a gradient background.
+//The pointer-events:none is important, otherwise elements such as button below this can't be clicked.
+%bottom-gradient {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 0 20px;
+  width: 100%;
+  height: $ib-text-fadeout-height;
+  pointer-events: none;
+
+  div {
+    background-image: linear-gradient(to top, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  &.ib-color-02 div {
+    background-image: linear-gradient(to top, rgba($ib-color-02, 1) 0%, rgba($ib-color-02, 0) 100%);
+  }
+  &.ib-color-28 div {
+    background-image: linear-gradient(to top, rgba($ib-color-28, 1) 0%, rgba($ib-color-28, 0) 100%);
+  }
+  &.ib-color-27 div {
+    background-image: linear-gradient(to top, rgba($ib-color-27, 1) 0%, rgba($ib-color-27, 0) 100%);
+  }
+}

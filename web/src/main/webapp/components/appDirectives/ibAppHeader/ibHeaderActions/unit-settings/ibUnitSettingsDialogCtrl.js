@@ -16,15 +16,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-angular.module('ibApp').controller(
-        'ibUnitSettingsDialogCtrl',
-        [ '$scope', '$rootScope', 'UserModel',
-                function($scope, $rootScope, UserModel) {
-                    'use strict';
+angular.module('ibApp').controller('ibUnitSettingsDialogCtrl', [ '$scope', '$log', 'VardenhetProxy', function($scope, $log, VardenhetProxy) {
+    'use strict';
+    $scope.vm = {
+        model: null,
+        loading: true,
+        saving: false
+    };
 
-                    $scope.user = UserModel.get();
+    VardenhetProxy.getVardenhetPreference().then(function(vardenhetPreference) {
+        $scope.vm.model = vardenhetPreference;
+    }, function(error) {
+        $log.error('failed to load preference!' + error);
+    }).finally(function() { // jshint ignore:line
+        $scope.vm.loading = false;
+    });
 
+    $scope.saveChanges = function() {
+        $scope.vm.saving = true;
+        VardenhetProxy.setVardenhetPreference($scope.vm.model).then(function() {
+            $scope.$dismiss();
+        }, function(error) {
+            $log.error('failed to save preference!' + error);
+        }).finally(function() { // jshint ignore:line
+            $scope.vm.saving = false;
+        });
+    };
 
-
-
-                } ]);
+} ]);

@@ -161,6 +161,7 @@
     color: $ib-color-07;
     padding: 0;
     line-height: 1.78;
+    margin: 0;
   }
 
   .material-icons {
@@ -180,9 +181,10 @@
   }
 
   h4 {
-    padding: 5px 0 10px;
-    font-size: 14px;
-    line-height: 18px;
+    @extend %ib-typo-06;
+    color: $ib-color-07;
+    padding: 5px 0 5px;
+    margin: 0;
   }
 
   h5 {

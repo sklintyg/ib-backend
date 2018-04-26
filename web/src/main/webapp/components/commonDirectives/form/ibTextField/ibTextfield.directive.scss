@@ -1,0 +1,24 @@
+ib-textfield {
+  label {
+    @extend %ib-typo-14;
+    color: $ib-color-09;
+
+    span.required {
+      @extend %ib-typo-14;
+      color: $ib-color-04;
+    }
+  }
+  input.form-control {
+    height: 38px;
+    width: 100%;
+    border: 1px solid $ib-color-15;
+    border-radius: 4px;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+  }
+  input.form-control:focus {
+    outline: none !important;
+    border: 1px solid $ib-color-21;
+    box-shadow: 2px 2px 4px 0 $black_12;
+  }
+
+}

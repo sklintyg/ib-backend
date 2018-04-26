@@ -5,10 +5,10 @@ $ib-header-user-min-width: 120px;
 
 ib-header-user {
   //default for this directive is to act as a non-growing, (aggressivly) shrinkable flex-item
-  flex: 0 3 auto;
+  flex: 0 1 auto;
   @media (max-width: $ib-header-collapse-breakpoint-width) {
     //but in compact mode, let it grow
-    flex-grow: 1;
+    flex-grow: 2;
   }
 
   //flex items must a some sort of width applied for it to be able to shrink

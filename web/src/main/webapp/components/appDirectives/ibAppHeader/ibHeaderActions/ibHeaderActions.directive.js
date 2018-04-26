@@ -27,7 +27,7 @@ angular.module('ibApp').directive('ibHeaderActions',
                 templateUrl: '/components/appDirectives/ibAppHeader/ibHeaderActions/ibHeaderActions.directive.html',
                 link: function($scope) {
 
-                    var aboutModalInstance, changeUnitDialogInstance;
+                    var aboutModalInstance, changeUnitDialogInstance, changeSystemRoleDialogInstance;
 
                     $scope.user = UserModel.get();
 
@@ -113,7 +113,7 @@ angular.module('ibApp').directive('ibHeaderActions',
 
                     $scope.onChangeSystemRoleClick = function() {
 
-                        changeUnitDialogInstance = $uibModal.open({
+                        changeSystemRoleDialogInstance = $uibModal.open({
                             templateUrl: '/components/appDirectives/ibAppHeader/ibHeaderActions/change-systemrole/ibChangeSystemRoleDialog.html',
                             controller: 'ibChangeSystemRoleDialogCtrl',
                             size: 'md',
@@ -122,7 +122,7 @@ angular.module('ibApp').directive('ibHeaderActions',
                             windowClass: 'ib-header-care-unit-dialog-window-class'
                         });
                         //angular > 1.5 warns if promise rejection is not handled (e.g backdrop-click == rejection)
-                        changeUnitDialogInstance.result.catch(function () {}); //jshint ignore:line
+                        changeSystemRoleDialogInstance.result.catch(function () {}); //jshint ignore:line
 
                     };
 
@@ -137,6 +137,11 @@ angular.module('ibApp').directive('ibHeaderActions',
                             changeUnitDialogInstance.close();
                             changeUnitDialogInstance = undefined;
                         }
+                        if (changeSystemRoleDialogInstance) {
+                            changeSystemRoleDialogInstance.close();
+                            changeSystemRoleDialogInstance = undefined;
+                        }
+
 
                     });
                     //Since rootscope event listeners aren't unregistered automatically when this directives

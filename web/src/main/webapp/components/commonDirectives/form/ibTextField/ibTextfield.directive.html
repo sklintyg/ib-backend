@@ -1,0 +1,14 @@
+  <div class="col-xs-{{::labelColSize}}">
+    <label ng-attr-for="{{::inputId}}" class="control-label">
+     <span ng-if="required" class="required">*</span>
+     <span message key="{{::labelKey}}"></span>
+    </label>
+  </div>
+  <div class="col-xs-{{::inputColSize}}">
+    <input ng-attr-id="{{::inputId}}"
+           type="text"
+           class="form-control"
+           ng-model="model"
+           ng-disabled="isDisabled"
+           maxlength="{{:: maxLength || 255}}">
+  </div>
