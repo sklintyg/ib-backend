@@ -18,6 +18,30 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
+import static se.inera.intyg.intygsbestallning.persistence.model.HandlingUrsprung.BESTALLNING;
+import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
+import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.AFU;
+import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.AFU_UTVIDGAD;
+import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.LIAG;
+import static se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest.AssessmentRequestBuilder.anAssessmentRequest;
+import static se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare.BestallareBuilder.aBestallare;
+import static se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest.EndUtredningRequestBuilder.anEndUtredningRequest;
+import static se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest.OrderRequestBuilder.anOrderRequest;
+
 import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,6 +64,7 @@ import se.inera.intyg.intygsbestallning.persistence.repository.UtredningReposito
 import se.inera.intyg.intygsbestallning.service.pdl.LogService;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStateResolver;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
@@ -54,27 +79,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
-import static se.inera.intyg.intygsbestallning.persistence.model.HandlingUrsprung.BESTALLNING;
-import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
-import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
-import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.AFU;
-import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.LIAG;
-import static se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare.BestallareBuilder.aBestallare;
-import static se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest.EndUtredningRequestBuilder.anEndUtredningRequest;
-import static se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest.OrderRequestBuilder.anOrderRequest;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtredningServiceImplTest {
@@ -286,6 +290,67 @@ public class UtredningServiceImplTest {
         assertEquals("stad", response.getHandlaggare().getStad());
         assertEquals("telefonnummer", response.getHandlaggare().getTelefonnummer());
     }
+
+
+    @Test
+    public void registerNewUtredningFromRequestHealthCarePerformerForAssesment() {
+
+        final LocalDateTime dateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 12);
+
+
+        final Utredning utredning = anUtredning()
+                .withUtredningId("id")
+                .withUtredningsTyp(AFU_UTVIDGAD)
+                .withExternForfragan(anExternForfragan()
+                        .withLandstingHsaId("id")
+                        .withInkomDatum(LocalDateTime.now())
+                        .withBesvarasSenastDatum(dateTime)
+                        .withKommentar("kommentar")
+                        .build())
+                .withHandlaggare(aHandlaggare()
+                        .withAdress("address")
+                        .withEmail("email")
+                        .withFullstandigtNamn("fullstandigtNamn")
+                        .withKontor("kontor")
+                        .withKostnadsstalle("kostnadsstalle")
+                        .withMyndighet("myndighet")
+                        .withPostkod("postkod")
+                        .withStad("stad")
+                        .withTelefonnummer("telefonnummer")
+                        .build())
+                .build();
+
+        doReturn(utredning)
+                .when(utredningRepository)
+                .save(any(Utredning.class));
+
+        final AssessmentRequest request = anAssessmentRequest()
+                .withUtredningsTyp(AFU_UTVIDGAD)
+                .withLandstingHsaId("id")
+                .withInvanareTidigareUtforare(ImmutableList.of("1", "2", "3"))
+                .withInvanareSarskildaBehov("sarskiltBehov")
+                .withInvanarePostkod("postkod")
+                .withBesvaraSenastDatum(dateTime)
+                .withKommentar("kommentar")
+                .withTolkSprak("tolksprak")
+                .withBestallare(aBestallare()
+                        .withAdress("adress")
+                        .withEmail("email")
+                        .withFullstandigtNamn("fullstandigtNamn")
+                        .withKontor("kontor")
+                        .withKostnadsstalle("kostnadsstalle")
+                        .withMyndighet("myndighet")
+                        .withPostkod("postkod")
+                        .withStad("stad")
+                        .withTelefonnummer("telefonnummer")
+                        .build())
+                .build();
+
+        final Utredning sparadUtredning = utredningService.registerNewUtredning(request);
+
+        assertEquals(utredning, sparadUtredning);
+    }
+
 
     @Test
     public void testGetUtredningSuccess() {
