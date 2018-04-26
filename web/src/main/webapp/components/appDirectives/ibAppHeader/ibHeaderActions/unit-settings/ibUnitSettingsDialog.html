@@ -7,9 +7,9 @@
   <div class="modal-body">
     <div ib-spinner label="unitsettings.spinner.loading" show-spinner="vm.loading">
       <form name="preferenceForm" class="form-horizontal" novalidate autocomplete="off">
-        <h4>Kontaktuppgifter för vårdenheten</h4>
+        <h4><span message key="unitsettings.change.adress.title"></span></h4>
         <p>
-          <span message key="unitsettings.change.modal.label.helpkey"></span>
+          <span message key="unitsettings.change.adress.desc"></span>
         </p>
 
         <div class="form-group">
@@ -75,15 +75,16 @@
         </div>
 
 
-        <h4>Meddelande</h4>
+        <h4><span message key="unitsettings.change.standardsvar.title"></span></h4>
         <p>
-          <span message key="unitsettings.form.standardsvar.helpkey"></span>
+          <span message key="unitsettings.change.standardsvar.desc"></span>
         </p>
         <div class="form-group">
           <ib-textarea
               id="standardsvar"
               model="vm.model.standardsvar"
               required="false"
+              placeholder-text="Skriv standardsvar här"
               max-length="255"
               col-size="12">
           </ib-textarea>

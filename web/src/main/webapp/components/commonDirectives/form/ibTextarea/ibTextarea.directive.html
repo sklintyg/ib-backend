@@ -8,5 +8,6 @@
            class="form-control"
            ng-model="model"
            ng-disabled="isDisabled"
-           maxlength="{{:: maxLength || 255}}">
+           ng-attr-placeholder="{{::placeholderText}}"
+              maxlength="{{:: maxLength || 255}}"></textarea>
   </div>

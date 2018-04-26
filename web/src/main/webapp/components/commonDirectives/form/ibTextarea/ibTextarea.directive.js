@@ -25,6 +25,7 @@ angular.module('ibApp').directive('ibTextarea', [ function() {
             form: '=',
             model: '=',
             labelKey: '@',
+            placeholderText: '@',
             maxLength: '=',
             required: '=',
             colSize: '@'

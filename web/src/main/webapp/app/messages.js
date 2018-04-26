@@ -50,16 +50,17 @@ var ibMessages = {
 
         //Unit settings dialog
         'unitsettings.spinner.loading': 'Hämtar standsinställningar...',
-        'unitsettings.change.modal.label': 'Standardinställningar för vårdenhet',
-        'unitsettings.change.modal.label.helpkey': 'Denna adress är den som handlingar ska skickas till som standard. Du kan alltid ändra adressen i en enskild förfrågan innan du svarar.',
+        'unitsettings.change.modal.label': 'Inställningar',
+        'unitsettings.change.adress.title': 'Hantera kontaktuppgifter',
+        'unitsettings.change.adress.desc': 'Denna adress är den som handlingar ska skickas till som standard. Du kan alltid ändra adressen i en enskild förfrågan innan du svarar.',
         'unitsettings.form.mottagarnamn': 'Mottagare',
         'unitsettings.form.adress': 'Postadress',
         'unitsettings.form.postnummer': 'Postkod',
         'unitsettings.form.postort': 'Postort',
         'unitsettings.form.telefonnummer': 'Telefonnummer',
         'unitsettings.form.epost': 'Epost',
-        'unitsettings.form.standardsvar': 'Standardsvar',
-        'unitsettings.form.standardsvar.helpkey': 'Denna text visas som standardkommentar när du svarar på en förfrågan. Du kan alltid ändra kommentaren i en enskild förfrågan innan du svarar.',
+        'unitsettings.change.standardsvar.title': 'Hantera standardsvar',
+        'unitsettings.change.standardsvar.desc': 'Denna text visas som standardkommentar när du svarar på en förfrågan. Du kan alltid ändra kommentaren i en enskild förfrågan innan du svarar.',
 
         // Lista utredningar tabell
         'label.table.utredningar.column.id': 'Id',
