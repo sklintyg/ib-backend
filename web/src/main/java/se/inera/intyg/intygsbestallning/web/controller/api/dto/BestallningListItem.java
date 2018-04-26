@@ -97,7 +97,7 @@ public class BestallningListItem implements PDLLoggable {
      */
     private static String resolveSlutDatumFas(Utredning utredning, UtredningStatus utredningStatus) {
         switch (utredningStatus.getUtredningFas()) {
-        case UTREDNING:UtredningServiceImpl
+        case UTREDNING:
             return utredning.getBestallning().getIntygKlartSenast().format(DateTimeFormatter.ISO_DATE);
         case KOMPLETTERING:
             return "2018-04-25";
