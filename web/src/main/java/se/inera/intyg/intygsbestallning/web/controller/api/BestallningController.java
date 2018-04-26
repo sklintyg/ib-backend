@@ -33,6 +33,7 @@ import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetBestallningListResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListBestallningFilter;
 
 import java.util.List;
 
@@ -62,5 +63,19 @@ public class BestallningController {
                 .findOngoingBestallningarForVardenhet(user.getCurrentlyLoggedInAt().getId());
 
         return ResponseEntity.ok(new GetBestallningListResponse(bestallningar, bestallningar.size()));
+    }
+
+    /**
+     * Returns an object containing all possible filter values for the getBestallningarForVardenhet query.
+     * @return
+     */
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/list/filter")
+    public ResponseEntity<ListBestallningFilter> getListBestallningFilter() {
+        IbUser user = userService.getUser();
+        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_BESTALLNINGAR)
+                .orThrow(new IbAuthorizationException("User does not have required privilege LISTA_BESTALLNINGAR"));
+
+        ListBestallningFilter listBestallningFilter = utredningService.buildListBestallningFilter(user.getCurrentlyLoggedInAt().getId());
+        return ResponseEntity.ok(listBestallningFilter);
     }
 }

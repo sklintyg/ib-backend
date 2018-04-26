@@ -23,10 +23,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.infra.logmessages.ResourceType;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
+import se.inera.intyg.intygsbestallning.auth.model.IbVardgivare;
 import se.inera.intyg.intygsbestallning.auth.pdl.PDLActivityStore;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
@@ -38,7 +40,9 @@ import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.pdl.LogService;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
+import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStateResolver;
+import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
@@ -48,11 +52,17 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListBestallningFilter;
+import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListBestallningFilterStatus;
 import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentType;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -84,6 +94,9 @@ public class UtredningServiceImpl implements UtredningService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private HsaOrganizationsService organizationUnitService;
 
     @Override
     public Utredning registerNewUtredning(RequestHealthcarePerformerForAssessmentType req) {
@@ -210,6 +223,30 @@ public class UtredningServiceImpl implements UtredningService {
 
         pdlLogList(bestallningListItems, ActivityType.READ, ResourceType.RESOURCE_TYPE_FMU);
         return bestallningListItems;
+    }
+
+    @Override
+    public ListBestallningFilter buildListBestallningFilter(String vardenhetHsaId) {
+        List<IbVardgivare> distinctVardgivare = utredningRepository
+                .findDistinctLandstingHsaIdByVardenhetHsaIdHavingBestallning(vardenhetHsaId)
+                .stream()
+                .map(vgHsaId -> new IbVardgivare(vgHsaId, organizationUnitService.getVardgivareInfo(vgHsaId).getNamn(), false))
+                .distinct()
+                .sorted(Comparator.comparing(IbVardgivare::getName))
+                .collect(Collectors.toList());
+
+        List<ListBestallningFilterStatus> statuses = Arrays.asList(ListBestallningFilterStatus.values());
+
+        Map<ListBestallningFilterStatus, List<UtredningStatus>> statusMap = new HashMap<>();
+        statusMap.put(ListBestallningFilterStatus.ALL, Arrays.asList(UtredningStatus.values()));
+        statusMap.put(ListBestallningFilterStatus.KRAVER_ATGARD, Arrays.stream(UtredningStatus.values())
+                .filter(us -> us.getNextActor() == Actor.VARDADMIN)
+                .collect(toList()));
+        statusMap.put(ListBestallningFilterStatus.VANTAR_ANNAN_AKTOR, Arrays.stream(UtredningStatus.values())
+                .filter(us -> us.getNextActor() != Actor.VARDADMIN)
+                .collect(toList()));
+
+        return new ListBestallningFilter(distinctVardgivare, statuses, statusMap);
     }
 
     // PDL logging. Important to only log after filtering and paging.

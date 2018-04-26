@@ -16,20 +16,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.service.util;
+package se.inera.intyg.intygsbestallning.web.controller.api.filter;
 
-import org.junit.Test;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
-import java.time.LocalDate;
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
+public enum ListBestallningFilterStatus {
+    ALL("Visa alla"),
+    KRAVER_ATGARD("Kräver åtgärd"),
+    VANTAR_ANNAN_AKTOR("Väntar på annan aktör");
 
-import static org.junit.Assert.assertEquals;
+    private final String id;
+    private final String label;
 
-public class EasterCalculatorTest {
+    ListBestallningFilterStatus(String label) {
+        this.id = this.name();
+        this.label = label;
+    }
 
-    @Test
-    public void test2018() {
-        LocalDate localDate = EasterCalculator.easterDate(2018);
-        assertEquals(1, localDate.getDayOfMonth());
-        assertEquals(4, localDate.getMonthValue());
+    public String getId() {
+        return id;
+    }
+
+    public String getLabel() {
+        return label;
     }
 }

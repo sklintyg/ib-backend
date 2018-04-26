@@ -26,6 +26,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListBestallningFilter;
 import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentType;
 
 import java.util.List;
@@ -99,6 +100,15 @@ public interface UtredningService {
      */
     List<BestallningListItem> findOngoingBestallningarForVardenhet(String vardenhetHsaId);
 
+    /**
+     * Ends the utredning with the reason if available.
+     *
+     * @param vardenhetHsaId
+     * @return
+     */
+    ListBestallningFilter buildListBestallningFilter(String vardenhetHsaId);
+    
+    
     /**
      * Ends the utredning with the reason if available.
      *

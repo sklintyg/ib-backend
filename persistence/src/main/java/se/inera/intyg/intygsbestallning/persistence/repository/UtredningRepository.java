@@ -26,11 +26,17 @@ import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import java.util.List;
 
 //CHECKSTYLE:OFF MethodName
+//CHECKSTYLE:OFF LineLength
 public interface UtredningRepository extends JpaRepository<Utredning, String> {
     List<Utredning> findAllByExternForfragan_InternForfraganList_VardenhetHsaId(String vardenhetHsaId);
+
     List<Utredning> findAllByExternForfragan_LandstingHsaId(String landstingHsaId);
 
     @Query("SELECT u FROM Utredning u JOIN u.bestallning b WHERE b.tilldeladVardenhetHsaId = :vardenhetHsaId")
     List<Utredning> findAllWithBestallningForVardenhetHsaId(@Param("vardenhetHsaId") String vardenhetHsaId);
+
+    @Query("SELECT ef.landstingHsaId FROM Utredning u JOIN u.bestallning b JOIN u.externForfragan ef WHERE b.tilldeladVardenhetHsaId = :vardenhetHsaId")
+    List<String> findDistinctLandstingHsaIdByVardenhetHsaIdHavingBestallning(@Param("vardenhetHsaId") String vardenhetHsaId);
 }
-//CHECKSTYLE:ON MethodName
+// CHECKSTYLE:ON MethodName
+//CHECKSTYLE:ON LineLength

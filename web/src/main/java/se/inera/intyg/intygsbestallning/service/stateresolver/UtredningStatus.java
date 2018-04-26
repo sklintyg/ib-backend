@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.intygsbestallning.service.stateresolver;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import static se.inera.intyg.intygsbestallning.service.stateresolver.Actor.FK;
 import static se.inera.intyg.intygsbestallning.service.stateresolver.Actor.NONE;
 import static se.inera.intyg.intygsbestallning.service.stateresolver.Actor.SAMORDNARE;
@@ -27,50 +30,64 @@ import static se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFa
 import static se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas.KOMPLETTERING;
 import static se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas.UTREDNING;
 
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum UtredningStatus {
 
     // Statuses in FORFRAGAN phase
-    FORFRAGAN_INKOMMEN(FORFRAGAN, SAMORDNARE),
-    VANTAR_PA_SVAR(FORFRAGAN, VARDADMIN),
-    TILLDELA_UTREDNING(FORFRAGAN, SAMORDNARE),
-    TILLDELAD_VANTAR_PA_BESTALLNING(FORFRAGAN, FK),
+    FORFRAGAN_INKOMMEN("Förfrågan inkommen", FORFRAGAN, SAMORDNARE),
+    VANTAR_PA_SVAR("Väntar på svar", FORFRAGAN, VARDADMIN),
+    TILLDELA_UTREDNING("Tilldela utredning", FORFRAGAN, SAMORDNARE),
+    TILLDELAD_VANTAR_PA_BESTALLNING("Tilldelad, väntar på beställning", FORFRAGAN, FK),
 
     // Statuses in UTREDNING phase
-    BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR(UTREDNING, FK),
-    UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR(UTREDNING, FK),
-    HANDLINGAR_MOTTAGNA_BOKA_BESOK(UTREDNING, VARDADMIN),
-    UTREDNING_PAGAR(UTREDNING, UTREDARE),
-    VANTAR_PA_BESLUT_OM_FORTSATT_UTREDNING(UTREDNING, FK),
-    BESLUT_OM_FORTSATT_UTREDNING_TAGET(UTREDNING, VARDADMIN),
-    UTLATANDE_SKICKAT(UTREDNING, FK),
-    UTLATANDE_MOTTAGET(UTREDNING, FK),
+    BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR("Beställning mottagen, väntar på handlingar", UTREDNING, FK),
+    UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR("Uppdaterad beställning, väntar på handlingar", UTREDNING, FK),
+    HANDLINGAR_MOTTAGNA_BOKA_BESOK("Handlingar mottagna, boka besök", UTREDNING, VARDADMIN),
+    UTREDNING_PAGAR("Utredning pågår", UTREDNING, UTREDARE),
+    VANTAR_PA_BESLUT_OM_FORTSATT_UTREDNING("Väntar på beslut om fortsatt utredning", UTREDNING, FK),
+    BESLUT_OM_FORTSATT_UTREDNING_TAGET("Beslut om fortsatt utredning taget", UTREDNING, VARDADMIN),
+    UTLATANDE_SKICKAT("Utlåtande skickat", UTREDNING, FK),
+    UTLATANDE_MOTTAGET("Utlåtande mottaget", UTREDNING, FK),
 
     // Statuses in KOMPLETTERING phase
-    KOMPLETTERINGSBEGARAN_MOTTAGEN_VANTAR_PA_FRAGESTALLNING(KOMPLETTERING, FK),
-    KOMPLETTERANDE_FRAGESTALLNING_MOTTAGEN(KOMPLETTERING, UTREDARE),
-    KOMPLETTERING_SKICKAD(KOMPLETTERING, FK),
-    KOMPLETTERING_MOTTAGEN(KOMPLETTERING, FK),
+    KOMPLETTERINGSBEGARAN_MOTTAGEN_VANTAR_PA_FRAGESTALLNING("Kompletteringsbegäran mottagen, väntar på frågeställning", KOMPLETTERING, FK),
+    KOMPLETTERANDE_FRAGESTALLNING_MOTTAGEN("Kompletterande frågeställning mottagen", KOMPLETTERING, UTREDARE),
+    KOMPLETTERING_SKICKAD("Komplettering skickad", KOMPLETTERING, FK),
+    KOMPLETTERING_MOTTAGEN("Komplettering mottagen", KOMPLETTERING, FK),
 
     // Statuses in REDOVISA_TOLK phase
-    REDOVISA_TOLK(UtredningFas.REDOVISA_TOLK, VARDADMIN),
+    REDOVISA_TOLK("Redovisa tolk", UtredningFas.REDOVISA_TOLK, VARDADMIN),
 
     // Statuses in AVSLUTAD
-    AVVISAD(UtredningFas.AVSLUTAD, NONE),
-    AVBRUTEN(UtredningFas.AVSLUTAD, NONE),
-    AVSLUTAD(UtredningFas.AVSLUTAD, NONE);
+    AVVISAD("Avvisad", UtredningFas.AVSLUTAD, NONE),
+    AVBRUTEN("Avbruten", UtredningFas.AVSLUTAD, NONE),
+    AVSLUTAD("Avslutad", UtredningFas.AVSLUTAD, NONE);
 
+    private final String id;
+    private final String label;
     private final UtredningFas utredningFas;
     private final Actor nextActor;
 
-    UtredningStatus(UtredningFas utredningFas, Actor nextActor) {
+    UtredningStatus(String label, UtredningFas utredningFas, Actor nextActor) {
+        this.id = this.name();
+        this.label = label;
         this.utredningFas = utredningFas;
         this.nextActor = nextActor;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getLabel() {
+        return label;
     }
 
     public UtredningFas getUtredningFas() {
         return utredningFas;
     }
 
+    @JsonIgnore
     public Actor getNextActor() {
         return nextActor;
     }

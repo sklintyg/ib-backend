@@ -18,6 +18,25 @@
  */
 package se.inera.intyg.intygsbestallning.service.stateresolver;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum UtredningFas {
-    FORFRAGAN, UTREDNING, KOMPLETTERING, REDOVISA_TOLK, AVSLUTAD;
+    FORFRAGAN("Förfrågan"), UTREDNING("Utredning"), KOMPLETTERING("Komplettering"), REDOVISA_TOLK("Redovisa tolk"), AVSLUTAD("Avslutad");
+
+    private final String id;
+    private final String label;
+
+    UtredningFas(String label) {
+        this.id = this.name();
+        this.label = label;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getLabel() {
+        return label;
+    }
 }

@@ -20,34 +20,90 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
+import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static java.util.Objects.isNull;
 
 public class BestallningListItem implements PDLLoggable {
 
+    public static final long DEFAULT_DAYS = 5L;
     private String utredningsId;
     private String utredningsTyp;
     private String vardgivareNamn;
     private String fas;
     private String slutdatumFas;
+    private boolean slutdatumPaVagPasseras;
+    private boolean slutdatumPasserat;
     private String status;
     private String patientId;
     private String patientNamn;
     private String nextActor;
+    private boolean kraverAtgard;
 
     public static BestallningListItem from(Utredning utredning, UtredningStatus utredningStatus, String patientNamn) {
-        return BestallningListItemBuilder.anUtredningListItem()
+        return BestallningListItemBuilder.anBestallningListItem()
                 .withFas(utredningStatus.getUtredningFas().name())
                 .withPatientId(utredning.getInvanare().getPersonId())
                 .withPatientNamn(patientNamn)
-                .withSlutdatumFas("TODO")
+                .withSlutdatumFas(resolveSlutDatumFas(utredning, utredningStatus))
+                .withSlutdatumPasserat(LocalDateTime.now().isAfter(utredning.getBestallning().getIntygKlartSenast()))
+                .withSlutdatumPaVagPasseras(resolveSlutDatumPaVagPasseras(utredning, utredningStatus))
                 .withStatus(utredningStatus.name())
                 .withNextActor(utredningStatus.getNextActor().name())
                 .withUtredningsId(utredning.getUtredningId())
                 .withUtredningsTyp(utredning.getUtredningsTyp().name())
                 .withVardgivareNamn(!isNull(utredning.getExternForfragan()) ? utredning.getExternForfragan().getLandstingHsaId() : null)
                 .build();
+    }
+
+    /**
+     * Systemet ska signalera när en utredning eller komplettering snart kommer att passera sitt slutdatum.
+     *
+     * Antalet arbetsdagar innan utredningens slutdatum som påminnelsen ska ske i systemet måste vara konfigurerbart
+     * (UTREDNING_PAMINNELSE_DAGAR). Default är UTREDNING_PAMINNELSE_DAGAR= 5.
+     *
+     * Systemet varnar om:
+     *
+     * Utredningsfas inte är Redovisa tolk (se FMU-G001 Statusflöde för utredning)
+     * Idag > (slutdatum - UTREDNING_PAMINNELSE_DAGAR arbetsdagar)
+     * Idag <= slutdatum
+     * där slutdatum avser slutdatum för utredningen (intyg.sista datum för mottagning) om ingen kompletteringsbegärans har
+     * mottagits, annars slutdatum för kompletteringsbegäran (komplettering.sista datum för mottagning)
+     */
+    private static boolean resolveSlutDatumPaVagPasseras(Utredning utredning, UtredningStatus utredningStatus) {
+        if (utredningStatus == UtredningStatus.REDOVISA_TOLK) {
+            return false;
+        }
+        if (utredningStatus.getUtredningFas() == UtredningFas.KOMPLETTERING) {
+            return false; // FIXME implementera så snart vi har Kompletterings-entitet.
+        }
+        if (utredningStatus.getUtredningFas() == UtredningFas.UTREDNING) {
+            // FIXME arbetsdagar + configurable
+            return LocalDateTime.now().isBefore(utredning.getBestallning().getIntygKlartSenast())
+                    && LocalDateTime.now().isAfter(utredning.getBestallning().getIntygKlartSenast().minusDays(DEFAULT_DAYS));
+
+        }
+        return false;
+    }
+
+    /*
+     * Om utredningsfas = utredning är slutdatum= Utredning.intyg.sista datum för mottagning
+     * Om utredningsfas = komplettering är slutdatum = Utredning.kompletteringsbegäran.komplettering.sista datum för
+     * mottagning
+     */
+    private static String resolveSlutDatumFas(Utredning utredning, UtredningStatus utredningStatus) {
+        switch (utredningStatus.getUtredningFas()) {
+        case UTREDNING:UtredningServiceImpl
+            return utredning.getBestallning().getIntygKlartSenast().format(DateTimeFormatter.ISO_DATE);
+        case KOMPLETTERING:
+            return "2018-04-25";
+        default:
+            return null;
+        }
     }
 
     public String getUtredningsId() {
@@ -123,21 +179,48 @@ public class BestallningListItem implements PDLLoggable {
         this.nextActor = nextActor;
     }
 
+    public boolean isSlutdatumPaVagPasseras() {
+        return slutdatumPaVagPasseras;
+    }
+
+    public void setSlutdatumPaVagPasseras(boolean slutdatumPaVagPasseras) {
+        this.slutdatumPaVagPasseras = slutdatumPaVagPasseras;
+    }
+
+    public boolean isSlutdatumPasserat() {
+        return slutdatumPasserat;
+    }
+
+    public void setSlutdatumPasserat(boolean slutdatumPasserat) {
+        this.slutdatumPasserat = slutdatumPasserat;
+    }
+
+    public boolean isKraverAtgard() {
+        return kraverAtgard;
+    }
+
+    public void setKraverAtgard(boolean kraverAtgard) {
+        this.kraverAtgard = kraverAtgard;
+    }
+
     public static final class BestallningListItemBuilder {
         private String utredningsId;
         private String utredningsTyp;
         private String vardgivareNamn;
         private String fas;
         private String slutdatumFas;
+        private boolean slutdatumPaVagPasseras;
+        private boolean slutdatumPasserat;
         private String status;
         private String patientId;
         private String patientNamn;
         private String nextActor;
+        private boolean kraverAtgard;
 
         private BestallningListItemBuilder() {
         }
 
-        public static BestallningListItemBuilder anUtredningListItem() {
+        public static BestallningListItemBuilder anBestallningListItem() {
             return new BestallningListItemBuilder();
         }
 
@@ -166,6 +249,16 @@ public class BestallningListItem implements PDLLoggable {
             return this;
         }
 
+        public BestallningListItemBuilder withSlutdatumPaVagPasseras(boolean slutdatumPaVagPasseras) {
+            this.slutdatumPaVagPasseras = slutdatumPaVagPasseras;
+            return this;
+        }
+
+        public BestallningListItemBuilder withSlutdatumPasserat(boolean slutdatumPasserat) {
+            this.slutdatumPasserat = slutdatumPasserat;
+            return this;
+        }
+
         public BestallningListItemBuilder withStatus(String status) {
             this.status = status;
             return this;
@@ -186,6 +279,11 @@ public class BestallningListItem implements PDLLoggable {
             return this;
         }
 
+        public BestallningListItemBuilder withKraverAtgard(boolean kraverAtgard) {
+            this.kraverAtgard = kraverAtgard;
+            return this;
+        }
+
         public BestallningListItem build() {
             BestallningListItem bestallningListItem = new BestallningListItem();
             bestallningListItem.setUtredningsId(utredningsId);
@@ -193,10 +291,13 @@ public class BestallningListItem implements PDLLoggable {
             bestallningListItem.setVardgivareNamn(vardgivareNamn);
             bestallningListItem.setFas(fas);
             bestallningListItem.setSlutdatumFas(slutdatumFas);
+            bestallningListItem.setSlutdatumPaVagPasseras(slutdatumPaVagPasseras);
+            bestallningListItem.setSlutdatumPasserat(slutdatumPasserat);
             bestallningListItem.setStatus(status);
             bestallningListItem.setPatientId(patientId);
             bestallningListItem.setPatientNamn(patientNamn);
             bestallningListItem.setNextActor(nextActor);
+            bestallningListItem.setKraverAtgard(kraverAtgard);
             return bestallningListItem;
         }
     }
