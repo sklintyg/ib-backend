@@ -127,7 +127,6 @@ dependencies {
     compile "io.prometheus:simpleclient_servlet:${prometheusClientVersion}"
 
     compile "org.aspectj:aspectjweaver:${aspectjWeaverVersion}"
-    compile group: 'org.valid4j', name: 'valid4j', version: '0.5.0'
 
     compileOnly "javax.jms:jms-api:${javaxJmsVersion}"
     compileOnly "javax.servlet:javax.servlet-api:${javaxServletVersion}"
