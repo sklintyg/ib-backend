@@ -1,0 +1,54 @@
+{
+  "utredningId": "utredning-bootstrap-5",
+  "utredningsTyp": "AFU",
+  "externForfragan": {
+    "landstingHsaId": "IFV1239877878-1041",
+    "inkomDatum": "2018-04-12T10:07:12.125",
+    "besvarasSenastDatum": "2018-04-26T10:07:12.127",
+    "kommentar": "Detta är en kommentar",
+    "internForfraganList": [
+      {
+        "vardenhetHsaId": "IFV1239877878-1042",
+        "besvarasSenastDatum": "2018-04-26T10:07:12.396",
+        "kommentar": "Bered skyndsamt!",
+        "tilldeladDatum":"2018-04-26T10:07:12.127",
+        "forfraganSvar": {
+          "svarTyp": "ACCEPTERA",
+          "utforareTyp": "ENHET",
+          "utforareNamn": "Utförarenheten",
+          "utforareAdress": "Utförarvägen 1",
+          "utforarePostnr": "12345",
+          "utforarePostort": "Utförhult",
+          "utforareTelefon": "123-123412",
+          "utforareEpost": "utforare@inera.se",
+          "kommentar": "Bered skyndsamt!",
+          "borjaDatum": "2018-12-12"
+        }
+      }
+    ]
+  },
+  "invanare": {
+    "personId": "19121212-1212",
+    "postkod": "11121",
+    "sarskildaBehov": "Gillar glass",
+    "tidigareUtforare": [
+      {
+        "tidigareEnhetId": "IFV1239877878-1042"
+      }
+    ]
+  },
+  "handlaggare": {
+    "fullstandigtNamn": "Hanna Handläggarsson",
+    "telefonnummer": "031-9999999",
+    "email": "epost@inera.se"
+  },
+  "bestallning": {
+    "tilldeladVardenhetHsaId": "IFV1239877878-1042",
+    "intygKlartSenast": "2018-05-25T00:00:00",
+    "orderDatum": "2018-05-27T00:00:00",
+    "syfte": "Att bli friskare",
+    "planeradeAktiviteter": "Bowla med gänget",
+    "kommentar": "Detta är faktiskt testdata..."
+  },
+  "sprakTolk": "sv"
+}

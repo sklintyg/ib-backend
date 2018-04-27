@@ -205,6 +205,7 @@ public class UtredningListItem implements FreeTextSearchable, FilterableListItem
             UtredningListItem utredningListItem = new UtredningListItem();
             utredningListItem.setUtredningsId(utredningsId);
             utredningListItem.setUtredningsTyp(utredningsTyp);
+            utredningListItem.setVardenhetHsaId(vardenhetHsaId);
             utredningListItem.setVardenhetNamn(vardenhetNamn);
             utredningListItem.setFas(fas);
             utredningListItem.setSlutdatumFas(slutdatumFas);
