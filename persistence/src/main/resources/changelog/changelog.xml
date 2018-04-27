@@ -524,5 +524,59 @@
                 <constraints nullable="true"/>
             </column>
         </createTable>
+
+        <createTable tableName="BESOK">
+
+            <column name="ID" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="UTREDNING_ID" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="BESOK_TID" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="KALLELSE_DATUM" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="BESOK_STATUS" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="TOLK_STATUS" type="varchar(64)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="KALLELSE_FORM" type="varchar(64)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="ERSATTS" type="boolean">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="DELTAGARE_PROFESSION" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="DELTAGARE_FULLSTANDIGT_NAMN" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <addAutoIncrement columnDataType="bigint"
+                          columnName="ID"
+                          incrementBy="1"
+                          startWith="1"
+                          tableName="BESOK"/>
+
+        <addForeignKeyConstraint baseTableName="BESOK"
+                                 baseColumnNames="UTREDNING_ID"
+                                 constraintName="BESOK_UTREDNING_FK"
+                                 referencedTableName="UTREDNING"
+                                 referencedColumnNames="UTREDNING_ID"/>
     </changeSet>
 </databaseChangeLog>

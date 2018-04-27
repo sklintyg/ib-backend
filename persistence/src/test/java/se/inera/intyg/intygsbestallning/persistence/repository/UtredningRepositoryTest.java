@@ -30,7 +30,10 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigDev;
 import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigTest;
+import se.inera.intyg.intygsbestallning.persistence.model.Besok;
+import se.inera.intyg.intygsbestallning.persistence.model.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
+import se.inera.intyg.intygsbestallning.persistence.model.DeltagarProfessionTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.EndReason;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar;
@@ -41,6 +44,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Handling;
 import se.inera.intyg.intygsbestallning.persistence.model.HandlingUrsprung;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
+import se.inera.intyg.intygsbestallning.persistence.model.KallelseFormTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
 import se.inera.intyg.intygsbestallning.persistence.model.UtforareTyp;
@@ -56,6 +60,7 @@ import java.util.Optional;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
@@ -106,6 +111,8 @@ public class UtredningRepositoryTest {
         utr.setHandlaggare(buildHandlaggare());
 
         utr.setInvanare(buildInvanare());
+
+        utr.getBesokList().add(buildBesok());
 
         utredningRepository.save(utr);
 
@@ -194,7 +201,18 @@ public class UtredningRepositoryTest {
         assertEquals(1, invanare.getTidigareUtforare().size());
         TidigareUtforare tu = invanare.getTidigareUtforare().get(0);
         assertEquals(VE_HSA_ID, tu.getTidigareEnhetId());
+
+        Besok besok = utredning.getBesokList().get(0);
+        assertEquals(BesokStatusTyp.TIDBOKAD_VARDKONTAKT, besok.getBesokStatus());
+        assertEquals(DeltagarProfessionTyp.FT, besok.getDeltagareProfession());
+        assertEquals(KallelseFormTyp.TELEFONKONTAKT, besok.getKallelseForm());
+        assertNotNull(besok.getBesokTid());
+        assertNull(besok.getTolkStatus());
+        assertNull(besok.getErsatts());
+
     }
+
+
 
     @Test
     public void testFindInternalForfraganByVardenhet() {
@@ -343,4 +361,14 @@ public class UtredningRepositoryTest {
                 .build();
     }
 
+    private Besok buildBesok() {
+        return Besok.BesokBuilder.aBesok()
+                .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
+                .withBesokTid(LocalDateTime.now().plusDays(5))
+                .withKallelseForm(KallelseFormTyp.TELEFONKONTAKT)
+                .withKallelseDatum(LocalDateTime.now())
+                .withDeltagareProfession(DeltagarProfessionTyp.FT)
+                .withDeltagareFullstandigtNamn("Håkan Fysiosson")
+                .build();
+    }
 }

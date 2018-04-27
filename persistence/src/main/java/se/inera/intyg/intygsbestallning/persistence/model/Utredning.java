@@ -77,6 +77,10 @@ public class Utredning {
     @JoinColumn(name = "UTREDNING_ID", referencedColumnName = "UTREDNING_ID", nullable = false)
     private List<Handling> handlingList = new ArrayList<>();
 
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "UTREDNING_ID", referencedColumnName = "UTREDNING_ID", nullable = false)
+    private List<Besok> besokList = new ArrayList<>();
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "HANDLAGGARE_ID")
     private Handlaggare handlaggare;
@@ -131,6 +135,14 @@ public class Utredning {
 
     public void setAvbrutenDatum(final LocalDateTime avbrutenDatum) {
         this.avbrutenDatum = avbrutenDatum;
+    }
+
+    public List<Besok> getBesokList() {
+        return besokList;
+    }
+
+    public void setBesokList(List<Besok> besokList) {
+        this.besokList = besokList;
     }
 
     public EndReason getAvbrutenAnledning() {

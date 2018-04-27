@@ -44,8 +44,8 @@ public enum UtredningStatus {
     UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR("Uppdaterad beställning, väntar på handlingar", UTREDNING, FK),
     HANDLINGAR_MOTTAGNA_BOKA_BESOK("Handlingar mottagna, boka besök", UTREDNING, VARDADMIN),
     UTREDNING_PAGAR("Utredning pågår", UTREDNING, UTREDARE),
-    VANTAR_PA_BESLUT_OM_FORTSATT_UTREDNING("Väntar på beslut om fortsatt utredning", UTREDNING, FK),
-    BESLUT_OM_FORTSATT_UTREDNING_TAGET("Beslut om fortsatt utredning taget", UTREDNING, VARDADMIN),
+   // VANTAR_PA_BESLUT_OM_FORTSATT_UTREDNING("Väntar på beslut om fortsatt utredning", UTREDNING, FK),
+   // BESLUT_OM_FORTSATT_UTREDNING_TAGET("Beslut om fortsatt utredning taget", UTREDNING, VARDADMIN),
     UTLATANDE_SKICKAT("Utlåtande skickat", UTREDNING, FK),
     UTLATANDE_MOTTAGET("Utlåtande mottaget", UTREDNING, FK),
 
