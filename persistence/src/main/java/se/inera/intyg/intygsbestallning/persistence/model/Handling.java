@@ -49,7 +49,7 @@ public class Handling {
 
     @Column(name = "URSPRUNG", nullable = false)
     @Enumerated(EnumType.STRING)
-    private HandlingUrsprung ursprung;
+    private HandlingUrsprungTyp ursprung;
 
     public long getId() {
         return id;
@@ -75,18 +75,18 @@ public class Handling {
         this.inkomDatum = inkomDatum;
     }
 
-    public HandlingUrsprung getUrsprung() {
+    public HandlingUrsprungTyp getUrsprung() {
         return ursprung;
     }
 
-    public void setUrsprung(HandlingUrsprung ursprung) {
+    public void setUrsprung(HandlingUrsprungTyp ursprung) {
         this.ursprung = ursprung;
     }
 
     public static final class HandlingBuilder {
         private LocalDateTime skickatDatum;
         private LocalDateTime inkomDatum;
-        private HandlingUrsprung ursprung;
+        private HandlingUrsprungTyp ursprung;
 
         private HandlingBuilder() {
         }
@@ -105,7 +105,7 @@ public class Handling {
             return this;
         }
 
-        public HandlingBuilder withUrsprung(HandlingUrsprung ursprung) {
+        public HandlingBuilder withUrsprung(HandlingUrsprungTyp ursprung) {
             this.ursprung = ursprung;
             return this;
         }

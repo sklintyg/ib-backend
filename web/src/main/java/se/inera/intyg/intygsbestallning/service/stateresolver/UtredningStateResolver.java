@@ -73,8 +73,13 @@ public class UtredningStateResolver {
         }
 
         // HANDLINGAR_MOTTAGNA_BOKA_BESOK
-        if (utredning.getHandlingList().size() > 0) {
+        if (utredning.getHandlingList().size() > 0 && utredning.getBesokList().size() == 0) {
             return UtredningStatus.HANDLINGAR_MOTTAGNA_BOKA_BESOK;
+        }
+
+        // UTREDNING_PAGAR
+        if (utredning.getHandlingList().size() > 0 && utredning.getBesokList().size() > 0) {
+            return UtredningStatus.UTREDNING_PAGAR;
         }
 
         throw new IllegalStateException("Unhandled state!");

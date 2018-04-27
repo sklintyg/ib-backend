@@ -22,7 +22,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.intygsbestallning.persistence.model.Besok;
+import se.inera.intyg.intygsbestallning.persistence.model.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
+import se.inera.intyg.intygsbestallning.persistence.model.DeltagarProfessionTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
@@ -83,22 +86,22 @@ public class UtredningStateResolverTest {
         assertEquals(Actor.SAMORDNARE, status.getNextActor());
     }
 
-
     @Test
     public void testResolvesTilldelaUtredning() {
         Utredning utr = buildBaseUtredning();
-        utr.getExternForfragan().getInternForfraganList().add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
+        utr.getExternForfragan().getInternForfraganList()
+                .add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
         UtredningStatus status = testee.resolveStatus(utr);
         assertEquals(UtredningStatus.TILLDELAD_VANTAR_PA_BESTALLNING, status);
         assertEquals(UtredningFas.FORFRAGAN, status.getUtredningFas());
         assertEquals(Actor.FK, status.getNextActor());
     }
 
-
     @Test
     public void testResolvesBestallningMottagenVantarPaHandlingar() {
         Utredning utr = buildBaseUtredning();
-        utr.getExternForfragan().getInternForfraganList().add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
+        utr.getExternForfragan().getInternForfraganList()
+                .add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
         utr.setBestallning(buildBestallning(null));
         utr.getHandlingList().clear();
 
@@ -112,7 +115,8 @@ public class UtredningStateResolverTest {
     @Test
     public void testResolvesUppdateradBestallningVantarPaHandlingar() {
         Utredning utr = buildBaseUtredning();
-        utr.getExternForfragan().getInternForfraganList().add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
+        utr.getExternForfragan().getInternForfraganList()
+                .add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
         utr.setBestallning(buildBestallning(LocalDateTime.now()));
         utr.getHandlingList().clear();
 
@@ -125,7 +129,8 @@ public class UtredningStateResolverTest {
     @Test
     public void testResolvesHandlingarMottagnaVantaPaBesok() {
         Utredning utr = buildBaseUtredning();
-        utr.getExternForfragan().getInternForfraganList().add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
+        utr.getExternForfragan().getInternForfraganList()
+                .add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
         utr.setBestallning(buildBestallning(null));
         utr.getHandlingList().add(buildHandling(LocalDateTime.now(), null));
 
@@ -133,6 +138,23 @@ public class UtredningStateResolverTest {
         assertEquals(UtredningStatus.HANDLINGAR_MOTTAGNA_BOKA_BESOK, status);
         assertEquals(UtredningFas.UTREDNING, status.getUtredningFas());
         assertEquals(Actor.VARDADMIN, status.getNextActor());
+    }
+
+    @Test
+    public void testResolvesUtredningPagar() {
+        Utredning utr = buildBaseUtredning();
+        utr.getExternForfragan().getInternForfraganList().add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
+        utr.setBestallning(buildBestallning(null));
+        utr.getHandlingList().add(buildHandling(LocalDateTime.now(), null));
+        utr.getBesokList().add(Besok.BesokBuilder.aBesok()
+                .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
+                .withDeltagareProfession(DeltagarProfessionTyp.FT)
+                .build());
+
+        UtredningStatus status = testee.resolveStatus(utr);
+        assertEquals(UtredningStatus.UTREDNING_PAGAR, status);
+        assertEquals(UtredningFas.UTREDNING, status.getUtredningFas());
+        assertEquals(Actor.UTREDARE, status.getNextActor());
     }
 
     // add(buildHandling(LocalDateTime.now(), null));
@@ -145,11 +167,10 @@ public class UtredningStateResolverTest {
     }
 
     private Bestallning buildBestallning(LocalDateTime uppdateradDatum) {
-        Bestallning b  = new Bestallning();
+        Bestallning b = new Bestallning();
         b.setUppdateradDatum(uppdateradDatum);
         return b;
     }
-
 
     private ForfraganSvar buildForfraganSvar(SvarTyp svarTyp) {
         ForfraganSvar fs = new ForfraganSvar();

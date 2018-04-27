@@ -38,7 +38,7 @@ import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
-import se.inera.intyg.intygsbestallning.persistence.model.HandlingUrsprung;
+import se.inera.intyg.intygsbestallning.persistence.model.HandlingUrsprungTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
 import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
@@ -255,7 +255,7 @@ public class UtredningServiceImpl implements UtredningService {
             utredning.getHandlingList().add(
                     aHandling()
                             .withSkickatDatum(LocalDate.now().atStartOfDay())
-                            .withUrsprung(HandlingUrsprung.BESTALLNING)
+                            .withUrsprung(HandlingUrsprungTyp.BESTALLNING)
                             .build());
         }
         utredning.getHandelseList().add(HandelseUtil.createOrderReceived(order.getBestallare().getMyndighet(), order.getOrderDate()));
@@ -280,7 +280,7 @@ public class UtredningServiceImpl implements UtredningService {
             utredning.getHandlingList().add(
                     aHandling()
                             .withSkickatDatum(LocalDate.now().atStartOfDay())
-                            .withUrsprung(HandlingUrsprung.BESTALLNING)
+                            .withUrsprung(HandlingUrsprungTyp.BESTALLNING)
                             .build());
         }
         utredningRepository.save(utredning);

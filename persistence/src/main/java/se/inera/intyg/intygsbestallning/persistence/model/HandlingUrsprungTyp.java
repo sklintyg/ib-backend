@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
-public enum HandlingUrsprung {
+public enum HandlingUrsprungTyp {
     BESTALLNING,
     UPPDATERING
 }
