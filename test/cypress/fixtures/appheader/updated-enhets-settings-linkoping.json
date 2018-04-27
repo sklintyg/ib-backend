@@ -1,0 +1,9 @@
+{
+  "mottagarNamn": "Vår enhet",
+  "adress": "vårdgatan 14",
+  "postnummer": "12344",
+  "postort": "Vårdinge",
+  "telefonnummer": "099-12344",
+  "epost": "ve@example.com",
+  "standardsvar": "Världens bästa vårdenhet"
+}

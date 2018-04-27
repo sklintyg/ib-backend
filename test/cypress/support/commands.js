@@ -38,3 +38,13 @@ Cypress.Commands.add("login", (loginId, unitId) => {
     cy.get('#cookie-usage-consent-btn').should('not.be.visible');
 
 });
+
+Cypress.Commands.add("logout", () => {
+    cy.get('ib-header-actions #logoutLinkBtn').click();
+});
+
+Cypress.Commands.add("bytEnhet", (unitId) => {
+    cy.get('ib-header-actions #changeSystemRoleLinkBtn').click();
+    cy.get('.ib-header-care-unit-dialog-template').should('be.visible');
+    cy.get('#ib-vardenhet-selector-select-active-unit-' + unitId + '-link').click();
+});
