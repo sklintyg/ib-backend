@@ -20,6 +20,11 @@ package se.inera.intyg.intygsbestallning.service.util;
 
 import org.springframework.data.util.Pair;
 
+/**
+ * Returns a Pair of lower and upper index bounds given some paging parameters.
+ *
+ * @author eriklupander
+ */
 public final class PagingUtil {
 
     private PagingUtil() {

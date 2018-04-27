@@ -36,11 +36,11 @@ public class BestallningListItem implements PDLLoggable, FreeTextSearchable, Fil
     private String utredningsTyp;
     private String vardgivareHsaId;
     private String vardgivareNamn;
-    private String fas;
+    private UtredningFas fas;
     private String slutdatumFas;
     private boolean slutdatumPaVagPasseras;
     private boolean slutdatumPasserat;
-    private String status;
+    private UtredningStatus status;
     private String patientId;
     private String patientNamn;
     private String nextActor;
@@ -48,13 +48,13 @@ public class BestallningListItem implements PDLLoggable, FreeTextSearchable, Fil
 
     public static BestallningListItem from(Utredning utredning, UtredningStatus utredningStatus, String patientNamn) {
         return BestallningListItemBuilder.anBestallningListItem()
-                .withFas(utredningStatus.getUtredningFas().name())
+                .withFas(utredningStatus.getUtredningFas())
                 .withPatientId(utredning.getInvanare().getPersonId())
                 .withPatientNamn(patientNamn)
                 .withSlutdatumFas(resolveSlutDatumFas(utredning, utredningStatus))
                 .withSlutdatumPasserat(LocalDateTime.now().isAfter(utredning.getBestallning().getIntygKlartSenast()))
                 .withSlutdatumPaVagPasseras(resolveSlutDatumPaVagPasseras(utredning, utredningStatus))
-                .withStatus(utredningStatus.name())
+                .withStatus(utredningStatus)
                 .withNextActor(utredningStatus.getNextActor().name())
                 .withUtredningsId(utredning.getUtredningId())
                 .withUtredningsTyp(utredning.getUtredningsTyp().name())
@@ -141,11 +141,11 @@ public class BestallningListItem implements PDLLoggable, FreeTextSearchable, Fil
         this.vardgivareNamn = vardgivareNamn;
     }
 
-    public String getFas() {
+    public UtredningFas getFas() {
         return fas;
     }
 
-    public void setFas(String fas) {
+    public void setFas(UtredningFas fas) {
         this.fas = fas;
     }
 
@@ -159,11 +159,11 @@ public class BestallningListItem implements PDLLoggable, FreeTextSearchable, Fil
     }
 
     @Override
-    public String getStatus() {
+    public UtredningStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(UtredningStatus status) {
         this.status = status;
     }
 
@@ -236,11 +236,11 @@ public class BestallningListItem implements PDLLoggable, FreeTextSearchable, Fil
         private String utredningsTyp;
         private String vardgivareHsaId;
         private String vardgivareNamn;
-        private String fas;
+        private UtredningFas fas;
         private String slutdatumFas;
         private boolean slutdatumPaVagPasseras;
         private boolean slutdatumPasserat;
-        private String status;
+        private UtredningStatus status;
         private String patientId;
         private String patientNamn;
         private String nextActor;
@@ -273,7 +273,7 @@ public class BestallningListItem implements PDLLoggable, FreeTextSearchable, Fil
             return this;
         }
 
-        public BestallningListItemBuilder withFas(String fas) {
+        public BestallningListItemBuilder withFas(UtredningFas fas) {
             this.fas = fas;
             return this;
         }
@@ -293,7 +293,7 @@ public class BestallningListItem implements PDLLoggable, FreeTextSearchable, Fil
             return this;
         }
 
-        public BestallningListItemBuilder withStatus(String status) {
+        public BestallningListItemBuilder withStatus(UtredningStatus status) {
             this.status = status;
             return this;
         }

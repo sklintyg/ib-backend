@@ -19,6 +19,7 @@
 package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 
 import java.time.format.DateTimeFormatter;
@@ -28,15 +29,15 @@ public class UtredningListItem implements FreeTextSearchable, FilterableListItem
     private String utredningsId;
     private String utredningsTyp;
     private String vardenhetNamn;
-    private String fas;
+    private UtredningFas fas;
     private String slutdatumFas;
-    private String status;
+    private UtredningStatus status;
 
     public static UtredningListItem from(Utredning utredning, UtredningStatus utredningStatus) {
         return UtredningListItemBuilder.anUtredningListItem()
-                .withFas(utredningStatus.getUtredningFas().getLabel())
+                .withFas(utredningStatus.getUtredningFas())
                 .withSlutdatumFas(resolveSlutDatum(utredning, utredningStatus))
-                .withStatus(utredningStatus.getLabel())
+                .withStatus(utredningStatus)
                 .withUtredningsId(utredning.getUtredningId())
                 .withUtredningsTyp(utredning.getUtredningsTyp().name())
                 .withVardenhetNamn("VE namn") // !isNull(utredning.getExternForfragan()) ?
@@ -90,11 +91,11 @@ public class UtredningListItem implements FreeTextSearchable, FilterableListItem
         this.vardenhetNamn = vardenhetNamn;
     }
 
-    public String getFas() {
+    public UtredningFas getFas() {
         return fas;
     }
 
-    public void setFas(String fas) {
+    public void setFas(UtredningFas fas) {
         this.fas = fas;
     }
 
@@ -108,11 +109,11 @@ public class UtredningListItem implements FreeTextSearchable, FilterableListItem
     }
 
     @Override
-    public String getStatus() {
+    public UtredningStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(UtredningStatus status) {
         this.status = status;
     }
 
@@ -130,9 +131,9 @@ public class UtredningListItem implements FreeTextSearchable, FilterableListItem
         private String utredningsId;
         private String utredningsTyp;
         private String vardenhetNamn;
-        private String fas;
+        private UtredningFas fas;
         private String slutdatumFas;
-        private String status;
+        private UtredningStatus status;
 
         private UtredningListItemBuilder() {
         }
@@ -156,7 +157,7 @@ public class UtredningListItem implements FreeTextSearchable, FilterableListItem
             return this;
         }
 
-        public UtredningListItemBuilder withFas(String fas) {
+        public UtredningListItemBuilder withFas(UtredningFas fas) {
             this.fas = fas;
             return this;
         }
@@ -166,7 +167,7 @@ public class UtredningListItem implements FreeTextSearchable, FilterableListItem
             return this;
         }
 
-        public UtredningListItemBuilder withStatus(String status) {
+        public UtredningListItemBuilder withStatus(UtredningStatus status) {
             this.status = status;
             return this;
         }

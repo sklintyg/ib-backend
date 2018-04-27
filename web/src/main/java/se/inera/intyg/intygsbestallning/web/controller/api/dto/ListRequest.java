@@ -20,7 +20,7 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
 public abstract class ListRequest {
 
-    private static final int DEFAULT_PAGE_SIZE = 10;
+    private static final int DEFAULT_PAGE_SIZE = 50;
 
     private int currentPage = 0;
     private int pageSize = DEFAULT_PAGE_SIZE;

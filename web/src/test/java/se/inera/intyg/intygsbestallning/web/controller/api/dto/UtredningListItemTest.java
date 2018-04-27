@@ -55,9 +55,9 @@ public class UtredningListItemTest {
         UtredningListItem response = UtredningListItem.from(utredning, utredningStateResolver.resolveStatus(utredning));
 
         assertNotNull(response);
-        assertEquals("Förfrågan", response.getFas());
+        assertEquals("Förfrågan", response.getFas().getLabel());
         assertEquals(LocalDate.now().format(DateTimeFormatter.ISO_DATE), response.getSlutdatumFas());
-        assertEquals("Förfrågan inkommen", response.getStatus());
+        assertEquals("Förfrågan inkommen", response.getStatus().getLabel());
         assertEquals("utredningId", response.getUtredningsId());
         assertEquals(AFU.name(), response.getUtredningsTyp());
         // assertEquals("landstingHsaId", response.getVardenhetNamn());

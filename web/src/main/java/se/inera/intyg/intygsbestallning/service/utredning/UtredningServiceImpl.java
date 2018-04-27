@@ -161,7 +161,7 @@ public class UtredningServiceImpl implements UtredningService {
             return true;
         }
         UtredningFas utredningFas = UtredningFas.valueOf(fas);
-        return UtredningFas.valueOf(uli.getFas()) == utredningFas;
+        return uli.getFas() == utredningFas;
     }
 
     @Override
@@ -375,7 +375,7 @@ public class UtredningServiceImpl implements UtredningService {
         if (Strings.isNullOrEmpty(fromDate) || Strings.isNullOrEmpty(toDate)) {
             return true;
         }
-        switch (UtredningStatus.valueOf(bli.getStatus()).getUtredningFas()) {
+        switch (bli.getStatus().getUtredningFas()) {
         case REDOVISA_TOLK:
             return Strings.isNullOrEmpty(fromDate);
         case UTREDNING:
@@ -457,7 +457,7 @@ public class UtredningServiceImpl implements UtredningService {
             }
 
             // Returns true if the items status maps to the grouping from the actual status.
-            return statusToFilterStatus.get(UtredningStatus.valueOf(bli.getStatus())) == actualStatus;
+            return statusToFilterStatus.get(bli.getStatus()) == actualStatus;
 
         } catch (IllegalArgumentException e) {
             throw new IbServiceException(IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Unknown status: '" + status + "'");
