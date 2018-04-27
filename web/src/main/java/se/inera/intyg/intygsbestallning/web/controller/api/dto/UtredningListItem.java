@@ -72,7 +72,7 @@ public class UtredningListItem implements FreeTextSearchable, FilterableListItem
         case FORFRAGAN:
             return utredning.getExternForfragan().getBesvarasSenastDatum().format(DateTimeFormatter.ISO_DATE);
         case UTREDNING:
-            return utredning.getBestallning().getIntygKlartSenast().format(DateTimeFormatter.ISO_DATE);
+            return utredning.getBestallning().get().getIntygKlartSenast().format(DateTimeFormatter.ISO_DATE);
         case KOMPLETTERING:
             return "TODO";
         case REDOVISA_TOLK:

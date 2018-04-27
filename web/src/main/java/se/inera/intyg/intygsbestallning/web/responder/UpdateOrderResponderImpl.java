@@ -18,40 +18,37 @@
  */
 package se.inera.intyg.intygsbestallning.web.responder;
 
-import org.apache.cxf.annotations.SchemaValidation;
-import org.springframework.stereotype.Service;
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.util.Objects.isNull;
+import static se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil.ok;
 
 import com.google.common.base.Preconditions;
-
+import org.apache.cxf.annotations.SchemaValidation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderResponseType;
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.rivtabp21.UpdateOrderResponderInterface;
-import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
-import se.riv.intygsbestallning.certificate.order.v1.ResultType;
 
 @Service
 @SchemaValidation
 public class UpdateOrderResponderImpl implements UpdateOrderResponderInterface {
 
+    @Autowired
+    private UtredningService utredningService;
+
     @Override
     public UpdateOrderResponseType updateOrder(final String logicalAddress, final UpdateOrderType request) {
 
-        Preconditions.checkArgument(null != logicalAddress);
-        Preconditions.checkArgument(null != request);
+        Preconditions.checkArgument(!isNullOrEmpty(logicalAddress));
+        Preconditions.checkArgument(!isNull(request));
 
-        return createDummyResponse();
-    }
-
-    private UpdateOrderResponseType createDummyResponse() {
-
-        ResultType resultType = new ResultType();
-        resultType.setResultCode(ResultCodeType.OK);
-        resultType.setLogId("DUMMY_LOG_ID");
-        resultType.setResultText("DUMMY_RESULT_TEXT");
+        utredningService.updateOrder(UpdateOrderRequest.from(request));
 
         UpdateOrderResponseType updateOrderResponseType = new UpdateOrderResponseType();
-        updateOrderResponseType.setResult(resultType);
-
+        updateOrderResponseType.setResult(ok());
         return updateOrderResponseType;
     }
 }

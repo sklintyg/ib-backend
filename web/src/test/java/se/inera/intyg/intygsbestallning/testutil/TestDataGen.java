@@ -18,6 +18,14 @@
  */
 package se.inera.intyg.intygsbestallning.testutil;
 
+import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.aCv;
+import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
+import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
+import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
+import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.AFU_UTVIDGAD;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
@@ -28,26 +36,28 @@ import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.IbUserDetailsService;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.util.SystemRolesParser;
+import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
+import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
+import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentType;
+import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
 import se.riv.intygsbestallning.certificate.order.v1.AddressType;
 import se.riv.intygsbestallning.certificate.order.v1.AuthorityAdministrativeOfficialType;
 import se.riv.intygsbestallning.certificate.order.v1.CitizenLimitedType;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.aCv;
-import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
 
 /**
  * Helper base class, provides data setup for tests.
  */
 public final class TestDataGen {
 
-    public final static LocalDate DATE_TIME = LocalDate.of(2018, 11, 11);
+    public final static LocalDateTime DATE_TIME = LocalDateTime.of(2018, 11, 11, 0, 0, 0);
 
     private static final String USER_HSA_ID = "user-1";
     private static final String USER_NAME = "Läkar Läkarsson";
@@ -67,6 +77,19 @@ public final class TestDataGen {
         systemRoles.add(SystemRolesParser.HSA_SYSTEMROLE_FMU_VARDADMIN_UNIT_PREFIX + "ve11");
         systemRoles.add(SystemRolesParser.HSA_SYSTEMROLE_FMU_VARDADMIN_UNIT_PREFIX + "ve21");
         return systemRoles;
+    }
+
+    public static IbUser buildIBVardadminUser() {
+        IbUser user = new IbUser(USER_HSA_ID, USER_NAME);
+        user.setMiuNamnPerEnhetsId(buildMiUPerEnhetsIdMap());
+        user.setTitel("Vårdadministratör");
+        Role r = new Role();
+        r.setName(AuthoritiesConstants.ROLE_FMU_VARDADMIN);
+        user.setRoles(ImmutableMap.of(AuthoritiesConstants.ROLE_FMU_VARDADMIN, r));
+        user.setSystemRoles(buildDefaultSystemRoles());
+        user.setVardgivare(buildDefaultVardgivareTree());
+        new IbUserDetailsService().buildSystemAuthoritiesTree(user);
+        return user;
     }
 
     public static List<Vardgivare> buildDefaultVardgivareTree() {
@@ -112,7 +135,7 @@ public final class TestDataGen {
 
         RequestHealthcarePerformerForAssessmentType request = new RequestHealthcarePerformerForAssessmentType();
         request.setCertificateType(aCv("AFU", null, null));
-        request.setLastResponseDate(DATE_TIME.toString());
+        request.setLastResponseDate(DATE_TIME.toLocalDate().toString());
         request.setCoordinatingCountyCouncilId(anII("root", "coordinatingCountyCouncilId"));
         request.setComment("comment");
         request.setNeedForInterpreter(true);
@@ -121,6 +144,102 @@ public final class TestDataGen {
         request.setCitizen(citizen);
 
         return request;
+    }
+
+    public static UpdateOrderType createUpdateOrderType(final Boolean tolkBehov, final String tolkSprak) {
+        UpdateOrderType type = new UpdateOrderType();
+        type.setAssessmentId(anII("root", "utredningsId"));
+        type.setComment("kommentar");
+        type.setLastDateForCertificateReceival(DATE_TIME.toString());
+        type.setNeedForInterpreter(tolkBehov);
+        type.setInterpreterLanguage(aCv(tolkSprak, null, null));
+        type.setDocumentsByPost(false);
+        type.setUpdatedAuthorityAdministrativeOfficial(createAuthorityAdministrativeOfficialType());
+
+        return type;
+    }
+
+    public static UpdateOrderType createUpdateOrderType() {
+        return createUpdateOrderType(true, "sv");
+    }
+
+    public static AuthorityAdministrativeOfficialType createAuthorityAdministrativeOfficialType() {
+        AuthorityAdministrativeOfficialType admin = new AuthorityAdministrativeOfficialType();
+        admin.setFullName("fullName");
+        admin.setPhoneNumber("phoneNumber");
+        admin.setEmail("email");
+        admin.setAuthority(aCv("authority", null, null));
+        admin.setOfficeName("officeName");
+        admin.setOfficeCostCenter("officeCostCenter");
+        admin.setOfficeAddress(createAddressType());
+
+        return admin;
+    }
+
+    public static AddressType createAddressType() {
+        AddressType address = new AddressType();
+        address.setPostalAddress("postalAddress");
+        address.setPostalCode("postalCode");
+        address.setPostalCity("postalCity");
+        return address;
+    }
+
+    public static Utredning createUtredning() {
+
+
+        final Utredning utredning = anUtredning()
+                .withUtredningId("utredningsId")
+                .withUtredningsTyp(AFU_UTVIDGAD)
+                .withExternForfragan(createExternForfragan())
+                .withHandlaggare(createHandlaggare())
+                .withBestallning(createBestallning())
+                .build();
+
+        return utredning;
+    }
+
+    public static Handlaggare createHandlaggare() {
+        return aHandlaggare()
+                .withAdress("address")
+                .withEmail("email")
+                .withFullstandigtNamn("fullstandigtNamn")
+                .withKontor("kontor")
+                .withKostnadsstalle("kostnadsstalle")
+                .withMyndighet("myndighet")
+                .withPostkod("postkod")
+                .withStad("stad")
+                .withTelefonnummer("telefonnummer")
+                .build();
+    }
+
+    public static Bestallning createBestallning() {
+        return aBestallning()
+                .withKommentar("2")
+                .build();
+    }
+
+    public static ExternForfragan createExternForfragan() {
+        return anExternForfragan()
+                .withLandstingHsaId("id")
+                .withInkomDatum(DATE_TIME)
+                .withBesvarasSenastDatum(DATE_TIME)
+                .withKommentar("kommentar")
+                .build();
+
+    }
+
+    private static Map<String, String> buildMiUPerEnhetsIdMap() {
+        Map<String, String> map = new HashMap<>();
+        map.put(CAREUNIT_ID, "Läkare på " + CAREUNIT_NAME);
+        return map;
+    }
+
+    private static SelectableVardenhet buildValdGivare(String hsaId, String namn) {
+        return new Vardgivare(hsaId, namn);
+    }
+
+    private static SelectableVardenhet buildValdVardenhet(String hsaId, String namn) {
+        return new Vardenhet(hsaId, namn);
     }
 
     // CHECKSTYLE:ON MagicNumber

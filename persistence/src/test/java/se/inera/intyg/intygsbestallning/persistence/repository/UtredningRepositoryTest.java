@@ -126,7 +126,7 @@ public class UtredningRepositoryTest {
         assertNotNull(utredning.getAvbrutenDatum());
         assertEquals(EndReason.JAV, utredning.getAvbrutenAnledning());
 
-        Bestallning bestallning = utredning.getBestallning();
+        Bestallning bestallning = utredning.getBestallning().orElse(null);
         assertNotNull(bestallning);
         assertNotNull(bestallning.getIntygKlartSenast());
         assertEquals("kommentar", bestallning.getKommentar());

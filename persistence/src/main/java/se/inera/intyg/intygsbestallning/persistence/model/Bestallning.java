@@ -26,6 +26,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "BESTALLNING")
@@ -179,5 +180,37 @@ public class Bestallning {
             bestallning.setKommentar(kommentar);
             return bestallning;
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final Bestallning that = (Bestallning) o;
+        return id == that.id
+                && Objects.equals(tilldeladVardenhetHsaId, that.tilldeladVardenhetHsaId)
+                && Objects.equals(intygKlartSenast, that.intygKlartSenast)
+                && Objects.equals(orderDatum, that.orderDatum)
+                && Objects.equals(uppdateradDatum, that.uppdateradDatum)
+                && Objects.equals(syfte, that.syfte)
+                && Objects.equals(planeradeAktiviteter, that.planeradeAktiviteter)
+                && Objects.equals(kommentar, that.kommentar);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id,
+                tilldeladVardenhetHsaId,
+                intygKlartSenast,
+                orderDatum,
+                uppdateradDatum,
+                syfte,
+                planeradeAktiviteter,
+                kommentar);
     }
 }

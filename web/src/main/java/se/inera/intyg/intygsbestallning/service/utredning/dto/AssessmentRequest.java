@@ -58,6 +58,46 @@ public class AssessmentRequest {
     private String invanarePostkod;
     private List<String> invanareTidigareUtforare;
 
+    public UtredningsTyp getUtredningsTyp() {
+        return utredningsTyp;
+    }
+
+    public LocalDateTime getBesvaraSenastDatum() {
+        return besvaraSenastDatum;
+    }
+
+    public String getKommentar() {
+        return kommentar;
+    }
+
+    public boolean isTolkBehov() {
+        return tolkBehov;
+    }
+
+    public String getTolkSprak() {
+        return tolkSprak;
+    }
+
+    public Bestallare getBestallare() {
+        return bestallare;
+    }
+
+    public String getLandstingHsaId() {
+        return landstingHsaId;
+    }
+
+    public String getInvanareSarskildaBehov() {
+        return invanareSarskildaBehov;
+    }
+
+    public String getInvanarePostkod() {
+        return invanarePostkod;
+    }
+
+    public List<String> getInvanareTidigareUtforare() {
+        return invanareTidigareUtforare;
+    }
+
     public static AssessmentRequest from(final RequestHealthcarePerformerForAssessmentType request) {
 
         validate(request);
@@ -137,47 +177,6 @@ public class AssessmentRequest {
             throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, Joiner.on(", ").join(errors));
         }
     }
-
-    public UtredningsTyp getUtredningsTyp() {
-        return utredningsTyp;
-    }
-
-    public LocalDateTime getBesvaraSenastDatum() {
-        return besvaraSenastDatum;
-    }
-
-    public String getKommentar() {
-        return kommentar;
-    }
-
-    public boolean isTolkBehov() {
-        return tolkBehov;
-    }
-
-    public String getTolkSprak() {
-        return tolkSprak;
-    }
-
-    public Bestallare getBestallare() {
-        return bestallare;
-    }
-
-    public String getLandstingHsaId() {
-        return landstingHsaId;
-    }
-
-    public String getInvanareSarskildaBehov() {
-        return invanareSarskildaBehov;
-    }
-
-    public String getInvanarePostkod() {
-        return invanarePostkod;
-    }
-
-    public List<String> getInvanareTidigareUtforare() {
-        return invanareTidigareUtforare;
-    }
-
     //CHECKSTYLE:OFF OperatorWrap
 
     @Override

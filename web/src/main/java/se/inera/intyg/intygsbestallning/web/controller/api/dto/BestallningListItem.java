@@ -51,7 +51,7 @@ public class BestallningListItem implements PDLLoggable, FreeTextSearchable, Fil
                 .withPatientId(utredning.getInvanare().getPersonId())
                 .withPatientNamn(null)
                 .withSlutdatumFas(resolveSlutDatumFas(utredning, utredningStatus))
-                .withSlutdatumPasserat(LocalDateTime.now().isAfter(utredning.getBestallning().getIntygKlartSenast()))
+                .withSlutdatumPasserat(LocalDateTime.now().isAfter(utredning.getBestallning().get().getIntygKlartSenast()))
                 .withSlutdatumPaVagPasseras(resolveSlutDatumPaVagPasseras(utredning, utredningStatus))
                 .withStatus(utredningStatus)
                 .withNextActor(utredningStatus.getNextActor().name())
@@ -86,8 +86,8 @@ public class BestallningListItem implements PDLLoggable, FreeTextSearchable, Fil
         }
         if (utredningStatus.getUtredningFas() == UtredningFas.UTREDNING) {
             // FIXME arbetsdagar + configurable
-            return LocalDateTime.now().isBefore(utredning.getBestallning().getIntygKlartSenast())
-                    && LocalDateTime.now().isAfter(utredning.getBestallning().getIntygKlartSenast().minusDays(DEFAULT_DAYS));
+            return LocalDateTime.now().isBefore(utredning.getBestallning().get().getIntygKlartSenast())
+                    && LocalDateTime.now().isAfter(utredning.getBestallning().get().getIntygKlartSenast().minusDays(DEFAULT_DAYS));
 
         }
         return false;
@@ -101,7 +101,7 @@ public class BestallningListItem implements PDLLoggable, FreeTextSearchable, Fil
     private static String resolveSlutDatumFas(Utredning utredning, UtredningStatus utredningStatus) {
         switch (utredningStatus.getUtredningFas()) {
         case UTREDNING:
-            return utredning.getBestallning().getIntygKlartSenast().format(DateTimeFormatter.ISO_DATE);
+            return utredning.getBestallning().get().getIntygKlartSenast().format(DateTimeFormatter.ISO_DATE);
         case KOMPLETTERING:
             return "2018-04-25";
         default:

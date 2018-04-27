@@ -23,6 +23,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Objects;
 
 @Entity
 @Table(name = "HANDLAGGARE")
@@ -215,5 +216,32 @@ public class Handlaggare {
             handlaggare.setStad(stad);
             return handlaggare;
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final Handlaggare that = (Handlaggare) o;
+        return id == that.id
+                && Objects.equals(fullstandigtNamn, that.fullstandigtNamn)
+                && Objects.equals(telefonnummer, that.telefonnummer)
+                && Objects.equals(email, that.email)
+                && Objects.equals(myndighet, that.myndighet)
+                && Objects.equals(kontor, that.kontor)
+                && Objects.equals(kostnadsstalle, that.kostnadsstalle)
+                && Objects.equals(adress, that.adress)
+                && Objects.equals(postkod, that.postkod)
+                && Objects.equals(stad, that.stad);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, fullstandigtNamn, telefonnummer, email, myndighet, kontor, kostnadsstalle, adress, postkod, stad);
     }
 }

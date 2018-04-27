@@ -18,6 +18,39 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
+import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
+import static se.inera.intyg.intygsbestallning.persistence.model.HandlingUrsprungTyp.BESTALLNING;
+import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
+import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.AFU;
+import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.AFU_UTVIDGAD;
+import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.LIAG;
+import static se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest.AssessmentRequestBuilder.anAssessmentRequest;
+import static se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare.BestallareBuilder.aBestallare;
+import static se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest.EndUtredningRequestBuilder.anEndUtredningRequest;
+import static se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest.OrderRequestBuilder.anOrderRequest;
+import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createBestallning;
+import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createExternForfragan;
+import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createHandlaggare;
+import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createUpdateOrderType;
+import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createUtredning;
+
 import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,12 +79,14 @@ import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListBestallningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
+import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -59,30 +94,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
-import static se.inera.intyg.intygsbestallning.persistence.model.HandlingUrsprungTyp.BESTALLNING;
-import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
-import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
-import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.AFU;
-import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.AFU_UTVIDGAD;
-import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.LIAG;
-import static se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest.AssessmentRequestBuilder.anAssessmentRequest;
-import static se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare.BestallareBuilder.aBestallare;
-import static se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest.EndUtredningRequestBuilder.anEndUtredningRequest;
-import static se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest.OrderRequestBuilder.anOrderRequest;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtredningServiceImplTest {
@@ -188,13 +199,13 @@ public class UtredningServiceImplTest {
         assertTrue(response.getTolkBehov());
         assertEquals("sv", response.getTolkSprak());
         assertEquals(AFU, response.getUtredningsTyp());
-        assertEquals("kommentar", response.getBestallning().getKommentar());
-        assertEquals("atgarder", response.getBestallning().getPlaneradeAktiviteter());
-        assertEquals("syfte", response.getBestallning().getSyfte());
-        assertEquals("enhet", response.getBestallning().getTilldeladVardenhetHsaId());
-        assertEquals(LocalDate.of(2019, 1, 1).atStartOfDay(), response.getBestallning().getIntygKlartSenast());
-        assertEquals(LocalDate.of(2018, 1, 1).atStartOfDay(), response.getBestallning().getOrderDatum());
-        assertNull(response.getBestallning().getUppdateradDatum());
+        assertEquals("kommentar", response.getBestallning().get().getKommentar());
+        assertEquals("atgarder", response.getBestallning().get().getPlaneradeAktiviteter());
+        assertEquals("syfte", response.getBestallning().get().getSyfte());
+        assertEquals("enhet", response.getBestallning().get().getTilldeladVardenhetHsaId());
+        assertEquals(LocalDate.of(2019, 1, 1).atStartOfDay(), response.getBestallning().get().getIntygKlartSenast());
+        assertEquals(LocalDate.of(2018, 1, 1).atStartOfDay(), response.getBestallning().get().getOrderDatum());
+        assertNull(response.getBestallning().get().getUppdateradDatum());
         assertEquals("behov", response.getInvanare().getSarskildaBehov());
         assertEquals("personnummer", response.getInvanare().getPersonId());
         assertEquals("bakgrund", response.getInvanare().getBakgrundNulage());
@@ -279,13 +290,13 @@ public class UtredningServiceImplTest {
         assertTrue(response.getTolkBehov());
         assertEquals("sv", response.getTolkSprak());
         assertEquals(LIAG, response.getUtredningsTyp());
-        assertEquals("kommentar", response.getBestallning().getKommentar());
-        assertEquals("atgarder", response.getBestallning().getPlaneradeAktiviteter());
-        assertEquals("syfte", response.getBestallning().getSyfte());
-        assertEquals("enhet", response.getBestallning().getTilldeladVardenhetHsaId());
-        assertEquals(LocalDate.of(2019, 1, 1).atStartOfDay(), response.getBestallning().getIntygKlartSenast());
-        assertEquals(LocalDate.of(2018, 1, 1).atStartOfDay(), response.getBestallning().getOrderDatum());
-        assertNull(response.getBestallning().getUppdateradDatum());
+        assertEquals("kommentar", response.getBestallning().get().getKommentar());
+        assertEquals("atgarder", response.getBestallning().get().getPlaneradeAktiviteter());
+        assertEquals("syfte", response.getBestallning().get().getSyfte());
+        assertEquals("enhet", response.getBestallning().get().getTilldeladVardenhetHsaId());
+        assertEquals(LocalDate.of(2019, 1, 1).atStartOfDay(), response.getBestallning().get().getIntygKlartSenast());
+        assertEquals(LocalDate.of(2018, 1, 1).atStartOfDay(), response.getBestallning().get().getOrderDatum());
+        assertNull(response.getBestallning().get().getUppdateradDatum());
         assertEquals("behov", response.getInvanare().getSarskildaBehov());
         assertEquals("personnummer", response.getInvanare().getPersonId());
         assertEquals("bakgrund", response.getInvanare().getBakgrundNulage());
@@ -363,6 +374,52 @@ public class UtredningServiceImplTest {
         final Utredning sparadUtredning = utredningService.registerNewUtredning(request);
 
         assertEquals(utredning, sparadUtredning);
+    }
+
+    @Test
+    public void uppdateraOrderOk() {
+
+        final String tolkSprak = "tolkSprak";
+
+
+
+        Utredning modifieradUtrening = Utredning.from(createUtredning());
+        modifieradUtrening.setTolkBehov(true);
+        modifieradUtrening.setTolkSprak(tolkSprak);
+
+        final UpdateOrderRequest updateOrderRequest = UpdateOrderRequest.from(createUpdateOrderType(true, tolkSprak));
+
+
+        doReturn(Optional.of(createUtredning()))
+                .when(utredningRepository)
+                .findById(anyString());
+
+        doReturn(modifieradUtrening)
+                .when(utredningRepository)
+                .save(any(Utredning.class));
+
+        final Utredning uppdateradUtredning = utredningService.updateOrder(updateOrderRequest);
+        assertEquals(AFU_UTVIDGAD, uppdateradUtredning.getUtredningsTyp());
+
+        assertEquals(createBestallning(), uppdateradUtredning.getBestallning().orElse(null));
+        assertEquals(createHandlaggare(), uppdateradUtredning.getHandlaggare());
+        assertEquals(createExternForfragan(), uppdateradUtredning.getExternForfragan());
+        assertTrue(uppdateradUtredning.getTolkBehov());
+        assertEquals(tolkSprak, uppdateradUtredning.getTolkSprak());
+    }
+
+    @Test
+    public void uppdateraOrderUtanForandringNok() {
+        final Utredning utredning = createUtredning();
+
+        doReturn(Optional.of(createUtredning()))
+                .when(utredningRepository)
+                .findById(anyString());
+
+        UpdateOrderType update = new UpdateOrderType();
+        update.setAssessmentId(anII("root", "utredningsId"));
+
+        assertThatThrownBy(() -> utredningService.updateOrder(UpdateOrderRequest.from(update)));
     }
 
     @Test

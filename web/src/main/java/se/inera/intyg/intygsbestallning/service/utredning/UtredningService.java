@@ -22,6 +22,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganResponse;
@@ -131,4 +132,6 @@ public interface UtredningService {
      * @param endUtredningRequest
      */
     void endUtredning(EndUtredningRequest endUtredningRequest);
+
+    Utredning updateOrder(UpdateOrderRequest update);
 }

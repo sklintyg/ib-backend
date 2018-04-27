@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +60,7 @@ import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
@@ -75,6 +77,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.filter.SelectItem;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -247,7 +250,7 @@ public class UtredningServiceImpl implements UtredningService {
                 () -> new IbNotFoundException("Could not find the assessment with id " + order.getUtredningId()));
 
         // Validate the state
-        if (utredning.getBestallning() != null) {
+        if (utredning.getBestallning().isPresent()) {
             LOG.warn("Assessment '{}' already have a bestallning", utredning.getUtredningId());
             throw new IllegalArgumentException(
                     "Cannot create a order when one already exists for assessmentId " + order.getUtredningId());
@@ -285,6 +288,54 @@ public class UtredningServiceImpl implements UtredningService {
         utredning.getHandelseList().add(HandelseUtil.createOrderReceived(order.getBestallare().getMyndighet(), order.getOrderDate()));
         utredningRepository.save(utredning);
         return utredning;
+    }
+
+    @Override
+    public Utredning updateOrder(final UpdateOrderRequest update) {
+
+        final Utredning utredning = utredningRepository.findById(update.getUtredningId())
+                .orElseThrow(() -> new IbServiceException(
+                        IbErrorCodeEnum.NOT_FOUND, MessageFormat.format("Assessment with id: {} was not found", update.getUtredningId())));
+
+        if (!utredning.getBestallning().isPresent()) {
+            throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, "Assessment does not have a Bestallning");
+        }
+
+        final Utredning updatedUtredning = qualifyForUpdatering(update, utredning);
+        return utredningRepository.save(updatedUtredning);
+    }
+
+    private Utredning qualifyForUpdatering(final UpdateOrderRequest update, final Utredning original) {
+
+        Preconditions.checkArgument(!isNull(update));
+        Preconditions.checkArgument(!isNull(original));
+        Preconditions.checkArgument(original.getBestallning().isPresent());
+
+        Utredning toUpdate = Utredning.from(original);
+
+        update.getLastDateIntyg().ifPresent(date -> toUpdate.getBestallning().get().setIntygKlartSenast(date));
+        update.getTolkBehov().ifPresent(toUpdate::setTolkBehov);
+        update.getTolkSprak().ifPresent(toUpdate::setTolkSprak);
+        update.getBestallare().ifPresent(bestallare -> toUpdate.setHandlaggare(aHandlaggare()
+                .withEmail(bestallare.getEmail())
+                .withFullstandigtNamn(bestallare.getFullstandigtNamn())
+                .withKontor(bestallare.getKontor())
+                .withKostnadsstalle(bestallare.getKostnadsstalle())
+                .withMyndighet(bestallare.getMyndighet())
+                .withPostkod(bestallare.getPostkod())
+                .withStad(bestallare.getStad())
+                .withTelefonnummer(bestallare.getTelefonnummer())
+                .build()));
+
+        if (Objects.equals(original, toUpdate)) {
+            throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, "No info to update");
+        }
+
+        update.getKommentar().ifPresent(kommentar -> toUpdate.getBestallning().get().setKommentar(kommentar));
+
+        //update.getHandling().ifPresent(isHandling -> toUpdate.getHandelseList());
+
+        return toUpdate;
     }
 
     @Override
@@ -443,14 +494,14 @@ public class UtredningServiceImpl implements UtredningService {
         }
 
         switch (bli.getStatus().getUtredningFas()) {
-        case AVSLUTAD:
-            return false;
-        case REDOVISA_TOLK:
-            return Strings.isNullOrEmpty(fromDate);
-        case UTREDNING:
-        case KOMPLETTERING:
-        case FORFRAGAN:
-            return fromDate.compareTo(bli.getSlutdatumFas()) <= 0 && toDate.compareTo(bli.getSlutdatumFas()) >= 0;
+            case AVSLUTAD:
+                return false;
+            case REDOVISA_TOLK:
+                return Strings.isNullOrEmpty(fromDate);
+            case UTREDNING:
+            case KOMPLETTERING:
+            case FORFRAGAN:
+                return fromDate.compareTo(bli.getSlutdatumFas()) <= 0 && toDate.compareTo(bli.getSlutdatumFas()) >= 0;
         }
         return true;
     }
@@ -467,15 +518,15 @@ public class UtredningServiceImpl implements UtredningService {
             return true;
         }
         switch (bli.getStatus().getUtredningFas()) {
-        case REDOVISA_TOLK:
-            return Strings.isNullOrEmpty(fromDate);
-        case UTREDNING:
-        case KOMPLETTERING:
-            return fromDate.compareTo(bli.getSlutdatumFas()) <= 0 && toDate.compareTo(bli.getSlutdatumFas()) >= 0;
-        case AVSLUTAD:
-            return true;
-        case FORFRAGAN:
-            return false;
+            case REDOVISA_TOLK:
+                return Strings.isNullOrEmpty(fromDate);
+            case UTREDNING:
+            case KOMPLETTERING:
+                return fromDate.compareTo(bli.getSlutdatumFas()) <= 0 && toDate.compareTo(bli.getSlutdatumFas()) >= 0;
+            case AVSLUTAD:
+                return true;
+            case FORFRAGAN:
+                return false;
         }
         return true;
     }
@@ -542,7 +593,7 @@ public class UtredningServiceImpl implements UtredningService {
     }
 
     private boolean buildStatusPredicate(FilterableListItem bli, String status,
-            Map<UtredningStatus, ListFilterStatus> statusToFilterStatus) {
+                                         Map<UtredningStatus, ListFilterStatus> statusToFilterStatus) {
 
         if (Strings.isNullOrEmpty(status)) {
             return true;

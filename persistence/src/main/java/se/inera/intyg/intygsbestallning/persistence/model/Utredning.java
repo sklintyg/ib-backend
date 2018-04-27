@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
+import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
+
 import org.hibernate.annotations.Type;
 
 import javax.persistence.CascadeType;
@@ -34,6 +36,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Entity
 @Table(name = "UTREDNING")
@@ -92,6 +95,26 @@ public class Utredning {
     @JoinColumn(name = "INVANARE_ID")
     private Invanare invanare;
 
+    public Utredning() {
+    }
+
+    public static Utredning from(Utredning utredning) {
+        return anUtredning()
+                .withUtredningId(utredning.getUtredningId())
+                .withUtredningsTyp(utredning.getUtredningsTyp())
+                .withBestallning(utredning.getBestallning().orElse(null))
+                .withTolkBehov(utredning.getTolkBehov())
+                .withTolkSprak(utredning.getTolkSprak())
+                .withExternForfragan(utredning.getExternForfragan())
+                .withHandelseList(utredning.getHandelseList())
+                .withHandlingList(utredning.getHandlingList())
+                .withHandlaggare(utredning.getHandlaggare())
+                .withInvanare(utredning.getInvanare())
+                .withAvbrutenDatum(utredning.getAvbrutenDatum())
+                .withAvbrutenAnledning(utredning.getAvbrutenAnledning())
+                .build();
+    }
+
     public String getUtredningId() {
         return utredningId;
     }
@@ -108,8 +131,8 @@ public class Utredning {
         this.utredningsTyp = utredningsTyp;
     }
 
-    public Bestallning getBestallning() {
-        return bestallning;
+    public Optional<Bestallning> getBestallning() {
+        return Optional.ofNullable(bestallning);
     }
 
     public void setBestallning(final Bestallning bestallning) {

@@ -37,7 +37,7 @@ public class UtredningStateResolver {
         }
 
         // First phase - there can be no Bestallning - i.e. Forfragan
-        if (utredning.getBestallning() == null) {
+        if (!utredning.getBestallning().isPresent()) {
 
             // AVVISAD
             if (utredning.getExternForfragan() != null && utredning.getExternForfragan().getAvvisatDatum() != null) {
@@ -72,7 +72,7 @@ public class UtredningStateResolver {
         // Second phase - Utredning. We ALWAYS have a Bestallning here.
 
         // BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR
-        Bestallning bestallning = utredning.getBestallning();
+        Bestallning bestallning = utredning.getBestallning().get();
         if (utredning.getHandlingList().size() == 0 && bestallning.getUppdateradDatum() == null) {
             return UtredningStatus.BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR;
         }
