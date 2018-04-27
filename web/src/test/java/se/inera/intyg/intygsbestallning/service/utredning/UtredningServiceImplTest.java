@@ -18,6 +18,46 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
+import com.google.common.collect.ImmutableList;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
+import se.inera.intyg.intygsbestallning.auth.IbUser;
+import se.inera.intyg.intygsbestallning.auth.model.IbVardenhet;
+import se.inera.intyg.intygsbestallning.auth.model.IbVardgivare;
+import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
+import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
+import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
+import se.inera.intyg.intygsbestallning.persistence.model.EndReason;
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
+import se.inera.intyg.intygsbestallning.service.patient.PatientNameEnricher;
+import se.inera.intyg.intygsbestallning.service.pdl.LogService;
+import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStateResolver;
+import se.inera.intyg.intygsbestallning.service.user.UserService;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListBestallningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -43,47 +83,10 @@ import static se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare.
 import static se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest.EndUtredningRequestBuilder.anEndUtredningRequest;
 import static se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest.OrderRequestBuilder.anOrderRequest;
 
-import com.google.common.collect.ImmutableList;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
-import se.inera.intyg.intygsbestallning.auth.IbUser;
-import se.inera.intyg.intygsbestallning.auth.model.IbVardenhet;
-import se.inera.intyg.intygsbestallning.auth.model.IbVardgivare;
-import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
-import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
-import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
-import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
-import se.inera.intyg.intygsbestallning.persistence.model.EndReason;
-import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
-import se.inera.intyg.intygsbestallning.service.pdl.LogService;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStateResolver;
-import se.inera.intyg.intygsbestallning.service.user.UserService;
-import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
-import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
-import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListBestallningRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 @RunWith(MockitoJUnitRunner.class)
 public class UtredningServiceImplTest {
 
+    public static final String TOLVAN_PNR = "19121212-1212";
     @Mock
     private UtredningRepository utredningRepository;
 
@@ -92,6 +95,12 @@ public class UtredningServiceImplTest {
 
     @Mock
     private LogService logService;
+
+    @Mock
+    private PatientNameEnricher patientNameEnricher;
+
+    @Mock
+    private HsaOrganizationsService hsaOrganizationsService;
 
     @Spy
     private UtredningStateResolver utredningStateResolver;
@@ -102,6 +111,7 @@ public class UtredningServiceImplTest {
     @Before
     public void setup() {
         doNothing().when(logService).logVisaBestallningarLista(anyList(), any(), any());
+        doNothing().when(patientNameEnricher).enrichWithPatientNames(anyList());
     }
 
     @Test

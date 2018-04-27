@@ -16,10 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.service.pdl.dto;
+package se.inera.intyg.intygsbestallning.service.patient;
 
-public interface PDLLoggable {
+import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
 
-    String getPatientId();
-    void setPatientNamn(String patientNamn);
+import java.util.List;
+
+public interface PatientNameEnricher {
+    void enrichWithPatientNames(List<? extends PDLLoggable> paged);
 }

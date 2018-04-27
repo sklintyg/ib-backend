@@ -25,8 +25,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
+import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
-import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.infra.logmessages.ResourceType;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
@@ -44,6 +45,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
+import se.inera.intyg.intygsbestallning.service.patient.PatientNameEnricher;
 import se.inera.intyg.intygsbestallning.service.pdl.LogService;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
 import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
@@ -104,7 +106,7 @@ public class UtredningServiceImpl implements UtredningService {
     private UtredningStateResolver utredningStateResolver;
 
     @Autowired
-    private PUService puService;
+    private PatientNameEnricher patientNameEnricher;
 
     @Autowired
     private LogService logService;
@@ -138,7 +140,7 @@ public class UtredningServiceImpl implements UtredningService {
         List<UtredningListItem> filtered = list.stream()
                 .filter(uli -> buildFasPredicate(uli, request.getFas()))
                 .filter(uli -> buildStatusPredicate(uli, request.getStatus(), statusToFilterStatus))
-                .filter(uli -> buildToFromPredicate(uli, request.getFromDate(), request.getToDate()))
+                .filter(uli -> buildToFromPredicateForUtredningar(uli, request.getFromDate(), request.getToDate()))
                 .filter(uli -> buildFreeTextPredicate(uli, request.getFreeText()))
 
                 .sorted((o1, o2) -> buildComparator(UtredningListItem.class, o1, o2, request.getOrderBy(), request.isOrderByAsc()))
@@ -152,6 +154,9 @@ public class UtredningServiceImpl implements UtredningService {
 
         Pair<Integer, Integer> bounds = PagingUtil.getBounds(total, request.getPageSize(), request.getCurrentPage());
         List<UtredningListItem> paged = filtered.subList(bounds.getFirst(), bounds.getSecond() + 1);
+
+        // Enrich with vardenhet namn from HSA
+        enrichWithVardenhetNames(paged);
 
         return paged;
     }
@@ -325,7 +330,7 @@ public class UtredningServiceImpl implements UtredningService {
     public List<BestallningListItem> findOngoingBestallningarForVardenhet(String vardenhetHsaId, ListBestallningRequest requestFilter) {
         List<BestallningListItem> bestallningListItems = utredningRepository.findAllWithBestallningForVardenhetHsaId(vardenhetHsaId)
                 .stream()
-                .map(u -> BestallningListItem.from(u, utredningStateResolver.resolveStatus(u), "patientNamn-TODO"))
+                .map(u -> BestallningListItem.from(u, utredningStateResolver.resolveStatus(u)))
                 .collect(Collectors.toList());
 
         // Get status mapper
@@ -336,7 +341,7 @@ public class UtredningServiceImpl implements UtredningService {
         List<BestallningListItem> filtered = bestallningListItems.stream()
                 .filter(bli -> buildVardgivareHsaIdPredicate(bli, requestFilter.getVardgivareHsaId()))
                 .filter(bli -> buildStatusPredicate(bli, requestFilter.getStatus(), statusToFilterStatus))
-                .filter(bli -> buildToFromPredicate(bli, requestFilter.getFromDate(), requestFilter.getToDate()))
+                .filter(bli -> buildToFromPredicateForBestallningar(bli, requestFilter.getFromDate(), requestFilter.getToDate()))
                 .filter(bli -> buildFreeTextPredicate(bli, requestFilter.getFreeText()))
 
                 .sorted((o1, o2) -> buildComparator(BestallningListItem.class, o1, o2, requestFilter.getOrderBy(),
@@ -352,9 +357,42 @@ public class UtredningServiceImpl implements UtredningService {
         Pair<Integer, Integer> bounds = PagingUtil.getBounds(total, requestFilter.getPageSize(), requestFilter.getCurrentPage());
         List<BestallningListItem> paged = filtered.subList(bounds.getFirst(), bounds.getSecond() + 1);
 
+        // Fetch patient names and hsa names only for the selected subset, we want to minimize number of calls per invocation
+        // of this API
+        patientNameEnricher.enrichWithPatientNames(paged);
+
+        // Call HSA to get actual name(s) of Vardgivare.
+        enrichWithVardgivareNames(paged);
+
         // Only PDL-log what we actually are sending to the GUI
         pdlLogList(paged, ActivityType.READ, ResourceType.RESOURCE_TYPE_FMU);
         return paged;
+    }
+
+    private void enrichWithVardgivareNames(List<BestallningListItem> items) {
+        items.stream().forEach(bli -> {
+            if (!Strings.isNullOrEmpty(bli.getVardgivareHsaId())) {
+                Vardgivare vardgivareInfo = organizationUnitService.getVardgivareInfo(bli.getVardgivareHsaId());
+                if (vardgivareInfo != null) {
+                    bli.setVardgivareNamn(vardgivareInfo.getNamn());
+                } else {
+                    LOG.warn("Could not fetch name for Vardgivare '{}' from HSA", bli.getVardgivareHsaId());
+                }
+            }
+        });
+    }
+
+    private void enrichWithVardenhetNames(List<UtredningListItem> items) {
+        items.stream().forEach(uli -> {
+            if (!Strings.isNullOrEmpty(uli.getVardenhetHsaId())) {
+                Vardenhet vardenhet = organizationUnitService.getVardenhet(uli.getVardenhetHsaId());
+                if (vardenhet != null) {
+                    uli.setVardenhetNamn(vardenhet.getNamn());
+                } else {
+                    LOG.warn("Could not fetch name for Vardenhet '{}' from HSA", uli.getVardenhetHsaId());
+                }
+            }
+        });
     }
 
     private boolean buildFreeTextPredicate(FreeTextSearchable bli, String freeText) {
@@ -364,6 +402,23 @@ public class UtredningServiceImpl implements UtredningService {
         return bli.toSearchString().contains(freeText);
     }
 
+    private boolean buildToFromPredicateForUtredningar(FilterableListItem bli, String fromDate, String toDate) {
+        if (Strings.isNullOrEmpty(fromDate) || Strings.isNullOrEmpty(toDate)) {
+            return true;
+        }
+
+        switch (bli.getStatus().getUtredningFas()) {
+        case AVSLUTAD:
+        case REDOVISA_TOLK:
+            return false;
+        case UTREDNING:
+        case KOMPLETTERING:
+        case FORFRAGAN:
+            return fromDate.compareTo(bli.getSlutdatumFas()) <= 0 && toDate.compareTo(bli.getSlutdatumFas()) >= 0;
+        }
+        return true;
+    }
+
     /*
      * Utredningar vars slutdatum (intyg.sista datum för mottagning) ligger inom den valda datumperioden visas i tabellen.
      * För utredningar i fas Beställning matchas den valda tidsperioden mot Utredning.intyg.sista datum för mottagning
@@ -371,7 +426,7 @@ public class UtredningServiceImpl implements UtredningService {
      * Utredning.kompletteringbegäran.komplettering.sista datum för mottagning
      * Utredningar i fas Redovisa tolk inkluderas inte i söktresultatet om en datumperiod är angiven.
      */
-    private boolean buildToFromPredicate(FilterableListItem bli, String fromDate, String toDate) {
+    private boolean buildToFromPredicateForBestallningar(FilterableListItem bli, String fromDate, String toDate) {
         if (Strings.isNullOrEmpty(fromDate) || Strings.isNullOrEmpty(toDate)) {
             return true;
         }

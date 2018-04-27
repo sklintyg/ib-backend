@@ -26,8 +26,6 @@ import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static java.util.Objects.isNull;
-
 public class BestallningListItem implements PDLLoggable, FreeTextSearchable, FilterableListItem {
 
     private static final long DEFAULT_DAYS = 5L;
@@ -46,11 +44,11 @@ public class BestallningListItem implements PDLLoggable, FreeTextSearchable, Fil
     private String nextActor;
     private boolean kraverAtgard;
 
-    public static BestallningListItem from(Utredning utredning, UtredningStatus utredningStatus, String patientNamn) {
+    public static BestallningListItem from(Utredning utredning, UtredningStatus utredningStatus) {
         return BestallningListItemBuilder.anBestallningListItem()
                 .withFas(utredningStatus.getUtredningFas())
                 .withPatientId(utredning.getInvanare().getPersonId())
-                .withPatientNamn(patientNamn)
+                .withPatientNamn(null)
                 .withSlutdatumFas(resolveSlutDatumFas(utredning, utredningStatus))
                 .withSlutdatumPasserat(LocalDateTime.now().isAfter(utredning.getBestallning().getIntygKlartSenast()))
                 .withSlutdatumPaVagPasseras(resolveSlutDatumPaVagPasseras(utredning, utredningStatus))
@@ -59,7 +57,7 @@ public class BestallningListItem implements PDLLoggable, FreeTextSearchable, Fil
                 .withUtredningsId(utredning.getUtredningId())
                 .withUtredningsTyp(utredning.getUtredningsTyp().name())
                 .withVardgivareHsaId(utredning.getExternForfragan().getLandstingHsaId())
-                .withVardgivareNamn(!isNull(utredning.getExternForfragan()) ? utredning.getExternForfragan().getLandstingHsaId() : null)
+                .withVardgivareNamn(null)
                 .build();
     }
 
@@ -180,6 +178,7 @@ public class BestallningListItem implements PDLLoggable, FreeTextSearchable, Fil
         return patientNamn;
     }
 
+    @Override
     public void setPatientNamn(String patientNamn) {
         this.patientNamn = patientNamn;
     }

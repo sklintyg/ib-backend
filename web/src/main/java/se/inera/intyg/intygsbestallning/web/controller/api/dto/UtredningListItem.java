@@ -23,26 +23,41 @@ import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 public class UtredningListItem implements FreeTextSearchable, FilterableListItem {
 
     private String utredningsId;
     private String utredningsTyp;
+    private String vardenhetHsaId;
     private String vardenhetNamn;
     private UtredningFas fas;
     private String slutdatumFas;
     private UtredningStatus status;
 
     public static UtredningListItem from(Utredning utredning, UtredningStatus utredningStatus) {
+
         return UtredningListItemBuilder.anUtredningListItem()
                 .withFas(utredningStatus.getUtredningFas())
                 .withSlutdatumFas(resolveSlutDatum(utredning, utredningStatus))
                 .withStatus(utredningStatus)
                 .withUtredningsId(utredning.getUtredningId())
                 .withUtredningsTyp(utredning.getUtredningsTyp().name())
-                .withVardenhetNamn("VE namn") // !isNull(utredning.getExternForfragan()) ?
-                                              // utredning.getExternForfragan().getLandstingHsaId() : null)
+                .withVardenhetHsaId(resolveTilldeladVardenhetHsaId(utredning))
+                .withVardenhetNamn("VE namn")
                 .build();
+    }
+
+    private static String resolveTilldeladVardenhetHsaId(Utredning utredning) {
+        if (utredning.getExternForfragan() != null) {
+            Optional<String> optionalVardenhetHsaId = utredning.getExternForfragan().getInternForfraganList().stream()
+                    .filter(intf -> intf.getTilldeladDatum() != null)
+                    .map(intf -> intf.getVardenhetHsaId())
+                    .findFirst();
+
+            return optionalVardenhetHsaId.orElse(null);
+        }
+        return null;
     }
 
     /**
@@ -81,6 +96,14 @@ public class UtredningListItem implements FreeTextSearchable, FilterableListItem
 
     public void setUtredningsTyp(String utredningsTyp) {
         this.utredningsTyp = utredningsTyp;
+    }
+
+    public String getVardenhetHsaId() {
+        return vardenhetHsaId;
+    }
+
+    public void setVardenhetHsaId(String vardenhetHsaId) {
+        this.vardenhetHsaId = vardenhetHsaId;
     }
 
     public String getVardenhetNamn() {
@@ -130,6 +153,7 @@ public class UtredningListItem implements FreeTextSearchable, FilterableListItem
     public static final class UtredningListItemBuilder {
         private String utredningsId;
         private String utredningsTyp;
+        private String vardenhetHsaId;
         private String vardenhetNamn;
         private UtredningFas fas;
         private String slutdatumFas;
@@ -149,6 +173,11 @@ public class UtredningListItem implements FreeTextSearchable, FilterableListItem
 
         public UtredningListItemBuilder withUtredningsTyp(String utredningsTyp) {
             this.utredningsTyp = utredningsTyp;
+            return this;
+        }
+
+        public UtredningListItemBuilder withVardenhetHsaId(String vardenhetHsaId) {
+            this.vardenhetHsaId = vardenhetHsaId;
             return this;
         }
 
