@@ -21,6 +21,7 @@ package se.inera.intyg.intygsbestallning.service.utredning;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -145,6 +146,7 @@ public class UtredningServiceImplTest {
         OrderRequest order = anOrderRequest()
                 .withUtredningsTyp(AFU)
                 .withUtredningId(utredningId)
+                .withTolkBehov(true)
                 .withTolkSprak("sv")
                 .withSyfte("syfte")
                 .withOrderDate(LocalDate.of(2018, 1, 1))
@@ -173,7 +175,8 @@ public class UtredningServiceImplTest {
 
         assertNotNull(response);
         assertEquals(utredningId, response.getUtredningId());
-        assertEquals("sv", response.getSprakTolk());
+        assertTrue(response.getTolkBehov());
+        assertEquals("sv",response.getTolkSprak());
         assertEquals(AFU, response.getUtredningsTyp());
         assertEquals("kommentar", response.getBestallning().getKommentar());
         assertEquals("atgarder", response.getBestallning().getPlaneradeAktiviteter());
@@ -234,6 +237,7 @@ public class UtredningServiceImplTest {
     public void registerNewUtredning() {
         OrderRequest order = anOrderRequest()
                 .withUtredningsTyp(LIAG)
+                .withTolkBehov(true)
                 .withTolkSprak("sv")
                 .withSyfte("syfte")
                 .withOrderDate(LocalDate.of(2018, 1, 1))
@@ -262,7 +266,8 @@ public class UtredningServiceImplTest {
 
         assertNotNull(response);
         assertNotNull(response.getUtredningId());
-        assertEquals("sv", response.getSprakTolk());
+        assertTrue(response.getTolkBehov());
+        assertEquals("sv", response.getTolkSprak());
         assertEquals(LIAG, response.getUtredningsTyp());
         assertEquals("kommentar", response.getBestallning().getKommentar());
         assertEquals("atgarder", response.getBestallning().getPlaneradeAktiviteter());
@@ -332,6 +337,7 @@ public class UtredningServiceImplTest {
                 .withInvanarePostkod("postkod")
                 .withBesvaraSenastDatum(dateTime)
                 .withKommentar("kommentar")
+                .withTolkBehov(true)
                 .withTolkSprak("tolksprak")
                 .withBestallare(aBestallare()
                         .withAdress("adress")

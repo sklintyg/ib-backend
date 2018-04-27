@@ -18,16 +18,17 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
+import static java.util.Objects.isNull;
+
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 
 import java.time.format.DateTimeFormatter;
-
-import static java.util.Objects.isNull;
 
 public class GetUtredningResponse {
     private static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
 
     private String utredningsId;
+
     private String utredningsTyp;
 
     private String vardgivareHsaId;
@@ -46,7 +47,7 @@ public class GetUtredningResponse {
 
     private boolean behovTolk;
 
-    private String sprakTolk;
+    private String tolkSprak;
 
     private String status;
 
@@ -64,8 +65,8 @@ public class GetUtredningResponse {
                 .withHandlaggareNamn(utredning.getHandlaggare().getFullstandigtNamn())
                 .withHandlaggareTelefonnummer(utredning.getHandlaggare().getTelefonnummer())
                 .withHandlaggareEpost(utredning.getHandlaggare().getEmail())
-                .withBehovTolk(utredning.getSprakTolk() != null)
-                .withSprakTolk(utredning.getSprakTolk())
+                .withBehovTolk(utredning.getTolkBehov() != null)
+                .withTolkSprak(utredning.getTolkSprak())
                 .withStatus("TODO")
                 .build();
     }
@@ -74,7 +75,7 @@ public class GetUtredningResponse {
         return utredningsId;
     }
 
-    public void setUtredningsId(String utredningsId) {
+    public void setUtredningsId(final String utredningsId) {
         this.utredningsId = utredningsId;
     }
 
@@ -82,7 +83,7 @@ public class GetUtredningResponse {
         return utredningsTyp;
     }
 
-    public void setUtredningsTyp(String utredningsTyp) {
+    public void setUtredningsTyp(final String utredningsTyp) {
         this.utredningsTyp = utredningsTyp;
     }
 
@@ -90,7 +91,7 @@ public class GetUtredningResponse {
         return vardgivareHsaId;
     }
 
-    public void setVardgivareHsaId(String vardgivareHsaId) {
+    public void setVardgivareHsaId(final String vardgivareHsaId) {
         this.vardgivareHsaId = vardgivareHsaId;
     }
 
@@ -98,7 +99,7 @@ public class GetUtredningResponse {
         return inkomDatum;
     }
 
-    public void setInkomDatum(String inkomDatum) {
+    public void setInkomDatum(final String inkomDatum) {
         this.inkomDatum = inkomDatum;
     }
 
@@ -106,7 +107,7 @@ public class GetUtredningResponse {
         return besvarasSenastDatum;
     }
 
-    public void setBesvarasSenastDatum(String besvarasSenastDatum) {
+    public void setBesvarasSenastDatum(final String besvarasSenastDatum) {
         this.besvarasSenastDatum = besvarasSenastDatum;
     }
 
@@ -114,7 +115,7 @@ public class GetUtredningResponse {
         return invanarePersonId;
     }
 
-    public void setInvanarePersonId(String invanarePersonId) {
+    public void setInvanarePersonId(final String invanarePersonId) {
         this.invanarePersonId = invanarePersonId;
     }
 
@@ -122,7 +123,7 @@ public class GetUtredningResponse {
         return handlaggareNamn;
     }
 
-    public void setHandlaggareNamn(String handlaggareNamn) {
+    public void setHandlaggareNamn(final String handlaggareNamn) {
         this.handlaggareNamn = handlaggareNamn;
     }
 
@@ -130,7 +131,7 @@ public class GetUtredningResponse {
         return handlaggareTelefonnummer;
     }
 
-    public void setHandlaggareTelefonnummer(String handlaggareTelefonnummer) {
+    public void setHandlaggareTelefonnummer(final String handlaggareTelefonnummer) {
         this.handlaggareTelefonnummer = handlaggareTelefonnummer;
     }
 
@@ -138,7 +139,7 @@ public class GetUtredningResponse {
         return handlaggareEpost;
     }
 
-    public void setHandlaggareEpost(String handlaggareEpost) {
+    public void setHandlaggareEpost(final String handlaggareEpost) {
         this.handlaggareEpost = handlaggareEpost;
     }
 
@@ -146,27 +147,28 @@ public class GetUtredningResponse {
         return behovTolk;
     }
 
-    public void setBehovTolk(boolean behovTolk) {
+    public void setBehovTolk(final boolean behovTolk) {
         this.behovTolk = behovTolk;
     }
 
-    public String getSprakTolk() {
-        return sprakTolk;
+    public String getTolkSprak() {
+        return tolkSprak;
     }
 
-    public void setSprakTolk(String sprakTolk) {
-        this.sprakTolk = sprakTolk;
+    public void setTolkSprak(final String tolkSprak) {
+        this.tolkSprak = tolkSprak;
     }
 
     public String getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(final String status) {
         this.status = status;
     }
 
     public static final class GetUtredningResponseBuilder {
+        private static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
         private String utredningsId;
         private String utredningsTyp;
         private String vardgivareHsaId;
@@ -177,7 +179,7 @@ public class GetUtredningResponse {
         private String handlaggareTelefonnummer;
         private String handlaggareEpost;
         private boolean behovTolk;
-        private String sprakTolk;
+        private String tolkSprak;
         private String status;
 
         private GetUtredningResponseBuilder() {
@@ -237,8 +239,8 @@ public class GetUtredningResponse {
             return this;
         }
 
-        public GetUtredningResponseBuilder withSprakTolk(String sprakTolk) {
-            this.sprakTolk = sprakTolk;
+        public GetUtredningResponseBuilder withTolkSprak(String tolkSprak) {
+            this.tolkSprak = tolkSprak;
             return this;
         }
 
@@ -259,7 +261,7 @@ public class GetUtredningResponse {
             getUtredningResponse.setHandlaggareTelefonnummer(handlaggareTelefonnummer);
             getUtredningResponse.setHandlaggareEpost(handlaggareEpost);
             getUtredningResponse.setBehovTolk(behovTolk);
-            getUtredningResponse.setSprakTolk(sprakTolk);
+            getUtredningResponse.setTolkSprak(tolkSprak);
             getUtredningResponse.setStatus(status);
             return getUtredningResponse;
         }

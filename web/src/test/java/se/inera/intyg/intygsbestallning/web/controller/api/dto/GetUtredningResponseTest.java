@@ -39,7 +39,8 @@ public class GetUtredningResponseTest {
         Utredning utredning = anUtredning()
                 .withUtredningId("utredningId")
                 .withUtredningsTyp(AFU)
-                .withSprakTolk("sv")
+                .withTolkBehov(true)
+                .withTolkSprak("sv")
                 .withExternForfragan(anExternForfragan()
                         .withBesvarasSenastDatum(LocalDateTime.of(2019, 1, 1, 0, 0))
                         .withInkomDatum(LocalDateTime.of(2018, 1, 1, 0, 0))
@@ -65,7 +66,8 @@ public class GetUtredningResponseTest {
         assertEquals("telefonnummer", response.getHandlaggareTelefonnummer());
         assertEquals("2018-01-01", response.getInkomDatum());
         assertEquals("personnummer", response.getInvanarePersonId());
-        assertEquals("sv", response.getSprakTolk());
+        assertEquals("sv", response.getTolkSprak());
+        assertTrue(response.isBehovTolk());
         assertEquals("TODO", response.getStatus());
         assertEquals(AFU.name(), response.getUtredningsTyp());
         assertTrue(response.isBehovTolk());

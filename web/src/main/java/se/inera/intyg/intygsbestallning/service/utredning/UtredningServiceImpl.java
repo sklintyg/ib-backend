@@ -238,7 +238,8 @@ public class UtredningServiceImpl implements UtredningService {
         LOG.info("Saving new order for request '{}' with type '{}'", utredning.getUtredningId(), utredning.getUtredningsTyp());
 
         // Update old information (last wins!)
-        utredning.setSprakTolk(order.getTolkSprak());
+        utredning.setTolkBehov(order.isTolkBehov());
+        utredning.setTolkSprak(order.getTolkSprak());
         if (order.getUtredningsTyp() != utredning.getUtredningsTyp()) {
             LOG.warn("Different utredningstyp for bestallning and externForfragan for assessment '{}', old type was '{}' and new is '{}'",
                     utredning.getUtredningId(), utredning.getUtredningsTyp(), order.getUtredningsTyp());
@@ -268,7 +269,8 @@ public class UtredningServiceImpl implements UtredningService {
                 .withUtredningId(UUID.randomUUID().toString())
                 .withUtredningsTyp(order.getUtredningsTyp())
                 .withInvanare(updateInvanareFromOrder(new Invanare(), order))
-                .withSprakTolk(order.getTolkSprak())
+                .withTolkBehov(order.isTolkBehov())
+                .withTolkSprak(order.getTolkSprak())
                 .withBestallning(createBestallning(order))
                 .withHandlaggare(createHandlaggare(order.getBestallare()))
                 .withHandelseList(Arrays.asList(HandelseUtil.createOrderReceived(order.getBestallare().getMyndighet(), null)))
@@ -314,7 +316,8 @@ public class UtredningServiceImpl implements UtredningService {
                 .withExternForfragan(externForfragan)
                 .withInvanare(invanare)
                 .withHandlaggare(createHandlaggare(request.getBestallare()))
-                .withSprakTolk(request.getTolkSprak())
+                .withTolkBehov(request.isTolkBehov())
+                .withTolkSprak(request.getTolkSprak())
                 .build());
     }
 

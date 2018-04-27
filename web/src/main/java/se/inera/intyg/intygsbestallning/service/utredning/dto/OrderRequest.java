@@ -18,7 +18,10 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning.dto;
 
+import static java.util.Objects.isNull;
+
 import com.google.common.base.Joiner;
+import org.apache.commons.lang3.BooleanUtils;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp;
@@ -30,8 +33,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.Objects.isNull;
-
 public final class OrderRequest {
     private String utredningId;
     private String enhetId;
@@ -41,6 +42,7 @@ public final class OrderRequest {
     private String invanareBakgrund;
     private String invanareBehov;
     private String syfte;
+    private boolean tolkBehov;
     private String tolkSprak;
     private String kommentar;
     private LocalDate lastDateIntyg;
@@ -49,6 +51,126 @@ public final class OrderRequest {
     private String atgarder;
 
     private OrderRequest() {
+    }
+
+    public String getUtredningId() {
+        return utredningId;
+    }
+
+    public void setUtredningId(final String utredningId) {
+        this.utredningId = utredningId;
+    }
+
+    public String getEnhetId() {
+        return enhetId;
+    }
+
+    public void setEnhetId(final String enhetId) {
+        this.enhetId = enhetId;
+    }
+
+    public UtredningsTyp getUtredningsTyp() {
+        return utredningsTyp;
+    }
+
+    public void setUtredningsTyp(final UtredningsTyp utredningsTyp) {
+        this.utredningsTyp = utredningsTyp;
+    }
+
+    public Bestallare getBestallare() {
+        return bestallare;
+    }
+
+    public void setBestallare(final Bestallare bestallare) {
+        this.bestallare = bestallare;
+    }
+
+    public String getInvanarePersonnummer() {
+        return invanarePersonnummer;
+    }
+
+    public void setInvanarePersonnummer(final String invanarePersonnummer) {
+        this.invanarePersonnummer = invanarePersonnummer;
+    }
+
+    public String getInvanareBakgrund() {
+        return invanareBakgrund;
+    }
+
+    public void setInvanareBakgrund(final String invanareBakgrund) {
+        this.invanareBakgrund = invanareBakgrund;
+    }
+
+    public String getInvanareBehov() {
+        return invanareBehov;
+    }
+
+    public void setInvanareBehov(final String invanareBehov) {
+        this.invanareBehov = invanareBehov;
+    }
+
+    public String getSyfte() {
+        return syfte;
+    }
+
+    public void setSyfte(final String syfte) {
+        this.syfte = syfte;
+    }
+
+    public boolean isTolkBehov() {
+        return tolkBehov;
+    }
+
+    public void setTolkBehov(final boolean tolkBehov) {
+        this.tolkBehov = tolkBehov;
+    }
+
+    public String getTolkSprak() {
+        return tolkSprak;
+    }
+
+    public void setTolkSprak(final String tolkSprak) {
+        this.tolkSprak = tolkSprak;
+    }
+
+    public String getKommentar() {
+        return kommentar;
+    }
+
+    public void setKommentar(final String kommentar) {
+        this.kommentar = kommentar;
+    }
+
+    public LocalDate getLastDateIntyg() {
+        return lastDateIntyg;
+    }
+
+    public void setLastDateIntyg(final LocalDate lastDateIntyg) {
+        this.lastDateIntyg = lastDateIntyg;
+    }
+
+    public LocalDate getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(final LocalDate orderDate) {
+        this.orderDate = orderDate;
+    }
+
+    public boolean isHandling() {
+        return handling;
+    }
+
+    public void setHandling(final boolean handling) {
+        this.handling = handling;
+    }
+
+    public String getAtgarder() {
+        return atgarder;
+    }
+
+    public void setAtgarder(final String atgarder) {
+        this.atgarder = atgarder;
     }
 
     public static OrderRequest from(OrderMedicalAssessmentType source) {
@@ -84,6 +206,7 @@ public final class OrderRequest {
                 .withOrderDate(!isNull(source.getOrderDate())
                         ? LocalDate.parse(source.getOrderDate()) : null)
                 .withSyfte(source.getPurpose())
+                .withTolkBehov(BooleanUtils.toBoolean(source.isNeedForInterpreter()))
                 .withTolkSprak((!isNull(source.isNeedForInterpreter()) && source.isNeedForInterpreter())
                         ? source.getInterpreterLanguage().getCode() : null)
                 .withUtredningId(!isNull(source.getAssessmentId()) ? source.getAssessmentId().getExtension() : null)
@@ -117,62 +240,6 @@ public final class OrderRequest {
 
     }
 
-    public String getUtredningId() {
-        return utredningId;
-    }
-
-    public String getEnhetId() {
-        return enhetId;
-    }
-
-    public UtredningsTyp getUtredningsTyp() {
-        return utredningsTyp;
-    }
-
-    public Bestallare getBestallare() {
-        return bestallare;
-    }
-
-    public String getInvanarePersonnummer() {
-        return invanarePersonnummer;
-    }
-
-    public String getInvanareBakgrund() {
-        return invanareBakgrund;
-    }
-
-    public String getInvanareBehov() {
-        return invanareBehov;
-    }
-
-    public String getSyfte() {
-        return syfte;
-    }
-
-    public String getTolkSprak() {
-        return tolkSprak;
-    }
-
-    public String getKommentar() {
-        return kommentar;
-    }
-
-    public LocalDate getLastDateIntyg() {
-        return lastDateIntyg;
-    }
-
-    public LocalDate getOrderDate() {
-        return orderDate;
-    }
-
-    public boolean isHandling() {
-        return handling;
-    }
-
-    public String getAtgarder() {
-        return atgarder;
-    }
-
     public static final class OrderRequestBuilder {
         private String utredningId;
         private String enhetId;
@@ -182,6 +249,7 @@ public final class OrderRequest {
         private String invanareBakgrund;
         private String invanareBehov;
         private String syfte;
+        private boolean tolkBehov;
         private String tolkSprak;
         private String kommentar;
         private LocalDate lastDateIntyg;
@@ -236,6 +304,11 @@ public final class OrderRequest {
             return this;
         }
 
+        public OrderRequestBuilder withTolkBehov(boolean tolkBehov) {
+            this.tolkBehov = tolkBehov;
+            return this;
+        }
+
         public OrderRequestBuilder withTolkSprak(String tolkSprak) {
             this.tolkSprak = tolkSprak;
             return this;
@@ -268,20 +341,21 @@ public final class OrderRequest {
 
         public OrderRequest build() {
             OrderRequest orderRequest = new OrderRequest();
-            orderRequest.invanarePersonnummer = this.invanarePersonnummer;
-            orderRequest.enhetId = this.enhetId;
-            orderRequest.handling = this.handling;
-            orderRequest.invanareBehov = this.invanareBehov;
-            orderRequest.orderDate = this.orderDate;
-            orderRequest.tolkSprak = this.tolkSprak;
             orderRequest.kommentar = this.kommentar;
-            orderRequest.atgarder = this.atgarder;
-            orderRequest.invanareBakgrund = this.invanareBakgrund;
-            orderRequest.lastDateIntyg = this.lastDateIntyg;
             orderRequest.utredningsTyp = this.utredningsTyp;
-            orderRequest.utredningId = this.utredningId;
-            orderRequest.bestallare = this.bestallare;
+            orderRequest.invanareBakgrund = this.invanareBakgrund;
             orderRequest.syfte = this.syfte;
+            orderRequest.orderDate = this.orderDate;
+            orderRequest.handling = this.handling;
+            orderRequest.bestallare = this.bestallare;
+            orderRequest.invanarePersonnummer = this.invanarePersonnummer;
+            orderRequest.tolkBehov = this.tolkBehov;
+            orderRequest.utredningId = this.utredningId;
+            orderRequest.enhetId = this.enhetId;
+            orderRequest.atgarder = this.atgarder;
+            orderRequest.lastDateIntyg = this.lastDateIntyg;
+            orderRequest.invanareBehov = this.invanareBehov;
+            orderRequest.tolkSprak = this.tolkSprak;
             return orderRequest;
         }
     }

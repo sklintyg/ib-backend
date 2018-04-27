@@ -54,6 +54,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
@@ -114,7 +115,7 @@ public class UtredningRepositoryTest {
 
         assertEquals(UTREDNING_ID, utredning.getUtredningId());
         assertEquals(UtredningsTyp.AFU, utredning.getUtredningsTyp());
-        assertEquals("sv", utredning.getSprakTolk());
+        assertFalse(utredning.getTolkBehov());
         assertNotNull(utredning.getAvbrutenDatum());
         assertEquals(EndReason.JAV, utredning.getAvbrutenAnledning());
 
@@ -321,7 +322,7 @@ public class UtredningRepositoryTest {
         return anUtredning()
                 .withUtredningId(UTREDNING_ID)
                 .withUtredningsTyp(UtredningsTyp.AFU)
-                .withSprakTolk("sv")
+                .withTolkBehov(false)
                 .withAvbrutenAnledning(EndReason.JAV)
                 .withAvbrutenDatum(LocalDateTime.now())
                 .build();

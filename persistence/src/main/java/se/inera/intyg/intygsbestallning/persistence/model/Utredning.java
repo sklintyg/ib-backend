@@ -51,8 +51,11 @@ public class Utredning {
     @JoinColumn(name = "BESTALLNING_ID")
     private Bestallning bestallning;
 
-    @Column(name = "SPRAK_TOLK")
-    private String sprakTolk;
+    @Column(name = "TOLK_BEHOV", columnDefinition = "tinyint(1) default 0")
+    private Boolean tolkBehov;
+
+    @Column(name = "TOLK_SPRAK")
+    private String tolkSprak;
 
     @Column(name = "AVBRUTEN_DATUM")
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
@@ -86,7 +89,7 @@ public class Utredning {
         return utredningId;
     }
 
-    public void setUtredningId(String utredningId) {
+    public void setUtredningId(final String utredningId) {
         this.utredningId = utredningId;
     }
 
@@ -94,71 +97,39 @@ public class Utredning {
         return utredningsTyp;
     }
 
-    public void setUtredningsTyp(UtredningsTyp utredningsTyp) {
+    public void setUtredningsTyp(final UtredningsTyp utredningsTyp) {
         this.utredningsTyp = utredningsTyp;
-    }
-
-    public String getSprakTolk() {
-        return sprakTolk;
-    }
-
-    public void setSprakTolk(String sprakTolk) {
-        this.sprakTolk = sprakTolk;
-    }
-
-    public List<Handelse> getHandelseList() {
-        return handelseList;
-    }
-
-    public void setHandelseList(List<Handelse> handelseList) {
-        this.handelseList = handelseList;
     }
 
     public Bestallning getBestallning() {
         return bestallning;
     }
 
-    public void setBestallning(Bestallning bestallning) {
+    public void setBestallning(final Bestallning bestallning) {
         this.bestallning = bestallning;
     }
 
-    public List<Handling> getHandlingList() {
-        return handlingList;
+    public Boolean getTolkBehov() {
+        return tolkBehov;
     }
 
-    public void setHandlingList(List<Handling> handlingList) {
-        this.handlingList = handlingList;
+    public void setTolkBehov(final Boolean tolkBehov) {
+        this.tolkBehov = tolkBehov;
     }
 
-    public ExternForfragan getExternForfragan() {
-        return externForfragan;
+    public String getTolkSprak() {
+        return tolkSprak;
     }
 
-    public void setExternForfragan(ExternForfragan externForfragan) {
-        this.externForfragan = externForfragan;
-    }
-
-    public Handlaggare getHandlaggare() {
-        return handlaggare;
-    }
-
-    public void setHandlaggare(Handlaggare handlaggare) {
-        this.handlaggare = handlaggare;
-    }
-
-    public Invanare getInvanare() {
-        return invanare;
-    }
-
-    public void setInvanare(Invanare invanare) {
-        this.invanare = invanare;
+    public void setTolkSprak(final String tolkSprak) {
+        this.tolkSprak = tolkSprak;
     }
 
     public LocalDateTime getAvbrutenDatum() {
         return avbrutenDatum;
     }
 
-    public void setAvbrutenDatum(LocalDateTime avbrutenDatum) {
+    public void setAvbrutenDatum(final LocalDateTime avbrutenDatum) {
         this.avbrutenDatum = avbrutenDatum;
     }
 
@@ -166,21 +137,48 @@ public class Utredning {
         return avbrutenAnledning;
     }
 
-    public void setAvbrutenAnledning(EndReason avbrutenAnledning) {
+    public void setAvbrutenAnledning(final EndReason avbrutenAnledning) {
         this.avbrutenAnledning = avbrutenAnledning;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+    public ExternForfragan getExternForfragan() {
+        return externForfragan;
+    }
 
-        Utredning forfragan = (Utredning) o;
-        return Objects.equals(utredningId, forfragan.utredningId);
+    public void setExternForfragan(final ExternForfragan externForfragan) {
+        this.externForfragan = externForfragan;
+    }
+
+    public List<Handelse> getHandelseList() {
+        return handelseList;
+    }
+
+    public void setHandelseList(final List<Handelse> handelseList) {
+        this.handelseList = handelseList;
+    }
+
+    public List<Handling> getHandlingList() {
+        return handlingList;
+    }
+
+    public void setHandlingList(final List<Handling> handlingList) {
+        this.handlingList = handlingList;
+    }
+
+    public Handlaggare getHandlaggare() {
+        return handlaggare;
+    }
+
+    public void setHandlaggare(final Handlaggare handlaggare) {
+        this.handlaggare = handlaggare;
+    }
+
+    public Invanare getInvanare() {
+        return invanare;
+    }
+
+    public void setInvanare(final Invanare invanare) {
+        this.invanare = invanare;
     }
 
     @Override
@@ -192,14 +190,15 @@ public class Utredning {
         private String utredningId;
         private UtredningsTyp utredningsTyp;
         private Bestallning bestallning;
-        private String sprakTolk;
+        private Boolean tolkBehov;
+        private String tolkSprak;
+        private LocalDateTime avbrutenDatum;
+        private EndReason avbrutenAnledning;
         private ExternForfragan externForfragan;
         private List<Handelse> handelseList = new ArrayList<>();
         private List<Handling> handlingList = new ArrayList<>();
         private Handlaggare handlaggare;
         private Invanare invanare;
-        private LocalDateTime avbrutenDatum;
-        private EndReason avbrutenAnledning;
 
         private UtredningBuilder() {
         }
@@ -223,8 +222,23 @@ public class Utredning {
             return this;
         }
 
-        public UtredningBuilder withSprakTolk(String sprakTolk) {
-            this.sprakTolk = sprakTolk;
+        public UtredningBuilder withTolkBehov(Boolean tolkBehov) {
+            this.tolkBehov = tolkBehov;
+            return this;
+        }
+
+        public UtredningBuilder withTolkSprak(String tolkSprak) {
+            this.tolkSprak = tolkSprak;
+            return this;
+        }
+
+        public UtredningBuilder withAvbrutenDatum(LocalDateTime avbrutenDatum) {
+            this.avbrutenDatum = avbrutenDatum;
+            return this;
+        }
+
+        public UtredningBuilder withAvbrutenAnledning(EndReason avbrutenAnledning) {
+            this.avbrutenAnledning = avbrutenAnledning;
             return this;
         }
 
@@ -253,30 +267,44 @@ public class Utredning {
             return this;
         }
 
-        public UtredningBuilder withAvbrutenDatum(LocalDateTime avbrutenDatum) {
-            this.avbrutenDatum = avbrutenDatum;
-            return this;
-        }
-
-        public UtredningBuilder withAvbrutenAnledning(EndReason avbrutenAnledning) {
-            this.avbrutenAnledning = avbrutenAnledning;
-            return this;
-        }
-
         public Utredning build() {
             Utredning utredning = new Utredning();
             utredning.setUtredningId(utredningId);
             utredning.setUtredningsTyp(utredningsTyp);
             utredning.setBestallning(bestallning);
-            utredning.setSprakTolk(sprakTolk);
+            utredning.setTolkBehov(tolkBehov);
+            utredning.setAvbrutenDatum(avbrutenDatum);
+            utredning.setAvbrutenAnledning(avbrutenAnledning);
             utredning.setExternForfragan(externForfragan);
             utredning.setHandelseList(handelseList);
             utredning.setHandlingList(handlingList);
             utredning.setHandlaggare(handlaggare);
             utredning.setInvanare(invanare);
-            utredning.setAvbrutenDatum(avbrutenDatum);
-            utredning.setAvbrutenAnledning(avbrutenAnledning);
+            utredning.tolkSprak = this.tolkSprak;
             return utredning;
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final Utredning utredning = (Utredning) o;
+        return Objects.equals(utredningId, utredning.utredningId)
+                && utredningsTyp == utredning.utredningsTyp
+                && Objects.equals(bestallning, utredning.bestallning)
+                && Objects.equals(tolkBehov, utredning.tolkBehov)
+                && Objects.equals(tolkSprak, utredning.tolkSprak)
+                && Objects.equals(avbrutenDatum, utredning.avbrutenDatum)
+                && avbrutenAnledning == utredning.avbrutenAnledning
+                && Objects.equals(externForfragan, utredning.externForfragan)
+                && Objects.equals(handelseList, utredning.handelseList)
+                && Objects.equals(handlingList, utredning.handlingList)
+                && Objects.equals(handlaggare, utredning.handlaggare)
+                && Objects.equals(invanare, utredning.invanare);
     }
 }

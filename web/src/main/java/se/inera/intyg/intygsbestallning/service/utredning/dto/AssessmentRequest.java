@@ -47,6 +47,7 @@ public class AssessmentRequest {
     private UtredningsTyp utredningsTyp;
     private LocalDateTime besvaraSenastDatum;
     private String kommentar;
+    private boolean tolkBehov;
     private String tolkSprak;
     private Bestallare bestallare;
     private String landstingHsaId;
@@ -64,6 +65,10 @@ public class AssessmentRequest {
 
     public String getKommentar() {
         return kommentar;
+    }
+
+    public boolean isTolkBehov() {
+        return tolkBehov;
     }
 
     public String getTolkSprak() {
@@ -145,84 +150,6 @@ public class AssessmentRequest {
                 .build();
     }
 
-    public static final class AssessmentRequestBuilder {
-        private UtredningsTyp utredningsTyp;
-        private LocalDateTime besvaraSenastDatum;
-        private String kommentar;
-        private String tolkSprak;
-        private Bestallare bestallare;
-        private String landstingHsaId;
-        private String invanareSarskildaBehov;
-        private String invanarePostkod;
-        private List<String> invanareTidigareUtforare;
-
-        private AssessmentRequestBuilder() {
-        }
-
-        public static AssessmentRequestBuilder anAssessmentRequest() {
-            return new AssessmentRequestBuilder();
-        }
-
-        public AssessmentRequestBuilder withUtredningsTyp(UtredningsTyp utredningsTyp) {
-            this.utredningsTyp = utredningsTyp;
-            return this;
-        }
-
-        public AssessmentRequestBuilder withBesvaraSenastDatum(LocalDateTime besvaraSenastDatum) {
-            this.besvaraSenastDatum = besvaraSenastDatum;
-            return this;
-        }
-
-        public AssessmentRequestBuilder withKommentar(String kommentar) {
-            this.kommentar = kommentar;
-            return this;
-        }
-
-        public AssessmentRequestBuilder withTolkSprak(String tolkSprak) {
-            this.tolkSprak = tolkSprak;
-            return this;
-        }
-
-        public AssessmentRequestBuilder withBestallare(Bestallare bestallare) {
-            this.bestallare = bestallare;
-            return this;
-        }
-
-        public AssessmentRequestBuilder withLandstingHsaId(String landstingHsaId) {
-            this.landstingHsaId = landstingHsaId;
-            return this;
-        }
-
-        public AssessmentRequestBuilder withInvanareSarskildaBehov(String invanareSarskildaBehov) {
-            this.invanareSarskildaBehov = invanareSarskildaBehov;
-            return this;
-        }
-
-        public AssessmentRequestBuilder withInvanarePostkod(String invanarePostkod) {
-            this.invanarePostkod = invanarePostkod;
-            return this;
-        }
-
-        public AssessmentRequestBuilder withInvanareTidigareUtforare(List<String> invanareTidigareUtforare) {
-            this.invanareTidigareUtforare = invanareTidigareUtforare;
-            return this;
-        }
-
-        public AssessmentRequest build() {
-            AssessmentRequest assessmentRequest = new AssessmentRequest();
-            assessmentRequest.utredningsTyp = this.utredningsTyp;
-            assessmentRequest.landstingHsaId = this.landstingHsaId;
-            assessmentRequest.invanarePostkod = this.invanarePostkod;
-            assessmentRequest.bestallare = this.bestallare;
-            assessmentRequest.invanareSarskildaBehov = this.invanareSarskildaBehov;
-            assessmentRequest.invanareTidigareUtforare = this.invanareTidigareUtforare;
-            assessmentRequest.kommentar = this.kommentar;
-            assessmentRequest.besvaraSenastDatum = this.besvaraSenastDatum;
-            assessmentRequest.tolkSprak = this.tolkSprak;
-            return assessmentRequest;
-        }
-    }
-
     private static void validate(final RequestHealthcarePerformerForAssessmentType source) {
         List<String> errors = Lists.newArrayList();
         final List<UtredningsTyp> godkandaUtredningsTyper = ImmutableList.of(AFU, AFU_UTVIDGAD);
@@ -276,6 +203,91 @@ public class AssessmentRequest {
 
         return java.util.Objects.hash(utredningsTyp, besvaraSenastDatum, kommentar, tolkSprak, bestallare, landstingHsaId,
                 invanareSarskildaBehov, invanarePostkod, invanareTidigareUtforare);
+    }
+
+    public static final class AssessmentRequestBuilder {
+        private UtredningsTyp utredningsTyp;
+        private LocalDateTime besvaraSenastDatum;
+        private String kommentar;
+        private boolean tolkBehov;
+        private String tolkSprak;
+        private Bestallare bestallare;
+        private String landstingHsaId;
+        private String invanareSarskildaBehov;
+        private String invanarePostkod;
+        private List<String> invanareTidigareUtforare;
+
+        private AssessmentRequestBuilder() {
+        }
+
+        public static AssessmentRequestBuilder anAssessmentRequest() {
+            return new AssessmentRequestBuilder();
+        }
+
+        public AssessmentRequestBuilder withUtredningsTyp(UtredningsTyp utredningsTyp) {
+            this.utredningsTyp = utredningsTyp;
+            return this;
+        }
+
+        public AssessmentRequestBuilder withBesvaraSenastDatum(LocalDateTime besvaraSenastDatum) {
+            this.besvaraSenastDatum = besvaraSenastDatum;
+            return this;
+        }
+
+        public AssessmentRequestBuilder withKommentar(String kommentar) {
+            this.kommentar = kommentar;
+            return this;
+        }
+
+        public AssessmentRequestBuilder withTolkBehov(boolean tolkBehov) {
+            this.tolkBehov = tolkBehov;
+            return this;
+        }
+
+        public AssessmentRequestBuilder withTolkSprak(String tolkSprak) {
+            this.tolkSprak = tolkSprak;
+            return this;
+        }
+
+        public AssessmentRequestBuilder withBestallare(Bestallare bestallare) {
+            this.bestallare = bestallare;
+            return this;
+        }
+
+        public AssessmentRequestBuilder withLandstingHsaId(String landstingHsaId) {
+            this.landstingHsaId = landstingHsaId;
+            return this;
+        }
+
+        public AssessmentRequestBuilder withInvanareSarskildaBehov(String invanareSarskildaBehov) {
+            this.invanareSarskildaBehov = invanareSarskildaBehov;
+            return this;
+        }
+
+        public AssessmentRequestBuilder withInvanarePostkod(String invanarePostkod) {
+            this.invanarePostkod = invanarePostkod;
+            return this;
+        }
+
+        public AssessmentRequestBuilder withInvanareTidigareUtforare(List<String> invanareTidigareUtforare) {
+            this.invanareTidigareUtforare = invanareTidigareUtforare;
+            return this;
+        }
+
+        public AssessmentRequest build() {
+            AssessmentRequest assessmentRequest = new AssessmentRequest();
+            assessmentRequest.bestallare = this.bestallare;
+            assessmentRequest.utredningsTyp = this.utredningsTyp;
+            assessmentRequest.tolkSprak = this.tolkSprak;
+            assessmentRequest.landstingHsaId = this.landstingHsaId;
+            assessmentRequest.invanareSarskildaBehov = this.invanareSarskildaBehov;
+            assessmentRequest.invanareTidigareUtforare = this.invanareTidigareUtforare;
+            assessmentRequest.tolkBehov = this.tolkBehov;
+            assessmentRequest.kommentar = this.kommentar;
+            assessmentRequest.invanarePostkod = this.invanarePostkod;
+            assessmentRequest.besvaraSenastDatum = this.besvaraSenastDatum;
+            return assessmentRequest;
+        }
     }
 
     //CHECKSTYLE:ON OperatorWrap
