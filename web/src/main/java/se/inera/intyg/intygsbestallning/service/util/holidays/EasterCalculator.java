@@ -31,7 +31,7 @@ public final class EasterCalculator {
     }
 
     /**
-     * Method responsible for creating an instance of this class
+     * Method responsible for creating an instance of this class.
      *
      * @param year
      *            A valid Gregorian year

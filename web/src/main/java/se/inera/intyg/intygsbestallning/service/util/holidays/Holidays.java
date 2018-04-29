@@ -30,7 +30,12 @@ import static java.time.temporal.TemporalAdjusters.nextOrSame;
 /**
  * @author Magnus Ekstrand on 2018-04-26.
  */
-public class Holidays {
+// CHECKSTYLE:OFF MagicNumber
+public final class Holidays {
+
+    private Holidays() {
+
+    }
 
     /**
      * The holiday calendar for Sweden.
@@ -90,3 +95,4 @@ public class Holidays {
     }
 
 }
+// CHECKSTYLE:ON MagicNumber

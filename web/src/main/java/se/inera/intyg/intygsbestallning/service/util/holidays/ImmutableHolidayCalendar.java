@@ -35,6 +35,7 @@ import java.util.SortedSet;
 /**
  * A holiday calendar implementation based on an immutable set of holiday dates and weekends.
  */
+// CHECKSTYLE:OFF MagicNumber
 public final class ImmutableHolidayCalendar implements HolidayCalendar, Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -212,3 +213,4 @@ public final class ImmutableHolidayCalendar implements HolidayCalendar, Serializ
     }
 
 }
+// CHECKSTYLE:ON MagicNumber

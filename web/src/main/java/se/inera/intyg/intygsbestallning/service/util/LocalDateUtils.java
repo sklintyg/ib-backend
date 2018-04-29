@@ -28,7 +28,11 @@ import java.util.stream.StreamSupport;
 /**
  * @author Magnus Ekstrand on 2018-04-26.
  */
-public class LocalDateUtils {
+public final class LocalDateUtils {
+
+    private LocalDateUtils() {
+
+    }
 
     /**
      * Streams the set of dates included in the range.
@@ -36,8 +40,10 @@ public class LocalDateUtils {
      * This returns a stream consisting of each date in the range.
      * The stream is ordered.
      *
-     * @param startInclusive  the start date
-     * @param endExclusive  the end date
+     * @param startInclusive
+     *            the start date
+     * @param endExclusive
+     *            the end date
      * @return the stream of dates from the start to the end
      */
     public static Stream<LocalDate> stream(LocalDate startInclusive, LocalDate endExclusive) {
@@ -59,9 +65,9 @@ public class LocalDateUtils {
 
         long count = endExclusive.toEpochDay() - startInclusive.toEpochDay() + 1;
         Spliterator<LocalDate> spliterator = Spliterators.spliterator(it, count,
-                Spliterator.IMMUTABLE | Spliterator.NONNULL |
-                        Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.SORTED |
-                        Spliterator.SIZED | Spliterator.SUBSIZED);
+                Spliterator.IMMUTABLE | Spliterator.NONNULL
+                        | Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.SORTED
+                        | Spliterator.SIZED | Spliterator.SUBSIZED);
 
         return StreamSupport.stream(spliterator, false);
     }
