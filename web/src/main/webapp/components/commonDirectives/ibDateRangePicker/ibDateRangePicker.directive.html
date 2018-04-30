@@ -1,0 +1,12 @@
+<div ng-class="{'col-xs-{{labelColSize}}' : labelColSize}">
+  <label ng-attr-for="{{::inputId}}" class="control-label">
+    <span ng-if="required" class="required">*</span>
+    <span message key="{{::labelKey}}"></span>
+  </label>
+</div>
+<div ng-class="{'col-xs-{{::inputColSize}}' : inputColSize}">
+  <div class="form-control" data-ng-click="open($event)">
+    <input disabled="disabled" type="text" data-ng-model="inputdate" placeholder="{{placeholderKey | message}}">
+    <i class="fa fa-calendar"></i>
+  </div>
+</div>

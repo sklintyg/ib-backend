@@ -59,10 +59,12 @@
 @import 'appDirectives/ibTableHead/ibTableHead.directive.scss';
 @import 'appDirectives/ibUtredningSlutdatumFas/ibUtredningSlutdatumFas.directive.scss';
 @import 'appDirectives/ibUtredningStatus/ibUtredningStatus.directive.scss';
+@import 'commonDirectives/form/ibDropdown/ibDropdown.directive.scss';
 @import 'commonDirectives/form/ibTextField/ibTextfield.directive.scss';
 @import 'commonDirectives/form/ibTextarea/ibTextarea.directive.scss';
 @import 'commonDirectives/ibBottomFadeout/ibBottomFadeout.directive.scss';
 @import 'commonDirectives/ibCookieBanner/ibCookieBanner.directive.scss';
+@import 'commonDirectives/ibDateRangePicker/ibDateRangePicker.directive.scss';
 @import 'commonDirectives/ibHelpChevron/ibHelpChevron.directive.scss';
 @import 'commonDirectives/ibHelpChevronText/ibHelpChevronText.directive.scss';
 @import 'commonDirectives/ibMainMenu/ibMainMenu.directive.scss';

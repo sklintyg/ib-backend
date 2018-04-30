@@ -1,5 +1,7 @@
 .listaForfragningar-page {
 
+  @extend %page;
+
   table {
     margin-top: 10px;
   }

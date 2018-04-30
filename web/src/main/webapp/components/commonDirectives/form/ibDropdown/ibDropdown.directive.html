@@ -1,0 +1,18 @@
+<div ng-class="{'col-xs-{{labelColSize}}' : labelColSize}">
+  <label ng-attr-for="{{::inputId}}" class="control-label">
+    <span ng-if="required" class="required">*</span>
+    <span message key="{{::labelKey}}"></span>
+  </label>
+</div>
+<div ng-class="{'col-xs-{{::inputColSize}}' : inputColSize}">
+  <div ng-click="togglePlate()" ng-class="{open: isOpen}" class="dropdown-label">
+    <span ng-attr-id="{{id + '-selected-item-label'}}">{{ selectedItemLabel }}</span>
+    <i class="material-icons md-18">{{isOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}</i>
+  </div>
+
+  <div ng-show="isOpen" class="plate ng-hide">
+    <div ng-repeat="item in items" ng-click="select(item)" ng-attr-id="{{id + '-' + item.id}}">
+      {{ item.label }}
+    </div>
+  </div>
+</div>

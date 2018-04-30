@@ -19,15 +19,20 @@
 
 angular.module('ibApp')
     .controller('ListaUtredningarCtrl',
-        function($log, $scope, UtredningarProxy) {
+        function($log, $scope, ibUtredningFilterModel, UtredningarProxy) {
             'use strict';
 
-            UtredningarProxy.getUtredningar().then(function(data) {
-                $scope.utredningar = data.utredningar;
-                $scope.utredningarTotal = data.totalCount;
-            }, function(error) {
-                $log.error(error);
-            });
+            $scope.filter = ibUtredningFilterModel.build();
 
+            $scope.getUtredningarFiltered = function() {
+                UtredningarProxy.getUtredningarWithFilter($scope.filter.convertToPayload()).then(function(data) {
+                    $scope.utredningar = data.utredningar;
+                    $scope.utredningarTotal = data.totalCount;
+                }, function(error) {
+                    $log.error(error);
+                });
+            };
+
+            $scope.getUtredningarFiltered();
         }
     );

@@ -1,14 +1,17 @@
-  <div class="col-xs-{{::labelColSize}}">
+  <div ng-class="{'col-xs-{{labelColSize}}' : labelColSize}">
     <label ng-attr-for="{{::inputId}}" class="control-label">
      <span ng-if="required" class="required">*</span>
      <span message key="{{::labelKey}}"></span>
     </label>
   </div>
-  <div class="col-xs-{{::inputColSize}}">
+  <div ng-class="{'col-xs-{{::inputColSize}}' : inputColSize}">
     <input ng-attr-id="{{::inputId}}"
            type="text"
            class="form-control"
            ng-model="model"
+           ng-model-options="{ debounce: 200 }"
+           ng-change="onChange()"
            ng-disabled="isDisabled"
-           maxlength="{{:: maxLength || 255}}">
+           maxlength="{{:: maxLength || 255}}"
+           placeholder="{{placeholderKey | message}}">
   </div>

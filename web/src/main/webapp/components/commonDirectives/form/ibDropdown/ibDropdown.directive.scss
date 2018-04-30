@@ -1,0 +1,103 @@
+/*!
+ * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+ib-dropdown {
+  position: relative;
+  display: block;
+
+  label {
+    @extend %ib-typo-14;
+    color: $ib-color-09;
+
+    span.required {
+      @extend %ib-typo-14;
+      color: $ib-color-04;
+    }
+  }
+
+  .dropdown-label {
+    display: flex;
+    padding: 9px 10px;
+    text-align: left;
+    border-radius: 4px;
+    border: 1px solid $ib-color-15;
+    height: 38px;
+
+    span {
+      flex: 1 1 auto;
+      display: inline-block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 100%;
+    }
+    i {
+      flex: 0 0 16px;
+    }
+  }
+
+  .dropdown-label {
+    color: $ib-color-07;
+    background: #fff;
+
+    &:hover, &.open {
+      border-color: $ib-color-21;
+      background-color: #fff;
+      color: $ib-color-07;
+      cursor: pointer;
+      box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.12);
+    }
+  }
+
+  &[disabled] .dropdown-label, fieldset[disabled] & .dropdown-label {
+    cursor: not-allowed;
+    color: $ib-color-09;
+    background-color: $ib-color-20;
+    border-color: $ib-color-15;
+    box-shadow: none;
+  }
+
+  .plate {
+    position: absolute;
+    top: 36px;
+    left: 0;
+    border: 1px solid $ib-color-21;;
+    border-radius: 4px;
+    background-color: #fff;
+    z-index: 1000;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.12);
+    min-width: 100%;
+    div {
+      padding: 4px 10px;
+      color: $ib-color-07;
+      &:hover {
+        background-color: $ib-color-21;
+        color: #fff;
+        cursor: pointer;
+      }
+      span {
+        display: inline-block;
+        white-space: nowrap;
+      }
+    }
+  }
+  &.fielderror .dropdown-label {
+    border-color: $ib-color-11;
+  }
+}

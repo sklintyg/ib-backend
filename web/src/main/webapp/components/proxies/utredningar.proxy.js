@@ -49,8 +49,36 @@ angular.module('ibApp').factory('UtredningarProxy',
             return promise.promise;
         }
 
+        function _getUtredningarWithFilter(query) {
+            var promise = $q.defer();
+
+            var restPath = '/api/utredningar';
+
+            var config =  {
+                timeout: networkConfig.defaultTimeout
+            };
+
+            $http.post(restPath, query, config).then(function(response) {
+                $log.debug(restPath + ' - success');
+
+                if (typeof response !== 'undefined') {
+                    promise.resolve(response.data);
+                } else {
+                    $log.debug('JSON response syntax error. Rejected.');
+                    promise.reject(null);
+                }
+            }, function(response) {
+                $log.error('error ' + response.status);
+                // Let calling code handle the error of no data response
+                promise.reject(response.data);
+            });
+
+            return promise.promise;
+        }
+
         // Return public API for the service
         return {
-            getUtredningar: _getUtredningar
+            getUtredningar: _getUtredningar,
+            getUtredningarWithFilter: _getUtredningarWithFilter
         };
     });

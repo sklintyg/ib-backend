@@ -1,0 +1,111 @@
+ib-date-range-picker {
+  display: block;
+
+  label {
+    @extend %ib-typo-14;
+    color: $ib-color-09;
+
+    span.required {
+      @extend %ib-typo-14;
+      color: $ib-color-04;
+    }
+  }
+
+  .form-control {
+    position: relative;
+    padding: 0;
+  }
+
+  .fa {
+    position: absolute;
+    color: #949494;
+    right: 6px;
+    top: 5px;
+    font-size: 20px;
+  }
+
+  input {
+    padding: 4px 20px 4px 6px;
+    border: 0;
+    width: 100%;
+    display: inline-block;
+    margin-top: 3px;
+    color: #555;
+    background-color: #fff;
+
+    &[disabled] {
+      cursor: pointer;
+    }
+
+    &:focus {
+      border-color: #66afe9;
+      outline: 0;
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+    }
+  }
+}
+
+
+// Datepicker overrides
+.date-picker-wrapper {
+
+  background-color: #fff;
+  padding: 0 12px 12px;
+
+  .drp_top-bar {
+    display: none;
+  }
+
+  #closeDatePicker,
+  #clearDatePicker {
+    padding: 6px 25px;
+  }
+
+  #clearDatePicker {
+    margin-left: 20px;
+  }
+
+  .real-today {
+    @extend %ib-typo-07;
+    background-color: $ib-color-00 !important;
+    color: $ib-color-07;
+    border: 1px solid $ib-color-21;
+  }
+
+  .checked {
+    @extend %ib-typo-07;
+    background-color: $ib-color-25 !important;
+    color: $ib-color-19;
+    border: none;
+  }
+
+  .first-date-selected,
+  .last-date-selected {
+    @extend %ib-typo-06;
+    background-color: $ib-color-21 !important;
+    color: $ib-color-00;
+    border: none;
+  }
+
+  .month-wrapper {
+    border: 0;
+
+    table {
+      .day {
+        padding: 6px 1px;
+
+        &.checked,
+        &.real-today.checked,
+        &.real-today.hovering,
+        &.toMonth.hovering{
+          background-color: rgba(0, 161, 176, 0.3);
+        }
+
+        &.real-today {
+          background-color: #fff;
+
+        }
+      }
+    }
+  }
+}

@@ -1,18 +1,18 @@
-<div class="container listaUtredningar-page">
+<div class="listaUtredningar-page">
 
-  <utredning-filter></utredning-filter>
+  <utredning-filter filter="filter" filter-changed="getUtredningarFiltered()"></utredning-filter>
 
   <span id="samordnare-lista-utredningar-resulttext">Sökresultat: {{utredningar.length}} av {{utredningarTotal}} beställningar</span>
 
   <table id="samordnare-lista-utredningar-table" class="table table-striped ib-table-striped">
     <thead>
       <tr>
-        <th ib-table-head label-key="label.table.utredningar.column.id"></th>
-        <th ib-table-head label-key="label.table.utredningar.column.typ"></th>
-        <th ib-table-head label-key="label.table.utredningar.column.vardenhet"></th>
-        <th ib-table-head label-key="label.table.utredningar.column.fas"></th>
-        <th ib-table-head label-key="label.table.utredningar.column.slutdatumfas"></th>
-        <th ib-table-head label-key="label.table.utredningar.column.status"></th>
+        <th ib-table-head filter="filter" filter-changed="getUtredningarFiltered()" order-by-key="utredningsId" label-key="label.table.utredningar.column.id"></th>
+        <th ib-table-head filter="filter" filter-changed="getUtredningarFiltered()" order-by-key="utredningsTyp" label-key="label.table.utredningar.column.typ"></th>
+        <th ib-table-head filter="filter" filter-changed="getUtredningarFiltered()" order-by-key="vardenhetNamn" label-key="label.table.utredningar.column.vardenhet"></th>
+        <th ib-table-head filter="filter" filter-changed="getUtredningarFiltered()" order-by-key="fas" label-key="label.table.utredningar.column.fas"></th>
+        <th ib-table-head filter="filter" filter-changed="getUtredningarFiltered()" order-by-key="slutdatumFas" label-key="label.table.utredningar.column.slutdatumfas"></th>
+        <th ib-table-head filter="filter" filter-changed="getUtredningarFiltered()" order-by-key="status" label-key="label.table.utredningar.column.status"></th>
         <th></th>
       </tr>
     </thead>
@@ -20,8 +20,8 @@
       <tr ng-repeat="row in utredningar">
         <td>{{::row.utredningsId}}</td>
         <td>{{::row.utredningsTyp}}</td>
-        <td>{{::row.vardgivareNamn}}</td>
-        <td>{{::row.fas}}</td>
+        <td>{{::row.vardenhetNamn}}</td>
+        <td>{{::row.fas.label}}</td>
         <td><ib-utredning-slutdatum-fas fas="::row.fas" slutdatum="::row.slutdatumFas"></ib-utredning-slutdatum-fas></td>
         <td><ib-utredning-status status="::row.status"></ib-utredning-status></td>
         <td><button class="btn btn-primary"><span message key="common.show"></span></button></td>

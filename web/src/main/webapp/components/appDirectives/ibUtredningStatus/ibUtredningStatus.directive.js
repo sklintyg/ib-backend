@@ -28,7 +28,7 @@ angular.module('ibApp').directive('ibUtredningStatus',
                 status: '<'
             },
             link: function($scope) {
-                if ($scope.status === 'FORFRAGAN_INKOMMEN' || $scope.status === 'TILLDELA_UTREDNING') {
+                if ($scope.status.id === 'FORFRAGAN_INKOMMEN' || $scope.status.id === 'TILLDELA_UTREDNING') {
                     $scope.kraverAtgard = true;
                 }
             }

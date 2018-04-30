@@ -16,30 +16,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-angular.module('ibApp').directive('ibTextfield', [ function() {
-    'use strict';
+angular.module('ibApp').directive('utredningFilter',
+    function($timeout) {
+        'use strict';
 
-    return {
-        restrict: 'E',
-        scope: {
-            form: '=',
-            model: '=',
-            labelKey: '@',
-            placeholderKey: '@',
-            maxLength: '=',
-            required: '=',
-            isDisabled: '=',
-            labelColSize: '@',
-            inputColSize: '@',
-            onChange: '&'
-        },
-        templateUrl: '/components/commonDirectives/form/ibTextfield/ibTextfield.directive.html',
-        link: function($scope, element, attr) {
+        return {
+            restrict: 'E',
+            scope: {
+                'filter': '=',
+                'filterChanged':'&'
+            },
+            templateUrl: '/app/samordnare/listaUtredningar/utredningFilter/utredningFilter.directive.html',
+            link: function($scope) {
 
-            attr.$observe('id', function(id) {
-                $scope.inputId = id + '-input';
-            });
+                $scope.onChange = function() {
+                    $timeout(function() {
+                        $scope.filterChanged();
+                    });
+                };
 
-        }
-    };
-} ]);
+                $scope.resetFilter = function() {
+                    $scope.filter.reset();
+                    $scope.filterChanged();
+                };
+            }
+        };
+    } );

@@ -70,6 +70,15 @@ var ibMessages = {
         'label.table.utredningar.column.slutdatumfas': 'Slutdatum fas',
         'label.table.utredningar.column.status': 'Status',
 
+        // Lista utredningar filter
+        'utredningar.filter.fritext.label': 'Fritextsökning',
+        'utredningar.filter.fritext.placeholder': 'Skriv sökord',
+        'utredningar.filter.fas.label': 'Fas',
+        'utredningar.filter.slutdatumfas.label': 'Slutdatum fas',
+        'utredningar.filter.slutdatumfas.placeholder': 'Visa alla',
+        'utredningar.filter.status.label': 'Status',
+        'utredningar.filter.resetfilter.label': 'Återställ sökfilter',
+
         // Lista förfrågningar tabell
         'label.table.forfragningar.column.id': 'Id',
         'label.table.forfragningar.column.typ': 'Utredningstyp',

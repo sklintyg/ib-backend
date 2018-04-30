@@ -1,0 +1,34 @@
+<div>
+  <ib-textfield
+      id="filterFritext"
+      model="filter.freetext"
+      label-key="utredningar.filter.fritext.label"
+      max-length="255"
+      on-change="onChange()"
+      placeholder-key="utredningar.filter.fritext.placeholder">
+  </ib-textfield>
+  <ib-dropdown
+      id="filterFas"
+      ng-model="filter.fas"
+      ng-change="onChange()"
+      label-key="utredningar.filter.fas.label"
+      items="filter.fasOptions">
+  </ib-dropdown>
+  <ib-date-range-picker
+      id="filterSlutdatumFas"
+      model="filter.slutdatumFas"
+      on-change="onChange()"
+      label-key="utredningar.filter.slutdatumfas.label"
+      placeholder-key="utredningar.filter.slutdatumfas.placeholder">
+  </ib-date-range-picker>
+  <ib-dropdown
+      id="filterStatus"
+      ng-model="filter.status"
+      ng-change="onChange()"
+      label-key="utredningar.filter.status.label"
+      items="filter.statusOptions">
+  </ib-dropdown>
+  <button class="btn btn-primary" ng-click="resetFilter()" ng-disabled="filter.isDefault()">
+    <message key="utredningar.filter.resetfilter.label"></message>
+  </button>
+</div>
