@@ -27,11 +27,14 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.intygsbestallning.common.integration.json.CustomObjectMapper;
+import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,6 +44,9 @@ import java.util.List;
 public class UtredningBootstrapBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(UtredningBootstrapBean.class);
+
+    private static final int EXTRA_TEST_DATA = 100;
+    private static final int EXTRA_TEST_DATA_MINUS_DAYS = 10;
 
     @Autowired
     private UtredningRepository utredningRepository;
@@ -53,6 +59,8 @@ public class UtredningBootstrapBean {
             LOG.debug("Loading resource " + res.getFilename());
             addUtredning(res);
         }
+
+        addTestUtredningar();
     }
 
     private void addUtredning(Resource res) {
@@ -64,6 +72,22 @@ public class UtredningBootstrapBean {
             throw new RuntimeException(e);
         }
 
+    }
+
+    private void addTestUtredningar() {
+        LocalDateTime startDate = LocalDateTime.now().minusDays(EXTRA_TEST_DATA_MINUS_DAYS);
+        LocalDateTime date = startDate;
+        for (int i = 0; i < EXTRA_TEST_DATA; i++) {
+            Utredning utredning = new Utredning();
+            utredning.setUtredningId("utredning-test-" + i);
+            utredning.setUtredningsTyp(UtredningsTyp.AFU);
+            utredning.setExternForfragan(new ExternForfragan());
+            utredning.getExternForfragan().setBesvarasSenastDatum(date);
+            utredning.getExternForfragan().setInkomDatum(startDate);
+            utredning.getExternForfragan().setLandstingHsaId("IFV1239877878-1041");
+            utredningRepository.save(utredning);
+            date = date.plusDays(1);
+        }
     }
 
     private List<Resource> getResourceListing(String classpathResourcePath) {
