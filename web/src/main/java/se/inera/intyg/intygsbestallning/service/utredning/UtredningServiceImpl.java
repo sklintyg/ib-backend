@@ -355,6 +355,18 @@ public class UtredningServiceImpl implements UtredningService {
                 .map(u -> BestallningListItem.from(u, utredningStateResolver.resolveStatus(u)))
                 .collect(Collectors.toList());
 
+        // We may need to fetch names for patients and vardgivare prior to filtering if free text search is
+        // used or if either of those two columns are sorted.
+        boolean enrichedWithPatientNames = false;
+        boolean enrichedWithVardgivareNames = false;
+        if (requestFilter.getFreeText() != null || requestFilter.getOrderBy().equals("vardgivareNamn")
+                || requestFilter.getOrderBy().equals("patientNamn")) {
+            enrichWithVardgivareNames(bestallningListItems);
+            patientNameEnricher.enrichWithPatientNames(bestallningListItems);
+            enrichedWithPatientNames = true;
+            enrichedWithVardgivareNames = true;
+        }
+
         // Get status mapper
         Map<UtredningStatus, ListFilterStatus> statusToFilterStatus = buildStatusToListBestallningFilterStatusMap();
 
@@ -381,10 +393,14 @@ public class UtredningServiceImpl implements UtredningService {
 
         // Fetch patient names and hsa names only for the selected subset, we want to minimize number of calls per invocation
         // of this API
-        patientNameEnricher.enrichWithPatientNames(paged);
+        if (!enrichedWithPatientNames) {
+            patientNameEnricher.enrichWithPatientNames(paged);
+        }
 
         // Call HSA to get actual name(s) of Vardgivare.
-        enrichWithVardgivareNames(paged);
+        if (!enrichedWithVardgivareNames) {
+            enrichWithVardgivareNames(paged);
+        }
 
         // Only PDL-log what we actually are sending to the GUI
         pdlLogList(paged, ActivityType.READ, ResourceType.RESOURCE_TYPE_FMU);

@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.service.patient;
 
+import com.google.common.base.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.integration.pu.model.Person;
@@ -52,10 +53,23 @@ public class PatientNameEnricherImpl implements PatientNameEnricher {
             Personnummer pnr = Personnummer.createPersonnummer(bli.getPatientId()).get();
             Person person = personNames.get(pnr).getPerson();
             if (personNames.containsKey(pnr) && person != null) {
-                bli.setPatientNamn(person.getFornamn() + " " + person.getMellannamn() + " " + person.getEfternamn());
+                bli.setPatientNamn(joinIgnoreNullAndEmpty(" ", person.getFornamn(), person.getMellannamn(), person.getEfternamn()));
             } else {
                 bli.setPatientNamn(null);
             }
         }
+    }
+
+    private String joinIgnoreNullAndEmpty(String separator, String... values) {
+        StringBuilder builder = new StringBuilder();
+        for (String value : values) {
+            if (!Strings.isNullOrEmpty(value)) {
+                if (builder.length() > 0) {
+                    builder.append(separator);
+                }
+                builder.append(value);
+            }
+        }
+        return builder.toString();
     }
 }
