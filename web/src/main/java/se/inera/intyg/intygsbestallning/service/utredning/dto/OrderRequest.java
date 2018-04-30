@@ -232,7 +232,6 @@ public final class OrderRequest {
             if (isNull(source.getLastDateForCertificateReceival())) {
                 errors.add("LastDateForCertificateReceival is required when assessmentId is present");
             }
-
         }
         if (!errors.isEmpty()) {
             throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, Joiner.on(", ").join(errors));

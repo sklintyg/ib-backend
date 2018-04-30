@@ -31,6 +31,7 @@ import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.model.IbVardenhet;
 import se.inera.intyg.intygsbestallning.auth.model.IbVardgivare;
+import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
@@ -394,7 +395,7 @@ public class UtredningServiceImplTest {
         assertEquals(landstingHsaId, response.getVardgivareHsaId());
     }
 
-    @Test(expected = IbNotFoundException.class)
+    @Test(expected = IbAuthorizationException.class)
     public void testGetUtredningIncorrectLandsting() {
         final String utredningId = "utredningId";
         final String landstingHsaId = "landstingHsaId";

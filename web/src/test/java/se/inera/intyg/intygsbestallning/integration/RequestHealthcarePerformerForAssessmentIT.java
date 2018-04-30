@@ -40,7 +40,7 @@ public class RequestHealthcarePerformerForAssessmentIT extends BaseRestIntegrati
     private STGroup templateGroup;
 
     @Before
-    public void setup() {
+    public void setupTestSpecific() {
         RestAssured.requestSpecification = new RequestSpecBuilder().setContentType("application/xml;charset=utf-8").build();
 
         templateGroup = new STGroupFile("integrationtests/RequestHealthcarePerformerAssessment/request1.stg");

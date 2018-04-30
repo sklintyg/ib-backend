@@ -43,7 +43,7 @@ public class AssessmentRequestTest {
         final AssessmentRequest converted = AssessmentRequest.from(request);
 
         assertEquals(UtredningsTyp.AFU, converted.getUtredningsTyp());
-        assertEquals(DATE_TIME, converted.getBesvaraSenastDatum());
+        assertEquals(DATE_TIME.atStartOfDay(), converted.getBesvaraSenastDatum());
         assertEquals("coordinatingCountyCouncilId", converted.getLandstingHsaId());
         assertEquals("comment", converted.getKommentar());
         assertEquals("language", converted.getTolkSprak());

@@ -14,7 +14,7 @@ request(data) ::= <<
             <urn2:codeSystemVersion></urn2:codeSystemVersion>
             <urn2:displayName>AFU</urn2:displayName>
          </urn1:certificateType>
-         <urn1:lastResponseDate>$data.lastResponseData$</urn1:lastResponseDate>
+         <urn1:lastResponseDate>$data.lastResponseDate$</urn1:lastResponseDate>
          <urn1:coordinatingCountyCouncilId>
             <urn2:root></urn2:root>
             <urn2:extension>$data.vardgivareHsaId$</urn2:extension>
@@ -50,13 +50,7 @@ request(data) ::= <<
             -->
          </urn1:authorityAdministrativeOfficial>
          <urn1:citizen>
-            <urn2:postalCity>
-               <urn2:code></urn2:code>
-               <urn2:codeSystem></urn2:codeSystem>
-               <urn2:codeSystemName></urn2:codeSystemName>
-               <urn2:codeSystemVersion></urn2:codeSystemVersion>
-               <urn2:displayName>Stockholm</urn2:displayName>
-            </urn2:postalCity>
+            <urn2:postalCity>111 21</urn2:postalCity>
             <urn2:specialNeeds>Påskgodis</urn2:specialNeeds>
             <!--
             <urn2:earlierAssessmentPerformer>

@@ -71,13 +71,13 @@ public class ForfraganController {
     }
 
     @PrometheusTimeMethod(name = "get_forfragan_duration_seconds", help = "Some helpful info here")
-    @GetMapping(path = "/{utredningId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetForfraganResponse> getForfragan(@PathVariable("forfraganId") String utredningId) {
+    @GetMapping(path = "/{utredningsId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GetForfraganResponse> getForfragan(@PathVariable("utredningsId") String utredningsId) {
         IbUser user = userService.getUser();
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_VISA_FORFRAGAN)
                 .orThrow(new IbAuthorizationException("User is not allowed to view the requested resource"));
 
-        GetForfraganResponse forfragan = utredningService.getForfragan(utredningId, user.getCurrentlyLoggedInAt().getId());
+        GetForfraganResponse forfragan = utredningService.getForfragan(utredningsId, user.getCurrentlyLoggedInAt().getId());
         return ResponseEntity.ok(forfragan);
     }
 

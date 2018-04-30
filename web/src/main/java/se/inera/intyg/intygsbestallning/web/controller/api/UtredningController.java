@@ -76,11 +76,11 @@ public class UtredningController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping(path = "/{utredningId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetUtredningResponse> getUtredning(@PathVariable("utredningId") String utredningId) {
+    @GetMapping(path = "/{utredningsId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GetUtredningResponse> getUtredning(@PathVariable("utredningsId") String utredningsId) {
         IbUser user = userService.getUser();
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_VISA_UTREDNING)
                 .orThrow(new IbAuthorizationException("User is not allowed to view the requested resource"));
-        return ResponseEntity.ok(utredningService.getExternForfragan(utredningId, user.getCurrentlyLoggedInAt().getId()));
+        return ResponseEntity.ok(utredningService.getExternForfragan(utredningsId, user.getCurrentlyLoggedInAt().getId()));
     }
 }

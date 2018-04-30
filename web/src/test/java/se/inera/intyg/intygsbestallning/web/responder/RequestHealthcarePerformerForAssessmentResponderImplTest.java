@@ -61,7 +61,7 @@ public class RequestHealthcarePerformerForAssessmentResponderImplTest {
         final String utredningId = "utredning-id";
 
         CitizenLimitedType citizen = new CitizenLimitedType();
-        citizen.setPostalCity(aCv("11111", null, null));
+        citizen.setPostalCity("11111");
 
         RequestHealthcarePerformerForAssessmentType request = new RequestHealthcarePerformerForAssessmentType();
         request.setCertificateType(aCv(AFU.name(), null, null));

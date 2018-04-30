@@ -27,22 +27,22 @@ import static com.jayway.restassured.RestAssured.given;
 
 public class InternForfraganControllerIT extends BaseRestIntegrationTest {
 
-    private static final String FORFRAGAN_API_ENDPOINT = "/api/forfragningar" ;
+    private static final String FORFRAGAN_API_ENDPOINT = "/api/forfragningar";
 
     @Test
     public void testListForfragningar() {
         RestAssured.sessionId = getAuthSession(DEFAULT_VARDADMIN);
         given().expect().statusCode(OK).when().get(FORFRAGAN_API_ENDPOINT)
-        .then()
+                .then()
                 .body("forfragningar", Matchers.notNullValue());
     }
 
     @Test
     public void testGetForfraganById() {
         RestAssured.sessionId = getAuthSession(DEFAULT_VARDADMIN);
-        given().expect().statusCode(OK).when().get(FORFRAGAN_API_ENDPOINT + "/1")
-        .then()
-                .body("forfraganId", Matchers.is(1));
+        given().expect().statusCode(OK).when().get(FORFRAGAN_API_ENDPOINT + "/utredning-bootstrap-2")
+                .then()
+                .body("kommentar", Matchers.is("Bered skyndsamt!"));
     }
 
     @Test

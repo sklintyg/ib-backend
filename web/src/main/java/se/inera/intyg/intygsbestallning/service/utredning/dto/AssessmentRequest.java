@@ -18,12 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning.dto;
 
-import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.AFU;
-import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.AFU_UTVIDGAD;
-import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.valueOf;
-import static se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest.AssessmentRequestBuilder.anAssessmentRequest;
-import static se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare.BestallareBuilder.aBestallare;
-
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -34,13 +28,22 @@ import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerfora
 import se.riv.intygsbestallning.certificate.order.v1.AddressType;
 import se.riv.intygsbestallning.certificate.order.v1.AuthorityAdministrativeOfficialType;
 import se.riv.intygsbestallning.certificate.order.v1.CVType;
+import se.riv.intygsbestallning.certificate.order.v1.CitizenLimitedType;
 import se.riv.intygsbestallning.certificate.order.v1.IIType;
 
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.AFU;
+import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.AFU_UTVIDGAD;
+import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.valueOf;
+import static se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest.AssessmentRequestBuilder.anAssessmentRequest;
+import static se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare.BestallareBuilder.aBestallare;
 
 public class AssessmentRequest {
 
@@ -55,46 +58,6 @@ public class AssessmentRequest {
     private String invanarePostkod;
     private List<String> invanareTidigareUtforare;
 
-    public UtredningsTyp getUtredningsTyp() {
-        return utredningsTyp;
-    }
-
-    public LocalDateTime getBesvaraSenastDatum() {
-        return besvaraSenastDatum;
-    }
-
-    public String getKommentar() {
-        return kommentar;
-    }
-
-    public boolean isTolkBehov() {
-        return tolkBehov;
-    }
-
-    public String getTolkSprak() {
-        return tolkSprak;
-    }
-
-    public Bestallare getBestallare() {
-        return bestallare;
-    }
-
-    public String getLandstingHsaId() {
-        return landstingHsaId;
-    }
-
-    public String getInvanareSarskildaBehov() {
-        return invanareSarskildaBehov;
-    }
-
-    public String getInvanarePostkod() {
-        return invanarePostkod;
-    }
-
-    public List<String> getInvanareTidigareUtforare() {
-        return invanareTidigareUtforare;
-    }
-
     public static AssessmentRequest from(final RequestHealthcarePerformerForAssessmentType request) {
 
         validate(request);
@@ -106,26 +69,25 @@ public class AssessmentRequest {
                         .map(cvType -> valueOf(cvType.getCode()))
                         .orElse(null))
                 .withBesvaraSenastDatum(Optional.ofNullable(request.getLastResponseDate())
-                        .map(date -> LocalDateTime.parse(date))
+                        .map(d -> LocalDate.parse(d, DateTimeFormatter.ISO_DATE).atStartOfDay())
                         .orElse(null))
                 .withKommentar(request.getComment())
                 .withLandstingHsaId(Optional.ofNullable(request.getCoordinatingCountyCouncilId())
                         .map(IIType::getExtension)
                         .orElse(null))
                 .withTolkSprak(Optional.ofNullable(request.getInterpreterLanguage())
-                        .map(cvType -> cvType.getCode())
+                        .map(CVType::getCode)
                         .orElse(null))
                 .withInvanarePostkod(Optional.ofNullable(request.getCitizen())
-                        .map(cit -> cit.getPostalCity())
-                        .map(cvType -> cvType.getCode())
+                        .map(CitizenLimitedType::getPostalCity)
                         .orElse(null))
                 .withInvanareSarskildaBehov(Optional.ofNullable(request.getCitizen())
-                        .map(cit -> cit.getSpecialNeeds())
+                        .map(CitizenLimitedType::getSpecialNeeds)
                         .orElse(null))
                 .withInvanareTidigareUtforare(Optional.ofNullable(request.getCitizen())
                         .map(cit -> cit.getEarlierAssessmentPerformer()
                                 .stream()
-                                .map(iiType -> iiType.getExtension())
+                                .map(IIType::getExtension)
                                 .collect(Collectors.toList()))
                         .orElse(null))
                 .withBestallare(aBestallare()
@@ -174,6 +136,46 @@ public class AssessmentRequest {
         if (!errors.isEmpty()) {
             throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, Joiner.on(", ").join(errors));
         }
+    }
+
+    public UtredningsTyp getUtredningsTyp() {
+        return utredningsTyp;
+    }
+
+    public LocalDateTime getBesvaraSenastDatum() {
+        return besvaraSenastDatum;
+    }
+
+    public String getKommentar() {
+        return kommentar;
+    }
+
+    public boolean isTolkBehov() {
+        return tolkBehov;
+    }
+
+    public String getTolkSprak() {
+        return tolkSprak;
+    }
+
+    public Bestallare getBestallare() {
+        return bestallare;
+    }
+
+    public String getLandstingHsaId() {
+        return landstingHsaId;
+    }
+
+    public String getInvanareSarskildaBehov() {
+        return invanareSarskildaBehov;
+    }
+
+    public String getInvanarePostkod() {
+        return invanarePostkod;
+    }
+
+    public List<String> getInvanareTidigareUtforare() {
+        return invanareTidigareUtforare;
     }
 
     //CHECKSTYLE:OFF OperatorWrap

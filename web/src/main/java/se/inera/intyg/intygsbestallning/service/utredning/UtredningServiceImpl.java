@@ -33,6 +33,7 @@ import se.inera.intyg.infra.logmessages.ResourceType;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.model.IbVardgivare;
 import se.inera.intyg.intygsbestallning.auth.pdl.PDLActivityStore;
+import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
@@ -187,7 +188,7 @@ public class UtredningServiceImpl implements UtredningService {
                 () -> new IbNotFoundException("Utredning with assessmentId '" + utredningId + "' does not exist."));
 
         if (!Objects.equals(utredning.getExternForfragan().getLandstingHsaId(), landstingHsaId)) {
-            throw new IbNotFoundException(
+            throw new IbAuthorizationException(
                     "Utredning with assessmentId '" + utredningId + "' does not have ExternForfragan for landsting with id '"
                             + landstingHsaId + "'");
         }

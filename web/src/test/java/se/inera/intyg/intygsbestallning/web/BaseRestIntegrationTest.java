@@ -90,7 +90,7 @@ public abstract class BaseRestIntegrationTest {
     }
 
     /**
-     * Log in to rehabstod using the supplied FakeCredentials.
+     * Log in to Intygsbestallning using the supplied FakeCredentials.
      *
      * @param fakeCredentials
      *            who to log in as

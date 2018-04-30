@@ -18,9 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.testutil;
 
-import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.aCv;
-import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
@@ -36,46 +33,32 @@ import se.riv.intygsbestallning.certificate.order.v1.AddressType;
 import se.riv.intygsbestallning.certificate.order.v1.AuthorityAdministrativeOfficialType;
 import se.riv.intygsbestallning.certificate.order.v1.CitizenLimitedType;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.aCv;
+import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
 
 /**
  * Helper base class, provides data setup for tests.
  */
 public final class TestDataGen {
 
-    public final static LocalDateTime DATE_TIME = LocalDateTime.of(2018, 11, 11, 11, 11, 11);
+    public final static LocalDate DATE_TIME = LocalDate.of(2018, 11, 11);
 
     private static final String USER_HSA_ID = "user-1";
     private static final String USER_NAME = "Läkar Läkarsson";
     private static final String CAREUNIT_ID = "careunit-1";
     private static final String CAREUNIT_NAME = "Vårdenhet 1";
-    private static final String CAREGIVER_ID = "caregiver-1";
-    private static final String CAREGIVER_NAME = "Vårdgivare 1";
 
     private TestDataGen() {
 
     }
 
     // CHECKSTYLE:OFF MagicNumber
-
-
-    public static List<String> buildDiagnosGrupper() {
-        List<String> diagnosGrupper = new ArrayList<>();
-        diagnosGrupper.add("H00-H59: Sjukdomar i ögat och närliggande organ");
-        diagnosGrupper.add("J00-J99: Andningsorganens sjukdomar");
-        diagnosGrupper.add("M00-M99: Sjukdomar i muskuloskeletala systemet och bindväven");
-        return diagnosGrupper;
-    }
-
-    public static List<String> buildPersonnummerList() {
-        List<String> personnummerList = new ArrayList<>();
-        personnummerList.add("19121212-1212");
-        return personnummerList;
-    }
 
     public static List<String> buildDefaultSystemRoles() {
         List<String> systemRoles = new ArrayList<>();
@@ -86,21 +69,7 @@ public final class TestDataGen {
         return systemRoles;
     }
 
-
-    public static IbUser buildIBVardadminUser() {
-        IbUser user = new IbUser(USER_HSA_ID, USER_NAME);
-        user.setMiuNamnPerEnhetsId(buildMiUPerEnhetsIdMap());
-        user.setTitel("Vårdadministratör");
-        Role r = new Role();
-        r.setName(AuthoritiesConstants.ROLE_FMU_VARDADMIN);
-        user.setRoles(ImmutableMap.of(AuthoritiesConstants.ROLE_FMU_VARDADMIN, r));
-        user.setSystemRoles(buildDefaultSystemRoles());
-        user.setVardgivare(buildDefaultVardgivareTree());
-        new IbUserDetailsService().buildSystemAuthoritiesTree(user);
-        return user;
-    }
-
-    public static  List<Vardgivare> buildDefaultVardgivareTree() {
+    public static List<Vardgivare> buildDefaultVardgivareTree() {
         Vardgivare vg1 = new Vardgivare("vg1", "Vårdgivare 1");
         Vardenhet ve11 = new Vardenhet("ve11", "ve11");
         vg1.getVardenheter().add(ve11);
@@ -120,7 +89,7 @@ public final class TestDataGen {
 
     public static RequestHealthcarePerformerForAssessmentType createFullRequest() {
         CitizenLimitedType citizen = new CitizenLimitedType();
-        citizen.setPostalCity(aCv("postalCity", null, null));
+        citizen.setPostalCity("postalCity");
         citizen.setSpecialNeeds("specialNeeds");
         citizen.getEarlierAssessmentPerformer().addAll(ImmutableList.of(
                 anII("root", "1"),
@@ -152,20 +121,6 @@ public final class TestDataGen {
         request.setCitizen(citizen);
 
         return request;
-    }
-
-    private static Map<String, String> buildMiUPerEnhetsIdMap() {
-        Map<String, String> map = new HashMap<>();
-        map.put(CAREUNIT_ID, "Läkare på " + CAREUNIT_NAME);
-        return map;
-    }
-
-    private static SelectableVardenhet buildValdGivare(String hsaId, String namn) {
-        return new Vardgivare(hsaId, namn);
-    }
-
-    private static SelectableVardenhet buildValdVardenhet(String hsaId, String namn) {
-        return new Vardenhet(hsaId, namn);
     }
 
     // CHECKSTYLE:ON MagicNumber
