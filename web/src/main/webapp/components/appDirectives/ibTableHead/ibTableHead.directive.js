@@ -43,26 +43,27 @@ angular.module('ibApp').directive('ibTableHead',
                     $scope.helpText = messageService.getProperty($scope.helpKey);
                 }
 
-                $scope.toggleSort = function() {
-                    if ($scope.filter.orderBy === $scope.orderByKey) {
-                        $scope.filter.orderByAsc = !$scope.filter.orderByAsc;
-                    }
-                    else {
-                        $scope.filter.orderByAsc = true;
-                    }
+                if ($scope.filter) {
+                    $scope.toggleSort = function() {
+                        if ($scope.filter.orderBy === $scope.orderByKey) {
+                            $scope.filter.orderByAsc = !$scope.filter.orderByAsc;
+                        }
+                        else {
+                            $scope.filter.orderByAsc = true;
+                        }
 
-                    $scope.filter.orderBy = $scope.orderByKey;
+                        $scope.filter.orderBy = $scope.orderByKey;
 
-                    $scope.filterChanged();
-                };
+                        $scope.filterChanged();
+                    };
 
-                $scope.getSortClass = function() {
-                    if ($scope.filter.orderBy === $scope.orderByKey) {
-                        return 'fa-sort-' + ($scope.filter.orderByAsc ? 'up' : 'down');
-                    }
-                    return 'fa-sort';
-                };
-
+                    $scope.getSortClass = function() {
+                        if ($scope.filter.orderBy === $scope.orderByKey) {
+                            return 'fa-sort-' + ($scope.filter.orderByAsc ? 'up' : 'down');
+                        }
+                        return 'fa-sort';
+                    };
+                }
             }
         };
     });
