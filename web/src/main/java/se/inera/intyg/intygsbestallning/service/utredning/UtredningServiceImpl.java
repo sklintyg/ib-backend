@@ -19,6 +19,7 @@
 package se.inera.intyg.intygsbestallning.service.utredning;
 
 import com.google.common.base.Strings;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +85,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
@@ -133,6 +135,7 @@ public class UtredningServiceImpl implements UtredningService {
         List<UtredningListItem> list = utredningRepository.findAllByExternForfragan_LandstingHsaId(landstingHsaId)
                 .stream()
                 .map(u -> UtredningListItem.from(u, utredningStateResolver.resolveStatus(u)))
+                .filter(statusIsEligibleForListaUtredningar())
                 .collect(Collectors.toList());
 
         // Get status mapper
@@ -172,6 +175,12 @@ public class UtredningServiceImpl implements UtredningService {
         }
 
         return new GetUtredningListResponse(paged, total);
+    }
+
+    @NotNull
+    private Predicate<UtredningListItem> statusIsEligibleForListaUtredningar() {
+        return uli -> uli.getStatus() != UtredningStatus.AVBRUTEN && uli.getStatus() != UtredningStatus.AVSLUTAD
+                && uli.getStatus() != UtredningStatus.AVVISAD;
     }
 
     private boolean buildFasPredicate(UtredningListItem uli, String fas) {

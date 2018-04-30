@@ -48,6 +48,26 @@ public class UtredningStateResolverTest {
     private UtredningStateResolver testee;
 
     @Test
+    public void testAvbruten() {
+        Utredning utr = buildBaseUtredning();
+        utr.setAvbrutenDatum(LocalDateTime.now());
+        UtredningStatus status = testee.resolveStatus(utr);
+        assertEquals(UtredningStatus.AVBRUTEN, status);
+        assertEquals(UtredningFas.AVSLUTAD, status.getUtredningFas());
+        assertEquals(Actor.NONE, status.getNextActor());
+    }
+
+    @Test
+    public void testAvvisad() {
+        Utredning utr = buildBaseUtredning();
+        utr.getExternForfragan().setAvvisatDatum(LocalDateTime.now());
+        UtredningStatus status = testee.resolveStatus(utr);
+        assertEquals(UtredningStatus.AVVISAD, status);
+        assertEquals(UtredningFas.AVSLUTAD, status.getUtredningFas());
+        assertEquals(Actor.NONE, status.getNextActor());
+    }
+
+    @Test
     public void testResolvesForfraganInkommen() {
         Utredning utr = buildBaseUtredning();
         UtredningStatus status = testee.resolveStatus(utr);

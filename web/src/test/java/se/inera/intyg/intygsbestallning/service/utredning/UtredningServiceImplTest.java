@@ -38,6 +38,7 @@ import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.EndReason;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.patient.PatientNameEnricher;
 import se.inera.intyg.intygsbestallning.service.pdl.LogService;
@@ -48,14 +49,17 @@ import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningReques
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListBestallningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -127,8 +131,7 @@ public class UtredningServiceImplTest {
                         .withInternForfraganList(ImmutableList.of(
                                 anInternForfragan()
                                         .withVardenhetHsaId(enhetId)
-                                        .build()
-                        ))
+                                        .build()))
                         .build())
                 .build();
         when(utredningRepository.findAllByExternForfragan_InternForfraganList_VardenhetHsaId(enhetId)).thenReturn(ImmutableList.of(utr));
@@ -187,7 +190,7 @@ public class UtredningServiceImplTest {
         assertNotNull(response);
         assertEquals(utredningId, response.getUtredningId());
         assertTrue(response.getTolkBehov());
-        assertEquals("sv",response.getTolkSprak());
+        assertEquals("sv", response.getTolkSprak());
         assertEquals(AFU, response.getUtredningsTyp());
         assertEquals("kommentar", response.getBestallning().getKommentar());
         assertEquals("atgarder", response.getBestallning().getPlaneradeAktiviteter());
@@ -307,12 +310,10 @@ public class UtredningServiceImplTest {
         assertEquals("telefonnummer", response.getHandlaggare().getTelefonnummer());
     }
 
-
     @Test
     public void registerNewUtredningFromRequestHealthCarePerformerForAssesment() {
 
         final LocalDateTime dateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 12);
-
 
         final Utredning utredning = anUtredning()
                 .withUtredningId("id")
@@ -367,7 +368,6 @@ public class UtredningServiceImplTest {
 
         assertEquals(utredning, sparadUtredning);
     }
-
 
     @Test
     public void testGetUtredningSuccess() {
@@ -503,6 +503,33 @@ public class UtredningServiceImplTest {
     }
 
     @Test
+    public void testFilterListUtredningarAvbrutenAvvisadReturnsZeroItems() {
+        when(utredningRepository.findAllByExternForfragan_LandstingHsaId(anyString()))
+                .thenReturn(Arrays.asList(
+                        anUtredning()
+                        .withUtredningId("123")
+                        .withUtredningsTyp(UtredningsTyp.AFU)
+                        .withAvbrutenDatum(LocalDateTime.now())
+                        .build(),
+                        anUtredning()
+                                .withUtredningId("124")
+                                .withUtredningsTyp(UtredningsTyp.AFU)
+                                .withExternForfragan(
+                                        anExternForfragan().withAvvisatDatum(LocalDateTime.now()).build())
+                                .build()));
+
+        GetUtredningListResponse response = utredningService.findExternForfraganByLandstingHsaIdWithFilter("vg-1",
+                buildListUtredningarFilter());
+        assertEquals(0, response.getTotalCount());
+        assertEquals(0, response.getUtredningar().size());
+    }
+
+    private ListUtredningRequest buildListUtredningarFilter() {
+        ListUtredningRequest req = new ListUtredningRequest();
+        return req;
+    }
+
+    @Test
     public void testFilterListBestallningar() {
         when(userService.getUser()).thenReturn(buildUser());
         when(utredningRepository.findAllWithBestallningForVardenhetHsaId(anyString())).thenReturn(buildBestallningar(7));
@@ -514,12 +541,13 @@ public class UtredningServiceImplTest {
     public void testFilterListBestallningarOrderByDesc() {
         when(userService.getUser()).thenReturn(buildUser());
         when(utredningRepository.findAllWithBestallningForVardenhetHsaId(anyString())).thenReturn(buildBestallningar(7));
-        List<BestallningListItem> list = utredningService.findOngoingBestallningarForVardenhet("enhet", buildFilter(ListFilterStatus.ALL, null, null, "patientId", false));
+        List<BestallningListItem> list = utredningService.findOngoingBestallningarForVardenhet("enhet",
+                buildFilter(ListFilterStatus.ALL, null, null, "patientId", false));
         assertEquals(7, list.size());
 
         // Check sort by patientId DESC
         int startIndex = 6;
-        for (BestallningListItem bli: list) {
+        for (BestallningListItem bli : list) {
             assertEquals("19121212-121" + startIndex, bli.getPatientId());
             startIndex--;
         }
@@ -529,14 +557,16 @@ public class UtredningServiceImplTest {
     public void testFilterListBestallningarWithFreeTextMatchingSingleId() {
         when(userService.getUser()).thenReturn(buildUser());
         when(utredningRepository.findAllWithBestallningForVardenhetHsaId(anyString())).thenReturn(buildBestallningar(7));
-        List<BestallningListItem> list = utredningService.findOngoingBestallningarForVardenhet("enhet", buildFilter(ListFilterStatus.ALL, "id-3"));
+        List<BestallningListItem> list = utredningService.findOngoingBestallningarForVardenhet("enhet",
+                buildFilter(ListFilterStatus.ALL, "id-3"));
         assertEquals(1, list.size());
     }
 
     @Test
     public void testFilterListBestallningarWithUnknownVg() {
         when(utredningRepository.findAllWithBestallningForVardenhetHsaId(anyString())).thenReturn(buildBestallningar(7));
-        List<BestallningListItem> list = utredningService.findOngoingBestallningarForVardenhet("enhet", buildFilter(ListFilterStatus.ALL, null, "vg-other"));
+        List<BestallningListItem> list = utredningService.findOngoingBestallningarForVardenhet("enhet",
+                buildFilter(ListFilterStatus.ALL, null, "vg-other"));
         assertEquals(0, list.size());
     }
 
@@ -556,8 +586,7 @@ public class UtredningServiceImplTest {
                             .withInternForfraganList(ImmutableList.of(
                                     anInternForfragan()
                                             .withVardenhetHsaId("enhet")
-                                            .build()
-                            ))
+                                            .build()))
                             .withLandstingHsaId("vg-id")
                             .build())
                     .withBestallning(buildBestallning())

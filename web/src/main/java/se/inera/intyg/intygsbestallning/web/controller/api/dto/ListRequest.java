@@ -24,8 +24,8 @@ public abstract class ListRequest {
 
     private int currentPage = 0;
     private int pageSize = DEFAULT_PAGE_SIZE;
-    private String orderBy;
-    private boolean orderByAsc = false;
+    private String orderBy = "";
+    private boolean orderByAsc = true;
 
     public int getCurrentPage() {
         return currentPage;

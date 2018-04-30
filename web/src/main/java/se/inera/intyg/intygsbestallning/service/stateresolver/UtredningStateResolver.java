@@ -32,8 +32,18 @@ public class UtredningStateResolver {
     public UtredningStatus resolveStatus(Utredning utredning) {
         // How to resolve statuses....
 
+        if (utredning.getAvbrutenDatum() != null) {
+            return UtredningStatus.AVBRUTEN;
+        }
+
         // First phase - there can be no Bestallning - i.e. Forfragan
         if (utredning.getBestallning() == null) {
+
+            // AVVISAD
+            if (utredning.getExternForfragan() != null && utredning.getExternForfragan().getAvvisatDatum() != null) {
+                return UtredningStatus.AVVISAD;
+            }
+
             // FORFRAGAN_INKOMMEN - får ej finnas några internförfrågan alls.
             if (utredning.getExternForfragan() != null && utredning.getExternForfragan().getInternForfraganList().size() == 0) {
                 return UtredningStatus.FORFRAGAN_INKOMMEN;
