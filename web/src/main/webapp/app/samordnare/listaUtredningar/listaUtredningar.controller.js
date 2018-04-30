@@ -24,13 +24,28 @@ angular.module('ibApp')
 
             $scope.filter = ibUtredningFilterModel.build();
 
-            $scope.getUtredningarFiltered = function() {
+            $scope.getUtredningarFiltered = function(appendResults) {
+
+                if (!appendResults) {
+                    $scope.filter.currentPage = 0;
+                }
+
                 UtredningarProxy.getUtredningarWithFilter($scope.filter.convertToPayload()).then(function(data) {
-                    $scope.utredningar = data.utredningar;
+                    if (appendResults) {
+                        $scope.utredningar = $scope.utredningar.concat(data.utredningar);
+                    }
+                    else {
+                        $scope.utredningar = data.utredningar;
+                    }
                     $scope.utredningarTotal = data.totalCount;
                 }, function(error) {
                     $log.error(error);
                 });
+            };
+
+            $scope.getMore = function() {
+                $scope.filter.currentPage++;
+                $scope.getUtredningarFiltered(true);
             };
 
             $scope.getUtredningarFiltered();

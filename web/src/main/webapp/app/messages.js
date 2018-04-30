@@ -41,6 +41,7 @@ var ibMessages = {
         'common.label.loading': 'Laddar',
 
         'common.no.results': 'Inget resultat hittades för den valda filtreringen. Överväg att ändra filtreringen för att utöka resultatet.',
+        'common.more.results': 'Hämta fler träffar',
 
         //System role
         'systemrole.login.label': 'Välj systemroll',

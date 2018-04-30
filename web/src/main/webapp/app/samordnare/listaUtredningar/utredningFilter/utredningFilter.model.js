@@ -56,6 +56,8 @@ angular.module('ibApp').factory('ibUtredningFilterModel',
         }
 
         var defaultFilter = {
+            currentPage: 0,
+            pageSize: 50,
             freetext: '',
             fas: null,
             status: null,
@@ -68,6 +70,8 @@ angular.module('ibApp').factory('ibUtredningFilterModel',
         };
 
         UtredningFilterModel.prototype.reset = function() {
+            this.currentPage = defaultFilter.currentPage;
+            this.pageSize = defaultFilter.pageSize;
             this.freetext = defaultFilter.freetext;
             this.fas = defaultFilter.fas;
             this.status = defaultFilter.status;
@@ -77,7 +81,9 @@ angular.module('ibApp').factory('ibUtredningFilterModel',
         };
 
         UtredningFilterModel.prototype.isDefault = function() {
-            return this.freetext === defaultFilter.freetext &&
+            return this.currentPage === defaultFilter.currentPage &&
+                this.pageSize === defaultFilter.pageSize &&
+                this.freetext === defaultFilter.freetext &&
                 this.fas === defaultFilter.fas &&
                 this.status === defaultFilter.status &&
                 angular.equals(this.slutdatumFas, defaultFilter.slutdatumFas) &&
@@ -87,11 +93,16 @@ angular.module('ibApp').factory('ibUtredningFilterModel',
 
         UtredningFilterModel.prototype.convertToPayload = function() {
             return {
+                // Pagination
+                currentPage: this.currentPage,
+                pageSize: this.pageSize,
+                // Filter
                 freeText: this.freetext,
                 status: this.status,
                 fas: this.fas,
                 fromDate: this.slutdatumFas.from,
                 toDate: this.slutdatumFas.to,
+                // Sort
                 orderBy: this.orderBy,
                 orderByAsc: this.orderByAsc
             };

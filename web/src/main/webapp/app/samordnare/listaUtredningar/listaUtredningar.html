@@ -29,6 +29,12 @@
     </tbody>
   </table>
 
+  <button class="btn btn-primary"
+          ng-click="getMore()"
+          ng-if="utredningarTotal > utredningar.length">
+    <message key="common.more.results"></message>
+  </button>
+
   <div id="samordnare-lista-utredningar-no-results" ng-if="!utredningar.length">
     <span message key="common.no.results"></span>
   </div>
