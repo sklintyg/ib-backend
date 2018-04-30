@@ -31,7 +31,7 @@ import static se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFa
 import static se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas.UTREDNING;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-public enum UtredningStatus {
+public enum UtredningStatus implements SortableLabel {
 
     // Statuses in FORFRAGAN phase
     FORFRAGAN_INKOMMEN("Förfrågan inkommen", FORFRAGAN, SAMORDNARE),
@@ -79,6 +79,7 @@ public enum UtredningStatus {
         return id;
     }
 
+    @Override
     public String getLabel() {
         return label;
     }

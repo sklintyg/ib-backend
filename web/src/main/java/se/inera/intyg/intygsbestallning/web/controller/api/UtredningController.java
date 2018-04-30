@@ -70,10 +70,10 @@ public class UtredningController {
                 .orThrow(new IbAuthorizationException("User is not allowed to view the requested resource"));
 
         // Do a SAMORDNARE search...
-        List<UtredningListItem> utredningar = utredningService
+        GetUtredningListResponse response = utredningService
                 .findExternForfraganByLandstingHsaIdWithFilter(user.getCurrentlyLoggedInAt().getId(), req);
 
-        return ResponseEntity.ok(new GetUtredningListResponse(utredningar, utredningar.size()));
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping(path = "/{utredningId}", produces = MediaType.APPLICATION_JSON_VALUE)

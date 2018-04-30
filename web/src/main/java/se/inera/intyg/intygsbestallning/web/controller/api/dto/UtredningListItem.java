@@ -44,7 +44,7 @@ public class UtredningListItem implements FreeTextSearchable, FilterableListItem
                 .withUtredningsId(utredning.getUtredningId())
                 .withUtredningsTyp(utredning.getUtredningsTyp().name())
                 .withVardenhetHsaId(resolveTilldeladVardenhetHsaId(utredning))
-                .withVardenhetNamn("VE namn")
+                .withVardenhetNamn("")
                 .build();
     }
 
@@ -145,9 +145,9 @@ public class UtredningListItem implements FreeTextSearchable, FilterableListItem
         return utredningsId + " "
                 + utredningsTyp + " "
                 + vardenhetNamn + " "
-                + fas + " "
+                + fas.getLabel() + " "
                 + slutdatumFas + " "
-                + status + " ";
+                + status.getLabel() + " ";
     }
 
     public static final class UtredningListItemBuilder {

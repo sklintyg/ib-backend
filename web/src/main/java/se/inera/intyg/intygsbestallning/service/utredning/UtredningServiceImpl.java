@@ -49,6 +49,7 @@ import se.inera.intyg.intygsbestallning.service.patient.PatientNameEnricher;
 import se.inera.intyg.intygsbestallning.service.pdl.LogService;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
 import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
+import se.inera.intyg.intygsbestallning.service.stateresolver.SortableLabel;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStateResolver;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
@@ -63,6 +64,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListIte
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FreeTextSearchable;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListBestallningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListUtredningRequest;
@@ -126,7 +128,7 @@ public class UtredningServiceImpl implements UtredningService {
     }
 
     @Override
-    public List<UtredningListItem> findExternForfraganByLandstingHsaIdWithFilter(String landstingHsaId, ListUtredningRequest request) {
+    public GetUtredningListResponse findExternForfraganByLandstingHsaIdWithFilter(String landstingHsaId, ListUtredningRequest request) {
         List<UtredningListItem> list = utredningRepository.findAllByExternForfragan_LandstingHsaId(landstingHsaId)
                 .stream()
                 .map(u -> UtredningListItem.from(u, utredningStateResolver.resolveStatus(u)))
@@ -134,6 +136,14 @@ public class UtredningServiceImpl implements UtredningService {
 
         // Get status mapper
         Map<UtredningStatus, ListFilterStatus> statusToFilterStatus = buildStatusToListBestallningFilterStatusMap();
+
+        // If filtering by freeText or ordering by vardenhetNamn we need all vardenhetNames
+        boolean enrichedWithVardenhetNames = false;
+        if (request.getFreeText() != null || request.getOrderBy().equals("vardenhetNamn")) {
+            // Enrich with vardenhet namn from HSA
+            enrichWithVardenhetNames(list);
+            enrichedWithVardenhetNames = true;
+        }
 
         // Start actual filtering. Order is important here. We must always filter out unwanted items _before_ sorting and
         // then finally paging.
@@ -149,16 +159,18 @@ public class UtredningServiceImpl implements UtredningService {
         // Paging. We need to perform some bounds-checking...
         int total = filtered.size();
         if (total == 0) {
-            return filtered;
+            return new GetUtredningListResponse(filtered, total);
         }
 
         Pair<Integer, Integer> bounds = PagingUtil.getBounds(total, request.getPageSize(), request.getCurrentPage());
         List<UtredningListItem> paged = filtered.subList(bounds.getFirst(), bounds.getSecond() + 1);
 
-        // Enrich with vardenhet namn from HSA
-        enrichWithVardenhetNames(paged);
+        if (!enrichedWithVardenhetNames) {
+            // Enrich with vardenhet namn from HSA
+            enrichWithVardenhetNames(paged);
+        }
 
-        return paged;
+        return new GetUtredningListResponse(paged, total);
     }
 
     private boolean buildFasPredicate(UtredningListItem uli, String fas) {
@@ -399,7 +411,7 @@ public class UtredningServiceImpl implements UtredningService {
         if (Strings.isNullOrEmpty(freeText)) {
             return true;
         }
-        return bli.toSearchString().contains(freeText);
+        return bli.toSearchString().toLowerCase().contains(freeText.toLowerCase());
     }
 
     private boolean buildToFromPredicateForUtredningar(FilterableListItem bli, String fromDate, String toDate) {
@@ -409,8 +421,9 @@ public class UtredningServiceImpl implements UtredningService {
 
         switch (bli.getStatus().getUtredningFas()) {
         case AVSLUTAD:
-        case REDOVISA_TOLK:
             return false;
+        case REDOVISA_TOLK:
+            return Strings.isNullOrEmpty(fromDate);
         case UTREDNING:
         case KOMPLETTERING:
         case FORFRAGAN:
@@ -455,6 +468,12 @@ public class UtredningServiceImpl implements UtredningService {
 
             Object o1Value = m.invoke(o1);
             Object o2Value = m.invoke(o2);
+
+            if (SortableLabel.class.isAssignableFrom(m.getReturnType())) {
+                o1Value = ((SortableLabel) o1Value).getLabel();
+                o2Value = ((SortableLabel) o2Value).getLabel();
+            }
+
             if (orderByAsc) {
 
                 if (o1Value instanceof Number) {
@@ -545,7 +564,7 @@ public class UtredningServiceImpl implements UtredningService {
     private Map<UtredningStatus, ListFilterStatus> buildStatusToListBestallningFilterStatusMap() {
         Map<UtredningStatus, ListFilterStatus> statusMap = new HashMap<>();
         for (UtredningStatus us : UtredningStatus.values()) {
-            statusMap.put(us, resolveListBestallningFilterStatus(us, Actor.VARDADMIN));
+            statusMap.put(us, resolveListBestallningFilterStatus(us, Actor.SAMORDNARE));
         }
         return statusMap;
     }
