@@ -33,6 +33,13 @@ pipeline {
                          "-DbuildVersion=" + buildVersion + " -DinfraVersion=" + infraVersion
             }
         }
+
+        stage('propagate') {
+            steps {
+                build job: "ib-sandbox-build", wait: false, parameters: [[$class: 'StringParameterValue', name: 'IB_BUILD_VERSION', value: buildVersion]]
+            }
+        }
+
     }
 }
 
