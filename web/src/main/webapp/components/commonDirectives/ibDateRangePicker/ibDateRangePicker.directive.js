@@ -87,7 +87,7 @@ angular.module('ibApp').directive('ibDateRangePicker',
                     showTopbar: true,
                     hoveringTooltip: false,
                     getValue: function() {
-                        if (!moment.isDate($scope.model.from)) {
+                        if (!moment($scope.model.from, 'YYYY-MM-DD').isValid()) {
                             return '';
                         }
 
@@ -103,8 +103,8 @@ angular.module('ibApp').directive('ibDateRangePicker',
                 inputElement.dateRangePicker(options)
                     .on('datepicker-change', function(event, obj) {
                         /* This event will be triggered when second date is selected */
-                        $scope.model.from = obj.date1;
-                        $scope.model.to = obj.date2;
+                        $scope.model.from = moment(obj.date1).format('YYYY-MM-DD');
+                        $scope.model.to = moment(obj.date2).format('YYYY-MM-DD');
                         $scope.onChange();
 
                         setDisplayValue(true);
@@ -139,7 +139,7 @@ angular.module('ibApp').directive('ibDateRangePicker',
                 $scope.$watch('model', function() {
                     setDisplayValue();
 
-                    if (!moment.isDate($scope.model.from)) {
+                    if (!moment($scope.model.from, 'YYYY-MM-DD').isValid()) {
                         inputElement.data('dateRangePicker').clear();
                     }
                 }, true);
@@ -155,11 +155,10 @@ angular.module('ibApp').directive('ibDateRangePicker',
                 }
 
                 function getDisplayValue(model) {
-                    if (!moment.isDate(model.from)) {
+                    var fromDate = moment(model.from, 'YYYY-MM-DD');
+                    if (!fromDate.isValid()) {
                         return '';
                     }
-
-                    var fromDate = moment(model.from);
 
                     if (fromDate.isSame(model.to)) {
                         return fromDate.format('YYYY-MM-DD');
