@@ -92,6 +92,9 @@ public class UtredningStateResolver {
             return UtredningStatus.UTREDNING_PAGAR;
         }
 
+        // Third phase - Komplettering?
+
+
         throw new IllegalStateException("Unhandled state!");
     }
 
