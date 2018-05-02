@@ -10,7 +10,7 @@ pipeline {
 
         stage('POST to trigger build in OC') {
             steps {
-                writeFile encoding: 'UTF-8', file: 'hook.json', text: '''{"git": {"uri": "https://github.com/sklintyg/ib-backend.git", "ref": "develop" }, "env": [{ "name": "infraVersion", "value": $INFRA_VERSION }, {"name": "buildVersion", "value": $BUILD_VERSION}]}'''
+                writeFile encoding: 'UTF-8', file: 'hook.json', text: '''{"git": {"uri": "https://github.com/sklintyg/ib-backend.git", "ref": "develop" }, "env": [{ "name": "infraVersion", "value": $INFRA_VERSION }, {"name": "buildVersion", "value": $BUILD_TAG}]}'''
                 sh 'curl -k -X POST -H "Content-Type: application/json" --data-binary @hook.json $BF_URL'
             }
         }
