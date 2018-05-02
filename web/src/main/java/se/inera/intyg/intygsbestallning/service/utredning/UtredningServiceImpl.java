@@ -18,6 +18,18 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toList;
+import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
+import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
+import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
+import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
+
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.slf4j.Logger;
@@ -86,25 +98,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import static java.util.Objects.isNull;
-import static java.util.stream.Collectors.toList;
-import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
-import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
-import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
-import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
-import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 
 @Service
 @Transactional
 public class UtredningServiceImpl implements UtredningService {
 
     private static final Logger LOG = LoggerFactory.getLogger(UtredningService.class);
+
+    public static final String INTERPRETER_ERROR_TEXT = "May not set interpreter language if there is no need for interpreter";
 
     @Autowired
     private UtredningRepository utredningRepository;
@@ -333,7 +338,14 @@ public class UtredningServiceImpl implements UtredningService {
 
         update.getKommentar().ifPresent(kommentar -> toUpdate.getBestallning().get().setKommentar(kommentar));
 
-        //update.getHandling().ifPresent(isHandling -> toUpdate.getHandelseList());
+        if ((isNull(toUpdate.getTolkBehov()) || nonNull(toUpdate.getTolkBehov())
+                && !toUpdate.getTolkBehov()) && !isNullOrEmpty(toUpdate.getTolkSprak())) {
+
+            throw new IbServiceException(
+                    IbErrorCodeEnum.BAD_REQUEST, INTERPRETER_ERROR_TEXT);
+        } else if (nonNull(toUpdate.getTolkSprak()) && !toUpdate.getTolkBehov() && !update.getTolkSprak().isPresent()) {
+            toUpdate.setTolkSprak(null);
+        }
 
         return toUpdate;
     }
@@ -708,9 +720,13 @@ public class UtredningServiceImpl implements UtredningService {
                 .withTilldeladVardenhetHsaId(order.getEnhetId())
                 .withSyfte(order.getSyfte())
                 .withPlaneradeAktiviteter(order.getAtgarder())
-                .withOrderDatum(order.getOrderDate().atStartOfDay())
+                .withOrderDatum(Optional.ofNullable(order.getOrderDate())
+                        .map(LocalDate::atStartOfDay)
+                        .orElse(null))
                 .withKommentar(order.getKommentar())
-                .withIntygKlartSenast(order.getLastDateIntyg().atStartOfDay())
+                .withIntygKlartSenast(Optional.ofNullable(order.getLastDateIntyg())
+                        .map(LocalDate::atStartOfDay)
+                        .orElse(null))
                 .build();
     }
 }

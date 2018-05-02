@@ -18,12 +18,10 @@
  */
 package se.inera.intyg.intygsbestallning.web.responder;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
-import static se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest.INTERPRETER_ERROR_TEXT;
 import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createUpdateOrderType;
 
 import org.junit.Test;
@@ -31,7 +29,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
@@ -78,13 +75,4 @@ public class UpdateOrderResponderImplTest {
 
         assertEquals(ResultTypeUtil.ok(), response.getResult());
     }
-
-    @Test
-    public void uppdateraUtanTolkBehovTolkSprakOk() {
-
-        assertThatThrownBy(() -> updateOrderResponder.updateOrder("logicalAddress", createUpdateOrderType(false, "tolkSprak")))
-                .isExactlyInstanceOf(IbServiceException.class)
-                .hasMessage(INTERPRETER_ERROR_TEXT);
-    }
-
 }

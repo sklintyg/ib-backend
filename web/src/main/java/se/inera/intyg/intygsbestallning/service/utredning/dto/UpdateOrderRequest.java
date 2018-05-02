@@ -18,22 +18,16 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning.dto;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
-import static java.util.Objects.nonNull;
 import static se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare.BestallareBuilder;
 import static se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare.BestallareBuilder.aBestallare;
 import static se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest.UpdateOrderRequestBuilder.anUpdateOrderRequest;
 
-import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
-import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 public class UpdateOrderRequest {
-
-    public static final String INTERPRETER_ERROR_TEXT = "May not set interpreter language if there is no need for interpreter";
 
     private String utredningId;
     private String kommentar;
@@ -72,18 +66,8 @@ public class UpdateOrderRequest {
             updateOrderRequestBuilder.withBestallare(updateBestallareBuilder.build());
         });
 
-        if (nonNull(request.isNeedForInterpreter())) {
-
-            if (request.isNeedForInterpreter() && nonNull(request.getInterpreterLanguage())) {
-                updateOrderRequestBuilder.withTolkSprak(request.getInterpreterLanguage().getCode());
-            } else if (!request.isNeedForInterpreter() && nonNull(request.getInterpreterLanguage())
-                    && !isNullOrEmpty(request.getInterpreterLanguage().getCode())) {
-                throw new IbServiceException(
-                        IbErrorCodeEnum.BAD_REQUEST, INTERPRETER_ERROR_TEXT);
-            }
-
-            updateOrderRequestBuilder.withTolkBehov(request.isNeedForInterpreter());
-        }
+        updateOrderRequestBuilder.withTolkBehov(request.isNeedForInterpreter());
+        Optional.ofNullable(request.getInterpreterLanguage()).ifPresent(typ -> updateOrderRequestBuilder.withTolkSprak(typ.getCode()));
 
         return updateOrderRequestBuilder.build();
     }

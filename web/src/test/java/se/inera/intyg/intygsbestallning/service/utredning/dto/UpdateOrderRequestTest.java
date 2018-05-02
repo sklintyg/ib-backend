@@ -18,16 +18,13 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning.dto;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest.INTERPRETER_ERROR_TEXT;
 import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.DATE_TIME;
 import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createUpdateOrderType;
 
 import org.junit.Test;
-import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 
 import java.util.Optional;
 
@@ -106,12 +103,5 @@ public class UpdateOrderRequestTest {
         assertEquals("postalCode", bestallare.getPostkod());
         assertEquals("postalCity", bestallare.getStad());
         assertEquals("phoneNumber", bestallare.getTelefonnummer());
-    }
-
-    @Test
-    public void testConvertFranOrderUpdateTypeUtanTolkBehovMedTolkSprakNok() {
-        assertThatThrownBy(() -> UpdateOrderRequest.from(createUpdateOrderType(false, "tolkSprak")))
-                .isExactlyInstanceOf(IbServiceException.class)
-                .hasMessage(INTERPRETER_ERROR_TEXT);
     }
 }
