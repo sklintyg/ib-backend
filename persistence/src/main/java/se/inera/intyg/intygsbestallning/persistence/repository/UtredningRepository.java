@@ -32,6 +32,8 @@ public interface UtredningRepository extends JpaRepository<Utredning, String> {
 
     List<Utredning> findAllByExternForfragan_LandstingHsaId(String landstingHsaId);
 
+    List<Utredning> findByExternForfragan_LandstingHsaId_AndArkiveradFalse(String landstingHsaId);
+
     @Query("SELECT u FROM Utredning u JOIN u.bestallning b WHERE b.tilldeladVardenhetHsaId = :vardenhetHsaId")
     List<Utredning> findAllWithBestallningForVardenhetHsaId(@Param("vardenhetHsaId") String vardenhetHsaId);
 

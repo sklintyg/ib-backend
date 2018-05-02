@@ -18,38 +18,51 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.filter;
 
-import java.util.List;
+import java.util.Objects;
 
-/**
- * Provides possible filter values for ListBestallning.
- */
-public class ListBestallningFilter {
+public class SelectItem {
+    private String id;
+    private String label;
 
-    private List<SelectItem> vardgivare;
-    private List<ListFilterStatus> statuses;
-
-    private ListBestallningFilter() {
+    public SelectItem() {
 
     }
 
-    public ListBestallningFilter(List<SelectItem> vardgivare, List<ListFilterStatus> statuses) {
-        this.vardgivare = vardgivare;
-        this.statuses = statuses;
+    public SelectItem(String id, String label) {
+        this.id = id;
+        this.label = label;
     }
 
-    public List<ListFilterStatus> getStatuses() {
-        return statuses;
+    public String getId() {
+        return id;
     }
 
-    public void setStatuses(List<ListFilterStatus> statuses) {
-        this.statuses = statuses;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public List<SelectItem> getVardgivare() {
-        return vardgivare;
+    public String getLabel() {
+        return label;
     }
 
-    public void setVardgivare(List<SelectItem> vardgivare) {
-        this.vardgivare = vardgivare;
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        SelectItem that = (SelectItem) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

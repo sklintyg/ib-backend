@@ -1,0 +1,18 @@
+
+ib-bestallning-slutdatum-fas {
+
+  .icon-container {
+    display: inline-block;
+    width: 16px;
+    .material-icons {
+      font-size: 16px;
+    }
+    .slutdatum-paminnelse {
+      color: $ib-color-21;
+    }
+    .slutdatum-passed {
+      color: $ib-color-04;
+    }
+  }
+
+}

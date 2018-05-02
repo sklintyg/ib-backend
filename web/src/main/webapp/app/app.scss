@@ -43,6 +43,7 @@
 @import 'vardadmin/avslutadeUtredningar/avslutadeUtredningar.page.scss';
 @import 'vardadmin/listaForfragningar/forfraganFilter/forfraganFilter.directive.scss';
 @import 'vardadmin/listaForfragningar/listaForfragningar.page.scss';
+@import 'vardadmin/pagaendeUtredningar/bestallningFilter/bestallningFilter.directive.scss';
 @import 'vardadmin/pagaendeUtredningar/pagaendeUtredningar.page.scss';
 @import 'appDirectives/ibAppHeader/ibAppHeader.directive.scss';
 @import 'appDirectives/ibAppHeader/ibAppHeader.variables.scss';
@@ -54,6 +55,8 @@
 @import 'appDirectives/ibAppHeader/ibHeaderActions/unit-settings/ibUnitSettingsDialog.scss';
 @import 'appDirectives/ibAppHeader/ibHeaderUnit/ibHeaderUnit.directive.scss';
 @import 'appDirectives/ibAppHeader/ibHeaderUser/ibHeaderUser.directive.scss';
+@import 'appDirectives/ibBestallningSlutdatumFas/ibBestallningSlutdatumFas.directive.scss';
+@import 'appDirectives/ibBestallningStatus/ibBestallningStatus.directive.scss';
 @import 'appDirectives/ibForfraganStatus/ibForfraganStatus.directive.scss';
 @import 'appDirectives/ibForfraganSvarsdatum/ibForfraganSvarsdatum.directive.scss';
 @import 'appDirectives/ibTableHead/ibTableHead.directive.scss';

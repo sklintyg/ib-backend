@@ -10,7 +10,6 @@ angular.module('ibApp').config(function($stateProvider) {
                 templateUrl: '/app/vardadmin/pagaendeUtredningar/pagaendeUtredningar.html',
                 controller: 'PagaendeUtredningarCtrl'
             }
-
         }
     });
 

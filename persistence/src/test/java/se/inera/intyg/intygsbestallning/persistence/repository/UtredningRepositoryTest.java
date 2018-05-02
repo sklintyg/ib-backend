@@ -343,6 +343,7 @@ public class UtredningRepositoryTest {
                 .withTolkBehov(false)
                 .withAvbrutenAnledning(EndReason.JAV)
                 .withAvbrutenDatum(LocalDateTime.now())
+                .withArkiverad(true)
                 .build();
     }
 

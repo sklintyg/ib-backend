@@ -31,6 +31,7 @@ import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
+import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningListResponse;
@@ -52,6 +53,7 @@ public class UtredningController {
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
+    @PrometheusTimeMethod(name = "list_utredningar_for_user_GET_duration_seconds", help = "Some helpful info here")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetUtredningListResponse> getAllUtredningarForUser() {
         IbUser user = userService.getUser();
@@ -63,6 +65,7 @@ public class UtredningController {
         return ResponseEntity.ok(new GetUtredningListResponse(utredningar, utredningar.size()));
     }
 
+    @PrometheusTimeMethod(name = "list_utredningar_for_user_duration_seconds", help = "Some helpful info here")
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetUtredningListResponse> getUtredningarForUser(@RequestBody ListUtredningRequest req) {
         IbUser user = userService.getUser();
@@ -76,6 +79,7 @@ public class UtredningController {
         return ResponseEntity.ok(response);
     }
 
+    @PrometheusTimeMethod(name = "get_utredning_duration_seconds", help = "Some helpful info here")
     @GetMapping(path = "/{utredningsId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetUtredningResponse> getUtredning(@PathVariable("utredningsId") String utredningsId) {
         IbUser user = userService.getUser();

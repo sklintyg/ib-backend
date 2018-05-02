@@ -1,6 +1,9 @@
 {
-  "utredningId": "utredning-bootstrap-6",
+  "utredningId": "utredning-bootstrap-7",
   "utredningsTyp": "AFU",
+  "arkiverad": true,
+  "avbrutenDatum": "2018-05-01T13:37:00",
+  "avbrutenAnledning":"JAV",
   "externForfragan": {
     "landstingHsaId": "IFV1239877878-1041",
     "inkomDatum": "2018-04-12T10:07:12.125",
@@ -28,7 +31,6 @@
     ]
   },
   "invanare": {
-    "personId": "19121212-1212",
     "postkod": "11121",
     "sarskildaBehov": "Gillar glass",
     "tidigareUtforare": [
@@ -42,17 +44,5 @@
     "telefonnummer": "031-9999999",
     "email": "epost@inera.se"
   },
-  "bestallning": {
-    "tilldeladVardenhetHsaId": "IFV1239877878-1042",
-    "intygKlartSenast": "2018-05-25T00:00:00",
-    "orderDatum": "2018-05-27T00:00:00",
-    "syfte": "Att bli friskare",
-    "planeradeAktiviteter": "Bowla med gänget",
-    "kommentar": "Detta är faktiskt testdata..."
-  },
-  "handlingList": [{
-    "skickatDatum": "2018-05-27T00:00:00",
-    "ursprung": "BESTALLNING"
-  }],
   "sprakTolk": "sv"
 }

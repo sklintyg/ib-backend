@@ -31,6 +31,7 @@ import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
+import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
@@ -52,6 +53,7 @@ public class BestallningController {
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
+    @PrometheusTimeMethod(name = "list_bestallningar_for_vardenhet_duration_seconds", help = "Some helpful info here")
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetBestallningListResponse> getBestallningarForVardenhet(@RequestBody ListBestallningRequest requestFilter) {
         IbUser user = userService.getUser();
@@ -72,6 +74,7 @@ public class BestallningController {
      * Returns an object containing all possible filter values for the getBestallningarForVardenhet query.
      * @return
      */
+    @PrometheusTimeMethod(name = "get_bestallning_list_filter_duration_seconds", help = "Some helpful info here")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/list/filter")
     public ResponseEntity<ListBestallningFilter> getListBestallningFilter() {
         IbUser user = userService.getUser();

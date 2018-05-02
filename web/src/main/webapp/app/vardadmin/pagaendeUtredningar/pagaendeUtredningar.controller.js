@@ -19,8 +19,42 @@
 
 angular.module('ibApp')
     .controller('PagaendeUtredningarCtrl',
-        function() {
+        function($log, $scope, ibBestallningFilterModel, BestallningarProxy) {
             'use strict';
 
+            $scope.filter = ibBestallningFilterModel.build();
+
+            $scope.getBestallningarFiltered = function(appendResults) {
+
+                if (!appendResults) {
+                    $scope.filter.currentPage = 0;
+                }
+
+                BestallningarProxy.getBestallningarWithFilter($scope.filter.convertToPayload()).then(function(data) {
+                    if (appendResults) {
+                        $scope.bestallningar = $scope.bestallningar.concat(data.bestallningar);
+                    }
+                    else {
+                        $scope.bestallningar = data.bestallningar;
+                    }
+                    $scope.bestallningarTotal = data.totalCount;
+                }, function(error) {
+                    $log.error(error);
+                });
+            };
+
+
+            BestallningarProxy.getBestallningarFilterValues().then(function(data) {
+               $scope.filter.populateFilter(data);
+            }, function(error) {
+                $log.error(error);
+            });
+
+            $scope.getMore = function() {
+                $scope.filter.currentPage++;
+                $scope.getBestallningarFiltered(true);
+            };
+
+            $scope.getBestallningarFiltered();
         }
     );

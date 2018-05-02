@@ -19,7 +19,6 @@
 package se.inera.intyg.intygsbestallning.service.utredning;
 
 import com.google.common.base.Strings;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +31,6 @@ import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.infra.logmessages.ResourceType;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
-import se.inera.intyg.intygsbestallning.auth.model.IbVardgivare;
 import se.inera.intyg.intygsbestallning.auth.pdl.PDLActivityStore;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
@@ -73,6 +71,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListUtredningRequ
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListBestallningFilter;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
+import se.inera.intyg.intygsbestallning.web.controller.api.filter.SelectItem;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -132,10 +131,9 @@ public class UtredningServiceImpl implements UtredningService {
 
     @Override
     public GetUtredningListResponse findExternForfraganByLandstingHsaIdWithFilter(String landstingHsaId, ListUtredningRequest request) {
-        List<UtredningListItem> list = utredningRepository.findAllByExternForfragan_LandstingHsaId(landstingHsaId)
+        List<UtredningListItem> list = utredningRepository.findByExternForfragan_LandstingHsaId_AndArkiveradFalse(landstingHsaId)
                 .stream()
                 .map(u -> UtredningListItem.from(u, utredningStateResolver.resolveStatus(u)))
-                .filter(statusIsEligibleForListaUtredningar())
                 .collect(Collectors.toList());
 
         // Get status mapper
@@ -177,7 +175,6 @@ public class UtredningServiceImpl implements UtredningService {
         return new GetUtredningListResponse(paged, total);
     }
 
-    @NotNull
     private Predicate<UtredningListItem> statusIsEligibleForListaUtredningar() {
         return uli -> uli.getStatus() != UtredningStatus.AVBRUTEN && uli.getStatus() != UtredningStatus.AVSLUTAD
                 && uli.getStatus() != UtredningStatus.AVVISAD;
@@ -352,14 +349,14 @@ public class UtredningServiceImpl implements UtredningService {
     public List<BestallningListItem> findOngoingBestallningarForVardenhet(String vardenhetHsaId, ListBestallningRequest requestFilter) {
         List<BestallningListItem> bestallningListItems = utredningRepository.findAllWithBestallningForVardenhetHsaId(vardenhetHsaId)
                 .stream()
-                .map(u -> BestallningListItem.from(u, utredningStateResolver.resolveStatus(u)))
+                .map(u -> BestallningListItem.from(u, utredningStateResolver.resolveStatus(u), Actor.VARDADMIN))
                 .collect(Collectors.toList());
 
         // We may need to fetch names for patients and vardgivare prior to filtering if free text search is
         // used or if either of those two columns are sorted.
         boolean enrichedWithPatientNames = false;
         boolean enrichedWithVardgivareNames = false;
-        if (requestFilter.getFreeText() != null || requestFilter.getOrderBy().equals("vardgivareNamn")
+        if (!Strings.isNullOrEmpty(requestFilter.getFreeText()) || requestFilter.getOrderBy().equals("vardgivareNamn")
                 || requestFilter.getOrderBy().equals("patientNamn")) {
             enrichWithVardgivareNames(bestallningListItems);
             patientNameEnricher.enrichWithPatientNames(bestallningListItems);
@@ -573,24 +570,23 @@ public class UtredningServiceImpl implements UtredningService {
 
     @Override
     public ListBestallningFilter buildListBestallningFilter(String vardenhetHsaId) {
-        List<IbVardgivare> distinctVardgivare = utredningRepository
+        List<SelectItem> distinctVardgivare = utredningRepository
                 .findDistinctLandstingHsaIdByVardenhetHsaIdHavingBestallning(vardenhetHsaId)
                 .stream()
-                .map(vgHsaId -> new IbVardgivare(vgHsaId, organizationUnitService.getVardgivareInfo(vgHsaId).getNamn(), false))
+                .map(vgHsaId -> new SelectItem(vgHsaId, organizationUnitService.getVardgivareInfo(vgHsaId).getNamn()))
                 .distinct()
-                .sorted(Comparator.comparing(IbVardgivare::getName))
+                .sorted(Comparator.comparing(SelectItem::getLabel))
                 .collect(Collectors.toList());
 
         List<ListFilterStatus> statuses = Arrays.asList(ListFilterStatus.values());
-        Map<UtredningStatus, ListFilterStatus> statusMap = buildStatusToListBestallningFilterStatusMap();
 
-        return new ListBestallningFilter(distinctVardgivare, statuses, statusMap);
+        return new ListBestallningFilter(distinctVardgivare, statuses);
     }
 
     private Map<UtredningStatus, ListFilterStatus> buildStatusToListBestallningFilterStatusMap() {
         Map<UtredningStatus, ListFilterStatus> statusMap = new HashMap<>();
         for (UtredningStatus us : UtredningStatus.values()) {
-            statusMap.put(us, resolveListBestallningFilterStatus(us, Actor.SAMORDNARE));
+            statusMap.put(us, resolveListBestallningFilterStatus(us, Actor.VARDADMIN));
         }
         return statusMap;
     }

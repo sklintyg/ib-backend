@@ -65,6 +65,9 @@ public class Utredning {
     @Enumerated(EnumType.STRING)
     private EndReason avbrutenAnledning;
 
+    @Column(name = "ARKIVERAD", nullable = false)
+    private Boolean arkiverad = false;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "EXTERN_FORFRAGAN_ID")
     private ExternForfragan externForfragan;
@@ -127,6 +130,14 @@ public class Utredning {
 
     public void setTolkSprak(final String tolkSprak) {
         this.tolkSprak = tolkSprak;
+    }
+
+    public Boolean getArkiverad() {
+        return arkiverad;
+    }
+
+    public void setArkiverad(Boolean arkiverad) {
+        this.arkiverad = arkiverad;
     }
 
     public LocalDateTime getAvbrutenDatum() {
@@ -207,6 +218,7 @@ public class Utredning {
         private LocalDateTime avbrutenDatum;
         private EndReason avbrutenAnledning;
         private ExternForfragan externForfragan;
+        private Boolean arkiverad;
         private List<Handelse> handelseList = new ArrayList<>();
         private List<Handling> handlingList = new ArrayList<>();
         private Handlaggare handlaggare;
@@ -254,6 +266,11 @@ public class Utredning {
             return this;
         }
 
+        public UtredningBuilder withArkiverad(Boolean arkiverad) {
+            this.arkiverad = arkiverad;
+            return this;
+        }
+
         public UtredningBuilder withExternForfragan(ExternForfragan externForfragan) {
             this.externForfragan = externForfragan;
             return this;
@@ -287,6 +304,7 @@ public class Utredning {
             utredning.setTolkBehov(tolkBehov);
             utredning.setAvbrutenDatum(avbrutenDatum);
             utredning.setAvbrutenAnledning(avbrutenAnledning);
+            utredning.setArkiverad(arkiverad);
             utredning.setExternForfragan(externForfragan);
             utredning.setHandelseList(handelseList);
             utredning.setHandlingList(handlingList);
@@ -313,6 +331,7 @@ public class Utredning {
                 && Objects.equals(tolkSprak, utredning.tolkSprak)
                 && Objects.equals(avbrutenDatum, utredning.avbrutenDatum)
                 && avbrutenAnledning == utredning.avbrutenAnledning
+                && arkiverad == utredning.arkiverad
                 && Objects.equals(externForfragan, utredning.externForfragan)
                 && Objects.equals(handelseList, utredning.handelseList)
                 && Objects.equals(handlingList, utredning.handlingList)

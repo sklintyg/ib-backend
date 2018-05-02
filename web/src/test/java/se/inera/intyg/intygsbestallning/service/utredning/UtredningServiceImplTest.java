@@ -38,7 +38,6 @@ import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.EndReason;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.patient.PatientNameEnricher;
 import se.inera.intyg.intygsbestallning.service.pdl.LogService;
@@ -49,17 +48,14 @@ import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningReques
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListBestallningRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -502,32 +498,6 @@ public class UtredningServiceImplTest {
         }
     }
 
-    @Test
-    public void testFilterListUtredningarAvbrutenAvvisadReturnsZeroItems() {
-        when(utredningRepository.findAllByExternForfragan_LandstingHsaId(anyString()))
-                .thenReturn(Arrays.asList(
-                        anUtredning()
-                        .withUtredningId("123")
-                        .withUtredningsTyp(UtredningsTyp.AFU)
-                        .withAvbrutenDatum(LocalDateTime.now())
-                        .build(),
-                        anUtredning()
-                                .withUtredningId("124")
-                                .withUtredningsTyp(UtredningsTyp.AFU)
-                                .withExternForfragan(
-                                        anExternForfragan().withAvvisatDatum(LocalDateTime.now()).build())
-                                .build()));
-
-        GetUtredningListResponse response = utredningService.findExternForfraganByLandstingHsaIdWithFilter("vg-1",
-                buildListUtredningarFilter());
-        assertEquals(0, response.getTotalCount());
-        assertEquals(0, response.getUtredningar().size());
-    }
-
-    private ListUtredningRequest buildListUtredningarFilter() {
-        ListUtredningRequest req = new ListUtredningRequest();
-        return req;
-    }
 
     @Test
     public void testFilterListBestallningar() {

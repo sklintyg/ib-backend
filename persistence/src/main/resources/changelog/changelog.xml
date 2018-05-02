@@ -257,6 +257,10 @@
             <column name="AVBRUTEN_ANLEDNING" type="varchar(16)">
                 <constraints nullable="true"/>
             </column>
+
+            <column name="ARKIVERAD" type="tinyint(1)">
+                <constraints nullable="false" />
+            </column>
         </createTable>
 
         <addForeignKeyConstraint baseTableName="UTREDNING"
@@ -282,6 +286,13 @@
                                  constraintName="UTREDNING_HANDLAGGARE_FK"
                                  referencedTableName="HANDLAGGARE"
                                  referencedColumnNames="ID"/>
+
+        <createIndex tableName="UTREDNING"
+                     indexName="UTREDNING_ARKIVERAD_IDX"
+                     unique="false">
+            <column name="ARKIVERAD"/>
+        </createIndex>
+
 
         <createTable tableName="FORFRAGAN_SVAR">
             <column name="ID" type="bigint">

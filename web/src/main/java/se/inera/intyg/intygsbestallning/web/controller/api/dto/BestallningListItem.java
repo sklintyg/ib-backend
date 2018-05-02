@@ -20,6 +20,7 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
+import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 
@@ -44,7 +45,7 @@ public class BestallningListItem implements PDLLoggable, FreeTextSearchable, Fil
     private String nextActor;
     private boolean kraverAtgard;
 
-    public static BestallningListItem from(Utredning utredning, UtredningStatus utredningStatus) {
+    public static BestallningListItem from(Utredning utredning, UtredningStatus utredningStatus, Actor actorInThisContext) {
         return BestallningListItemBuilder.anBestallningListItem()
                 .withFas(utredningStatus.getUtredningFas())
                 .withPatientId(utredning.getInvanare().getPersonId())
@@ -54,6 +55,7 @@ public class BestallningListItem implements PDLLoggable, FreeTextSearchable, Fil
                 .withSlutdatumPaVagPasseras(resolveSlutDatumPaVagPasseras(utredning, utredningStatus))
                 .withStatus(utredningStatus)
                 .withNextActor(utredningStatus.getNextActor().name())
+                .withKraverAtgard(actorInThisContext == utredningStatus.getNextActor())
                 .withUtredningsId(utredning.getUtredningId())
                 .withUtredningsTyp(utredning.getUtredningsTyp().name())
                 .withVardgivareHsaId(utredning.getExternForfragan().getLandstingHsaId())

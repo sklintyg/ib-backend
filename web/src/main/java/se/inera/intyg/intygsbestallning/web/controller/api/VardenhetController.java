@@ -64,7 +64,7 @@ public class VardenhetController {
         return ResponseEntity.ok(vardenhetService.getVardEnhetPreference(user.getCurrentlyLoggedInAt().getId()));
     }
 
-    @PrometheusTimeMethod(name = "get_set_preference_for_vardenhet_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod(name = "set_preference_for_vardenhet_duration_seconds", help = "Some helpful info here")
     @PutMapping(path = "/preference", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<VardenhetPreferenceResponse> setPreferenceForVardenhet(
             @RequestBody final VardenhetPreferenceRequest vardenhetPreferenceRequest) {

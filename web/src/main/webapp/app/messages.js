@@ -92,6 +92,24 @@ var ibMessages = {
         'label.table.forfragningar.column.planeringsdatum.tooltip': 'Potentiellt slutdatum för utredningen om beställning sker idag.',
         'label.table.forfragningar.column.status': 'Status',
 
+        // Lista pågående utredningar (vårdadmin) tabell
+        'label.table.bestallningar.column.id': 'Id',
+        'label.table.bestallningar.column.typ': 'Utredningstyp',
+        'label.table.bestallningar.column.vardgivareNamn': 'Landsting',
+        'label.table.bestallningar.column.patientId': 'Personnummer',
+        'label.table.bestallningar.column.patientNamn': 'Namn',
+        'label.table.bestallningar.column.slutdatumfas': 'Slutdatum fas',
+        'label.table.bestallningar.column.status': 'Status',
+
+        // Lista bestallningar filter
+        'bestallningar.filter.fritext.label': 'Fritextsökning',
+        'bestallningar.filter.fritext.placeholder': 'Skriv sökord',
+        'bestallningar.filter.vardgivarenamn.label': 'Landsting',
+        'bestallningar.filter.slutdatumfas.label': 'Slutdatum fas',
+        'bestallningar.filter.slutdatumfas.placeholder': 'Visa alla',
+        'bestallningar.filter.status.label': 'Status',
+        'bestallningar.filter.resetfilter.label': 'Återställ sökfilter',
+
         //Errors for reporting IO / backend error responses for REST requests
         'server.error.changeunit.title': 'Kunde inte byta systemroll',
         'server.error.changeunit.text': 'Försök igen eller kontakta support',
