@@ -1,0 +1,24 @@
+<div class="visaUtredning-page ib-workarea-hflex-container centered-constrained-content" id="edit-{{viewState.utredningId}}">
+
+  <div class="bottom-fadeout-gradient ib-color-27">
+    <div></div>
+  </div>
+
+  <div id="ib-content-container" class="ib-workarea-utredning container-fluid edit-form">
+
+    <div ng-hide="viewState.error.key">
+      <ib-spinner label="info.loadingintyg" show-spinner="!viewState.common.doneLoading">
+        <div id="utredning" class="row utredning">
+          <div class="col-md-12 utredning-body">
+            utredning
+          </div>
+        </div>
+      </ib-spinner>
+    </div>
+  </div>
+
+  <div class="ib-workarea-supportpanel">
+    <div class="forfragan-test">förfrågan</div>
+  </div>
+
+</div>
