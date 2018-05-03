@@ -18,8 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
-import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
-
 import org.hibernate.annotations.Type;
 
 import javax.persistence.CascadeType;
@@ -37,6 +35,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
+import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 
 @Entity
 @Table(name = "UTREDNING")
@@ -354,7 +354,7 @@ public class Utredning {
                 && Objects.equals(tolkSprak, utredning.tolkSprak)
                 && Objects.equals(avbrutenDatum, utredning.avbrutenDatum)
                 && avbrutenAnledning == utredning.avbrutenAnledning
-                && arkiverad == utredning.arkiverad
+                && Objects.equals(arkiverad, utredning.arkiverad)
                 && Objects.equals(externForfragan, utredning.externForfragan)
                 && Objects.equals(handelseList, utredning.handelseList)
                 && Objects.equals(handlingList, utredning.handlingList)

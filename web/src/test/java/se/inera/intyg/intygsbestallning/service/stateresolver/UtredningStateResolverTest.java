@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.testutil;
+package se.inera.intyg.intygsbestallning.service.stateresolver;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,25 +24,17 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.BesokStatusTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.DeltagarProfessionTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
-import se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
-import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStateResolver;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 
 import java.time.LocalDateTime;
 
 import static org.junit.Assert.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UtredningStateResolverTest {
+public class UtredningStateResolverTest extends BaseResolverTest {
 
     @InjectMocks
     private UtredningStateResolver testee;
@@ -177,44 +169,11 @@ public class UtredningStateResolverTest {
         assertEquals(Actor.UTREDARE, status.getNextActor());
     }
 
-    // add(buildHandling(LocalDateTime.now(), null));
-
     private Handling buildHandling(LocalDateTime inkomDatum, LocalDateTime skickadDatum) {
         Handling h = new Handling();
         h.setInkomDatum(inkomDatum);
         h.setSkickatDatum(skickadDatum);
         return h;
-    }
-
-    private Bestallning buildBestallning(LocalDateTime uppdateradDatum) {
-        Bestallning b = new Bestallning();
-        b.setUppdateradDatum(uppdateradDatum);
-        return b;
-    }
-
-    private ForfraganSvar buildForfraganSvar(SvarTyp svarTyp) {
-        ForfraganSvar fs = new ForfraganSvar();
-        fs.setSvarTyp(svarTyp);
-        return fs;
-    }
-
-    private InternForfragan buildInternForfragan(ForfraganSvar forfraganSvar, LocalDateTime tilldeladDatum) {
-        InternForfragan internForfragan = new InternForfragan();
-        internForfragan.setForfraganSvar(forfraganSvar);
-        internForfragan.setTilldeladDatum(tilldeladDatum);
-        return internForfragan;
-    }
-
-    private Utredning buildBaseUtredning() {
-        Utredning utr = new Utredning();
-        utr.setExternForfragan(buildBaseExternForfragan());
-        return utr;
-    }
-
-    private ExternForfragan buildBaseExternForfragan() {
-        ExternForfragan externForfragan = new ExternForfragan();
-
-        return externForfragan;
     }
 
 }

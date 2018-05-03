@@ -20,6 +20,8 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
 import org.junit.Test;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStateResolver;
+import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -53,7 +55,7 @@ public class ForfraganListItemTest {
                         .build())
                 .build();
 
-        ForfraganListItem response = ForfraganListItem.from(utredning, vardenhetHsaId);
+        ForfraganListItem response = ForfraganListItem.from(utredning, vardenhetHsaId, new InternForfraganStateResolver());
 
         assertNotNull(response);
         assertEquals("utredningId", response.getUtredningsId());
@@ -61,7 +63,7 @@ public class ForfraganListItemTest {
         assertEquals("2019-01-01", response.getBesvarasSenastDatum());
         assertEquals("2018-01-01", response.getInkomDatum());
         assertEquals("2020-01-01", response.getPlaneringsDatum());
-        assertEquals("TODO", response.getStatus());
+        assertEquals(InternForfraganStatus.INKOMMEN, response.getStatus());
         assertEquals("landstingHsaId", response.getVardgivareNamn());
     }
 }

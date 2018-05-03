@@ -23,15 +23,12 @@ import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListBestallningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListBestallningFilter;
 
 import java.util.List;
 
@@ -59,19 +56,24 @@ public interface UtredningService {
     GetUtredningResponse getExternForfragan(String utredningId, String landstingHsaId);
 
     /**
-     * Gets all the {@link se.inera.intyg.intygsbestallning.persistence.model.InternForfragan} for the unit with HSA-id vardenhetHsaId.
+     * Gets all the {@link se.inera.intyg.intygsbestallning.persistence.model.InternForfragan} for the unit with HSA-id
+     * vardenhetHsaId.
      *
-     * @param vardenhetHsaId the HSA-id of the unit
+     * @param vardenhetHsaId
+     *            the HSA-id of the unit
      * @return a list of the InternForfragan represented as a {@link ForfraganListItem}
      */
     List<ForfraganListItem> findForfragningarForVardenhetHsaId(String vardenhetHsaId);
 
     /**
-     * Get the {@link se.inera.intyg.intygsbestallning.persistence.model.InternForfragan} associated with the utredningid and
+     * Get the {@link se.inera.intyg.intygsbestallning.persistence.model.InternForfragan} associated with the utredningid
+     * and
      * vardenhetHsaId as a {@link GetForfraganResponse}.
      *
-     * @param utredningId    the id of the utredning
-     * @param vardenhetHsaId the hsaId of the vardenhet of which have received an InternForfragan
+     * @param utredningId
+     *            the id of the utredning
+     * @param vardenhetHsaId
+     *            the hsaId of the vardenhet of which have received an InternForfragan
      * @return The information of the InternForfragan
      */
     GetForfraganResponse getForfragan(String utredningId, String vardenhetHsaId);
@@ -79,7 +81,8 @@ public interface UtredningService {
     /**
      * Handles the new incomming order for FMU.
      * <p>
-     * Updates all the information retrieved from the {@link se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan} if new
+     * Updates all the information retrieved from the
+     * {@link se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan} if new
      * information is available.
      *
      * @param order
@@ -90,7 +93,8 @@ public interface UtredningService {
     /**
      * Registers new order for Bestallningsportalen.
      * <p>
-     * In this case there is no {@link se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan} and all information is taken
+     * In this case there is no {@link se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan} and all
+     * information is taken
      * from the order.
      *
      * @param order
@@ -108,23 +112,6 @@ public interface UtredningService {
      * @return
      */
     Utredning registerNewUtredning(AssessmentRequest request);
-
-    /**
-     * Gets all ongoing bestallningar for a given vardenhet.
-     *
-     * @param vardenhetHsaId
-     * @param requestFilter
-     * @return
-     */
-    List<BestallningListItem> findOngoingBestallningarForVardenhet(String vardenhetHsaId, ListBestallningRequest requestFilter);
-
-    /**
-     * Ends the utredning with the reason if available.
-     *
-     * @param vardenhetHsaId
-     * @return
-     */
-    ListBestallningFilter buildListBestallningFilter(String vardenhetHsaId);
 
     /**
      * Ends the utredning with the reason if available.

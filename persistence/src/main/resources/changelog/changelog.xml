@@ -92,6 +92,10 @@
             <column name="AVVISAT_KOMMENTAR" type="text">
                 <constraints nullable="true"/>
             </column>
+
+            <column name="DIREKTTILLDELAD" type="tinyint(1)">
+                <constraints nullable="true"/>
+            </column>
         </createTable>
 
         <addAutoIncrement columnDataType="bigint"

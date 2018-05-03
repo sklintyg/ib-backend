@@ -18,6 +18,10 @@
  */
 package se.inera.intyg.intygsbestallning.service.stateresolver;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum InternForfraganStatus {
     INKOMMEN("Inkommen", InternForfraganFas.FORFRAGAN, Actor.VARDADMIN),
     ACCEPTERAD_VANTAR_PA_TILLDELNINGSBESLUT("Accepterad, väntar på tilldelningsbeslut", InternForfraganFas.FORFRAGAN, Actor.SAMORDNARE),
@@ -48,10 +52,12 @@ public enum InternForfraganStatus {
         return label;
     }
 
+    @JsonIgnore
     public InternForfraganFas getInternForfraganFas() {
         return internForfraganFas;
     }
 
+    @JsonIgnore
     public Actor getNextActor() {
         return nextActor;
     }

@@ -18,6 +18,56 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.util.Pair;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
+import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
+import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
+import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
+import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
+import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
+import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
+import se.inera.intyg.intygsbestallning.persistence.model.HandlingUrsprungTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
+import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
+import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
+import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
+import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
+import se.inera.intyg.intygsbestallning.service.util.GenericComparator;
+import se.inera.intyg.intygsbestallning.service.util.PagingUtil;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningListResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListUtredningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
+
+import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -30,104 +80,13 @@ import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.Invana
 import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Pair;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
-import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
-import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
-import se.inera.intyg.infra.logmessages.ActivityType;
-import se.inera.intyg.infra.logmessages.ResourceType;
-import se.inera.intyg.intygsbestallning.auth.IbUser;
-import se.inera.intyg.intygsbestallning.auth.pdl.PDLActivityStore;
-import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
-import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
-import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
-import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
-import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
-import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
-import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
-import se.inera.intyg.intygsbestallning.persistence.model.HandlingUrsprungTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
-import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
-import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
-import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
-import se.inera.intyg.intygsbestallning.service.patient.PatientNameEnricher;
-import se.inera.intyg.intygsbestallning.service.pdl.LogService;
-import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
-import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
-import se.inera.intyg.intygsbestallning.service.stateresolver.SortableLabel;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStateResolver;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
-import se.inera.intyg.intygsbestallning.service.user.UserService;
-import se.inera.intyg.intygsbestallning.service.util.PagingUtil;
-import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
-import se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare;
-import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
-import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
-import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.FreeTextSearchable;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningListResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListBestallningRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListUtredningRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListBestallningFilter;
-import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
-import se.inera.intyg.intygsbestallning.web.controller.api.filter.SelectItem;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.text.MessageFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
 @Service
 @Transactional
-public class UtredningServiceImpl implements UtredningService {
+public class UtredningServiceImpl extends BaseUtredningService implements UtredningService {
 
     private static final Logger LOG = LoggerFactory.getLogger(UtredningService.class);
 
     public static final String INTERPRETER_ERROR_TEXT = "May not set interpreter language if there is no need for interpreter";
-
-    @Autowired
-    private UtredningRepository utredningRepository;
-
-    @Autowired
-    private UtredningStateResolver utredningStateResolver;
-
-    @Autowired
-    private PatientNameEnricher patientNameEnricher;
-
-    @Autowired
-    private LogService logService;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private HsaOrganizationsService organizationUnitService;
 
     @Override
     public List<UtredningListItem> findExternForfraganByLandstingHsaId(String landstingHsaId) {
@@ -145,7 +104,7 @@ public class UtredningServiceImpl implements UtredningService {
                 .collect(Collectors.toList());
 
         // Get status mapper
-        Map<UtredningStatus, ListFilterStatus> statusToFilterStatus = buildStatusToListBestallningFilterStatusMap();
+        Map<UtredningStatus, ListFilterStatus> statusToFilterStatus = buildStatusToListBestallningFilterStatusMap(Actor.SAMORDNARE);
 
         // If filtering by freeText or ordering by vardenhetNamn we need all vardenhetNames
         boolean enrichedWithVardenhetNames = false;
@@ -163,7 +122,8 @@ public class UtredningServiceImpl implements UtredningService {
                 .filter(uli -> buildToFromPredicateForUtredningar(uli, request.getFromDate(), request.getToDate()))
                 .filter(uli -> buildFreeTextPredicate(uli, request.getFreeText()))
 
-                .sorted((o1, o2) -> buildComparator(UtredningListItem.class, o1, o2, request.getOrderBy(), request.isOrderByAsc()))
+                .sorted((o1, o2) -> GenericComparator.compare(UtredningListItem.class, o1, o2, request.getOrderBy(),
+                        request.isOrderByAsc()))
                 .collect(toList());
 
         // Paging. We need to perform some bounds-checking...
@@ -181,19 +141,6 @@ public class UtredningServiceImpl implements UtredningService {
         }
 
         return new GetUtredningListResponse(paged, total);
-    }
-
-    private Predicate<UtredningListItem> statusIsEligibleForListaUtredningar() {
-        return uli -> uli.getStatus() != UtredningStatus.AVBRUTEN && uli.getStatus() != UtredningStatus.AVSLUTAD
-                && uli.getStatus() != UtredningStatus.AVVISAD;
-    }
-
-    private boolean buildFasPredicate(UtredningListItem uli, String fas) {
-        if (Strings.isNullOrEmpty(fas)) {
-            return true;
-        }
-        UtredningFas utredningFas = UtredningFas.valueOf(fas);
-        return uli.getFas() == utredningFas;
     }
 
     @Override
@@ -228,7 +175,7 @@ public class UtredningServiceImpl implements UtredningService {
     public List<ForfraganListItem> findForfragningarForVardenhetHsaId(String vardenhetHsaId) {
         return utredningRepository.findAllByExternForfragan_InternForfraganList_VardenhetHsaId(vardenhetHsaId)
                 .stream()
-                .map(utr -> ForfraganListItem.from(utr, vardenhetHsaId))
+                .map(utr -> ForfraganListItem.from(utr, vardenhetHsaId, internForfraganStateResolver))
                 .collect(toList());
     }
 
@@ -405,79 +352,8 @@ public class UtredningServiceImpl implements UtredningService {
                 .withHandlaggare(createHandlaggare(request.getBestallare()))
                 .withTolkBehov(request.isTolkBehov())
                 .withTolkSprak(request.getTolkSprak())
+                .withArkiverad(false)
                 .build());
-    }
-
-    @Override
-    public List<BestallningListItem> findOngoingBestallningarForVardenhet(String vardenhetHsaId, ListBestallningRequest requestFilter) {
-        List<BestallningListItem> bestallningListItems = utredningRepository.findAllWithBestallningForVardenhetHsaId(vardenhetHsaId)
-                .stream()
-                .map(u -> BestallningListItem.from(u, utredningStateResolver.resolveStatus(u), Actor.VARDADMIN))
-                .collect(Collectors.toList());
-
-        // We may need to fetch names for patients and vardgivare prior to filtering if free text search is
-        // used or if either of those two columns are sorted.
-        boolean enrichedWithPatientNames = false;
-        boolean enrichedWithVardgivareNames = false;
-        if (!Strings.isNullOrEmpty(requestFilter.getFreeText()) || requestFilter.getOrderBy().equals("vardgivareNamn")
-                || requestFilter.getOrderBy().equals("patientNamn")) {
-            enrichWithVardgivareNames(bestallningListItems);
-            patientNameEnricher.enrichWithPatientNames(bestallningListItems);
-            enrichedWithPatientNames = true;
-            enrichedWithVardgivareNames = true;
-        }
-
-        // Get status mapper
-        Map<UtredningStatus, ListFilterStatus> statusToFilterStatus = buildStatusToListBestallningFilterStatusMap();
-
-        // Start actual filtering. Order is important here. We must always filter out unwanted items _before_ sorting and
-        // then finally paging.
-        List<BestallningListItem> filtered = bestallningListItems.stream()
-                .filter(bli -> buildVardgivareHsaIdPredicate(bli, requestFilter.getVardgivareHsaId()))
-                .filter(bli -> buildStatusPredicate(bli, requestFilter.getStatus(), statusToFilterStatus))
-                .filter(bli -> buildToFromPredicateForBestallningar(bli, requestFilter.getFromDate(), requestFilter.getToDate()))
-                .filter(bli -> buildFreeTextPredicate(bli, requestFilter.getFreeText()))
-
-                .sorted((o1, o2) -> buildComparator(BestallningListItem.class, o1, o2, requestFilter.getOrderBy(),
-                        requestFilter.isOrderByAsc()))
-                .collect(toList());
-
-        // Paging. We need to perform some bounds-checking...
-        int total = filtered.size();
-        if (total == 0) {
-            return filtered;
-        }
-
-        Pair<Integer, Integer> bounds = PagingUtil.getBounds(total, requestFilter.getPageSize(), requestFilter.getCurrentPage());
-        List<BestallningListItem> paged = filtered.subList(bounds.getFirst(), bounds.getSecond() + 1);
-
-        // Fetch patient names and hsa names only for the selected subset, we want to minimize number of calls per invocation
-        // of this API
-        if (!enrichedWithPatientNames) {
-            patientNameEnricher.enrichWithPatientNames(paged);
-        }
-
-        // Call HSA to get actual name(s) of Vardgivare.
-        if (!enrichedWithVardgivareNames) {
-            enrichWithVardgivareNames(paged);
-        }
-
-        // Only PDL-log what we actually are sending to the GUI
-        pdlLogList(paged, ActivityType.READ, ResourceType.RESOURCE_TYPE_FMU);
-        return paged;
-    }
-
-    private void enrichWithVardgivareNames(List<BestallningListItem> items) {
-        items.stream().forEach(bli -> {
-            if (!Strings.isNullOrEmpty(bli.getVardgivareHsaId())) {
-                Vardgivare vardgivareInfo = organizationUnitService.getVardgivareInfo(bli.getVardgivareHsaId());
-                if (vardgivareInfo != null) {
-                    bli.setVardgivareNamn(vardgivareInfo.getNamn());
-                } else {
-                    LOG.warn("Could not fetch name for Vardgivare '{}' from HSA", bli.getVardgivareHsaId());
-                }
-            }
-        });
     }
 
     private void enrichWithVardenhetNames(List<UtredningListItem> items) {
@@ -491,193 +367,6 @@ public class UtredningServiceImpl implements UtredningService {
                 }
             }
         });
-    }
-
-    private boolean buildFreeTextPredicate(FreeTextSearchable bli, String freeText) {
-        if (Strings.isNullOrEmpty(freeText)) {
-            return true;
-        }
-        return bli.toSearchString().toLowerCase().contains(freeText.toLowerCase());
-    }
-
-    private boolean buildToFromPredicateForUtredningar(FilterableListItem bli, String fromDate, String toDate) {
-        if (Strings.isNullOrEmpty(fromDate) || Strings.isNullOrEmpty(toDate)) {
-            return true;
-        }
-
-        switch (bli.getStatus().getUtredningFas()) {
-            case AVSLUTAD:
-                return false;
-            case REDOVISA_TOLK:
-                return Strings.isNullOrEmpty(fromDate);
-            case UTREDNING:
-            case KOMPLETTERING:
-            case FORFRAGAN:
-                return fromDate.compareTo(bli.getSlutdatumFas()) <= 0 && toDate.compareTo(bli.getSlutdatumFas()) >= 0;
-        }
-        return true;
-    }
-
-    /*
-     * Utredningar vars slutdatum (intyg.sista datum för mottagning) ligger inom den valda datumperioden visas i tabellen.
-     * För utredningar i fas Beställning matchas den valda tidsperioden mot Utredning.intyg.sista datum för mottagning
-     * För utredningar i fas Komplettering machar den valda tidsperioden mot slutdatum för
-     * Utredning.kompletteringbegäran.komplettering.sista datum för mottagning
-     * Utredningar i fas Redovisa tolk inkluderas inte i söktresultatet om en datumperiod är angiven.
-     */
-    private boolean buildToFromPredicateForBestallningar(FilterableListItem bli, String fromDate, String toDate) {
-        if (Strings.isNullOrEmpty(fromDate) || Strings.isNullOrEmpty(toDate)) {
-            return true;
-        }
-        switch (bli.getStatus().getUtredningFas()) {
-            case REDOVISA_TOLK:
-                return Strings.isNullOrEmpty(fromDate);
-            case UTREDNING:
-            case KOMPLETTERING:
-                return fromDate.compareTo(bli.getSlutdatumFas()) <= 0 && toDate.compareTo(bli.getSlutdatumFas()) >= 0;
-            case AVSLUTAD:
-                return true;
-            case FORFRAGAN:
-                return false;
-        }
-        return true;
-    }
-
-    private int buildComparator(Class clazz, Object o1, Object o2, String orderBy, boolean orderByAsc) {
-        if (Strings.isNullOrEmpty(orderBy)) {
-            return 0;
-        }
-
-        try {
-            // Reflection...
-            Method m = clazz.getDeclaredMethod("get" + camelCase(orderBy), null);
-
-            Object o1Value = m.invoke(o1);
-            Object o2Value = m.invoke(o2);
-
-            if (SortableLabel.class.isAssignableFrom(m.getReturnType())) {
-                o1Value = ((SortableLabel) o1Value).getLabel();
-                o2Value = ((SortableLabel) o2Value).getLabel();
-            }
-
-            if (orderByAsc) {
-
-                if (o1Value instanceof Number) {
-                    Number n1 = (Number) o1Value;
-                    Number n2 = (Number) o2Value;
-                    Integer i1 = n1.intValue();
-                    Integer i2 = n2.intValue();
-                    return i1.compareTo(i2);
-                }
-                if (o1Value instanceof String) {
-                    return ((String) o1Value).compareToIgnoreCase((String) o2Value);
-                }
-                if (o1Value instanceof Boolean) {
-                    return Boolean.compare((Boolean) o1Value, (Boolean) o2Value);
-                }
-            } else {
-                if (o1Value instanceof Number) {
-                    Number n1 = (Number) o1Value;
-                    Number n2 = (Number) o2Value;
-                    Integer i1 = n1.intValue();
-                    Integer i2 = n2.intValue();
-                    return i2.compareTo(i1);
-                }
-                if (o1Value instanceof String) {
-                    return ((String) o2Value).compareToIgnoreCase((String) o1Value);
-                }
-                if (o1Value instanceof Boolean) {
-                    return Boolean.compare((Boolean) o2Value, (Boolean) o1Value);
-                }
-            }
-        } catch (NoSuchMethodException e) {
-            throw new IbServiceException(IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Unknown column to order by: '" + orderBy + "'");
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new IbServiceException(IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
-                    "Unable to sort by column : '" + orderBy + "'. Message: " + e.getMessage());
-        }
-        // We should never come here...
-        return 0;
-    }
-
-    private String camelCase(String orderBy) {
-        return orderBy.substring(0, 1).toUpperCase() + orderBy.substring(1);
-    }
-
-    private boolean buildStatusPredicate(FilterableListItem bli, String status,
-                                         Map<UtredningStatus, ListFilterStatus> statusToFilterStatus) {
-
-        if (Strings.isNullOrEmpty(status)) {
-            return true;
-        }
-        try {
-            ListFilterStatus actualStatus = ListFilterStatus.valueOf(status);
-            if (actualStatus == ListFilterStatus.ALL) {
-                return true;
-            }
-
-            // Returns true if the items status maps to the grouping from the actual status.
-            return statusToFilterStatus.get(bli.getStatus()) == actualStatus;
-
-        } catch (IllegalArgumentException e) {
-            throw new IbServiceException(IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Unknown status: '" + status + "'");
-        }
-    }
-
-    private boolean buildVardgivareHsaIdPredicate(BestallningListItem bli, String vardgivareHsaId) {
-        if (Strings.isNullOrEmpty(vardgivareHsaId)) {
-            return true;
-        }
-        return vardgivareHsaId.equalsIgnoreCase(bli.getVardgivareHsaId());
-    }
-
-    @Override
-    public ListBestallningFilter buildListBestallningFilter(String vardenhetHsaId) {
-        List<SelectItem> distinctVardgivare = utredningRepository
-                .findDistinctLandstingHsaIdByVardenhetHsaIdHavingBestallning(vardenhetHsaId)
-                .stream()
-                .map(vgHsaId -> new SelectItem(vgHsaId, organizationUnitService.getVardgivareInfo(vgHsaId).getNamn()))
-                .distinct()
-                .sorted(Comparator.comparing(SelectItem::getLabel))
-                .collect(Collectors.toList());
-
-        List<ListFilterStatus> statuses = Arrays.asList(ListFilterStatus.values());
-
-        return new ListBestallningFilter(distinctVardgivare, statuses);
-    }
-
-    private Map<UtredningStatus, ListFilterStatus> buildStatusToListBestallningFilterStatusMap() {
-        Map<UtredningStatus, ListFilterStatus> statusMap = new HashMap<>();
-        for (UtredningStatus us : UtredningStatus.values()) {
-            statusMap.put(us, resolveListBestallningFilterStatus(us, Actor.VARDADMIN));
-        }
-        return statusMap;
-    }
-
-    private ListFilterStatus resolveListBestallningFilterStatus(UtredningStatus us, Actor actor) {
-        if (us.getNextActor() == actor) {
-            return ListFilterStatus.KRAVER_ATGARD;
-        } else {
-            return ListFilterStatus.VANTAR_ANNAN_AKTOR;
-        }
-    }
-
-    // PDL logging. Important to only log after filtering and paging.
-    private void pdlLogList(List<? extends PDLLoggable> loggableItems, ActivityType activityType, ResourceType resourceType) {
-        if (loggableItems == null || loggableItems.size() == 0) {
-            return;
-        }
-
-        IbUser user = userService.getUser();
-
-        List<? extends PDLLoggable> bestallningarToLog = PDLActivityStore.getActivitiesNotInStore(user.getCurrentlyLoggedInAt().getId(),
-                loggableItems, activityType, resourceType,
-                user.getStoredActivities());
-
-        logService.logVisaBestallningarLista(bestallningarToLog, activityType, resourceType);
-
-        PDLActivityStore.addActivitiesToStore(user.getCurrentlyLoggedInAt().getId(), bestallningarToLog, activityType,
-                resourceType, user.getStoredActivities());
     }
 
     @Override
@@ -729,4 +418,31 @@ public class UtredningServiceImpl implements UtredningService {
                         .orElse(null))
                 .build();
     }
+
+    private boolean buildToFromPredicateForUtredningar(FilterableListItem bli, String fromDate, String toDate) {
+        if (Strings.isNullOrEmpty(fromDate) || Strings.isNullOrEmpty(toDate)) {
+            return true;
+        }
+
+        switch (bli.getStatus().getUtredningFas()) {
+        case AVSLUTAD:
+            return false;
+        case REDOVISA_TOLK:
+            return Strings.isNullOrEmpty(fromDate);
+        case UTREDNING:
+        case KOMPLETTERING:
+        case FORFRAGAN:
+            return fromDate.compareTo(bli.getSlutdatumFas()) <= 0 && toDate.compareTo(bli.getSlutdatumFas()) >= 0;
+        }
+        return true;
+    }
+
+    private boolean buildFasPredicate(UtredningListItem uli, String fas) {
+        if (Strings.isNullOrEmpty(fas)) {
+            return true;
+        }
+        UtredningFas utredningFas = UtredningFas.valueOf(fas);
+        return uli.getFas() == utredningFas;
+    }
+
 }

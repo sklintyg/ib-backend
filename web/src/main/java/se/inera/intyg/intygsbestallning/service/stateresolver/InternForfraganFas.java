@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.intygsbestallning.service.stateresolver;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum InternForfraganFas {
     FORFRAGAN("Förfrågan"),
     TILLDELAD("Tilldelad"),

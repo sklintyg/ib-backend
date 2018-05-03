@@ -33,7 +33,7 @@ import se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
-import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
+import se.inera.intyg.intygsbestallning.service.utredning.BestallningService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetBestallningListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListBestallningRequest;
@@ -49,7 +49,7 @@ public class BestallningController {
     private UserService userService;
 
     @Autowired
-    private UtredningService utredningService;
+    private BestallningService bestallningService;
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
@@ -64,7 +64,7 @@ public class BestallningController {
             throw new IbAuthorizationException("User is not logged in at a Vårdenhet");
         }
 
-        List<BestallningListItem> bestallningar = utredningService
+        List<BestallningListItem> bestallningar = bestallningService
                 .findOngoingBestallningarForVardenhet(user.getCurrentlyLoggedInAt().getId(), requestFilter);
 
         return ResponseEntity.ok(new GetBestallningListResponse(bestallningar, bestallningar.size()));
@@ -81,7 +81,7 @@ public class BestallningController {
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_BESTALLNINGAR)
                 .orThrow(new IbAuthorizationException("User does not have required privilege LISTA_BESTALLNINGAR"));
 
-        ListBestallningFilter listBestallningFilter = utredningService.buildListBestallningFilter(user.getCurrentlyLoggedInAt().getId());
+        ListBestallningFilter listBestallningFilter = bestallningService.buildListBestallningFilter(user.getCurrentlyLoggedInAt().getId());
         return ResponseEntity.ok(listBestallningFilter);
     }
 }

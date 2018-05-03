@@ -20,6 +20,8 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStateResolver;
+import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
@@ -35,14 +37,16 @@ public class ForfraganListItem {
     private String inkomDatum;
     private String besvarasSenastDatum;
     private String planeringsDatum;
-    private String status;
+    private InternForfraganStatus status;
 
-    public static ForfraganListItem from(Utredning utredning, String vardenhetId) {
+    public static ForfraganListItem from(Utredning utredning, String vardenhetId, InternForfraganStateResolver statusResolver) {
         InternForfragan internForfragan = utredning.getExternForfragan().getInternForfraganList()
                 .stream()
                 .filter(i -> Objects.equals(i.getVardenhetHsaId(), vardenhetId))
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
+
+
         return ForfraganListItemBuilder.aForfraganListItem()
                 .withBesvarasSenastDatum(!isNull(internForfragan.getBesvarasSenastDatum())
                         ? internForfragan.getBesvarasSenastDatum().format(formatter) : null)
@@ -51,7 +55,7 @@ public class ForfraganListItem {
                 .withPlaneringsDatum(
                         !isNull(internForfragan.getForfraganSvar()) && !isNull(internForfragan.getForfraganSvar().getBorjaDatum())
                                 ? internForfragan.getForfraganSvar().getBorjaDatum().format(formatter) : null)
-                .withStatus("TODO")
+                .withStatus(statusResolver.resolveStatus(utredning, internForfragan))
                 .withUtredningsId(utredning.getUtredningId())
                 .withUtredningsTyp(utredning.getUtredningsTyp().name())
                 .withVardgivareNamn(utredning.getExternForfragan().getLandstingHsaId())
@@ -106,11 +110,11 @@ public class ForfraganListItem {
         this.planeringsDatum = planeringsDatum;
     }
 
-    public String getStatus() {
+    public InternForfraganStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(InternForfraganStatus status) {
         this.status = status;
     }
 
@@ -121,7 +125,7 @@ public class ForfraganListItem {
         private String inkomDatum;
         private String besvarasSenastDatum;
         private String planeringsDatum;
-        private String status;
+        private InternForfraganStatus status;
 
         private ForfraganListItemBuilder() {
         }
@@ -160,7 +164,7 @@ public class ForfraganListItem {
             return this;
         }
 
-        public ForfraganListItemBuilder withStatus(String status) {
+        public ForfraganListItemBuilder withStatus(InternForfraganStatus status) {
             this.status = status;
             return this;
         }

@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.service.stateresolver;
 
-import org.springframework.stereotype.Service;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.SvarTyp;
@@ -26,7 +25,6 @@ import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 
 import java.util.List;
 
-@Service
 public class UtredningStateResolver {
 
     public UtredningStatus resolveStatus(Utredning utredning) {
