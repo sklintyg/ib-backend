@@ -19,7 +19,7 @@ env:
 
     post {
         always {
-            sh 'rm hook.json'
+            sh 'rm hook.yml'
         }
     }
 
