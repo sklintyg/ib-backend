@@ -34,7 +34,7 @@ database_provisioning_password: ""
 
 # ActiveMQ configuration
 activemq_version : 5.13.0
-activemq_server: ${activemq_hostname}
+activemq_server: ${activemq_server}
 activemq_port: ${activemq_port}
 activemq_broker_url: "tcp://{{ activemq_server }}:{{ activemq_port }}"
 activemq_username: ${activemq_username}
