@@ -10,17 +10,6 @@ tomcat_bin:  "{{ inera_tomcat_folder }}/bin"
 tomcat_lib:  "{{ inera_tomcat_folder }}/lib"
 webapps_folder: "{{ inera_tomcat_folder }}/webapps"
 
-# Configuration repository
-#environment_name: "test"
-#config_name: intygsbestallning-konfiguration
-#config_repository: https://github.com/sklintyg/intygsbestallning-konfiguration.git
-#config_version: "master"
-#config_folder: "{{ inera_root }}/intygsbestallning-konfiguration"
-#gitcrypt_key_name: "git-crypt4.key"
-#gitcrypt_key_file: "./{{ gitcrypt_key_name }}"
-
-#config_etc_folder: "{{ config_folder }}/{{ environment_name }}"
-
 # Application resources
 # Note: end with slash, in order to copy only files inside the source folder, not the folder itself
 app_resources_src: "{{ playbook_dir }}/../web/src/main/resources/"
@@ -28,11 +17,11 @@ app_ext_resources_src: "{{ playbook_dir }}/../src/main/resources/"
 app_resources_folder: "{{ inera_root }}/resources"
 
 # Database configuration
-database_server: mysql
-database_port: 3306
+database_server: ${database_server}
+database_port: ${database_port}
 database_name: intygsbestallning
-database_username: intygsbestallning
-database_password: intygsbestallning
+database_username: ${database_username}
+database_password: ${database_password}
 database_driver: com.mysql.jdbc.Driver
 database_url: "jdbc:mysql://{{ database_server }}:{{ database_port }}/{{ database_name }}?useCompression=true&amp;useSSL=false"
 database_pool_maxActive: 20
@@ -45,10 +34,10 @@ database_provisioning_password: ""
 
 # ActiveMQ configuration
 activemq_version : 5.13.0
-activemq_server: activemq-amq-tcp
-activemq_port: 61616
+activemq_server: ${activemq_hostname}
+activemq_port: ${activemq_port}
 activemq_broker_url: "tcp://{{ activemq_server }}:{{ activemq_port }}"
-activemq_username: ""
-activemq_password: ""
+activemq_username: ${activemq_username}
+activemq_password: ${activemq_password}
 
 environment_name: openshift
