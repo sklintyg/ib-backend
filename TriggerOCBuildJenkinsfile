@@ -20,6 +20,7 @@ env:
     post {
         always {
             sh 'rm hook.json'
+        }
     }
 
 }
