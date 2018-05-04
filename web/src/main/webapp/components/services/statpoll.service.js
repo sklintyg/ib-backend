@@ -66,7 +66,7 @@ angular.module('ibApp').factory('StatPollService',
          */
         function _getStats() {
 
-            var apiPath = '/api/stats/' + (UserModel.get().currentlyLoggedInAt.type === 'VE' ? 'vardgivare' : 'samordnare');
+            var apiPath = '/api/stats/' + (UserModel.get().currentlyLoggedInAt.type === 'VE' ? 'vardadmin' : 'samordnare');
 
 
             $log.debug('_getStats requesting info from ' + apiPath + ' =>');

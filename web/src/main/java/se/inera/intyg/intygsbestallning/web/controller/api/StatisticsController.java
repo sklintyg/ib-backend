@@ -18,8 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api;
 
-import java.util.function.Predicate;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,12 +29,10 @@ import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
-import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStateResolver;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
+import se.inera.intyg.intygsbestallning.service.statistics.StatisticsService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.SamordnarStatisticsResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardadminStatisticsResponse;
 
 /**
  * Created by marced on 2018-05-02.
@@ -49,9 +45,7 @@ public class StatisticsController {
     private UserService userService;
 
     @Autowired
-    private UtredningRepository utredningRepository;
-
-    protected UtredningStateResolver utredningStateResolver = new UtredningStateResolver();
+    private StatisticsService statisticsService;
 
     @PrometheusTimeMethod(name = "get_samordnare_stats_duration_seconds", help = "Some helpful info here")
     @GetMapping(path = "/samordnare", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -60,17 +54,17 @@ public class StatisticsController {
 
         validateCorrectLoginContext(user, SelectableHsaEntityType.VG);
 
-        // Calculate nr of utredningar for this vg/landsting's in a status that requires action from actor 'samordnare'
-        long requireSamordnarActionCount = utredningRepository
-                .findByExternForfragan_LandstingHsaId_AndArkiveradFalse(user.getCurrentlyLoggedInAt().getId())
-                .stream()
-                .map(u -> UtredningListItem.from(u, utredningStateResolver.resolveStatus(u)))
-                .filter(statusIsEligibleForSamordnareStats()).count();
-        return ResponseEntity.ok(new SamordnarStatisticsResponse(requireSamordnarActionCount));
+        return ResponseEntity.ok(statisticsService.getStatsForSamordnare(user.getCurrentlyLoggedInAt().getId()));
     }
 
-    private Predicate<UtredningListItem> statusIsEligibleForSamordnareStats() {
-        return uli -> uli.getStatus() == UtredningStatus.FORFRAGAN_INKOMMEN || uli.getStatus() == UtredningStatus.TILLDELA_UTREDNING;
+    @PrometheusTimeMethod(name = "get_vardadmin_stats_duration_seconds", help = "Some helpful info here")
+    @GetMapping(path = "/vardadmin", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<VardadminStatisticsResponse> getStatsForVardadministrator() {
+        IbUser user = userService.getUser();
+
+        validateCorrectLoginContext(user, SelectableHsaEntityType.VE);
+
+        return ResponseEntity.ok(statisticsService.getStatsForVardadmin(user.getCurrentlyLoggedInAt().getId()));
     }
 
     private void validateCorrectLoginContext(IbUser user, SelectableHsaEntityType selectedEntityType) {

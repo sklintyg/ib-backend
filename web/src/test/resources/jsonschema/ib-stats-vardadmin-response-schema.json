@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Defines the transport model of a IB get stats for vardadmin model, e.g returned by /api/stats/vardadmin",
+  "properties": {
+    "forfraganRequiringActionCount": {
+      "type": "number"
+    },
+    "bestallningarRequiringActionCount": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "forfraganRequiringActionCount",
+    "bestallningarRequiringActionCount"
+  ],
+  "title": "IB get stats for vardadmin model",
+  "type": "object",
+  "additionalProperties": false
+}

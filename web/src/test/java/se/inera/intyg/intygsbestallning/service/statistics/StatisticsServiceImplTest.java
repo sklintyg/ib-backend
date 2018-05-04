@@ -1,0 +1,149 @@
+/*
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package se.inera.intyg.intygsbestallning.service.statistics;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.when;
+import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
+import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.AFU;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import com.google.common.collect.ImmutableList;
+
+import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
+import se.inera.intyg.intygsbestallning.persistence.model.Handling;
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.SamordnarStatisticsResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardadminStatisticsResponse;
+
+/**
+ * Created by marced on 2018-05-04.
+ */
+@RunWith(MockitoJUnitRunner.class)
+public class StatisticsServiceImplTest {
+
+    private static final String VG_ID = "VG-HsaId1";
+    private static final String VE_ID = "VE-HsaId1";
+
+    @Mock
+    private UtredningRepository utredningRepository;
+
+    @InjectMocks
+    private StatisticsServiceImpl testee;
+
+    private static List<Utredning> buildUtredningarWithExternforfragningar(int num, boolean addInternForfragning) {
+        List<Utredning> utredningList = new ArrayList<>();
+        for (int a = 0; a < num; a++) {
+            Utredning.UtredningBuilder utrBuilder = anUtredning().withUtredningsTyp(AFU).withUtredningId("id-" + a);
+
+            if (addInternForfragning) {
+                utrBuilder.withExternForfragan(anExternForfragan().withLandstingHsaId(VG_ID).withBesvarasSenastDatum(LocalDateTime.now())
+                        .withInternForfraganList(ImmutableList.of(anInternForfragan().withVardenhetHsaId(VE_ID).build())).build());
+            } else {
+                utrBuilder.withExternForfragan(
+                        anExternForfragan().withLandstingHsaId(VG_ID).withBesvarasSenastDatum(LocalDateTime.now()).build());
+            }
+
+            utredningList.add(utrBuilder.build());
+        }
+
+        return utredningList;
+    }
+
+    private static List<Utredning> buildBestallningar(int num, boolean handlingarMottagna) {
+        List<Utredning> utredningList = new ArrayList<>();
+        for (int a = 0; a < num; a++) {
+            Utredning utr = anUtredning()
+                    .withUtredningsTyp(AFU)
+                    .withUtredningId("id-" + a)
+                    .withExternForfragan(anExternForfragan()
+                            .withInternForfraganList(ImmutableList.of(
+                                    anInternForfragan()
+                                            .withVardenhetHsaId(VE_ID)
+                                            .build()))
+                            .withLandstingHsaId(VG_ID)
+                            .build())
+                    .withBestallning(buildBestallning())
+                    .withInvanare(anInvanare().withPersonId("19121212-121" + a).build())
+                    .build();
+            if (handlingarMottagna) {
+                utr.setHandlingList(buildHandlingsLista());
+            }
+            utredningList.add(utr);
+        }
+        return utredningList;
+    }
+
+    private static List<Handling> buildHandlingsLista() {
+        List<Handling> handlingar = new ArrayList<>();
+        handlingar.add(new Handling());
+        return handlingar;
+    }
+
+    private static Bestallning buildBestallning() {
+        Bestallning b = new Bestallning();
+        b.setIntygKlartSenast(LocalDateTime.now().plusDays(10L));
+        b.setTilldeladVardenhetHsaId(VE_ID);
+        return b;
+    }
+
+    @Test
+    public void testGetStatsForVardadmin() {
+        List<Utredning> repoContents = buildUtredningarWithExternforfragningar(3, true);
+        when(utredningRepository.findAllByExternForfragan_InternForfraganList_VardenhetHsaId(VE_ID)).thenReturn(repoContents);
+
+        List<Utredning> bestallningsUtredningar = buildBestallningar(4, true);
+        // Add one that will resolve to the an irrelevant status
+        bestallningsUtredningar.addAll(buildBestallningar(1, false));
+        when(utredningRepository.findAllWithBestallningForVardenhetHsaId(VE_ID)).thenReturn(bestallningsUtredningar);
+
+        final VardadminStatisticsResponse statsForVardadmin = testee.getStatsForVardadmin(VE_ID);
+
+        assertNotNull(statsForVardadmin);
+        assertEquals(3, statsForVardadmin.getForfraganRequiringActionCount());
+        assertEquals(4, statsForVardadmin.getBestallningarRequiringActionCount());
+    }
+
+    @Test
+    public void testGetStatsForSamordnare() {
+        List<Utredning> repoContents = buildUtredningarWithExternforfragningar(3, false);
+        repoContents.addAll(buildUtredningarWithExternforfragningar(2, true));
+
+        when(utredningRepository.findByExternForfragan_LandstingHsaId_AndArkiveradFalse(VG_ID)).thenReturn(repoContents);
+
+        final SamordnarStatisticsResponse result = testee.getStatsForSamordnare(VG_ID);
+
+        assertNotNull(result);
+        assertEquals(3, result.getRequireSamordnarActionCount());
+    }
+}

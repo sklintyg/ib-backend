@@ -74,8 +74,9 @@ angular.module('ibApp').directive('ibMainMenu', ['$state', 'UserModel', 'StatPol
                         state: 'app.vardadmin.listaForfragningar',
                         label: 'Förfrågningar',
                         id: 'menu-vardadministrator-listaForfragningar',
+                        helptext: 'Antalet förfrågningar från landstinget som kräver åtgärd av vårdenheten',
                         getStat: function() {
-                            return $scope.stat.forfragningarAtgard || '';
+                            return $scope.stat.forfraganRequiringActionCount || '';
                         }
                     });
 
@@ -83,8 +84,9 @@ angular.module('ibApp').directive('ibMainMenu', ['$state', 'UserModel', 'StatPol
                         state: 'app.vardadmin.pagaendeUtredningar',
                         label: 'Pågående',
                         id: 'menu-vardadministrator-pagaendeUtredningar',
+                        helptext: 'Antalet utredningar som kräver åtgärd av vårdenheten',
                         getStat: function() {
-                            return $scope.stat.utredningarAtgard || '';
+                            return $scope.stat.bestallningarRequiringActionCount || '';
                         }
                     });
 

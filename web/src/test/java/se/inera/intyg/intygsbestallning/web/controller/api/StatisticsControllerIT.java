@@ -32,6 +32,7 @@ import se.inera.intyg.intygsbestallning.web.BaseRestIntegrationTest;
  */
 public class StatisticsControllerIT extends BaseRestIntegrationTest {
     private static final String SAMORDNARE_API_ENDPOINT = "/api/stats/samordnare";
+    private static final String VARDADMIN_API_ENDPOINT = "/api/stats/vardadmin";
 
     @Test
     public void testGetSamordnarStats() {
@@ -44,6 +45,19 @@ public class StatisticsControllerIT extends BaseRestIntegrationTest {
     public void testGetSamordnarStatsForVardenhetsFails() {
         RestAssured.sessionId = getAuthSession(DEFAULT_VARDADMIN);
         given().expect().statusCode(403).when().get(SAMORDNARE_API_ENDPOINT);
+    }
+
+    @Test
+    public void testGetVardadminStats() {
+        RestAssured.sessionId = getAuthSession(DEFAULT_VARDADMIN);
+        given().expect().statusCode(OK).when().get(VARDADMIN_API_ENDPOINT).then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/ib-stats-vardadmin-response-schema.json"));
+    }
+
+    @Test
+    public void testGetVardadminStatsForSamordnareFails() {
+        RestAssured.sessionId = getAuthSession(DEFAULT_SAMORDNARE);
+        given().expect().statusCode(403).when().get(VARDADMIN_API_ENDPOINT);
     }
 
 }
