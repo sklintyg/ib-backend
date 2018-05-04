@@ -81,4 +81,6 @@ public class VardenhetController {
         return ResponseEntity
                 .ok(vardenhetService.setVardEnhetPreference(user.getCurrentlyLoggedInAt().getId(), vardenhetPreferenceRequest));
     }
+
+
 }

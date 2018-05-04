@@ -18,12 +18,11 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
-import java.util.Objects;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Objects;
 
 /**
  * Created by marced on 2018-04-23.
@@ -31,7 +30,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "VARDENHET_PREFERENCE")
-public class VardenhetPreference {
+public class  VardenhetPreference {
 
     @Id
     @Column(name = "VARDENHET_HSA_ID", nullable = false)

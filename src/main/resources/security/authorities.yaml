@@ -55,6 +55,7 @@ knownPrivileges:
   - &kp040 VISA_FORFRAGAN
   - &kp050 SPARA_VARDENHETPREFERENS
   - &kp060 LISTA_BESTALLNINGAR
+  - &kp070 HANTERA_VARDENHETER_FOR_VARDGIVARE
 
 # De roller som systemet har
 knownRoles:
@@ -100,6 +101,12 @@ privileges:
       desc: Lista beställningar
       intygstyper: # Implicit alla
       requestOrigins: # Implicit alla
+  - &p070
+      name: *kp070
+      desc: Hantera vårdenheter för vårdgivare
+      intygstyper: # Implicit alla
+      requestOrigins: # Implicit alla
+
 # Roller
 roles:
   - &r010
@@ -116,6 +123,7 @@ roles:
     privileges:
       - *p010 # LISTA_UTREDNINGAR
       - *p030 # VISA_UTREDNING
+      - *p070 # HANTERA_VARDENHETER_FOR_VARDGIVARE
 
 # Legitimerade yrkesroller
 titles:

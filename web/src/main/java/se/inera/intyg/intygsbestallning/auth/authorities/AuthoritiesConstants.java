@@ -34,6 +34,7 @@ public final class AuthoritiesConstants {
     public static final String PRIVILEGE_VISA_UTREDNING = "VISA_UTREDNING";
     public static final String PRIVILEGE_VISA_FORFRAGAN = "VISA_FORFRAGAN";
     public static final String PRIVILEGE_SPARA_VARDENHETPREFERENS = "SPARA_VARDENHETPREFERENS";
+    public static final String PRIVILEGE_HANTERA_VARDENHETER_FOR_VARDGIVARE = "HANTERA_VARDENHETER_FOR_VARDGIVARE";
 
     public static final String PRIVILEGE_LISTA_BESTALLNINGAR = "LISTA_BESTALLNINGAR";
 
