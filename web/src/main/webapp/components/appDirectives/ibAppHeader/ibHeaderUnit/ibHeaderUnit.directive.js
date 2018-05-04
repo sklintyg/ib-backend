@@ -19,8 +19,7 @@
 /**
  Note: This directive is not rendered unless a valid userModel & current unit is available, so all access to $scope.userModel can skips such checks.
  */
-angular.module('ibApp').directive('ibHeaderUnit', [ '$uibModal', 'UserModel',
-    function($uibModal, UserModel) {
+angular.module('ibApp').directive('ibHeaderUnit', [ '$uibModal', 'StatPollService', 'UserModel', function($uibModal, StatPollService, UserModel) {
     'use strict';
 
     return {
@@ -29,34 +28,17 @@ angular.module('ibApp').directive('ibHeaderUnit', [ '$uibModal', 'UserModel',
         templateUrl: '/components/appDirectives/ibAppHeader/ibHeaderUnit/ibHeaderUnit.directive.html',
         link: function($scope) {
 
-
-/*
-            $scope.statService = statService;
-            $scope.statService.startPolling();
-            $scope.stat = {
-                fragaSvarValdEnhet: 0,
-                fragaSvarAndraEnheter: 0,
-                intygValdEnhet: 0,
-                intygAndraEnheter: 0,
-                vardgivare: []
-            };
- */
-            /**
-             * Event listeners
-             */
-            /*
-            $scope.$on('statService.stat-update', function(event, message) {
-                $scope.stat = message;
-            });
-
-*/
-
-            $scope.getUser = function () {
+            $scope.getUser = function() {
                 return UserModel.get();
             };
 
+            StatPollService.startPolling();
 
 
+            $scope.$on('$destroy', function() {
+                //If no unit to display, then no stats to show either..
+                StatPollService.stopPolling('ibHeaderUnit destroyed');
+            });
 
         }
     };

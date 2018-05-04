@@ -2,10 +2,15 @@
 
     <ul class="nav navbar-nav">
       <li ng-class="{active: isActive(menu.state)}" ng-repeat="menu in menuDefs">
-        <a ui-sref="{{menu.state}}"
-           id="{{menu.id}}">{{menu.label}}
-          <span id="{{menu.statNumberId}}" ng-if="menu.getStat()>0" class="badge badge__stat"
-                title="{{menu.statTooltip}}">{{menu.getStat()}}</span></a>
+        <a ui-sref="{{menu.state}}" ng-attr-id="{{::menu.id}}">{{menu.label}}
+          <span ng-attr-id="{{::menu.id}}-count"
+                ng-if="menu.getStat()>0"
+                class="badge badge__stat"
+                uib-popover="{{::menu.helptext}}"
+                popover-trigger="mouseenter"
+                popover-popup-delay="300"
+                popover-append-to-body="true"
+                popover-placement="auto top">{{menu.getStat()}}</span></a>
       </li>
     </ul>
 

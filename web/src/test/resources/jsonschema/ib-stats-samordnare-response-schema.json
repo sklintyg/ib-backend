@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Defines the transport model of a IB get stats for samordnare model, e.g returned by /api/stats/samordnare",
+  "properties": {
+    "requireSamordnarActionCount": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "requireSamordnarActionCount"
+  ],
+  "title": "IB get stats for samordnare model",
+  "type": "object",
+  "additionalProperties": false
+}

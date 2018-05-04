@@ -4,8 +4,8 @@
   <div class="vertical-container">
     <!-- first item in vertical container -->
     <div class="single-text-row-container">
-      <div class="text-nowrap vg-name" ng-if="getUser().currentlyLoggedInAt.parentName">{{getUser().currentlyLoggedInAt.parentName}}&nbsp;-&nbsp;</div>
-      <div class="truncate-when-needed ve-name">{{getUser().currentlyLoggedInAt.name}}</div>
+      <div class="text-nowrap vg-name" ng-if="getUser().currentlyLoggedInAt.parentName" ng-attr-id="ib-header-unit-parent-name">{{getUser().currentlyLoggedInAt.parentName}}&nbsp;-&nbsp;</div>
+      <div class="truncate-when-needed ve-name" ng-attr-id="ib-header-unit-name">{{getUser().currentlyLoggedInAt.name}}</div>
     </div>
   </div>
 </div>

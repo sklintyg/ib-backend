@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-angular.module('ibApp').directive('ibMainMenu', ['$state', 'UserModel',
-    function($state, UserModel) {
+angular.module('ibApp').directive('ibMainMenu', ['$state', 'UserModel', 'StatPollService',
+    function($state, UserModel, StatPollService) {
     'use strict';
 
     return {
@@ -27,14 +27,9 @@ angular.module('ibApp').directive('ibMainMenu', ['$state', 'UserModel',
         link: function($scope) {
 
             $scope.menuDefs = [];
+
             //Set default stats
-            $scope.stat = {
-                fragaSvarValdEnhet: 0,
-                fragaSvarAndraEnheter: 0,
-                intygValdEnhet: 0,
-                intygAndraEnheter: 0,
-                vardgivare: []
-            };
+            $scope.stat = StatPollService.getLatestData();
             /**
              * Event listeners
              */
@@ -54,14 +49,11 @@ angular.module('ibApp').directive('ibMainMenu', ['$state', 'UserModel',
                     menu.push({
                         state: 'app.samordnare.listaUtredningar',
                         label: 'Pågående',
-                        id: 'menu-samordnare-listaUtredningar'/*,
-                        statNumberId: 'stat-unitstat-unhandled-question-count',
-                        statTooltip: 'not set',
+                        id: 'menu-samordnare-listaUtredningar',
+                        helptext: 'Antal utredningar i en status som kräver åtgärd',
                         getStat: function() {
-                            this.statTooltip = 'Vårdenheten har ' + $scope.stat.fragaSvarValdEnhet +
-                                ' ej hanterade frågor och svar.';
-                            return $scope.stat.fragaSvarValdEnhet || '';
-                        }*/
+                               return $scope.stat.requireSamordnarActionCount || '';
+                        }
                     });
 
                     menu.push({
@@ -77,16 +69,23 @@ angular.module('ibApp').directive('ibMainMenu', ['$state', 'UserModel',
                     });
                 }
                 else if (UserModel.get().currentRole.name === 'FMU_VARDADMIN') {
+
                     menu.push({
                         state: 'app.vardadmin.listaForfragningar',
                         label: 'Förfrågningar',
-                        id: 'menu-vardadministrator-listaForfragningar'
+                        id: 'menu-vardadministrator-listaForfragningar',
+                        getStat: function() {
+                            return $scope.stat.forfragningarAtgard || '';
+                        }
                     });
 
                     menu.push({
                         state: 'app.vardadmin.pagaendeUtredningar',
                         label: 'Pågående',
-                        id: 'menu-vardadministrator-pagaendeUtredningar'
+                        id: 'menu-vardadministrator-pagaendeUtredningar',
+                        getStat: function() {
+                            return $scope.stat.utredningarAtgard || '';
+                        }
                     });
 
                     menu.push({
