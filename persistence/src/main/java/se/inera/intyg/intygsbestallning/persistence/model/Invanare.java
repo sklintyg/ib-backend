@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
+import static java.util.Objects.isNull;
+import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,6 +31,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "INVANARE")
@@ -53,6 +57,27 @@ public class Invanare {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "INVANARE_ID", referencedColumnName = "ID", nullable = false)
     private List<TidigareUtforare> tidigareUtforare = new ArrayList<>();
+
+    public Invanare() {
+    }
+
+    public static Invanare from(final Invanare invanare) {
+        if (isNull(invanare)) {
+            return null;
+        }
+
+        return anInvanare()
+                .withId(invanare.getId())
+                .withPersonId(invanare.getPersonId())
+                .withSarskildaBehov(invanare.getSarskildaBehov())
+                .withBakgrundNulage(invanare.getBakgrundNulage())
+                .withPostkod(invanare.getPostkod())
+                .withTidigareUtforare(invanare.getTidigareUtforare().stream()
+                        .map(TidigareUtforare::from)
+                        .collect(Collectors.toList()))
+                .build();
+
+    }
 
     public String getPersonId() {
         return personId;
@@ -103,6 +128,7 @@ public class Invanare {
     }
 
     public static final class InvanareBuilder {
+        private long id;
         private String personId;
         private String sarskildaBehov;
         private String bakgrundNulage;
@@ -114,6 +140,11 @@ public class Invanare {
 
         public static InvanareBuilder anInvanare() {
             return new InvanareBuilder();
+        }
+
+        public InvanareBuilder withId(long id) {
+            this.id = id;
+            return this;
         }
 
         public InvanareBuilder withPersonId(String personId) {
@@ -143,6 +174,7 @@ public class Invanare {
 
         public Invanare build() {
             Invanare invanare = new Invanare();
+            invanare.setId(id);
             invanare.setPersonId(personId);
             invanare.setSarskildaBehov(sarskildaBehov);
             invanare.setBakgrundNulage(bakgrundNulage);

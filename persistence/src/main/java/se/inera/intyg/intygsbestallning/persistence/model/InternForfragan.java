@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
+import static java.util.Objects.isNull;
+import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
+
 import org.hibernate.annotations.Type;
 
 import javax.persistence.CascadeType;
@@ -61,6 +64,26 @@ public class InternForfragan {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "FORFRAGAN_SVAR_ID")
     private ForfraganSvar forfraganSvar;
+
+    public InternForfragan() {
+    }
+
+    public static InternForfragan from(final InternForfragan internForfragan) {
+
+        if (isNull(internForfragan)) {
+            return null;
+        }
+
+        return anInternForfragan()
+                .withId(internForfragan.getId())
+                .withVardenhetHsaId(internForfragan.getVardenhetHsaId())
+                .withTilldeladDatum(internForfragan.getTilldeladDatum())
+                .withBesvarasSenastDatum(internForfragan.getBesvarasSenastDatum())
+                .withSkapadDatum(internForfragan.getSkapadDatum())
+                .withKommentar(internForfragan.getKommentar())
+                .withForfraganSvar(ForfraganSvar.from(internForfragan.getForfraganSvar()))
+                .build();
+    }
 
     public long getId() {
         return id;
@@ -137,17 +160,24 @@ public class InternForfragan {
     }
 
     public static final class InternForfraganBuilder {
+        private long id;
         private String vardenhetHsaId;
         private LocalDateTime tilldeladDatum;
         private LocalDateTime besvarasSenastDatum;
         private LocalDateTime skapadDatum;
         private String kommentar;
         private ForfraganSvar forfraganSvar;
+
         private InternForfraganBuilder() {
         }
 
         public static InternForfraganBuilder anInternForfragan() {
             return new InternForfraganBuilder();
+        }
+
+        public InternForfraganBuilder withId(long id) {
+            this.id = id;
+            return this;
         }
 
         public InternForfraganBuilder withVardenhetHsaId(String vardenhetHsaId) {
@@ -182,12 +212,13 @@ public class InternForfragan {
 
         public InternForfragan build() {
             InternForfragan internForfragan = new InternForfragan();
+            internForfragan.setId(id);
             internForfragan.setVardenhetHsaId(vardenhetHsaId);
             internForfragan.setTilldeladDatum(tilldeladDatum);
             internForfragan.setBesvarasSenastDatum(besvarasSenastDatum);
+            internForfragan.setSkapadDatum(skapadDatum);
             internForfragan.setKommentar(kommentar);
             internForfragan.setForfraganSvar(forfraganSvar);
-            internForfragan.setSkapadDatum(skapadDatum);
             return internForfragan;
         }
     }

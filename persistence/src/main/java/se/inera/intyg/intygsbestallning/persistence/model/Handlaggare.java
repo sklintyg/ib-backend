@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
+import static java.util.Objects.isNull;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -59,6 +62,28 @@ public class Handlaggare {
 
     @Column(name = "STAD")
     private String stad;
+
+    public Handlaggare() {
+    }
+
+    public static Handlaggare from(final Handlaggare handlaggare) {
+        if (isNull(handlaggare)) {
+            return null;
+        }
+
+        return aHandlaggare()
+                .withId(handlaggare.getId())
+                .withFullstandigtNamn(handlaggare.getFullstandigtNamn())
+                .withTelefonnummer(handlaggare.getTelefonnummer())
+                .withEmail(handlaggare.getEmail())
+                .withMyndighet(handlaggare.getMyndighet())
+                .withKontor(handlaggare.getKontor())
+                .withKostnadsstalle(handlaggare.getKostnadsstalle())
+                .withAdress(handlaggare.getAdress())
+                .withPostkod(handlaggare.getPostkod())
+                .withStad(handlaggare.getStad())
+                .build();
+    }
 
     public long getId() {
         return id;
@@ -140,7 +165,35 @@ public class Handlaggare {
         this.stad = stad;
     }
 
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final Handlaggare that = (Handlaggare) o;
+        return id == that.id
+                && Objects.equals(fullstandigtNamn, that.fullstandigtNamn)
+                && Objects.equals(telefonnummer, that.telefonnummer)
+                && Objects.equals(email, that.email)
+                && Objects.equals(myndighet, that.myndighet)
+                && Objects.equals(kontor, that.kontor)
+                && Objects.equals(kostnadsstalle, that.kostnadsstalle)
+                && Objects.equals(adress, that.adress)
+                && Objects.equals(postkod, that.postkod)
+                && Objects.equals(stad, that.stad);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, fullstandigtNamn, telefonnummer, email, myndighet, kontor, kostnadsstalle, adress, postkod, stad);
+    }
+
     public static final class HandlaggareBuilder {
+        private long id;
         private String fullstandigtNamn;
         private String telefonnummer;
         private String email;
@@ -158,6 +211,11 @@ public class Handlaggare {
             return new HandlaggareBuilder();
         }
 
+        public HandlaggareBuilder withId(long id) {
+            this.id = id;
+            return this;
+        }
+
         public HandlaggareBuilder withFullstandigtNamn(String fullstandigtNamn) {
             this.fullstandigtNamn = fullstandigtNamn;
             return this;
@@ -173,8 +231,8 @@ public class Handlaggare {
             return this;
         }
 
-        public HandlaggareBuilder withMyndighet(String authority) {
-            this.myndighet = authority;
+        public HandlaggareBuilder withMyndighet(String myndighet) {
+            this.myndighet = myndighet;
             return this;
         }
 
@@ -205,6 +263,7 @@ public class Handlaggare {
 
         public Handlaggare build() {
             Handlaggare handlaggare = new Handlaggare();
+            handlaggare.setId(id);
             handlaggare.setFullstandigtNamn(fullstandigtNamn);
             handlaggare.setTelefonnummer(telefonnummer);
             handlaggare.setEmail(email);
@@ -216,32 +275,5 @@ public class Handlaggare {
             handlaggare.setStad(stad);
             return handlaggare;
         }
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        final Handlaggare that = (Handlaggare) o;
-        return id == that.id
-                && Objects.equals(fullstandigtNamn, that.fullstandigtNamn)
-                && Objects.equals(telefonnummer, that.telefonnummer)
-                && Objects.equals(email, that.email)
-                && Objects.equals(myndighet, that.myndighet)
-                && Objects.equals(kontor, that.kontor)
-                && Objects.equals(kostnadsstalle, that.kostnadsstalle)
-                && Objects.equals(adress, that.adress)
-                && Objects.equals(postkod, that.postkod)
-                && Objects.equals(stad, that.stad);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(id, fullstandigtNamn, telefonnummer, email, myndighet, kontor, kostnadsstalle, adress, postkod, stad);
     }
 }

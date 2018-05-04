@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
+import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
+
 import com.google.common.base.MoreObjects;
 import org.hibernate.annotations.Type;
 
@@ -33,6 +35,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "EXTERN_FORFRAGAN")
@@ -70,6 +73,24 @@ public class ExternForfragan {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "EXTERN_FORFRAGAN_ID", referencedColumnName = "ID", nullable = false)
     private List<InternForfragan> internForfraganList = new ArrayList<>();
+
+    public ExternForfragan() {
+    }
+
+    public static ExternForfragan from(final ExternForfragan externForfragan) {
+        return anExternForfragan()
+                .withId(externForfragan.getId())
+                .withLandstingHsaId(externForfragan.getLandstingHsaId())
+                .withBesvarasSenastDatum(externForfragan.getBesvarasSenastDatum())
+                .withKommentar(externForfragan.getKommentar())
+                .withAvvisatKommentar(externForfragan.getAvvisatKommentar())
+                .withAvvisatDatum(externForfragan.getAvvisatDatum())
+                .withInkomDatum(externForfragan.getInkomDatum())
+                .withInternForfraganList(externForfragan.getInternForfraganList().stream()
+                        .map(InternForfragan::from)
+                        .collect(Collectors.toList()))
+                .build();
+    }
 
     public String getLandstingHsaId() {
         return landstingHsaId;
@@ -145,77 +166,6 @@ public class ExternForfragan {
     }
 
 
-    public static final class ExternForfraganBuilder {
-        private String landstingHsaId;
-        private LocalDateTime besvarasSenastDatum;
-        private String kommentar;
-        private String avvisatKommentar;
-        private LocalDateTime avvisatDatum;
-        private LocalDateTime inkomDatum;
-        private Boolean direkttilldelad;
-        private List<InternForfragan> internForfraganList = new ArrayList<>();
-
-        private ExternForfraganBuilder() {
-        }
-
-        public static ExternForfraganBuilder anExternForfragan() {
-            return new ExternForfraganBuilder();
-        }
-
-        public ExternForfraganBuilder withLandstingHsaId(String landstingHsaId) {
-            this.landstingHsaId = landstingHsaId;
-            return this;
-        }
-
-        public ExternForfraganBuilder withBesvarasSenastDatum(LocalDateTime besvarasSenastDatum) {
-            this.besvarasSenastDatum = besvarasSenastDatum;
-            return this;
-        }
-
-        public ExternForfraganBuilder withKommentar(String kommentar) {
-            this.kommentar = kommentar;
-            return this;
-        }
-
-        public ExternForfraganBuilder withAvvisatKommentar(String avvisatKommentar) {
-            this.avvisatKommentar = avvisatKommentar;
-            return this;
-        }
-
-        public ExternForfraganBuilder withAvvisatDatum(LocalDateTime avvisatDatum) {
-            this.avvisatDatum = avvisatDatum;
-            return this;
-        }
-
-        public ExternForfraganBuilder withInkomDatum(LocalDateTime inkomDatum) {
-            this.inkomDatum = inkomDatum;
-            return this;
-        }
-
-        public ExternForfraganBuilder withDirekttilldelad(Boolean direkttilldelad) {
-            this.direkttilldelad = direkttilldelad;
-            return this;
-        }
-
-        public ExternForfraganBuilder withInternForfraganList(List<InternForfragan> internForfraganList) {
-            this.internForfraganList = internForfraganList;
-            return this;
-        }
-
-        public ExternForfragan build() {
-            ExternForfragan externForfragan = new ExternForfragan();
-            externForfragan.setLandstingHsaId(landstingHsaId);
-            externForfragan.setBesvarasSenastDatum(besvarasSenastDatum);
-            externForfragan.setKommentar(kommentar);
-            externForfragan.setAvvisatKommentar(avvisatKommentar);
-            externForfragan.setAvvisatDatum(avvisatDatum);
-            externForfragan.setInternForfraganList(internForfraganList);
-            externForfragan.setInkomDatum(inkomDatum);
-            externForfragan.setDirekttilldelad(direkttilldelad);
-            return externForfragan;
-        }
-    }
-
     @Override
     public boolean equals(final Object o) {
         if (this == o) {
@@ -261,5 +211,83 @@ public class ExternForfragan {
                 .add("inkomDatum", inkomDatum)
                 .add("internForfraganList", internForfraganList)
                 .toString();
+    }
+
+    public static final class ExternForfraganBuilder {
+        private long id;
+        private String landstingHsaId;
+        private LocalDateTime besvarasSenastDatum;
+        private String kommentar;
+        private String avvisatKommentar;
+        private LocalDateTime avvisatDatum;
+        private LocalDateTime inkomDatum;
+        private Boolean direkttilldelad;
+        private List<InternForfragan> internForfraganList = new ArrayList<>();
+
+        private ExternForfraganBuilder() {
+        }
+
+        public static ExternForfraganBuilder anExternForfragan() {
+            return new ExternForfraganBuilder();
+        }
+
+        public ExternForfraganBuilder withId(long id) {
+            this.id = id;
+            return this;
+        }
+
+        public ExternForfraganBuilder withLandstingHsaId(String landstingHsaId) {
+            this.landstingHsaId = landstingHsaId;
+            return this;
+        }
+
+        public ExternForfraganBuilder withBesvarasSenastDatum(LocalDateTime besvarasSenastDatum) {
+            this.besvarasSenastDatum = besvarasSenastDatum;
+            return this;
+        }
+
+        public ExternForfraganBuilder withKommentar(String kommentar) {
+            this.kommentar = kommentar;
+            return this;
+        }
+
+        public ExternForfraganBuilder withAvvisatKommentar(String avvisatKommentar) {
+            this.avvisatKommentar = avvisatKommentar;
+            return this;
+        }
+
+        public ExternForfraganBuilder withAvvisatDatum(LocalDateTime avvisatDatum) {
+            this.avvisatDatum = avvisatDatum;
+            return this;
+        }
+
+        public ExternForfraganBuilder withInkomDatum(LocalDateTime inkomDatum) {
+            this.inkomDatum = inkomDatum;
+            return this;
+        }
+
+        public ExternForfraganBuilder withDirekttilldelad(Boolean direkttilldelad) {
+            this.direkttilldelad = direkttilldelad;
+            return this;
+        }
+
+        public ExternForfraganBuilder withInternForfraganList(List<InternForfragan> internForfraganList) {
+            this.internForfraganList = internForfraganList;
+            return this;
+        }
+
+        public ExternForfragan build() {
+            ExternForfragan externForfragan = new ExternForfragan();
+            externForfragan.setId(id);
+            externForfragan.setLandstingHsaId(landstingHsaId);
+            externForfragan.setBesvarasSenastDatum(besvarasSenastDatum);
+            externForfragan.setKommentar(kommentar);
+            externForfragan.setAvvisatKommentar(avvisatKommentar);
+            externForfragan.setAvvisatDatum(avvisatDatum);
+            externForfragan.setInkomDatum(inkomDatum);
+            externForfragan.setDirekttilldelad(direkttilldelad);
+            externForfragan.setInternForfraganList(internForfraganList);
+            return externForfragan;
+        }
     }
 }

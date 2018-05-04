@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
+import static java.util.Objects.isNull;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handelse.HandelseBuilder.aHandelse;
+
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
@@ -54,6 +57,24 @@ public class Handelse {
 
     @Column(name = "KOMMENTAR", nullable = true)
     private String kommentar;
+
+    public Handelse() {
+    }
+
+    public static Handelse from(final Handelse handelse) {
+        if (isNull(handelse)) {
+            return null;
+        }
+
+        return aHandelse()
+                .withId(handelse.getId())
+                .withHandelseTyp(handelse.getHandelseTyp())
+                .withSkapad(handelse.getSkapad())
+                .withAnvandare(handelse.getAnvandare())
+                .withHandelseText(handelse.getHandelseText())
+                .withKommentar(handelse.getKommentar())
+                .build();
+    }
 
     public long getId() {
         return id;
@@ -104,6 +125,7 @@ public class Handelse {
     }
 
     public static final class HandelseBuilder {
+        private long id;
         private HandelseTyp handelseTyp;
         private LocalDateTime skapad;
         private String anvandare;
@@ -115,6 +137,11 @@ public class Handelse {
 
         public static HandelseBuilder aHandelse() {
             return new HandelseBuilder();
+        }
+
+        public HandelseBuilder withId(long id) {
+            this.id = id;
+            return this;
         }
 
         public HandelseBuilder withHandelseTyp(HandelseTyp handelseTyp) {
@@ -144,6 +171,7 @@ public class Handelse {
 
         public Handelse build() {
             Handelse handelse = new Handelse();
+            handelse.setId(id);
             handelse.setHandelseTyp(handelseTyp);
             handelse.setSkapad(skapad);
             handelse.setAnvandare(anvandare);
