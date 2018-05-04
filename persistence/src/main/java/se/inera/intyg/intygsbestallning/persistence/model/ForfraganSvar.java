@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
+import static java.util.Objects.isNull;
+import static se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar;
+
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
@@ -70,6 +73,31 @@ public class ForfraganSvar {
     @Column(name = "BORJA_DATUM")
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDate")
     private LocalDate borjaDatum;
+
+    public ForfraganSvar() {
+
+    }
+
+    public static ForfraganSvar from(final ForfraganSvar forfraganSvar) {
+
+        if (isNull(forfraganSvar)) {
+            return null;
+        }
+
+        return aForfraganSvar()
+                .withId(forfraganSvar.getId())
+                .withSvarTyp(forfraganSvar.getSvarTyp())
+                .withUtforareTyp(forfraganSvar.getUtforareTyp())
+                .withUtforareNamn(forfraganSvar.getUtforareNamn())
+                .withUtforareAdress(forfraganSvar.getUtforareAdress())
+                .withUtforarePostnr(forfraganSvar.getUtforarePostnr())
+                .withUtforarePostort(forfraganSvar.getUtforarePostort())
+                .withUtforareTelefon(forfraganSvar.getUtforareTelefon())
+                .withUtforareEpost(forfraganSvar.getUtforareEpost())
+                .withKommentar(forfraganSvar.getKommentar())
+                .withBorjaDatum(forfraganSvar.getBorjaDatum())
+                .build();
+    }
 
     public long getId() {
         return id;
@@ -160,6 +188,7 @@ public class ForfraganSvar {
     }
 
     public static final class ForfraganSvarBuilder {
+        private long id;
         private SvarTyp svarTyp;
         private UtforareTyp utforareTyp;
         private String utforareNamn;
@@ -176,6 +205,11 @@ public class ForfraganSvar {
 
         public static ForfraganSvarBuilder aForfraganSvar() {
             return new ForfraganSvarBuilder();
+        }
+
+        public ForfraganSvarBuilder withId(long id) {
+            this.id = id;
+            return this;
         }
 
         public ForfraganSvarBuilder withSvarTyp(SvarTyp svarTyp) {
@@ -230,6 +264,7 @@ public class ForfraganSvar {
 
         public ForfraganSvar build() {
             ForfraganSvar forfraganSvar = new ForfraganSvar();
+            forfraganSvar.setId(id);
             forfraganSvar.setSvarTyp(svarTyp);
             forfraganSvar.setUtforareTyp(utforareTyp);
             forfraganSvar.setUtforareNamn(utforareNamn);

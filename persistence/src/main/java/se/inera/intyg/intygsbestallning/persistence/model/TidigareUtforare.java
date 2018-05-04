@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
+import static java.util.Objects.isNull;
+import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -36,6 +39,21 @@ public class TidigareUtforare {
     @Column(name = "TIDIGARE_ENHET_ID")
     private String tidigareEnhetId;
 
+    public TidigareUtforare() {
+    }
+
+    public static TidigareUtforare from(final TidigareUtforare tidigareUtforare) {
+        if (isNull(tidigareUtforare)) {
+            return null;
+        }
+
+        return aTidigareUtforare()
+                .withId(tidigareUtforare.getId())
+                .withTidigareEnhetId(tidigareUtforare.getTidigareEnhetId())
+                .build();
+
+    }
+
     public String getTidigareEnhetId() {
         return tidigareEnhetId;
     }
@@ -53,6 +71,7 @@ public class TidigareUtforare {
     }
 
     public static final class TidigareUtforareBuilder {
+        private long id;
         private String tidigareEnhetId;
 
         private TidigareUtforareBuilder() {
@@ -62,6 +81,11 @@ public class TidigareUtforare {
             return new TidigareUtforareBuilder();
         }
 
+        public TidigareUtforareBuilder withId(long id) {
+            this.id = id;
+            return this;
+        }
+
         public TidigareUtforareBuilder withTidigareEnhetId(String tidigareEnhetId) {
             this.tidigareEnhetId = tidigareEnhetId;
             return this;
@@ -69,6 +93,7 @@ public class TidigareUtforare {
 
         public TidigareUtforare build() {
             TidigareUtforare tidigareUtforare = new TidigareUtforare();
+            tidigareUtforare.setId(id);
             tidigareUtforare.setTidigareEnhetId(tidigareEnhetId);
             return tidigareUtforare;
         }

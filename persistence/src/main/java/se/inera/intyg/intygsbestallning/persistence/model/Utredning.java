@@ -35,7 +35,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 
 @Entity
@@ -98,18 +100,27 @@ public class Utredning {
     public Utredning() {
     }
 
-    public static Utredning from(Utredning utredning) {
+    public static Utredning from(final Utredning utredning) {
+
+        if (isNull(utredning)) {
+            return null;
+        }
+
         return anUtredning()
                 .withUtredningId(utredning.getUtredningId())
                 .withUtredningsTyp(utredning.getUtredningsTyp())
-                .withBestallning(utredning.getBestallning().orElse(null))
+                .withBestallning(Bestallning.from(utredning.getBestallning().orElse(null)))
                 .withTolkBehov(utredning.getTolkBehov())
                 .withTolkSprak(utredning.getTolkSprak())
-                .withExternForfragan(utredning.getExternForfragan())
-                .withHandelseList(utredning.getHandelseList())
-                .withHandlingList(utredning.getHandlingList())
-                .withHandlaggare(utredning.getHandlaggare())
-                .withInvanare(utredning.getInvanare())
+                .withExternForfragan(ExternForfragan.from(utredning.getExternForfragan()))
+                .withHandelseList(utredning.getHandelseList().stream()
+                        .map(Handelse::from)
+                        .collect(Collectors.toList()))
+                .withHandlingList(utredning.getHandlingList().stream()
+                        .map(Handling::from)
+                        .collect(Collectors.toList()))
+                .withHandlaggare(Handlaggare.from(utredning.getHandlaggare()))
+                .withInvanare(Invanare.from(utredning.getInvanare()))
                 .withAvbrutenDatum(utredning.getAvbrutenDatum())
                 .withAvbrutenAnledning(utredning.getAvbrutenAnledning())
                 .build();

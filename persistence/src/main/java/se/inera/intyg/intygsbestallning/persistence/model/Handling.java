@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
+import static java.util.Objects.isNull;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
+
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
@@ -50,6 +53,22 @@ public class Handling {
     @Column(name = "URSPRUNG", nullable = false)
     @Enumerated(EnumType.STRING)
     private HandlingUrsprungTyp ursprung;
+
+    public Handling() {
+    }
+
+    public static Handling from(final Handling handling) {
+        if (isNull(handling)) {
+            return null;
+        }
+
+        return aHandling()
+                .withId(handling.getId())
+                .withSkickatDatum(handling.getSkickatDatum())
+                .withInkomDatum(handling.getInkomDatum())
+                .withUrsprung(handling.getUrsprung())
+                .build();
+    }
 
     public long getId() {
         return id;
@@ -84,6 +103,7 @@ public class Handling {
     }
 
     public static final class HandlingBuilder {
+        private long id;
         private LocalDateTime skickatDatum;
         private LocalDateTime inkomDatum;
         private HandlingUrsprungTyp ursprung;
@@ -93,6 +113,11 @@ public class Handling {
 
         public static HandlingBuilder aHandling() {
             return new HandlingBuilder();
+        }
+
+        public HandlingBuilder withId(long id) {
+            this.id = id;
+            return this;
         }
 
         public HandlingBuilder withSkickatDatum(LocalDateTime skickatDatum) {
@@ -112,6 +137,7 @@ public class Handling {
 
         public Handling build() {
             Handling handling = new Handling();
+            handling.setId(id);
             handling.setSkickatDatum(skickatDatum);
             handling.setInkomDatum(inkomDatum);
             handling.setUrsprung(ursprung);
