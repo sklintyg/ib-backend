@@ -20,6 +20,8 @@ package se.inera.intyg.intygsbestallning.persistence.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -36,11 +38,18 @@ public class RegistreradVardenhet {
     @Column(name = "VARDGIVARE_HSA_ID", nullable = false)
     private String vardgivareHsaId;
 
+    @Column(name = "VARDENHET_VARDGIVARE_HSA_ID", nullable = false)
+    private String vardenhetVardgivareHsaId;
+
     @Column(name = "VARDENHET_HSA_ID", nullable = false)
     private String vardenhetHsaId;
 
     @Column(name = "VARDENHET_NAMN", nullable = false)
     private String vardenhetNamn;
+
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "VARDENHET_REGIFORM", nullable = false)
+    private RegiFormTyp vardenhetRegiForm;
 
     public long getId() {
         return id;
@@ -56,6 +65,14 @@ public class RegistreradVardenhet {
 
     public void setVardgivareHsaId(String vardgivareHsaId) {
         this.vardgivareHsaId = vardgivareHsaId;
+    }
+
+    public String getVardenhetVardgivareHsaId() {
+        return vardenhetVardgivareHsaId;
+    }
+
+    public void setVardenhetVardgivareHsaId(String vardenhetVardgivareHsaId) {
+        this.vardenhetVardgivareHsaId = vardenhetVardgivareHsaId;
     }
 
     public String getVardenhetHsaId() {
@@ -74,10 +91,21 @@ public class RegistreradVardenhet {
         this.vardenhetNamn = vardenhetNamn;
     }
 
+    public RegiFormTyp getVardenhetRegiForm() {
+        return vardenhetRegiForm;
+    }
+
+    public void setVardenhetRegiFormTyp(RegiFormTyp vardenhetRegiForm) {
+        this.vardenhetRegiForm = vardenhetRegiForm;
+    }
+
+
     public static final class RegistreradVardenhetBuilder {
         private String vardgivareHsaId;
+        private String vardenhetVardgivareHsaId;
         private String vardenhetHsaId;
         private String vardenhetNamn;
+        private RegiFormTyp vardenhetRegiForm;
 
         private RegistreradVardenhetBuilder() {
         }
@@ -91,6 +119,11 @@ public class RegistreradVardenhet {
             return this;
         }
 
+        public RegistreradVardenhetBuilder withVardenhetVardgivareHsaId(String vardenhetVardgivareHsaId) {
+            this.vardenhetVardgivareHsaId = vardenhetVardgivareHsaId;
+            return this;
+        }
+
         public RegistreradVardenhetBuilder withVardenhetHsaId(String vardenhetHsaId) {
             this.vardenhetHsaId = vardenhetHsaId;
             return this;
@@ -101,11 +134,18 @@ public class RegistreradVardenhet {
             return this;
         }
 
+        public RegistreradVardenhetBuilder withVardenhetRegiForm(RegiFormTyp vardenhetRegiForm) {
+            this.vardenhetRegiForm = vardenhetRegiForm;
+            return this;
+        }
+
         public RegistreradVardenhet build() {
             RegistreradVardenhet registreradVardenhet = new RegistreradVardenhet();
             registreradVardenhet.setVardgivareHsaId(vardgivareHsaId);
+            registreradVardenhet.setVardenhetVardgivareHsaId(vardenhetVardgivareHsaId);
             registreradVardenhet.setVardenhetHsaId(vardenhetHsaId);
             registreradVardenhet.setVardenhetNamn(vardenhetNamn);
+            registreradVardenhet.setVardenhetRegiFormTyp(vardenhetRegiForm);
             return registreradVardenhet;
         }
     }

@@ -20,12 +20,13 @@ package se.inera.intyg.intygsbestallning.service.vardgivare;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.intygsbestallning.persistence.model.RegiFormTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.RegistreradVardenhet;
 import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
 import se.inera.intyg.intygsbestallning.service.vardgivare.dto.VardenhetItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetVardenheterForVardgivareResponse;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class VardgivareServiceImpl implements VardgivareService {
@@ -34,8 +35,21 @@ public class VardgivareServiceImpl implements VardgivareService {
     private RegistreradVardenhetRepository registreradVardenhetRepository;
 
     @Override
-    public List<VardenhetItem> listVardenheterForVardgivare(String vardgivareHsaId) {
+    public GetVardenheterForVardgivareResponse listVardenheterForVardgivare(String vardgivareHsaId) {
         List<RegistreradVardenhet> byVardgivareHsaId = registreradVardenhetRepository.findByVardgivareHsaId(vardgivareHsaId);
-        return byVardgivareHsaId.stream().map(VardenhetItem::from).collect(Collectors.toList());
+
+        GetVardenheterForVardgivareResponse response = new GetVardenheterForVardgivareResponse();
+
+        for (RegistreradVardenhet rv : byVardgivareHsaId) {
+            if (rv.getVardenhetRegiForm() == RegiFormTyp.PRIVAT) {
+                response.getPrivat().add(VardenhetItem.from(rv));
+            } else if (rv.getVardenhetVardgivareHsaId().equals(vardgivareHsaId)) {
+                response.getEgetLandsting().add(VardenhetItem.from(rv));
+            } else {
+                response.getAnnatLandsting().add(VardenhetItem.from(rv));
+            }
+        }
+
+        return response;
     }
 }

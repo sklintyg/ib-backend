@@ -24,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesValidator;
@@ -31,10 +32,7 @@ import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationExceptio
 import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.vardgivare.VardgivareService;
-import se.inera.intyg.intygsbestallning.service.vardgivare.dto.VardenhetItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetVardenheterForVardgivareResponse;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/vardgivare")
@@ -56,9 +54,7 @@ public class VardgivareController {
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_VARDENHETER_FOR_VARDGIVARE)
                 .orThrow(new IbAuthorizationException("User is not allowed to list or manage vardenheter for vardgivare"));
 
-        List<VardenhetItem> vardenhetItems = vardgivareService.listVardenheterForVardgivare(user.getCurrentlyLoggedInAt().getId());
-
-        return ResponseEntity.ok(new GetVardenheterForVardgivareResponse(vardenhetItems, vardenhetItems.size()));
+        return ResponseEntity.ok(vardgivareService.listVardenheterForVardgivare(user.getCurrentlyLoggedInAt().getId()));
     }
 
 }

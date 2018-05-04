@@ -20,34 +20,39 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
 import se.inera.intyg.intygsbestallning.service.vardgivare.dto.VardenhetItem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GetVardenheterForVardgivareResponse {
-    private List<VardenhetItem> vardenhetItemList;
-    private int totalCount;
+    private List<VardenhetItem> egetLandsting = new ArrayList<>();
+    private List<VardenhetItem> annatLandsting = new ArrayList<>();
+    private List<VardenhetItem> privat = new ArrayList<>();
 
-    private GetVardenheterForVardgivareResponse() {
+    public GetVardenheterForVardgivareResponse() {
 
     }
 
-    public GetVardenheterForVardgivareResponse(List<VardenhetItem> vardenhetItemList, int totalCount) {
-        this.vardenhetItemList = vardenhetItemList;
-        this.totalCount = totalCount;
+    public List<VardenhetItem> getEgetLandsting() {
+        return egetLandsting;
     }
 
-    public List<VardenhetItem> getVardenhetItemList() {
-        return vardenhetItemList;
+    public void setEgetLandsting(List<VardenhetItem> egetLandsting) {
+        this.egetLandsting = egetLandsting;
     }
 
-    public void setVardenhetItemList(List<VardenhetItem> vardenhetItemList) {
-        this.vardenhetItemList = vardenhetItemList;
+    public List<VardenhetItem> getAnnatLandsting() {
+        return annatLandsting;
     }
 
-    public int getTotalCount() {
-        return totalCount;
+    public void setAnnatLandsting(List<VardenhetItem> annatLandsting) {
+        this.annatLandsting = annatLandsting;
     }
 
-    public void setTotalCount(int totalCount) {
-        this.totalCount = totalCount;
+    public List<VardenhetItem> getPrivat() {
+        return privat;
+    }
+
+    public void setPrivat(List<VardenhetItem> privat) {
+        this.privat = privat;
     }
 }

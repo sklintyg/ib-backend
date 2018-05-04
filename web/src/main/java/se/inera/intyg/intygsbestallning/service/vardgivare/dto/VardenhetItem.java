@@ -18,38 +18,50 @@
  */
 package se.inera.intyg.intygsbestallning.service.vardgivare.dto;
 
+import se.inera.intyg.intygsbestallning.persistence.model.RegiFormTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.RegistreradVardenhet;
 
 public class VardenhetItem {
-    private String hsaId;
-    private String namn;
+    private String id;
+    private String label;
+    private RegiFormTyp regiForm;
 
     public static VardenhetItem from(RegistreradVardenhet hsaVardenhet) {
         return VardenhetItemBuilder.aVardenhetItem()
-                .withHsaId(hsaVardenhet.getVardenhetHsaId())
-                .withNamn(hsaVardenhet.getVardenhetNamn())
+                .withId(hsaVardenhet.getVardenhetHsaId())
+                .withLabel(hsaVardenhet.getVardenhetNamn())
+                .withRegiForm(hsaVardenhet.getVardenhetRegiForm())
                 .build();
     }
 
-    public String getHsaId() {
-        return hsaId;
+    public String getId() {
+        return id;
     }
 
-    public void setHsaId(String hsaId) {
-        this.hsaId = hsaId;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public String getNamn() {
-        return namn;
+    public String getLabel() {
+        return label;
     }
 
-    public void setNamn(String namn) {
-        this.namn = namn;
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public RegiFormTyp getRegiForm() {
+        return regiForm;
+    }
+
+    public void setRegiForm(RegiFormTyp regiForm) {
+        this.regiForm = regiForm;
     }
 
     public static final class VardenhetItemBuilder {
-        private String hsaId;
-        private String namn;
+        private String id;
+        private String label;
+        private RegiFormTyp regiForm;
 
         private VardenhetItemBuilder() {
         }
@@ -58,20 +70,26 @@ public class VardenhetItem {
             return new VardenhetItemBuilder();
         }
 
-        public VardenhetItemBuilder withHsaId(String hsaId) {
-            this.hsaId = hsaId;
+        public VardenhetItemBuilder withId(String id) {
+            this.id = id;
             return this;
         }
 
-        public VardenhetItemBuilder withNamn(String namn) {
-            this.namn = namn;
+        public VardenhetItemBuilder withLabel(String label) {
+            this.label = label;
+            return this;
+        }
+
+        public VardenhetItemBuilder withRegiForm(RegiFormTyp regiForm) {
+            this.regiForm = regiForm;
             return this;
         }
 
         public VardenhetItem build() {
             VardenhetItem vardenhetItem = new VardenhetItem();
-            vardenhetItem.setHsaId(hsaId);
-            vardenhetItem.setNamn(namn);
+            vardenhetItem.setId(id);
+            vardenhetItem.setLabel(label);
+            vardenhetItem.setRegiForm(regiForm);
             return vardenhetItem;
         }
     }

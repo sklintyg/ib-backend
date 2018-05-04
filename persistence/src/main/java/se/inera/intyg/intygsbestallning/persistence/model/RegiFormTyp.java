@@ -16,10 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.service.vardgivare;
+package se.inera.intyg.intygsbestallning.persistence.model;
 
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetVardenheterForVardgivareResponse;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
-public interface VardgivareService {
-    GetVardenheterForVardgivareResponse listVardenheterForVardgivare(String vardgivareHsaId);
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
+public enum RegiFormTyp {
+    LANDSTING("Landsting"), PRIVAT("Privat");
+
+    private final String id;
+    private final String label;
+
+    RegiFormTyp(String label) {
+        this.id = this.name();
+        this.label = label;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getLabel() {
+        return label;
+    }
 }
