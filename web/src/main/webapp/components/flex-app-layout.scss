@@ -89,7 +89,7 @@ body {
     //Split horizontally in 3:2 ratio
     .ib-workarea-utredning {
       position: relative; //important: needs to be relative for anchorScroll to work
-      flex: 3;
+      flex: 2;
       overflow-y: auto;
       padding: 20px 15px 0 15px;
       background-color: $ib-color-27;
@@ -101,7 +101,7 @@ body {
       }
     }
     .ib-workarea-supportpanel {
-      flex: 2;
+      flex: 3;
       min-width: 1%;
     }
 

@@ -19,8 +19,35 @@
 
 angular.module('ibApp')
     .controller('VisaUtredningCtrl',
-        function() {
+        function($scope) {
             'use strict';
 
+            var config = {
+                tabs: [],
+                intygContext: {
+                    type: 'fk7263',
+                    id: null,
+                }
+            };
+
+            config.tabs.push({
+                id: 'wc-arende-panel-tab',
+                title: 'common.supportpanel.arende.title',
+                tooltip: 'common.supportpanel.arende.tooltip',
+                config: {
+                    intygContext: config.intygContext
+                }
+            });
+
+            config.tabs.push({
+                id: 'wc-help-tips-panel-tab',
+                title: 'common.supportpanel.help.title',
+                tooltip: 'common.supportpanel.help.tooltip',
+                config: {
+                    intygContext: config.intygContext
+                }
+            });
+
+            $scope.config = config;
         }
     );

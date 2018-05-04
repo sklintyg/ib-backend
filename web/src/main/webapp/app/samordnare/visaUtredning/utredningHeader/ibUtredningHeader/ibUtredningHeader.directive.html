@@ -1,0 +1,55 @@
+<div class="ib-page-header">
+  <ib-spinner label="common.load.certificate" show-spinner="!intygHeaderViewState.intygLoaded || !intygHeaderViewState.arendenLoaded">
+    <div class="centered-constrained-content">
+
+      <!-- page error message -->
+      <div ng-if="utredningHeaderViewState.activeErrorMessageKey">
+        <ib-alert-message id="intyg-load-error" ng-show="utredningHeaderViewState.common.doneLoading"
+                          alert-severity="danger">
+            <span dynamic-label key="{{utredningHeaderViewState.common.activeErrorMessageKey}}"></span>
+        </ib-alert-message>
+      </div>
+
+      <!-- header content -->
+      <div ng-if="!utredningHeaderViewState.activeErrorMessageKey" id="utredning-header-status">
+
+        <!-- Status -->
+        <div class="page-header-divider">
+          <div class="inline-block">
+            <a ng-click="back()"
+               uib-popover="Tillbaka."
+               popover-trigger="mouseenter"
+               popover-popup-delay="300"
+               popover-append-to-body="true"
+               popover-placement="auto top"
+               popover-class="z-low">
+              <i class="material-icons">arrow_back</i>
+            </a><a
+                id="tillbakaButton"
+                ng-click="back()">Tillbaka
+            </a>
+          </div>
+
+          <ib-utredning-header-status intyg-view-state="utredningHeaderViewState"></ib-utredning-header-status>
+        </div>
+        <div class="flex-row padding-top-small">
+          <div class="flex-col-max">
+            <!-- Header text -->
+            <h2 class="page-heading1">
+              <span>UtredningTitel</span>
+            </h2>
+            <h3 class="page-heading2">
+              Info
+            </h3>
+            <!-- Patient status -->
+            <ib-patient-status is-intyg="true" patient="utredningHeaderViewState.intygModel.grundData.patient" intyg-model="utredningHeaderViewState.intygModel" intyg-properties="utredningHeaderViewState.common.intygProperties"></ib-patient-status>
+          </div>
+          <div class="flex-col-min">
+            <!-- Buttonbar -->
+            <ib-utredning-button-bar view-state="utredningHeaderViewState"></ib-utredning-button-bar>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ib-spinner>
+</div>
