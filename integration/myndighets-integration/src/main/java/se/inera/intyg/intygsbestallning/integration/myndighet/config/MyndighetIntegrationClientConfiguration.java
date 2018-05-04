@@ -31,12 +31,12 @@ import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.r
 public class MyndighetIntegrationClientConfiguration {
 
     @Value("${ib.myndighet.integration.url}")
-    private String itWsUrl;
+    private String ntjpWsUrl;
 
     @Bean
     public RespondToPerformerRequestResponderInterface respondToPerformerRequestResponderClient() {
         JaxWsProxyFactoryBean proxyFactoryBean = new JaxWsProxyFactoryBean();
-        proxyFactoryBean.setAddress(itWsUrl);
+        proxyFactoryBean.setAddress(ntjpWsUrl);
         proxyFactoryBean.setServiceClass(RespondToPerformerRequestResponderInterface.class);
         return (RespondToPerformerRequestResponderInterface) proxyFactoryBean.create();
     }
