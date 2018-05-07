@@ -70,7 +70,6 @@ public class Bestallning {
         }
 
         return aBestallning()
-                .withId(bestallning.getId())
                 .withTilldeladVardenhetHsaId(bestallning.getTilldeladVardenhetHsaId())
                 .withOrderDatum(bestallning.getOrderDatum())
                 .withUppdateradDatum(bestallning.getUppdateradDatum())
@@ -166,7 +165,6 @@ public class Bestallning {
     }
 
     public static final class BestallningBuilder {
-        private long id;
         private String tilldeladVardenhetHsaId;
         private LocalDateTime orderDatum;
         private LocalDateTime uppdateradDatum;
@@ -179,11 +177,6 @@ public class Bestallning {
 
         public static BestallningBuilder aBestallning() {
             return new BestallningBuilder();
-        }
-
-        public BestallningBuilder withId(long id) {
-            this.id = id;
-            return this;
         }
 
         public BestallningBuilder withTilldeladVardenhetHsaId(String tilldeladVardenhetHsaId) {
@@ -218,7 +211,6 @@ public class Bestallning {
 
         public Bestallning build() {
             Bestallning bestallning = new Bestallning();
-            bestallning.setId(id);
             bestallning.setTilldeladVardenhetHsaId(tilldeladVardenhetHsaId);
             bestallning.setOrderDatum(orderDatum);
             bestallning.setUppdateradDatum(uppdateradDatum);
