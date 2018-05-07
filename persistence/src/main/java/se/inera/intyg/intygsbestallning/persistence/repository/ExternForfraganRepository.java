@@ -26,8 +26,12 @@ import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 
 import java.util.List;
 
+//CHECKSTYLE:OFF MethodName
+//CHECKSTYLE:OFF LineLength
 public interface ExternForfraganRepository extends JpaRepository<ExternForfragan, Long> {
 
-    @Query("SELECT u FROM Utredning u JOIN u.externForfragan ef WHERE u.arkiverad = false AND ef.landstingHsaId = :landstingHsaId")
-    List<Utredning> findByExternForfraganAndLandstingHsaIdAndArkiveradFalse(@Param("landstingHsaId") String landstingHsaId);
+    @Query("SELECT u FROM Utredning u JOIN u.externForfragan ef JOIN ef.internForfraganList intf WHERE u.arkiverad = false AND intf.vardenhetHsaId = :vardenhetHsaId")
+    List<Utredning> findByExternForfraganAndVardenhetHsaIdAndArkiveradFalse(@Param("vardenhetHsaId") String vardenhetHsaId);
 }
+//CHECKSTYLE:ON MethodName
+//CHECKSTYLE:ON LineLength

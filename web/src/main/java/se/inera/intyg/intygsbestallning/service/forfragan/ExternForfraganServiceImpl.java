@@ -70,7 +70,7 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
     @Override
     public GetForfraganListResponse findForfragningarForVardenhetHsaIdWithFilter(String vardenhetHsaId, ListForfraganRequest request) {
         List<ForfraganListItem> forfraganList = externForfraganRepository
-                .findByExternForfraganAndLandstingHsaIdAndArkiveradFalse(vardenhetHsaId)
+                .findByExternForfraganAndVardenhetHsaIdAndArkiveradFalse(vardenhetHsaId)
                 .stream()
                 .map(utr -> ForfraganListItem.from(utr, vardenhetHsaId, internForfraganStateResolver))
                 .collect(toList());

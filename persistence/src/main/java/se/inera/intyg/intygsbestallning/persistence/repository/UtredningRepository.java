@@ -45,6 +45,7 @@ public interface UtredningRepository extends JpaRepository<Utredning, String> {
 
     /**
      * Variant query that filters out any Utredningar that are in a closed state.
+     *
      * @param vardenhetHsaId
      * @return
      */
