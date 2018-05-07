@@ -212,7 +212,25 @@ public class UtredningRepositoryTest {
 
     }
 
+    @Test
+    public void testFindAllByExternForfragan_InternForfraganList_VardenhetHsaId_AndArkiveradFalse() {
+        Utredning utr = buildUtredning();
+        utr.setBestallning(buildBestallning());
+        utr.setExternForfragan(buildExternForfragan());
+        utredningRepository.save(utr);
 
+        List<Utredning> response = utredningRepository.findAllByExternForfragan_InternForfraganList_VardenhetHsaId_AndArkiveradFalse(VE_HSA_ID);
+        assertNotNull(response);
+        assertTrue(response.isEmpty());
+
+
+        utr.setArkiverad(false);
+        utredningRepository.save(utr);
+        response = utredningRepository.findAllByExternForfragan_InternForfraganList_VardenhetHsaId_AndArkiveradFalse(VE_HSA_ID);
+        assertNotNull(response);
+        assertEquals(1, response.size());
+
+    }
 
     @Test
     public void testFindInternalForfraganByVardenhet() {
@@ -243,6 +261,26 @@ public class UtredningRepositoryTest {
         response = utredningRepository.findAllByExternForfragan_LandstingHsaId(VG_HSA_ID);
         assertNotNull(response);
         assertEquals(1, response.size());
+
+    }
+
+    @Test
+    public void testFindAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse() {
+        Utredning utr = buildUtredning();
+        utr.setBestallning(buildBestallning());
+        utr.setArkiverad(true);
+        utredningRepository.save(utr);
+
+        List<Utredning> resultList = utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(VE_HSA_ID);
+        assertNotNull(resultList);
+        assertTrue(resultList.isEmpty());
+
+        utr.setArkiverad(false);
+        utredningRepository.save(utr);
+        resultList = utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(VE_HSA_ID);
+        assertEquals(1, resultList.size());
+        assertNotNull(resultList.get(0).getBestallning());
+
 
     }
 

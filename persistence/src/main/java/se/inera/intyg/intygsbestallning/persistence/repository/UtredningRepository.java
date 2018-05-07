@@ -30,11 +30,25 @@ import java.util.List;
 public interface UtredningRepository extends JpaRepository<Utredning, String> {
     List<Utredning> findAllByExternForfragan_InternForfraganList_VardenhetHsaId(String vardenhetHsaId);
 
+    /**
+     * Variant query that filters out any Utredningar that are in a closed state
+     * @param vardenhetHsaId
+     * @return
+     */
+    List<Utredning> findAllByExternForfragan_InternForfraganList_VardenhetHsaId_AndArkiveradFalse(String vardenhetHsaId);
+
     List<Utredning> findAllByExternForfragan_LandstingHsaId(String landstingHsaId);
 
     List<Utredning> findByExternForfragan_LandstingHsaId_AndArkiveradFalse(String landstingHsaId);
 
     List<Utredning> findAllByBestallning_TilldeladVardenhetHsaId(String vardenhetHsaId);
+
+    /**
+     * Variant query that filters out any Utredningar that are in a closed state
+     * @param vardenhetHsaId
+     * @return
+     */
+    List<Utredning> findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(String vardenhetHsaId);
 
     @Query("SELECT ef.landstingHsaId FROM Utredning u JOIN u.bestallning b JOIN u.externForfragan ef WHERE b.tilldeladVardenhetHsaId = :vardenhetHsaId")
     List<String> findDistinctLandstingHsaIdByVardenhetHsaIdHavingBestallning(@Param("vardenhetHsaId") String vardenhetHsaId);

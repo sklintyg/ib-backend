@@ -21,7 +21,7 @@ angular.module('ibApp').factory('StatPollService',
         'use strict';
 
         var intervalPromise;
-        var msPollingInterval = 10 * 1000;
+        var msPollingInterval = 60 * 1000;
 
 
         //Default stat result

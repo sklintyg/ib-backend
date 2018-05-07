@@ -58,14 +58,14 @@ public class StatisticsServiceImpl implements StatisticsService {
     public VardadminStatisticsResponse getStatsForVardadmin(String enhetsHsaId) {
 
         // Calculate nr of forfragningar for this vardenhet where next actor is VARDADMIN
-        long forfraganRequiringActionCount = utredningRepository.findAllByExternForfragan_InternForfraganList_VardenhetHsaId(enhetsHsaId)
+        long forfraganRequiringActionCount = utredningRepository.findAllByExternForfragan_InternForfraganList_VardenhetHsaId_AndArkiveradFalse(enhetsHsaId)
                 .stream()
                 .map(utr -> ForfraganListItem.from(utr, enhetsHsaId, internForfraganStateResolver))
                 .filter(ffli -> ffli.getStatus().getNextActor().equals(Actor.VARDADMIN)).count();
 
         // Calculate nr of bestallningar for this vardenhet where action is required from actor VARDADMIN and not in AVSLUTAD or
         // FORFRAGAN fas.
-        long bestallningarRequiringActionCount = utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId(enhetsHsaId)
+        long bestallningarRequiringActionCount = utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(enhetsHsaId)
                 .stream()
                 .map(u -> BestallningListItem.from(u, utredningStateResolver.resolveStatus(u), Actor.VARDADMIN))
                 .filter(bli -> bli.getKraverAtgard() && !bli.getFas().equals(UtredningFas.AVSLUTAD)

@@ -119,12 +119,12 @@ public class StatisticsServiceImplTest {
     @Test
     public void testGetStatsForVardadmin() {
         List<Utredning> repoContents = buildUtredningarWithExternforfragningar(3, true);
-        when(utredningRepository.findAllByExternForfragan_InternForfraganList_VardenhetHsaId(VE_ID)).thenReturn(repoContents);
+        when(utredningRepository.findAllByExternForfragan_InternForfraganList_VardenhetHsaId_AndArkiveradFalse(VE_ID)).thenReturn(repoContents);
 
         List<Utredning> bestallningsUtredningar = buildBestallningar(4, true);
         // Add one that will resolve to the an irrelevant status
         bestallningsUtredningar.addAll(buildBestallningar(1, false));
-        when(utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId(VE_ID)).thenReturn(bestallningsUtredningar);
+        when(utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(VE_ID)).thenReturn(bestallningsUtredningar);
 
         final VardadminStatisticsResponse statsForVardadmin = testee.getStatsForVardadmin(VE_ID);
 
