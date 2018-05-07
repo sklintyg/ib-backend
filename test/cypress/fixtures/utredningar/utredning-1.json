@@ -1,0 +1,58 @@
+{
+  "utredningId": "utredning-cypress-1",
+  "utredningsTyp": "AFU",
+  "tolkBehov": false,
+  "tolkSprak": null,
+  "avbrutenDatum": null,
+  "avbrutenAnledning": null,
+  "arkiverad": false,
+  "externForfragan": {
+    "landstingHsaId": "IFV1239877878-1043",
+    "besvarasSenastDatum": "2018-07-02T00:00:00",
+    "kommentar": null,
+    "avvisatKommentar": null,
+    "avvisatDatum": null,
+    "inkomDatum": "2018-05-04T16:28:16.545",
+    "direkttilldelad": null,
+    "internForfraganList": [{
+      "vardenhetHsaId": "IFV1239877878-1042",
+      "besvarasSenastDatum": "2018-04-30T10:07:12.396",
+      "kommentar": "Bered skyndsamt!",
+      "skapadDatum": "2018-04-26T10:07:12.127",
+      "tilldeladDatum":"2018-04-28T10:07:12.127",
+      "forfraganSvar": {
+        "svarTyp": "ACCEPTERA",
+        "utforareTyp": "ENHET",
+        "utforareNamn": "Utförarenheten",
+        "utforareAdress": "Utförarvägen 1",
+        "utforarePostnr": "12345",
+        "utforarePostort": "Utförhult",
+        "utforareTelefon": "123-123412",
+        "utforareEpost": "utforare@inera.se",
+        "kommentar": "Bered skyndsamt!",
+        "borjaDatum": "2018-12-12"
+      }
+    }]
+  },
+  "handelseList": [ ],
+  "handlingList": [ ],
+  "besokList": [ ],
+  "handlaggare": {
+    "fullstandigtNamn": null,
+    "telefonnummer": "123465789",
+    "email": null,
+    "myndighet": "FKASSA",
+    "kontor": null,
+    "kostnadsstalle": null,
+    "adress": null,
+    "postkod": null,
+    "stad": null
+  },
+  "invanare": {
+    "personId": null,
+    "sarskildaBehov": null,
+    "bakgrundNulage": null,
+    "postkod": "hemma",
+    "tidigareUtforare": [ ]
+  }
+}

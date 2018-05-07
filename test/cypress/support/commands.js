@@ -26,6 +26,7 @@
 
 Cypress.Commands.add("login", (loginId, unitId) => {
     cy.visit('/welcome.html');
+    cy.clearLocalStorage();
     cy.get('#jsonSelect').select(loginId);
     cy.get('#loginBtn').click();
     cy.window().should('have.property', 'disableAnimations').then((disableAnimations) => {
