@@ -22,10 +22,13 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
+import se.inera.intyg.infra.integration.pu.model.PersonSvar;
+import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
@@ -56,6 +59,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningRespo
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
+import se.inera.intyg.schemas.contract.Personnummer;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
@@ -87,6 +91,9 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
     public static final String INTERPRETER_ERROR_TEXT = "May not set interpreter language if there is no need for interpreter";
     private static final Logger LOG = LoggerFactory.getLogger(UtredningService.class);
+
+    @Autowired
+    private PUService puService;
 
     @Override
     public List<UtredningListItem> findExternForfraganByLandstingHsaId(String landstingHsaId) {
@@ -154,7 +161,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                             + landstingHsaId + "'");
         }
 
-        return GetUtredningResponse.from(utredning);
+        return GetUtredningResponse.from(utredning, utredningStateResolver.resolveStatus(utredning), null);
     }
 
     @Override
@@ -168,7 +175,10 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                             + landstingHsaId + "'");
         }
 
-        return GetUtredningResponse.from(utredning);
+        Optional<PersonSvar> personSvar = Personnummer.createPersonnummer(utredning.getInvanare().getPersonId())
+                .map(pnr -> puService.getPerson(pnr));
+
+        return GetUtredningResponse.from(utredning, utredningStateResolver.resolveStatus(utredning), personSvar);
     }
 
     @Override

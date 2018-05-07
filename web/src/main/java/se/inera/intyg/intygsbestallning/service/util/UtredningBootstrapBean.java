@@ -28,6 +28,8 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.intygsbestallning.common.integration.json.CustomObjectMapper;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
+import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
+import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
@@ -85,6 +87,8 @@ public class UtredningBootstrapBean {
             utredning.getExternForfragan().setBesvarasSenastDatum(date);
             utredning.getExternForfragan().setInkomDatum(startDate);
             utredning.getExternForfragan().setLandstingHsaId("IFV1239877878-1041");
+            utredning.setInvanare(new Invanare());
+            utredning.setHandlaggare(new Handlaggare());
             utredningRepository.save(utredning);
             date = date.plusDays(1);
         }

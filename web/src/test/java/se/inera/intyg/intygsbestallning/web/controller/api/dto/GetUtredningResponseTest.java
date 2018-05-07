@@ -20,6 +20,7 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
 import org.junit.Test;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 
 import java.time.LocalDateTime;
 
@@ -55,7 +56,7 @@ public class GetUtredningResponseTest {
                         .withPersonId("personnummer")
                         .build())
                 .build();
-        GetUtredningResponse response = GetUtredningResponse.from(utredning);
+        GetUtredningResponse response = GetUtredningResponse.from(utredning, UtredningStatus.FORFRAGAN_INKOMMEN, null);
 
         assertNotNull(response);
         assertEquals("utredningId", response.getUtredningsId());
@@ -65,10 +66,10 @@ public class GetUtredningResponseTest {
         assertEquals("fullstandigtnamn", response.getHandlaggareNamn());
         assertEquals("telefonnummer", response.getHandlaggareTelefonnummer());
         assertEquals("2018-01-01", response.getInkomDatum());
-        assertEquals("personnummer", response.getInvanarePersonId());
+        assertEquals("personnummer", response.getInvanare().getPersonId());
         assertEquals("sv", response.getTolkSprak());
         assertTrue(response.isBehovTolk());
-        assertEquals("TODO", response.getStatus());
+        assertEquals(UtredningStatus.FORFRAGAN_INKOMMEN, response.getStatus());
         assertEquals(AFU.name(), response.getUtredningsTyp());
         assertTrue(response.isBehovTolk());
     }
