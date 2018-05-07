@@ -21,6 +21,7 @@ package se.inera.intyg.intygsbestallning.persistence.model;
 import static java.util.Objects.isNull;
 import static se.inera.intyg.intygsbestallning.persistence.model.Handelse.HandelseBuilder.aHandelse;
 
+import com.google.common.base.MoreObjects;
 import org.hibernate.annotations.Type;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 
@@ -32,10 +33,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "HANDELSE")
-public class Handelse {
+public final class Handelse {
 
     @Id
     @GeneratedValue
@@ -180,5 +182,40 @@ public class Handelse {
             handelse.setKommentar(kommentar);
             return handelse;
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Handelse)) {
+            return false;
+        }
+        final Handelse handelse = (Handelse) o;
+        return id == handelse.id
+                && handelseTyp == handelse.handelseTyp
+                && Objects.equals(skapad, handelse.skapad)
+                && Objects.equals(anvandare, handelse.anvandare)
+                && Objects.equals(handelseText, handelse.handelseText)
+                && Objects.equals(kommentar, handelse.kommentar);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, handelseTyp, skapad, anvandare, handelseText, kommentar);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("handelseTyp", handelseTyp)
+                .add("skapad", skapad)
+                .add("anvandare", anvandare)
+                .add("handelseText", handelseText)
+                .add("kommentar", kommentar)
+                .toString();
     }
 }

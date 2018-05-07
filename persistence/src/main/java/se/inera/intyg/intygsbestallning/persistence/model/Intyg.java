@@ -18,6 +18,10 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
+import static java.util.Objects.isNull;
+import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
+
+import com.google.common.base.MoreObjects;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
@@ -26,10 +30,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "INTYG")
-public class Intyg {
+public final class Intyg {
 
     @Id
     @GeneratedValue
@@ -90,7 +95,23 @@ public class Intyg {
         this.sistaDatumKompletteringsbegaran = sistaDatumKompletteringsbegaran;
     }
 
+    public static Intyg from(final Intyg intyg) {
+
+        if (isNull(intyg)) {
+            return null;
+        }
+
+        return anIntyg()
+                .withId(intyg.getId())
+                .withKompletteringsId(intyg.getKompletteringsId())
+                .withSistaDatum(intyg.getSistaDatum())
+                .withMottagetDatum(intyg.getMottagetDatum())
+                .withSistaDatumKompletteringsbegaran(intyg.getSistaDatumKompletteringsbegaran())
+                .build();
+    }
+
     public static final class IntygBuilder {
+        private long id;
         private String kompletteringsId;
         private LocalDateTime sistaDatum;
         private LocalDateTime mottagetDatum;
@@ -101,6 +122,11 @@ public class Intyg {
 
         public static IntygBuilder anIntyg() {
             return new IntygBuilder();
+        }
+
+        public IntygBuilder withId(long id) {
+            this.id = id;
+            return this;
         }
 
         public IntygBuilder withKompletteringsId(String kompletteringsId) {
@@ -125,11 +151,45 @@ public class Intyg {
 
         public Intyg build() {
             Intyg intyg = new Intyg();
+            intyg.setId(id);
             intyg.setKompletteringsId(kompletteringsId);
             intyg.setSistaDatum(sistaDatum);
             intyg.setMottagetDatum(mottagetDatum);
             intyg.setSistaDatumKompletteringsbegaran(sistaDatumKompletteringsbegaran);
             return intyg;
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Intyg)) {
+            return false;
+        }
+        final Intyg intyg = (Intyg) o;
+        return Objects.equals(id, intyg.id)
+                && Objects.equals(kompletteringsId, intyg.kompletteringsId)
+                && Objects.equals(sistaDatum, intyg.sistaDatum)
+                && Objects.equals(mottagetDatum, intyg.mottagetDatum)
+                && Objects.equals(sistaDatumKompletteringsbegaran, intyg.sistaDatumKompletteringsbegaran);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, kompletteringsId, sistaDatum, mottagetDatum, sistaDatumKompletteringsbegaran);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("kompletteringsId", kompletteringsId)
+                .add("sistaDatum", sistaDatum)
+                .add("mottagetDatum", mottagetDatum)
+                .add("sistaDatumKompletteringsbegaran", sistaDatumKompletteringsbegaran)
+                .toString();
     }
 }

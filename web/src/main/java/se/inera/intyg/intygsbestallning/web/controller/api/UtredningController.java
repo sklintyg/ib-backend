@@ -24,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,11 +33,13 @@ import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
+import se.inera.intyg.intygsbestallning.service.besok.BesokService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListUtredningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
 
 import java.util.List;
@@ -45,11 +48,17 @@ import java.util.List;
 @RequestMapping("/api/utredningar")
 public class UtredningController {
 
+    private static final String VIEW_NOT_ALLOWED = "User is not allowed to view the requested resource";
+    private static final String EDIT_NOT_ALLOWED = "User is not allowed to edit the requested resource";
+
     @Autowired
     private UserService userService;
 
     @Autowired
     private UtredningService utredningService;
+
+    @Autowired
+    private BesokService besokService;
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
@@ -58,7 +67,7 @@ public class UtredningController {
     public ResponseEntity<GetUtredningListResponse> getAllUtredningarForUser() {
         IbUser user = userService.getUser();
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_UTREDNINGAR)
-                .orThrow(new IbAuthorizationException("User is not allowed to view the requested resource"));
+                .orThrow(new IbAuthorizationException(VIEW_NOT_ALLOWED));
 
         // Do a SAMORDNARE search...
         List<UtredningListItem> utredningar = utredningService.findExternForfraganByLandstingHsaId(user.getCurrentlyLoggedInAt().getId());
@@ -70,7 +79,7 @@ public class UtredningController {
     public ResponseEntity<GetUtredningListResponse> getUtredningarForUser(@RequestBody ListUtredningRequest req) {
         IbUser user = userService.getUser();
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_UTREDNINGAR)
-                .orThrow(new IbAuthorizationException("User is not allowed to view the requested resource"));
+                .orThrow(new IbAuthorizationException(VIEW_NOT_ALLOWED));
 
         // Do a SAMORDNARE search...
         GetUtredningListResponse response = utredningService
@@ -84,7 +93,19 @@ public class UtredningController {
     public ResponseEntity<GetUtredningResponse> getUtredning(@PathVariable("utredningsId") String utredningsId) {
         IbUser user = userService.getUser();
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_VISA_UTREDNING)
-                .orThrow(new IbAuthorizationException("User is not allowed to view the requested resource"));
+                .orThrow(new IbAuthorizationException(VIEW_NOT_ALLOWED));
         return ResponseEntity.ok(utredningService.getExternForfragan(utredningsId, user.getCurrentlyLoggedInAt().getId()));
+    }
+
+    @PutMapping("/besok")
+    public void createBesok(final RegisterBesokRequest request) {
+
+        final IbUser user = userService.getUser();
+        authoritiesValidator.given(user)
+                .privilege(AuthoritiesConstants.ROLE_FMU_SAMORDNARE)
+                .privilege(AuthoritiesConstants.ROLE_FMU_VARDADMIN)
+                .orThrow(new IbAuthorizationException(EDIT_NOT_ALLOWED));
+
+        besokService.registerNewBesok(null);
     }
 }

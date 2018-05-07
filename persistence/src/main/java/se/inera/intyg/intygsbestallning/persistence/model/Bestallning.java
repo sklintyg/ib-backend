@@ -18,6 +18,10 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
+import static java.util.Objects.isNull;
+import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
+
+import com.google.common.base.MoreObjects;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
@@ -28,12 +32,9 @@ import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-import static java.util.Objects.isNull;
-import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
-
 @Entity
 @Table(name = "BESTALLNING")
-public class Bestallning {
+public final class Bestallning {
 
     @Id
     @GeneratedValue
@@ -70,6 +71,7 @@ public class Bestallning {
         }
 
         return aBestallning()
+                .withId(bestallning.getId())
                 .withTilldeladVardenhetHsaId(bestallning.getTilldeladVardenhetHsaId())
                 .withOrderDatum(bestallning.getOrderDatum())
                 .withUppdateradDatum(bestallning.getUppdateradDatum())
@@ -135,36 +137,8 @@ public class Bestallning {
         this.kommentar = kommentar;
     }
 
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        final Bestallning that = (Bestallning) o;
-        return id == that.id
-                && Objects.equals(tilldeladVardenhetHsaId, that.tilldeladVardenhetHsaId)
-                && Objects.equals(orderDatum, that.orderDatum)
-                && Objects.equals(uppdateradDatum, that.uppdateradDatum)
-                && Objects.equals(syfte, that.syfte)
-                && Objects.equals(planeradeAktiviteter, that.planeradeAktiviteter)
-                && Objects.equals(kommentar, that.kommentar);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id,
-                tilldeladVardenhetHsaId,
-                orderDatum,
-                uppdateradDatum,
-                syfte,
-                planeradeAktiviteter,
-                kommentar);
-    }
-
     public static final class BestallningBuilder {
+        private long id;
         private String tilldeladVardenhetHsaId;
         private LocalDateTime orderDatum;
         private LocalDateTime uppdateradDatum;
@@ -177,6 +151,11 @@ public class Bestallning {
 
         public static BestallningBuilder aBestallning() {
             return new BestallningBuilder();
+        }
+
+        public BestallningBuilder withId(long id) {
+            this.id = id;
+            return this;
         }
 
         public BestallningBuilder withTilldeladVardenhetHsaId(String tilldeladVardenhetHsaId) {
@@ -211,6 +190,7 @@ public class Bestallning {
 
         public Bestallning build() {
             Bestallning bestallning = new Bestallning();
+            bestallning.setId(id);
             bestallning.setTilldeladVardenhetHsaId(tilldeladVardenhetHsaId);
             bestallning.setOrderDatum(orderDatum);
             bestallning.setUppdateradDatum(uppdateradDatum);
@@ -219,5 +199,42 @@ public class Bestallning {
             bestallning.setKommentar(kommentar);
             return bestallning;
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Bestallning)) {
+            return false;
+        }
+        final Bestallning that = (Bestallning) o;
+        return id == that.id
+                && Objects.equals(tilldeladVardenhetHsaId, that.tilldeladVardenhetHsaId)
+                && Objects.equals(orderDatum, that.orderDatum)
+                && Objects.equals(uppdateradDatum, that.uppdateradDatum)
+                && Objects.equals(syfte, that.syfte)
+                && Objects.equals(planeradeAktiviteter, that.planeradeAktiviteter)
+                && Objects.equals(kommentar, that.kommentar);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, tilldeladVardenhetHsaId, orderDatum, uppdateradDatum, syfte, planeradeAktiviteter, kommentar);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("tilldeladVardenhetHsaId", tilldeladVardenhetHsaId)
+                .add("orderDatum", orderDatum)
+                .add("uppdateradDatum", uppdateradDatum)
+                .add("syfte", syfte)
+                .add("planeradeAktiviteter", planeradeAktiviteter)
+                .add("kommentar", kommentar)
+                .toString();
     }
 }

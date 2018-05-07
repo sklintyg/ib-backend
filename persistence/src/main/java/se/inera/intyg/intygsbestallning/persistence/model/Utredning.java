@@ -18,6 +18,11 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
+import static java.util.Objects.isNull;
+import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
+
+import com.google.common.base.MoreObjects;
+import org.apache.commons.collections4.ListUtils;
 import org.hibernate.annotations.Type;
 import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
@@ -39,12 +44,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static java.util.Objects.isNull;
-import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
-
 @Entity
 @Table(name = "UTREDNING")
-public class Utredning {
+public final class Utredning {
 
     @Id
     @Column(name = "UTREDNING_ID")
@@ -128,6 +130,15 @@ public class Utredning {
                         .collect(Collectors.toList()))
                 .withHandlingList(utredning.getHandlingList().stream()
                         .map(Handling::from)
+                        .collect(Collectors.toList()))
+                .withBesokList(utredning.getBesokList().stream()
+                        .map(Besok::from)
+                        .collect(Collectors.toList()))
+                .withIntygList(utredning.getIntygList().stream()
+                        .map(Intyg::from)
+                        .collect(Collectors.toList()))
+                .withAnteckningList(utredning.getAnteckningList().stream()
+                        .map(Anteckning::from)
                         .collect(Collectors.toList()))
                 .withHandlaggare(Handlaggare.from(utredning.getHandlaggare()))
                 .withInvanare(Invanare.from(utredning.getInvanare()))
@@ -260,38 +271,8 @@ public class Utredning {
         return anteckningList;
     }
 
-    public void setAnteckningList(List<Anteckning> anteckningList) {
+    public void setAnteckningList(final List<Anteckning> anteckningList) {
         this.anteckningList = anteckningList;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(utredningId);
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        final Utredning utredning = (Utredning) o;
-        return Objects.equals(utredningId, utredning.utredningId)
-                && utredningsTyp == utredning.utredningsTyp
-                && Objects.equals(bestallning, utredning.bestallning)
-                && Objects.equals(tolkBehov, utredning.tolkBehov)
-                && Objects.equals(tolkSprak, utredning.tolkSprak)
-                && Objects.equals(avbrutenDatum, utredning.avbrutenDatum)
-                && avbrutenAnledning == utredning.avbrutenAnledning
-                && Objects.equals(arkiverad, utredning.arkiverad)
-                && Objects.equals(externForfragan, utredning.externForfragan)
-                && Objects.equals(handelseList, utredning.handelseList)
-                && Objects.equals(handlingList, utredning.handlingList)
-                && Objects.equals(intygList, utredning.intygList)
-                && Objects.equals(handlaggare, utredning.handlaggare)
-                && Objects.equals(invanare, utredning.invanare);
     }
 
     public static final class UtredningBuilder {
@@ -419,5 +400,107 @@ public class Utredning {
             utredning.setInvanare(invanare);
             return utredning;
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Utredning)) {
+            return false;
+        }
+
+        final Utredning utredning = (Utredning) o;
+
+        if (utredningId != null ? !utredningId.equals(utredning.utredningId) : utredning.utredningId != null) {
+            return false;
+        }
+        if (utredningsTyp != utredning.utredningsTyp) {
+            return false;
+        }
+        if (bestallning != null ? !bestallning.equals(utredning.bestallning) : utredning.bestallning != null) {
+            return false;
+        }
+        if (tolkBehov != null ? !tolkBehov.equals(utredning.tolkBehov) : utredning.tolkBehov != null) {
+            return false;
+        }
+        if (tolkSprak != null ? !tolkSprak.equals(utredning.tolkSprak) : utredning.tolkSprak != null) {
+            return false;
+        }
+        if (avbrutenDatum != null ? !avbrutenDatum.equals(utredning.avbrutenDatum) : utredning.avbrutenDatum != null) {
+            return false;
+        }
+        if (avbrutenAnledning != utredning.avbrutenAnledning) {
+            return false;
+        }
+        if (arkiverad != null ? !arkiverad.equals(utredning.arkiverad) : utredning.arkiverad != null) {
+            return false;
+        }
+        if (externForfragan != null ? !externForfragan.equals(utredning.externForfragan) : utredning.externForfragan != null) {
+            return false;
+        }
+        if (!ListUtils.isEqualList(handelseList, utredning.handelseList)) {
+            return false;
+        }
+        if (!ListUtils.isEqualList(handlingList, utredning.handlingList)) {
+            return false;
+        }
+        if (!ListUtils.isEqualList(besokList, utredning.besokList)) {
+            return false;
+        }
+        if (!ListUtils.isEqualList(intygList, utredning.intygList)) {
+            return false;
+        }
+        if (!ListUtils.isEqualList(anteckningList, utredning.anteckningList)) {
+            return false;
+        }
+        if (handlaggare != null ? !handlaggare.equals(utredning.handlaggare) : utredning.handlaggare != null) {
+            return false;
+        }
+        return invanare != null ? invanare.equals(utredning.invanare) : utredning.invanare == null;
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(utredningId,
+                utredningsTyp,
+                bestallning,
+                tolkBehov,
+                tolkSprak,
+                avbrutenDatum,
+                avbrutenAnledning,
+                arkiverad,
+                externForfragan,
+                handelseList,
+                handlingList,
+                besokList,
+                intygList,
+                anteckningList,
+                handlaggare,
+                invanare);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("utredningId", utredningId)
+                .add("utredningsTyp", utredningsTyp)
+                .add("bestallning", bestallning)
+                .add("tolkBehov", tolkBehov)
+                .add("tolkSprak", tolkSprak)
+                .add("avbrutenDatum", avbrutenDatum)
+                .add("avbrutenAnledning", avbrutenAnledning)
+                .add("arkiverad", arkiverad)
+                .add("externForfragan", externForfragan)
+                .add("handelseList", handelseList)
+                .add("handlingList", handlingList)
+                .add("besokList", besokList)
+                .add("intygList", intygList)
+                .add("anteckningsList", anteckningList)
+                .add("handlaggare", handlaggare)
+                .add("invanare", invanare)
+                .toString();
     }
 }

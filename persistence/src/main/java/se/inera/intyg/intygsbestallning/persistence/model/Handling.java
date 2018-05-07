@@ -21,6 +21,7 @@ package se.inera.intyg.intygsbestallning.persistence.model;
 import static java.util.Objects.isNull;
 import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
 
+import com.google.common.base.MoreObjects;
 import org.hibernate.annotations.Type;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
 
@@ -33,10 +34,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "HANDLING")
-public class Handling {
+public final class Handling {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -144,5 +146,36 @@ public class Handling {
             handling.setUrsprung(ursprung);
             return handling;
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Handling)) {
+            return false;
+        }
+        final Handling handling = (Handling) o;
+        return id == handling.id
+                && Objects.equals(skickatDatum, handling.skickatDatum)
+                && Objects.equals(inkomDatum, handling.inkomDatum)
+                && ursprung == handling.ursprung;
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, skickatDatum, inkomDatum, ursprung);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("skickatDatum", skickatDatum)
+                .add("inkomDatum", inkomDatum)
+                .add("ursprung", ursprung)
+                .toString();
     }
 }

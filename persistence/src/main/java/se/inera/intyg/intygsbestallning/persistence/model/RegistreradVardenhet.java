@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
+import com.google.common.base.MoreObjects;
 import se.inera.intyg.intygsbestallning.persistence.model.type.RegiFormTyp;
 
 import javax.persistence.Column;
@@ -27,10 +28,11 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Objects;
 
 @Entity
 @Table(name = "REGISTRERAD_VARDENHET")
-public class RegistreradVardenhet {
+public final class RegistreradVardenhet {
 
     @Id
     @GeneratedValue
@@ -150,5 +152,40 @@ public class RegistreradVardenhet {
             registreradVardenhet.setVardenhetRegiFormTyp(vardenhetRegiForm);
             return registreradVardenhet;
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof RegistreradVardenhet)) {
+            return false;
+        }
+        final RegistreradVardenhet that = (RegistreradVardenhet) o;
+        return id == that.id
+                && Objects.equals(vardgivareHsaId, that.vardgivareHsaId)
+                && Objects.equals(vardenhetVardgivareHsaId, that.vardenhetVardgivareHsaId)
+                && Objects.equals(vardenhetHsaId, that.vardenhetHsaId)
+                && Objects.equals(vardenhetNamn, that.vardenhetNamn)
+                && vardenhetRegiForm == that.vardenhetRegiForm;
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, vardgivareHsaId, vardenhetVardgivareHsaId, vardenhetHsaId, vardenhetNamn, vardenhetRegiForm);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("vardgivareHsaId", vardgivareHsaId)
+                .add("vardenhetVardgivareHsaId", vardenhetVardgivareHsaId)
+                .add("vardenhetHsaId", vardenhetHsaId)
+                .add("vardenhetNamn", vardenhetNamn)
+                .add("vardenhetRegiForm", vardenhetRegiForm)
+                .toString();
     }
 }

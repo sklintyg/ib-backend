@@ -18,6 +18,19 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toList;
+import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
+import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
+import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
+import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
+import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
+
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.commons.lang3.BooleanUtils;
@@ -72,19 +85,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static com.google.common.base.Strings.isNullOrEmpty;
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toList;
-import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
-import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
-import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
-import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
-import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
-import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 
 @Service
 @Transactional
@@ -240,9 +240,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         // Inserts new information from order
         utredning.setBestallning(createBestallning(order));
         utredning.getIntygList().add(anIntyg()
-                .withSistaDatum(Optional.ofNullable(order.getLastDateIntyg())
-                        .map(LocalDate::atStartOfDay)
-                        .orElse(null))
+                .withSistaDatum(order.getLastDateIntyg().atStartOfDay())
                 .build());
         updateInvanareFromOrder(utredning.getInvanare(), order);
 
@@ -262,7 +260,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
         final Utredning utredning = utredningRepository.findById(update.getUtredningId())
                 .orElseThrow(() -> new IbServiceException(
-                        IbErrorCodeEnum.NOT_FOUND, MessageFormat.format("Assessment with id: {} was not found", update.getUtredningId())));
+                        IbErrorCodeEnum.NOT_FOUND, MessageFormat.format("Assessment with id: {0} was not found", update.getUtredningId())));
 
         if (!utredning.getBestallning().isPresent()) {
             throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, "Assessment does not have a Bestallning");
@@ -274,15 +272,15 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
     private Utredning qualifyForUpdatering(final UpdateOrderRequest update, final Utredning original) {
 
-        Preconditions.checkArgument(!isNull(update));
-        Preconditions.checkArgument(!isNull(original));
+        Preconditions.checkArgument(nonNull(update));
+        Preconditions.checkArgument(nonNull(original));
         Preconditions.checkArgument(original.getBestallning().isPresent());
 
         Utredning toUpdate = Utredning.from(original);
 
         update.getLastDateIntyg().ifPresent(date -> toUpdate.getIntygList().stream()
                 .filter(i -> isNull(i.getKompletteringsId()))
-                .findAny()
+                .findFirst()
                 .ifPresent(i -> i.setSistaDatum(date)));
         update.getTolkBehov().ifPresent(toUpdate::setTolkBehov);
         update.getTolkSprak().ifPresent(toUpdate::setTolkSprak);

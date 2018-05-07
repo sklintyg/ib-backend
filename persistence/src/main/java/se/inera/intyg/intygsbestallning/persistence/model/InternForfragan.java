@@ -21,6 +21,7 @@ package se.inera.intyg.intygsbestallning.persistence.model;
 import static java.util.Objects.isNull;
 import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
 
+import com.google.common.base.MoreObjects;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.CascadeType;
@@ -36,7 +37,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "INTERN_FORFRAGAN")
-public class InternForfragan {
+public final class InternForfragan {
 
     @Id
     @GeneratedValue
@@ -141,24 +142,6 @@ public class InternForfragan {
         this.skapadDatum = skapadDatum;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        InternForfragan internForfragan = (InternForfragan) o;
-        return Objects.equals(id, internForfragan.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-
     public static final class InternForfraganBuilder {
         private long id;
         private String vardenhetHsaId;
@@ -221,5 +204,42 @@ public class InternForfragan {
             internForfragan.setForfraganSvar(forfraganSvar);
             return internForfragan;
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof InternForfragan)) {
+            return false;
+        }
+        final InternForfragan that = (InternForfragan) o;
+        return id == that.id
+                && Objects.equals(vardenhetHsaId, that.vardenhetHsaId)
+                && Objects.equals(tilldeladDatum, that.tilldeladDatum)
+                && Objects.equals(besvarasSenastDatum, that.besvarasSenastDatum)
+                && Objects.equals(skapadDatum, that.skapadDatum)
+                && Objects.equals(kommentar, that.kommentar)
+                && Objects.equals(forfraganSvar, that.forfraganSvar);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, vardenhetHsaId, tilldeladDatum, besvarasSenastDatum, skapadDatum, kommentar, forfraganSvar);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("vardenhetHsaId", vardenhetHsaId)
+                .add("tilldeladDatum", tilldeladDatum)
+                .add("besvarasSenastDatum", besvarasSenastDatum)
+                .add("skapadDatum", skapadDatum)
+                .add("kommentar", kommentar)
+                .add("forfraganSvar", forfraganSvar)
+                .toString();
     }
 }

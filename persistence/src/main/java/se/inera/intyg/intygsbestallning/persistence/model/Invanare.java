@@ -21,6 +21,9 @@ package se.inera.intyg.intygsbestallning.persistence.model;
 import static java.util.Objects.isNull;
 import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
 
+import com.google.common.base.MoreObjects;
+import org.apache.commons.collections4.ListUtils;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -31,11 +34,12 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "INVANARE")
-public class Invanare {
+public final class Invanare {
 
     @Id
     @GeneratedValue
@@ -182,5 +186,52 @@ public class Invanare {
             invanare.setTidigareUtforare(tidigareUtforare);
             return invanare;
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Invanare)) {
+            return false;
+        }
+
+        final Invanare invanare = (Invanare) o;
+
+        if (id != invanare.id) {
+            return false;
+        }
+        if (personId != null ? !personId.equals(invanare.personId) : invanare.personId != null) {
+            return false;
+        }
+        if (sarskildaBehov != null ? !sarskildaBehov.equals(invanare.sarskildaBehov) : invanare.sarskildaBehov != null) {
+            return false;
+        }
+        if (bakgrundNulage != null ? !bakgrundNulage.equals(invanare.bakgrundNulage) : invanare.bakgrundNulage != null) {
+            return false;
+        }
+        if (postkod != null ? !postkod.equals(invanare.postkod) : invanare.postkod != null) {
+            return false;
+        }
+        return ListUtils.isEqualList(tidigareUtforare, invanare.tidigareUtforare);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, personId, sarskildaBehov, bakgrundNulage, postkod, tidigareUtforare);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("personId", personId)
+                .add("sarskildaBehov", sarskildaBehov)
+                .add("bakgrundNulage", bakgrundNulage)
+                .add("postkod", postkod)
+                .add("tidigareUtforare", tidigareUtforare)
+                .toString();
     }
 }

@@ -18,6 +18,10 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
+import static java.util.Objects.isNull;
+import static se.inera.intyg.intygsbestallning.persistence.model.Avvikelse.AvvikelseBuilder.anAvvikelse;
+
+import com.google.common.base.MoreObjects;
 import org.hibernate.annotations.Type;
 import se.inera.intyg.intygsbestallning.persistence.model.type.AvvikelseOrsak;
 
@@ -28,10 +32,11 @@ import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "AVVIKELSE")
-public class Avvikelse {
+public final class Avvikelse {
 
     @Id
     @Column(name = "AVVIKELSE_ID")
@@ -50,6 +55,20 @@ public class Avvikelse {
 
     @Column(name = "INVANARE_UTEBLEV", columnDefinition = "tinyint(1) default 0")
     private Boolean invanareUteblev;
+
+    public static Avvikelse from(final Avvikelse avvikelse) {
+        if (isNull(avvikelse)) {
+            return null;
+        }
+
+        return anAvvikelse()
+                .withAvvikelseId(avvikelse.getAvvikelseId())
+                .withOrsakatAv(avvikelse.getOrsakatAv())
+                .withBeskrivning(avvikelse.getBeskrivning())
+                .withTidpunkt(avvikelse.getTidpunkt())
+                .withInvanareUteblev(avvikelse.getInvanareUteblev())
+                .build();
+    }
 
     public String getAvvikelseId() {
         return avvikelseId;
@@ -139,5 +158,38 @@ public class Avvikelse {
             avvikelse.setInvanareUteblev(invanareUteblev);
             return avvikelse;
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Avvikelse)) {
+            return false;
+        }
+        final Avvikelse avvikelse = (Avvikelse) o;
+        return Objects.equals(avvikelseId, avvikelse.avvikelseId)
+                && orsakatAv == avvikelse.orsakatAv
+                && Objects.equals(beskrivning, avvikelse.beskrivning)
+                && Objects.equals(tidpunkt, avvikelse.tidpunkt)
+                && Objects.equals(invanareUteblev, avvikelse.invanareUteblev);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(avvikelseId, orsakatAv, beskrivning, tidpunkt, invanareUteblev);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("avvikelseId", avvikelseId)
+                .add("orsakatAv", orsakatAv)
+                .add("beskrivning", beskrivning)
+                .add("tidpunkt", tidpunkt)
+                .add("invanareUteblev", invanareUteblev)
+                .toString();
     }
 }

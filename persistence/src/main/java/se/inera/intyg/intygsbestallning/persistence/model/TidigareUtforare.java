@@ -21,15 +21,18 @@ package se.inera.intyg.intygsbestallning.persistence.model;
 import static java.util.Objects.isNull;
 import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
 
+import com.google.common.base.MoreObjects;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Objects;
 
 @Entity
 @Table(name = "TIDIGARE_UTFORARE")
-public class TidigareUtforare {
+public final class TidigareUtforare {
 
     @Id
     @GeneratedValue
@@ -97,5 +100,32 @@ public class TidigareUtforare {
             tidigareUtforare.setTidigareEnhetId(tidigareEnhetId);
             return tidigareUtforare;
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof TidigareUtforare)) {
+            return false;
+        }
+        final TidigareUtforare that = (TidigareUtforare) o;
+        return id == that.id
+                && Objects.equals(tidigareEnhetId, that.tidigareEnhetId);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, tidigareEnhetId);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("tidigareEnhetId", tidigareEnhetId)
+                .toString();
     }
 }

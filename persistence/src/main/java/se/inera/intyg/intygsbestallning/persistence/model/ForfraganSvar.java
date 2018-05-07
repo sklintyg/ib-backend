@@ -21,6 +21,7 @@ package se.inera.intyg.intygsbestallning.persistence.model;
 import static java.util.Objects.isNull;
 import static se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar;
 
+import com.google.common.base.MoreObjects;
 import org.hibernate.annotations.Type;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
@@ -33,10 +34,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Entity
 @Table(name = "FORFRAGAN_SVAR")
-public class ForfraganSvar {
+public final class ForfraganSvar {
 
     @Id
     @GeneratedValue
@@ -279,5 +281,60 @@ public class ForfraganSvar {
             forfraganSvar.setBorjaDatum(borjaDatum);
             return forfraganSvar;
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ForfraganSvar)) {
+            return false;
+        }
+        final ForfraganSvar that = (ForfraganSvar) o;
+        return id == that.id
+                && svarTyp == that.svarTyp
+                && utforareTyp == that.utforareTyp
+                && Objects.equals(utforareNamn, that.utforareNamn)
+                && Objects.equals(utforareAdress, that.utforareAdress)
+                && Objects.equals(utforarePostnr, that.utforarePostnr)
+                && Objects.equals(utforarePostort, that.utforarePostort)
+                && Objects.equals(utforareTelefon, that.utforareTelefon)
+                && Objects.equals(utforareEpost, that.utforareEpost)
+                && Objects.equals(kommentar, that.kommentar)
+                && Objects.equals(borjaDatum, that.borjaDatum);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id,
+                svarTyp,
+                utforareTyp,
+                utforareNamn,
+                utforareAdress,
+                utforarePostnr,
+                utforarePostort,
+                utforareTelefon,
+                utforareEpost,
+                kommentar,
+                borjaDatum);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("svarTyp", svarTyp)
+                .add("utforareTyp", utforareTyp)
+                .add("utforareNamn", utforareNamn)
+                .add("utforareAdress", utforareAdress)
+                .add("utforarePostnr", utforarePostnr)
+                .add("utforarePostort", utforarePostort)
+                .add("utforareTelefon", utforareTelefon)
+                .add("utforareEpost", utforareEpost)
+                .add("kommentar", kommentar)
+                .add("borjaDatum", borjaDatum)
+                .toString();
     }
 }

@@ -18,9 +18,11 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
+import static java.util.Objects.isNull;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
 
 import com.google.common.base.MoreObjects;
+import org.apache.commons.collections4.ListUtils;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.CascadeType;
@@ -39,7 +41,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "EXTERN_FORFRAGAN")
-public class ExternForfragan {
+public final class ExternForfragan {
 
     @Id
     @GeneratedValue
@@ -78,6 +80,11 @@ public class ExternForfragan {
     }
 
     public static ExternForfragan from(final ExternForfragan externForfragan) {
+
+        if (isNull(externForfragan)) {
+            return null;
+        }
+
         return anExternForfragan()
                 .withId(externForfragan.getId())
                 .withLandstingHsaId(externForfragan.getLandstingHsaId())
@@ -86,6 +93,7 @@ public class ExternForfragan {
                 .withAvvisatKommentar(externForfragan.getAvvisatKommentar())
                 .withAvvisatDatum(externForfragan.getAvvisatDatum())
                 .withInkomDatum(externForfragan.getInkomDatum())
+                .withDirekttilldelad(externForfragan.getDirekttilldelad())
                 .withInternForfraganList(externForfragan.getInternForfraganList().stream()
                         .map(InternForfragan::from)
                         .collect(Collectors.toList()))
@@ -165,54 +173,6 @@ public class ExternForfragan {
         this.direkttilldelad = direkttilldelad;
     }
 
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        final ExternForfragan that = (ExternForfragan) o;
-        return id == that.id
-                && Objects.equals(landstingHsaId, that.landstingHsaId)
-                && Objects.equals(besvarasSenastDatum, that.besvarasSenastDatum)
-                && Objects.equals(kommentar, that.kommentar)
-                && Objects.equals(avvisatKommentar, that.avvisatKommentar)
-                && Objects.equals(avvisatDatum, that.avvisatDatum)
-                && Objects.equals(inkomDatum, that.inkomDatum)
-                && Objects.equals(internForfraganList, that.internForfraganList);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(
-                id,
-                landstingHsaId,
-                besvarasSenastDatum,
-                kommentar,
-                avvisatKommentar,
-                avvisatDatum,
-                inkomDatum,
-                internForfraganList);
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("id", id)
-                .add("landstingHsaId", landstingHsaId)
-                .add("besvarasSenastDatum", besvarasSenastDatum)
-                .add("kommentar", kommentar)
-                .add("avvisatKommentar", avvisatKommentar)
-                .add("avvisatDatum", avvisatDatum)
-                .add("inkomDatum", inkomDatum)
-                .add("internForfraganList", internForfraganList)
-                .toString();
-    }
-
     public static final class ExternForfraganBuilder {
         private long id;
         private String landstingHsaId;
@@ -289,5 +249,72 @@ public class ExternForfragan {
             externForfragan.setInternForfraganList(internForfraganList);
             return externForfragan;
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ExternForfragan)) {
+            return false;
+        }
+
+        final ExternForfragan that = (ExternForfragan) o;
+
+        if (id != that.id) {
+            return false;
+        }
+        if (landstingHsaId != null ? !landstingHsaId.equals(that.landstingHsaId) : that.landstingHsaId != null) {
+            return false;
+        }
+        if (besvarasSenastDatum != null ? !besvarasSenastDatum.equals(that.besvarasSenastDatum) : that.besvarasSenastDatum != null) {
+            return false;
+        }
+        if (kommentar != null ? !kommentar.equals(that.kommentar) : that.kommentar != null) {
+            return false;
+        }
+        if (avvisatKommentar != null ? !avvisatKommentar.equals(that.avvisatKommentar) : that.avvisatKommentar != null) {
+            return false;
+        }
+        if (avvisatDatum != null ? !avvisatDatum.equals(that.avvisatDatum) : that.avvisatDatum != null) {
+            return false;
+        }
+        if (inkomDatum != null ? !inkomDatum.equals(that.inkomDatum) : that.inkomDatum != null) {
+            return false;
+        }
+        if (direkttilldelad != null ? !direkttilldelad.equals(that.direkttilldelad) : that.direkttilldelad != null) {
+            return false;
+        }
+        return ListUtils.isEqualList(internForfraganList, that.internForfraganList);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id,
+                landstingHsaId,
+                besvarasSenastDatum,
+                kommentar,
+                avvisatKommentar,
+                avvisatDatum,
+                inkomDatum,
+                direkttilldelad,
+                internForfraganList);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("landstingHsaId", landstingHsaId)
+                .add("besvarasSenastDatum", besvarasSenastDatum)
+                .add("kommentar", kommentar)
+                .add("avvisatKommentar", avvisatKommentar)
+                .add("avvisatDatum", avvisatDatum)
+                .add("inkomDatum", inkomDatum)
+                .add("direkttilldelad", direkttilldelad)
+                .add("internForfraganList", internForfraganList)
+                .toString();
     }
 }

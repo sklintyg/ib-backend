@@ -18,19 +18,17 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
+import com.google.common.base.MoreObjects;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Objects;
 
-/**
- * Created by marced on 2018-04-23.
- */
-
 @Entity
 @Table(name = "VARDENHET_PREFERENCE")
-public class  VardenhetPreference {
+public final class VardenhetPreference {
 
     @Id
     @Column(name = "VARDENHET_HSA_ID", nullable = false)
@@ -122,21 +120,41 @@ public class  VardenhetPreference {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
-
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof VardenhetPreference)) {
             return false;
         }
-
-        VardenhetPreference that = (VardenhetPreference) o;
-        return Objects.equals(vardenhetHsaId, that.vardenhetHsaId);
+        final VardenhetPreference that = (VardenhetPreference) o;
+        return Objects.equals(vardenhetHsaId, that.vardenhetHsaId)
+                && Objects.equals(mottagarNamn, that.mottagarNamn)
+                && Objects.equals(adress, that.adress)
+                && Objects.equals(postnummer, that.postnummer)
+                && Objects.equals(postort, that.postort)
+                && Objects.equals(telefonnummer, that.telefonnummer)
+                && Objects.equals(epost, that.epost)
+                && Objects.equals(standardsvar, that.standardsvar);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(vardenhetHsaId);
+
+        return Objects.hash(vardenhetHsaId, mottagarNamn, adress, postnummer, postort, telefonnummer, epost, standardsvar);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("vardenhetHsaId", vardenhetHsaId)
+                .add("mottagarNamn", mottagarNamn)
+                .add("adress", adress)
+                .add("postnummer", postnummer)
+                .add("postort", postort)
+                .add("telefonnummer", telefonnummer)
+                .add("epost", epost)
+                .add("standardsvar", standardsvar)
+                .toString();
     }
 }

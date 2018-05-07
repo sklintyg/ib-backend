@@ -18,6 +18,10 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
+import static java.util.Objects.isNull;
+import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
+
+import com.google.common.base.MoreObjects;
 import org.hibernate.annotations.Type;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
@@ -35,10 +39,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "BESOK")
-public class Besok {
+public final class Besok {
 
     @Id
     @GeneratedValue
@@ -159,7 +164,28 @@ public class Besok {
         this.avvikelse = avvikelse;
     }
 
+    public static Besok from(final Besok besok) {
+
+        if (isNull(besok)) {
+            return null;
+        }
+
+        return aBesok()
+                .withId(besok.getId())
+                .withBesokTid(besok.getBesokTid())
+                .withKallelseDatum(besok.getKallelseDatum())
+                .withBesokStatus(besok.getBesokStatus())
+                .withTolkStatus(besok.getTolkStatus())
+                .withKallelseForm(besok.getKallelseForm())
+                .withErsatts(besok.getErsatts())
+                .withDeltagareProfession(besok.getDeltagareProfession())
+                .withDeltagareFullstandigtNamn(besok.getDeltagareFullstandigtNamn())
+                .withAvvikelse(Avvikelse.from(besok.getAvvikelse()))
+                .build();
+    }
+
     public static final class BesokBuilder {
+        private long id;
         private LocalDateTime besokTid;
         private LocalDateTime kallelseDatum;
         private BesokStatusTyp besokStatus;
@@ -175,6 +201,11 @@ public class Besok {
 
         public static BesokBuilder aBesok() {
             return new BesokBuilder();
+        }
+
+        public BesokBuilder withId(long id) {
+            this.id = id;
+            return this;
         }
 
         public BesokBuilder withBesokTid(LocalDateTime besokTid) {
@@ -224,6 +255,7 @@ public class Besok {
 
         public Besok build() {
             Besok besok = new Besok();
+            besok.setId(id);
             besok.setBesokTid(besokTid);
             besok.setKallelseDatum(kallelseDatum);
             besok.setBesokStatus(besokStatus);
@@ -235,5 +267,57 @@ public class Besok {
             besok.setAvvikelse(avvikelse);
             return besok;
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Besok)) {
+            return false;
+        }
+        final Besok besok = (Besok) o;
+        return id == besok.id
+                && Objects.equals(besokTid, besok.besokTid)
+                && Objects.equals(kallelseDatum, besok.kallelseDatum)
+                && besokStatus == besok.besokStatus
+                && tolkStatus == besok.tolkStatus
+                && kallelseForm == besok.kallelseForm
+                && Objects.equals(ersatts, besok.ersatts)
+                && deltagareProfession == besok.deltagareProfession
+                && Objects.equals(deltagareFullstandigtNamn, besok.deltagareFullstandigtNamn)
+                && Objects.equals(avvikelse, besok.avvikelse);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id,
+                besokTid,
+                kallelseDatum,
+                besokStatus,
+                tolkStatus,
+                kallelseForm,
+                ersatts,
+                deltagareProfession,
+                deltagareFullstandigtNamn,
+                avvikelse);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("besokTid", besokTid)
+                .add("kallelseDatum", kallelseDatum)
+                .add("besokStatus", besokStatus)
+                .add("tolkStatus", tolkStatus)
+                .add("kallelseForm", kallelseForm)
+                .add("ersatts", ersatts)
+                .add("deltagareProfession", deltagareProfession)
+                .add("deltagareFullstandigtNamn", deltagareFullstandigtNamn)
+                .add("avvikelse", avvikelse)
+                .toString();
     }
 }

@@ -18,6 +18,10 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
+import static java.util.Objects.isNull;
+import static se.inera.intyg.intygsbestallning.persistence.model.Anteckning.AnteckningBuilder.anAnteckning;
+
+import com.google.common.base.Objects;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
@@ -90,6 +94,19 @@ public class Anteckning {
         this.skapat = skapat;
     }
 
+    public static Anteckning from(final Anteckning anteckning) {
+        if (isNull(anteckning)) {
+            return null;
+        }
+
+        return anAnteckning()
+                .withVardenhetHsaId(anteckning.getVardenhetHsaId())
+                .withText(anteckning.getText())
+                .withAnvandare(anteckning.getAnvandare())
+                .withSkapat(anteckning.getSkapat())
+                .build();
+    }
+
     public static final class AnteckningBuilder {
         private String vardenhetHsaId;
         private String text;
@@ -131,5 +148,26 @@ public class Anteckning {
             anteckning.setSkapat(skapat);
             return anteckning;
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Anteckning)) {
+            return false;
+        }
+        final Anteckning that = (Anteckning) o;
+        return Objects.equal(id, that.id)
+                && Objects.equal(vardenhetHsaId, that.vardenhetHsaId)
+                && Objects.equal(text, that.text)
+                && Objects.equal(anvandare, that.anvandare)
+                && Objects.equal(skapat, that.skapat);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id, vardenhetHsaId, text, anvandare, skapat);
     }
 }

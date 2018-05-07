@@ -24,15 +24,16 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Objects;
 
 /**
  * Created by eriklupander on 2016-06-22.
- *
+ * <p>
  * Note that unique constraint is handled by liquibase DB setup.
  */
 @Entity
 @Table(name = "ANVANDARE_PREFERENCE")
-public class AnvandarPreference {
+public final class AnvandarPreference {
 
     private static final int INT = 31;
 
@@ -63,7 +64,7 @@ public class AnvandarPreference {
         return internReferens;
     }
 
-    public void setInternReferens(long internReferens) {
+    public void setInternReferens(final long internReferens) {
         this.internReferens = internReferens;
     }
 
@@ -71,7 +72,7 @@ public class AnvandarPreference {
         return hsaId;
     }
 
-    public void setHsaId(String hsaId) {
+    public void setHsaId(final String hsaId) {
         this.hsaId = hsaId;
     }
 
@@ -79,7 +80,7 @@ public class AnvandarPreference {
         return key;
     }
 
-    public void setKey(String key) {
+    public void setKey(final String key) {
         this.key = key;
     }
 
@@ -87,38 +88,28 @@ public class AnvandarPreference {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(final String value) {
         this.value = value;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
-
         if (!(o instanceof AnvandarPreference)) {
             return false;
         }
-
-
-        AnvandarPreference that = (AnvandarPreference) o;
-
-        if (!hsaId.equals(that.hsaId)) {
-            return false;
-        }
-        if (!key.equals(that.key)) {
-            return false;
-        }
-        return value != null ? value.equals(that.value) : that.value == null;
-
+        final AnvandarPreference that = (AnvandarPreference) o;
+        return internReferens == that.internReferens
+                && Objects.equals(hsaId, that.hsaId)
+                && Objects.equals(key, that.key)
+                && Objects.equals(value, that.value);
     }
 
     @Override
     public int hashCode() {
-        int result = hsaId.hashCode();
-        result = INT * result + key.hashCode();
-        result = INT * result + (value != null ? value.hashCode() : 0);
-        return result;
+
+        return Objects.hash(internReferens, hsaId, key, value);
     }
 }
