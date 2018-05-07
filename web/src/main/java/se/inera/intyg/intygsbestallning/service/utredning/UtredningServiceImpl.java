@@ -18,16 +18,41 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toList;
+import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
+import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
+import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
+import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
+import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
+
+import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
-import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
@@ -43,7 +68,6 @@ import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
 import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
-import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.util.GenericComparator;
@@ -55,49 +79,19 @@ import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListForfraganRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
-import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListForfraganFilterStatus;
 import se.inera.intyg.schemas.contract.Personnummer;
-
-import java.text.MessageFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import static com.google.common.base.Strings.isNullOrEmpty;
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toList;
-import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
-import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
-import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
-import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
-import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
-import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 
 @Service
 @Transactional
 public class UtredningServiceImpl extends BaseUtredningService implements UtredningService {
 
-    public static final String INTERPRETER_ERROR_TEXT = "May not set interpreter language if there is no need for interpreter";
+    private static final String INTERPRETER_ERROR_TEXT = "May not set interpreter language if there is no need for interpreter";
     private static final Logger LOG = LoggerFactory.getLogger(UtredningService.class);
 
     @Autowired
@@ -279,114 +273,9 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         return utredningRepository.save(updatedUtredning);
     }
 
-    @Override
-    public GetForfraganListResponse findForfragningarForVardenhetHsaIdWithFilter(String vardenhetHsaId, ListForfraganRequest request) {
-        List<ForfraganListItem> forfraganList = utredningRepository
-                .findAllByExternForfragan_InternForfraganList_VardenhetHsaId(vardenhetHsaId)
-                .stream()
-                .map(utr -> ForfraganListItem.from(utr, vardenhetHsaId, internForfraganStateResolver))
-                .collect(toList());
 
-        Map<InternForfraganStatus, List<ListForfraganFilterStatus>> statusMap = buildFilterStatusesForForfragan();
 
-        // Set the "filterStatusar" on each item. This is context dependent.
-        for (ForfraganListItem fli : forfraganList) {
-            fli.setFilterStatusar(statusMap.get(fli.getStatus()));
-        }
 
-        // If filtering by freeText or ordering by landsting we need all vardgivareNames
-        boolean enrichedWithVardgivareNames = false;
-        if (request.getFreeText() != null || request.getOrderBy().equals("vardgivareNamn")) {
-            // Enrich with vårdgivare namn from HSA
-            for (ForfraganListItem fli : forfraganList) {
-                fli.setVardgivareNamn(getVardgivareNamn(fli.getVardgivareHsaId()));
-            }
-            enrichedWithVardgivareNames = true;
-        }
-
-        List<ForfraganListItem> filtered = forfraganList.stream()
-                .filter(fli -> buildForfroganStatusPredicate(fli, request.getStatus()))
-                .filter(fli -> buildToFromPredicate(fli.getInkomDatum(), request.getInkommetFromDate(), request.getInkommetToDate()))
-                .filter(fli -> buildToFromPredicate(fli.getBesvarasSenastDatum(), request.getBesvarasSenastDatumFromDate(),
-                        request.getBesvarasSenastDatumToDate()))
-                .filter(fli -> buildToFromPredicate(fli.getPlaneringsDatum(), request.getPlaneringFromDate(), request.getPlaneringToDate()))
-                .filter(fli -> buildFreeTextPredicate(fli, request.getFreeText()))
-                .filter(fli -> buildVardgivareHsaIdPredicate(fli.getVardgivareHsaId(), request.getVardgivareHsaId()))
-                .sorted((o1, o2) -> GenericComparator.compare(ForfraganListItem.class, o1, o2, request.getOrderBy(),
-                        request.isOrderByAsc()))
-                .collect(toList());
-
-        int total = filtered.size();
-        if (total == 0) {
-            return new GetForfraganListResponse(filtered, total);
-        }
-
-        Pair<Integer, Integer> bounds = PagingUtil.getBounds(total, request.getPageSize(), request.getCurrentPage());
-        List<ForfraganListItem> paged = filtered.subList(bounds.getFirst(), bounds.getSecond() + 1);
-
-        if (!enrichedWithVardgivareNames) {
-            // Enrich with vardenhet namn from HSA
-            for (ForfraganListItem fli : paged) {
-                fli.setVardgivareNamn(getVardgivareNamn(fli.getVardgivareHsaId()));
-            }
-        }
-
-        return new GetForfraganListResponse(paged, total);
-    }
-
-    private boolean buildForfroganStatusPredicate(ForfraganListItem fli, String forfraganListStatus) {
-        if (Strings.isNullOrEmpty(forfraganListStatus)) {
-            return true;
-        }
-        try {
-            ListForfraganFilterStatus status = ListForfraganFilterStatus.valueOf(forfraganListStatus);
-            return fli.getFilterStatusar().contains(status);
-        } catch (IllegalArgumentException e) {
-            throw new IbServiceException(IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Unknown filter status: '" + forfraganListStatus + "'");
-        }
-
-    }
-
-    private String getVardgivareNamn(String vardgivareHsaId) {
-        try {
-            Vardgivare vardgivareInfo = organizationUnitService.getVardgivareInfo(vardgivareHsaId);
-            if (vardgivareInfo != null) {
-                return vardgivareInfo.getNamn();
-            }
-            return vardgivareHsaId;
-        } catch (Exception e) {
-            return vardgivareHsaId;
-        }
-    }
-
-    private Map<InternForfraganStatus, List<ListForfraganFilterStatus>> buildFilterStatusesForForfragan() {
-
-        Map<InternForfraganStatus, List<ListForfraganFilterStatus>> statusMap = new HashMap<>();
-
-        for (InternForfraganStatus ifs : InternForfraganStatus.values()) {
-            List<ListForfraganFilterStatus> statuses = new ArrayList<>();
-            statuses.add(ListForfraganFilterStatus.ALL);
-            switch (ifs) {
-            case INKOMMEN:
-                statuses.addAll(Arrays.asList(ListForfraganFilterStatus.PAGAENDE, ListForfraganFilterStatus.BEHOVER_ATGARDAS));
-                break;
-            case ACCEPTERAD_VANTAR_PA_TILLDELNINGSBESLUT:
-            case TILLDELAD_VANTAR_PA_BESTALLNING:
-                statuses.addAll(Arrays.asList(ListForfraganFilterStatus.PAGAENDE, ListForfraganFilterStatus.VANTAR_ANNAN_AKTOR));
-                break;
-            case AVVISAD:
-            case EJ_TILLDELAD:
-            case INGEN_BESTALLNING:
-            case BESTALLD:
-                statuses.add(ListForfraganFilterStatus.AVSLUTADE);
-                break;
-            default:
-                break;
-            }
-            statusMap.put(ifs, statuses);
-        }
-        return statusMap;
-    }
 
     private Utredning qualifyForUpdatering(final UpdateOrderRequest update, final Utredning original) {
 
@@ -550,13 +439,6 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                         .orElse(null))
                 .withKommentar(order.getKommentar())
                 .build();
-    }
-
-    private boolean buildToFromPredicate(String compareTo, String fromDate, String toDate) {
-        if (Strings.isNullOrEmpty(compareTo) || Strings.isNullOrEmpty(fromDate) || Strings.isNullOrEmpty(toDate)) {
-            return true;
-        }
-        return fromDate.compareTo(compareTo) <= 0 && toDate.compareTo(compareTo) >= 0;
     }
 
     private boolean buildToFromPredicateForUtredningar(FilterableListItem bli, String fromDate, String toDate) {

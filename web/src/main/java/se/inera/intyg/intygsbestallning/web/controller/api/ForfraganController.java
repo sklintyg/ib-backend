@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesValidator;
@@ -35,15 +36,12 @@ import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.service.forfragan.ExternForfraganService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganSvarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganSvarResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListForfraganRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListForfraganFilter;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/forfragningar")
@@ -61,19 +59,6 @@ public class ForfraganController {
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     @PrometheusTimeMethod(name = "list_all_forfragningar_duration_seconds", help = "Some helpful info here")
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetForfraganListResponse> getAllForfragningarForUser() {
-        IbUser user = userService.getUser();
-
-        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_FORFRAGNINGAR)
-                .orThrow(new IbAuthorizationException("User is not allowed to view the requested resource"));
-
-        // Utredningar där vårdenheten har en förfrågan.
-        List<ForfraganListItem> forfragningar = utredningService.findForfragningarForVardenhetHsaId(user.getCurrentlyLoggedInAt().getId());
-        return ResponseEntity.ok(new GetForfraganListResponse(forfragningar, forfragningar.size()));
-    }
-
-    @PrometheusTimeMethod(name = "list_all_forfragningar_duration_seconds", help = "Some helpful info here")
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetForfraganListResponse> getFilteredForfragningarForUser(@RequestBody ListForfraganRequest request) {
         IbUser user = userService.getUser();
@@ -82,7 +67,7 @@ public class ForfraganController {
                 .orThrow(new IbAuthorizationException("User is not allowed to view the requested resource"));
 
         // Utredningar där vårdenheten har en förfrågan.
-        GetForfraganListResponse response = utredningService
+        GetForfraganListResponse response = externForfraganService
                 .findForfragningarForVardenhetHsaIdWithFilter(user.getCurrentlyLoggedInAt().getId(), request);
         return ResponseEntity.ok(response);
     }

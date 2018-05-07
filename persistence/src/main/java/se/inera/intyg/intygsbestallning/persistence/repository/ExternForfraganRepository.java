@@ -19,7 +19,15 @@
 package se.inera.intyg.intygsbestallning.persistence.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+
+import java.util.List;
 
 public interface ExternForfraganRepository extends JpaRepository<ExternForfragan, Long> {
+
+    @Query("SELECT u FROM Utredning u JOIN u.externForfragan ef WHERE u.arkiverad = false AND ef.landstingHsaId = :landstingHsaId")
+    List<Utredning> findByExternForfraganAndLandstingHsaIdAndArkiveradFalse(@Param("landstingHsaId") String landstingHsaId);
 }

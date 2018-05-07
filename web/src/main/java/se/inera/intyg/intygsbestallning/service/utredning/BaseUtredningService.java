@@ -94,6 +94,13 @@ public abstract class BaseUtredningService {
         return matchAgainstHsaId.equalsIgnoreCase(thisVardgivareHsaId);
     }
 
+    protected boolean buildToFromPredicate(String compareTo, String fromDate, String toDate) {
+        if (Strings.isNullOrEmpty(compareTo) || Strings.isNullOrEmpty(fromDate) || Strings.isNullOrEmpty(toDate)) {
+            return true;
+        }
+        return fromDate.compareTo(compareTo) <= 0 && toDate.compareTo(compareTo) >= 0;
+    }
+
     private ListFilterStatus resolveListFilterStatus(UtredningStatus us, Actor actor) {
         if (us.getNextActor() == actor) {
             return ListFilterStatus.KRAVER_ATGARD;

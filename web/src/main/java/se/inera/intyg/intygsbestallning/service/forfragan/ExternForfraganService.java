@@ -20,6 +20,8 @@ package se.inera.intyg.intygsbestallning.service.forfragan;
 
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganSvarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganSvarResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganListResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListForfraganRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListForfraganFilter;
 
 public interface ExternForfraganService {
@@ -27,6 +29,8 @@ public interface ExternForfraganService {
     default ForfraganSvarResponse besvaraForfragan(Long forfraganId, ForfraganSvarRequest svarRequest) {
         return null;
     }
+
+    GetForfraganListResponse findForfragningarForVardenhetHsaIdWithFilter(String vardenhetHsaId, ListForfraganRequest request);
 
     ListForfraganFilter buildListForfraganFilter(String vardenhetHsaId);
 }
