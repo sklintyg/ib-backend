@@ -31,7 +31,7 @@ public interface UtredningRepository extends JpaRepository<Utredning, String> {
     List<Utredning> findAllByExternForfragan_InternForfraganList_VardenhetHsaId(String vardenhetHsaId);
 
     /**
-     * Variant query that filters out any Utredningar that are in a closed state
+     * Variant query that filters out any Utredningar that are in a closed state.
      * @param vardenhetHsaId
      * @return
      */
@@ -44,7 +44,7 @@ public interface UtredningRepository extends JpaRepository<Utredning, String> {
     List<Utredning> findAllByBestallning_TilldeladVardenhetHsaId(String vardenhetHsaId);
 
     /**
-     * Variant query that filters out any Utredningar that are in a closed state
+     * Variant query that filters out any Utredningar that are in a closed state.
      * @param vardenhetHsaId
      * @return
      */
