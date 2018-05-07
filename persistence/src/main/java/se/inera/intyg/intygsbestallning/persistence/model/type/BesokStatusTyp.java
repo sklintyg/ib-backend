@@ -16,10 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.persistence.model;
+package se.inera.intyg.intygsbestallning.persistence.model.type;
 
-public enum SvarTyp {
+/**
+ * avslutad vårdkontakt = 53671000052101  inställd vårdkontakt = 53641000052109 tidbokad vårdkontakt = 53631000052103.
+ */
+public enum BesokStatusTyp {
+    AVSLUTAD_VARDKONTAKT("53671000052101"), INSTALLD_VARDKONTAKT("53641000052109"), TIDBOKAD_VARDKONTAKT("53631000052103");
 
-    ACCEPTERA, AVBOJ
+    private final String cvValue;
 
+    BesokStatusTyp(String cvValue) {
+        this.cvValue = cvValue;
+    }
+
+    public String getCvValue() {
+        return cvValue;
+    }
 }

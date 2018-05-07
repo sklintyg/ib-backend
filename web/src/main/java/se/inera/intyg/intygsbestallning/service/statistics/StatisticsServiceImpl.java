@@ -65,7 +65,7 @@ public class StatisticsServiceImpl implements StatisticsService {
 
         // Calculate nr of bestallningar for this vardenhet where action is required from actor VARDADMIN and not in AVSLUTAD or
         // FORFRAGAN fas.
-        long bestallningarRequiringActionCount = utredningRepository.findAllWithBestallningForVardenhetHsaId(enhetsHsaId)
+        long bestallningarRequiringActionCount = utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId(enhetsHsaId)
                 .stream()
                 .map(u -> BestallningListItem.from(u, utredningStateResolver.resolveStatus(u), Actor.VARDADMIN))
                 .filter(bli -> bli.getKraverAtgard() && !bli.getFas().equals(UtredningFas.AVSLUTAD)

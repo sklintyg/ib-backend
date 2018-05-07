@@ -16,19 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.persistence.model;
+package se.inera.intyg.intygsbestallning.persistence.model.type;
 
-public enum KallelseFormTyp {
-    TELEFONKONTAKT("185317003"),
-    BREVKONTAKT("308720009");
+public enum SvarTyp {
 
-    private final String cvValue;
+    ACCEPTERA, AVBOJ
 
-    KallelseFormTyp(String cvValue) {
-        this.cvValue = cvValue;
-    }
-
-    public String getCvValue() {
-        return cvValue;
-    }
 }

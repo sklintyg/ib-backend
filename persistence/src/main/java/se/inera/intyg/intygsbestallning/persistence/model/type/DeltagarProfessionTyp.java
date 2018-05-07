@@ -16,8 +16,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.persistence.model;
+package se.inera.intyg.intygsbestallning.persistence.model.type;
 
-public enum UtforareTyp {
-    ENHET, UNDERLEVERANTOR
+/**
+ * Kod som anger deltagande profession.
+ *
+ * AT = Arbetsterapeut
+ * FT = Fysioterapeut
+ * LK = Läkare
+ * PS = Psykolog
+ * SG = Sjukgymnast
+ */
+public enum DeltagarProfessionTyp {
+    AT("Arbetsterapeut"),
+    FT("Fysioterapeut"),
+    LK("Läkare"),
+    PS("Psykolog"),
+    SG("Sjukgymnast");
+
+    private final String label;
+
+    DeltagarProfessionTyp(String label) {
+        this.label = label;
+    }
+
+    public String getLabel() {
+        return label;
+    }
 }

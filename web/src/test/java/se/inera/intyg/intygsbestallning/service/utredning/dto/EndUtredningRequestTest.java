@@ -19,7 +19,7 @@
 package se.inera.intyg.intygsbestallning.service.utredning.dto;
 
 import org.junit.Test;
-import se.inera.intyg.intygsbestallning.persistence.model.EndReason;
+import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
 import se.riv.intygsbestallning.certificate.order.endassessment.v1.EndAssessmentType;
 
 import static org.junit.Assert.assertEquals;

@@ -24,7 +24,7 @@ import com.google.common.base.Joiner;
 import org.apache.commons.lang3.BooleanUtils;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
-import se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.riv.intygsbestallning.certificate.order.ordermedicalassessment.v1.OrderMedicalAssessmentType;
 import se.riv.intygsbestallning.certificate.order.v1.AuthorityAdministrativeOfficialType;
 import se.riv.intygsbestallning.certificate.order.v1.CitizenType;

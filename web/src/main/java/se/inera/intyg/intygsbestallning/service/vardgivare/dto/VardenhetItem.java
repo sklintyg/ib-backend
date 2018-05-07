@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.service.vardgivare.dto;
 
-import se.inera.intyg.intygsbestallning.persistence.model.RegiFormTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.RegiFormTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.RegistreradVardenhet;
 
 public class VardenhetItem {

@@ -19,6 +19,8 @@
 package se.inera.intyg.intygsbestallning.persistence.model;
 
 import org.hibernate.annotations.Type;
+import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
+import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -88,6 +90,10 @@ public class Utredning {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "UTREDNING_ID", referencedColumnName = "UTREDNING_ID", nullable = false)
     private List<Besok> besokList = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "UTREDNING_ID", referencedColumnName = "UTREDNING_ID", nullable = false)
+    private List<Intyg> intygList = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "HANDLAGGARE_ID")
@@ -238,9 +244,42 @@ public class Utredning {
         this.invanare = invanare;
     }
 
+    public List<Intyg> getIntygList() {
+        return intygList;
+    }
+
+    public void setIntygList(List<Intyg> intygList) {
+        this.intygList = intygList;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(utredningId);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final Utredning utredning = (Utredning) o;
+        return Objects.equals(utredningId, utredning.utredningId)
+                && utredningsTyp == utredning.utredningsTyp
+                && Objects.equals(bestallning, utredning.bestallning)
+                && Objects.equals(tolkBehov, utredning.tolkBehov)
+                && Objects.equals(tolkSprak, utredning.tolkSprak)
+                && Objects.equals(avbrutenDatum, utredning.avbrutenDatum)
+                && avbrutenAnledning == utredning.avbrutenAnledning
+                && Objects.equals(arkiverad, utredning.arkiverad)
+                && Objects.equals(externForfragan, utredning.externForfragan)
+                && Objects.equals(handelseList, utredning.handelseList)
+                && Objects.equals(handlingList, utredning.handlingList)
+                && Objects.equals(intygList, utredning.intygList)
+                && Objects.equals(handlaggare, utredning.handlaggare)
+                && Objects.equals(invanare, utredning.invanare);
     }
 
     public static final class UtredningBuilder {
@@ -251,10 +290,12 @@ public class Utredning {
         private String tolkSprak;
         private LocalDateTime avbrutenDatum;
         private EndReason avbrutenAnledning;
+        private Boolean arkiverad = false;
         private ExternForfragan externForfragan;
-        private Boolean arkiverad;
         private List<Handelse> handelseList = new ArrayList<>();
         private List<Handling> handlingList = new ArrayList<>();
+        private List<Besok> besokList = new ArrayList<>();
+        private List<Intyg> intygList = new ArrayList<>();
         private Handlaggare handlaggare;
         private Invanare invanare;
 
@@ -320,6 +361,16 @@ public class Utredning {
             return this;
         }
 
+        public UtredningBuilder withBesokList(List<Besok> besokList) {
+            this.besokList = besokList;
+            return this;
+        }
+
+        public UtredningBuilder withIntygList(List<Intyg> intygList) {
+            this.intygList = intygList;
+            return this;
+        }
+
         public UtredningBuilder withHandlaggare(Handlaggare handlaggare) {
             this.handlaggare = handlaggare;
             return this;
@@ -336,40 +387,18 @@ public class Utredning {
             utredning.setUtredningsTyp(utredningsTyp);
             utredning.setBestallning(bestallning);
             utredning.setTolkBehov(tolkBehov);
+            utredning.setTolkSprak(tolkSprak);
             utredning.setAvbrutenDatum(avbrutenDatum);
             utredning.setAvbrutenAnledning(avbrutenAnledning);
             utredning.setArkiverad(arkiverad);
             utredning.setExternForfragan(externForfragan);
             utredning.setHandelseList(handelseList);
             utredning.setHandlingList(handlingList);
+            utredning.setBesokList(besokList);
+            utredning.setIntygList(intygList);
             utredning.setHandlaggare(handlaggare);
             utredning.setInvanare(invanare);
-            utredning.tolkSprak = this.tolkSprak;
             return utredning;
         }
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        final Utredning utredning = (Utredning) o;
-        return Objects.equals(utredningId, utredning.utredningId)
-                && utredningsTyp == utredning.utredningsTyp
-                && Objects.equals(bestallning, utredning.bestallning)
-                && Objects.equals(tolkBehov, utredning.tolkBehov)
-                && Objects.equals(tolkSprak, utredning.tolkSprak)
-                && Objects.equals(avbrutenDatum, utredning.avbrutenDatum)
-                && avbrutenAnledning == utredning.avbrutenAnledning
-                && Objects.equals(arkiverad, utredning.arkiverad)
-                && Objects.equals(externForfragan, utredning.externForfragan)
-                && Objects.equals(handelseList, utredning.handelseList)
-                && Objects.equals(handlingList, utredning.handlingList)
-                && Objects.equals(handlaggare, utredning.handlaggare)
-                && Objects.equals(invanare, utredning.invanare);
     }
 }

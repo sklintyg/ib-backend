@@ -22,6 +22,7 @@ import static java.util.Objects.isNull;
 import static se.inera.intyg.intygsbestallning.persistence.model.Handelse.HandelseBuilder.aHandelse;
 
 import org.hibernate.annotations.Type;
+import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

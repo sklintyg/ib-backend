@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
+import se.inera.intyg.intygsbestallning.persistence.model.type.RegiFormTyp;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;

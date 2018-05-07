@@ -32,7 +32,7 @@ import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan
 import static se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar;
 import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
-import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.AFU;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU;
 
 public class ForfraganListItemTest {
 

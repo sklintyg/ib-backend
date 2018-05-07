@@ -24,7 +24,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
-import se.inera.intyg.intygsbestallning.persistence.model.EndReason;
+import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.riv.intygsbestallning.certificate.order.endassessment.v1.EndAssessmentResponseType;
 import se.riv.intygsbestallning.certificate.order.endassessment.v1.EndAssessmentType;

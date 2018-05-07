@@ -19,10 +19,10 @@
 package se.inera.intyg.intygsbestallning.service.stateresolver;
 
 import org.junit.Test;
-import se.inera.intyg.intygsbestallning.persistence.model.EndReason;
+import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
-import se.inera.intyg.intygsbestallning.persistence.model.SvarTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 
 import java.time.LocalDateTime;

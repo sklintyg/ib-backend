@@ -18,9 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
-import static java.util.Objects.isNull;
-import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
-
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
@@ -30,6 +27,9 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.Objects;
+
+import static java.util.Objects.isNull;
+import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
 
 @Entity
 @Table(name = "BESTALLNING")
@@ -42,10 +42,6 @@ public class Bestallning {
 
     @Column(name = "TILLDELAD_VARDENHET_HSA_ID", nullable = false)
     private String tilldeladVardenhetHsaId;
-
-    @Column(name = "INTYG_KLART_SENAST")
-    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
-    private LocalDateTime intygKlartSenast;
 
     @Column(name = "ORDER_DATUM")
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
@@ -76,7 +72,6 @@ public class Bestallning {
         return aBestallning()
                 .withId(bestallning.getId())
                 .withTilldeladVardenhetHsaId(bestallning.getTilldeladVardenhetHsaId())
-                .withIntygKlartSenast(bestallning.getIntygKlartSenast())
                 .withOrderDatum(bestallning.getOrderDatum())
                 .withUppdateradDatum(bestallning.getUppdateradDatum())
                 .withSyfte(bestallning.getSyfte())
@@ -99,14 +94,6 @@ public class Bestallning {
 
     public void setTilldeladVardenhetHsaId(String tilldeladVardenhetHsaId) {
         this.tilldeladVardenhetHsaId = tilldeladVardenhetHsaId;
-    }
-
-    public LocalDateTime getIntygKlartSenast() {
-        return intygKlartSenast;
-    }
-
-    public void setIntygKlartSenast(LocalDateTime intygKlartSenast) {
-        this.intygKlartSenast = intygKlartSenast;
     }
 
     public LocalDateTime getOrderDatum() {
@@ -160,7 +147,6 @@ public class Bestallning {
         final Bestallning that = (Bestallning) o;
         return id == that.id
                 && Objects.equals(tilldeladVardenhetHsaId, that.tilldeladVardenhetHsaId)
-                && Objects.equals(intygKlartSenast, that.intygKlartSenast)
                 && Objects.equals(orderDatum, that.orderDatum)
                 && Objects.equals(uppdateradDatum, that.uppdateradDatum)
                 && Objects.equals(syfte, that.syfte)
@@ -170,10 +156,8 @@ public class Bestallning {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(id,
                 tilldeladVardenhetHsaId,
-                intygKlartSenast,
                 orderDatum,
                 uppdateradDatum,
                 syfte,
@@ -184,7 +168,6 @@ public class Bestallning {
     public static final class BestallningBuilder {
         private long id;
         private String tilldeladVardenhetHsaId;
-        private LocalDateTime intygKlartSenast;
         private LocalDateTime orderDatum;
         private LocalDateTime uppdateradDatum;
         private String syfte;
@@ -205,11 +188,6 @@ public class Bestallning {
 
         public BestallningBuilder withTilldeladVardenhetHsaId(String tilldeladVardenhetHsaId) {
             this.tilldeladVardenhetHsaId = tilldeladVardenhetHsaId;
-            return this;
-        }
-
-        public BestallningBuilder withIntygKlartSenast(LocalDateTime intygKlartSenast) {
-            this.intygKlartSenast = intygKlartSenast;
             return this;
         }
 
@@ -242,7 +220,6 @@ public class Bestallning {
             Bestallning bestallning = new Bestallning();
             bestallning.setId(id);
             bestallning.setTilldeladVardenhetHsaId(tilldeladVardenhetHsaId);
-            bestallning.setIntygKlartSenast(intygKlartSenast);
             bestallning.setOrderDatum(orderDatum);
             bestallning.setUppdateradDatum(uppdateradDatum);
             bestallning.setSyfte(syfte);

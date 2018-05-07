@@ -52,9 +52,9 @@ public class HolidaysTest {
     @Test
     public void testSweHol() {
         Object[][] data = dataSweHol();
-        for (int row = 0; row < data.length; row++) {
-            int year = (Integer)data[row][0];
-            List<LocalDate> holidays = (List<LocalDate>)data[row][1];
+        for (Object[] aData : data) {
+            int year = (Integer) aData[0];
+            List<LocalDate> holidays = (List<LocalDate>) aData[1];
             assertSweHol(year, holidays);
         }
     }
@@ -65,9 +65,9 @@ public class HolidaysTest {
         Object[][] data = dataSweHol();
 
         // let's loop through array to print each row and column
-        for (int row = 0; row < data.length; row++) {
-            for (int col = 0; col < data[row].length; col++) {
-                System.out.print(data[row][col] + "\t");
+        for (Object[] aData : data) {
+            for (Object anAData : aData) {
+                System.out.print(anAData + "\t");
             }
             System.out.println();
         }

@@ -33,10 +33,10 @@ import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
-import se.inera.intyg.intygsbestallning.persistence.model.HandlingUrsprungTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
 import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
 import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
@@ -60,7 +60,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStat
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -76,6 +76,7 @@ import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.Bes
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
 import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
 import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
+import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
 import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
 import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
@@ -84,9 +85,8 @@ import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.Utred
 @Transactional
 public class UtredningServiceImpl extends BaseUtredningService implements UtredningService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(UtredningService.class);
-
     public static final String INTERPRETER_ERROR_TEXT = "May not set interpreter language if there is no need for interpreter";
+    private static final Logger LOG = LoggerFactory.getLogger(UtredningService.class);
 
     @Override
     public List<UtredningListItem> findExternForfraganByLandstingHsaId(String landstingHsaId) {
@@ -228,14 +228,18 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
         // Inserts new information from order
         utredning.setBestallning(createBestallning(order));
+        utredning.getIntygList().add(anIntyg()
+                .withSistaDatum(Optional.ofNullable(order.getLastDateIntyg())
+                        .map(LocalDate::atStartOfDay)
+                        .orElse(null))
+                .build());
         updateInvanareFromOrder(utredning.getInvanare(), order);
 
         if (order.isHandling()) {
-            utredning.getHandlingList().add(
-                    aHandling()
-                            .withSkickatDatum(LocalDate.now().atStartOfDay())
-                            .withUrsprung(HandlingUrsprungTyp.BESTALLNING)
-                            .build());
+            utredning.getHandlingList().add(aHandling()
+                    .withSkickatDatum(LocalDate.now().atStartOfDay())
+                    .withUrsprung(HandlingUrsprungTyp.BESTALLNING)
+                    .build());
         }
         utredning.getHandelseList().add(HandelseUtil.createOrderReceived(order.getBestallare().getMyndighet(), order.getOrderDate()));
         utredningRepository.save(utredning);
@@ -265,7 +269,10 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
         Utredning toUpdate = Utredning.from(original);
 
-        update.getLastDateIntyg().ifPresent(date -> toUpdate.getBestallning().get().setIntygKlartSenast(date));
+        update.getLastDateIntyg().ifPresent(date -> toUpdate.getIntygList().stream()
+                .filter(i -> isNull(i.getKompletteringsId()))
+                .findAny()
+                .ifPresent(i -> i.setSistaDatum(date)));
         update.getTolkBehov().ifPresent(toUpdate::setTolkBehov);
         update.getTolkSprak().ifPresent(toUpdate::setTolkSprak);
         update.getBestallare().ifPresent(bestallare -> toUpdate.setHandlaggare(aHandlaggare()
@@ -307,15 +314,17 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .withTolkSprak(order.getTolkSprak())
                 .withBestallning(createBestallning(order))
                 .withHandlaggare(createHandlaggare(order.getBestallare()))
-                .withHandelseList(Arrays.asList(HandelseUtil.createOrderReceived(order.getBestallare().getMyndighet(), null)))
+                .withHandelseList(Collections.singletonList(HandelseUtil.createOrderReceived(order.getBestallare().getMyndighet(), null)))
+                .withIntygList(Collections.singletonList(anIntyg()
+                        .withSistaDatum(Optional.ofNullable(order.getLastDateIntyg()).map(LocalDate::atStartOfDay).orElse(null))
+                        .build()))
                 .build();
 
         if (order.isHandling()) {
-            utredning.getHandlingList().add(
-                    aHandling()
-                            .withSkickatDatum(LocalDate.now().atStartOfDay())
-                            .withUrsprung(HandlingUrsprungTyp.BESTALLNING)
-                            .build());
+            utredning.getHandlingList().add(aHandling()
+                    .withSkickatDatum(LocalDate.now().atStartOfDay())
+                    .withUrsprung(HandlingUrsprungTyp.BESTALLNING)
+                    .build());
         }
         utredningRepository.save(utredning);
         return utredning;
@@ -413,9 +422,6 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                         .map(LocalDate::atStartOfDay)
                         .orElse(null))
                 .withKommentar(order.getKommentar())
-                .withIntygKlartSenast(Optional.ofNullable(order.getLastDateIntyg())
-                        .map(LocalDate::atStartOfDay)
-                        .orElse(null))
                 .build();
     }
 

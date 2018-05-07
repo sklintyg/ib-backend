@@ -34,7 +34,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.aCv;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
-import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.AFU;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU;
 
 public class OrderRequestTest {
 

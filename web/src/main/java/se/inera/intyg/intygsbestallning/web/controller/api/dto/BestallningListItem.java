@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
+import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
 import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
@@ -26,6 +27,8 @@ import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+
+import static java.util.Objects.isNull;
 
 public class BestallningListItem implements PDLLoggable, FreeTextSearchable, FilterableListItem {
 
@@ -51,7 +54,11 @@ public class BestallningListItem implements PDLLoggable, FreeTextSearchable, Fil
                 .withPatientId(utredning.getInvanare().getPersonId())
                 .withPatientNamn(null)
                 .withSlutdatumFas(resolveSlutDatumFas(utredning, utredningStatus))
-                .withSlutdatumPasserat(LocalDateTime.now().isAfter(utredning.getBestallning().get().getIntygKlartSenast()))
+                .withSlutdatumPasserat(LocalDateTime.now().isAfter(utredning.getIntygList().stream()
+                        .filter(i -> isNull(i.getKompletteringsId()))
+                        .findFirst()
+                        .map(Intyg::getSistaDatum)
+                        .orElseThrow(IllegalStateException::new)))
                 .withSlutdatumPaVagPasseras(resolveSlutDatumPaVagPasseras(utredning, utredningStatus))
                 .withStatus(utredningStatus)
                 .withNextActor(utredningStatus.getNextActor().name())
@@ -65,12 +72,12 @@ public class BestallningListItem implements PDLLoggable, FreeTextSearchable, Fil
 
     /**
      * Systemet ska signalera när en utredning eller komplettering snart kommer att passera sitt slutdatum.
-     *
+     * <p>
      * Antalet arbetsdagar innan utredningens slutdatum som påminnelsen ska ske i systemet måste vara konfigurerbart
      * (UTREDNING_PAMINNELSE_DAGAR). Default är UTREDNING_PAMINNELSE_DAGAR= 5.
-     *
+     * <p>
      * Systemet varnar om:
-     *
+     * <p>
      * Utredningsfas inte är Redovisa tolk (se FMU-G001 Statusflöde för utredning)
      * Idag > (slutdatum - UTREDNING_PAMINNELSE_DAGAR arbetsdagar)
      * Idag <= slutdatum
@@ -78,19 +85,26 @@ public class BestallningListItem implements PDLLoggable, FreeTextSearchable, Fil
      * mottagits, annars slutdatum för kompletteringsbegäran (komplettering.sista datum för mottagning)
      */
     private static boolean resolveSlutDatumPaVagPasseras(Utredning utredning, UtredningStatus utredningStatus) {
-        if (utredningStatus == UtredningStatus.REDOVISA_TOLK) {
+        LocalDateTime timestamp;
+        switch (utredningStatus.getUtredningFas()) {
+        case KOMPLETTERING:
+            timestamp = utredning.getIntygList().stream()
+                    .map(Intyg::getSistaDatum)
+                    .max(LocalDateTime::compareTo)
+                    .orElseThrow(IllegalStateException::new);
+            break;
+        case UTREDNING:
+            timestamp = utredning.getIntygList().stream()
+                    .filter(i -> isNull(i.getKompletteringsId()))
+                    .map(Intyg::getSistaDatum)
+                    .findAny()
+                    .orElseThrow(IllegalStateException::new);
+            break;
+        default:
             return false;
         }
-        if (utredningStatus.getUtredningFas() == UtredningFas.KOMPLETTERING) {
-            return false; // FIXME implementera så snart vi har Kompletterings-entitet.
-        }
-        if (utredningStatus.getUtredningFas() == UtredningFas.UTREDNING) {
-            // FIXME arbetsdagar + configurable
-            return LocalDateTime.now().isBefore(utredning.getBestallning().get().getIntygKlartSenast())
-                    && LocalDateTime.now().isAfter(utredning.getBestallning().get().getIntygKlartSenast().minusDays(DEFAULT_DAYS));
-
-        }
-        return false;
+        return LocalDateTime.now().isBefore(timestamp)
+                && LocalDateTime.now().isAfter(timestamp.minusDays(DEFAULT_DAYS));
     }
 
     /*
@@ -101,9 +115,18 @@ public class BestallningListItem implements PDLLoggable, FreeTextSearchable, Fil
     private static String resolveSlutDatumFas(Utredning utredning, UtredningStatus utredningStatus) {
         switch (utredningStatus.getUtredningFas()) {
         case UTREDNING:
-            return utredning.getBestallning().get().getIntygKlartSenast().format(DateTimeFormatter.ISO_DATE);
+            return utredning.getIntygList().stream()
+                    .filter(i -> isNull(i.getKompletteringsId()))
+                    .findAny()
+                    .map(Intyg::getSistaDatum)
+                    .map(datum -> datum.format(DateTimeFormatter.ISO_DATE))
+                    .orElseThrow(IllegalStateException::new);
         case KOMPLETTERING:
-            return "2018-04-25";
+            return utredning.getIntygList().stream()
+                    .map(Intyg::getSistaDatum)
+                    .max(LocalDateTime::compareTo)
+                    .map(datum -> datum.format(DateTimeFormatter.ISO_DATE))
+                    .orElseThrow(IllegalStateException::new);
         default:
             return null;
         }

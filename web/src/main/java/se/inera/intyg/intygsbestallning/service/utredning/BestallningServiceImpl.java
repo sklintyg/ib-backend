@@ -79,7 +79,7 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
 
     @Override
     public List<BestallningListItem> findOngoingBestallningarForVardenhet(String vardenhetHsaId, ListBestallningRequest requestFilter) {
-        List<BestallningListItem> bestallningListItems = utredningRepository.findAllWithBestallningForVardenhetHsaId(vardenhetHsaId)
+        List<BestallningListItem> bestallningListItems = utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId(vardenhetHsaId)
                 .stream()
                 .map(u -> BestallningListItem.from(u, utredningStateResolver.resolveStatus(u), Actor.VARDADMIN))
                 .collect(Collectors.toList());

@@ -23,10 +23,10 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
-import se.inera.intyg.intygsbestallning.persistence.model.BesokStatusTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.DeltagarProfessionTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
-import se.inera.intyg.intygsbestallning.persistence.model.SvarTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 
 import java.time.LocalDateTime;

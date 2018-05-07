@@ -19,7 +19,7 @@
 package se.inera.intyg.intygsbestallning.service.handelse;
 
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
-import se.inera.intyg.intygsbestallning.persistence.model.HandelseTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

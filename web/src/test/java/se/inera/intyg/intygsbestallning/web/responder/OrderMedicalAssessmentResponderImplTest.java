@@ -44,8 +44,8 @@ import static org.mockito.Mockito.when;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.aCv;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
-import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.AFU;
-import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.LIAG;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.LIAG;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OrderMedicalAssessmentResponderImplTest {

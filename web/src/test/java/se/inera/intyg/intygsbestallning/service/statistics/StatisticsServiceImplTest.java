@@ -18,33 +18,34 @@
  */
 package se.inera.intyg.intygsbestallning.service.statistics;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.when;
-import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
-import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
-import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.AFU;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import com.google.common.collect.ImmutableList;
-
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.SamordnarStatisticsResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardadminStatisticsResponse;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.when;
+import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
+import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
+import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU;
 
 /**
  * Created by marced on 2018-05-04.
@@ -93,8 +94,13 @@ public class StatisticsServiceImplTest {
                                             .build()))
                             .withLandstingHsaId(VG_ID)
                             .build())
-                    .withBestallning(buildBestallning())
+                    .withBestallning(aBestallning()
+                            .withTilldeladVardenhetHsaId(VE_ID)
+                            .build())
                     .withInvanare(anInvanare().withPersonId("19121212-121" + a).build())
+                    .withIntygList(Collections.singletonList(anIntyg()
+                            .withSistaDatum(LocalDateTime.now().plusDays(10L))
+                            .build()))
                     .build();
             if (handlingarMottagna) {
                 utr.setHandlingList(buildHandlingsLista());
@@ -110,13 +116,6 @@ public class StatisticsServiceImplTest {
         return handlingar;
     }
 
-    private static Bestallning buildBestallning() {
-        Bestallning b = new Bestallning();
-        b.setIntygKlartSenast(LocalDateTime.now().plusDays(10L));
-        b.setTilldeladVardenhetHsaId(VE_ID);
-        return b;
-    }
-
     @Test
     public void testGetStatsForVardadmin() {
         List<Utredning> repoContents = buildUtredningarWithExternforfragningar(3, true);
@@ -125,7 +124,7 @@ public class StatisticsServiceImplTest {
         List<Utredning> bestallningsUtredningar = buildBestallningar(4, true);
         // Add one that will resolve to the an irrelevant status
         bestallningsUtredningar.addAll(buildBestallningar(1, false));
-        when(utredningRepository.findAllWithBestallningForVardenhetHsaId(VE_ID)).thenReturn(bestallningsUtredningar);
+        when(utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId(VE_ID)).thenReturn(bestallningsUtredningar);
 
         final VardadminStatisticsResponse statsForVardadmin = testee.getStatsForVardadmin(VE_ID);
 

@@ -16,10 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.persistence.model;
+package se.inera.intyg.intygsbestallning.persistence.model.type;
 
-public enum UtredningsTyp {
-    AFU,
-    AFU_UTVIDGAD,
-    LIAG
+public enum UtforareTyp {
+    ENHET, UNDERLEVERANTOR
 }

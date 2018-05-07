@@ -31,7 +31,7 @@ import static org.junit.Assert.assertNotNull;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
 import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
-import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.AFU;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU;
 
 public class UtredningListItemTest {
 

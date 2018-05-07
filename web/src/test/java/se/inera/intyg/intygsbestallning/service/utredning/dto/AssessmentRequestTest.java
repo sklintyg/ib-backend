@@ -29,7 +29,7 @@ import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createFullRe
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
-import se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentType;
 
 import java.text.MessageFormat;

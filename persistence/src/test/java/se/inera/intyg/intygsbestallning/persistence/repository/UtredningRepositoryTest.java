@@ -31,25 +31,25 @@ import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigDev;
 import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigTest;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
-import se.inera.intyg.intygsbestallning.persistence.model.BesokStatusTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
-import se.inera.intyg.intygsbestallning.persistence.model.DeltagarProfessionTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.EndReason;
+import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar;
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
-import se.inera.intyg.intygsbestallning.persistence.model.HandelseTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
-import se.inera.intyg.intygsbestallning.persistence.model.HandlingUrsprungTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
-import se.inera.intyg.intygsbestallning.persistence.model.KallelseFormTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.SvarTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.KallelseFormTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
-import se.inera.intyg.intygsbestallning.persistence.model.UtforareTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -128,7 +128,7 @@ public class UtredningRepositoryTest {
 
         Bestallning bestallning = utredning.getBestallning().orElse(null);
         assertNotNull(bestallning);
-        assertNotNull(bestallning.getIntygKlartSenast());
+//        assertNotNull(bestallning.getIntygKlartSenast());
         assertEquals("kommentar", bestallning.getKommentar());
         assertEquals("aktiviteter", bestallning.getPlaneradeAktiviteter());
         assertEquals("syfte", bestallning.getSyfte());
@@ -252,7 +252,7 @@ public class UtredningRepositoryTest {
         utr.setBestallning(buildBestallning());
         utredningRepository.save(utr);
 
-        List<Utredning> resultList = utredningRepository.findAllWithBestallningForVardenhetHsaId(VE_HSA_ID);
+        List<Utredning> resultList = utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId(VE_HSA_ID);
         assertEquals(1, resultList.size());
         assertNotNull(resultList.get(0).getBestallning());
     }
@@ -317,7 +317,7 @@ public class UtredningRepositoryTest {
 
     private Bestallning buildBestallning() {
         return aBestallning()
-                .withIntygKlartSenast(LocalDateTime.now())
+//                .withIntygKlartSenast(LocalDateTime.now())
                 .withKommentar("kommentar")
                 .withOrderDatum(LocalDateTime.now())
                 .withPlaneradeAktiviteter("aktiviteter")

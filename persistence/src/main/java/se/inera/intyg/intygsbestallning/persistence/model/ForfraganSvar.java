@@ -22,6 +22,8 @@ import static java.util.Objects.isNull;
 import static se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar;
 
 import org.hibernate.annotations.Type;
+import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

@@ -18,12 +18,18 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
+import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
+import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
+
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 public class UtredningListItem implements FreeTextSearchable, FilterableListItem {
 
@@ -51,8 +57,8 @@ public class UtredningListItem implements FreeTextSearchable, FilterableListItem
     private static String resolveTilldeladVardenhetHsaId(Utredning utredning) {
         if (utredning.getExternForfragan() != null) {
             Optional<String> optionalVardenhetHsaId = utredning.getExternForfragan().getInternForfraganList().stream()
-                    .filter(intf -> intf.getTilldeladDatum() != null)
-                    .map(intf -> intf.getVardenhetHsaId())
+                    .filter(intf -> nonNull(intf.getTilldeladDatum()))
+                    .map(InternForfragan::getVardenhetHsaId)
                     .findFirst();
 
             return optionalVardenhetHsaId.orElse(null);
@@ -72,9 +78,19 @@ public class UtredningListItem implements FreeTextSearchable, FilterableListItem
         case FORFRAGAN:
             return utredning.getExternForfragan().getBesvarasSenastDatum().format(DateTimeFormatter.ISO_DATE);
         case UTREDNING:
-            return utredning.getBestallning().get().getIntygKlartSenast().format(DateTimeFormatter.ISO_DATE);
+            return utredning.getIntygList().stream()
+                    .filter(i -> isNull(i.getKompletteringsId()))
+                    .map(Intyg::getSistaDatum)
+                    .findAny()
+                    .map(datum -> datum.format(DateTimeFormatter.ISO_DATE))
+                    .orElseThrow(IllegalArgumentException::new);
         case KOMPLETTERING:
-            return "TODO";
+            return utredning.getIntygList().stream()
+                    .filter(i -> nonNull(i.getKompletteringsId()))
+                    .map(Intyg::getSistaDatum)
+                    .max(LocalDateTime::compareTo)
+                    .map(datum -> datum.format(DateTimeFormatter.ISO_DATE))
+                    .orElseThrow(IllegalArgumentException::new);
         case REDOVISA_TOLK:
         case AVSLUTAD:
             return null;

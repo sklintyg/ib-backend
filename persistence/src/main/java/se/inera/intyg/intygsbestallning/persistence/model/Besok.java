@@ -19,13 +19,20 @@
 package se.inera.intyg.intygsbestallning.persistence.model;
 
 import org.hibernate.annotations.Type;
+import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.KallelseFormTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 
@@ -67,6 +74,10 @@ public class Besok {
 
     @Column(name = "DELTAGARE_FULLSTANDIGT_NAMN")
     private String deltagareFullstandigtNamn;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "AVVIKELSE_ID")
+    private Avvikelse avvikelse;
 
     public long getId() {
         return id;
@@ -140,6 +151,14 @@ public class Besok {
         this.deltagareFullstandigtNamn = deltagareFullstandigtNamn;
     }
 
+    public Avvikelse getAvvikelse() {
+        return avvikelse;
+    }
+
+    public void setAvvikelse(Avvikelse avvikelse) {
+        this.avvikelse = avvikelse;
+    }
+
     public static final class BesokBuilder {
         private LocalDateTime besokTid;
         private LocalDateTime kallelseDatum;
@@ -149,6 +168,7 @@ public class Besok {
         private Boolean ersatts;
         private DeltagarProfessionTyp deltagareProfession;
         private String deltagareFullstandigtNamn;
+        private Avvikelse avvikelse;
 
         private BesokBuilder() {
         }
@@ -197,16 +217,22 @@ public class Besok {
             return this;
         }
 
+        public BesokBuilder withAvvikelse(Avvikelse avvikelse) {
+            this.avvikelse = avvikelse;
+            return this;
+        }
+
         public Besok build() {
             Besok besok = new Besok();
-            besok.setBesokStatus(besokStatus);
             besok.setBesokTid(besokTid);
-            besok.setDeltagareFullstandigtNamn(deltagareFullstandigtNamn);
-            besok.setDeltagareProfession(deltagareProfession);
-            besok.setErsatts(ersatts);
             besok.setKallelseDatum(kallelseDatum);
-            besok.setKallelseForm(kallelseForm);
+            besok.setBesokStatus(besokStatus);
             besok.setTolkStatus(tolkStatus);
+            besok.setKallelseForm(kallelseForm);
+            besok.setErsatts(ersatts);
+            besok.setDeltagareProfession(deltagareProfession);
+            besok.setDeltagareFullstandigtNamn(deltagareFullstandigtNamn);
+            besok.setAvvikelse(avvikelse);
             return besok;
         }
     }

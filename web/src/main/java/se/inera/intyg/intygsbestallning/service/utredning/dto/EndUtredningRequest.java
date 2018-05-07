@@ -21,7 +21,7 @@ package se.inera.intyg.intygsbestallning.service.utredning.dto;
 import com.google.common.base.Joiner;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
-import se.inera.intyg.intygsbestallning.persistence.model.EndReason;
+import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
 import se.riv.intygsbestallning.certificate.order.endassessment.v1.EndAssessmentType;
 
 import java.util.ArrayList;

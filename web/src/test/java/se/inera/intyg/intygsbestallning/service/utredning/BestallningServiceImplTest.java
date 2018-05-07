@@ -72,7 +72,7 @@ public class BestallningServiceImplTest {
     @Test
     public void testFilterListBestallningar() {
         when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
-        when(utredningRepository.findAllWithBestallningForVardenhetHsaId(anyString())).thenReturn(ServiceTestUtil.buildBestallningar(7));
+        when(utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId(anyString())).thenReturn(ServiceTestUtil.buildBestallningar(7));
         List<BestallningListItem> list = bestallningService.findOngoingBestallningarForVardenhet("enhet",
                 buildFilter(ListFilterStatus.ALL));
         assertEquals(7, list.size());
@@ -81,7 +81,7 @@ public class BestallningServiceImplTest {
     @Test
     public void testFilterListBestallningarOrderByDesc() {
         when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
-        when(utredningRepository.findAllWithBestallningForVardenhetHsaId(anyString())).thenReturn(ServiceTestUtil.buildBestallningar(7));
+        when(utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId(anyString())).thenReturn(ServiceTestUtil.buildBestallningar(7));
         List<BestallningListItem> list = bestallningService.findOngoingBestallningarForVardenhet("enhet",
                 buildFilter(ListFilterStatus.ALL, null, null, "patientId", false));
         assertEquals(7, list.size());
@@ -97,7 +97,7 @@ public class BestallningServiceImplTest {
     @Test
     public void testFilterListBestallningarWithFreeTextMatchingSingleId() {
         when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
-        when(utredningRepository.findAllWithBestallningForVardenhetHsaId(anyString())).thenReturn(ServiceTestUtil.buildBestallningar(7));
+        when(utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId(anyString())).thenReturn(ServiceTestUtil.buildBestallningar(7));
         List<BestallningListItem> list = bestallningService.findOngoingBestallningarForVardenhet("enhet",
                 buildFilter(ListFilterStatus.ALL, "id-3"));
         assertEquals(1, list.size());
@@ -105,7 +105,7 @@ public class BestallningServiceImplTest {
 
     @Test
     public void testFilterListBestallningarWithUnknownVg() {
-        when(utredningRepository.findAllWithBestallningForVardenhetHsaId(anyString())).thenReturn(ServiceTestUtil.buildBestallningar(7));
+        when(utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId(anyString())).thenReturn(ServiceTestUtil.buildBestallningar(7));
         List<BestallningListItem> list = bestallningService.findOngoingBestallningarForVardenhet("enhet",
                 buildFilter(ListFilterStatus.ALL, null, "vg-other"));
         assertEquals(0, list.size());

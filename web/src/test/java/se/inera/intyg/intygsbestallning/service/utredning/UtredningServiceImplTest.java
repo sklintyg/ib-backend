@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
-
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,8 +29,8 @@ import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationExceptio
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
-import se.inera.intyg.intygsbestallning.persistence.model.EndReason;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
@@ -49,6 +48,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -60,13 +60,13 @@ import static org.mockito.Mockito.when;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
 import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
-import static se.inera.intyg.intygsbestallning.persistence.model.HandlingUrsprungTyp.BESTALLNING;
 import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
 import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
-import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.AFU;
-import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.AFU_UTVIDGAD;
-import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.LIAG;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp.BESTALLNING;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU_UTVIDGAD;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.LIAG;
 import static se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest.AssessmentRequestBuilder.anAssessmentRequest;
 import static se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare.BestallareBuilder.aBestallare;
 import static se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest.EndUtredningRequestBuilder.anEndUtredningRequest;
@@ -76,7 +76,6 @@ import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createExtern
 import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createHandlaggare;
 import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createUpdateOrderType;
 import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createUtredning;
-
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtredningServiceImplTest {
@@ -164,7 +163,8 @@ public class UtredningServiceImplTest {
         assertEquals("atgarder", response.getBestallning().get().getPlaneradeAktiviteter());
         assertEquals("syfte", response.getBestallning().get().getSyfte());
         assertEquals("enhet", response.getBestallning().get().getTilldeladVardenhetHsaId());
-        assertEquals(LocalDate.of(2019, 1, 1).atStartOfDay(), response.getBestallning().get().getIntygKlartSenast());
+        assertFalse(response.getIntygList().isEmpty());
+        assertEquals(LocalDate.of(2019, 1, 1).atStartOfDay(), response.getIntygList().get(0).getSistaDatum());
         assertEquals(LocalDate.of(2018, 1, 1).atStartOfDay(), response.getBestallning().get().getOrderDatum());
         assertNull(response.getBestallning().get().getUppdateradDatum());
         assertEquals("behov", response.getInvanare().getSarskildaBehov());
@@ -255,7 +255,8 @@ public class UtredningServiceImplTest {
         assertEquals("atgarder", response.getBestallning().get().getPlaneradeAktiviteter());
         assertEquals("syfte", response.getBestallning().get().getSyfte());
         assertEquals("enhet", response.getBestallning().get().getTilldeladVardenhetHsaId());
-        assertEquals(LocalDate.of(2019, 1, 1).atStartOfDay(), response.getBestallning().get().getIntygKlartSenast());
+        assertFalse(response.getIntygList().isEmpty());
+        assertEquals(LocalDate.of(2019, 1, 1).atStartOfDay(), response.getIntygList().get(0).getSistaDatum());
         assertEquals(LocalDate.of(2018, 1, 1).atStartOfDay(), response.getBestallning().get().getOrderDatum());
         assertNull(response.getBestallning().get().getUppdateradDatum());
         assertEquals("behov", response.getInvanare().getSarskildaBehov());
@@ -342,14 +343,11 @@ public class UtredningServiceImplTest {
 
         final String tolkSprak = "tolkSprak";
 
-
-
         Utredning modifieradUtrening = Utredning.from(createUtredning());
         modifieradUtrening.setTolkBehov(true);
         modifieradUtrening.setTolkSprak(tolkSprak);
 
         final UpdateOrderRequest updateOrderRequest = UpdateOrderRequest.from(createUpdateOrderType(true, tolkSprak));
-
 
         doReturn(Optional.of(createUtredning()))
                 .when(utredningRepository)

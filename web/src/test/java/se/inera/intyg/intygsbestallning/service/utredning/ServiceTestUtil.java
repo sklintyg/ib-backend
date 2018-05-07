@@ -22,20 +22,24 @@ import com.google.common.collect.ImmutableList;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.model.IbVardenhet;
 import se.inera.intyg.intygsbestallning.auth.model.IbVardgivare;
-import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
 import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
 import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
-import static se.inera.intyg.intygsbestallning.persistence.model.UtredningsTyp.AFU;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU;
 
-public class ServiceTestUtil {
+public final class ServiceTestUtil {
+    private ServiceTestUtil() {
+    }
 
     public static IbUser buildUser() {
         IbUser user = new IbUser("user-1", "username");
@@ -43,7 +47,7 @@ public class ServiceTestUtil {
         return user;
     }
 
-    public static  List<Utredning> buildBestallningar(int num) {
+    public static List<Utredning> buildBestallningar(int num) {
         List<Utredning> utredningList = new ArrayList<>();
         for (int a = 0; a < num; a++) {
             Utredning utr = anUtredning()
@@ -56,18 +60,16 @@ public class ServiceTestUtil {
                                             .build()))
                             .withLandstingHsaId("vg-id")
                             .build())
-                    .withBestallning(buildBestallning())
+                    .withBestallning(aBestallning()
+                            .withTilldeladVardenhetHsaId("enhet")
+                            .build())
                     .withInvanare(anInvanare().withPersonId("19121212-121" + a).build())
+                    .withIntygList(Collections.singletonList(anIntyg()
+                            .withSistaDatum(LocalDateTime.now().plusDays(10L))
+                            .build()))
                     .build();
             utredningList.add(utr);
         }
         return utredningList;
-    }
-
-    public static  Bestallning buildBestallning() {
-        Bestallning b = new Bestallning();
-        b.setIntygKlartSenast(LocalDateTime.now().plusDays(10L));
-        b.setTilldeladVardenhetHsaId("enhet");
-        return b;
     }
 }

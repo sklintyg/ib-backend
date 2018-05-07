@@ -44,11 +44,15 @@
   },
   "bestallning": {
     "tilldeladVardenhetHsaId": "IFV1239877878-1042",
-    "intygKlartSenast": "2018-05-25T00:00:00",
     "orderDatum": "2018-05-27T00:00:00",
     "syfte": "Att bli friskare",
     "planeradeAktiviteter": "Bowla med gänget",
     "kommentar": "Detta är faktiskt testdata..."
   },
+  "intygList": [
+    {
+      "sistaDatum": "2018-05-25T00:00:00.000"
+    }
+  ],
   "sprakTolk": "sv"
 }

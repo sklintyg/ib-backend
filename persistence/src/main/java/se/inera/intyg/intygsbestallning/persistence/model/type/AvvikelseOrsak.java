@@ -16,33 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.persistence.model;
+package se.inera.intyg.intygsbestallning.persistence.model.type;
 
-public enum HandelseTyp {
-
-    FORFRAGAN_MOTTAGEN,
-    FORFRAGAN_SKICKAD,
-    FORFRAGAN_ACCEPTERAD,
-    FORFRAGAN_AVVISAD,
-    FORFRAGAN_BESVARAD,
-    BESTALLNING_MOTTAGEN,
-    BESTALLNING_UPPDATERAD,
-    HANDLING_MOTTAGEN,
-    UTLATANDE_SKICKAT,
-    MOTTAGEN_KOMPLETTERING,
-    KOMPLETTERING_SKICKAD,
-    NYTT_BESOK,
-    UPPDATERA_BESOK,
-    OMBOKAT_BESOK,
-    ANDRAD_UTREDNINGSTYP,
-    AVVIKELSE_RAPPORTERAD,
-    UTLATANDE_MOTTAGET,
-    KOMPLETTERINGSBEGARAN_MOTTAGEN,
-    KOMPLETTERANDE_FRAGESTALLNING_MOTTAGEN,
-    AVSLUTAD,
-    INGEN_BESTALLNING,
-    JAV,
-    UTREDNING_AVBRUTEN,
-    NY_ANTECKNING,
-    TOLK_REDOVISAD
+public enum AvvikelseOrsak {
+    VARDEN,
+    PATIENT
 }
