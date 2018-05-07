@@ -22,11 +22,33 @@
                   </card-value>
                   <h4>Datum</h4>
                   <card-table>
-                    {{utredning.utredningsTyp}}
+                    <table class="table ib-table-striped">
+                      <tr>
+                        <th>Beställningsdatum</th>
+                        <th>Slutdatum utlåtande</th>
+                        <th>Slutdatum komplettering</th>
+                      </tr>
+                      <tr>
+                        <td>{{utredning.inkomDatum}}</td>
+                        <td>{{utredning.intygSistaDatum}}</td>
+                        <td>{{utredning.intygSistaDatumKomplettering}}</td>
+                      </tr>
+                    </table>
                   </card-table>
                   <h4>Avslutsvillkor</h4>
                   <card-table>
-                    {{utredning.utredningsTyp}}
+                    <table class="table ib-table-striped">
+                      <tr>
+                        <th>Avslutsdatum</th>
+                        <th>Ersätts</th>
+                        <th>Orsak</th>
+                      </tr>
+                      <tr>
+                        <td>{{utredning.avbrutenDatum}}</td>
+                        <td>{{utredning.ersatts}}</td>
+                        <td>{{utredning.avbrutenAnledning}}</td>
+                      </tr>
+                    </table>
                   </card-table>
                 </card-body>
               </card>
@@ -35,19 +57,20 @@
                 <card-body>
                   <h4>Personnummer/Samordningsnummer</h4>
                   <card-value>
-                    {{utredning.utredningsTyp}}
+                    {{utredning.invanare.personId}}
                   </card-value>
                   <h4>Namn</h4>
                   <card-value>
-                    {{utredning.utredningsTyp}}
+                    {{utredning.invanare.name}}
                   </card-value>
                   <h4>Behov av tolk</h4>
                   <card-value>
-                    {{utredning.utredningsTyp}}
+                    {{utredning.behovTolk}}<br>
+                    {{utredning.tolkSprak}}
                   </card-value>
                   <h4>Särskilda behov</h4>
                   <card-value>
-                    {{utredning.utredningsTyp}}
+                    {{utredning.invanare.sarskildaBehov}}
                   </card-value>
                 </card-body>
               </card>
@@ -56,11 +79,27 @@
                 <card-body>
                   <h4>Meddelande från handläggare</h4>
                   <card-table>
-                    {{utredning.utredningsTyp}}
+                    <table class="table ib-table-striped">
+                      <tr>
+                        <th>Datum</th>
+                        <th>Meddelande</th>
+                      </tr>
+                      <tr>
+                        <td>{{utredning.inkomDatum}}</td>
+                        <td>{{utredning.meddelandeFromHandlaggare}}</td>
+                      </tr>
+                    </table>
                   </card-table>
+                </card-body>
+              </card>
+              <card>
+                <h3>Handläggare</h3>
+                <card-body>
                   <h4>Kontaktuppgifter</h4>
                   <card-value>
-                    {{utredning.utredningsTyp}}
+                    {{utredning.handlaggareNamn}}<br>
+                    {{utredning.handlaggareTelefonnummer}}<br>
+                    {{utredning.handlaggareEpost}}
                   </card-value>
                 </card-body>
               </card>

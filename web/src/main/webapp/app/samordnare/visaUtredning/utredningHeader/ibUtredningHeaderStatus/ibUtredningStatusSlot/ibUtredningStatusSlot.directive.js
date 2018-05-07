@@ -25,20 +25,17 @@ angular.module('ibApp').directive('ibUtredningStatusSlot',
             scope: {
                 intygstatus: '<'
             },
-            templateUrl: '/app/samordnare/visaUtredning/utredningHeader/ibUtredningHeaderStatus/ibUtredningStatusSlot/ibUtredningStatusSlot.directive.html',
+            templateUrl: '/app/samordnare/visaUtredning/utredningHeader/ibUtredningHeaderStatus/ibUtredningStatusSlot/' +
+            'ibUtredningStatusSlot.directive.html',
             link: function($scope) {
                 $scope.openModal = function() {
-                    var statusCode = $scope.intygstatus.code.toLowerCase();
                     var modalInstance = $uibModal.open({
-                        templateUrl: '/web/webjars/common/webcert/intyg/intygHeader/ibUtredningStatus/ibUtredningStatusSlot/ibUtredningHeaderStatusModal.template.html',
+                        templateUrl: '/web/webjars/common/webcert/intyg/intygHeader/ibUtredningStatus/' +
+                        'ibUtredningStatusSlot/ibUtredningHeaderStatusModal.template.html',
                         size: 'md',
-                        controller: function($scope) {
-/*                            var vars = {
-                                recipient: IntygHeaderViewState.recipientText
-                            };
-                            $scope.header = messageService.getProperty(IntygStatusService.getMessageKeyForIntyg('.modalheader.intygstatus.' + statusCode), vars);
-                            $scope.body = messageService.getProperty(IntygStatusService.getMessageKeyForIntyg('.modalbody.intygstatus.' + statusCode), vars);
-  */                      }
+                        controller: function() {
+
+                        }
                     });
                     //angular > 1.5 warns if promise rejection is not handled (e.g backdrop-click == rejection)
                     modalInstance.result.catch(function () {}); //jshint ignore:line

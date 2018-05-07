@@ -1,14 +1,14 @@
 /*!
  * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
- * This file is part of sklutredning (https://github.com/sklutredning).
+ * This file is part of sklintyg (https://github.com/sklintyg).
  *
- * sklutredning is free software: you can redistribute it and/or modify
+ * sklintyg is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * sklutredning is distributed in the hope that it will be useful,
+ * sklintyg is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
@@ -108,7 +108,7 @@ body {
     > .bottom-fadeout-gradient {
       @extend %bottom-gradient;
 
-      max-width: $ib-max-content-width * 0.6;
+      max-width: $ib-max-content-width * 0.3;
       left: auto;
       z-index: 10;
       padding: 0 15px;

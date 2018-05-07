@@ -26,7 +26,7 @@ angular.module('ibApp').directive('ibUtredningStatusModalLink', [
             scope: {
                 source:'='
             },
-            link: function($scope, $element, attrs) {
+            link: function($scope, $element) {
                 $element[0].innerHTML = $scope.source;
                 $compile($element.contents())($scope);
             }

@@ -26,7 +26,7 @@ angular.module('ibApp')
                 tabs: [],
                 intygContext: {
                     type: 'fk7263',
-                    id: null,
+                    id: null
                 }
             };
 
@@ -51,43 +51,23 @@ angular.module('ibApp')
             $scope.config = config;
 
             /*
-behovTolk
-:
-false
-besvarasSenastDatum
-:
-"2018-04-25"
-handlaggareEpost
-:
-"epost@inera.se"
-handlaggareNamn
-:
-"Hanna Handläggarsson"
-handlaggareTelefonnummer
-:
-"031-9999999"
-inkomDatum
-:
-"2018-04-11"
-invanarePersonId
-:
-null
-status
-:
-"TODO"
-tolkSprak
-:
-null
-utredningsId
-:
-"utredning-bootstrap-1"
-utredningsTyp
-:
-"AFU"
-vardgivareHsaId
-:
-"IFV1239877878-1041"
-
+avbrutenAnledning:null
+avbrutenDatum:null
+behovTolk:false
+besvarasSenastDatum:"2018-04-25"
+handlaggareEpost:"epost@inera.se"
+handlaggareNamn:"Hanna Handläggarsson"
+handlaggareTelefonnummer:"031-9999999"
+inkomDatum:"2018-04-11"
+intygSistaDatum:null
+intygSistaDatumKomplettering:null
+invanare:{personId: null, name: null, gender: null, sarskildaBehov: "Gillar glass"}
+meddelandeFromHandlaggare:null
+status:{id: "FORFRAGAN_INKOMMEN", label: "Förfrågan inkommen",…}
+tolkSprak:null
+utredningsId:"utredning-bootstrap-1"
+utredningsTyp:"AFU"
+vardgivareHsaId:"IFV1239877878-1041"
              */
 
             UtredningarProxy.getUtredning($stateParams.utredningsId).then(function(utredning) {

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-$card-header-padding: 18px 30px 10px 30px;
+$card-header-padding: 0 30px 10px 30px;
 $card-body-padding: 14px 30px 14px 30px;
 $card-h3-padding: 9px 0 6px;
 
@@ -35,7 +35,7 @@ card {
   border-radius: 4px;
   padding-top: 20px;
 
-  h2 {
+  h3 {
     font-size: 18px;
     background: $card-header-bg;
     color: $card-header-color;
@@ -45,6 +45,10 @@ card {
     color: $ib-color-07;
     border-radius: 4px 4px 0 0;
     border-bottom: solid 1px $ib-color-15;
+  }
+
+  h4 {
+    @extend %ib-typo-05;
   }
 
   card-body {
@@ -58,8 +62,7 @@ card {
     padding: $card-body-padding;
     border-radius: 0 0 4px 4px;
     h3 {
-      font-size: 16px;
-      font-weight: bold;
+      @extend %ib-typo-06;
       font-family: $font-0, $font-3;
       padding: $card-h3-padding;
       color: $ib-color-08;
@@ -73,6 +76,7 @@ card {
     }
 
     h4 {
+      @extend %ib-typo-10;
       color: $ib-color-09;
       padding: 4px 0;
     }
@@ -82,4 +86,36 @@ card {
       padding: 0;
     }
   }
+
+  $utredning-table-bg: $ib-color-00 !default;
+  $utredning-table-bg-accent: $ib-color-20 !default;
+
+  card-table {
+    display: block;
+    padding-top: 5px;
+
+    .table {
+      margin: 0;
+    }
+
+    .mobile-table-wrapper {
+      .mobile-table {
+        display: table;
+        width: 100%;
+      }
+
+      > .mobile-table:nth-of-type(even) {
+        background-color: $utredning-table-bg;
+      }
+
+      > .mobile-table:nth-of-type(odd) {
+        background-color: $utredning-table-bg-accent;
+      }
+
+      .row {
+        margin: 15px 0;
+      }
+    }
+  }
+
 }

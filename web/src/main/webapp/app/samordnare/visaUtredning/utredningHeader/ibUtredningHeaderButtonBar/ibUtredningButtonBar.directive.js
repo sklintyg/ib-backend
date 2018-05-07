@@ -27,7 +27,7 @@ angular.module('ibApp').directive('ibUtredningButtonBar',
             viewState: '='
         },
         templateUrl: '/app/samordnare/visaUtredning/utredningHeader/ibUtredningHeaderButtonBar/ibUtredningButtonBar.directive.html',
-        link: function($scope) {
+        link: function() {
         }
     };
 });

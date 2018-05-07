@@ -36,11 +36,8 @@
           <div class="flex-col-max">
             <!-- Header text -->
             <h2 class="page-heading1">
-              <span>UtredningTitel</span>
+              <span>{{utredning.utredningsId}}</span>
             </h2>
-            <h3 class="page-heading2">
-              Info
-            </h3>
             <!-- Patient status -->
             <ib-patient-status is-intyg="true" patient="utredningHeaderViewState.intygModel.grundData.patient" intyg-model="utredningHeaderViewState.intygModel" intyg-properties="utredningHeaderViewState.common.intygProperties"></ib-patient-status>
           </div>

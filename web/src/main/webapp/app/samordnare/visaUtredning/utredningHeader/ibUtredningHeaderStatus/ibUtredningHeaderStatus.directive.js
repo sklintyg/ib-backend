@@ -27,7 +27,7 @@ angular.module('ibApp').directive('ibUtredningHeaderStatus',
                 intygViewState: '='
             },
             templateUrl: '/app/samordnare/visaUtredning/utredningHeader/ibUtredningHeaderStatus/ibUtredningHeaderStatus.directive.html',
-            link: function($scope) {
+            link: function() {
 /*
                 $scope.intygHeaderService = IntygHeaderService;
                 $scope.intygHeaderViewState = IntygHeaderViewState;
