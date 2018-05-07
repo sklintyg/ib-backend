@@ -95,6 +95,10 @@ public class Utredning {
     @JoinColumn(name = "UTREDNING_ID", referencedColumnName = "UTREDNING_ID", nullable = false)
     private List<Intyg> intygList = new ArrayList<>();
 
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "UTREDNING_ID", referencedColumnName = "UTREDNING_ID", nullable = false)
+    private List<Anteckning> anteckningList = new ArrayList<>();
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "HANDLAGGARE_ID")
     private Handlaggare handlaggare;
@@ -252,6 +256,14 @@ public class Utredning {
         this.intygList = intygList;
     }
 
+    public List<Anteckning> getAnteckningList() {
+        return anteckningList;
+    }
+
+    public void setAnteckningList(List<Anteckning> anteckningList) {
+        this.anteckningList = anteckningList;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(utredningId);
@@ -296,6 +308,7 @@ public class Utredning {
         private List<Handling> handlingList = new ArrayList<>();
         private List<Besok> besokList = new ArrayList<>();
         private List<Intyg> intygList = new ArrayList<>();
+        private List<Anteckning> anteckningList = new ArrayList<>();
         private Handlaggare handlaggare;
         private Invanare invanare;
 
@@ -371,6 +384,11 @@ public class Utredning {
             return this;
         }
 
+        public UtredningBuilder withAnteckningList(List<Anteckning> anteckningList) {
+            this.anteckningList = anteckningList;
+            return this;
+        }
+
         public UtredningBuilder withHandlaggare(Handlaggare handlaggare) {
             this.handlaggare = handlaggare;
             return this;
@@ -396,6 +414,7 @@ public class Utredning {
             utredning.setHandlingList(handlingList);
             utredning.setBesokList(besokList);
             utredning.setIntygList(intygList);
+            utredning.setAnteckningList(anteckningList);
             utredning.setHandlaggare(handlaggare);
             utredning.setInvanare(invanare);
             return utredning;

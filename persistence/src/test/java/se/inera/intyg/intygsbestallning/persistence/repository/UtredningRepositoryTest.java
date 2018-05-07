@@ -30,25 +30,26 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigDev;
 import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigTest;
+import se.inera.intyg.intygsbestallning.persistence.model.Anteckning;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
-import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
-import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar;
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
-import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
-import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
+import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
+import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.KallelseFormTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 
 import java.time.LocalDate;
@@ -62,6 +63,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static se.inera.intyg.intygsbestallning.persistence.model.Anteckning.AnteckningBuilder.anAnteckning;
 import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
 import static se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar;
@@ -114,6 +116,8 @@ public class UtredningRepositoryTest {
 
         utr.getBesokList().add(buildBesok());
 
+        utr.getAnteckningList().add(buildAnteckning());
+
         utredningRepository.save(utr);
 
         Optional<Utredning> saved = utredningRepository.findById(UTREDNING_ID);
@@ -128,7 +132,6 @@ public class UtredningRepositoryTest {
 
         Bestallning bestallning = utredning.getBestallning().orElse(null);
         assertNotNull(bestallning);
-//        assertNotNull(bestallning.getIntygKlartSenast());
         assertEquals("kommentar", bestallning.getKommentar());
         assertEquals("aktiviteter", bestallning.getPlaneradeAktiviteter());
         assertEquals("syfte", bestallning.getSyfte());
@@ -210,6 +213,13 @@ public class UtredningRepositoryTest {
         assertNull(besok.getTolkStatus());
         assertNull(besok.getErsatts());
 
+        assertNotNull(utredning.getAnteckningList());
+        assertFalse(utredning.getAnteckningList().isEmpty());
+        Anteckning anteckning = utredning.getAnteckningList().get(0);
+        assertEquals("text", anteckning.getText());
+        assertEquals("anvandare", anteckning.getAnvandare());
+        assertEquals("anteckningVardenhetHsaId", anteckning.getVardenhetHsaId());
+        assertNotNull(anteckning.getSkapat());
     }
 
     @Test
@@ -219,10 +229,10 @@ public class UtredningRepositoryTest {
         utr.setExternForfragan(buildExternForfragan());
         utredningRepository.save(utr);
 
-        List<Utredning> response = utredningRepository.findAllByExternForfragan_InternForfraganList_VardenhetHsaId_AndArkiveradFalse(VE_HSA_ID);
+        List<Utredning> response = utredningRepository
+                .findAllByExternForfragan_InternForfraganList_VardenhetHsaId_AndArkiveradFalse(VE_HSA_ID);
         assertNotNull(response);
         assertTrue(response.isEmpty());
-
 
         utr.setArkiverad(false);
         utredningRepository.save(utr);
@@ -230,6 +240,15 @@ public class UtredningRepositoryTest {
         assertNotNull(response);
         assertEquals(1, response.size());
 
+    }
+
+    private Anteckning buildAnteckning() {
+        return anAnteckning()
+                .withAnvandare("anvandare")
+                .withSkapat(LocalDateTime.now())
+                .withText("text")
+                .withVardenhetHsaId("anteckningVardenhetHsaId")
+                .build();
     }
 
     @Test
@@ -280,7 +299,6 @@ public class UtredningRepositoryTest {
         resultList = utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(VE_HSA_ID);
         assertEquals(1, resultList.size());
         assertNotNull(resultList.get(0).getBestallning());
-
 
     }
 
@@ -355,7 +373,6 @@ public class UtredningRepositoryTest {
 
     private Bestallning buildBestallning() {
         return aBestallning()
-//                .withIntygKlartSenast(LocalDateTime.now())
                 .withKommentar("kommentar")
                 .withOrderDatum(LocalDateTime.now())
                 .withPlaneradeAktiviteter("aktiviteter")

@@ -41,7 +41,6 @@ public abstract class BaseUtredningService {
     @Autowired
     protected UtredningRepository utredningRepository;
 
-
     @Autowired
     protected UserService userService;
 
