@@ -22,7 +22,7 @@ angular.module('ibApp').factory('ForfragningarProxy',
         networkConfig) {
         'use strict';
 
-        function _getForfragningar() {
+        function _getForfragningar(query) {
             var promise = $q.defer();
 
             var restPath = '/api/forfragningar';
@@ -31,7 +31,34 @@ angular.module('ibApp').factory('ForfragningarProxy',
                 timeout: networkConfig.defaultTimeout
             };
 
-            $http.get(restPath, config).then(function(response) {
+            $http.post(restPath, query, config).then(function(response) {
+                $log.debug(restPath + ' - success');
+
+                if (typeof response !== 'undefined') {
+                    promise.resolve(response.data);
+                } else {
+                    $log.debug('JSON response syntax error. Rejected.');
+                    promise.reject(null);
+                }
+            }, function(response) {
+                $log.error('error ' + response.status);
+                // Let calling code handle the error of no data response
+                promise.reject(response.data);
+            });
+
+            return promise.promise;
+        }
+
+        function _getForfragningarFilterValues() {
+            var promise = $q.defer();
+
+            var restPath = '/api/forfragningar/list/filter';
+
+            var config =  {
+                timeout: networkConfig.defaultTimeout
+            };
+
+            $http.get(restPath, null, config).then(function(response) {
                 $log.debug(restPath + ' - success');
 
                 if (typeof response !== 'undefined') {
@@ -51,6 +78,7 @@ angular.module('ibApp').factory('ForfragningarProxy',
 
         // Return public API for the service
         return {
-            getForfragningar: _getForfragningar
+            getForfragningar: _getForfragningar,
+            getForfragningarFilterValues: _getForfragningarFilterValues
         };
     });

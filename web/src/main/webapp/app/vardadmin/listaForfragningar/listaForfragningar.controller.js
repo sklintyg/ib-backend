@@ -19,15 +19,42 @@
 
 angular.module('ibApp')
     .controller('ListaForfragningarCtrl',
-        function($log, $scope, ForfragningarProxy) {
+        function($log, $scope, ibForfraganFilterModel, ForfragningarProxy) {
             'use strict';
 
-            ForfragningarProxy.getForfragningar().then(function(data) {
-                $scope.forfragningar = data.forfragningar;
-                $scope.forfragningarTotal = data.totalCount;
+            $scope.filter = ibForfraganFilterModel.build();
+
+            $scope.getForfragningarFiltered = function(appendResults) {
+
+                if (!appendResults) {
+                    $scope.filter.currentPage = 0;
+                }
+
+                ForfragningarProxy.getForfragningar($scope.filter.convertToPayload()).then(function(data) {
+                    if (appendResults) {
+                        $scope.forfragningar = $scope.forfragningar.concat(data.forfragningar);
+                    }
+                    else {
+                        $scope.forfragningar = data.forfragningar;
+                    }
+                    $scope.forfragningarTotal = data.totalCount;
+                }, function(error) {
+                    $log.error(error);
+                });
+            };
+
+
+            ForfragningarProxy.getForfragningarFilterValues().then(function(data) {
+                $scope.filter.populateFilter(data);
             }, function(error) {
                 $log.error(error);
             });
 
+            $scope.getMore = function() {
+                $scope.filter.currentPage++;
+                $scope.getForfragningarFiltered(true);
+            };
+
+            $scope.getForfragningarFiltered();
         }
     );

@@ -110,6 +110,20 @@ var ibMessages = {
         'bestallningar.filter.status.label': 'Status',
         'bestallningar.filter.resetfilter.label': 'Återställ sökfilter',
 
+        // Lista förfrågningar filter
+        'forfragningar.filter.fritext.label': 'Fritextsökning',
+        'forfragningar.filter.fritext.placeholder': 'Skriv sökord',
+        'forfragningar.filter.vardgivarenamn.label': 'Landsting',
+        'forfragningar.filter.inkommet.label': 'Inkommet datum',
+        'forfragningar.filter.inkommet.placeholder': 'Alla valda',
+        'forfragningar.filter.svarsdatum.label': 'Svarsdatum',
+        'forfragningar.filter.svarsdatum.placeholder': 'Alla valda',
+        'forfragningar.filter.planeringsdatum.label': 'Planeringsdatum',
+        'forfragningar.filter.planeringsdatum.placeholder': 'Alla valda',
+
+        'forfragningar.filter.status.label': 'Status',
+        'forfragningar.filter.resetfilter.label': 'Återställ sökfilter',
+
         //Errors for reporting IO / backend error responses for REST requests
         'server.error.changeunit.title': 'Kunde inte byta systemroll',
         'server.error.changeunit.text': 'Försök igen eller kontakta support',

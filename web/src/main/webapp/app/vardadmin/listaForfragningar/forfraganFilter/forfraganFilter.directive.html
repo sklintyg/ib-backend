@@ -1,0 +1,52 @@
+<div>
+    <ib-textfield
+            id="filterFritext"
+            model="filter.freetext"
+            label-key="forfragningar.filter.fritext.label"
+            max-length="255"
+            on-change="onChange()"
+            placeholder-key="forfragningar.filter.fritext.placeholder">
+    </ib-textfield>
+    <ib-dropdown
+            id="filterLandsting"
+            ng-model="filter.vardgivareNamn"
+            ng-change="onChange()"
+            label-key="forfragningar.filter.vardgivareNamn.label"
+            items="filter.vardgivareNamnOptions">
+    </ib-dropdown>
+
+    <ib-date-range-picker
+            id="filterInkommet"
+            model="filter.inkomDatum"
+            on-change="onChange()"
+            label-key="forfragningar.filter.inkommet.label"
+            placeholder-key="forfragningar.filter.inkommet.placeholder">
+    </ib-date-range-picker>
+
+    <ib-date-range-picker
+            id="filterSvarsDatum"
+            model="filter.besvarasSenastDatum"
+            on-change="onChange()"
+            label-key="forfragningar.filter.svarsdatum.label"
+            placeholder-key="forfragningar.filter.svarsdatum.placeholder">
+    </ib-date-range-picker>
+
+    <ib-date-range-picker
+            id="filterPlaneringsDatum"
+            model="filter.planeringsDatum"
+            on-change="onChange()"
+            label-key="forfragningar.filter.planeringsdatum.label"
+            placeholder-key="forfragningar.filter.planeringsdatum.placeholder">
+    </ib-date-range-picker>
+
+    <ib-dropdown
+            id="filterStatus"
+            ng-model="filter.status"
+            ng-change="onChange()"
+            label-key="forfragningar.filter.status.label"
+            items="filter.statusOptions">
+    </ib-dropdown>
+    <button class="btn btn-primary" ng-click="resetFilter()" ng-disabled="filter.isDefault()">
+        <message key="forfragningar.filter.resetfilter.label"></message>
+    </button>
+</div>
