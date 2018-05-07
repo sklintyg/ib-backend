@@ -16,17 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.service.forfragan;
+package se.inera.intyg.intygsbestallning.common.exception;
 
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganSvarRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganSvarResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListForfraganFilter;
-
-public interface ExternForfraganService {
-
-    default ForfraganSvarResponse besvaraForfragan(Long forfraganId, ForfraganSvarRequest svarRequest) {
-        return null;
+public class IbJMSException extends IbServiceException {
+    public IbJMSException(IbErrorCodeEnum errorCode, String message) {
+        super(errorCode, message);
     }
-
-    ListForfraganFilter buildListForfraganFilter(String vardenhetHsaId);
 }

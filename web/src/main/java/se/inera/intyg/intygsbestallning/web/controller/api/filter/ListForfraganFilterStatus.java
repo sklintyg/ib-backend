@@ -16,17 +16,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.service.forfragan;
+package se.inera.intyg.intygsbestallning.web.controller.api.filter;
 
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganSvarRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganSvarResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListForfraganFilter;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
-public interface ExternForfraganService {
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
+public enum ListForfraganFilterStatus {
+    ALL("Visa alla"),
+    PAGAENDE("Pågående"),
+    BEHOVER_ATGARDAS("Behöver åtgärdas"),
+    VANTAR_ANNAN_AKTOR("Väntar på annan aktör"),
+    AVSLUTADE("Avslutade");
 
-    default ForfraganSvarResponse besvaraForfragan(Long forfraganId, ForfraganSvarRequest svarRequest) {
-        return null;
+    private final String id;
+    private final String label;
+
+    ListForfraganFilterStatus(String label) {
+        this.id = this.name();
+        this.label = label;
     }
 
-    ListForfraganFilter buildListForfraganFilter(String vardenhetHsaId);
+    public String getId() {
+        return id;
+    }
+
+    public String getLabel() {
+        return label;
+    }
 }

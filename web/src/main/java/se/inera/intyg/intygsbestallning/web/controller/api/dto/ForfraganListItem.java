@@ -22,22 +22,26 @@ import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStateResolver;
 import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
+import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListForfraganFilterStatus;
 
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Objects;
 
 import static java.util.Objects.isNull;
 
-public class ForfraganListItem {
+public class ForfraganListItem implements FreeTextSearchable {
     private static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
 
     private String utredningsId;
     private String utredningsTyp;
+    private String vardgivareHsaId;
     private String vardgivareNamn;
     private String inkomDatum;
     private String besvarasSenastDatum;
     private String planeringsDatum;
     private InternForfraganStatus status;
+    private List<ListForfraganFilterStatus> filterStatusar;
 
     public static ForfraganListItem from(Utredning utredning, String vardenhetId, InternForfraganStateResolver statusResolver) {
         InternForfragan internForfragan = utredning.getExternForfragan().getInternForfraganList()
@@ -46,18 +50,21 @@ public class ForfraganListItem {
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
 
-
         return ForfraganListItemBuilder.aForfraganListItem()
                 .withBesvarasSenastDatum(!isNull(internForfragan.getBesvarasSenastDatum())
-                        ? internForfragan.getBesvarasSenastDatum().format(formatter) : null)
+                        ? internForfragan.getBesvarasSenastDatum().format(formatter)
+                        : null)
                 .withInkomDatum(!isNull(internForfragan.getSkapadDatum())
-                        ? internForfragan.getSkapadDatum().format(formatter) : null)
+                        ? internForfragan.getSkapadDatum().format(formatter)
+                        : null)
                 .withPlaneringsDatum(
                         !isNull(internForfragan.getForfraganSvar()) && !isNull(internForfragan.getForfraganSvar().getBorjaDatum())
-                                ? internForfragan.getForfraganSvar().getBorjaDatum().format(formatter) : null)
+                                ? internForfragan.getForfraganSvar().getBorjaDatum().format(formatter)
+                                : null)
                 .withStatus(statusResolver.resolveStatus(utredning, internForfragan))
                 .withUtredningsId(utredning.getUtredningId())
                 .withUtredningsTyp(utredning.getUtredningsTyp().name())
+                .withVardgivareHsaId(utredning.getExternForfragan().getLandstingHsaId())
                 .withVardgivareNamn(utredning.getExternForfragan().getLandstingHsaId())
                 .build();
     }
@@ -76,6 +83,14 @@ public class ForfraganListItem {
 
     public void setUtredningsTyp(String utredningsTyp) {
         this.utredningsTyp = utredningsTyp;
+    }
+
+    public String getVardgivareHsaId() {
+        return vardgivareHsaId;
+    }
+
+    public void setVardgivareHsaId(String vardgivareHsaId) {
+        this.vardgivareHsaId = vardgivareHsaId;
     }
 
     public String getVardgivareNamn() {
@@ -118,14 +133,36 @@ public class ForfraganListItem {
         this.status = status;
     }
 
+    public List<ListForfraganFilterStatus> getFilterStatusar() {
+        return filterStatusar;
+    }
+
+    public void setFilterStatusar(List<ListForfraganFilterStatus> filterStatusar) {
+        this.filterStatusar = filterStatusar;
+    }
+
+    @Override
+    public String toSearchString() {
+        return utredningsId
+                + utredningsTyp + " "
+                + vardgivareHsaId + " "
+                + vardgivareNamn + " "
+                + inkomDatum + " "
+                + besvarasSenastDatum + " "
+                + planeringsDatum + " "
+                + status;
+    }
+
     public static final class ForfraganListItemBuilder {
         private String utredningsId;
         private String utredningsTyp;
+        private String vardgivareHsaId;
         private String vardgivareNamn;
         private String inkomDatum;
         private String besvarasSenastDatum;
         private String planeringsDatum;
         private InternForfraganStatus status;
+        private List<ListForfraganFilterStatus> filterStatusar;
 
         private ForfraganListItemBuilder() {
         }
@@ -141,6 +178,11 @@ public class ForfraganListItem {
 
         public ForfraganListItemBuilder withUtredningsTyp(String utredningsTyp) {
             this.utredningsTyp = utredningsTyp;
+            return this;
+        }
+
+        public ForfraganListItemBuilder withVardgivareHsaId(String vardgivareHsaId) {
+            this.vardgivareHsaId = vardgivareHsaId;
             return this;
         }
 
@@ -169,17 +211,23 @@ public class ForfraganListItem {
             return this;
         }
 
+        public ForfraganListItemBuilder withFilterStatusar(List<ListForfraganFilterStatus> filterStatusar) {
+            this.filterStatusar = filterStatusar;
+            return this;
+        }
+
         public ForfraganListItem build() {
             ForfraganListItem forfraganListItem = new ForfraganListItem();
             forfraganListItem.setUtredningsId(utredningsId);
             forfraganListItem.setUtredningsTyp(utredningsTyp);
+            forfraganListItem.setVardgivareHsaId(vardgivareHsaId);
             forfraganListItem.setVardgivareNamn(vardgivareNamn);
             forfraganListItem.setInkomDatum(inkomDatum);
             forfraganListItem.setBesvarasSenastDatum(besvarasSenastDatum);
             forfraganListItem.setPlaneringsDatum(planeringsDatum);
             forfraganListItem.setStatus(status);
+            forfraganListItem.setFilterStatusar(filterStatusar);
             return forfraganListItem;
         }
     }
 }
-

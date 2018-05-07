@@ -20,10 +20,18 @@ package se.inera.intyg.intygsbestallning.service.forfragan;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.intygsbestallning.persistence.repository.ExternForfraganRepository;
+import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganSvarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganSvarResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListForfraganFilter;
+import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListForfraganFilterStatus;
+import se.inera.intyg.intygsbestallning.web.controller.api.filter.SelectItem;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ExternForfraganServiceImpl implements ExternForfraganService {
@@ -31,8 +39,34 @@ public class ExternForfraganServiceImpl implements ExternForfraganService {
     @Autowired
     private ExternForfraganRepository externForfraganRepository;
 
+    @Autowired
+    private RegistreradVardenhetRepository registreradVardenhetRepository;
+
+    @Autowired
+    private HsaOrganizationsService hsaOrganizationsService;
+
     @Override
     public ForfraganSvarResponse besvaraForfragan(Long forfraganId, ForfraganSvarRequest svarRequest) {
         return null;
+    }
+
+    @Override
+    public ListForfraganFilter buildListForfraganFilter(String vardenhetHsaId) {
+        return new ListForfraganFilter(findLandstingBeingRelatedToVardenhet(vardenhetHsaId), buildStatusesForListForfraganFilter());
+    }
+
+    /*
+     * Möjliga val för filterkriteriet är "Visa alla" samt de landsting som är kopplade till vårdenheten.
+     * Förvalt värde: Visa alla.
+     */
+    private List<SelectItem> findLandstingBeingRelatedToVardenhet(String vardenhetHsaId) {
+        List<String> vardgivareHsaIdList = registreradVardenhetRepository.findVardgivareHsaIdRegisteredForVardenhet(vardenhetHsaId);
+        return vardgivareHsaIdList.stream()
+                .map(veHsaId -> new SelectItem(veHsaId, hsaOrganizationsService.getVardgivareInfo(veHsaId).getNamn()))
+                .collect(Collectors.toList());
+    }
+
+    private List<ListForfraganFilterStatus> buildStatusesForListForfraganFilter() {
+        return Arrays.asList(ListForfraganFilterStatus.values());
     }
 }

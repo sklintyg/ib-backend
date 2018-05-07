@@ -102,7 +102,7 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
         // Start actual filtering. Order is important here. We must always filter out unwanted items _before_ sorting and
         // then finally paging.
         List<BestallningListItem> filtered = bestallningListItems.stream()
-                .filter(bli -> buildVardgivareHsaIdPredicate(bli, requestFilter.getVardgivareHsaId()))
+                .filter(bli -> buildVardgivareHsaIdPredicate(bli.getVardgivareHsaId(), requestFilter.getVardgivareHsaId()))
                 .filter(bli -> buildStatusPredicate(bli, requestFilter.getStatus(), statusToFilterStatus))
                 .filter(bli -> buildToFromPredicateForBestallningar(bli, requestFilter.getFromDate(), requestFilter.getToDate()))
                 .filter(bli -> buildFreeTextPredicate(bli, requestFilter.getFreeText()))
@@ -166,15 +166,15 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
             return true;
         }
         switch (bli.getStatus().getUtredningFas()) {
-            case REDOVISA_TOLK:
-                return Strings.isNullOrEmpty(fromDate);
-            case UTREDNING:
-            case KOMPLETTERING:
-                return fromDate.compareTo(bli.getSlutdatumFas()) <= 0 && toDate.compareTo(bli.getSlutdatumFas()) >= 0;
-            case AVSLUTAD:
-                return true;
-            case FORFRAGAN:
-                return false;
+        case REDOVISA_TOLK:
+            return Strings.isNullOrEmpty(fromDate);
+        case UTREDNING:
+        case KOMPLETTERING:
+            return fromDate.compareTo(bli.getSlutdatumFas()) <= 0 && toDate.compareTo(bli.getSlutdatumFas()) >= 0;
+        case AVSLUTAD:
+            return true;
+        case FORFRAGAN:
+            return false;
         }
         return true;
     }

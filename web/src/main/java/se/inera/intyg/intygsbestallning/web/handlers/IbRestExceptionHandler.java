@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
+import se.inera.intyg.intygsbestallning.common.exception.IbJMSException;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 
@@ -73,11 +74,20 @@ public class IbRestExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
+    public IbRestExceptionResponse serviceExceptionHandler(HttpServletRequest request, IbJMSException re) {
+        LOG.error("Unhandled IbJMSException occured!", re);
+        IbRestExceptionResponse response = new IbRestExceptionResponse(
+                IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, re.getMessage());
+        return response;
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseBody
     public IbRestExceptionResponse serviceExceptionHandler(HttpServletRequest request, RuntimeException re) {
         LOG.error("Unhandled RuntimeException occured!", re);
         IbRestExceptionResponse response = new IbRestExceptionResponse(
                 IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Unhandled runtime exception");
         return response;
     }
-
 }

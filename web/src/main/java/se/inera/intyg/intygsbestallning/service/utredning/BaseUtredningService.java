@@ -29,7 +29,6 @@ import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganSta
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStateResolver;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FreeTextSearchable;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
@@ -88,11 +87,11 @@ public abstract class BaseUtredningService {
         }
     }
 
-    protected boolean buildVardgivareHsaIdPredicate(BestallningListItem bli, String vardgivareHsaId) {
-        if (Strings.isNullOrEmpty(vardgivareHsaId)) {
+    protected boolean buildVardgivareHsaIdPredicate(String thisVardgivareHsaId, String matchAgainstHsaId) {
+        if (Strings.isNullOrEmpty(matchAgainstHsaId)) {
             return true;
         }
-        return vardgivareHsaId.equalsIgnoreCase(bli.getVardgivareHsaId());
+        return matchAgainstHsaId.equalsIgnoreCase(thisVardgivareHsaId);
     }
 
     private ListFilterStatus resolveListFilterStatus(UtredningStatus us, Actor actor) {

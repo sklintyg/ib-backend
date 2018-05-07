@@ -19,6 +19,7 @@
 package se.inera.intyg.intygsbestallning.persistence.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import se.inera.intyg.intygsbestallning.persistence.model.RegistreradVardenhet;
 
@@ -29,4 +30,7 @@ import java.util.List;
  */
 public interface RegistreradVardenhetRepository extends JpaRepository<RegistreradVardenhet, Long> {
     List<RegistreradVardenhet> findByVardgivareHsaId(@Param("vardgivareHsaId") String vardgivareHsaId);
+
+    @Query("SELECT DISTINCT(rve.vardgivareHsaId) FROM RegistreradVardenhet rve WHERE rve.vardenhetHsaId = :vardenhetHsaId")
+    List<String> findVardgivareHsaIdRegisteredForVardenhet(@Param("vardenhetHsaId") String vardenhetHsaId);
 }

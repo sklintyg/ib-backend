@@ -31,6 +31,8 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.infra.logmessages.PdlLogMessage;
 import se.inera.intyg.infra.logmessages.ResourceType;
+import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
+import se.inera.intyg.intygsbestallning.common.exception.IbJMSException;
 import se.inera.intyg.intygsbestallning.common.integration.json.CustomObjectMapper;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
@@ -68,16 +70,15 @@ public class LogServiceImpl implements LogService {
         }
     }
 
-
     @Override
     public void logVisaBestallningarLista(List<? extends PDLLoggable> utredningListItems, ActivityType activityType,
-                                          ResourceType resourceType) {
+            ResourceType resourceType) {
         if (utredningListItems == null) {
             LOG.debug("No utredningar for PDL logging, not logging.");
             return;
         }
-        PdlLogMessage pdlLogMessage =
-            pdlLogMessageFactory.buildLogMessage(utredningListItems, activityType, resourceType, userService.getUser());
+        PdlLogMessage pdlLogMessage = pdlLogMessageFactory.buildLogMessage(utredningListItems, activityType, resourceType,
+                userService.getUser());
 
         send(pdlLogMessage);
     }
@@ -95,7 +96,8 @@ public class LogServiceImpl implements LogService {
             jmsTemplate.send(new MC(pdlLogMessage));
         } catch (JmsException e) {
             LOG.error("Could not log list of IntygsData", e);
-            throw e;
+            throw new IbJMSException(IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
+                    "Error connecting to JMS broker when performing PDL-logging. This is probably a configuration error.");
         }
 
     }

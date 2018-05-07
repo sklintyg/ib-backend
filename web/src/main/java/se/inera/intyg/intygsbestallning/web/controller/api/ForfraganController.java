@@ -24,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
@@ -39,6 +40,8 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganSvarRequ
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganSvarResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListForfraganRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListForfraganFilter;
 
 import java.util.List;
 
@@ -68,6 +71,34 @@ public class ForfraganController {
         // Utredningar där vårdenheten har en förfrågan.
         List<ForfraganListItem> forfragningar = utredningService.findForfragningarForVardenhetHsaId(user.getCurrentlyLoggedInAt().getId());
         return ResponseEntity.ok(new GetForfraganListResponse(forfragningar, forfragningar.size()));
+    }
+
+    @PrometheusTimeMethod(name = "list_all_forfragningar_duration_seconds", help = "Some helpful info here")
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GetForfraganListResponse> getFilteredForfragningarForUser(@RequestBody ListForfraganRequest request) {
+        IbUser user = userService.getUser();
+
+        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_FORFRAGNINGAR)
+                .orThrow(new IbAuthorizationException("User is not allowed to view the requested resource"));
+
+        // Utredningar där vårdenheten har en förfrågan.
+        GetForfraganListResponse response = utredningService
+                .findForfragningarForVardenhetHsaIdWithFilter(user.getCurrentlyLoggedInAt().getId(), request);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Returns an object containing all possible filter values for the getAllForfragningarForUser query.
+     */
+    @PrometheusTimeMethod(name = "get_forfragningar_list_filter_duration_seconds", help = "Some helpful info here")
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/list/filter")
+    public ResponseEntity<ListForfraganFilter> getListForfragningarFilter() {
+        IbUser user = userService.getUser();
+        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_FORFRAGNINGAR)
+                .orThrow(new IbAuthorizationException("User does not have required privilege LISTA_FORFRAGNINGAR"));
+
+        ListForfraganFilter listBestallningFilter = externForfraganService.buildListForfraganFilter(user.getCurrentlyLoggedInAt().getId());
+        return ResponseEntity.ok(listBestallningFilter);
     }
 
     @PrometheusTimeMethod(name = "get_forfragan_duration_seconds", help = "Some helpful info here")
