@@ -24,8 +24,8 @@ angular.module('ibApp')
 
             $scope.filter = ibUtredningFilterModel.build();
 
-            $scope.visaUtredning = function(){
-              $state.go('.visaUtredning');
+            $scope.visaUtredning = function(utredningsId){
+              $state.go('.visaUtredning', {utredningsId: utredningsId});
             };
 
             $scope.getUtredningarFiltered = function(appendResults) {

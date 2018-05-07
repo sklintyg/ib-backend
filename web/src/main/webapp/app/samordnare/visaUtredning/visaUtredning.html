@@ -1,8 +1,8 @@
 <div class="visaUtredning-page">
 
-  <ib-utredning-header utredning-view-state="utredningViewState"></ib-utredning-header>
+  <ib-utredning-header utredning="utredning" utredning-view-state="utredningViewState"></ib-utredning-header>
 
-  <div class="ib-workarea-hflex-container centered-constrained-content" id="edit-{{viewState.utredningId}}">
+  <div class="ib-workarea-hflex-container centered-constrained-content" id="edit-{{utredning.utredningsId}}">
 
     <div class="bottom-fadeout-gradient ib-color-27">
       <div></div>
@@ -14,10 +14,53 @@
           <div id="utredning" class="row utredning">
             <div class="col-md-12 utredning-body">
               <card>
-                <h2>title</h2>
+                <h3>Beställning</h3>
                 <card-body>
+                  <h4>Utredningstyp</h4>
                   <card-value>
-                    body
+                    {{utredning.utredningsTyp}}
+                  </card-value>
+                  <h4>Datum</h4>
+                  <card-table>
+                    {{utredning.utredningsTyp}}
+                  </card-table>
+                  <h4>Avslutsvillkor</h4>
+                  <card-table>
+                    {{utredning.utredningsTyp}}
+                  </card-table>
+                </card-body>
+              </card>
+              <card>
+                <h3>Invånare</h3>
+                <card-body>
+                  <h4>Personnummer/Samordningsnummer</h4>
+                  <card-value>
+                    {{utredning.utredningsTyp}}
+                  </card-value>
+                  <h4>Namn</h4>
+                  <card-value>
+                    {{utredning.utredningsTyp}}
+                  </card-value>
+                  <h4>Behov av tolk</h4>
+                  <card-value>
+                    {{utredning.utredningsTyp}}
+                  </card-value>
+                  <h4>Särskilda behov</h4>
+                  <card-value>
+                    {{utredning.utredningsTyp}}
+                  </card-value>
+                </card-body>
+              </card>
+              <card>
+                <h3>Meddelande</h3>
+                <card-body>
+                  <h4>Meddelande från handläggare</h4>
+                  <card-table>
+                    {{utredning.utredningsTyp}}
+                  </card-table>
+                  <h4>Kontaktuppgifter</h4>
+                  <card-value>
+                    {{utredning.utredningsTyp}}
                   </card-value>
                 </card-body>
               </card>

@@ -19,7 +19,7 @@
 
 angular.module('ibApp')
     .controller('VisaUtredningCtrl',
-        function($scope) {
+        function($log, $scope, $stateParams, UtredningarProxy) {
             'use strict';
 
             var config = {
@@ -49,5 +49,51 @@ angular.module('ibApp')
             });
 
             $scope.config = config;
+
+            /*
+behovTolk
+:
+false
+besvarasSenastDatum
+:
+"2018-04-25"
+handlaggareEpost
+:
+"epost@inera.se"
+handlaggareNamn
+:
+"Hanna Handläggarsson"
+handlaggareTelefonnummer
+:
+"031-9999999"
+inkomDatum
+:
+"2018-04-11"
+invanarePersonId
+:
+null
+status
+:
+"TODO"
+tolkSprak
+:
+null
+utredningsId
+:
+"utredning-bootstrap-1"
+utredningsTyp
+:
+"AFU"
+vardgivareHsaId
+:
+"IFV1239877878-1041"
+
+             */
+
+            UtredningarProxy.getUtredning($stateParams.utredningsId).then(function(utredning) {
+                $scope.utredning = utredning;
+            }, function(error) {
+                $log.error(error);
+            });
         }
     );

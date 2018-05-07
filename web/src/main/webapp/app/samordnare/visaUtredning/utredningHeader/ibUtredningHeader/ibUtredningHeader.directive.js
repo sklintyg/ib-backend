@@ -16,37 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-angular.module('ibApp').directive('ibUtredningHeader', function($window, $state, UtredningHeaderViewState) {
+angular.module('ibApp').directive('ibUtredningHeader', function($window, $state) {
     'use strict';
 
     return {
         restrict: 'E',
         scope: {
+            utredning: '=',
             intygViewState: '='
         },
         templateUrl: '/app/samordnare/visaUtredning/utredningHeader/ibUtredningHeader/ibUtredningHeader.directive.html',
         link: function($scope) {
-            //$scope.certificateName = moduleService.getModuleName(UtredningHeaderViewState.intygType);
-            $scope.backState = $state.$current.parent.data.backState; // backstate is defined in webcert.intyg state data in router.js
-            $scope.utredningHeaderViewState = UtredningHeaderViewState;
-
             $scope.back = function(){
-                $state.go($scope.backState);
+                $state.go('^');
             };
-            /*
-
-                        function updatePersonId() {
-                            if ($scope.intygViewState.intygModel.grundData) {
-                                $scope.personId = $scope.intygViewState.intygModel.grundData.patient.personId;
-                                if (UserModel.getIntegrationParam('alternateSsn')) {
-                                    $scope.oldPersonId = $scope.personId;
-                                    $scope.personId = UserModel.getIntegrationParam('alternateSsn');
-                                }
-                            }
-                        }
-
-                        updatePersonId();
-                        $scope.$on('intyg.loaded', updatePersonId);*/
         }
     };
 });

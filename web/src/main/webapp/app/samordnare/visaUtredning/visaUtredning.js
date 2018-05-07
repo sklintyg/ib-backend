@@ -20,7 +20,7 @@
 angular.module('ibApp').config(function($stateProvider) {
     'use strict';
     $stateProvider.state('app.samordnare.listaUtredningar.visaUtredning', {
-        url: '/visaUtredning',
+        url: '/visaUtredning/:utredningsId',
         views: {
             'navbar@': {
                 template: '<ib-main-menu/>'

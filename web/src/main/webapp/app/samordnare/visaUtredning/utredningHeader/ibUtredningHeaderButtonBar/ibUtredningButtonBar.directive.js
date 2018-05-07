@@ -23,6 +23,7 @@ angular.module('ibApp').directive('ibUtredningButtonBar',
     return {
         restrict: 'E',
         scope: {
+            utredning: '=',
             viewState: '='
         },
         templateUrl: '/app/samordnare/visaUtredning/utredningHeader/ibUtredningHeaderButtonBar/ibUtredningButtonBar.directive.html',

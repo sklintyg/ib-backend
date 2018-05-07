@@ -116,8 +116,9 @@ var ibMessages = {
         'server.error.getvardenhetpreference.title': 'Kunde inte hämta vårdenhetens uppgifter',
         'server.error.getvardenhetpreference.text': 'Försök igen eller kontakta support',
         'server.error.setvardenhetpreference.title': 'Kunde inte spara vårdenhetens uppgifter',
-        'server.error.setvardenhetpreference.text': 'Försök igen eller kontakta support'
-
+        'server.error.setvardenhetpreference.text': 'Försök igen eller kontakta support',
+        'server.error.getutredning.title': 'Kunde inte hämta utredning',
+        'server.error.getutredning.text': 'Försök igen eller kontakta support'
     },
     'en': {
         'common.ok': 'OK',

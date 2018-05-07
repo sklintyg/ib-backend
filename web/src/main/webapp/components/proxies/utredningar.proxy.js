@@ -22,6 +22,37 @@ angular.module('ibApp').factory('UtredningarProxy',
         networkConfig) {
         'use strict';
 
+        function _getUtredning(utredningsId) {
+            var promise = $q.defer();
+
+            var restPath = '/api/utredningar/' + utredningsId;
+
+            var config =  {
+                errorMessageConfig: {
+                    errorTitleKey: 'server.error.getutredning.title',
+                    errorTextKey: 'server.error.getutredning.text'
+                },
+                timeout: networkConfig.defaultTimeout
+            };
+
+            $http.get(restPath, config).then(function(response) {
+                $log.debug(restPath + ' - success');
+
+                if (typeof response !== 'undefined') {
+                    promise.resolve(response.data);
+                } else {
+                    $log.debug('JSON response syntax error. Rejected.');
+                    promise.reject(null);
+                }
+            }, function(response) {
+                $log.error('error ' + response.status);
+                // Let calling code handle the error of no data response
+                promise.reject(response.data);
+            });
+
+            return promise.promise;
+        }
+
         function _getUtredningar() {
             var promise = $q.defer();
 
@@ -78,6 +109,7 @@ angular.module('ibApp').factory('UtredningarProxy',
 
         // Return public API for the service
         return {
+            getUtredning: _getUtredning,
             getUtredningar: _getUtredningar,
             getUtredningarWithFilter: _getUtredningarWithFilter
         };
