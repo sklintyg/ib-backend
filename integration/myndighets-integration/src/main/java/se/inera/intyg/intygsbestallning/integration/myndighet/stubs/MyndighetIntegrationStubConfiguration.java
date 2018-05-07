@@ -26,6 +26,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import se.riv.intygsbestallning.certificate.order.respondtoorder.v1.rivtabp21.RespondToOrderResponderInterface;
 
 @Configuration
 @ComponentScan("se.inera.intyg.intygsbestallning.integration.myndighet.stubs")
@@ -39,8 +40,8 @@ public class MyndighetIntegrationStubConfiguration {
     private Bus bus;
 
     @Bean
-    public RespondToPerformerRequestStub respondToPerformerRequestStub() {
-        return new RespondToPerformerRequestStub();
+    public RespondToPerformerInteractionStub respondToPerformerInteractionStub() {
+        return new RespondToPerformerInteractionStub();
     }
 
     @Bean
@@ -58,32 +59,44 @@ public class MyndighetIntegrationStubConfiguration {
         return new ReportDeviationInteractionStub();
     }
 
+    @Bean
+    public RespondToOrderResponderInterface respondToOrderInteractionStub() {
+        return new RespondToOrderInteractionStub();
+    }
+
 
     @Bean
-    public EndpointImpl respondToPerformerRequest() {
-        EndpointImpl endpoint = new EndpointImpl(bus, respondToPerformerRequestStub());
-        endpoint.publish("/respond-to-performer-request");
+    public EndpointImpl respondToPerformerInteractionStubEndpoint() {
+        EndpointImpl endpoint = new EndpointImpl(bus, respondToPerformerInteractionStub());
+        endpoint.publish("/respond-to-performer-interaction-stub");
         return endpoint;
     }
 
     @Bean
-    public EndpointImpl updateAssessment() {
+    public EndpointImpl updateAssessmentInteractionStubEndpoint() {
         EndpointImpl endpoint = new EndpointImpl(bus, updateAssessmentStub());
-        endpoint.publish("/update-assessment");
+        endpoint.publish("/update-assessment-interaction-stub");
         return endpoint;
     }
 
     @Bean
-    public EndpointImpl reportCareContactInteraction() {
+    public EndpointImpl reportCareContactInteractionStubEndpoint() {
         EndpointImpl endpoint = new EndpointImpl(bus, reportCareContactInteractionStub());
         endpoint.publish("/report-care-contact-interaction-stub");
         return endpoint;
     }
 
     @Bean
-    public EndpointImpl reportDeviationInteraction() {
+    public EndpointImpl reportDeviationInteractionStubEndpoint() {
         EndpointImpl endpoint = new EndpointImpl(bus, reportDeviationInteractionStub());
         endpoint.publish("/report-deviation-interaction-stub");
+        return endpoint;
+    }
+
+    @Bean
+    public EndpointImpl respondToOrderInteractionStubEndpoint() {
+        EndpointImpl endpoint = new EndpointImpl(bus, respondToOrderInteractionStub());
+        endpoint.publish("/respond-to-order-interaction-stub");
         return endpoint;
     }
 }

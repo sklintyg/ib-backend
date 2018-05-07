@@ -26,9 +26,9 @@ import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.r
 import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
 import se.riv.intygsbestallning.certificate.order.v1.ResultType;
 
-public class RespondToPerformerRequestStub implements RespondToPerformerRequestResponderInterface {
+public class RespondToPerformerInteractionStub implements RespondToPerformerRequestResponderInterface {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RespondToPerformerRequestStub.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RespondToPerformerInteractionStub.class);
 
     @Override
     public RespondToPerformerRequestResponseType respondToPerformerRequest(String logicalAddress, RespondToPerformerRequestType request) {
