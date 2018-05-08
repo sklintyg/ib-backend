@@ -20,16 +20,16 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
 import static java.util.Objects.isNull;
 
-import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
+import se.inera.intyg.intygsbestallning.service.patient.Gender;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
+import se.inera.intyg.schemas.contract.Personnummer;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
-import java.util.Optional;
 
 public class GetUtredningResponse {
     private static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
@@ -68,7 +68,7 @@ public class GetUtredningResponse {
 
     private String meddelandeFromHandlaggare;
 
-    public static GetUtredningResponse from(Utredning utredning, UtredningStatus utredningStatus, Optional<PersonSvar> personSvar) {
+    public static GetUtredningResponse from(Utredning utredning, UtredningStatus utredningStatus) {
 
 
         return GetUtredningResponseBuilder.aGetUtredningResponse()
@@ -81,7 +81,7 @@ public class GetUtredningResponse {
                 .withBesvarasSenastDatum(!isNull(utredning.getExternForfragan())
                         ? utredning.getExternForfragan().getBesvarasSenastDatum().format(formatter) : null)
                 .withInvanare(!isNull(utredning.getInvanare())
-                        ? new InvanareResponse(utredning.getInvanare(), personSvar) : null)
+                        ? new InvanareResponse(utredning.getInvanare()) : null)
                 .withHandlaggareNamn(utredning.getHandlaggare().getFullstandigtNamn())
                 .withHandlaggareTelefonnummer(utredning.getHandlaggare().getTelefonnummer())
                 .withHandlaggareEpost(utredning.getHandlaggare().getEmail())
@@ -383,11 +383,18 @@ public class GetUtredningResponse {
 
         private String personId;
         private String name;
-        private String gender;
+        private Gender gender;
         private String sarskildaBehov;
 
-        public InvanareResponse(Invanare invanare, Optional<PersonSvar> personSvar) {
+        public InvanareResponse(Invanare invanare) {
             personId = invanare.getPersonId();
+            if (isNull(invanare.getPersonId())) {
+                gender = Gender.UNKNOWN;
+            } else {
+                gender = Personnummer.createPersonnummer(invanare.getPersonId())
+                        .map(pnr -> Gender.getGenderFromPersonnummer(pnr))
+                        .orElse(Gender.UNKNOWN);
+            }
             sarskildaBehov = invanare.getSarskildaBehov();
         }
 
@@ -407,11 +414,11 @@ public class GetUtredningResponse {
             this.name = name;
         }
 
-        public String getGender() {
+        public Gender getGender() {
             return gender;
         }
 
-        public void setGender(String gender) {
+        public void setGender(Gender gender) {
             this.gender = gender;
         }
 

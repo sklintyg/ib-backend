@@ -41,7 +41,6 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
-import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
@@ -73,7 +72,6 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningRespo
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
-import se.inera.intyg.schemas.contract.Personnummer;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
@@ -162,7 +160,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                             + landstingHsaId + "'");
         }
 
-        return GetUtredningResponse.from(utredning, utredningStateResolver.resolveStatus(utredning), null);
+        return GetUtredningResponse.from(utredning, utredningStateResolver.resolveStatus(utredning));
     }
 
     @Override
@@ -176,10 +174,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                             + landstingHsaId + "'");
         }
 
-        Optional<PersonSvar> personSvar = Personnummer.createPersonnummer(utredning.getInvanare().getPersonId())
-                .map(pnr -> puService.getPerson(pnr));
-
-        return GetUtredningResponse.from(utredning, utredningStateResolver.resolveStatus(utredning), personSvar);
+        return GetUtredningResponse.from(utredning, utredningStateResolver.resolveStatus(utredning));
     }
 
     @Override
