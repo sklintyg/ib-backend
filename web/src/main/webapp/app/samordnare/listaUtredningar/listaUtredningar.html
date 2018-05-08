@@ -1,4 +1,4 @@
-<div class="listaUtredningar-page">
+<div class="listaUtredningar-page ib-workarea">
 
   <utredning-filter filter="filter" filter-changed="getUtredningarFiltered()"></utredning-filter>
 
@@ -29,11 +29,13 @@
     </tbody>
   </table>
 
-  <button class="btn btn-primary"
-          ng-click="getMore()"
-          ng-if="utredningarTotal > utredningar.length">
-    <message key="common.more.results"></message>
-  </button>
+  <div>
+    <button class="btn btn-primary"
+            ng-click="getMore()"
+            ng-if="utredningarTotal > utredningar.length">
+      <message key="common.more.results"></message>
+    </button>
+  </div>
 
   <div id="samordnare-lista-utredningar-no-results" ng-if="!utredningar.length">
     <span message key="common.no.results"></span>
