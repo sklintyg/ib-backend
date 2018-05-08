@@ -50,9 +50,13 @@ public final class Besok {
     @Column(name = "ID", nullable = false)
     private long id;
 
-    @Column(name = "BESOK_TID")
+    @Column(name = "BESOK_START_TID")
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
-    private LocalDateTime besokTid;
+    private LocalDateTime besokStartTid;
+
+    @Column(name = "BESOK_SLUT_TID")
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
+    private LocalDateTime besokSlutTid;
 
     @Column(name = "KALLELSE_DATUM")
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
@@ -92,12 +96,20 @@ public final class Besok {
         this.id = id;
     }
 
-    public LocalDateTime getBesokTid() {
-        return besokTid;
+    public LocalDateTime getBesokStartTid() {
+        return besokStartTid;
     }
 
-    public void setBesokTid(LocalDateTime besokTid) {
-        this.besokTid = besokTid;
+    public void setBesokStartTid(LocalDateTime besokStartTid) {
+        this.besokStartTid = besokStartTid;
+    }
+
+    public LocalDateTime getBesokSlutTid() {
+        return besokSlutTid;
+    }
+
+    public void setBesokSlutTid(final LocalDateTime besokSlutTid) {
+        this.besokSlutTid = besokSlutTid;
     }
 
     public LocalDateTime getKallelseDatum() {
@@ -172,7 +184,8 @@ public final class Besok {
 
         return aBesok()
                 .withId(besok.getId())
-                .withBesokTid(besok.getBesokTid())
+                .withBesokStartTid(besok.getBesokStartTid())
+                .withBesokSlutTid(besok.getBesokSlutTid())
                 .withKallelseDatum(besok.getKallelseDatum())
                 .withBesokStatus(besok.getBesokStatus())
                 .withTolkStatus(besok.getTolkStatus())
@@ -184,9 +197,11 @@ public final class Besok {
                 .build();
     }
 
+
     public static final class BesokBuilder {
         private long id;
-        private LocalDateTime besokTid;
+        private LocalDateTime besokStartTid;
+        private LocalDateTime besokSlutTid;
         private LocalDateTime kallelseDatum;
         private BesokStatusTyp besokStatus;
         private TolkStatusTyp tolkStatus;
@@ -208,8 +223,13 @@ public final class Besok {
             return this;
         }
 
-        public BesokBuilder withBesokTid(LocalDateTime besokTid) {
-            this.besokTid = besokTid;
+        public BesokBuilder withBesokStartTid(LocalDateTime besokStartTid) {
+            this.besokStartTid = besokStartTid;
+            return this;
+        }
+
+        public BesokBuilder withBesokSlutTid(LocalDateTime besokSlutTid) {
+            this.besokSlutTid = besokSlutTid;
             return this;
         }
 
@@ -256,7 +276,8 @@ public final class Besok {
         public Besok build() {
             Besok besok = new Besok();
             besok.setId(id);
-            besok.setBesokTid(besokTid);
+            besok.setBesokStartTid(besokStartTid);
+            besok.setBesokSlutTid(besokSlutTid);
             besok.setKallelseDatum(kallelseDatum);
             besok.setBesokStatus(besokStatus);
             besok.setTolkStatus(tolkStatus);
@@ -279,7 +300,8 @@ public final class Besok {
         }
         final Besok besok = (Besok) o;
         return id == besok.id
-                && Objects.equals(besokTid, besok.besokTid)
+                && Objects.equals(besokStartTid, besok.besokStartTid)
+                && Objects.equals(besokSlutTid, besok.besokSlutTid)
                 && Objects.equals(kallelseDatum, besok.kallelseDatum)
                 && besokStatus == besok.besokStatus
                 && tolkStatus == besok.tolkStatus
@@ -294,7 +316,8 @@ public final class Besok {
     public int hashCode() {
 
         return Objects.hash(id,
-                besokTid,
+                besokStartTid,
+                besokSlutTid,
                 kallelseDatum,
                 besokStatus,
                 tolkStatus,
@@ -309,7 +332,8 @@ public final class Besok {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("id", id)
-                .add("besokTid", besokTid)
+                .add("besokStartTid", besokStartTid)
+                .add("besokSlutTid", besokSlutTid)
                 .add("kallelseDatum", kallelseDatum)
                 .add("besokStatus", besokStatus)
                 .add("tolkStatus", tolkStatus)

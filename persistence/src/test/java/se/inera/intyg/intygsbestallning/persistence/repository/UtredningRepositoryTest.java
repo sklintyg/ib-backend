@@ -209,7 +209,7 @@ public class UtredningRepositoryTest {
         assertEquals(BesokStatusTyp.TIDBOKAD_VARDKONTAKT, besok.getBesokStatus());
         assertEquals(DeltagarProfessionTyp.FT, besok.getDeltagareProfession());
         assertEquals(KallelseFormTyp.TELEFONKONTAKT, besok.getKallelseForm());
-        assertNotNull(besok.getBesokTid());
+        assertNotNull(besok.getBesokStartTid());
         assertNull(besok.getTolkStatus());
         assertNull(besok.getErsatts());
 
@@ -420,7 +420,8 @@ public class UtredningRepositoryTest {
     private Besok buildBesok() {
         return Besok.BesokBuilder.aBesok()
                 .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
-                .withBesokTid(LocalDateTime.now().plusDays(5))
+                .withBesokStartTid(LocalDateTime.now().plusDays(5))
+                .withBesokSlutTid(LocalDateTime.now().plusDays(5).plusHours(2))
                 .withKallelseForm(KallelseFormTyp.TELEFONKONTAKT)
                 .withKallelseDatum(LocalDateTime.now())
                 .withDeltagareProfession(DeltagarProfessionTyp.FT)

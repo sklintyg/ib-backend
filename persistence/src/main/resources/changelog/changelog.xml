@@ -572,8 +572,12 @@
                 <constraints nullable="true"/>
             </column>
 
-            <column name="BESOK_TID" type="datetime">
+            <column name="BESOK_START_TID" type="datetime">
                 <constraints nullable="false"/>
+            </column>
+
+            <column name="BESOK_SLUT_TID" type="datetime">
+                <constraints nullable="true"/>
             </column>
 
             <column name="KALLELSE_DATUM" type="datetime">
