@@ -28,7 +28,7 @@
         <!-- initial creation of tables -->
 
         <createTable tableName="ANVANDARE_PREFERENCE">
-            <column name="INTERNREFERENS" type="bigint" defaultValue="0">
+            <column name="ID" type="bigint" defaultValue="0">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="HSA_ID" type="varchar(255)">
@@ -44,7 +44,7 @@
 
         <!-- Add auto incremented id column to table -->
         <addAutoIncrement columnDataType="bigint"
-                          columnName="INTERNREFERENS"
+                          columnName="ID"
                           incrementBy="1"
                           startWith="1"
                           tableName="ANVANDARE_PREFERENCE"/>
@@ -143,7 +143,11 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
 
-            <column name="PERSON_ID" type="varchar(255)">
+            <column name="PERSON_ID" type="varchar(64)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="FULLSTANDIGT_NAMN" type="varchar(64)">
                 <constraints nullable="true"/>
             </column>
 

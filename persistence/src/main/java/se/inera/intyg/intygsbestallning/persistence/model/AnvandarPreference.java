@@ -35,11 +35,10 @@ import java.util.Objects;
 @Table(name = "ANVANDARE_PREFERENCE")
 public final class AnvandarPreference {
 
-    private static final int INT = 31;
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long internReferens;
+    @Column(name = "ID", nullable = false)
+    private long id;
 
     @Column(name = "HSA_ID", nullable = false)
     private String hsaId;
@@ -47,7 +46,7 @@ public final class AnvandarPreference {
     @Column(name = "PREF_KEY", nullable = false)
     private String key;
 
-    @Column(name = "PREF_VALUE", nullable = true)
+    @Column(name = "PREF_VALUE")
     private String value;
 
     public AnvandarPreference() {
@@ -60,12 +59,12 @@ public final class AnvandarPreference {
         this.value = value;
     }
 
-    public long getInternReferens() {
-        return internReferens;
+    public long getId() {
+        return id;
     }
 
-    public void setInternReferens(final long internReferens) {
-        this.internReferens = internReferens;
+    public void setId(final long id) {
+        this.id = id;
     }
 
     public String getHsaId() {
@@ -101,7 +100,7 @@ public final class AnvandarPreference {
             return false;
         }
         final AnvandarPreference that = (AnvandarPreference) o;
-        return internReferens == that.internReferens
+        return id == that.id
                 && Objects.equals(hsaId, that.hsaId)
                 && Objects.equals(key, that.key)
                 && Objects.equals(value, that.value);
@@ -110,6 +109,6 @@ public final class AnvandarPreference {
     @Override
     public int hashCode() {
 
-        return Objects.hash(internReferens, hsaId, key, value);
+        return Objects.hash(id, hsaId, key, value);
     }
 }

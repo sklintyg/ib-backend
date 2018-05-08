@@ -42,7 +42,7 @@ public final class Handling {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "ID")
+    @Column(name = "ID", nullable = false)
     private long id;
 
     @Column(name = "SKICKAT_DATUM", nullable = false)

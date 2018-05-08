@@ -18,19 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toList;
-import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
-import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
-import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
-import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
-import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
-import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
-
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.commons.lang3.BooleanUtils;
@@ -83,6 +70,19 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toList;
+import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
+import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
+import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
+import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
+import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 
 @Service
 @Transactional
@@ -265,47 +265,6 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         return utredningRepository.save(updatedUtredning);
     }
 
-    private Utredning qualifyForUpdatering(final UpdateOrderRequest update, final Utredning original) {
-
-        Preconditions.checkArgument(nonNull(update));
-        Preconditions.checkArgument(nonNull(original));
-        Preconditions.checkArgument(original.getBestallning().isPresent());
-
-        Utredning toUpdate = Utredning.copyFrom(original);
-
-        update.getLastDateIntyg().ifPresent(date -> toUpdate.getIntygList().stream()
-                .filter(i -> isNull(i.getKompletteringsId()))
-                .findFirst()
-                .ifPresent(i -> i.setSistaDatum(date)));
-        update.getTolkBehov().ifPresent(toUpdate::setTolkBehov);
-        update.getTolkSprak().ifPresent(toUpdate::setTolkSprak);
-        update.getBestallare().ifPresent(bestallare -> toUpdate.setHandlaggare(aHandlaggare()
-                .withEmail(bestallare.getEmail())
-                .withFullstandigtNamn(bestallare.getFullstandigtNamn())
-                .withKontor(bestallare.getKontor())
-                .withKostnadsstalle(bestallare.getKostnadsstalle())
-                .withMyndighet(bestallare.getMyndighet())
-                .withPostkod(bestallare.getPostkod())
-                .withStad(bestallare.getStad())
-                .withTelefonnummer(bestallare.getTelefonnummer())
-                .build()));
-
-        if (Objects.equals(original, toUpdate)) {
-            throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, "No info to update");
-        }
-
-        update.getKommentar().ifPresent(kommentar -> toUpdate.getBestallning().get().setKommentar(kommentar));
-
-        if (!BooleanUtils.toBoolean(toUpdate.getTolkBehov()) && !isNullOrEmpty(toUpdate.getTolkSprak())) {
-            throw new IbServiceException(
-                    IbErrorCodeEnum.BAD_REQUEST, INTERPRETER_ERROR_TEXT);
-        } else if (nonNull(toUpdate.getTolkSprak()) && !toUpdate.getTolkBehov() && !update.getTolkSprak().isPresent()) {
-            toUpdate.setTolkSprak(null);
-        }
-
-        return toUpdate;
-    }
-
     @Override
     public Utredning registerNewUtredning(OrderRequest order) {
         Utredning utredning = anUtredning()
@@ -367,19 +326,6 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .build());
     }
 
-    private void enrichWithVardenhetNames(List<UtredningListItem> items) {
-        items.stream().forEach(uli -> {
-            if (!Strings.isNullOrEmpty(uli.getVardenhetHsaId())) {
-                Vardenhet vardenhet = organizationUnitService.getVardenhet(uli.getVardenhetHsaId());
-                if (vardenhet != null) {
-                    uli.setVardenhetNamn(vardenhet.getNamn());
-                } else {
-                    LOG.warn("Could not fetch name for Vardenhet '{}' from HSA", uli.getVardenhetHsaId());
-                }
-            }
-        });
-    }
-
     @Override
     public void endUtredning(EndUtredningRequest endUtredningRequest) {
         Utredning utredning = utredningRepository.findById(endUtredningRequest.getUtredningId()).orElseThrow(
@@ -394,8 +340,63 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         utredningRepository.save(utredning);
     }
 
+    private Utredning qualifyForUpdatering(final UpdateOrderRequest update, final Utredning original) {
+
+        Preconditions.checkArgument(nonNull(update));
+        Preconditions.checkArgument(nonNull(original));
+        Preconditions.checkArgument(original.getBestallning().isPresent());
+
+        Utredning toUpdate = Utredning.copyFrom(original);
+
+        update.getLastDateIntyg().ifPresent(date -> toUpdate.getIntygList().stream()
+                .filter(i -> isNull(i.getKompletteringsId()))
+                .findFirst()
+                .ifPresent(i -> i.setSistaDatum(date)));
+        update.getTolkBehov().ifPresent(toUpdate::setTolkBehov);
+        update.getTolkSprak().ifPresent(toUpdate::setTolkSprak);
+        update.getBestallare().ifPresent(bestallare -> toUpdate.setHandlaggare(aHandlaggare()
+                .withEmail(bestallare.getEmail())
+                .withFullstandigtNamn(bestallare.getFullstandigtNamn())
+                .withKontor(bestallare.getKontor())
+                .withKostnadsstalle(bestallare.getKostnadsstalle())
+                .withMyndighet(bestallare.getMyndighet())
+                .withPostkod(bestallare.getPostkod())
+                .withStad(bestallare.getStad())
+                .withTelefonnummer(bestallare.getTelefonnummer())
+                .build()));
+
+        if (Objects.equals(original, toUpdate)) {
+            throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, "No info to update");
+        }
+
+        update.getKommentar().ifPresent(kommentar -> toUpdate.getBestallning().get().setKommentar(kommentar));
+
+        if (!BooleanUtils.toBoolean(toUpdate.getTolkBehov()) && !isNullOrEmpty(toUpdate.getTolkSprak())) {
+            throw new IbServiceException(
+                    IbErrorCodeEnum.BAD_REQUEST, INTERPRETER_ERROR_TEXT);
+        } else if (nonNull(toUpdate.getTolkSprak()) && !toUpdate.getTolkBehov() && !update.getTolkSprak().isPresent()) {
+            toUpdate.setTolkSprak(null);
+        }
+
+        return toUpdate;
+    }
+
+    private void enrichWithVardenhetNames(List<UtredningListItem> items) {
+        items.stream().forEach(uli -> {
+            if (!Strings.isNullOrEmpty(uli.getVardenhetHsaId())) {
+                Vardenhet vardenhet = organizationUnitService.getVardenhet(uli.getVardenhetHsaId());
+                if (vardenhet != null) {
+                    uli.setVardenhetNamn(vardenhet.getNamn());
+                } else {
+                    LOG.warn("Could not fetch name for Vardenhet '{}' from HSA", uli.getVardenhetHsaId());
+                }
+            }
+        });
+    }
+
     private Invanare updateInvanareFromOrder(Invanare invanare, OrderRequest order) {
         invanare.setPersonId(order.getInvanarePersonnummer());
+        invanare.setFullstandigtNamn(order.getInvanareFullstandigtNamn());
         invanare.setSarskildaBehov(order.getInvanareBehov());
         invanare.setBakgrundNulage(order.getInvanareBakgrund());
         return invanare;

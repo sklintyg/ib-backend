@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
 public final class Utredning {
 
     @Id
-    @Column(name = "UTREDNING_ID")
+    @Column(name = "UTREDNING_ID", nullable = false)
     private String utredningId;
 
     @Column(name = "UTREDNINGS_TYP", nullable = false)

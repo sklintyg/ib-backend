@@ -39,7 +39,7 @@ import java.util.Objects;
 public final class Avvikelse {
 
     @Id
-    @Column(name = "AVVIKELSE_ID")
+    @Column(name = "AVVIKELSE_ID", nullable = false)
     private String avvikelseId;
 
     @Column(name = "ORSAKAT_AV")

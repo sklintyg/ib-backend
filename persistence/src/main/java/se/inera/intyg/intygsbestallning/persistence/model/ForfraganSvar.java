@@ -42,7 +42,7 @@ public final class ForfraganSvar {
 
     @Id
     @GeneratedValue
-    @Column(name = "ID")
+    @Column(name = "ID", nullable = false)
     private long id;
 
     @Column(name = "SVAR_TYP", nullable = false)

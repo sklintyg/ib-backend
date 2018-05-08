@@ -36,7 +36,7 @@ public final class TidigareUtforare {
 
     @Id
     @GeneratedValue
-    @Column(name = "ID")
+    @Column(name = "ID", nullable = false)
     private long id;
 
     @Column(name = "TIDIGARE_ENHET_ID")

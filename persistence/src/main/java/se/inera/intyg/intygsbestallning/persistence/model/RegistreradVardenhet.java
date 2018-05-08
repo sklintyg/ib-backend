@@ -36,7 +36,7 @@ public final class RegistreradVardenhet {
 
     @Id
     @GeneratedValue
-    @Column(name = "ID")
+    @Column(name = "ID", nullable = false)
     private long id;
 
     @Column(name = "VARDGIVARE_HSA_ID", nullable = false)

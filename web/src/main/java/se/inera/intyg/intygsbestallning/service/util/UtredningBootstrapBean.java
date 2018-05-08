@@ -27,9 +27,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.intygsbestallning.common.integration.json.CustomObjectMapper;
-import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
-import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
@@ -40,9 +38,12 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
+import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
+
 @Service
 @DependsOn("dbUpdate")
-@Profile({"dev", "ib-init-data"})
+@Profile({ "dev", "ib-init-data" })
 public class UtredningBootstrapBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(UtredningBootstrapBean.class);
@@ -83,11 +84,14 @@ public class UtredningBootstrapBean {
             Utredning utredning = new Utredning();
             utredning.setUtredningId("utredning-test-" + i);
             utredning.setUtredningsTyp(UtredningsTyp.AFU);
-            utredning.setExternForfragan(new ExternForfragan());
-            utredning.getExternForfragan().setBesvarasSenastDatum(date);
-            utredning.getExternForfragan().setInkomDatum(startDate);
-            utredning.getExternForfragan().setLandstingHsaId("IFV1239877878-1041");
-            utredning.setInvanare(new Invanare());
+            utredning.setExternForfragan(anExternForfragan()
+                    .withLandstingHsaId("IFV1239877878-1041")
+                    .withBesvarasSenastDatum(date)
+                    .withInkomDatum(startDate)
+                    .build());
+            utredning.setInvanare(anInvanare()
+                    .withPostkod("11221")
+                    .build());
             utredning.setHandlaggare(new Handlaggare());
             utredningRepository.save(utredning);
             date = date.plusDays(1);

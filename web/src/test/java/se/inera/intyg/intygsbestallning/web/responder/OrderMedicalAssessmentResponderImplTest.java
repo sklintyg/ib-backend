@@ -70,6 +70,9 @@ public class OrderMedicalAssessmentResponderImplTest {
         request.setCareUnitId(anII(null, "enhet"));
         CitizenType citizen = new CitizenType();
         citizen.setPersonalIdentity(anII(null, "personnummer"));
+        citizen.setFirstName("firstname");
+        citizen.setMiddleName("middlename");
+        citizen.setLastName("lastname");
         request.setCitizen(citizen);
         request.setLastDateForCertificateReceival("2018-01-01");
         request.setOrderDate("2018-01-01");

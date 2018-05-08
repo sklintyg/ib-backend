@@ -18,8 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning.dto;
 
-import static java.util.Objects.isNull;
-
 import com.google.common.base.Joiner;
 import org.apache.commons.lang3.BooleanUtils;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
@@ -33,6 +31,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Objects.isNull;
+
 public final class OrderRequest {
     private String utredningId;
     private String enhetId;
@@ -41,6 +41,7 @@ public final class OrderRequest {
     private String invanarePersonnummer;
     private String invanareBakgrund;
     private String invanareBehov;
+    private String invanareFullstandigtNamn;
     private String syfte;
     private boolean tolkBehov;
     private String tolkSprak;
@@ -51,6 +52,78 @@ public final class OrderRequest {
     private String atgarder;
 
     private OrderRequest() {
+    }
+
+    public static OrderRequest from(OrderMedicalAssessmentType source) {
+        validate(source);
+
+        AuthorityAdministrativeOfficialType bestallareSource = source.getAuthorityAdministrativeOfficial();
+        CitizenType invanareSource = source.getCitizen();
+
+        return OrderRequestBuilder.anOrderRequest()
+                .withAtgarder(source.getPlannedActions())
+                .withBestallare(Bestallare.BestallareBuilder.aBestallare()
+                        .withMyndighet(!isNull(bestallareSource.getAuthority()) ? bestallareSource.getAuthority().getCode() : null)
+                        .withEmail(bestallareSource.getEmail())
+                        .withFullstandigtNamn(bestallareSource.getFullName())
+                        .withAdress(!isNull(bestallareSource.getOfficeAddress())
+                                ? bestallareSource.getOfficeAddress().getPostalAddress() : null)
+                        .withStad(!isNull(bestallareSource.getOfficeAddress())
+                                ? bestallareSource.getOfficeAddress().getPostalCity() : null)
+                        .withPostkod(!isNull(bestallareSource.getOfficeAddress())
+                                ? bestallareSource.getOfficeAddress().getPostalCode() : null)
+                        .withKostnadsstalle(bestallareSource.getOfficeCostCenter())
+                        .withKontor(bestallareSource.getOfficeName())
+                        .withTelefonnummer(bestallareSource.getPhoneNumber())
+                        .build())
+                .withEnhetId(source.getCareUnitId().getExtension())
+                .withHandling(!isNull(source.isDocumentsByPost()) && source.isDocumentsByPost())
+                .withInvanareBakgrund(invanareSource.getSituationBackground())
+                .withInvanareBehov(invanareSource.getSpecialNeeds())
+                .withInvanarePersonnummer(invanareSource.getPersonalIdentity().getExtension())
+                .withInvanareFullstandigtNamn(Joiner.on(' ').skipNulls()
+                        .join(invanareSource.getFirstName(), invanareSource.getMiddleName(), invanareSource.getLastName()))
+                .withKommentar(source.getComment())
+                .withLastDateIntyg(!isNull(source.getLastDateForCertificateReceival())
+                        ? LocalDate.parse(source.getLastDateForCertificateReceival()) : null)
+                .withOrderDate(!isNull(source.getOrderDate())
+                        ? LocalDate.parse(source.getOrderDate()) : null)
+                .withSyfte(source.getPurpose())
+                .withTolkBehov(BooleanUtils.toBoolean(source.isNeedForInterpreter()))
+                .withTolkSprak((!isNull(source.isNeedForInterpreter()) && source.isNeedForInterpreter())
+                        ? source.getInterpreterLanguage().getCode() : null)
+                .withUtredningId(!isNull(source.getAssessmentId()) ? source.getAssessmentId().getExtension() : null)
+                .withUtredningsTyp(UtredningsTyp.valueOf(source.getCertificateType().getCode()))
+                .build();
+    }
+
+    private static void validate(OrderMedicalAssessmentType source) {
+        List<String> errors = new ArrayList<>();
+        try {
+            UtredningsTyp.valueOf(source.getCertificateType().getCode());
+        } catch (IllegalArgumentException iae) {
+            errors.add("CertificateType is not of a known type");
+        }
+        if (!isNull(source.isNeedForInterpreter()) && source.isNeedForInterpreter() && isNull(source.getInterpreterLanguage())) {
+            errors.add("InterpreterLanguage is required when the need is declared");
+        }
+        // if FMU-order
+        if (!isNull(source.getAssessmentId())) {
+            if (isNull(source.getOrderDate())) {
+                errors.add("OrderDate is required when assessmentId is present");
+            }
+            if (isNull(source.getLastDateForCertificateReceival())) {
+                errors.add("LastDateForCertificateReceival is required when assessmentId is present");
+            }
+            if (isNull(source.getCitizen().getFirstName()) && isNull(source.getCitizen().getMiddleName())
+                    && isNull(source.getCitizen().getLastName())) {
+                errors.add("Name is required when assessmentId is present");
+            }
+        }
+        if (!errors.isEmpty()) {
+            throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, Joiner.on(", ").join(errors));
+        }
+
     }
 
     public String getUtredningId() {
@@ -173,70 +246,12 @@ public final class OrderRequest {
         this.atgarder = atgarder;
     }
 
-    public static OrderRequest from(OrderMedicalAssessmentType source) {
-        validate(source);
-
-        AuthorityAdministrativeOfficialType bestallareSource = source.getAuthorityAdministrativeOfficial();
-        CitizenType invanareSource = source.getCitizen();
-
-        return OrderRequestBuilder.anOrderRequest()
-                .withAtgarder(source.getPlannedActions())
-                .withBestallare(Bestallare.BestallareBuilder.aBestallare()
-                        .withMyndighet(!isNull(bestallareSource.getAuthority()) ? bestallareSource.getAuthority().getCode() : null)
-                        .withEmail(bestallareSource.getEmail())
-                        .withFullstandigtNamn(bestallareSource.getFullName())
-                        .withAdress(!isNull(bestallareSource.getOfficeAddress())
-                                ? bestallareSource.getOfficeAddress().getPostalAddress() : null)
-                        .withStad(!isNull(bestallareSource.getOfficeAddress())
-                                ? bestallareSource.getOfficeAddress().getPostalCity() : null)
-                        .withPostkod(!isNull(bestallareSource.getOfficeAddress())
-                                ? bestallareSource.getOfficeAddress().getPostalCode() : null)
-                        .withKostnadsstalle(bestallareSource.getOfficeCostCenter())
-                        .withKontor(bestallareSource.getOfficeName())
-                        .withTelefonnummer(bestallareSource.getPhoneNumber())
-                        .build())
-                .withEnhetId(source.getCareUnitId().getExtension())
-                .withHandling(!isNull(source.isDocumentsByPost()) && source.isDocumentsByPost())
-                .withInvanareBakgrund(invanareSource.getSituationBackground())
-                .withInvanareBehov(invanareSource.getSpecialNeeds())
-                .withInvanarePersonnummer(invanareSource.getPersonalIdentity().getExtension())
-                .withKommentar(source.getComment())
-                .withLastDateIntyg(!isNull(source.getLastDateForCertificateReceival())
-                        ? LocalDate.parse(source.getLastDateForCertificateReceival()) : null)
-                .withOrderDate(!isNull(source.getOrderDate())
-                        ? LocalDate.parse(source.getOrderDate()) : null)
-                .withSyfte(source.getPurpose())
-                .withTolkBehov(BooleanUtils.toBoolean(source.isNeedForInterpreter()))
-                .withTolkSprak((!isNull(source.isNeedForInterpreter()) && source.isNeedForInterpreter())
-                        ? source.getInterpreterLanguage().getCode() : null)
-                .withUtredningId(!isNull(source.getAssessmentId()) ? source.getAssessmentId().getExtension() : null)
-                .withUtredningsTyp(UtredningsTyp.valueOf(source.getCertificateType().getCode()))
-                .build();
+    public String getInvanareFullstandigtNamn() {
+        return invanareFullstandigtNamn;
     }
 
-    private static void validate(OrderMedicalAssessmentType source) {
-        List<String> errors = new ArrayList<>();
-        try {
-            UtredningsTyp.valueOf(source.getCertificateType().getCode());
-        } catch (IllegalArgumentException iae) {
-            errors.add("CertificateType is not of a known type");
-        }
-        if (!isNull(source.isNeedForInterpreter()) && source.isNeedForInterpreter() && source.getInterpreterLanguage() == null) {
-            errors.add("InterpreterLanguage is required when the need is declared");
-        }
-        // if FMU-order
-        if (!isNull(source.getAssessmentId())) {
-            if (isNull(source.getOrderDate())) {
-                errors.add("OrderDate is required when assessmentId is present");
-            }
-            if (isNull(source.getLastDateForCertificateReceival())) {
-                errors.add("LastDateForCertificateReceival is required when assessmentId is present");
-            }
-        }
-        if (!errors.isEmpty()) {
-            throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, Joiner.on(", ").join(errors));
-        }
-
+    public void setInvanareFullstandigtNamn(String invanareFullstandigtNamn) {
+        this.invanareFullstandigtNamn = invanareFullstandigtNamn;
     }
 
     public static final class OrderRequestBuilder {
@@ -247,6 +262,7 @@ public final class OrderRequest {
         private String invanarePersonnummer;
         private String invanareBakgrund;
         private String invanareBehov;
+        private String invanareFullstandigtNamn;
         private String syfte;
         private boolean tolkBehov;
         private String tolkSprak;
@@ -298,6 +314,11 @@ public final class OrderRequest {
             return this;
         }
 
+        public OrderRequestBuilder withInvanareFullstandigtNamn(String invanareFullstandigtNamn) {
+            this.invanareFullstandigtNamn = invanareFullstandigtNamn;
+            return this;
+        }
+
         public OrderRequestBuilder withSyfte(String syfte) {
             this.syfte = syfte;
             return this;
@@ -340,21 +361,22 @@ public final class OrderRequest {
 
         public OrderRequest build() {
             OrderRequest orderRequest = new OrderRequest();
-            orderRequest.kommentar = this.kommentar;
-            orderRequest.utredningsTyp = this.utredningsTyp;
-            orderRequest.invanareBakgrund = this.invanareBakgrund;
-            orderRequest.syfte = this.syfte;
-            orderRequest.orderDate = this.orderDate;
-            orderRequest.handling = this.handling;
-            orderRequest.bestallare = this.bestallare;
-            orderRequest.invanarePersonnummer = this.invanarePersonnummer;
-            orderRequest.tolkBehov = this.tolkBehov;
-            orderRequest.utredningId = this.utredningId;
-            orderRequest.enhetId = this.enhetId;
-            orderRequest.atgarder = this.atgarder;
-            orderRequest.lastDateIntyg = this.lastDateIntyg;
-            orderRequest.invanareBehov = this.invanareBehov;
-            orderRequest.tolkSprak = this.tolkSprak;
+            orderRequest.setUtredningId(utredningId);
+            orderRequest.setEnhetId(enhetId);
+            orderRequest.setUtredningsTyp(utredningsTyp);
+            orderRequest.setBestallare(bestallare);
+            orderRequest.setInvanarePersonnummer(invanarePersonnummer);
+            orderRequest.setInvanareBakgrund(invanareBakgrund);
+            orderRequest.setInvanareBehov(invanareBehov);
+            orderRequest.setInvanareFullstandigtNamn(invanareFullstandigtNamn);
+            orderRequest.setSyfte(syfte);
+            orderRequest.setTolkBehov(tolkBehov);
+            orderRequest.setTolkSprak(tolkSprak);
+            orderRequest.setKommentar(kommentar);
+            orderRequest.setLastDateIntyg(lastDateIntyg);
+            orderRequest.setOrderDate(orderDate);
+            orderRequest.setHandling(handling);
+            orderRequest.setAtgarder(atgarder);
             return orderRequest;
         }
     }

@@ -32,6 +32,7 @@ import java.time.LocalDate;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum.BAD_REQUEST;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.aCv;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU;
@@ -65,6 +66,7 @@ public class OrderRequestTest {
         assertEquals("postkod", result.getBestallare().getPostkod());
         assertEquals("stad", result.getBestallare().getStad());
         assertEquals("telefonnummer", result.getBestallare().getTelefonnummer());
+        assertEquals("firstname middlename lastname", result.getInvanareFullstandigtNamn());
     }
 
     @Test
@@ -104,13 +106,7 @@ public class OrderRequestTest {
         OrderMedicalAssessmentType request = createFullRequest();
         request.setCertificateType(aCv("notExisting", null, null));
 
-        try {
-            OrderRequest.from(request);
-        } catch (IbServiceException ise) {
-            assertEquals(IbErrorCodeEnum.BAD_REQUEST, ise.getErrorCode());
-            assertNotNull(ise.getMessage());
-            throw ise;
-        }
+        assertErrorCode(request, BAD_REQUEST);
     }
 
     @Test(expected = IbServiceException.class)
@@ -118,13 +114,17 @@ public class OrderRequestTest {
         OrderMedicalAssessmentType request = createFullRequest();
         request.setOrderDate(null);
 
-        try {
-            OrderRequest.from(request);
-        } catch (IbServiceException ise) {
-            assertEquals(IbErrorCodeEnum.BAD_REQUEST, ise.getErrorCode());
-            assertNotNull(ise.getMessage());
-            throw ise;
-        }
+        assertErrorCode(request, BAD_REQUEST);
+    }
+
+    @Test(expected = IbServiceException.class)
+    public void testConvertFailOrderNameMissing() {
+        OrderMedicalAssessmentType request = createFullRequest();
+        request.getCitizen().setFirstName(null);
+        request.getCitizen().setMiddleName(null);
+        request.getCitizen().setLastName(null);
+
+        assertErrorCode(request, BAD_REQUEST);
     }
 
     @Test(expected = IbServiceException.class)
@@ -132,13 +132,7 @@ public class OrderRequestTest {
         OrderMedicalAssessmentType request = createFullRequest();
         request.setLastDateForCertificateReceival(null);
 
-        try {
-            OrderRequest.from(request);
-        } catch (IbServiceException ise) {
-            assertEquals(IbErrorCodeEnum.BAD_REQUEST, ise.getErrorCode());
-            assertNotNull(ise.getMessage());
-            throw ise;
-        }
+        assertErrorCode(request, BAD_REQUEST);
     }
 
     @NotNull
@@ -149,6 +143,9 @@ public class OrderRequestTest {
         request.setLastDateForCertificateReceival("2019-01-01");
         CitizenType citizen = new CitizenType();
         citizen.setPersonalIdentity(anII(null, "personnummer"));
+        citizen.setFirstName("firstname");
+        citizen.setMiddleName("middlename");
+        citizen.setLastName("lastname");
         citizen.setSituationBackground("bakgrund");
         citizen.setSpecialNeeds("behov");
         request.setCitizen(citizen);
@@ -174,5 +171,16 @@ public class OrderRequestTest {
         request.setPurpose("syfte");
         request.setCareUnitId(anII(null, "enhet"));
         return request;
+    }
+
+    private void assertErrorCode(OrderMedicalAssessmentType request,
+            IbErrorCodeEnum errorCodeEnum) {
+        try {
+            OrderRequest.from(request);
+        } catch (IbServiceException ise) {
+            assertEquals(errorCodeEnum, ise.getErrorCode());
+            assertNotNull(ise.getMessage());
+            throw ise;
+        }
     }
 }

@@ -38,6 +38,7 @@ public final class Intyg {
 
     @Id
     @GeneratedValue
+    @Column(name = "ID", nullable = false)
     private Long id;
 
     @Column(name = "KOMPLETTERINGS_ID")

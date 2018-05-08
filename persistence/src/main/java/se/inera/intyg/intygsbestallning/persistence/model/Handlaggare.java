@@ -35,7 +35,7 @@ import java.util.Objects;
 public final class Handlaggare {
     @Id
     @GeneratedValue
-    @Column(name = "ID")
+    @Column(name = "ID", nullable = false)
     private long id;
 
     @Column(name = "FULLSTANDIGT_NAMN")
