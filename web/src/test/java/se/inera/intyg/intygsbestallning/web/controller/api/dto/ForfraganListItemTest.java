@@ -24,10 +24,13 @@ import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganSta
 import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
 import static se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar;
 import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
@@ -36,9 +39,11 @@ import static se.inera.intyg.intygsbestallning.persistence.model.type.Utrednings
 
 public class ForfraganListItemTest {
 
+    private static final String VARDENHET_HSA_ID = "enhet";
+
     @Test
     public void testFrom() {
-        final String vardenhetHsaId = "enhet";
+
         final Utredning utredning = anUtredning()
                 .withUtredningId("utredningId")
                 .withUtredningsTyp(AFU)
@@ -47,7 +52,7 @@ public class ForfraganListItemTest {
                         .withInternForfraganList(Collections.singletonList(anInternForfragan()
                                 .withBesvarasSenastDatum(LocalDate.of(2019, 1, 1).atStartOfDay())
                                 .withSkapadDatum(LocalDate.of(2018, 1, 1).atStartOfDay())
-                                .withVardenhetHsaId(vardenhetHsaId)
+                                .withVardenhetHsaId(VARDENHET_HSA_ID)
                                 .withForfraganSvar(aForfraganSvar()
                                         .withBorjaDatum(LocalDate.of(2020, 1, 1))
                                         .build())
@@ -55,7 +60,7 @@ public class ForfraganListItemTest {
                         .build())
                 .build();
 
-        ForfraganListItem response = ForfraganListItem.from(utredning, vardenhetHsaId, new InternForfraganStateResolver());
+        ForfraganListItem response = ForfraganListItem.from(utredning, VARDENHET_HSA_ID, new InternForfraganStateResolver());
 
         assertNotNull(response);
         assertEquals("utredningId", response.getUtredningsId());
@@ -65,5 +70,48 @@ public class ForfraganListItemTest {
         assertEquals("2020-01-01", response.getPlaneringsDatum());
         assertEquals(InternForfraganStatus.INKOMMEN, response.getStatus());
         assertEquals("landstingHsaId", response.getVardgivareNamn());
+    }
+
+    @Test
+    public void testBesvaraSenastSnartFlaggaShowForClose() {
+        final Utredning utredning = buildUtredningWithBesvaraSenastDatum(LocalDate.now().plusDays(1).atStartOfDay());
+        ForfraganListItem response = ForfraganListItem.from(utredning, VARDENHET_HSA_ID, new InternForfraganStateResolver());
+
+        assertNotNull(response);
+        assertTrue(response.isBesvarasSenastDatumPaVagPasseras());
+        assertFalse(response.isBesvarasSenastDatumPasserat());
+    }
+
+    @Test
+    public void testBesvaraSenastSnartFlaggaNotShownForFar() {
+        final Utredning utredning = buildUtredningWithBesvaraSenastDatum(LocalDate.now().plusYears(1).atStartOfDay());
+        ForfraganListItem response = ForfraganListItem.from(utredning, VARDENHET_HSA_ID, new InternForfraganStateResolver());
+
+        assertNotNull(response);
+        assertFalse(response.isBesvarasSenastDatumPaVagPasseras());
+        assertFalse(response.isBesvarasSenastDatumPasserat());
+    }
+
+    @Test
+    public void testBesvaraSenastPasserat() {
+        final Utredning utredning = buildUtredningWithBesvaraSenastDatum(LocalDate.now().minusDays(1).atStartOfDay());
+        ForfraganListItem response = ForfraganListItem.from(utredning, VARDENHET_HSA_ID, new InternForfraganStateResolver());
+
+        assertNotNull(response);
+        assertFalse(response.isBesvarasSenastDatumPaVagPasseras());
+        assertTrue(response.isBesvarasSenastDatumPasserat());
+    }
+
+    private Utredning buildUtredningWithBesvaraSenastDatum(LocalDateTime besvaraSenastDatum) {
+        return anUtredning()
+                    .withUtredningsTyp(AFU)
+                    .withExternForfragan(anExternForfragan()
+
+                            .withInternForfraganList(Collections.singletonList(anInternForfragan()
+                                    .withVardenhetHsaId(VARDENHET_HSA_ID)
+                                    .withBesvarasSenastDatum(besvaraSenastDatum)
+                                    .build()))
+                            .build())
+                    .build();
     }
 }
