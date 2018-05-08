@@ -18,7 +18,11 @@
  */
 package se.inera.intyg.intygsbestallning.service.patient;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.primitives.Ints;
 import se.inera.intyg.schemas.contract.Personnummer;
+
+import java.util.Optional;
 
 public enum Gender {
 
@@ -33,24 +37,20 @@ public enum Gender {
         this.desc = desc;
     }
 
+    @VisibleForTesting
+    public static Gender getGenderFromPersonnummer(Personnummer pnr) {
+        return Gender.getGenderFromString(pnr.getPersonnummer().substring(GENDER_START, GENDER_END));
+    }
+
+    protected static Gender getGenderFromString(String genderString) {
+        return Optional.ofNullable(genderString)
+                .map(Ints::tryParse)
+                .map(i -> i % 2 == 0 ? F : M)
+                .orElse(UNKNOWN);
+    }
+
     public String getDescription() {
         return this.desc;
     }
 
-    public static Gender getGenderFromString(String genderString) {
-
-        if (genderString != null && genderString.length() == 1) {
-            if (genderString.matches("^\\d*[13579]$")) {
-                return M;
-            } else if (genderString.matches("^\\d*[02468]$")) {
-                return F;
-            }
-        }
-
-        return UNKNOWN;
-    }
-
-    public static Gender getGenderFromPersonnummer(Personnummer pnr) {
-        return Gender.getGenderFromString(pnr.getPersonnummer().substring(GENDER_START, GENDER_END));
-    }
 }

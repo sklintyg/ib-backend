@@ -18,13 +18,10 @@
  */
 package se.inera.intyg.intygsbestallning.service.patient;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
 import se.inera.intyg.schemas.contract.Personnummer;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
+import static org.junit.Assert.assertEquals;
 
 public class GenderTest {
 
@@ -52,7 +49,6 @@ public class GenderTest {
         assertEquals(Gender.UNKNOWN, Gender.getGenderFromString(""));
         assertEquals(Gender.UNKNOWN, Gender.getGenderFromString(null));
         assertEquals(Gender.UNKNOWN, Gender.getGenderFromString("+"));
-        assertEquals(Gender.UNKNOWN, Gender.getGenderFromString("12"));
     }
 
     @Test

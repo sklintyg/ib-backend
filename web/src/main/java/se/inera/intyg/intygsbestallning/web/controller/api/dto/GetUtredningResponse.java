@@ -18,8 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
-import static java.util.Objects.isNull;
-
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
@@ -30,6 +28,9 @@ import se.inera.intyg.schemas.contract.Personnummer;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
+import java.util.Optional;
+
+import static java.util.Objects.isNull;
 
 public class GetUtredningResponse {
     private static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
@@ -69,7 +70,6 @@ public class GetUtredningResponse {
     private String meddelandeFromHandlaggare;
 
     public static GetUtredningResponse from(Utredning utredning, UtredningStatus utredningStatus) {
-
 
         return GetUtredningResponseBuilder.aGetUtredningResponse()
                 .withUtredningsId(utredning.getUtredningId())
@@ -388,14 +388,12 @@ public class GetUtredningResponse {
 
         public InvanareResponse(Invanare invanare) {
             personId = invanare.getPersonId();
-            if (isNull(invanare.getPersonId())) {
-                gender = Gender.UNKNOWN;
-            } else {
-                gender = Personnummer.createPersonnummer(invanare.getPersonId())
-                        .map(pnr -> Gender.getGenderFromPersonnummer(pnr))
-                        .orElse(Gender.UNKNOWN);
-            }
             sarskildaBehov = invanare.getSarskildaBehov();
+            name = invanare.getFullstandigtNamn();
+            gender = Optional.ofNullable(invanare.getPersonId())
+                    .flatMap(Personnummer::createPersonnummer)
+                    .map(Gender::getGenderFromPersonnummer)
+                    .orElse(Gender.UNKNOWN);
         }
 
         public String getPersonId() {
@@ -429,5 +427,5 @@ public class GetUtredningResponse {
         public void setSarskildaBehov(String sarskildaBehov) {
             this.sarskildaBehov = sarskildaBehov;
         }
-    };
+    }
 }
