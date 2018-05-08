@@ -1,6 +1,8 @@
 .listaUtredningar-page {
 
   @extend %page;
+  width: 100%;
+  overflow-y: auto;
 
   table {
     margin-top: 10px;

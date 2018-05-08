@@ -1,0 +1,24 @@
+ <span class="status">
+  <span ng-switch="intygstatus.code" data-intyg-status-code="{{intygstatus.code}}" class="">
+    <i ng-switch-when="is-001" class="ng-animate-disabled material-icons ib-color-10">check</i>
+    <i ng-switch-when="is-002" class="ng-animate-disabled material-icons ib-color-10">check</i>
+    <i ng-switch-when="is-003" class="ng-animate-disabled material-icons ib-color-11">error_outline</i>
+    <i ng-switch-when="is-004" class="ng-animate-disabled material-icons ib-color-11">error_outline</i>
+    <i ng-switch-when="is-005" class="ng-animate-disabled material-icons ib-color-11">error_outline</i>
+    <i ng-switch-when="is-006" class="ng-animate-disabled icon-ib-ikon-alert02 icon-ib-18 ib-color-05"></i>
+    <i ng-switch-when="is-007" class="ng-animate-disabled material-icons ib-color-11">error_outline</i>
+    <i ng-switch-when="is-008" class="ng-animate-disabled material-icons ib-color-10">check</i>
+    <i ng-switch-when="is-009" class="ng-animate-disabled material-icons ib-color-11">error_outline</i>
+    <i ng-switch-when="is-010" class="ng-animate-disabled material-icons ib-color-11">error_outline</i>
+    <i ng-switch-when="is-011" class="ng-animate-disabled material-icons ib-color-11">error_outline</i>
+    <i ng-switch-when="is-012" class="ng-animate-disabled material-icons ib-color-11">error_outline</i>
+    <i ng-switch-when="is-013" class="ng-animate-disabled icon-ib-ikon-02 icon-ib-18 ib-color-10"></i>
+    <i ng-switch-when="is-014" class="ng-animate-disabled material-icons ib-color-10">check</i>
+    <i ng-switch-when="is-015" class="ng-animate-disabled material-icons ib-color-11">error_outline</i>
+    <i ng-switch-when="is-016" class="ng-animate-disabled material-icons ib-color-10">check</i>
+  </span>
+  <span ng-switch="intygstatus.modal">
+    <a ng-switch-when="true" class="ng-animate-disabled" ng-click="openModal()"><span ng-bind-html="intygstatus.text" /></a>
+    <span ng-switch-when="false" class="ng-animate-disabled" ng-bind-html="intygstatus.text" />
+  </span>
+</span>

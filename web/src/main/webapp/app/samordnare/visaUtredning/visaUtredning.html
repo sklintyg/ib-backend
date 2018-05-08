@@ -1,0 +1,132 @@
+<div class="visaUtredning-page">
+
+  <ib-utredning-header utredning="utredning" utredning-view-state="utredningViewState"></ib-utredning-header>
+
+  <div class="ib-workarea-hflex-container centered-constrained-content" id="edit-{{utredning.utredningsId}}">
+
+    <div class="bottom-fadeout-gradient ib-color-27">
+      <div></div>
+    </div>
+
+    <div id="ib-content-container" class="ib-workarea-utredning container-fluid edit-form">
+      <div ng-hide="viewState.error.key">
+        <ib-spinner label="info.loadingintyg" show-spinner="!viewState.common.doneLoading">
+          <div id="utredning" class="row utredning">
+            <div class="col-md-12 utredning-body">
+              <card>
+                <h3>Beställning</h3>
+                <card-body>
+                  <h4>Utredningstyp</h4>
+                  <card-value>
+                    {{utredning.utredningsTyp}}
+                  </card-value>
+                  <h4>Datum</h4>
+                  <card-table>
+                    <table class="table ib-table-striped">
+                      <tr>
+                        <th>Beställningsdatum</th>
+                        <th>Slutdatum utlåtande</th>
+                        <th>Slutdatum komplettering</th>
+                      </tr>
+                      <tr>
+                        <td>{{utredning.inkomDatum}}</td>
+                        <td>{{utredning.intygSistaDatum}}</td>
+                        <td>{{utredning.intygSistaDatumKomplettering}}</td>
+                      </tr>
+                    </table>
+                  </card-table>
+                  <h4>Avslutsvillkor</h4>
+                  <card-table>
+                    <table class="table ib-table-striped">
+                      <tr>
+                        <th>Avslutsdatum</th>
+                        <th>Ersätts</th>
+                        <th>Orsak</th>
+                      </tr>
+                      <tr>
+                        <td>{{utredning.avbrutenDatum}}</td>
+                        <td>{{utredning.ersatts}}</td>
+                        <td>{{utredning.avbrutenAnledning}}</td>
+                      </tr>
+                    </table>
+                  </card-table>
+                </card-body>
+              </card>
+              <card>
+                <h3>Invånare</h3>
+                <card-body>
+                  <h4>Personnummer/Samordningsnummer</h4>
+                  <card-value>
+                    {{utredning.invanare.personId}}
+                  </card-value>
+                  <h4>Namn</h4>
+                  <card-value>
+                    {{utredning.invanare.name}}
+                  </card-value>
+                  <h4>Behov av tolk</h4>
+                  <card-value>
+                    {{utredning.behovTolk}}<br>
+                    {{utredning.tolkSprak}}
+                  </card-value>
+                  <h4>Särskilda behov</h4>
+                  <card-value>
+                    {{utredning.invanare.sarskildaBehov}}
+                  </card-value>
+                </card-body>
+              </card>
+              <card>
+                <h3>Meddelande</h3>
+                <card-body>
+                  <h4>Meddelande från handläggare</h4>
+                  <card-table>
+                    <table class="table ib-table-striped">
+                      <tr>
+                        <th>Datum</th>
+                        <th>Meddelande</th>
+                      </tr>
+                      <tr>
+                        <td>{{utredning.inkomDatum}}</td>
+                        <td>{{utredning.meddelandeFromHandlaggare}}</td>
+                      </tr>
+                    </table>
+                  </card-table>
+                </card-body>
+              </card>
+              <card>
+                <h3>Handläggare</h3>
+                <card-body>
+                  <h4>Kontaktuppgifter</h4>
+                  <card-value>
+                    {{utredning.handlaggareNamn}}<br>
+                    {{utredning.handlaggareTelefonnummer}}<br>
+                    {{utredning.handlaggareEpost}}
+                  </card-value>
+                </card-body>
+              </card>
+            </div>
+          </div>
+        </ib-spinner>
+      </div>
+    </div>
+
+    <div class="ib-workarea-supportpanel">
+      <ul class="support-tabs">
+        <li ng-repeat="tab in config.tabs" role="presentation" ng-class="{'active': tab.active}">
+          <a href ng-click="onSelect(tab, $event)"
+             ng-attr-id="{{::'tab-link-' + tab.id}}"
+             uib-popover="{{::getText(tab.tooltip)}}"
+             popover-trigger="mouseenter"
+             popover-placement="auto top">
+            <i data-ng-if="tab.icon" class="material-icons">{{::tab.icon}}</i>
+            <span dynamic-label key="{{::tab.title}}"></span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="tab-content-container" ng-repeat="tab in config.tabs" ng-show="tab.active">
+        <wc-support-panel-component-renderer component-name="{{tab.id}}" config="tab.config"></wc-support-panel-component-renderer>
+      </div>
+    </div>
+
+  </div>
+</div>

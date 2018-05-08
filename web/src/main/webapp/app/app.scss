@@ -39,6 +39,11 @@
 @import 'samordnare/hanteraEnheter/hanteraEnheter.page.scss';
 @import 'samordnare/listaUtredningar/listaUtredningar.page.scss';
 @import 'samordnare/listaUtredningar/utredningFilter/utredningFilter.directive.scss';
+@import 'samordnare/visaUtredning/utredningHeader/ibUtredningHeader/ibUtredningHeader.directive.scss';
+@import 'samordnare/visaUtredning/utredningHeader/ibUtredningHeaderButtonBar/ibUtredningButtonBar.directive.scss';
+@import 'samordnare/visaUtredning/utredningHeader/ibUtredningHeaderStatus/ibUtredningHeaderStatus.directive.scss';
+@import 'samordnare/visaUtredning/utredningHeader/ibUtredningHeaderStatus/ibUtredningStatusSlot/ibUtredningStatusSlot.directive.scss';
+@import 'samordnare/visaUtredning/visaUtredning.page.scss';
 @import 'selectunit/selectunit.page.scss';
 @import 'vardadmin/avslutadeUtredningar/avslutadeUtredningar.page.scss';
 @import 'vardadmin/listaForfragningar/forfraganFilter/forfraganFilter.directive.scss';
@@ -62,6 +67,7 @@
 @import 'appDirectives/ibTableHead/ibTableHead.directive.scss';
 @import 'appDirectives/ibUtredningSlutdatumFas/ibUtredningSlutdatumFas.directive.scss';
 @import 'appDirectives/ibUtredningStatus/ibUtredningStatus.directive.scss';
+@import 'card.scss';
 @import 'commonDirectives/form/ibDropdown/ibDropdown.directive.scss';
 @import 'commonDirectives/form/ibTextarea/ibTextarea.directive.scss';
 @import 'commonDirectives/form/ibTextfield/ibTextfield.directive.scss';
@@ -73,4 +79,6 @@
 @import 'commonDirectives/ibMainMenu/ibMainMenu.directive.scss';
 @import 'commonDirectives/ibSpinner/ibSpinner.scss';
 @import 'commonDirectives/ibVardenhetSelector/ibVardenhetSelector.directive.scss';
+@import 'flex-app-layout.scss';
+@import 'ib-page-header.scss';
 // endinjector

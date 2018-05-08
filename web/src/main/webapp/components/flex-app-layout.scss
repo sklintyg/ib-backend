@@ -1,0 +1,118 @@
+/*!
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
+  Root classes for app flex layout
+ */
+
+html,
+body {
+  //Needed to allow having nested flex containers that expands & handle overflow themselves
+  height: 100%;
+  overflow:hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.ib-workarea {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  //center content (will show whitespace on sides)
+  align-self: center;
+  width: 100%;
+  min-height: 1%; //without a min-height IE11/edge wont shrink flex-items
+  background-color: $ib-color-24;
+
+  //when workarea is empty, hide it.
+  &:empty {
+    display: none;
+  }
+
+  .centered-constrained-content {
+    //Actual workarea content should be centered and max 1440 wide (equal whitespace on sides)
+    max-width: $ib-max-content-width;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  //defines padding for "page" workarea containers
+  .ib-workarea-page {
+    padding-top: 20px;
+
+    //Hack to fix IE not respecting padding bottom
+    &:after {
+      content:'';
+      display:block;
+      padding-bottom:35px;
+    }
+
+    &.container-fluid {
+      //all "page-templates" / views such as sök / skriv utredning, ej signerade utkast etc should also have this as root, to get inner vertical scrollbar
+      // and to work bootstraps with rows / cols
+      width: 100%;
+      overflow-y: auto;
+    }
+  }
+
+  .ib-workarea-vflex-container {
+    display: flex;
+    flex:1;
+    flex-direction: column;
+    min-height: 1%; //without a min-height IE11/edge wont shrink flex-items
+  }
+
+  // Some views have deeper containers that take up extra vertical space, and
+  // handle their own overflow, eg utredning / supportpanel.
+  .ib-workarea-hflex-container {
+    display: flex;
+    flex: 1;
+    min-height: 1%; //without a min-height IE11/edge wont shrink flex-items
+
+    //Split horizontally in 3:2 ratio
+    .ib-workarea-utredning {
+      position: relative; //important: needs to be relative for anchorScroll to work
+      flex: 2;
+      overflow-y: auto;
+      padding: 20px 15px 0 15px;
+      background-color: $ib-color-27;
+
+      &:after {
+        content:'';
+        display:block;
+        padding-bottom:35px;
+      }
+    }
+    .ib-workarea-supportpanel {
+      flex: 3;
+      min-width: 1%;
+    }
+
+    > .bottom-fadeout-gradient {
+      @extend %bottom-gradient;
+
+      max-width: $ib-max-content-width * 0.3;
+      left: auto;
+      z-index: 10;
+      padding: 0 15px;
+      width: 60%;
+    }
+  }
+}

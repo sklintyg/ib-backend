@@ -38,7 +38,7 @@ angular.module('ibApp').directive('ibMainMenu', ['$state', 'UserModel', 'StatPol
             });
 
             $scope.isActive = function(stateName) {
-                return stateName === $state.current.name;
+                return $state.current.name.indexOf(stateName) !== -1;
             };
 
             function buildMenu() {

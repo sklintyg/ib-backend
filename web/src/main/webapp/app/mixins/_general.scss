@@ -29,6 +29,8 @@ input[type=search]::-ms-clear {
 .ib-body {
   @extend %ib-typo-07;
   color: $ib-color-07;
+  display: flex;
+  flex-direction: column;
 }
 
 //absolutely positioned element with a gradient background.

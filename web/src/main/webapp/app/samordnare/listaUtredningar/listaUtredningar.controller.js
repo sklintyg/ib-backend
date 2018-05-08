@@ -19,10 +19,14 @@
 
 angular.module('ibApp')
     .controller('ListaUtredningarCtrl',
-        function($log, $scope, ibUtredningFilterModel, UtredningarProxy) {
+        function($state, $log, $scope, ibUtredningFilterModel, UtredningarProxy) {
             'use strict';
 
             $scope.filter = ibUtredningFilterModel.build();
+
+            $scope.visaUtredning = function(utredningsId){
+              $state.go('.visaUtredning', {utredningsId: utredningsId});
+            };
 
             $scope.getUtredningarFiltered = function(appendResults) {
 
