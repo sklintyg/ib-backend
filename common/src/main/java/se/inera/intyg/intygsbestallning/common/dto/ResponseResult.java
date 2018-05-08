@@ -16,17 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.integration.myndighet.service;
+package se.inera.intyg.intygsbestallning.common.dto;
 
-import se.inera.intyg.intygsbestallning.common.dto.ReportCareContactRequestDto;
-import se.inera.intyg.intygsbestallning.common.dto.UpdateAssessmentResponseDto;
-import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.ReportCareContactResponseType;
-
-public interface MyndighetIntegrationService {
-
-    void respondToPerformerRequest(String id);
-
-    ReportCareContactResponseType reportCareContactInteraction(ReportCareContactRequestDto request);
-
-    UpdateAssessmentResponseDto updateAssessment(String id, String certificateType);
+public enum ResponseResult {
+    OK,
+    INFO,
+    ERROR
 }

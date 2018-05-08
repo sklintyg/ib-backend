@@ -28,6 +28,10 @@ import java.util.List;
 public class UtredningStateResolver {
 
     public UtredningStatus resolveStatus(Utredning utredning) {
+        return resolveStaticStatus(utredning);
+    }
+
+    public static UtredningStatus resolveStaticStatus(Utredning utredning) {
         // How to resolve statuses....
 
         if (utredning.getAvbrutenDatum() != null) {
@@ -96,17 +100,17 @@ public class UtredningStateResolver {
         throw new IllegalStateException("Unhandled state!");
     }
 
-    private boolean isAccepteradAndTilldelad(List<InternForfragan> internForfraganList) {
+    private static boolean isAccepteradAndTilldelad(List<InternForfragan> internForfraganList) {
         return internForfraganList.stream().anyMatch(internForfragan -> internForfragan.getTilldeladDatum() != null
                 && internForfragan.getForfraganSvar().getSvarTyp() == SvarTyp.ACCEPTERA);
     }
 
-    private boolean isAccepterad(List<InternForfragan> internForfraganList) {
+    private static boolean isAccepterad(List<InternForfragan> internForfraganList) {
         return internForfraganList.stream().filter(internForfragan -> internForfragan.getForfraganSvar() != null)
                 .anyMatch(internForfragan -> internForfragan.getForfraganSvar().getSvarTyp() == SvarTyp.ACCEPTERA);
     }
 
-    private boolean isTilldelad(List<InternForfragan> internForfraganList) {
+    private static boolean isTilldelad(List<InternForfragan> internForfraganList) {
         return internForfraganList.stream()
                 .anyMatch(internForfragan -> internForfragan.getForfraganSvar() != null && internForfragan.getTilldeladDatum() != null);
     }

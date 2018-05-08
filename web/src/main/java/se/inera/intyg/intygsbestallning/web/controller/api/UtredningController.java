@@ -106,6 +106,6 @@ public class UtredningController {
                 .privilege(AuthoritiesConstants.ROLE_FMU_VARDADMIN)
                 .orThrow(new IbAuthorizationException(EDIT_NOT_ALLOWED));
 
-        besokService.registerNewBesok(null);
+        besokService.registerNewBesok(request);
     }
 }

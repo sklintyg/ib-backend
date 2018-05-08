@@ -21,6 +21,9 @@ package se.inera.intyg.intygsbestallning.integration.myndighet.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.intygsbestallning.integration.myndighet.client.MyndighetIntegrationClientService;
+import se.inera.intyg.intygsbestallning.common.dto.ReportCareContactRequestDto;
+import se.inera.intyg.intygsbestallning.common.dto.UpdateAssessmentResponseDto;
+import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.ReportCareContactResponseType;
 
 @Service
 public class MyndighetIntegrationServiceImpl implements MyndighetIntegrationService {
@@ -35,7 +38,12 @@ public class MyndighetIntegrationServiceImpl implements MyndighetIntegrationServ
     }
 
     @Override
-    public void updateAssessment(String id, String certificateType) {
-        clientService.updateAssessment(id, certificateType);
+    public ReportCareContactResponseType reportCareContactInteraction(final ReportCareContactRequestDto request) {
+        return clientService.reportCareContact(request);
+    }
+
+    @Override
+    public UpdateAssessmentResponseDto updateAssessment(String id, String certificateType) {
+        return UpdateAssessmentResponseDto.from(clientService.updateAssessment(id, certificateType));
     }
 }

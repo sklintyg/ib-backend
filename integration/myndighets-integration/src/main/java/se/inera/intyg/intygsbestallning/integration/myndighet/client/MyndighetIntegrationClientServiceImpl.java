@@ -18,9 +18,14 @@
  */
 package se.inera.intyg.intygsbestallning.integration.myndighet.client;
 
+import static se.inera.intyg.intygsbestallning.common.util.TjanstekontraktUtils.aReportCareContact;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import se.inera.intyg.intygsbestallning.common.dto.ReportCareContactRequestDto;
+import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.ReportCareContactResponseType;
+import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.rivtabp21.ReportCareContactResponderInterface;
 import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.RespondToPerformerRequestResponseType;
 import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.RespondToPerformerRequestType;
 import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.rivtabp21.RespondToPerformerRequestResponderInterface;
@@ -37,6 +42,9 @@ public class MyndighetIntegrationClientServiceImpl implements MyndighetIntegrati
     private RespondToPerformerRequestResponderInterface respondToPerformerRequestResponder;
 
     @Autowired
+    private ReportCareContactResponderInterface reportCareContactResponder;
+
+    @Autowired
     private UpdateAssessmentResponderInterface updateAssessmentResponderInterface;
 
     @Override
@@ -48,6 +56,11 @@ public class MyndighetIntegrationClientServiceImpl implements MyndighetIntegrati
         request.setAssessmentId(assID);
 
         return respondToPerformerRequestResponder.respondToPerformerRequest("ID?", request);
+    }
+
+    @Override
+    public ReportCareContactResponseType reportCareContact(final ReportCareContactRequestDto request) {
+        return reportCareContactResponder.reportCareContact("ID?", aReportCareContact(request));
     }
 
     @Override

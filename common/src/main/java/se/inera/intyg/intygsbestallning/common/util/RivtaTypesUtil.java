@@ -25,11 +25,19 @@ public final class RivtaTypesUtil {
     private RivtaTypesUtil() {
     }
 
+    public static IIType anII(final String extension) {
+        return anII("", extension);
+    }
+
     public static IIType anII(String root, String extension) {
         IIType ii = new IIType();
         ii.setExtension(extension);
         ii.setRoot(root);
         return ii;
+    }
+
+    public static CVType aCv(final String code) {
+        return aCv(code, null, null);
     }
 
     public static CVType aCv(String code, String codeSystem, String displayName) {

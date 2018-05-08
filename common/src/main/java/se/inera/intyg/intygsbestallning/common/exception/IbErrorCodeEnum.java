@@ -20,6 +20,7 @@ package se.inera.intyg.intygsbestallning.common.exception;
 
 public enum IbErrorCodeEnum {
     BAD_REQUEST,
+    BAD_STATE,
     ALREADY_EXISTS,
     NOT_FOUND,
     UNKNOWN_INTERNAL_PROBLEM,
