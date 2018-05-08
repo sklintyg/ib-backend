@@ -25,12 +25,8 @@ angular.module('ibApp').directive('ibForfraganStatus',
             restrict: 'E',
             templateUrl: '/components/appDirectives/ibForfraganStatus/ibForfraganStatus.directive.html',
             scope: {
-                status: '<'
-            },
-            link: function($scope) {
-                if ($scope.status === 'INKOMMEN') {
-                    $scope.kraverAtgard = true;
-                }
+                status: '<',
+                kraverAtgard: '<'
             }
         };
     });

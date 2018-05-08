@@ -18,35 +18,16 @@
  */
 
 angular.module('ibApp').directive('ibForfraganSvarsdatum',
-    function(APP_CONFIG) {
+    function() {
         'use strict';
 
         return {
             restrict: 'E',
             templateUrl: '/components/appDirectives/ibForfraganSvarsdatum/ibForfraganSvarsdatum.directive.html',
             scope: {
-                status: '<',
+                svarsdatumPasserat: '<',
+                svarsdatumPaVagPasseras: '<',
                 svarsdatum: '<'
-            },
-            link: function($scope) {
-
-                if ($scope.status === 'INKOMMEN') {
-                    var dateTime = moment();
-                    var todaydate = moment({
-                        year: dateTime.year(),
-                        month: dateTime.month(),
-                        day: dateTime.date()
-                    }).utc(true);
-
-                    var daysToSvarsdatum = moment($scope.svarsdatum, 'YYYY-MM-DD').utc(true).diff(todaydate, 'days');
-
-                    if (daysToSvarsdatum < 0) {
-                        $scope.warningSvarsdatumPassed = true;
-                    }
-                    else if (daysToSvarsdatum < APP_CONFIG.forfraganPaminnelseDagar) {
-                        $scope.warningSvarsdatumPaminnelsePassed = true;
-                    }
-                }
             }
         };
     });

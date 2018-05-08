@@ -92,6 +92,7 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
             enrichedWithVardgivareNames = true;
         }
 
+        // Apply the filter from the request.
         List<ForfraganListItem> filtered = forfraganList.stream()
                 .filter(fli -> buildForfroganStatusPredicate(fli, request.getStatus()))
                 .filter(fli -> buildToFromPredicate(fli.getInkomDatum(), request.getInkommetFromDate(), request.getInkommetToDate()))
@@ -109,6 +110,7 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
             return new GetForfraganListResponse(filtered, total);
         }
 
+        // Paging...
         Pair<Integer, Integer> bounds = PagingUtil.getBounds(total, request.getPageSize(), request.getCurrentPage());
         List<ForfraganListItem> paged = filtered.subList(bounds.getFirst(), bounds.getSecond() + 1);
 

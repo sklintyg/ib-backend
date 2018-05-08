@@ -20,10 +20,14 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
 import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStateResolver;
 import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
+import se.inera.intyg.intygsbestallning.service.util.holidays.Holidays;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListForfraganFilterStatus;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
@@ -33,15 +37,21 @@ import static java.util.Objects.isNull;
 public class ForfraganListItem implements FreeTextSearchable {
     private static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
 
+    // Temp hard-coded, replace by parameterized stuff.
+    private static final int BESVARA_FORFRAGAN_ARBETSDAGAR = 2;
+
     private String utredningsId;
     private String utredningsTyp;
     private String vardgivareHsaId;
     private String vardgivareNamn;
     private String inkomDatum;
     private String besvarasSenastDatum;
+    private boolean besvarasSenastDatumPaVagPasseras;
+    private boolean besvarasSenastDatumPasserat;
     private String planeringsDatum;
     private InternForfraganStatus status;
     private List<ListForfraganFilterStatus> filterStatusar;
+    private boolean kraverAtgard;
 
     public static ForfraganListItem from(Utredning utredning, String vardenhetId, InternForfraganStateResolver statusResolver) {
         InternForfragan internForfragan = utredning.getExternForfragan().getInternForfraganList()
@@ -50,10 +60,14 @@ public class ForfraganListItem implements FreeTextSearchable {
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
 
+        InternForfraganStatus status = statusResolver.resolveStatus(utredning, internForfragan);
+
         return ForfraganListItemBuilder.aForfraganListItem()
                 .withBesvarasSenastDatum(!isNull(internForfragan.getBesvarasSenastDatum())
                         ? internForfragan.getBesvarasSenastDatum().format(formatter)
                         : null)
+                .withBesvarasSenastDatumPaVagPasseras(resolveBesvarasSenastPaVagPasseras(internForfragan.getBesvarasSenastDatum()))
+                .withBesvarasSenastDatumPasserat(resolveBesvaraSenastPasserat(internForfragan))
                 .withInkomDatum(!isNull(internForfragan.getSkapadDatum())
                         ? internForfragan.getSkapadDatum().format(formatter)
                         : null)
@@ -61,12 +75,32 @@ public class ForfraganListItem implements FreeTextSearchable {
                         !isNull(internForfragan.getForfraganSvar()) && !isNull(internForfragan.getForfraganSvar().getBorjaDatum())
                                 ? internForfragan.getForfraganSvar().getBorjaDatum().format(formatter)
                                 : null)
-                .withStatus(statusResolver.resolveStatus(utredning, internForfragan))
+                .withStatus(status)
                 .withUtredningsId(utredning.getUtredningId())
                 .withUtredningsTyp(utredning.getUtredningsTyp().name())
                 .withVardgivareHsaId(utredning.getExternForfragan().getLandstingHsaId())
                 .withVardgivareNamn(utredning.getExternForfragan().getLandstingHsaId())
+                .withKraverAtgard(status.getNextActor() == Actor.VARDADMIN)
                 .build();
+    }
+
+    private static boolean resolveBesvaraSenastPasserat(InternForfragan internForfragan) {
+        if (internForfragan.getBesvarasSenastDatum() == null) {
+            return false;
+        }
+        return LocalDateTime.now().compareTo(internForfragan.getBesvarasSenastDatum()) > 0;
+    }
+
+    private static boolean resolveBesvarasSenastPaVagPasseras(LocalDateTime besvarasSenastDatum) {
+        if (besvarasSenastDatum == null) {
+            return false;
+        }
+
+        // Om datumet redan passerats skall vi ej flagga.
+        if (besvarasSenastDatum.toLocalDate().compareTo(LocalDate.now()) < 0) {
+            return false;
+        }
+        return Holidays.SWE.daysBetween(LocalDate.now(), besvarasSenastDatum.toLocalDate()) < BESVARA_FORFRAGAN_ARBETSDAGAR;
     }
 
     public String getUtredningsId() {
@@ -141,6 +175,30 @@ public class ForfraganListItem implements FreeTextSearchable {
         this.filterStatusar = filterStatusar;
     }
 
+    public boolean isBesvarasSenastDatumPaVagPasseras() {
+        return besvarasSenastDatumPaVagPasseras;
+    }
+
+    public void setBesvarasSenastDatumPaVagPasseras(boolean besvarasSenastDatumPaVagPasseras) {
+        this.besvarasSenastDatumPaVagPasseras = besvarasSenastDatumPaVagPasseras;
+    }
+
+    public boolean isBesvarasSenastDatumPasserat() {
+        return besvarasSenastDatumPasserat;
+    }
+
+    public void setBesvarasSenastDatumPasserat(boolean besvarasSenastDatumPasserat) {
+        this.besvarasSenastDatumPasserat = besvarasSenastDatumPasserat;
+    }
+
+    public boolean isKraverAtgard() {
+        return kraverAtgard;
+    }
+
+    public void setKraverAtgard(boolean kraverAtgard) {
+        this.kraverAtgard = kraverAtgard;
+    }
+
     @Override
     public String toSearchString() {
         return utredningsId
@@ -160,9 +218,12 @@ public class ForfraganListItem implements FreeTextSearchable {
         private String vardgivareNamn;
         private String inkomDatum;
         private String besvarasSenastDatum;
+        private boolean besvarasSenastDatumPaVagPasseras;
+        private boolean besvarasSenastDatumPasserat;
         private String planeringsDatum;
         private InternForfraganStatus status;
         private List<ListForfraganFilterStatus> filterStatusar;
+        private boolean kraverAtgard;
 
         private ForfraganListItemBuilder() {
         }
@@ -201,6 +262,16 @@ public class ForfraganListItem implements FreeTextSearchable {
             return this;
         }
 
+        public ForfraganListItemBuilder withBesvarasSenastDatumPaVagPasseras(boolean besvarasSenastDatumPaVagPasseras) {
+            this.besvarasSenastDatumPaVagPasseras = besvarasSenastDatumPaVagPasseras;
+            return this;
+        }
+
+        public ForfraganListItemBuilder withBesvarasSenastDatumPasserat(boolean besvarasSenastDatumPasserat) {
+            this.besvarasSenastDatumPasserat = besvarasSenastDatumPasserat;
+            return this;
+        }
+
         public ForfraganListItemBuilder withPlaneringsDatum(String planeringsDatum) {
             this.planeringsDatum = planeringsDatum;
             return this;
@@ -216,6 +287,11 @@ public class ForfraganListItem implements FreeTextSearchable {
             return this;
         }
 
+        public ForfraganListItemBuilder withKraverAtgard(boolean kraverAtgard) {
+            this.kraverAtgard = kraverAtgard;
+            return this;
+        }
+
         public ForfraganListItem build() {
             ForfraganListItem forfraganListItem = new ForfraganListItem();
             forfraganListItem.setUtredningsId(utredningsId);
@@ -224,9 +300,12 @@ public class ForfraganListItem implements FreeTextSearchable {
             forfraganListItem.setVardgivareNamn(vardgivareNamn);
             forfraganListItem.setInkomDatum(inkomDatum);
             forfraganListItem.setBesvarasSenastDatum(besvarasSenastDatum);
+            forfraganListItem.setBesvarasSenastDatumPaVagPasseras(besvarasSenastDatumPaVagPasseras);
+            forfraganListItem.setBesvarasSenastDatumPasserat(besvarasSenastDatumPasserat);
             forfraganListItem.setPlaneringsDatum(planeringsDatum);
             forfraganListItem.setStatus(status);
             forfraganListItem.setFilterStatusar(filterStatusar);
+            forfraganListItem.setKraverAtgard(kraverAtgard);
             return forfraganListItem;
         }
     }

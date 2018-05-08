@@ -22,10 +22,10 @@
         <td>{{::row.utredningsId}}</td>
         <td>{{::row.utredningsTyp}}</td>
         <td>{{::row.vardgivareNamn}}</td>
-        <td>{{::row.skapadDatum}}</td>
-        <td><ib-forfragan-svarsdatum status="::row.status" svarsdatum="::row.besvarasSenastDatum"></ib-forfragan-svarsdatum></td>
+        <td>{{::row.skapadDatum}}</td><!-- <ib-bestallning-slutdatum-fas slutdatum-passerat="::row.slutdatumPasserat" slutdatum-pa-vag-passeras="::row.slutdatumPaVagPasseras" slutdatum-fas="::row.slutdatumFas"></ib-bestallning-slutdatum-fas> -->
+        <td><ib-forfragan-svarsdatum svarsdatum-passerat="::row.besvarasSenastDatumPasserat" svarsdatum-pa-vag-passeras="::row.besvarasSenastDatumPaVagPasseras" svarsdatum="::row.besvarasSenastDatum"></ib-forfragan-svarsdatum></td>
         <td>{{::row.planeringsDatum}}</td>
-        <td><ib-forfragan-status status="::row.status.label"></ib-forfragan-status></td>
+        <td><ib-forfragan-status status="::row.status.label" kraver-atgard="::row.kraverAtgard"></ib-forfragan-status></td>
         <td><button class="btn btn-primary"><span message key="common.show"></span></button></td>
       </tr>
     </tbody>
