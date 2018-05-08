@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.repository;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,9 +51,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,16 +61,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static se.inera.intyg.intygsbestallning.persistence.model.Anteckning.AnteckningBuilder.anAnteckning;
-import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
-import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handelse.HandelseBuilder.aHandelse;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
-import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
-import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
-import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildBesok;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildBestallning;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildExternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildHandelse;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildHandlaggare;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildHandling;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildInvanare;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildUtredning;
 
 /**
  * Created by eriklupander on 2015-08-05.
@@ -225,6 +220,7 @@ public class UtredningRepositoryTest {
     @Test
     public void testFindAllByExternForfragan_InternForfraganList_VardenhetHsaId_AndArkiveradFalse() {
         Utredning utr = buildUtredning();
+        utr.setArkiverad(true);
         utr.setBestallning(buildBestallning());
         utr.setExternForfragan(buildExternForfragan());
         utredningRepository.save(utr);
@@ -313,119 +309,6 @@ public class UtredningRepositoryTest {
         assertNotNull(resultList.get(0).getBestallning());
     }
 
-    private Invanare buildInvanare() {
-        return anInvanare()
-                .withBakgrundNulage("bakgrund")
-                .withPersonId("personId")
-                .withPostkod("postkod")
-                .withSarskildaBehov("behov")
-                .withTidigareUtforare(Collections.singletonList(buildTidigareUtforare()))
-                .build();
-    }
 
-    private TidigareUtforare buildTidigareUtforare() {
-        return aTidigareUtforare()
-                .withTidigareEnhetId(VE_HSA_ID)
-                .build();
-    }
 
-    private Handlaggare buildHandlaggare() {
-        return aHandlaggare()
-                .withAdress("adress")
-                .withMyndighet("authority")
-                .withEmail("email")
-                .withFullstandigtNamn("fullstandigtNamn")
-                .withKontor("kontor")
-                .withKostnadsstalle("kontorCostCenter")
-                .withPostkod("postkod")
-                .withStad("stad")
-                .withTelefonnummer("telefonnummer")
-                .build();
-    }
-
-    private Handling buildHandling() {
-        return aHandling()
-                .withInkomDatum(LocalDateTime.now())
-                .withSkickatDatum(LocalDateTime.now())
-                .withUrsprung(HandlingUrsprungTyp.BESTALLNING)
-                .build();
-    }
-
-    private ExternForfragan buildExternForfragan() {
-        return anExternForfragan()
-                .withLandstingHsaId(VG_HSA_ID)
-                .withBesvarasSenastDatum(LocalDateTime.now())
-                .withAvvisatDatum(LocalDateTime.now())
-                .withAvvisatKommentar("avvisatKommentar")
-                .withKommentar("kommentar")
-                .withInkomDatum(LocalDateTime.now())
-                .withInternForfraganList(ImmutableList.of(
-                        anInternForfragan()
-                                .withForfraganSvar(buildForfraganSvar())
-                                .withVardenhetHsaId(VE_HSA_ID)
-                                .withBesvarasSenastDatum(LocalDateTime.now())
-                                .withKommentar("kommentar")
-                                .withTilldeladDatum(LocalDateTime.now())
-                                .withSkapadDatum(LocalDateTime.now())
-                                .build()))
-                .build();
-    }
-
-    private Bestallning buildBestallning() {
-        return aBestallning()
-                .withKommentar("kommentar")
-                .withOrderDatum(LocalDateTime.now())
-                .withPlaneradeAktiviteter("aktiviteter")
-                .withSyfte("syfte")
-                .withTilldeladVardenhetHsaId(VE_HSA_ID)
-                .build();
-    }
-
-    private Handelse buildHandelse() {
-        return aHandelse()
-                .withAnvandare("Kotte Korv")
-                .withHandelseText("Utredning skapades")
-                .withHandelseTyp(HandelseTyp.FORFRAGAN_MOTTAGEN)
-                .withSkapad(LocalDateTime.now())
-                .withKommentar("Detta är en kommentar")
-                .build();
-    }
-
-    private Utredning buildUtredning() {
-        return anUtredning()
-                .withUtredningId(UTREDNING_ID)
-                .withUtredningsTyp(UtredningsTyp.AFU)
-                .withTolkBehov(false)
-                .withAvbrutenAnledning(EndReason.JAV)
-                .withAvbrutenDatum(LocalDateTime.now())
-                .withArkiverad(true)
-                .build();
-    }
-
-    private ForfraganSvar buildForfraganSvar() {
-        return aForfraganSvar()
-                .withSvarTyp(SvarTyp.ACCEPTERA)
-                .withUtforareNamn("Utförarenheten")
-                .withUtforareAdress("Utförarvägen 1")
-                .withUtforarePostnr("12345")
-                .withUtforarePostort("Utförhult")
-                .withUtforareEpost("utforare@inera.se")
-                .withUtforareTelefon("123-123412")
-                .withKommentar("Bered skyndsamt!")
-                .withUtforareTyp(UtforareTyp.ENHET)
-                .withBorjaDatum(LocalDate.now())
-                .build();
-    }
-
-    private Besok buildBesok() {
-        return Besok.BesokBuilder.aBesok()
-                .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
-                .withBesokStartTid(LocalDateTime.now().plusDays(5))
-                .withBesokSlutTid(LocalDateTime.now().plusDays(5).plusHours(2))
-                .withKallelseForm(KallelseFormTyp.TELEFONKONTAKT)
-                .withKallelseDatum(LocalDateTime.now())
-                .withDeltagareProfession(DeltagarProfessionTyp.FT)
-                .withDeltagareFullstandigtNamn("Håkan Fysiosson")
-                .build();
-    }
 }
