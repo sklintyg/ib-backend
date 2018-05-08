@@ -93,9 +93,61 @@ card {
   card-table {
     display: block;
     padding-top: 5px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 14px;
 
     .table {
       margin: 0;
+
+      > thead > tr > th,
+      > thead > tr > td,
+      > tbody > tr > th,
+      > tbody > tr > td {
+        padding: 8px;
+        vertical-align: top;
+      }
+      tr {
+        > td {
+          border-top: 1px solid transparent;
+          border-bottom: 1px solid transparent;
+        }
+
+        > td:first-child {
+          border-left: 1px solid transparent;
+        }
+
+        > td:last-child {
+          border-right: 1px solid transparent;
+        }
+
+        &:hover {
+          > td {
+            border-top-color: $ib-color-21 !important;
+            border-bottom-color: $ib-color-21;
+          }
+
+          > td:first-child {
+            border-left-color: $ib-color-21;
+          }
+
+          > td:last-child {
+            border-right-color:$ib-color-21;
+          }
+        }
+      }
+
+      &.table-striped tbody > tr:nth-child(odd) > th,
+      > thead > tr > th {
+        background-color: $ib-color-15;
+        color: $ib-color-19;
+      }
+
+      &.table-striped tbody > tr:nth-child(odd) > td,
+      > tbody > tr > td {
+        background-color: $ib-color-13;
+        border-top: 1px solid $ib-color-00;
+      }
     }
 
     .mobile-table-wrapper {
