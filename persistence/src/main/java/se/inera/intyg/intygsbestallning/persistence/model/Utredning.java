@@ -112,7 +112,7 @@ public final class Utredning {
     public Utredning() {
     }
 
-    public static Utredning from(final Utredning utredning) {
+    public static Utredning copyFrom(final Utredning utredning) {
 
         if (isNull(utredning)) {
             return null;
@@ -121,27 +121,27 @@ public final class Utredning {
         return anUtredning()
                 .withUtredningId(utredning.getUtredningId())
                 .withUtredningsTyp(utredning.getUtredningsTyp())
-                .withBestallning(Bestallning.from(utredning.getBestallning().orElse(null)))
+                .withBestallning(Bestallning.copyFrom(utredning.getBestallning().orElse(null)))
                 .withTolkBehov(utredning.getTolkBehov())
                 .withTolkSprak(utredning.getTolkSprak())
-                .withExternForfragan(ExternForfragan.from(utredning.getExternForfragan()))
+                .withExternForfragan(ExternForfragan.copyFrom(utredning.getExternForfragan()))
                 .withHandelseList(utredning.getHandelseList().stream()
-                        .map(Handelse::from)
+                        .map(Handelse::copyFrom)
                         .collect(Collectors.toList()))
                 .withHandlingList(utredning.getHandlingList().stream()
-                        .map(Handling::from)
+                        .map(Handling::copyFrom)
                         .collect(Collectors.toList()))
                 .withBesokList(utredning.getBesokList().stream()
-                        .map(Besok::from)
+                        .map(Besok::copyFrom)
                         .collect(Collectors.toList()))
                 .withIntygList(utredning.getIntygList().stream()
-                        .map(Intyg::from)
+                        .map(Intyg::copyFrom)
                         .collect(Collectors.toList()))
                 .withAnteckningList(utredning.getAnteckningList().stream()
-                        .map(Anteckning::from)
+                        .map(Anteckning::copyFrom)
                         .collect(Collectors.toList()))
-                .withHandlaggare(Handlaggare.from(utredning.getHandlaggare()))
-                .withInvanare(Invanare.from(utredning.getInvanare()))
+                .withHandlaggare(Handlaggare.copyFrom(utredning.getHandlaggare()))
+                .withInvanare(Invanare.copyFrom(utredning.getInvanare()))
                 .withAvbrutenDatum(utredning.getAvbrutenDatum())
                 .withAvbrutenAnledning(utredning.getAvbrutenAnledning())
                 .build();

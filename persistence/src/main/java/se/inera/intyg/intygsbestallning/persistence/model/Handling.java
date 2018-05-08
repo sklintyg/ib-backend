@@ -60,7 +60,7 @@ public final class Handling {
     public Handling() {
     }
 
-    public static Handling from(final Handling handling) {
+    public static Handling copyFrom(final Handling handling) {
         if (isNull(handling)) {
             return null;
         }

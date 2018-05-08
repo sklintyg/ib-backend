@@ -343,7 +343,7 @@ public class UtredningServiceImplTest {
 
         final String tolkSprak = "tolkSprak";
 
-        Utredning modifieradUtrening = Utredning.from(createUtredning());
+        Utredning modifieradUtrening = Utredning.copyFrom(createUtredning());
         modifieradUtrening.setTolkBehov(true);
         modifieradUtrening.setTolkSprak(tolkSprak);
 

@@ -51,8 +51,6 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Objects;
 
 public class UtredningTest {
     @Test
@@ -182,7 +180,7 @@ public class UtredningTest {
                         .build()))
                 .build();
 
-        final Utredning copy = Utredning.from(utredning);
+        final Utredning copy = Utredning.copyFrom(utredning);
 
         assertEquals(utredning, copy);
     }

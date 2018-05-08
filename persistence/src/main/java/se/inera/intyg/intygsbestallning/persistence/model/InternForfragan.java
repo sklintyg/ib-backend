@@ -82,7 +82,7 @@ public final class InternForfragan {
                 .withBesvarasSenastDatum(internForfragan.getBesvarasSenastDatum())
                 .withSkapadDatum(internForfragan.getSkapadDatum())
                 .withKommentar(internForfragan.getKommentar())
-                .withForfraganSvar(ForfraganSvar.from(internForfragan.getForfraganSvar()))
+                .withForfraganSvar(ForfraganSvar.copyFrom(internForfragan.getForfraganSvar()))
                 .build();
     }
 

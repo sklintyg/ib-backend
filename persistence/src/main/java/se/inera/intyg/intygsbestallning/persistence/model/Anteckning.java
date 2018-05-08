@@ -94,7 +94,7 @@ public class Anteckning {
         this.skapat = skapat;
     }
 
-    public static Anteckning from(final Anteckning anteckning) {
+    public static Anteckning copyFrom(final Anteckning anteckning) {
         if (isNull(anteckning)) {
             return null;
         }

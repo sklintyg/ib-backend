@@ -95,7 +95,7 @@ public final class Intyg {
         this.sistaDatumKompletteringsbegaran = sistaDatumKompletteringsbegaran;
     }
 
-    public static Intyg from(final Intyg intyg) {
+    public static Intyg copyFrom(final Intyg intyg) {
 
         if (isNull(intyg)) {
             return null;

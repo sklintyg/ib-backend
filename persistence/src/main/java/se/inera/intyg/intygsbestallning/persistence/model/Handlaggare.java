@@ -68,7 +68,7 @@ public final class Handlaggare {
     public Handlaggare() {
     }
 
-    public static Handlaggare from(final Handlaggare handlaggare) {
+    public static Handlaggare copyFrom(final Handlaggare handlaggare) {
         if (isNull(handlaggare)) {
             return null;
         }

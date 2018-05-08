@@ -82,7 +82,7 @@ public final class ForfraganSvar {
 
     }
 
-    public static ForfraganSvar from(final ForfraganSvar forfraganSvar) {
+    public static ForfraganSvar copyFrom(final ForfraganSvar forfraganSvar) {
 
         if (isNull(forfraganSvar)) {
             return null;

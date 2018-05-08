@@ -276,7 +276,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         Preconditions.checkArgument(nonNull(original));
         Preconditions.checkArgument(original.getBestallning().isPresent());
 
-        Utredning toUpdate = Utredning.from(original);
+        Utredning toUpdate = Utredning.copyFrom(original);
 
         update.getLastDateIntyg().ifPresent(date -> toUpdate.getIntygList().stream()
                 .filter(i -> isNull(i.getKompletteringsId()))

@@ -65,7 +65,7 @@ public final class Invanare {
     public Invanare() {
     }
 
-    public static Invanare from(final Invanare invanare) {
+    public static Invanare copyFrom(final Invanare invanare) {
         if (isNull(invanare)) {
             return null;
         }
@@ -77,7 +77,7 @@ public final class Invanare {
                 .withBakgrundNulage(invanare.getBakgrundNulage())
                 .withPostkod(invanare.getPostkod())
                 .withTidigareUtforare(invanare.getTidigareUtforare().stream()
-                        .map(TidigareUtforare::from)
+                        .map(TidigareUtforare::copyFrom)
                         .collect(Collectors.toList()))
                 .build();
 

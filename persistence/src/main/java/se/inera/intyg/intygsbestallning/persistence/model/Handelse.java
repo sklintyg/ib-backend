@@ -64,7 +64,7 @@ public final class Handelse {
     public Handelse() {
     }
 
-    public static Handelse from(final Handelse handelse) {
+    public static Handelse copyFrom(final Handelse handelse) {
         if (isNull(handelse)) {
             return null;
         }

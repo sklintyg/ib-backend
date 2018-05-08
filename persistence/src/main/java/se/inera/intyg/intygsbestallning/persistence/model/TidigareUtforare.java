@@ -45,7 +45,7 @@ public final class TidigareUtforare {
     public TidigareUtforare() {
     }
 
-    public static TidigareUtforare from(final TidigareUtforare tidigareUtforare) {
+    public static TidigareUtforare copyFrom(final TidigareUtforare tidigareUtforare) {
         if (isNull(tidigareUtforare)) {
             return null;
         }

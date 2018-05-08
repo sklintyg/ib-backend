@@ -79,7 +79,7 @@ public final class ExternForfragan {
     public ExternForfragan() {
     }
 
-    public static ExternForfragan from(final ExternForfragan externForfragan) {
+    public static ExternForfragan copyFrom(final ExternForfragan externForfragan) {
 
         if (isNull(externForfragan)) {
             return null;

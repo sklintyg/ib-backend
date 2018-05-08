@@ -56,7 +56,7 @@ public final class Avvikelse {
     @Column(name = "INVANARE_UTEBLEV", columnDefinition = "tinyint(1) default 0")
     private Boolean invanareUteblev;
 
-    public static Avvikelse from(final Avvikelse avvikelse) {
+    public static Avvikelse copyFrom(final Avvikelse avvikelse) {
         if (isNull(avvikelse)) {
             return null;
         }

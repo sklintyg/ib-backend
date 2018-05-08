@@ -164,7 +164,7 @@ public final class Besok {
         this.avvikelse = avvikelse;
     }
 
-    public static Besok from(final Besok besok) {
+    public static Besok copyFrom(final Besok besok) {
 
         if (isNull(besok)) {
             return null;
@@ -180,7 +180,7 @@ public final class Besok {
                 .withErsatts(besok.getErsatts())
                 .withDeltagareProfession(besok.getDeltagareProfession())
                 .withDeltagareFullstandigtNamn(besok.getDeltagareFullstandigtNamn())
-                .withAvvikelse(Avvikelse.from(besok.getAvvikelse()))
+                .withAvvikelse(Avvikelse.copyFrom(besok.getAvvikelse()))
                 .build();
     }
 

@@ -64,7 +64,7 @@ public final class Bestallning {
     public Bestallning() {
     }
 
-    public static Bestallning from(final Bestallning bestallning) {
+    public static Bestallning copyFrom(final Bestallning bestallning) {
 
         if (isNull(bestallning)) {
             return null;
