@@ -37,11 +37,11 @@ public enum Gender {
         this.desc = desc;
     }
 
-    @VisibleForTesting
     public static Gender getGenderFromPersonnummer(Personnummer pnr) {
         return Gender.getGenderFromString(pnr.getPersonnummer().substring(GENDER_START, GENDER_END));
     }
 
+    @VisibleForTesting
     protected static Gender getGenderFromString(String genderString) {
         return Optional.ofNullable(genderString)
                 .map(Ints::tryParse)
