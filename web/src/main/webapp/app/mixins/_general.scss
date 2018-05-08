@@ -2,6 +2,14 @@
   display: none !important;
 }
 
+a {
+  cursor: pointer;
+}
+
+a[data-ng-disabled] {
+  cursor: default;
+}
+
 body {
   -ms-overflow-style: scrollbar;
 }
