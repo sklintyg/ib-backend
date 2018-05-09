@@ -22,7 +22,36 @@ angular.module('ibApp').factory('BestallningarProxy',
         networkConfig) {
         'use strict';
 
+        function _getBestallning(utredningsId) {
+            var promise = $q.defer();
 
+            var restPath = '/api/vardadmin/bestallningar/' + utredningsId;
+
+            var config =  {
+                errorMessageConfig: {
+                    errorTitleKey: 'server.error.getbestallning.title',
+                    errorTextKey: 'server.error.getbestallning.text'
+                },
+                timeout: networkConfig.defaultTimeout
+            };
+
+            $http.get(restPath, config).then(function(response) {
+                $log.debug(restPath + ' - success');
+
+                if (typeof response !== 'undefined') {
+                    promise.resolve(response.data);
+                } else {
+                    $log.debug('JSON response syntax error. Rejected.');
+                    promise.reject(null);
+                }
+            }, function(response) {
+                $log.error('error ' + response.status);
+                // Let calling code handle the error of no data response
+                promise.reject(response.data);
+            });
+
+            return promise.promise;
+        }
 
         function _getBestallningarWithFilter(query) {
             var promise = $q.defer();
@@ -80,6 +109,7 @@ angular.module('ibApp').factory('BestallningarProxy',
 
         // Return public API for the service
         return {
+            getBestallning: _getBestallning,
             getBestallningarWithFilter: _getBestallningarWithFilter,
             getBestallningarFilterValues : _getBestallningarFilterValues
         };

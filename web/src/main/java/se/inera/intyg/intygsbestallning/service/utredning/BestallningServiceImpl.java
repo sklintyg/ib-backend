@@ -29,6 +29,9 @@ import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.infra.logmessages.ResourceType;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.pdl.PDLActivityStore;
+import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
+import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.patient.PatientNameEnricher;
 import se.inera.intyg.intygsbestallning.service.pdl.LogService;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
@@ -38,6 +41,7 @@ import se.inera.intyg.intygsbestallning.service.util.GenericComparator;
 import se.inera.intyg.intygsbestallning.service.util.PagingUtil;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetBestallningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListBestallningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListBestallningFilter;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
@@ -61,6 +65,22 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
     private LogService logService;
 
     private static final Logger LOG = LoggerFactory.getLogger(BestallningServiceImpl.class);
+
+    @Override
+    public GetBestallningResponse getBestallning(String utredningId, String vardenhetHsaId) {
+        Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
+                () -> new IbNotFoundException("Utredning with assessmentId '" + utredningId + "' does not exist."));
+
+        if (!utredning.getExternForfragan().getInternForfraganList().stream()
+                .anyMatch(internForfragan -> internForfragan.getVardenhetHsaId().equals(vardenhetHsaId)
+                        && internForfragan.getTilldeladDatum() != null)) {
+            throw new IbAuthorizationException(
+                    "Utredning with assessmentId '" + utredningId + "' has not been tilldelad to vardgivare with id '"
+                            + vardenhetHsaId + "'");
+        }
+
+        return GetBestallningResponse.from(utredning, utredningStateResolver.resolveStatus(utredning));
+    }
 
     @Override
     public ListBestallningFilter buildListBestallningFilter(String vardenhetHsaId) {

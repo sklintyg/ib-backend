@@ -19,6 +19,7 @@
 package se.inera.intyg.intygsbestallning.service.utredning;
 
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetBestallningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListBestallningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListBestallningFilter;
 
@@ -41,4 +42,14 @@ public interface BestallningService {
      * @return
      */
     ListBestallningFilter buildListBestallningFilter(String vardenhetHsaId);
+
+    /**
+     * Retrieves the {@link se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan} for a specific UtredningId.
+     *
+     * @param utredningId
+     * @param vardenhetHsaId
+     * @return
+     */
+    GetBestallningResponse getBestallning(String utredningId, String vardenhetHsaId);
+
 }

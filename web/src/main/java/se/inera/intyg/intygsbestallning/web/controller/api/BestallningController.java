@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,6 +37,7 @@ import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.BestallningService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetBestallningListResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetBestallningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListBestallningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListBestallningFilter;
 
@@ -83,5 +85,14 @@ public class BestallningController {
 
         ListBestallningFilter listBestallningFilter = bestallningService.buildListBestallningFilter(user.getCurrentlyLoggedInAt().getId());
         return ResponseEntity.ok(listBestallningFilter);
+    }
+
+    @PrometheusTimeMethod(name = "get_utredning_duration_seconds", help = "Some helpful info here")
+    @GetMapping(path = "/{utredningsId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GetBestallningResponse> getUtredning(@PathVariable("utredningsId") String utredningsId) {
+        IbUser user = userService.getUser();
+        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_VISA_BESTALLNING)
+                .orThrow(new IbAuthorizationException("User does not have required privilege VISA_BESTALLNING"));
+        return ResponseEntity.ok(bestallningService.getBestallning(utredningsId, user.getCurrentlyLoggedInAt().getId()));
     }
 }

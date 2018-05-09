@@ -28,7 +28,8 @@ input[type=search]::-ms-clear {
 }
 
 %page {
-  width: auto;
+  width: 100%;
+  overflow-y: auto;
   max-width: $ib-max-content-width;
   margin: 0 auto;
   padding-bottom: 20px;

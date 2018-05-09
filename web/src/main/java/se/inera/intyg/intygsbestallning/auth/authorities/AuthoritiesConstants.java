@@ -37,6 +37,8 @@ public final class AuthoritiesConstants {
     public static final String PRIVILEGE_HANTERA_VARDENHETER_FOR_VARDGIVARE = "HANTERA_VARDENHETER_FOR_VARDGIVARE";
 
     public static final String PRIVILEGE_LISTA_BESTALLNINGAR = "LISTA_BESTALLNINGAR";
+    public static final String PRIVILEGE_VISA_BESTALLNING = "VISA_BESTALLNING";
+
 
     // constructors
 
