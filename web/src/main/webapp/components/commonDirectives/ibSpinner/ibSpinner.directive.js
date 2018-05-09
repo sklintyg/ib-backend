@@ -22,7 +22,7 @@ angular.module('ibApp').directive('ibSpinner',
         'use strict';
 
         return {
-            restrict: 'A',
+            restrict: 'EA',
             transclude: true,
             scope: {
                 label: '@',

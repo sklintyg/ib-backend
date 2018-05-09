@@ -16,22 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-angular.module('ibApp')
-    .controller('VisaUtredningCtrl',
-        function($log, $scope, $stateParams, UtredningarProxy) {
+angular.module('ibApp').directive('ibCheckboxWrapper',
+    [
+        function() {
             'use strict';
 
-            $scope.vm = {
-                loading: true
+            return {
+                restrict: 'E',
+                transclude: true,
+                templateUrl: '/components/commonDirectives/form/ibCheckboxWrapper/ibCheckboxWrapper.directive.html'
             };
-
-            UtredningarProxy.getUtredning($stateParams.utredningsId).then(function(utredning) {
-                $scope.utredning = utredning;
-            }, function(error) {
-                $log.error(error);
-            }).finally(function() { // jshint ignore:line
-                $scope.vm.loading = false;
-            });
-        }
-    );
+        }]);

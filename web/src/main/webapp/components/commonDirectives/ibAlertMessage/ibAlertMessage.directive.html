@@ -1,0 +1,12 @@
+<div ng-attr-id="{{alertId | ibDomIdFilter}}" class="alert alert-{{::alertSeverity}}" ng-class="::{'alert-warning': alertSeverity === 'sekretess'}">
+  <div class="alert-icon" ng-switch="::alertSeverity">
+    <i ng-switch-when="info" class="material-icons">info_outline</i>
+    <i ng-switch-when="warning" class="material-icons">error_outline</i>
+    <i ng-switch-when="sekretess" class="material-icons">security</i>
+    <i ng-switch-when="danger" class="material-icons">warning</i>
+    <i ng-switch-when="success" class="material-icons">check</i>
+    <i ng-switch-when="komplettering" class="icon-wc-ikon-alert02 icon-wc-18"></i>
+  </div>
+  <span message key="{{alertMessageId}}" class="multiline"></span>
+  <ng-transclude></ng-transclude>
+</div>

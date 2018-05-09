@@ -17,21 +17,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('ibApp')
-    .controller('VisaUtredningCtrl',
-        function($log, $scope, $stateParams, UtredningarProxy) {
-            'use strict';
+angular.module('ibApp').directive('ibCheckgroup', function() {
+    'use strict';
+    return {
+        restrict: 'E',
+        scope: {
+            labelKey: '@',
+            model: '=',
+            items: '='
+        },
+        templateUrl: '/components/commonDirectives/form/ibCheckgroup/ibCheckgroup.directive.html',
+        link: function($scope, element, attr) {
 
-            $scope.vm = {
-                loading: true
-            };
-
-            UtredningarProxy.getUtredning($stateParams.utredningsId).then(function(utredning) {
-                $scope.utredning = utredning;
-            }, function(error) {
-                $log.error(error);
-            }).finally(function() { // jshint ignore:line
-                $scope.vm.loading = false;
+            attr.$observe('id', function(id) {
+                $scope.inputId = id + '-input';
             });
+
         }
-    );
+    };
+});

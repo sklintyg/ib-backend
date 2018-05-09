@@ -1,13 +1,17 @@
   <div class="col-xs-{{::colSize}}">
     <label ng-attr-for="{{::inputId}}" class="control-label" ng-if="labelKey">
-     <span ng-if="required" class="required">*</span>
-     <span message key="{{::labelKey}}"></span>
+      <span ng-if="required" class="required">*</span>
+      <span message key="{{::labelKey}}"></span>
+      <span ng-if="helpKey">
+        <ib-help-chevron help-text-key="{{helpKey}}"></ib-help-chevron>
+        <ib-help-chevron-text help-text-key="{{helpKey}}"></ib-help-chevron-text>
+      </span>
     </label>
     <textarea ng-attr-id="{{::inputId}}" ng-attr-rows="{{rows || 4 }}"
-           type="text"
-           class="form-control"
-           ng-model="model"
-           ng-disabled="isDisabled"
-           ng-attr-placeholder="{{::placeholderText}}"
+              type="text"
+              class="form-control"
+              ng-model="model"
+              ng-disabled="isDisabled"
+              ng-attr-placeholder="{{::placeholderText}}"
               maxlength="{{:: maxLength || 255}}"></textarea>
   </div>

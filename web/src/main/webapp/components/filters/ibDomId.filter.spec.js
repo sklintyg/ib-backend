@@ -17,21 +17,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('ibApp')
-    .controller('VisaUtredningCtrl',
-        function($log, $scope, $stateParams, UtredningarProxy) {
-            'use strict';
+describe('Filter: ibDomIdFilter', function() {
+    'use strict';
 
-            $scope.vm = {
-                loading: true
-            };
+    var _filter;
 
-            UtredningarProxy.getUtredning($stateParams.utredningsId).then(function(utredning) {
-                $scope.utredning = utredning;
-            }, function(error) {
-                $log.error(error);
-            }).finally(function() { // jshint ignore:line
-                $scope.vm.loading = false;
-            });
-        }
-    );
+    beforeEach(angular.mock.module('ibApp'));
+
+    beforeEach(inject(function(_ibDomIdFilterFilter_) {
+        _filter = _ibDomIdFilterFilter_;
+    }));
+
+    it('should replace non-valid characters', function() {
+        expect(_filter('ABC-D:E-[0].svar')).toEqual('ABC-D-E--0--svar');
+        expect(_filter('my.prop')).toEqual('my-prop');
+    });
+
+    it('should not replace valid charachers', function() {
+        expect(_filter('synVinkel1')).toEqual('synVinkel1');
+    });
+
+});

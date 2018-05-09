@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2018 Inera AB (http://www.inera.se)
+/*!
+ * Copyright (C) 2017 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -17,21 +17,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('ibApp')
-    .controller('VisaUtredningCtrl',
-        function($log, $scope, $stateParams, UtredningarProxy) {
-            'use strict';
+ib-alert-message {
+  display: inline-block; /* so it is easier to see bounding box in inspector */
 
-            $scope.vm = {
-                loading: true
-            };
+  .alert {
+    @extend %ib-typo-07;
+    display: inline-block;
+    vertical-align: top;
+    position: relative;
+    padding: 8px 9px 7px 38px;
 
-            UtredningarProxy.getUtredning($stateParams.utredningsId).then(function(utredning) {
-                $scope.utredning = utredning;
-            }, function(error) {
-                $log.error(error);
-            }).finally(function() { // jshint ignore:line
-                $scope.vm.loading = false;
-            });
-        }
-    );
+    .alert-icon {
+      .material-icons, .icon-ib-ikon-alert02 {
+        position: absolute;
+        top: 5px;
+        left: 6px;
+      }
+    }
+
+    a:hover {
+      color: $ib-color-07;
+    }
+    &.alert-komplettering {
+      background-color: $ib-color-02;
+      color: $ib-color-05;
+    }
+  }
+
+}

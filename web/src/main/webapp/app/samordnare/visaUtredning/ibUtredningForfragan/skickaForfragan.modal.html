@@ -1,0 +1,61 @@
+<div id="skicka-forfragan-modal">
+  <div class="modal-header">
+    <button class="close" data-dismiss="modal" data-ng-click="$dismiss()">×</button>
+    <h4 class="modal-title">Välj enhet</h4>
+  </div>
+  <div class="modal-body">
+
+    <ib-spinner show-spinner="vm.loading" label="common.label.loading">
+      <div ng-switch="vm.hasVardenheter">
+        <div ng-switch-when="false">
+          <ib-alert-message alert-id="skicka-forfragan-modal-vardenheter-no-results"
+                            alert-message-id="skicka.forfragan.vardenheter.no.results"
+                            alert-severity="info"></ib-alert-message>
+        </div>
+        <div ng-switch-when="true">
+
+            <p><span message key="skicka.forfragan.vardenheter.heading"></span></p>
+
+            <ib-checkgroup id="skicka-forfragan-modal-vardenheter-eget-landsting"
+                           ng-if="vm.vardenheter.egetLandsting.length > 0"
+                           class="form-group"
+                           label-key="skicka.forfragan.egna.label"
+                           model="vm.selectedVardenheter"
+                           items="vm.vardenheter.egetLandsting"></ib-checkgroup>
+
+            <ib-checkgroup id="skicka-forfragan-modal-vardenheter-annat-landsting"
+                           ng-if="vm.vardenheter.annatLandsting.length > 0"
+                           class="form-group"
+                           label-key="skicka.forfragan.annat.label"
+                           model="vm.selectedVardenheter"
+                           items="vm.vardenheter.annatLandsting"></ib-checkgroup>
+
+            <ib-checkgroup id="skicka-forfragan-modal-vardenheter-privat"
+                           ng-if="vm.vardenheter.privat.length > 0"
+                           class="form-group"
+                           label-key="skicka.forfragan.privat.label"
+                           model="vm.selectedVardenheter"
+                           items="vm.vardenheter.privat"></ib-checkgroup>
+
+            <ib-textarea id="skicka-forfragan-modal-meddelande"
+                         class="form-group"
+                         label-key="skicka.forfragan.meddelande.label"
+                         help-key="skicka.forfragan.meddelande.help"
+                         placeholder-text="{{'skicka.forfragan.meddelande.placeholder' | message}}"
+                         model="vm.meddelande"></ib-textarea>
+
+        </div>
+
+      </div>
+    </ib-spinner>
+
+  </div>
+  <div class="modal-footer">
+    <button type="button" id="skicka-forfragan-modal-skicka" class="btn btn-primary" ng-click="skicka()">
+      Skicka förfrågan
+    </button>
+    <button type="button" id="skicka-forfragan-modal-cancel" class="btn btn-default" ng-click="$dismiss()">
+      <span message key="common.cancel"></span>
+    </button>
+  </div>
+</div>

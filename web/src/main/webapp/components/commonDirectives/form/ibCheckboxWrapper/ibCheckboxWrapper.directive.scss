@@ -1,0 +1,110 @@
+ib-checkbox-wrapper {
+
+  display: inline-block;
+  padding: 0 22px 0 22px;
+
+  > .ib-checkbox {
+
+    position: relative; //make it relative so that we cant position the input relatively
+
+    label {
+      @extend %ib-typo-07;
+      position: relative;
+      padding: 0 0 0 6px; //space between checkbox and label as spec in zeplin
+      cursor: pointer;
+      margin-bottom: 0;
+    }
+
+    label::before, label::after {
+      position: absolute;
+      top: 0;
+      left: -20px;
+      padding: 0;
+      width: 20px;
+      height: 20px;
+
+      border-radius: 3px;
+      text-decoration: none;
+
+    }
+
+    //determines background layer of visual checkbox
+    label::before {
+      content: "";
+
+      border: 1px solid $ib-color-23;
+      box-shadow: inset 0 1px 3px 0 rgba(0, 0, 0, 0.24);
+      transition: all .3s;
+      background-color: $ib-color-00;
+
+    }
+
+    //determines foreground layer of visual checkbox (and tick mark)
+    label::after {
+      font-size: 13px;
+      text-align: center;
+      border: none;
+      background-color: $ib-color-21;
+      box-shadow: inset 0 1px 3px 0 rgba(0, 0, 0, 0.5);
+
+    }
+
+    input[type="checkbox"] {
+      opacity: 0.01; //Important: 0.01 is not practically visible, but if we set it to 0, protractor won't find it..
+      z-index: 1;
+
+      margin: 0;
+      position: absolute;
+
+      //place it at same coordinates as the labels :before/:after content
+      top: 0;
+      left: -20px;
+      width: 20px;
+      height: 20px;
+
+      cursor: pointer;
+
+    }
+
+    input[type="checkbox"]:focus + label::before {
+      outline: thin dotted;
+      outline-offset: 0px;
+    }
+
+    //The tick mark when checked
+    input[type="checkbox"]:checked + label::after {
+      padding-top: 1px;
+      font-family: 'Glyphicons Halflings';
+      content: "\e013";
+      color: $ib-color-00;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+
+    }
+
+    input[type="checkbox"] {
+      // :disabled selector doesnt work in ie11 with disabled fieldset, using fieldset[disabled] instead
+      &:disabled, fieldset[disabled] & {
+        cursor: not-allowed;
+
+        & + label {
+          cursor: not-allowed;
+          color: $ib-color-09;
+        }
+
+        & + label::before {
+          background-color: $ib-color-20;
+          color: $ib-color-09;
+          cursor: not-allowed;
+        }
+
+        & + label::after {
+          background-color: $ib-color-09;
+        }
+      }
+    }
+
+    &.checkbox-ib-default input[type="checkbox"]:checked + label::before {
+      background-color: $ib-color-21;
+    }
+  }
+}

@@ -16,22 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-angular.module('ibApp')
-    .controller('VisaUtredningCtrl',
-        function($log, $scope, $stateParams, UtredningarProxy) {
+/**
+ * Show an alert box
+ */
+angular.module('ibApp').directive('ibAlertMessage',
+    [ '$log',
+        function($log) {
             'use strict';
 
-            $scope.vm = {
-                loading: true
+            return {
+                restrict: 'E',
+                transclude: true,
+                scope: {
+                    'alertId': '@',
+                    'alertMessageId' : '@',
+                    'alertSeverity' : '@'
+                },
+                controller: function($scope) {
+                    if(!$scope.alertSeverity){
+                        $log.error('ibAlertMessage - alert has no severity set. id: ' + $scope.alertId);
+                    }
+                },
+                templateUrl: '/components/commonDirectives/ibAlertMessage/ibAlertMessage.directive.html'
             };
-
-            UtredningarProxy.getUtredning($stateParams.utredningsId).then(function(utredning) {
-                $scope.utredning = utredning;
-            }, function(error) {
-                $log.error(error);
-            }).finally(function() { // jshint ignore:line
-                $scope.vm.loading = false;
-            });
-        }
-    );
+        }]);

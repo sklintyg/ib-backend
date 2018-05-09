@@ -1,0 +1,16 @@
+<div class="form-horizontal">
+
+  <label class="control-label" ng-if="labelKey">
+    <span ng-if="required" class="required">*</span>
+    <message key="{{::labelKey}}"></message>
+  </label>
+
+  <div data-ng-repeat="item in ::items">
+    <ib-checkbox-wrapper>
+      <input ng-attr-id="{{::inputId}}-{{::item.id|ibDomIdFilter}}" type="checkbox" ng-model="model[choice.id]" value="">
+      <label ng-attr-for="{{::inputId}}-{{::item.id|ibDomIdFilter}}">
+        {{::item.label}}
+      </label>
+    </ib-checkbox-wrapper>
+  </div>
+</div>

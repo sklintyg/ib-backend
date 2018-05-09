@@ -63,6 +63,16 @@ var ibMessages = {
         'unitsettings.change.standardsvar.title': 'Hantera standardsvar',
         'unitsettings.change.standardsvar.desc': 'Denna text visas som standardkommentar när du svarar på en förfrågan. Du kan alltid ändra kommentaren i en enskild förfrågan innan du svarar.',
 
+        // Skicka forfragan modal
+        'skicka.forfragan.vardenheter.no.results': 'Det finns inga vårdenheter tillagda i landstinget.',
+        'skicka.forfragan.vardenheter.heading': 'Nedan visas de vårdenheter som finns avtalade för landstinget.',
+        'skicka.forfragan.egna.label': 'Vårdenheter i det egna landstingets regi',
+        'skicka.forfragan.annat.label': 'Vårdenheter i andra landstings regi',
+        'skicka.forfragan.privat.label': 'Vårdenheter i privat regi',
+        'skicka.forfragan.meddelande.label': 'Meddelande',
+        'skicka.forfragan.meddelande.help': 'Meddelandet visas för vårdenheten och för Försäkringskassans handläggare.',
+        'skicka.forfragan.meddelande.placeholder': 'Skriv meddelande här',
+
         // Lista utredningar tabell
         'label.table.utredningar.column.id': 'Id',
         'label.table.utredningar.column.typ': 'Utredningstyp',

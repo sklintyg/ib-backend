@@ -1,0 +1,12 @@
+#skicka-forfragan-modal {
+
+  ib-checkgroup .control-label {
+    @extend %ib-typo-05;
+    color: $ib-color-09;
+  }
+
+  .control-label {
+    @extend %ib-typo-06;
+    color: $ib-color-09;
+  }
+}
