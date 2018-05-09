@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
+import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
@@ -31,14 +32,20 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
-import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 public class ForfraganListItem implements FreeTextSearchable {
     private static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
 
     // Temp hard-coded, replace by parameterized stuff.
     private static final int BESVARA_FORFRAGAN_ARBETSDAGAR = 2;
+
+    // Planeringsdatum = Dagens datum + POSTGÅNG_DAGAR arbetsdagar + AFU_UTREDNING_ARBETSDAGAR arbetsdagar exklusive
+    // semesterperioder + POSTGANG_ARBETSDAGAR arbetsdagar
+    private static final int AFU_UTREDNING_ARBETSDAGAR = 25;
+    private static final int POSTGANG_ARBETSDAGAR = 3;
 
     private String utredningsId;
     private String utredningsTyp;
@@ -63,18 +70,20 @@ public class ForfraganListItem implements FreeTextSearchable {
         InternForfraganStatus status = statusResolver.resolveStatus(utredning, internForfragan);
 
         return ForfraganListItemBuilder.aForfraganListItem()
-                .withBesvarasSenastDatum(!isNull(internForfragan.getBesvarasSenastDatum())
+                .withBesvarasSenastDatum(nonNull(internForfragan.getBesvarasSenastDatum())
                         ? internForfragan.getBesvarasSenastDatum().format(formatter)
                         : null)
                 .withBesvarasSenastDatumPaVagPasseras(resolveBesvarasSenastPaVagPasseras(internForfragan.getBesvarasSenastDatum()))
                 .withBesvarasSenastDatumPasserat(resolveBesvaraSenastPasserat(internForfragan))
-                .withInkomDatum(!isNull(internForfragan.getSkapadDatum())
+                .withInkomDatum(nonNull(internForfragan.getSkapadDatum())
                         ? internForfragan.getSkapadDatum().format(formatter)
                         : null)
-                .withPlaneringsDatum(
-                        !isNull(internForfragan.getForfraganSvar()) && !isNull(internForfragan.getForfraganSvar().getBorjaDatum())
-                                ? internForfragan.getForfraganSvar().getBorjaDatum().format(formatter)
-                                : null)
+
+                .withPlaneringsDatum(resolvePlaneringsDatum(utredning.getBestallning()))
+                // .withPlaneringsDatum(
+                // !isNull(internForfragan.getForfraganSvar()) && !isNull(internForfragan.getForfraganSvar().getBorjaDatum())
+                // ? internForfragan.getForfraganSvar().getBorjaDatum().format(formatter)
+                // : null)
                 .withStatus(status)
                 .withUtredningsId(utredning.getUtredningId())
                 .withUtredningsTyp(utredning.getUtredningsTyp().name())
@@ -82,6 +91,27 @@ public class ForfraganListItem implements FreeTextSearchable {
                 .withVardgivareNamn(utredning.getExternForfragan().getLandstingHsaId())
                 .withKraverAtgard(status.getNextActor() == Actor.VARDADMIN)
                 .build();
+    }
+
+    private static String resolvePlaneringsDatum(Optional<Bestallning> bestallning) {
+
+        LocalDate startDatum = LocalDate.now();
+
+        // Om redan beställd, ska vi då utgå från orderdatumet istället?? Dvs planeringsdatum blir orderdatum + 31 arbetsdagar?
+        if (bestallning.isPresent() && bestallning.get().getOrderDatum() != null) {
+            startDatum = bestallning.get().getOrderDatum().toLocalDate();
+        }
+
+        // // Planeringsdatum = Dagens datum + POSTGÅNG_DAGAR arbetsdagar + AFU_UTREDNING_ARBETSDAGAR arbetsdagar exklusive
+        // semesterperioder
+        // + POSTGANG_ARBETSDAGAR arbetsdagar
+
+        LocalDate planeringsDatum = LocalDate.from(startDatum);
+        int total = POSTGANG_ARBETSDAGAR + AFU_UTREDNING_ARBETSDAGAR + POSTGANG_ARBETSDAGAR;
+        while (Holidays.SWE.daysBetween(startDatum, planeringsDatum) < total) {
+            planeringsDatum = planeringsDatum.plusDays(1);
+        }
+        return planeringsDatum.format(formatter);
     }
 
     private static boolean resolveBesvaraSenastPasserat(InternForfragan internForfragan) {

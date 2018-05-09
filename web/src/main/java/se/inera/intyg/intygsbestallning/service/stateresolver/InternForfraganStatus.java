@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-public enum InternForfraganStatus {
+public enum InternForfraganStatus implements SortableLabel {
     INKOMMEN("Inkommen", InternForfraganFas.FORFRAGAN, Actor.VARDADMIN),
     ACCEPTERAD_VANTAR_PA_TILLDELNINGSBESLUT("Accepterad, väntar på tilldelningsbeslut", InternForfraganFas.FORFRAGAN, Actor.SAMORDNARE),
     DIREKTTILLDELAD("Direkttilldelad", InternForfraganFas.TILLDELAD, Actor.SAMORDNARE),

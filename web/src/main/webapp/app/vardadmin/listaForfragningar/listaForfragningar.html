@@ -7,13 +7,13 @@
   <table id="vardadmin-lista-forfragningar-table" class="table table-striped ib-table-striped">
     <thead>
       <tr>
-        <th ib-table-head label-key="label.table.forfragningar.column.id"></th>
-        <th ib-table-head label-key="label.table.forfragningar.column.typ"></th>
-        <th ib-table-head label-key="label.table.forfragningar.column.landsting"></th>
-        <th ib-table-head label-key="label.table.forfragningar.column.inkommet" help-key="label.table.forfragningar.column.inkommet.tooltip"></th>
-        <th ib-table-head label-key="label.table.forfragningar.column.svarsdatum" help-key="label.table.forfragningar.column.svarsdatum.tooltip"></th>
-        <th ib-table-head label-key="label.table.forfragningar.column.planeringsdatum" help-key="label.table.forfragningar.column.planeringsdatum.tooltip"></th>
-        <th ib-table-head label-key="label.table.forfragningar.column.status"></th>
+        <th ib-table-head filter="filter" filter-changed="getForfragningarFiltered()" ib-table-head order-by-key="utredningsId" label-key="label.table.forfragningar.column.id"></th>
+        <th ib-table-head filter="filter" filter-changed="getForfragningarFiltered()" ib-table-head order-by-key="utredningsTyp" label-key="label.table.forfragningar.column.typ"></th>
+        <th ib-table-head filter="filter" filter-changed="getForfragningarFiltered()" ib-table-head order-by-key="vardgivareNamn" label-key="label.table.forfragningar.column.landsting"></th>
+        <th ib-table-head filter="filter" filter-changed="getForfragningarFiltered()" ib-table-head order-by-key="inkomDatum" label-key="label.table.forfragningar.column.inkommet" help-key="label.table.forfragningar.column.inkommet.tooltip"></th>
+        <th ib-table-head filter="filter" filter-changed="getForfragningarFiltered()" ib-table-head order-by-key="besvarasSenastDatum" label-key="label.table.forfragningar.column.svarsdatum" help-key="label.table.forfragningar.column.svarsdatum.tooltip"></th>
+        <th ib-table-head filter="filter" filter-changed="getForfragningarFiltered()" ib-table-head order-by-key="planeringsDatum" label-key="label.table.forfragningar.column.planeringsdatum" help-key="label.table.forfragningar.column.planeringsdatum.tooltip"></th>
+        <th ib-table-head filter="filter" filter-changed="getForfragningarFiltered()" ib-table-head order-by-key="status" label-key="label.table.forfragningar.column.status"></th>
         <th></th>
       </tr>
     </thead>
@@ -22,7 +22,7 @@
         <td>{{::row.utredningsId}}</td>
         <td>{{::row.utredningsTyp}}</td>
         <td>{{::row.vardgivareNamn}}</td>
-        <td>{{::row.inkomDatum}}</td><!-- <ib-bestallning-slutdatum-fas slutdatum-passerat="::row.slutdatumPasserat" slutdatum-pa-vag-passeras="::row.slutdatumPaVagPasseras" slutdatum-fas="::row.slutdatumFas"></ib-bestallning-slutdatum-fas> -->
+        <td>{{::row.inkomDatum}}</td>
         <td><ib-forfragan-svarsdatum svarsdatum-passerat="::row.besvarasSenastDatumPasserat" svarsdatum-pa-vag-passeras="::row.besvarasSenastDatumPaVagPasseras" svarsdatum="::row.besvarasSenastDatum"></ib-forfragan-svarsdatum></td>
         <td>{{::row.planeringsDatum}}</td>
         <td><ib-forfragan-status status="::row.status.label" kraver-atgard="::row.kraverAtgard"></ib-forfragan-status></td>

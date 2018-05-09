@@ -45,43 +45,44 @@ public final class GenericComparator {
             Object o1Value = m.invoke(o1);
             Object o2Value = m.invoke(o2);
 
+            if (o1Value == null && o2Value == null) {
+                return 0;
+            }
+
+            // If either value is null, don't sort?
+            if (o1Value == null && o2Value != null) {
+                return orderByAsc ? 1 : -1;
+            }
+            if (o1Value != null && o2Value == null) {
+                return orderByAsc ? -1 : 1;
+            }
+
             if (SortableLabel.class.isAssignableFrom(m.getReturnType())) {
                 o1Value = ((SortableLabel) o1Value).getLabel();
                 o2Value = ((SortableLabel) o2Value).getLabel();
             }
 
-            if (orderByAsc) {
+            int compareResult = 0;
 
-                if (o1Value instanceof Number) {
-                    Pair<Integer, Integer> intPair = castToIntegerPair(o1Value, o2Value);
-                    return intPair.getFirst().compareTo(intPair.getSecond());
-                }
-                if (o1Value instanceof String) {
-                    return ((String) o1Value).compareToIgnoreCase((String) o2Value);
-                }
-                if (o1Value instanceof Boolean) {
-                    return Boolean.compare((Boolean) o1Value, (Boolean) o2Value);
-                }
-            } else {
-                if (o1Value instanceof Number) {
-                    Pair<Integer, Integer> intPair = castToIntegerPair(o1Value, o2Value);
-                    return intPair.getSecond().compareTo(intPair.getFirst());
-                }
-                if (o1Value instanceof String) {
-                    return ((String) o2Value).compareToIgnoreCase((String) o1Value);
-                }
-                if (o1Value instanceof Boolean) {
-                    return Boolean.compare((Boolean) o2Value, (Boolean) o1Value);
-                }
+            if (o1Value instanceof Number) {
+                Pair<Integer, Integer> intPair = castToIntegerPair(o1Value, o2Value);
+                compareResult = intPair.getFirst().compareTo(intPair.getSecond());
             }
+            if (o1Value instanceof String) {
+                compareResult = ((String) o1Value).compareToIgnoreCase((String) o2Value);
+            }
+            if (o1Value instanceof Boolean) {
+                compareResult = Boolean.compare((Boolean) o1Value, (Boolean) o2Value);
+            }
+
+            return orderByAsc ? compareResult : Math.negateExact(compareResult);
+
         } catch (NoSuchMethodException e) {
             throw new IbServiceException(IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Unknown column to order by: '" + orderBy + "'");
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new IbServiceException(IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
                     "Unable to sort by column : '" + orderBy + "'. Message: " + e.getMessage());
         }
-        // We should never come here...
-        return 0;
     }
 
     private static Pair<Integer, Integer> castToIntegerPair(Object o1Value, Object o2Value) {
