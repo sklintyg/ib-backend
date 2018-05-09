@@ -22,6 +22,7 @@ import com.google.common.collect.ImmutableList;
 import se.inera.intyg.intygsbestallning.persistence.model.Anteckning;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
+import se.inera.intyg.intygsbestallning.persistence.model.Betalning;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar;
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
@@ -51,6 +52,7 @@ import java.util.Collections;
 import static se.inera.intyg.intygsbestallning.persistence.model.Anteckning.AnteckningBuilder.anAnteckning;
 import static se.inera.intyg.intygsbestallning.persistence.model.Avvikelse.AvvikelseBuilder.anAvvikelse;
 import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
+import static se.inera.intyg.intygsbestallning.persistence.model.Betalning.BetalningBuilder.aBetalning;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
 import static se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar;
 import static se.inera.intyg.intygsbestallning.persistence.model.Handelse.HandelseBuilder.aHandelse;
@@ -220,6 +222,15 @@ public final class TestDataFactory {
                 .withMottagetDatum(LocalDateTime.now())
                 .withKompletteringsId("kompletteringsId")
                 .withSkickatDatum(LocalDateTime.now())
+                .build();
+    }
+
+    public static Betalning buildBetalning() {
+        return aBetalning()
+                .withBetalningsDatum(LocalDateTime.now())
+                .withBetalningsId("betalnings-id")
+                .withFakturaId("faktura-id")
+                .withUtbetalningsId("utbetalnings-id")
                 .build();
     }
 }

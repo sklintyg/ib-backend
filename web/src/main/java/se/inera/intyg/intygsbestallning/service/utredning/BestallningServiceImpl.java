@@ -124,6 +124,8 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
                         requestFilter.getAvslutsDatumToDate()))
                 .filter(bli -> buildFreeTextPredicate(bli, requestFilter.getFreeText()))
                 .filter(bli -> buildErsattsPredicate(bli, requestFilter.getErsatts()))
+                .filter(bli -> buildFaktureradPredicate(bli, requestFilter.getFakturerad()))
+                .filter(bli -> buildBetaldPredicate(bli, requestFilter.getUtbetald()))
 
                 .sorted((o1, o2) -> GenericComparator.compare(AvslutadBestallningListItem.class, o1, o2, requestFilter.getOrderBy(),
                         requestFilter.isOrderByAsc()))
@@ -142,17 +144,67 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
             enrichWithVardgivareNames(paged);
         }
 
-        return avslutadeBestallningar;
+        return paged;
+    }
+
+    private boolean buildBetaldPredicate(AvslutadBestallningListItem bli, String enumValue) {
+        if (Strings.isNullOrEmpty(enumValue)) {
+            return true;
+        }
+        try {
+            YesNoAllFilter filterVal = YesNoAllFilter.valueOf(enumValue);
+            if (filterVal == YesNoAllFilter.ALL) {
+                return true;
+            }
+            if (filterVal == YesNoAllFilter.YES) {
+                return !Strings.isNullOrEmpty(bli.getUtbetald());
+            }
+            if (filterVal == YesNoAllFilter.NO) {
+                return Strings.isNullOrEmpty(bli.getUtbetald());
+            }
+        } catch (IllegalArgumentException e) {
+            throw new IbServiceException(IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Unknown enum value for YesNoAll: '" + enumValue + "'");
+        }
+        return false;
+    }
+
+    private boolean buildFaktureradPredicate(AvslutadBestallningListItem bli, String enumValue) {
+        if (Strings.isNullOrEmpty(enumValue)) {
+            return true;
+        }
+        try {
+            YesNoAllFilter filterVal = YesNoAllFilter.valueOf(enumValue);
+            if (filterVal == YesNoAllFilter.ALL) {
+                return true;
+            }
+            if (filterVal == YesNoAllFilter.YES) {
+                return !Strings.isNullOrEmpty(bli.getFakturerad());
+            }
+            if (filterVal == YesNoAllFilter.NO) {
+                return Strings.isNullOrEmpty(bli.getFakturerad());
+            }
+        } catch (IllegalArgumentException e) {
+            throw new IbServiceException(IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Unknown enum value for YesNoAll: '" + enumValue + "'");
+        }
+        return false;
     }
 
     private boolean buildErsattsPredicate(AvslutadBestallningListItem bli, String enumValue) {
+        if (Strings.isNullOrEmpty(enumValue)) {
+            return true;
+        }
         try {
             YesNoAllFilter filterVal = YesNoAllFilter.valueOf(enumValue);
 
             if (filterVal == YesNoAllFilter.ALL) {
                 return true;
             }
-
+            if (filterVal == YesNoAllFilter.YES) {
+                return bli.isErsatts();
+            }
+            if (filterVal == YesNoAllFilter.NO) {
+                return !bli.isErsatts();
+            }
         } catch (IllegalArgumentException e) {
             throw new IbServiceException(IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Unknown enum value for YesNoAll: '" + enumValue + "'");
         }

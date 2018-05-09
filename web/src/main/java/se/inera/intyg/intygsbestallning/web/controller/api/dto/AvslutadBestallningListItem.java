@@ -28,6 +28,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.Optional;
 
+import static java.util.Objects.nonNull;
+
 public class AvslutadBestallningListItem implements FreeTextSearchable, VardgivareEnrichable {
 
     private String utredningsId;
@@ -51,8 +53,8 @@ public class AvslutadBestallningListItem implements FreeTextSearchable, Vardgiva
                 .withVardgivareNamn("Enriched later")
                 .withAvslutsDatum(resolveAvslutsDatum(utredning))
                 .withErsatts(resolveErsatts(utredning))
-                .withFakturerad("Fixme")
-                .withUtbetald("Fixme")
+                .withFakturerad(nonNull(utredning.getBetalning()) ? utredning.getBetalning().getFakturaId() : null)
+                .withUtbetald(nonNull(utredning.getBetalning()) ? utredning.getBetalning().getBetalningsId() : null)
                 .build();
     }
 
@@ -174,11 +176,6 @@ public class AvslutadBestallningListItem implements FreeTextSearchable, Vardgiva
 
     @Override
     public String toSearchString() {
-        return null;
-    }
-
-    @Override
-    public String toString() {
         return utredningsId + " "
                 + utredningsTyp + " "
                 + vardgivareHsaId + " "

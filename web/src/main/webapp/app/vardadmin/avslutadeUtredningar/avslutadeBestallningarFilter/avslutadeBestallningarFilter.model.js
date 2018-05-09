@@ -43,9 +43,9 @@ angular.module('ibApp').factory('ibAvslutadeBestallningarFilterModel',
                 from: null,
                 to: null
             },
-            ersatts: false,
-            fakturerad: '',
-            utbetald: '',
+            ersatts: 'ALL',
+            fakturerad: 'ALL',
+            utbetald: 'ALL',
             orderBy: 'avslutsDatum',
             orderByAsc: false
         };
@@ -84,11 +84,11 @@ angular.module('ibApp').factory('ibAvslutadeBestallningarFilterModel',
                 // Filter
                 freeText: this.freetext,
                 vardgivareNamn: this.vardgivareNamn,
-                fromDate: this.avslutsDatum.from,
-                toDate: this.avslutsDatum.to,
-                ersatts: this.ersatts.id,
-                fakturerad: this.fakturerad.id,
-                utbetald: this.utbetald.id,
+                avslutsDatumFromDate: this.avslutsDatum.from,
+                avslutsDatumToDate: this.avslutsDatum.to,
+                ersatts: this.ersatts,
+                fakturerad: this.fakturerad,
+                utbetald: this.utbetald,
 
                 // Sort
                 orderBy: this.orderBy,

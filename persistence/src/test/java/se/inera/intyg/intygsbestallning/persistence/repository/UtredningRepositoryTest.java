@@ -65,6 +65,7 @@ import static org.junit.Assert.assertTrue;
 import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildAnteckning;
 import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildBesok;
 import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildBestallning;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildBetalning;
 import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildExternForfragan;
 import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildHandelse;
 import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildHandlaggare;
@@ -117,6 +118,8 @@ public class UtredningRepositoryTest {
         utr.getAnteckningList().add(buildAnteckning());
 
         utr.getIntygList().add(buildIntyg());
+
+        utr.setBetalning(buildBetalning());
 
         utredningRepository.save(utr);
 
@@ -238,6 +241,8 @@ public class UtredningRepositoryTest {
         assertNotNull(intyg.getSistaDatum());
         assertNotNull(intyg.getSistaDatumKompletteringsbegaran());
         assertNotNull(intyg.getSkickatDatum());
+
+
     }
 
     @Test

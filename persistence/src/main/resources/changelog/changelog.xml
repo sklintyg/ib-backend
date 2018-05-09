@@ -64,6 +64,30 @@
 
 
     <changeSet id="3" author="el">
+        <createTable tableName="BETALNING">
+            <column name="ID" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="FAKTURA_ID" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="BETALNINGS_ID" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UTBETALNINGS_ID" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="BETALNINGS_DATUM" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <addAutoIncrement columnDataType="bigint"
+                          columnName="ID"
+                          incrementBy="1"
+                          startWith="1"
+                          tableName="BETALNING"/>
+
         <createTable tableName="EXTERN_FORFRAGAN">
             <column name="ID" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
@@ -246,6 +270,10 @@
                 <constraints nullable="true"/>
             </column>
 
+            <column name="BETALNING_ID" type="bigint">
+                <constraints nullable="true"/>
+            </column>
+
             <column name="TOLK_BEHOV" type="tinyint(1)" defaultValue="0">
                 <constraints nullable="true"/>
             </column>
@@ -289,6 +317,12 @@
                                  baseColumnNames="HANDLAGGARE_ID"
                                  constraintName="UTREDNING_HANDLAGGARE_FK"
                                  referencedTableName="HANDLAGGARE"
+                                 referencedColumnNames="ID"/>
+
+        <addForeignKeyConstraint baseTableName="UTREDNING"
+                                 baseColumnNames="BETALNING_ID"
+                                 constraintName="UTREDNING_BETALNING_FK"
+                                 referencedTableName="BETALNING"
                                  referencedColumnNames="ID"/>
 
         <createIndex tableName="UTREDNING"
@@ -743,5 +777,6 @@
                                  constraintName="ANTECKNING_UTREDNING_FK"
                                  referencedTableName="UTREDNING"
                                  referencedColumnNames="UTREDNING_ID"/>
+
     </changeSet>
 </databaseChangeLog>

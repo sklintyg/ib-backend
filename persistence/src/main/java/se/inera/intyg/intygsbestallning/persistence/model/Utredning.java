@@ -18,9 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
-import static java.util.Objects.isNull;
-import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
-
 import com.google.common.base.MoreObjects;
 import org.apache.commons.collections4.ListUtils;
 import org.hibernate.annotations.Type;
@@ -43,6 +40,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static java.util.Objects.isNull;
+import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 
 @Entity
 @Table(name = "UTREDNING")
@@ -109,6 +109,10 @@ public final class Utredning {
     @JoinColumn(name = "INVANARE_ID")
     private Invanare invanare;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "BETALNING_ID")
+    private Betalning betalning;
+
     public Utredning() {
     }
 
@@ -144,6 +148,7 @@ public final class Utredning {
                 .withInvanare(Invanare.copyFrom(utredning.getInvanare()))
                 .withAvbrutenDatum(utredning.getAvbrutenDatum())
                 .withAvbrutenAnledning(utredning.getAvbrutenAnledning())
+                .withBetalning(utredning.getBetalning())
                 .build();
     }
 
@@ -259,6 +264,14 @@ public final class Utredning {
         this.invanare = invanare;
     }
 
+    public Betalning getBetalning() {
+        return betalning;
+    }
+
+    public void setBetalning(final Betalning betalning) {
+        this.betalning = betalning;
+    }
+
     public List<Intyg> getIntygList() {
         return intygList;
     }
@@ -292,6 +305,7 @@ public final class Utredning {
         private List<Anteckning> anteckningList = new ArrayList<>();
         private Handlaggare handlaggare;
         private Invanare invanare;
+        private Betalning betalning;
 
         private UtredningBuilder() {
         }
@@ -380,6 +394,11 @@ public final class Utredning {
             return this;
         }
 
+        public UtredningBuilder withBetalning(Betalning betalning) {
+            this.betalning = betalning;
+            return this;
+        }
+
         public Utredning build() {
             Utredning utredning = new Utredning();
             utredning.setUtredningId(utredningId);
@@ -398,6 +417,7 @@ public final class Utredning {
             utredning.setAnteckningList(anteckningList);
             utredning.setHandlaggare(handlaggare);
             utredning.setInvanare(invanare);
+            utredning.setBetalning(betalning);
             return utredning;
         }
     }
@@ -458,6 +478,9 @@ public final class Utredning {
         if (handlaggare != null ? !handlaggare.equals(utredning.handlaggare) : utredning.handlaggare != null) {
             return false;
         }
+        if (betalning != null ? !betalning.equals(utredning.betalning) : utredning.betalning != null) {
+            return false;
+        }
         return invanare != null ? invanare.equals(utredning.invanare) : utredning.invanare == null;
     }
 
@@ -479,7 +502,8 @@ public final class Utredning {
                 intygList,
                 anteckningList,
                 handlaggare,
-                invanare);
+                invanare,
+                betalning);
     }
 
     @Override
@@ -501,6 +525,7 @@ public final class Utredning {
                 .add("anteckningsList", anteckningList)
                 .add("handlaggare", handlaggare)
                 .add("invanare", invanare)
+                .add("betalning", betalning)
                 .toString();
     }
 }
