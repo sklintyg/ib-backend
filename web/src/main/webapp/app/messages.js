@@ -134,6 +134,29 @@ var ibMessages = {
         'forfragningar.filter.status.label': 'Status',
         'forfragningar.filter.resetfilter.label': 'Återställ sökfilter',
 
+        // Lista avslutade utredningar (vårdadmin) tabell
+        'label.table.avslutade.bestallningar.column.id': 'Id',
+        'label.table.avslutade.bestallningar.column.typ': 'Utredningstyp',
+        'label.table.avslutade.bestallningar.column.vardgivareNamn': 'Landsting',
+        'label.table.avslutade.bestallningar.column.status': 'Status',
+        'label.table.avslutade.bestallningar.column.avslutsdatum': 'Avslutsdatum',
+        'label.table.avslutade.bestallningar.column.ersatts': 'Ersätts',
+        'label.table.avslutade.bestallningar.column.fakturerad': 'Fakturerad',
+        'label.table.avslutade.bestallningar.column.utbetald': 'Utbetald',
+
+
+        // Lista avslutade bestallningar filter
+        'avslutade.bestallningar.filter.fritext.label': 'Fritextsökning',
+        'avslutade.bestallningar.filter.fritext.placeholder': 'Skriv sökord',
+        'avslutade.bestallningar.filter.vardgivarenamn.label': 'Landsting',
+        'avslutade.bestallningar.filter.avslutsdatum.label': 'Avslutsdatum',
+        'avslutade.bestallningar.filter.avslutsdatum.placeholder': 'Alla valda',
+        'avslutade.bestallningar.filter.ersatts.label': 'Ersätts',
+        'avslutade.bestallningar.filter.fakturerad.label': 'Fakturerad',
+        'avslutade.bestallningar.filter.utbetald.label': 'Utbetald',
+        'avslutade.bestallningar.filter.status.label': 'Status',
+        'avslutade.bestallningar.filter.resetfilter.label': 'Återställ sökfilter',
+
         //Errors for reporting IO / backend error responses for REST requests
         'server.error.changeunit.title': 'Kunde inte byta systemroll',
         'server.error.changeunit.text': 'Försök igen eller kontakta support',

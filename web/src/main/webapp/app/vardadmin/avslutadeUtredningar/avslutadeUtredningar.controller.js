@@ -19,8 +19,46 @@
 
 angular.module('ibApp')
     .controller('AvslutadeUtredningarCtrl',
-        function() {
+        function($log, $scope, $state, ibAvslutadeBestallningarFilterModel, BestallningarProxy) {
             'use strict';
 
+            $scope.filter = ibAvslutadeBestallningarFilterModel.build();
+
+            $scope.visaBestallning = function(utredningsId){
+                $state.go('.visaBestallning', {utredningsId: utredningsId});
+            };
+
+            $scope.getAvslutadeBestallningarFiltered = function(appendResults) {
+
+                if (!appendResults) {
+                    $scope.filter.currentPage = 0;
+                }
+
+                BestallningarProxy.getAvslutadeBestallningarWithFilter($scope.filter.convertToPayload()).then(function(data) {
+                    if (appendResults) {
+                        $scope.bestallningar = $scope.bestallningar.concat(data.bestallningar);
+                    }
+                    else {
+                        $scope.bestallningar = data.bestallningar;
+                    }
+                    $scope.bestallningarTotal = data.totalCount;
+                }, function(error) {
+                    $log.error(error);
+                });
+            };
+
+
+            BestallningarProxy.getAvslutadeBestallningarFilterValues().then(function(data) {
+                $scope.filter.populateFilter(data);
+            }, function(error) {
+                $log.error(error);
+            });
+
+            $scope.getMore = function() {
+                $scope.filter.currentPage++;
+                $scope.getAvslutadeBestallningarFiltered(true);
+            };
+
+            $scope.getAvslutadeBestallningarFiltered();
         }
     );

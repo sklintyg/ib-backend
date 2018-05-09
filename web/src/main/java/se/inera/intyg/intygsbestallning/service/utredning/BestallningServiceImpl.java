@@ -30,7 +30,9 @@ import se.inera.intyg.infra.logmessages.ResourceType;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.pdl.PDLActivityStore;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
+import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
+import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.patient.PatientNameEnricher;
 import se.inera.intyg.intygsbestallning.service.pdl.LogService;
@@ -39,13 +41,18 @@ import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.util.GenericComparator;
 import se.inera.intyg.intygsbestallning.service.util.PagingUtil;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.AvslutadBestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetBestallningResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListAvslutadeBestallningarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListBestallningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardgivareEnrichable;
+import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListAvslutadeBestallningarFilter;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListBestallningFilter;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.SelectItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.filter.YesNoAllFilter;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -95,6 +102,75 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
         List<ListFilterStatus> statuses = Arrays.asList(ListFilterStatus.values());
 
         return new ListBestallningFilter(distinctVardgivare, statuses);
+    }
+
+    @Override
+    public List<AvslutadBestallningListItem> findAvslutadeBestallningarForVardenhet(String vardenhetHsaId,
+            ListAvslutadeBestallningarRequest requestFilter) {
+        List<AvslutadBestallningListItem> avslutadeBestallningar = utredningRepository
+                .findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradTrue(vardenhetHsaId)
+                .stream().map(utr -> AvslutadBestallningListItem.from(utr, utredningStateResolver))
+                .collect(Collectors.toList());
+
+        boolean enrichedWithVardgivareNames = false;
+        if (!Strings.isNullOrEmpty(requestFilter.getFreeText()) || requestFilter.getOrderBy().equals("vardgivareNamn")) {
+            enrichWithVardgivareNames(avslutadeBestallningar);
+            enrichedWithVardgivareNames = true;
+        }
+
+        List<AvslutadBestallningListItem> filtered = avslutadeBestallningar.stream()
+                .filter(bli -> buildVardgivareHsaIdPredicate(bli.getVardgivareHsaId(), requestFilter.getVardgivareHsaId()))
+                .filter(bli -> buildToFromPredicate(bli.getAvslutsDatum(), requestFilter.getAvslutsDatumFromDate(),
+                        requestFilter.getAvslutsDatumToDate()))
+                .filter(bli -> buildFreeTextPredicate(bli, requestFilter.getFreeText()))
+                .filter(bli -> buildErsattsPredicate(bli, requestFilter.getErsatts()))
+
+                .sorted((o1, o2) -> GenericComparator.compare(AvslutadBestallningListItem.class, o1, o2, requestFilter.getOrderBy(),
+                        requestFilter.isOrderByAsc()))
+                .collect(toList());
+
+        // Paging. We need to perform some bounds-checking...
+        int total = filtered.size();
+        if (total == 0) {
+            return filtered;
+        }
+
+        Pair<Integer, Integer> bounds = PagingUtil.getBounds(total, requestFilter.getPageSize(), requestFilter.getCurrentPage());
+        List<AvslutadBestallningListItem> paged = filtered.subList(bounds.getFirst(), bounds.getSecond() + 1);
+
+        if (!enrichedWithVardgivareNames) {
+            enrichWithVardgivareNames(paged);
+        }
+
+        return avslutadeBestallningar;
+    }
+
+    private boolean buildErsattsPredicate(AvslutadBestallningListItem bli, String enumValue) {
+        try {
+            YesNoAllFilter filterVal = YesNoAllFilter.valueOf(enumValue);
+
+            if (filterVal == YesNoAllFilter.ALL) {
+                return true;
+            }
+
+        } catch (IllegalArgumentException e) {
+            throw new IbServiceException(IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Unknown enum value for YesNoAll: '" + enumValue + "'");
+        }
+        return false;
+    }
+
+    @Override
+    public ListAvslutadeBestallningarFilter buildListAvslutadeBestallningarFilter(String vardenhetHsaId) {
+        List<SelectItem> distinctVardgivare = utredningRepository
+                .findDistinctLandstingHsaIdByVardenhetHsaIdHavingBestallningAndIsArkiverad(vardenhetHsaId)
+                .stream()
+                .map(vgHsaId -> new SelectItem(vgHsaId, organizationUnitService.getVardgivareInfo(vgHsaId).getNamn()))
+                .distinct()
+                .sorted(Comparator.comparing(SelectItem::getLabel))
+                .collect(Collectors.toList());
+        ListAvslutadeBestallningarFilter filter = new ListAvslutadeBestallningarFilter(distinctVardgivare);
+
+        return filter;
     }
 
     @Override
@@ -199,7 +275,7 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
         return true;
     }
 
-    private void enrichWithVardgivareNames(List<BestallningListItem> items) {
+    private void enrichWithVardgivareNames(List<? extends VardgivareEnrichable> items) {
         items.stream().forEach(bli -> {
             if (!Strings.isNullOrEmpty(bli.getVardgivareHsaId())) {
                 Vardgivare vardgivareInfo = organizationUnitService.getVardgivareInfo(bli.getVardgivareHsaId());

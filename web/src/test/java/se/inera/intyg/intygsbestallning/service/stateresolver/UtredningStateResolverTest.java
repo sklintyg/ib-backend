@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
+import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
@@ -115,6 +116,7 @@ public class UtredningStateResolverTest extends BaseResolverTest {
         utr.getExternForfragan().getInternForfraganList()
                 .add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
         utr.setBestallning(buildBestallning(null));
+        utr.getIntygList().add(buildBestalltIntyg());
         utr.getHandlingList().clear();
 
         UtredningStatus status = testee.resolveStatus(utr);
@@ -130,6 +132,7 @@ public class UtredningStateResolverTest extends BaseResolverTest {
         utr.getExternForfragan().getInternForfraganList()
                 .add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
         utr.setBestallning(buildBestallning(LocalDateTime.now()));
+        utr.getIntygList().add(buildBestalltIntyg());
         utr.getHandlingList().clear();
 
         UtredningStatus status = testee.resolveStatus(utr);
@@ -144,6 +147,7 @@ public class UtredningStateResolverTest extends BaseResolverTest {
         utr.getExternForfragan().getInternForfraganList()
                 .add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
         utr.setBestallning(buildBestallning(null));
+        utr.getIntygList().add(buildBestalltIntyg());
         utr.getHandlingList().add(buildHandling(LocalDateTime.now(), null));
 
         UtredningStatus status = testee.resolveStatus(utr);
@@ -157,6 +161,7 @@ public class UtredningStateResolverTest extends BaseResolverTest {
         Utredning utr = buildBaseUtredning();
         utr.getExternForfragan().getInternForfraganList().add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
         utr.setBestallning(buildBestallning(null));
+        utr.getIntygList().add(buildBestalltIntyg());
         utr.getHandlingList().add(buildHandling(LocalDateTime.now(), null));
         utr.getBesokList().add(Besok.BesokBuilder.aBesok()
                 .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
@@ -174,6 +179,14 @@ public class UtredningStateResolverTest extends BaseResolverTest {
         h.setInkomDatum(inkomDatum);
         h.setSkickatDatum(skickadDatum);
         return h;
+    }
+
+    // Den post som skapas i samband med inkommen beställning. Dvs EJ komplettering.
+    private Intyg buildBestalltIntyg() {
+        return Intyg.IntygBuilder.anIntyg()
+                .withId(123L)
+                .withSistaDatum(LocalDateTime.now().plusDays(25))
+                .build();
     }
 
 }

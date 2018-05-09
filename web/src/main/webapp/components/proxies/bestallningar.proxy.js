@@ -107,10 +107,66 @@ angular.module('ibApp').factory('BestallningarProxy',
             return promise.promise;
         }
 
+        function _getAvslutadeBestallningarWithFilter(query) {
+            var promise = $q.defer();
+
+            var restPath = '/api/vardadmin/bestallningar/avslutade';
+
+            var config =  {
+                timeout: networkConfig.defaultTimeout
+            };
+
+            $http.post(restPath, query, config).then(function(response) {
+                $log.debug(restPath + ' - success');
+
+                if (typeof response !== 'undefined') {
+                    promise.resolve(response.data);
+                } else {
+                    $log.debug('JSON response syntax error. Rejected.');
+                    promise.reject(null);
+                }
+            }, function(response) {
+                $log.error('error ' + response.status);
+                // Let calling code handle the error of no data response
+                promise.reject(response.data);
+            });
+
+            return promise.promise;
+        }
+
+        function _getAvslutadeBestallningarFilterValues() {
+            var promise = $q.defer();
+
+            var restPath = '/api/vardadmin/bestallningar/avslutade/list/filter';
+
+            var config =  {
+                timeout: networkConfig.defaultTimeout
+            };
+
+            $http.get(restPath, null, config).then(function(response) {
+                $log.debug(restPath + ' - success');
+
+                if (typeof response !== 'undefined') {
+                    promise.resolve(response.data);
+                } else {
+                    $log.debug('JSON response syntax error. Rejected.');
+                    promise.reject(null);
+                }
+            }, function(response) {
+                $log.error('error ' + response.status);
+                // Let calling code handle the error of no data response
+                promise.reject(response.data);
+            });
+
+            return promise.promise;
+        }
+
         // Return public API for the service
         return {
             getBestallning: _getBestallning,
             getBestallningarWithFilter: _getBestallningarWithFilter,
-            getBestallningarFilterValues : _getBestallningarFilterValues
+            getBestallningarFilterValues : _getBestallningarFilterValues,
+            getAvslutadeBestallningarWithFilter: _getAvslutadeBestallningarWithFilter,
+            getAvslutadeBestallningarFilterValues : _getAvslutadeBestallningarFilterValues
         };
     });

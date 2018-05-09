@@ -30,7 +30,7 @@ import java.time.format.DateTimeFormatter;
 
 import static java.util.Objects.isNull;
 
-public class BestallningListItem implements PDLLoggable, FreeTextSearchable, FilterableListItem {
+public class BestallningListItem implements PDLLoggable, FreeTextSearchable, FilterableListItem, VardgivareEnrichable {
 
     private static final long DEFAULT_DAYS = 5L;
 
@@ -148,6 +148,7 @@ public class BestallningListItem implements PDLLoggable, FreeTextSearchable, Fil
         this.utredningsTyp = utredningsTyp;
     }
 
+    @Override
     public String getVardgivareHsaId() {
         return vardgivareHsaId;
     }
@@ -160,6 +161,7 @@ public class BestallningListItem implements PDLLoggable, FreeTextSearchable, Fil
         return vardgivareNamn;
     }
 
+    @Override
     public void setVardgivareNamn(String vardgivareNamn) {
         this.vardgivareNamn = vardgivareNamn;
     }

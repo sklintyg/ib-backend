@@ -37,6 +37,14 @@ public interface UtredningRepository extends JpaRepository<Utredning, String> {
      */
     List<Utredning> findAllByExternForfragan_InternForfraganList_VardenhetHsaId_AndArkiveradFalse(String vardenhetHsaId);
 
+    /**
+     * Returns utredningar tilldelad to vardenhet in archived state.
+     *
+     * @param vardenhetHsaId
+     * @return
+     */
+    List<Utredning> findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradTrue(String vardenhetHsaId);
+
     List<Utredning> findAllByExternForfragan_LandstingHsaId(String landstingHsaId);
 
     List<Utredning> findByExternForfragan_LandstingHsaId_AndArkiveradFalse(String landstingHsaId);
@@ -53,6 +61,9 @@ public interface UtredningRepository extends JpaRepository<Utredning, String> {
 
     @Query("SELECT ef.landstingHsaId FROM Utredning u JOIN u.bestallning b JOIN u.externForfragan ef WHERE b.tilldeladVardenhetHsaId = :vardenhetHsaId")
     List<String> findDistinctLandstingHsaIdByVardenhetHsaIdHavingBestallning(@Param("vardenhetHsaId") String vardenhetHsaId);
+
+    @Query("SELECT ef.landstingHsaId FROM Utredning u JOIN u.bestallning b JOIN u.externForfragan ef WHERE b.tilldeladVardenhetHsaId = :vardenhetHsaId AND u.arkiverad = true")
+    List<String> findDistinctLandstingHsaIdByVardenhetHsaIdHavingBestallningAndIsArkiverad(@Param("vardenhetHsaId") String vardenhetHsaId);
 }
 //CHECKSTYLE:ON MethodName
 //CHECKSTYLE:ON LineLength

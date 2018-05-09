@@ -78,12 +78,7 @@ public class ForfraganListItem implements FreeTextSearchable {
                 .withInkomDatum(nonNull(internForfragan.getSkapadDatum())
                         ? internForfragan.getSkapadDatum().format(formatter)
                         : null)
-
                 .withPlaneringsDatum(resolvePlaneringsDatum(utredning.getBestallning()))
-                // .withPlaneringsDatum(
-                // !isNull(internForfragan.getForfraganSvar()) && !isNull(internForfragan.getForfraganSvar().getBorjaDatum())
-                // ? internForfragan.getForfraganSvar().getBorjaDatum().format(formatter)
-                // : null)
                 .withStatus(status)
                 .withUtredningsId(utredning.getUtredningId())
                 .withUtredningsTyp(utredning.getUtredningsTyp().name())
@@ -95,17 +90,12 @@ public class ForfraganListItem implements FreeTextSearchable {
 
     private static String resolvePlaneringsDatum(Optional<Bestallning> bestallning) {
 
-        LocalDate startDatum = LocalDate.now();
-
         // Om redan beställd, ska vi då utgå från orderdatumet istället?? Dvs planeringsdatum blir orderdatum + 31 arbetsdagar?
         if (bestallning.isPresent() && bestallning.get().getOrderDatum() != null) {
-            startDatum = bestallning.get().getOrderDatum().toLocalDate();
+            return null;
         }
 
-        // // Planeringsdatum = Dagens datum + POSTGÅNG_DAGAR arbetsdagar + AFU_UTREDNING_ARBETSDAGAR arbetsdagar exklusive
-        // semesterperioder
-        // + POSTGANG_ARBETSDAGAR arbetsdagar
-
+        LocalDate startDatum = LocalDate.now();
         LocalDate planeringsDatum = LocalDate.from(startDatum);
         int total = POSTGANG_ARBETSDAGAR + AFU_UTREDNING_ARBETSDAGAR + POSTGANG_ARBETSDAGAR;
         while (Holidays.SWE.daysBetween(startDatum, planeringsDatum) < total) {

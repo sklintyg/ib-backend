@@ -1,0 +1,10 @@
+avslutade-bestallningar-filter {
+  display: block;
+  margin: 20px 0;
+
+  ib-textfield, ib-dropdown, ib-date-range-picker {
+    display: inline-block;
+    width: 150px;
+    margin-right: 20px;
+  }
+}

@@ -35,10 +35,14 @@ import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationExceptio
 import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.BestallningService;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.AvslutadBestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetAvslutadeBestallningarListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetBestallningListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetBestallningResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListAvslutadeBestallningarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListBestallningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListAvslutadeBestallningarFilter;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListBestallningFilter;
 
 import java.util.List;
@@ -74,7 +78,6 @@ public class BestallningController {
 
     /**
      * Returns an object containing all possible filter values for the getBestallningarForVardenhet query.
-     * @return
      */
     @PrometheusTimeMethod(name = "get_bestallning_list_filter_duration_seconds", help = "Some helpful info here")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/list/filter")
@@ -85,6 +88,39 @@ public class BestallningController {
 
         ListBestallningFilter listBestallningFilter = bestallningService.buildListBestallningFilter(user.getCurrentlyLoggedInAt().getId());
         return ResponseEntity.ok(listBestallningFilter);
+    }
+
+    @PrometheusTimeMethod(name = "list_avslutade_bestallningar_for_vardenhet_duration_seconds", help = "Some helpful info here")
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/avslutade")
+    public ResponseEntity<GetAvslutadeBestallningarListResponse> getAvslutadeBestallningarForVardenhet(
+            @RequestBody ListAvslutadeBestallningarRequest request) {
+        IbUser user = userService.getUser();
+        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_BESTALLNINGAR)
+                .orThrow(new IbAuthorizationException("User does not have required privilege LISTA_BESTALLNINGAR"));
+
+        if (user.getCurrentlyLoggedInAt().getType() != SelectableHsaEntityType.VE) {
+            throw new IbAuthorizationException("User is not logged in at a Vårdenhet");
+        }
+
+        List<AvslutadBestallningListItem> bestallningar = bestallningService
+                .findAvslutadeBestallningarForVardenhet(user.getCurrentlyLoggedInAt().getId(), request);
+
+        return ResponseEntity.ok(new GetAvslutadeBestallningarListResponse(bestallningar, bestallningar.size()));
+    }
+
+    /**
+     * Returns an object containing all possible filter values for the getBestallningarForVardenhet query.
+     */
+    @PrometheusTimeMethod(name = "get_bestallning_list_filter_duration_seconds", help = "Some helpful info here")
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/avslutade/list/filter")
+    public ResponseEntity<ListAvslutadeBestallningarFilter> getListAvslutadeBestallningarFilter() {
+        IbUser user = userService.getUser();
+        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_BESTALLNINGAR)
+                .orThrow(new IbAuthorizationException("User does not have required privilege LISTA_BESTALLNINGAR"));
+
+        ListAvslutadeBestallningarFilter listAvslutadeBestallningarFilter = bestallningService
+                .buildListAvslutadeBestallningarFilter(user.getCurrentlyLoggedInAt().getId());
+        return ResponseEntity.ok(listAvslutadeBestallningarFilter);
     }
 
     @PrometheusTimeMethod(name = "get_utredning_duration_seconds", help = "Some helpful info here")

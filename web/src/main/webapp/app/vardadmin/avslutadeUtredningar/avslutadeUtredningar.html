@@ -1,3 +1,44 @@
 <div class="container avslutadeUtredningar-page">
-  Avslutade utredningar
+  <avslutade-bestallningar-filter filter="filter" filter-changed="getAvslutadeBestallningarFiltered()"></avslutade-bestallningar-filter>
+
+  <span id="samordnare-lista-avslutade-bestallningar-resulttext">Sökresultat: {{bestallningar.length}} av {{bestallningarTotal}} beställningar</span>
+
+  <table id="samordnare-lista-avslutade-bestallningar-table" class="table table-striped ib-table-striped">
+    <thead>
+    <tr>
+      <th ib-table-head filter="filter" filter-changed="getAvslutadeBestallningarFiltered()" order-by-key="utredningsId" label-key="label.table.avslutade.bestallningar.column.id"></th>
+      <th ib-table-head filter="filter" filter-changed="getAvslutadeBestallningarFiltered()" order-by-key="utredningsTyp" label-key="label.table.avslutade.bestallningar.column.typ"></th>
+      <th ib-table-head filter="filter" filter-changed="getAvslutadeBestallningarFiltered()" order-by-key="vardgivareNamn" label-key="label.table.avslutade.bestallningar.column.vardgivareNamn"></th>
+      <th ib-table-head filter="filter" filter-changed="getAvslutadeBestallningarFiltered()" order-by-key="status" label-key="label.table.avslutade.bestallningar.column.status"></th>
+      <th ib-table-head filter="filter" filter-changed="getAvslutadeBestallningarFiltered()" order-by-key="avslutsDatum" label-key="label.table.avslutade.bestallningar.column.avslutsdatum"></th>
+      <th ib-table-head filter="filter" filter-changed="getAvslutadeBestallningarFiltered()" order-by-key="ersatts" label-key="label.table.avslutade.bestallningar.column.ersatts"></th>
+      <th ib-table-head filter="filter" filter-changed="getAvslutadeBestallningarFiltered()" order-by-key="fakturerad" label-key="label.table.avslutade.bestallningar.column.fakturerad"></th>
+      <th ib-table-head filter="filter" filter-changed="getAvslutadeBestallningarFiltered()" order-by-key="utbetald" label-key="label.table.avslutade.bestallningar.column.utbetald"></th>
+      <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="row in bestallningar">
+      <td>{{::row.utredningsId}}</td>
+      <td>{{::row.utredningsTyp}}</td>
+      <td>{{::row.vardgivareNamn}}</td>
+      <td>{{::row.status.label}}</td>
+      <td>{{::row.avslutsDatum}}</td>
+      <td>{{::row.ersatts}}</td>
+      <td>{{::row.fakturerad}}</td>
+      <td>{{::row.utbetald}}</td>
+      <td><button class="btn btn-primary" ng-click="visaBestallning(row.utredningsId)"><span message key="common.show"></span></button></td>
+    </tr>
+    </tbody>
+  </table>
+
+  <button class="btn btn-primary"
+          ng-click="getMore()"
+          ng-if="bestallningarTotal > bestallningar.length">
+    <message key="common.more.results"></message>
+  </button>
+
+  <div id="samordnare-lista-avslutade-bestallningar-no-results" ng-if="!bestallningar.length">
+    <span message key="common.no.results"></span>
+  </div>
 </div>

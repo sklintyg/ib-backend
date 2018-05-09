@@ -20,9 +20,11 @@ package se.inera.intyg.intygsbestallning.service.stateresolver;
 
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
-import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class UtredningStateResolver {
@@ -71,31 +73,76 @@ public class UtredningStateResolver {
             throw new IllegalStateException("Invalid sub-state in phase FORFRAGAN!");
         }
 
-        // Second phase - Utredning. We ALWAYS have a Bestallning here.
+        // Second phase - Utredning. We ALWAYS have a Bestallning here and one intyg.
+        if (utredning.getIntygList().size() == 1) {
 
-        // BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR
-        Bestallning bestallning = utredning.getBestallning().get();
-        if (utredning.getHandlingList().size() == 0 && bestallning.getUppdateradDatum() == null) {
-            return UtredningStatus.BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR;
+            // UTREDNING_PAGAR_AVVIKELSE
+            if (utredning.getBesokList().stream().anyMatch(bl -> bl.getAvvikelse() != null)) {
+                return UtredningStatus.AVVIKELSE_MOTTAGEN;
+            }
+
+            // BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR
+            Bestallning bestallning = utredning.getBestallning().get();
+            if (utredning.getHandlingList().size() == 0 && bestallning.getUppdateradDatum() == null) {
+                return UtredningStatus.BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR;
+            }
+
+            // BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR
+            if (utredning.getHandlingList().size() == 0 && bestallning.getUppdateradDatum() != null) {
+                return UtredningStatus.UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR;
+            }
+
+            // HANDLINGAR_MOTTAGNA_BOKA_BESOK
+            if (utredning.getHandlingList().size() > 0 && utredning.getBesokList().size() == 0) {
+                return UtredningStatus.HANDLINGAR_MOTTAGNA_BOKA_BESOK;
+            }
+
+            // UTREDNING_PAGAR
+            if (utredning.getHandlingList().size() > 0 && utredning.getBesokList().size() > 0) {
+                return UtredningStatus.UTREDNING_PAGAR;
+            }
+
+            // SKICKAT - om det finns en skickad handling...
+            // if (utredning.getHandlingList().stream().anyMatch(handling -> handling.getSkickatDatum() != null)) {
+            // return UtredningStatus.UTLATANDE_SKICKAT;
+            // }
         }
 
-        // BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR
-        if (utredning.getHandlingList().size() == 0 && bestallning.getUppdateradDatum() != null) {
-            return UtredningStatus.UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR;
-        }
+        if (utredning.getIntygList().size() > 0) {
 
-        // HANDLINGAR_MOTTAGNA_BOKA_BESOK
-        if (utredning.getHandlingList().size() > 0 && utredning.getBesokList().size() == 0) {
-            return UtredningStatus.HANDLINGAR_MOTTAGNA_BOKA_BESOK;
-        }
+            // Om sista datum för kompletteringsbegäran EJ passerats.
+            if (utredning.getIntygList().stream().noneMatch(intyg -> intyg.getSistaDatumKompletteringsbegaran() != null
+                    && LocalDate.now().isBefore(intyg.getSistaDatumKompletteringsbegaran().toLocalDate()))) {
+                return UtredningStatus.UTLATANDE_MOTTAGET;
+            }
 
-        // UTREDNING_PAGAR
-        if (utredning.getHandlingList().size() > 0 && utredning.getBesokList().size() > 0) {
-            return UtredningStatus.UTREDNING_PAGAR;
+            // Om ingen komplettering finns utstående.
+            if (utredning.getIntygList().stream()
+                    .noneMatch(intyg -> LocalDate.now().isAfter(intyg.getSistaDatumKompletteringsbegaran().toLocalDate()))) {
+
+                // Om något besök inkluderade deltagande tolk...
+                if (utredning.getBesokList().stream()
+                        .anyMatch(besok -> besok.getTolkStatus() != null && besok.getTolkStatus() == TolkStatusTyp.DELTAGIT)) {
+
+                    // Kolla om samtliga tolkar redovisats.
+                    if (utredning.getBesokList().stream()
+                            .filter(besok -> besok.getTolkStatus() != null && besok.getTolkStatus() == TolkStatusTyp.DELTAGIT)
+                            .allMatch(besok -> besok.getErsatts() != null && besok.getErsatts())) {
+                        return UtredningStatus.AVSLUTAD;
+                    } else {
+                        return UtredningStatus.REDOVISA_TOLK;
+                    }
+                }
+            }
+
+            // Om det finns kompletteringar (om alla var avslutade så tog förra blocket hand om dem)
+//            if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getKompletteringsId() != null)) {
+//
+//            }
+
         }
 
         // Third phase - Komplettering?
-
 
         throw new IllegalStateException("Unhandled state!");
     }

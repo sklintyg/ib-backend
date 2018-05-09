@@ -1,5 +1,5 @@
 {
-  "utredningId": "utredning-bootstrap-7",
+  "utredningId": "utredning-bootstrap-8",
   "utredningsTyp": "AFU",
   "arkiverad": true,
   "avbrutenDatum": "2018-05-01T13:37:00",
@@ -34,7 +34,7 @@
   "invanare": {
     "personId": "19121212-1212",
     "fullstandigtNamn": "Tolvan Tolvansson",
-    "postort": "11121",
+    "postkod": "11121",
     "sarskildaBehov": "Gillar glass",
     "tidigareUtforare": [
       {
@@ -47,17 +47,5 @@
     "telefonnummer": "031-9999999",
     "email": "epost@inera.se"
   },
-  "bestallning": {
-    "tilldeladVardenhetHsaId": "IFV1239877878-1042",
-    "orderDatum": "2018-05-27T00:00:00",
-    "syfte": "Att bli friskare",
-    "planeradeAktiviteter": "Bowla med gänget",
-    "kommentar": "Detta är faktiskt testdata..."
-  },
-  "intygList": [
-    {
-      "sistaDatum": "2018-05-25T00:00:00.000"
-    }
-  ],
   "sprakTolk": "sv"
 }
