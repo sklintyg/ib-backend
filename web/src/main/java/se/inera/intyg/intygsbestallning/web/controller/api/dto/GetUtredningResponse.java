@@ -18,17 +18,11 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
-import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
-import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
-import se.inera.intyg.intygsbestallning.service.patient.Gender;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
-import se.inera.intyg.schemas.contract.Personnummer;
 
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.util.Objects.isNull;
 
@@ -37,15 +31,23 @@ public class GetUtredningResponse {
 
     private String utredningsId;
 
-    private String utredningsTyp;
-
-    private String vardgivareHsaId;
-
     private String inkomDatum;
 
     private String besvarasSenastDatum;
 
-    private InvanareResponse invanare;
+    private String bostadsort;
+
+    private boolean tidigareUtredd;
+
+    List<FelaktigEnhet> felaktigaEnheter;
+
+    private boolean behovTolk;
+
+    private String tolkSprak;
+
+    private String sarskildaBehov;
+
+    private String kommentar;
 
     private String handlaggareNamn;
 
@@ -53,57 +55,25 @@ public class GetUtredningResponse {
 
     private String handlaggareEpost;
 
-    private boolean behovTolk;
-
-    private String tolkSprak;
-
-    private UtredningStatus status;
-
-    private String intygSistaDatum;
-
-    private String intygSistaDatumKomplettering;
-
-    private String avbrutenDatum;
-
-    private EndReason avbrutenAnledning;
-
-    private String meddelandeFromHandlaggare;
-
-    public static GetUtredningResponse from(Utredning utredning, UtredningStatus utredningStatus) {
+    public static GetUtredningResponse from(Utredning utredning) {
 
         return GetUtredningResponseBuilder.aGetUtredningResponse()
                 .withUtredningsId(utredning.getUtredningId())
-                .withUtredningsTyp(utredning.getUtredningsTyp().name())
-                .withVardgivareHsaId(!isNull(utredning.getExternForfragan())
-                        ? utredning.getExternForfragan().getLandstingHsaId() : null)
                 .withInkomDatum(!isNull(utredning.getExternForfragan())
                         ? utredning.getExternForfragan().getInkomDatum().format(formatter) : null)
                 .withBesvarasSenastDatum(!isNull(utredning.getExternForfragan())
                         ? utredning.getExternForfragan().getBesvarasSenastDatum().format(formatter) : null)
-                .withInvanare(!isNull(utredning.getInvanare())
-                        ? new InvanareResponse(utredning.getInvanare()) : null)
+                .withBostadsort(!isNull(utredning.getInvanare())
+                        ? utredning.getInvanare().getPostkod() : null)
+                .withTidigareUtredd(false)
+                .withFelaktigaEnheter(new ArrayList<>())
+                .withBehovTolk(utredning.getTolkBehov() != null)
+                .withTolkSprak(utredning.getTolkSprak())
+                .withSarskildaBehov(utredning.getInvanare().getSarskildaBehov())
+                .withKommentar(utredning.getExternForfragan().getKommentar())
                 .withHandlaggareNamn(utredning.getHandlaggare().getFullstandigtNamn())
                 .withHandlaggareTelefonnummer(utredning.getHandlaggare().getTelefonnummer())
                 .withHandlaggareEpost(utredning.getHandlaggare().getEmail())
-                .withBehovTolk(utredning.getTolkBehov() != null)
-                .withTolkSprak(utredning.getTolkSprak())
-                .withStatus(utredningStatus)
-                .withIntygSistaDatum(utredning.getIntygList()
-                        .stream()
-                        .filter(intyg -> intyg.getSistaDatum() != null)
-                        .sorted(Comparator.comparing(Intyg::getSistaDatum))
-                        .findFirst()
-                        .map(intyg -> intyg.getSistaDatum().format(formatter)).orElse(null))
-                .withIntygSistaDatumKomplettering(utredning.getIntygList()
-                        .stream()
-                        .filter(intyg -> intyg.getSistaDatumKompletteringsbegaran() != null)
-                        .sorted(Comparator.comparing(Intyg::getSistaDatumKompletteringsbegaran))
-                        .findFirst()
-                        .map(intyg -> intyg.getSistaDatumKompletteringsbegaran().format(formatter)).orElse(null))
-                .withAvbrutenDatum(!isNull(utredning.getAvbrutenDatum())
-                        ? utredning.getAvbrutenDatum().format(formatter) : null)
-                .withAvbrutenAnledning(utredning.getAvbrutenAnledning())
-                .withMeddelandeFromHandlaggare(utredning.getBestallning().map(bestallning -> bestallning.getKommentar()).orElse(null))
                 .build();
 
     }
@@ -112,31 +82,15 @@ public class GetUtredningResponse {
         return utredningsId;
     }
 
-    public void setUtredningsId(final String utredningsId) {
+    public void setUtredningsId(String utredningsId) {
         this.utredningsId = utredningsId;
-    }
-
-    public String getUtredningsTyp() {
-        return utredningsTyp;
-    }
-
-    public void setUtredningsTyp(final String utredningsTyp) {
-        this.utredningsTyp = utredningsTyp;
-    }
-
-    public String getVardgivareHsaId() {
-        return vardgivareHsaId;
-    }
-
-    public void setVardgivareHsaId(final String vardgivareHsaId) {
-        this.vardgivareHsaId = vardgivareHsaId;
     }
 
     public String getInkomDatum() {
         return inkomDatum;
     }
 
-    public void setInkomDatum(final String inkomDatum) {
+    public void setInkomDatum(String inkomDatum) {
         this.inkomDatum = inkomDatum;
     }
 
@@ -144,47 +98,39 @@ public class GetUtredningResponse {
         return besvarasSenastDatum;
     }
 
-    public void setBesvarasSenastDatum(final String besvarasSenastDatum) {
+    public void setBesvarasSenastDatum(String besvarasSenastDatum) {
         this.besvarasSenastDatum = besvarasSenastDatum;
     }
 
-    public InvanareResponse getInvanare() {
-        return invanare;
+    public String getBostadsort() {
+        return bostadsort;
     }
 
-    public void setInvanare(InvanareResponse invanare) {
-        this.invanare = invanare;
+    public void setBostadsort(String bostadsort) {
+        this.bostadsort = bostadsort;
     }
 
-    public String getHandlaggareNamn() {
-        return handlaggareNamn;
+    public boolean isTidigareUtredd() {
+        return tidigareUtredd;
     }
 
-    public void setHandlaggareNamn(final String handlaggareNamn) {
-        this.handlaggareNamn = handlaggareNamn;
+    public void setTidigareUtredd(boolean tidigareUtredd) {
+        this.tidigareUtredd = tidigareUtredd;
     }
 
-    public String getHandlaggareTelefonnummer() {
-        return handlaggareTelefonnummer;
+    public List<FelaktigEnhet> getFelaktigaEnheter() {
+        return felaktigaEnheter;
     }
 
-    public void setHandlaggareTelefonnummer(final String handlaggareTelefonnummer) {
-        this.handlaggareTelefonnummer = handlaggareTelefonnummer;
-    }
-
-    public String getHandlaggareEpost() {
-        return handlaggareEpost;
-    }
-
-    public void setHandlaggareEpost(final String handlaggareEpost) {
-        this.handlaggareEpost = handlaggareEpost;
+    public void setFelaktigaEnheter(List<FelaktigEnhet> felaktigaEnheter) {
+        this.felaktigaEnheter = felaktigaEnheter;
     }
 
     public boolean isBehovTolk() {
         return behovTolk;
     }
 
-    public void setBehovTolk(final boolean behovTolk) {
+    public void setBehovTolk(boolean behovTolk) {
         this.behovTolk = behovTolk;
     }
 
@@ -192,77 +138,65 @@ public class GetUtredningResponse {
         return tolkSprak;
     }
 
-    public void setTolkSprak(final String tolkSprak) {
+    public void setTolkSprak(String tolkSprak) {
         this.tolkSprak = tolkSprak;
     }
 
-    public UtredningStatus getStatus() {
-        return status;
+    public String getSarskildaBehov() {
+        return sarskildaBehov;
     }
 
-    public void setStatus(final UtredningStatus status) {
-        this.status = status;
+    public void setSarskildaBehov(String sarskildaBehov) {
+        this.sarskildaBehov = sarskildaBehov;
     }
 
-    public String getIntygSistaDatum() {
-        return intygSistaDatum;
+    public String getKommentar() {
+        return kommentar;
     }
 
-    public void setIntygSistaDatum(String intygSistaDatum) {
-        this.intygSistaDatum = intygSistaDatum;
+    public void setKommentar(String kommentar) {
+        this.kommentar = kommentar;
     }
 
-    public String getIntygSistaDatumKomplettering() {
-        return intygSistaDatumKomplettering;
+    public String getHandlaggareNamn() {
+        return handlaggareNamn;
     }
 
-    public void setIntygSistaDatumKomplettering(String intygSistaDatumKomplettering) {
-        this.intygSistaDatumKomplettering = intygSistaDatumKomplettering;
+    public void setHandlaggareNamn(String handlaggareNamn) {
+        this.handlaggareNamn = handlaggareNamn;
     }
 
-    public String getAvbrutenDatum() {
-        return avbrutenDatum;
+    public String getHandlaggareTelefonnummer() {
+        return handlaggareTelefonnummer;
     }
 
-    public void setAvbrutenDatum(String avbrutenDatum) {
-        this.avbrutenDatum = avbrutenDatum;
+    public void setHandlaggareTelefonnummer(String handlaggareTelefonnummer) {
+        this.handlaggareTelefonnummer = handlaggareTelefonnummer;
     }
 
-    public EndReason getAvbrutenAnledning() {
-        return avbrutenAnledning;
+    public String getHandlaggareEpost() {
+        return handlaggareEpost;
     }
 
-    public void setAvbrutenAnledning(EndReason avbrutenAnledning) {
-        this.avbrutenAnledning = avbrutenAnledning;
-    }
-
-    public String getMeddelandeFromHandlaggare() {
-        return meddelandeFromHandlaggare;
-    }
-
-    public void setMeddelandeFromHandlaggare(String meddelandeFromHandlaggare) {
-        this.meddelandeFromHandlaggare = meddelandeFromHandlaggare;
+    public void setHandlaggareEpost(String handlaggareEpost) {
+        this.handlaggareEpost = handlaggareEpost;
     }
 
     public static final class GetUtredningResponseBuilder {
         private static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
         private String utredningsId;
-        private String utredningsTyp;
-        private String vardgivareHsaId;
         private String inkomDatum;
         private String besvarasSenastDatum;
-        private InvanareResponse invanare;
+        private String bostadsort;
+        private boolean tidigareUtredd;
+        List<FelaktigEnhet> felaktigaEnheter;
+        private boolean behovTolk;
+        private String tolkSprak;
+        private String sarskildaBehov;
+        private String kommentar;
         private String handlaggareNamn;
         private String handlaggareTelefonnummer;
         private String handlaggareEpost;
-        private boolean behovTolk;
-        private String tolkSprak;
-        private UtredningStatus status;
-        private String intygSistaDatum;
-        private String intygSistaDatumKomplettering;
-        private String avbrutenDatum;
-        private EndReason avbrutenAnledning;
-        private String meddelandeFromHandlaggare;
 
         private GetUtredningResponseBuilder() {
         }
@@ -276,16 +210,6 @@ public class GetUtredningResponse {
             return this;
         }
 
-        public GetUtredningResponseBuilder withUtredningsTyp(String utredningsTyp) {
-            this.utredningsTyp = utredningsTyp;
-            return this;
-        }
-
-        public GetUtredningResponseBuilder withVardgivareHsaId(String vardgivareHsaId) {
-            this.vardgivareHsaId = vardgivareHsaId;
-            return this;
-        }
-
         public GetUtredningResponseBuilder withInkomDatum(String inkomDatum) {
             this.inkomDatum = inkomDatum;
             return this;
@@ -296,8 +220,38 @@ public class GetUtredningResponse {
             return this;
         }
 
-        public GetUtredningResponseBuilder withInvanare(InvanareResponse invanare) {
-            this.invanare = invanare;
+        public GetUtredningResponseBuilder withBostadsort(String bostadsort) {
+            this.bostadsort = bostadsort;
+            return this;
+        }
+
+        public GetUtredningResponseBuilder withTidigareUtredd(boolean tidigareUtredd) {
+            this.tidigareUtredd = tidigareUtredd;
+            return this;
+        }
+
+        public GetUtredningResponseBuilder withFelaktigaEnheter(List<FelaktigEnhet> felaktigaEnheter) {
+            this.felaktigaEnheter = felaktigaEnheter;
+            return this;
+        }
+
+        public GetUtredningResponseBuilder withBehovTolk(boolean behovTolk) {
+            this.behovTolk = behovTolk;
+            return this;
+        }
+
+        public GetUtredningResponseBuilder withTolkSprak(String tolkSprak) {
+            this.tolkSprak = tolkSprak;
+            return this;
+        }
+
+        public GetUtredningResponseBuilder withSarskildaBehov(String sarskildaBehov) {
+            this.sarskildaBehov = sarskildaBehov;
+            return this;
+        }
+
+        public GetUtredningResponseBuilder withKommentar(String kommentar) {
+            this.kommentar = kommentar;
             return this;
         }
 
@@ -316,116 +270,27 @@ public class GetUtredningResponse {
             return this;
         }
 
-        public GetUtredningResponseBuilder withBehovTolk(boolean behovTolk) {
-            this.behovTolk = behovTolk;
-            return this;
-        }
-
-        public GetUtredningResponseBuilder withTolkSprak(String tolkSprak) {
-            this.tolkSprak = tolkSprak;
-            return this;
-        }
-
-        public GetUtredningResponseBuilder withStatus(UtredningStatus status) {
-            this.status = status;
-            return this;
-        }
-
-        public GetUtredningResponseBuilder withIntygSistaDatum(String datum) {
-            this.intygSistaDatum = datum;
-            return this;
-        }
-
-        public GetUtredningResponseBuilder withIntygSistaDatumKomplettering(String datum) {
-            this.intygSistaDatumKomplettering = datum;
-            return this;
-        }
-
-        public GetUtredningResponseBuilder withAvbrutenDatum(String avbrutenDatum) {
-            this.avbrutenDatum = avbrutenDatum;
-            return this;
-        }
-
-        public GetUtredningResponseBuilder withAvbrutenAnledning(EndReason avbrutenAnledning) {
-            this.avbrutenAnledning = avbrutenAnledning;
-            return this;
-        }
-
-        public GetUtredningResponseBuilder withMeddelandeFromHandlaggare(String meddelandeFromHandlaggare) {
-            this.meddelandeFromHandlaggare = meddelandeFromHandlaggare;
-            return this;
-        }
-
         public GetUtredningResponse build() {
             GetUtredningResponse getUtredningResponse = new GetUtredningResponse();
             getUtredningResponse.setUtredningsId(utredningsId);
-            getUtredningResponse.setUtredningsTyp(utredningsTyp);
-            getUtredningResponse.setVardgivareHsaId(vardgivareHsaId);
             getUtredningResponse.setInkomDatum(inkomDatum);
             getUtredningResponse.setBesvarasSenastDatum(besvarasSenastDatum);
-            getUtredningResponse.setInvanare(invanare);
+            getUtredningResponse.setBostadsort(bostadsort);
+            getUtredningResponse.setTidigareUtredd(tidigareUtredd);
+            getUtredningResponse.setFelaktigaEnheter(felaktigaEnheter);
+            getUtredningResponse.setBehovTolk(behovTolk);
+            getUtredningResponse.setTolkSprak(tolkSprak);
+            getUtredningResponse.setSarskildaBehov(sarskildaBehov);
+            getUtredningResponse.setKommentar(kommentar);
             getUtredningResponse.setHandlaggareNamn(handlaggareNamn);
             getUtredningResponse.setHandlaggareTelefonnummer(handlaggareTelefonnummer);
             getUtredningResponse.setHandlaggareEpost(handlaggareEpost);
-            getUtredningResponse.setBehovTolk(behovTolk);
-            getUtredningResponse.setTolkSprak(tolkSprak);
-            getUtredningResponse.setStatus(status);
-            getUtredningResponse.setIntygSistaDatum(intygSistaDatum);
-            getUtredningResponse.setIntygSistaDatumKomplettering(intygSistaDatumKomplettering);
-            getUtredningResponse.setAvbrutenDatum(avbrutenDatum);
-            getUtredningResponse.setAvbrutenAnledning(avbrutenAnledning);
-            getUtredningResponse.setMeddelandeFromHandlaggare(meddelandeFromHandlaggare);
             return getUtredningResponse;
         }
     }
 
-    public static final class InvanareResponse {
-
-        private String personId;
-        private String name;
-        private Gender gender;
-        private String sarskildaBehov;
-
-        public InvanareResponse(Invanare invanare) {
-            personId = invanare.getPersonId();
-            sarskildaBehov = invanare.getSarskildaBehov();
-            name = invanare.getFullstandigtNamn();
-            gender = Optional.ofNullable(invanare.getPersonId())
-                    .flatMap(Personnummer::createPersonnummer)
-                    .map(Gender::getGenderFromPersonnummer)
-                    .orElse(Gender.UNKNOWN);
-        }
-
-        public String getPersonId() {
-            return personId;
-        }
-
-        public void setPersonId(String personId) {
-            this.personId = personId;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public Gender getGender() {
-            return gender;
-        }
-
-        public void setGender(Gender gender) {
-            this.gender = gender;
-        }
-
-        public String getSarskildaBehov() {
-            return sarskildaBehov;
-        }
-
-        public void setSarskildaBehov(String sarskildaBehov) {
-            this.sarskildaBehov = sarskildaBehov;
-        }
+    public static final class FelaktigEnhet {
+        private String hsaId;
+        private String errorMessage;
     }
 }

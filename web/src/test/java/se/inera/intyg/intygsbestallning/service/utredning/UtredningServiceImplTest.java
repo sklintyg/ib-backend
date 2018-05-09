@@ -404,7 +404,6 @@ public class UtredningServiceImplTest {
 
         assertNotNull(response);
         assertEquals(utredningId, response.getUtredningsId());
-        assertEquals(landstingHsaId, response.getVardgivareHsaId());
     }
 
     @Test(expected = IbAuthorizationException.class)

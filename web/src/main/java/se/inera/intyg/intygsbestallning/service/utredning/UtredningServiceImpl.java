@@ -160,7 +160,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                             + landstingHsaId + "'");
         }
 
-        return GetUtredningResponse.from(utredning, utredningStateResolver.resolveStatus(utredning));
+        return GetUtredningResponse.from(utredning);
     }
 
     @Override
@@ -174,7 +174,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                             + landstingHsaId + "'");
         }
 
-        return GetUtredningResponse.from(utredning, utredningStateResolver.resolveStatus(utredning));
+        return GetUtredningResponse.from(utredning);
     }
 
     @Override

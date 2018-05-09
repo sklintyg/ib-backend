@@ -53,24 +53,21 @@ public class GetUtredningResponseTest {
                         .withEmail("email")
                         .build())
                 .withInvanare(anInvanare()
+                        .withPostkod("bostadsort")
                         .withPersonId("personnummer")
                         .build())
                 .build();
-        GetUtredningResponse response = GetUtredningResponse.from(utredning, UtredningStatus.FORFRAGAN_INKOMMEN);
+        GetUtredningResponse response = GetUtredningResponse.from(utredning);
 
         assertNotNull(response);
         assertEquals("utredningId", response.getUtredningsId());
-        assertEquals("landstingHsaId", response.getVardgivareHsaId());
         assertEquals("2019-01-01", response.getBesvarasSenastDatum());
         assertEquals("email", response.getHandlaggareEpost());
         assertEquals("fullstandigtnamn", response.getHandlaggareNamn());
         assertEquals("telefonnummer", response.getHandlaggareTelefonnummer());
         assertEquals("2018-01-01", response.getInkomDatum());
-        assertEquals("personnummer", response.getInvanare().getPersonId());
+        assertEquals("bostadsort", response.getBostadsort());
         assertEquals("sv", response.getTolkSprak());
-        assertTrue(response.isBehovTolk());
-        assertEquals(UtredningStatus.FORFRAGAN_INKOMMEN, response.getStatus());
-        assertEquals(AFU.name(), response.getUtredningsTyp());
         assertTrue(response.isBehovTolk());
     }
 }
