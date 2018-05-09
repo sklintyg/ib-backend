@@ -18,7 +18,7 @@
  */
 
 angular.module('ibApp').directive('ibDateRangePicker',
-    function(moment) {
+    function(moment, $document) {
         'use strict';
 
         return {
@@ -30,7 +30,7 @@ angular.module('ibApp').directive('ibDateRangePicker',
                 onChange: '&'
             },
             templateUrl: '/components/commonDirectives/ibDateRangePicker/ibDateRangePicker.directive.html',
-            link: function($scope, element) {
+            link: function($scope, element, attr) {
 
                 $.dateRangePickerLanguages.se = {
                     'selected': 'Vald:',
@@ -78,10 +78,10 @@ angular.module('ibApp').directive('ibDateRangePicker',
                     singleMonth: false,
                     showShortcuts: true,
                     customShortcuts: [{
-                        name: '<button id="closeDatePicker" class="btn btn-primary">Stäng</button>',
+                        name: '<button id="' + attr.id + '-closeDatePicker" class="btn btn-primary">Stäng</button>',
                         dates: function() { return null; }
                     }, {
-                        name: '<button id="clearDatePicker" class="btn btn-default">Rensa</button>',
+                        name: '<button id="' + attr.id + '-clearDatePicker" class="btn btn-default">Rensa</button>',
                         dates: function() { return null; }
                     }],
                     showTopbar: true,
@@ -110,7 +110,7 @@ angular.module('ibApp').directive('ibDateRangePicker',
                         setDisplayValue(true);
                     })
                     .on('datepicker-open', function() {
-                        $('#clearDatePicker').click(function() {
+                        $('#' + attr.id + '-clearDatePicker').click(function() {
                             inputElement.data('dateRangePicker').clear();
                             inputElement.data('dateRangePicker').redraw();
 
@@ -121,12 +121,16 @@ angular.module('ibApp').directive('ibDateRangePicker',
                             setDisplayValue(true);
                         });
 
-                        $('#closeDatePicker').click(function() {
+                        $('#' + attr.id + '-closeDatePicker').click(function() {
                             inputElement.data('dateRangePicker').close();
                         });
                     });
 
                 $scope.open = function($event) {
+                    // Close any other open daterangepicker
+                    angular.forEach($document.find('ib-date-range-picker input'), function(el) {
+                        $(el).data('dateRangePicker').close();
+                    });
                     $event.preventDefault();
                     $event.stopPropagation();
                     inputElement.data('dateRangePicker').open();
