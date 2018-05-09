@@ -48,6 +48,7 @@ public enum InternForfraganStatus implements SortableLabel {
         return id;
     }
 
+    @Override
     public String getLabel() {
         return label;
     }

@@ -21,7 +21,7 @@ package se.inera.intyg.intygsbestallning.service.stateresolver;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-public enum InternForfraganFas implements SortableLabel{
+public enum InternForfraganFas implements SortableLabel {
     FORFRAGAN("Förfrågan"),
     TILLDELAD("Tilldelad"),
     AVSLUTAD("Avslutad");
@@ -38,6 +38,7 @@ public enum InternForfraganFas implements SortableLabel{
         return id;
     }
 
+    @Override
     public String getLabel() {
         return label;
     }
