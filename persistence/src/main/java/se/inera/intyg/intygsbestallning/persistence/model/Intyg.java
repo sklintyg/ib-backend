@@ -48,6 +48,10 @@ public final class Intyg {
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime sistaDatum;
 
+    @Column(name = "SKICKAT_DATUM")
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
+    private LocalDateTime skickatDatum;
+
     @Column(name = "MOTTAGET_DATUM")
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime mottagetDatum;
@@ -96,6 +100,14 @@ public final class Intyg {
         this.sistaDatumKompletteringsbegaran = sistaDatumKompletteringsbegaran;
     }
 
+    public LocalDateTime getSkickatDatum() {
+        return skickatDatum;
+    }
+
+    public void setSkickatDatum(LocalDateTime skickatDatum) {
+        this.skickatDatum = skickatDatum;
+    }
+
     public static Intyg copyFrom(final Intyg intyg) {
 
         if (isNull(intyg)) {
@@ -111,10 +123,46 @@ public final class Intyg {
                 .build();
     }
 
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Intyg)) {
+            return false;
+        }
+        final Intyg intyg = (Intyg) o;
+        return Objects.equals(id, intyg.id)
+                && Objects.equals(kompletteringsId, intyg.kompletteringsId)
+                && Objects.equals(sistaDatum, intyg.sistaDatum)
+                && Objects.equals(skickatDatum, intyg.skickatDatum)
+                && Objects.equals(mottagetDatum, intyg.mottagetDatum)
+                && Objects.equals(sistaDatumKompletteringsbegaran, intyg.sistaDatumKompletteringsbegaran);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, kompletteringsId, sistaDatum, skickatDatum, mottagetDatum, sistaDatumKompletteringsbegaran);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("kompletteringsId", kompletteringsId)
+                .add("sistaDatum", sistaDatum)
+                .add("skickatDatum", skickatDatum)
+                .add("mottagetDatum", mottagetDatum)
+                .add("sistaDatumKompletteringsbegaran", sistaDatumKompletteringsbegaran)
+                .toString();
+    }
+
     public static final class IntygBuilder {
-        private long id;
+        private Long id;
         private String kompletteringsId;
         private LocalDateTime sistaDatum;
+        private LocalDateTime skickatDatum;
         private LocalDateTime mottagetDatum;
         private LocalDateTime sistaDatumKompletteringsbegaran;
 
@@ -125,7 +173,7 @@ public final class Intyg {
             return new IntygBuilder();
         }
 
-        public IntygBuilder withId(long id) {
+        public IntygBuilder withId(Long id) {
             this.id = id;
             return this;
         }
@@ -137,6 +185,11 @@ public final class Intyg {
 
         public IntygBuilder withSistaDatum(LocalDateTime sistaDatum) {
             this.sistaDatum = sistaDatum;
+            return this;
+        }
+
+        public IntygBuilder withSkickatDatum(LocalDateTime skickatDatum) {
+            this.skickatDatum = skickatDatum;
             return this;
         }
 
@@ -155,42 +208,10 @@ public final class Intyg {
             intyg.setId(id);
             intyg.setKompletteringsId(kompletteringsId);
             intyg.setSistaDatum(sistaDatum);
+            intyg.setSkickatDatum(skickatDatum);
             intyg.setMottagetDatum(mottagetDatum);
             intyg.setSistaDatumKompletteringsbegaran(sistaDatumKompletteringsbegaran);
             return intyg;
         }
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Intyg)) {
-            return false;
-        }
-        final Intyg intyg = (Intyg) o;
-        return Objects.equals(id, intyg.id)
-                && Objects.equals(kompletteringsId, intyg.kompletteringsId)
-                && Objects.equals(sistaDatum, intyg.sistaDatum)
-                && Objects.equals(mottagetDatum, intyg.mottagetDatum)
-                && Objects.equals(sistaDatumKompletteringsbegaran, intyg.sistaDatumKompletteringsbegaran);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(id, kompletteringsId, sistaDatum, mottagetDatum, sistaDatumKompletteringsbegaran);
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("id", id)
-                .add("kompletteringsId", kompletteringsId)
-                .add("sistaDatum", sistaDatum)
-                .add("mottagetDatum", mottagetDatum)
-                .add("sistaDatumKompletteringsbegaran", sistaDatumKompletteringsbegaran)
-                .toString();
     }
 }

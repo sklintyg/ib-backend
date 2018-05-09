@@ -55,7 +55,7 @@ public class AssessmentRequest {
     private Bestallare bestallare;
     private String landstingHsaId;
     private String invanareSarskildaBehov;
-    private String invanarePostkod;
+    private String invanarePostort;
     private List<String> invanareTidigareUtforare;
 
     public UtredningsTyp getUtredningsTyp() {
@@ -90,8 +90,8 @@ public class AssessmentRequest {
         return invanareSarskildaBehov;
     }
 
-    public String getInvanarePostkod() {
-        return invanarePostkod;
+    public String getInvanarePostort() {
+        return invanarePostort;
     }
 
     public List<String> getInvanareTidigareUtforare() {
@@ -118,7 +118,7 @@ public class AssessmentRequest {
                 .withTolkSprak(Optional.ofNullable(request.getInterpreterLanguage())
                         .map(CVType::getCode)
                         .orElse(null))
-                .withInvanarePostkod(Optional.ofNullable(request.getCitizen())
+                .withInvanarePostort(Optional.ofNullable(request.getCitizen())
                         .map(CitizenLimitedType::getPostalCity)
                         .orElse(null))
                 .withInvanareSarskildaBehov(Optional.ofNullable(request.getCitizen())
@@ -195,7 +195,7 @@ public class AssessmentRequest {
                 java.util.Objects.equals(bestallare, that.bestallare) &&
                 java.util.Objects.equals(landstingHsaId, that.landstingHsaId) &&
                 java.util.Objects.equals(invanareSarskildaBehov, that.invanareSarskildaBehov) &&
-                java.util.Objects.equals(invanarePostkod, that.invanarePostkod) &&
+                java.util.Objects.equals(invanarePostort, that.invanarePostort) &&
                 java.util.Objects.equals(invanareTidigareUtforare, that.invanareTidigareUtforare);
     }
 
@@ -203,7 +203,7 @@ public class AssessmentRequest {
     public int hashCode() {
 
         return java.util.Objects.hash(utredningsTyp, besvaraSenastDatum, kommentar, tolkSprak, bestallare, landstingHsaId,
-                invanareSarskildaBehov, invanarePostkod, invanareTidigareUtforare);
+                invanareSarskildaBehov, invanarePostort, invanareTidigareUtforare);
     }
 
     public static final class AssessmentRequestBuilder {
@@ -215,7 +215,7 @@ public class AssessmentRequest {
         private Bestallare bestallare;
         private String landstingHsaId;
         private String invanareSarskildaBehov;
-        private String invanarePostkod;
+        private String invanarePostort;
         private List<String> invanareTidigareUtforare;
 
         private AssessmentRequestBuilder() {
@@ -265,8 +265,8 @@ public class AssessmentRequest {
             return this;
         }
 
-        public AssessmentRequestBuilder withInvanarePostkod(String invanarePostkod) {
-            this.invanarePostkod = invanarePostkod;
+        public AssessmentRequestBuilder withInvanarePostort(String invanarePostort) {
+            this.invanarePostort = invanarePostort;
             return this;
         }
 
@@ -278,14 +278,14 @@ public class AssessmentRequest {
         public AssessmentRequest build() {
             AssessmentRequest assessmentRequest = new AssessmentRequest();
             assessmentRequest.bestallare = this.bestallare;
-            assessmentRequest.utredningsTyp = this.utredningsTyp;
-            assessmentRequest.tolkSprak = this.tolkSprak;
             assessmentRequest.landstingHsaId = this.landstingHsaId;
-            assessmentRequest.invanareSarskildaBehov = this.invanareSarskildaBehov;
+            assessmentRequest.utredningsTyp = this.utredningsTyp;
             assessmentRequest.invanareTidigareUtforare = this.invanareTidigareUtforare;
-            assessmentRequest.tolkBehov = this.tolkBehov;
             assessmentRequest.kommentar = this.kommentar;
-            assessmentRequest.invanarePostkod = this.invanarePostkod;
+            assessmentRequest.tolkSprak = this.tolkSprak;
+            assessmentRequest.tolkBehov = this.tolkBehov;
+            assessmentRequest.invanareSarskildaBehov = this.invanareSarskildaBehov;
+            assessmentRequest.invanarePostort = this.invanarePostort;
             assessmentRequest.besvaraSenastDatum = this.besvaraSenastDatum;
             return assessmentRequest;
         }

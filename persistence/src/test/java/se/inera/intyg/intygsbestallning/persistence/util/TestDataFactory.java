@@ -19,6 +19,7 @@
 package se.inera.intyg.intygsbestallning.persistence.util;
 
 import com.google.common.collect.ImmutableList;
+import se.inera.intyg.intygsbestallning.persistence.model.Anteckning;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
@@ -26,10 +27,12 @@ import se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar;
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
+import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
 import se.inera.intyg.intygsbestallning.persistence.model.RegistreradVardenhet;
 import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.type.AvvikelseOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
@@ -45,6 +48,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 
+import static se.inera.intyg.intygsbestallning.persistence.model.Anteckning.AnteckningBuilder.anAnteckning;
+import static se.inera.intyg.intygsbestallning.persistence.model.Avvikelse.AvvikelseBuilder.anAvvikelse;
 import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
 import static se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar;
@@ -52,24 +57,25 @@ import static se.inera.intyg.intygsbestallning.persistence.model.Handelse.Handel
 import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
 import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
 import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
 import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
 import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 
 public final class TestDataFactory {
 
-    private TestDataFactory() {
-    }
-
     public static final String VE_HSA_ID = "enhet-1";
     public static final String VG_HSA_ID = "vg-1";
     public static final String UTREDNING_ID = "abc-123";
+
+    private TestDataFactory() {
+    }
 
     public static Invanare buildInvanare() {
         return anInvanare()
                 .withBakgrundNulage("bakgrund")
                 .withPersonId("personId")
-                .withPostkod("postkod")
+                .withPostort("postort")
                 .withSarskildaBehov("behov")
                 .withTidigareUtforare(Collections.singletonList(buildTidigareUtforare()))
                 .build();
@@ -178,16 +184,42 @@ public final class TestDataFactory {
                 .withKallelseDatum(LocalDateTime.now())
                 .withDeltagareProfession(DeltagarProfessionTyp.FT)
                 .withDeltagareFullstandigtNamn("Håkan Fysiosson")
+                .withAvvikelse(anAvvikelse()
+                        .withTidpunkt(LocalDateTime.now())
+                        .withOrsakatAv(AvvikelseOrsak.PATIENT)
+                        .withInvanareUteblev(true)
+                        .withBeskrivning("avvikelseBeskrivning")
+                        .withAvvikelseId("avvikelseId")
+                        .build())
                 .build();
     }
 
-    public static  RegistreradVardenhet buildRegistreradVardenhet() {
+    public static RegistreradVardenhet buildRegistreradVardenhet() {
         return RegistreradVardenhet.RegistreradVardenhetBuilder.aRegistreradVardenhet()
                 .withVardenhetHsaId("ve-1")
                 .withVardenhetNamn("Enhet 1")
                 .withVardenhetRegiForm(RegiFormTyp.LANDSTING)
                 .withVardenhetVardgivareHsaId("vg-1")
                 .withVardgivareHsaId("vg-1")
+                .build();
+    }
+
+    public static Anteckning buildAnteckning() {
+        return anAnteckning()
+                .withAnvandare("anvandare")
+                .withSkapat(LocalDateTime.now())
+                .withText("text")
+                .withVardenhetHsaId("anteckningVardenhetHsaId")
+                .build();
+    }
+
+    public static Intyg buildIntyg() {
+        return anIntyg()
+                .withSistaDatumKompletteringsbegaran(LocalDateTime.now())
+                .withSistaDatum(LocalDateTime.now())
+                .withMottagetDatum(LocalDateTime.now())
+                .withKompletteringsId("kompletteringsId")
+                .withSkickatDatum(LocalDateTime.now())
                 .build();
     }
 }

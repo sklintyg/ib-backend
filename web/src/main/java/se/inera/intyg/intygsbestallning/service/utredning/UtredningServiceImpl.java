@@ -309,7 +309,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .collect(toList());
 
         final Invanare invanare = anInvanare()
-                .withPostkod(request.getInvanarePostkod())
+                .withPostort(request.getInvanarePostort())
                 .withSarskildaBehov(request.getInvanareSarskildaBehov())
                 .withTidigareUtforare(tidigareUtforareList)
                 .build();

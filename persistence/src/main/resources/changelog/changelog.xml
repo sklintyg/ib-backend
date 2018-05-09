@@ -159,7 +159,7 @@
                 <constraints nullable="true"/>
             </column>
 
-            <column name="POSTKOD" type="varchar(16)">
+            <column name="POSTORT" type="varchar(255)">
                 <constraints nullable="true"/>
             </column>
 
@@ -678,6 +678,10 @@
             </column>
 
             <column name="SISTA_DATUM" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="SKICKAT_DATUM" type="datetime">
                 <constraints nullable="true"/>
             </column>
 

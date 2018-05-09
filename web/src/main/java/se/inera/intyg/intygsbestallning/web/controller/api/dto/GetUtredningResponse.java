@@ -64,7 +64,7 @@ public class GetUtredningResponse {
                 .withBesvarasSenastDatum(!isNull(utredning.getExternForfragan())
                         ? utredning.getExternForfragan().getBesvarasSenastDatum().format(formatter) : null)
                 .withBostadsort(!isNull(utredning.getInvanare())
-                        ? utredning.getInvanare().getPostkod() : null)
+                        ? utredning.getInvanare().getPostort() : null)
                 .withTidigareUtredd(false)
                 .withFelaktigaEnheter(new ArrayList<>())
                 .withBehovTolk(utredning.getTolkBehov() != null)

@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigDev;
 import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigTest;
 import se.inera.intyg.intygsbestallning.persistence.model.Anteckning;
+import se.inera.intyg.intygsbestallning.persistence.model.Avvikelse;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
@@ -38,9 +39,11 @@ import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
+import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
 import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.type.AvvikelseOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
@@ -51,7 +54,6 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,13 +62,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static se.inera.intyg.intygsbestallning.persistence.model.Anteckning.AnteckningBuilder.anAnteckning;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildAnteckning;
 import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildBesok;
 import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildBestallning;
 import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildExternForfragan;
 import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildHandelse;
 import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildHandlaggare;
 import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildHandling;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildIntyg;
 import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildInvanare;
 import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildUtredning;
 
@@ -112,6 +115,8 @@ public class UtredningRepositoryTest {
         utr.getBesokList().add(buildBesok());
 
         utr.getAnteckningList().add(buildAnteckning());
+
+        utr.getIntygList().add(buildIntyg());
 
         utredningRepository.save(utr);
 
@@ -193,7 +198,7 @@ public class UtredningRepositoryTest {
         assertNotNull(invanare);
         assertEquals("bakgrund", invanare.getBakgrundNulage());
         assertEquals("personId", invanare.getPersonId());
-        assertEquals("postkod", invanare.getPostkod());
+        assertEquals("postort", invanare.getPostort());
         assertEquals("behov", invanare.getSarskildaBehov());
 
         assertEquals(1, invanare.getTidigareUtforare().size());
@@ -208,6 +213,14 @@ public class UtredningRepositoryTest {
         assertNull(besok.getTolkStatus());
         assertNull(besok.getErsatts());
 
+        Avvikelse avvikelse = besok.getAvvikelse();
+        assertNotNull(avvikelse);
+        assertNotNull(avvikelse.getTidpunkt());
+        assertEquals(AvvikelseOrsak.PATIENT, avvikelse.getOrsakatAv());
+        assertEquals("avvikelseId", avvikelse.getAvvikelseId());
+        assertEquals("avvikelseBeskrivning", avvikelse.getBeskrivning());
+        assertTrue(avvikelse.getInvanareUteblev());
+
         assertNotNull(utredning.getAnteckningList());
         assertFalse(utredning.getAnteckningList().isEmpty());
         Anteckning anteckning = utredning.getAnteckningList().get(0);
@@ -215,6 +228,16 @@ public class UtredningRepositoryTest {
         assertEquals("anvandare", anteckning.getAnvandare());
         assertEquals("anteckningVardenhetHsaId", anteckning.getVardenhetHsaId());
         assertNotNull(anteckning.getSkapat());
+
+        assertNotNull(utredning.getIntygList());
+        assertEquals(1, utredning.getIntygList().size());
+        Intyg intyg = utredning.getIntygList().get(0);
+        assertNotNull(intyg);
+        assertEquals("kompletteringsId", intyg.getKompletteringsId());
+        assertNotNull(intyg.getMottagetDatum());
+        assertNotNull(intyg.getSistaDatum());
+        assertNotNull(intyg.getSistaDatumKompletteringsbegaran());
+        assertNotNull(intyg.getSkickatDatum());
     }
 
     @Test
@@ -236,15 +259,6 @@ public class UtredningRepositoryTest {
         assertNotNull(response);
         assertEquals(1, response.size());
 
-    }
-
-    private Anteckning buildAnteckning() {
-        return anAnteckning()
-                .withAnvandare("anvandare")
-                .withSkapat(LocalDateTime.now())
-                .withText("text")
-                .withVardenhetHsaId("anteckningVardenhetHsaId")
-                .build();
     }
 
     @Test
@@ -308,7 +322,5 @@ public class UtredningRepositoryTest {
         assertEquals(1, resultList.size());
         assertNotNull(resultList.get(0).getBestallning());
     }
-
-
 
 }

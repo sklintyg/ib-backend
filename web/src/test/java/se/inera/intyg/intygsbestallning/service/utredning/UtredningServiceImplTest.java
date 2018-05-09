@@ -119,7 +119,7 @@ public class UtredningServiceImplTest {
                 .withUtredningId(utredningId)
                 .withUtredningsTyp(AFU)
                 .withInvanare(anInvanare()
-                        .withPostkod("invanarePostkod")
+                        .withPostort("invanarePostort")
                         .build())
                 .withExternForfragan(anExternForfragan().build())
                 .build()));
@@ -170,7 +170,7 @@ public class UtredningServiceImplTest {
         assertEquals("behov", response.getInvanare().getSarskildaBehov());
         assertEquals("personnummer", response.getInvanare().getPersonId());
         assertEquals("bakgrund", response.getInvanare().getBakgrundNulage());
-        assertEquals("invanarePostkod", response.getInvanare().getPostkod());
+        assertEquals("invanarePostort", response.getInvanare().getPostort());
         assertNotNull("", response.getHandlingList());
         assertEquals(1, response.getHandlingList().size());
         assertNull(response.getHandlingList().get(0).getInkomDatum());
@@ -195,7 +195,7 @@ public class UtredningServiceImplTest {
                 .withUtredningId(utredningId)
                 .withUtredningsTyp(AFU)
                 .withInvanare(anInvanare()
-                        .withPostkod("invanarePostkod")
+                        .withPostort("invanarePostkod")
                         .build())
                 .build()));
 
@@ -262,7 +262,7 @@ public class UtredningServiceImplTest {
         assertEquals("behov", response.getInvanare().getSarskildaBehov());
         assertEquals("personnummer", response.getInvanare().getPersonId());
         assertEquals("bakgrund", response.getInvanare().getBakgrundNulage());
-        assertNull(response.getInvanare().getPostkod());
+        assertNull(response.getInvanare().getPostort());
         assertNotNull("", response.getHandlingList());
         assertEquals(1, response.getHandlingList().size());
         assertNull(response.getHandlingList().get(0).getInkomDatum());
@@ -315,7 +315,7 @@ public class UtredningServiceImplTest {
                 .withLandstingHsaId("id")
                 .withInvanareTidigareUtforare(ImmutableList.of("1", "2", "3"))
                 .withInvanareSarskildaBehov("sarskiltBehov")
-                .withInvanarePostkod("postkod")
+                .withInvanarePostort("postort")
                 .withBesvaraSenastDatum(dateTime)
                 .withKommentar("kommentar")
                 .withTolkBehov(true)

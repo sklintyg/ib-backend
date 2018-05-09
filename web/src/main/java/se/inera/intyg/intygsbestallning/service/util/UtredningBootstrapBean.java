@@ -90,7 +90,7 @@ public class UtredningBootstrapBean {
                     .withInkomDatum(startDate)
                     .build());
             utredning.setInvanare(anInvanare()
-                    .withPostkod("11221")
+                    .withPostort("11221")
                     .build());
             utredning.setHandlaggare(new Handlaggare());
             utredningRepository.save(utredning);

@@ -59,8 +59,8 @@ public final class Invanare {
     @Column(name = "BAKGRUND_NULAGE")
     private String bakgrundNulage;
 
-    @Column(name = "POSTKOD", length = 16)
-    private String postkod;
+    @Column(name = "POSTORT", length = 255)
+    private String postort;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "INVANARE_ID", referencedColumnName = "ID", nullable = false)
@@ -80,7 +80,7 @@ public final class Invanare {
                 .withPersonId(invanare.getPersonId())
                 .withSarskildaBehov(invanare.getSarskildaBehov())
                 .withBakgrundNulage(invanare.getBakgrundNulage())
-                .withPostkod(invanare.getPostkod())
+                .withPostort(invanare.getPostort())
                 .withTidigareUtforare(invanare.getTidigareUtforare().stream()
                         .map(TidigareUtforare::copyFrom)
                         .collect(Collectors.toList()))
@@ -136,12 +136,12 @@ public final class Invanare {
         this.id = id;
     }
 
-    public String getPostkod() {
-        return postkod;
+    public String getPostort() {
+        return postort;
     }
 
-    public void setPostkod(String postkod) {
-        this.postkod = postkod;
+    public void setPostort(String postort) {
+        this.postort = postort;
     }
 
     @Override
@@ -170,7 +170,7 @@ public final class Invanare {
         if (bakgrundNulage != null ? !bakgrundNulage.equals(invanare.bakgrundNulage) : invanare.bakgrundNulage != null) {
             return false;
         }
-        if (postkod != null ? !postkod.equals(invanare.postkod) : invanare.postkod != null) {
+        if (postort != null ? !postort.equals(invanare.postort) : invanare.postort != null) {
             return false;
         }
         return ListUtils.isEqualList(tidigareUtforare, invanare.tidigareUtforare);
@@ -179,7 +179,7 @@ public final class Invanare {
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, personId, fullstandigtNamn, sarskildaBehov, bakgrundNulage, postkod, tidigareUtforare);
+        return Objects.hash(id, personId, fullstandigtNamn, sarskildaBehov, bakgrundNulage, postort, tidigareUtforare);
     }
 
     @Override
@@ -190,7 +190,7 @@ public final class Invanare {
                 .add("fullstandigtNamn", fullstandigtNamn)
                 .add("sarskildaBehov", sarskildaBehov)
                 .add("bakgrundNulage", bakgrundNulage)
-                .add("postkod", postkod)
+                .add("postort", postort)
                 .add("tidigareUtforare", tidigareUtforare)
                 .toString();
     }
@@ -201,7 +201,7 @@ public final class Invanare {
         private String fullstandigtNamn;
         private String sarskildaBehov;
         private String bakgrundNulage;
-        private String postkod;
+        private String postort;
         private List<TidigareUtforare> tidigareUtforare = new ArrayList<>();
 
         private InvanareBuilder() {
@@ -236,8 +236,8 @@ public final class Invanare {
             return this;
         }
 
-        public InvanareBuilder withPostkod(String postkod) {
-            this.postkod = postkod;
+        public InvanareBuilder withPostort(String postort) {
+            this.postort = postort;
             return this;
         }
 
@@ -253,7 +253,7 @@ public final class Invanare {
             invanare.setFullstandigtNamn(fullstandigtNamn);
             invanare.setSarskildaBehov(sarskildaBehov);
             invanare.setBakgrundNulage(bakgrundNulage);
-            invanare.setPostkod(postkod);
+            invanare.setPostort(postort);
             invanare.setTidigareUtforare(tidigareUtforare);
             return invanare;
         }

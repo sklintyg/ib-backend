@@ -53,7 +53,7 @@ public class GetUtredningResponseTest {
                         .withEmail("email")
                         .build())
                 .withInvanare(anInvanare()
-                        .withPostkod("bostadsort")
+                        .withPostort("bostadsort")
                         .withPersonId("personnummer")
                         .build())
                 .build();

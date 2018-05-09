@@ -61,7 +61,7 @@ public class AssessmentRequestTest {
         assertEquals("postalCode", converted.getBestallare().getPostkod());
         assertEquals("postalCity", converted.getBestallare().getStad());
 
-        assertEquals("postalCity", converted.getInvanarePostkod());
+        assertEquals("postalCity", converted.getInvanarePostort());
         assertEquals("specialNeeds", converted.getInvanareSarskildaBehov());
         assertThat(converted.getInvanareTidigareUtforare())
                 .containsExactly("1", "2", "3");
