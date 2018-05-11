@@ -22,11 +22,11 @@ import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
 import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
+import se.inera.intyg.intygsbestallning.service.stateresolver.SlutDatumFasResolver;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 import static java.util.Objects.isNull;
 
@@ -53,7 +53,7 @@ public class BestallningListItem implements PDLLoggable, FreeTextSearchable, Fil
                 .withFas(utredningStatus.getUtredningFas())
                 .withPatientId(utredning.getInvanare().getPersonId())
                 .withPatientNamn(null)
-                .withSlutdatumFas(resolveSlutDatumFas(utredning, utredningStatus))
+                .withSlutdatumFas(SlutDatumFasResolver.resolveSlutDatumFas(utredning, utredningStatus))
                 .withSlutdatumPasserat(LocalDateTime.now().isAfter(utredning.getIntygList().stream()
                         .filter(i -> isNull(i.getKompletteringsId()))
                         .findFirst()
@@ -107,30 +107,7 @@ public class BestallningListItem implements PDLLoggable, FreeTextSearchable, Fil
                 && LocalDateTime.now().isAfter(timestamp.minusDays(DEFAULT_DAYS));
     }
 
-    /*
-     * Om utredningsfas = utredning är slutdatum= Utredning.intyg.sista datum för mottagning
-     * Om utredningsfas = komplettering är slutdatum = Utredning.kompletteringsbegäran.komplettering.sista datum för
-     * mottagning
-     */
-    private static String resolveSlutDatumFas(Utredning utredning, UtredningStatus utredningStatus) {
-        switch (utredningStatus.getUtredningFas()) {
-        case UTREDNING:
-            return utredning.getIntygList().stream()
-                    .filter(i -> isNull(i.getKompletteringsId()))
-                    .findAny()
-                    .map(Intyg::getSistaDatum)
-                    .map(datum -> datum.format(DateTimeFormatter.ISO_DATE))
-                    .orElseThrow(IllegalStateException::new);
-        case KOMPLETTERING:
-            return utredning.getIntygList().stream()
-                    .map(Intyg::getSistaDatum)
-                    .max(LocalDateTime::compareTo)
-                    .map(datum -> datum.format(DateTimeFormatter.ISO_DATE))
-                    .orElseThrow(IllegalStateException::new);
-        default:
-            return null;
-        }
-    }
+
 
     public String getUtredningsId() {
         return utredningsId;

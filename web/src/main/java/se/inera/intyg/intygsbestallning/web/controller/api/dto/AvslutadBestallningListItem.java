@@ -20,13 +20,12 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
+import se.inera.intyg.intygsbestallning.service.stateresolver.ErsattsResolver;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStateResolver;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
-import java.util.Optional;
 
 import static java.util.Objects.nonNull;
 
@@ -52,40 +51,13 @@ public class AvslutadBestallningListItem implements FreeTextSearchable, Vardgiva
                 .withVardgivareHsaId(utredning.getExternForfragan().getLandstingHsaId())
                 .withVardgivareNamn("Enriched later")
                 .withAvslutsDatum(resolveAvslutsDatum(utredning))
-                .withErsatts(resolveErsatts(utredning))
+                .withErsatts(ErsattsResolver.resolveUtredningErsatts(utredning))
                 .withFakturerad(nonNull(utredning.getBetalning()) ? utredning.getBetalning().getFakturaId() : null)
                 .withUtbetald(nonNull(utredning.getBetalning()) ? utredning.getBetalning().getBetalningsId() : null)
                 .build();
     }
 
-    private static boolean resolveErsatts(Utredning utredning) {
 
-        // Utredningen avslutad med orsak ”Jäv” eller ”Ingen beställning"
-        if (utredning.getAvbrutenDatum() != null) {
-            if (utredning.getAvbrutenAnledning() == EndReason.INGEN_BESTALLNING || utredning.getAvbrutenAnledning() == EndReason.JAV) {
-                return false;
-            }
-        }
-
-        // Slutdatum för utredningen passeras innan utlåtandet är mottaget av Försäkringskassan
-        // Slutdatum för komplettering passerat innan kompletteringen är mottagen av Försäkringskassan
-        // Nedanstående letar reda på det senaste sista-datumet (gäller både kompletteringar och intyg) och jämför sedan.
-        Optional<Intyg> maxSistaDatumOptional = utredning.getIntygList().stream().max(Comparator.comparing(Intyg::getSistaDatum));
-        if (maxSistaDatumOptional.isPresent()) {
-            Intyg intyg = maxSistaDatumOptional.get();
-            if (intyg.getMottagetDatum() == null || intyg.getSistaDatum().compareTo(intyg.getMottagetDatum()) > 0) {
-                return false;
-            }
-        }
-
-        // Det finns Inget besök i utredning som är ersättningsberättigat.
-        if (utredning.getBesokList().stream().noneMatch(besok -> besok.getErsatts() != null && besok.getErsatts())) {
-            return false;
-        }
-
-        // Om inget av ovanstående är sant ersätts utredningen
-        return true;
-    }
 
     private static String resolveAvslutsDatum(Utredning utredning) {
         if (utredning.getAvbrutenDatum() != null) {
