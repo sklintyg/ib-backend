@@ -53,8 +53,36 @@ angular.module('ibApp').factory('VardgivareProxy',
             return promise.promise;
         }
 
+        function _getVardenheterWithFilter(query) {
+            var promise = $q.defer();
+
+            var restPath = '/api/vardgivare/vardenheter';
+
+            var config =  {
+                timeout: networkConfig.defaultTimeout
+            };
+
+            $http.post(restPath, query, config).then(function(response) {
+                $log.debug(restPath + ' - success');
+
+                if (typeof response !== 'undefined') {
+                    promise.resolve(response.data);
+                } else {
+                    $log.debug('JSON response syntax error. Rejected.');
+                    promise.reject(null);
+                }
+            }, function(response) {
+                $log.error('error ' + response.status);
+                // Let calling code handle the error of no data response
+                promise.reject(response.data);
+            });
+
+            return promise.promise;
+        }
+
         // Return public API for the service
         return {
-            getVardenheter: _getVardenheter
+            getVardenheter: _getVardenheter,
+            getVardenheterWithFilter: _getVardenheterWithFilter
         };
     });

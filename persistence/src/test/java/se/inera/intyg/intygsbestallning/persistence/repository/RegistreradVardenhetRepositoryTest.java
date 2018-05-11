@@ -18,6 +18,11 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.repository;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,15 +31,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
+
 import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigDev;
 import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigTest;
-import se.inera.intyg.intygsbestallning.persistence.model.type.RegiFormTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.RegistreradVardenhet;
-
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import se.inera.intyg.intygsbestallning.persistence.model.type.RegiFormTyp;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = { PersistenceConfigTest.class, PersistenceConfigDev.class })
@@ -76,7 +77,7 @@ public class RegistreradVardenhetRepositoryTest {
         return RegistreradVardenhet.RegistreradVardenhetBuilder.aRegistreradVardenhet()
                 .withVardenhetHsaId("ve-1")
                 .withVardenhetNamn("Enhet 1")
-                .withVardenhetRegiForm(RegiFormTyp.LANDSTING)
+                .withVardenhetRegiForm(RegiFormTyp.EGET_LANDSTING)
                 .withVardenhetVardgivareHsaId("vg-1")
                 .withVardgivareHsaId("vg-1")
                 .build();

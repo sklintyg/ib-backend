@@ -18,8 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
-import com.google.common.base.MoreObjects;
-import se.inera.intyg.intygsbestallning.persistence.model.type.RegiFormTyp;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,7 +27,10 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.util.Objects;
+
+import com.google.common.base.MoreObjects;
+
+import se.inera.intyg.intygsbestallning.persistence.model.type.RegiFormTyp;
 
 @Entity
 @Table(name = "REGISTRERAD_VARDENHET")
@@ -47,9 +49,6 @@ public final class RegistreradVardenhet {
 
     @Column(name = "VARDENHET_HSA_ID", nullable = false)
     private String vardenhetHsaId;
-
-    @Column(name = "VARDENHET_NAMN", nullable = false)
-    private String vardenhetNamn;
 
     @Enumerated(value = EnumType.STRING)
     @Column(name = "VARDENHET_REGIFORM", nullable = false)
@@ -87,14 +86,6 @@ public final class RegistreradVardenhet {
         this.vardenhetHsaId = vardenhetHsaId;
     }
 
-    public String getVardenhetNamn() {
-        return vardenhetNamn;
-    }
-
-    public void setVardenhetNamn(String vardenhetNamn) {
-        this.vardenhetNamn = vardenhetNamn;
-    }
-
     public RegiFormTyp getVardenhetRegiForm() {
         return vardenhetRegiForm;
     }
@@ -103,6 +94,38 @@ public final class RegistreradVardenhet {
         this.vardenhetRegiForm = vardenhetRegiForm;
     }
 
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof RegistreradVardenhet)) {
+            return false;
+        }
+        final RegistreradVardenhet that = (RegistreradVardenhet) o;
+        return id == that.id
+                && Objects.equals(vardgivareHsaId, that.vardgivareHsaId)
+                && Objects.equals(vardenhetVardgivareHsaId, that.vardenhetVardgivareHsaId)
+                && Objects.equals(vardenhetHsaId, that.vardenhetHsaId)
+                && vardenhetRegiForm == that.vardenhetRegiForm;
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, vardgivareHsaId, vardenhetVardgivareHsaId, vardenhetHsaId, vardenhetRegiForm);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("vardgivareHsaId", vardgivareHsaId)
+                .add("vardenhetVardgivareHsaId", vardenhetVardgivareHsaId)
+                .add("vardenhetHsaId", vardenhetHsaId)
+                .add("vardenhetRegiForm", vardenhetRegiForm)
+                .toString();
+    }
 
     public static final class RegistreradVardenhetBuilder {
         private String vardgivareHsaId;
@@ -148,44 +171,8 @@ public final class RegistreradVardenhet {
             registreradVardenhet.setVardgivareHsaId(vardgivareHsaId);
             registreradVardenhet.setVardenhetVardgivareHsaId(vardenhetVardgivareHsaId);
             registreradVardenhet.setVardenhetHsaId(vardenhetHsaId);
-            registreradVardenhet.setVardenhetNamn(vardenhetNamn);
             registreradVardenhet.setVardenhetRegiFormTyp(vardenhetRegiForm);
             return registreradVardenhet;
         }
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof RegistreradVardenhet)) {
-            return false;
-        }
-        final RegistreradVardenhet that = (RegistreradVardenhet) o;
-        return id == that.id
-                && Objects.equals(vardgivareHsaId, that.vardgivareHsaId)
-                && Objects.equals(vardenhetVardgivareHsaId, that.vardenhetVardgivareHsaId)
-                && Objects.equals(vardenhetHsaId, that.vardenhetHsaId)
-                && Objects.equals(vardenhetNamn, that.vardenhetNamn)
-                && vardenhetRegiForm == that.vardenhetRegiForm;
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(id, vardgivareHsaId, vardenhetVardgivareHsaId, vardenhetHsaId, vardenhetNamn, vardenhetRegiForm);
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("id", id)
-                .add("vardgivareHsaId", vardgivareHsaId)
-                .add("vardenhetVardgivareHsaId", vardenhetVardgivareHsaId)
-                .add("vardenhetHsaId", vardenhetHsaId)
-                .add("vardenhetNamn", vardenhetNamn)
-                .add("vardenhetRegiForm", vardenhetRegiForm)
-                .toString();
     }
 }

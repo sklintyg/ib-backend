@@ -73,6 +73,18 @@ var ibMessages = {
         'skicka.forfragan.meddelande.help': 'Meddelandet visas för vårdenheten och för Försäkringskassans handläggare.',
         'skicka.forfragan.meddelande.placeholder': 'Skriv meddelande här',
 
+        //Registrerade vårdenheter
+        'hantera-enheter.label.table.vardenheter.column.namn': 'Namn',
+        'hantera-enheter.label.table.vardenheter.column.postadress': 'Postadress',
+        'hantera-enheter.label.table.vardenheter.column.postnummer': 'Postnummer',
+        'hantera-enheter.label.table.vardenheter.column.postort': 'Postort',
+        'hantera-enheter.label.table.vardenheter.column.telefon': 'Telefon',
+        'hantera-enheter.label.table.vardenheter.column.epost': 'Epost',
+        'hantera-enheter.label.table.vardenheter.column.regiForm': 'Regiform',
+        'hantera-enheter.filter.fritext.label': 'Fritextsökning',
+        'hantera-enheter.filter.fritext.placeholder': 'Skriv sökord',
+        'hantera-enheter.filter.addunit.label': 'Lägg till vårdenhet',
+
         // Lista utredningar tabell
         'label.table.utredningar.column.id': 'Id',
         'label.table.utredningar.column.typ': 'Utredningstyp',

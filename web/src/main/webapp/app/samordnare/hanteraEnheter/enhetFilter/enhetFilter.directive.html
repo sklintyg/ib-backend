@@ -1,0 +1,15 @@
+<div>
+  <ib-textfield
+      class="filter-component"
+      id="hantera-enheter-filter-fritext"
+      model="filter.freetext"
+      label-key="hantera-enheter.filter.fritext.label"
+      max-length="255"
+      on-change="onChange()"
+      placeholder-key="hantera-enheter.filter.fritext.placeholder">
+  </ib-textfield>
+
+  <button class="filter-component btn btn-primary" id="hantera-enheter-filter-add-unit" ng-click="onAddUnitClick()">
+    <message key="hantera-enheter.filter.addunit.label"></message>
+  </button>
+</div>

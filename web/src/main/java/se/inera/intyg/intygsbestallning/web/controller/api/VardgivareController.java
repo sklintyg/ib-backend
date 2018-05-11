@@ -22,17 +22,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.vardgivare.VardgivareService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetVardenheterForVardgivareResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListVardenheterForVardgivareRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListVardenheterForVardgivareResponse;
 
 @RestController
 @RequestMapping("/api/vardgivare")
@@ -57,4 +62,19 @@ public class VardgivareController {
         return ResponseEntity.ok(vardgivareService.listVardenheterForVardgivare(user.getCurrentlyLoggedInAt().getId()));
     }
 
+    @PrometheusTimeMethod(name = "list_vardenheter_for_vardgivare_duration_seconds", help = "Some helpful info here")
+    @PostMapping(path = "/vardenheter", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ListVardenheterForVardgivareResponse> findVardenheterForVardgivareWithFilter(
+            @RequestBody ListVardenheterForVardgivareRequest request) {
+        IbUser user = userService.getUser();
+        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_VARDENHETER_FOR_VARDGIVARE)
+                .orThrow(
+                        new IbAuthorizationException("User does not have required privilege PRIVILEGE_HANTERA_VARDENHETER_FOR_VARDGIVARE"));
+
+        if (user.getCurrentlyLoggedInAt().getType() != SelectableHsaEntityType.VG) {
+            throw new IbAuthorizationException("User is not logged in at a Vardgivare");
+        }
+
+        return ResponseEntity.ok(vardgivareService.findVardenheterForVardgivareWithFilter(user.getCurrentlyLoggedInAt().getId(), request));
+    }
 }

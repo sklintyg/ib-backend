@@ -18,28 +18,41 @@
  */
 package se.inera.intyg.intygsbestallning.service.vardgivare;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import se.inera.intyg.intygsbestallning.persistence.model.type.RegiFormTyp;
+
+import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
+import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.intygsbestallning.persistence.model.RegistreradVardenhet;
+import se.inera.intyg.intygsbestallning.persistence.model.type.RegiFormTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetVardenheterForVardgivareResponse;
-
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListVardenheterForVardgivareRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListVardenheterForVardgivareResponse;
 
 @RunWith(MockitoJUnitRunner.class)
 public class VardgivareServiceImplTest {
 
+    private static final String VARDGIVARE_ID = "vg-1";
+    private static final String ENHET_1 = "ve-1";
+    private static final String ENHET_2 = "ve-2";
+    private static final String ENHET_3 = "ve-3";
+
     @Mock
     private RegistreradVardenhetRepository registreradVardenhetRepository;
+
+    @Mock
+    private HsaOrganizationsService hsaOrganizationsService;
 
     @InjectMocks
     private VardgivareServiceImpl testee;
@@ -47,41 +60,79 @@ public class VardgivareServiceImplTest {
     @Test
     public void testGroupsCorrectly() {
         when(registreradVardenhetRepository.findByVardgivareHsaId(anyString())).thenReturn(buildRegVardenhetList());
+        when(hsaOrganizationsService.getVardenhet(anyString())).thenAnswer(
+                invocation -> buildVardEnhet(invocation.getArgument(0)));
 
-        GetVardenheterForVardgivareResponse response = testee.listVardenheterForVardgivare("vg-1");
+        GetVardenheterForVardgivareResponse response = testee.listVardenheterForVardgivare(VARDGIVARE_ID);
 
         assertEquals(1, response.getAnnatLandsting().size());
         assertEquals(1, response.getEgetLandsting().size());
         assertEquals(1, response.getPrivat().size());
 
-        assertEquals("ve-1", response.getEgetLandsting().get(0).getId());
-        assertEquals("ve-2", response.getAnnatLandsting().get(0).getId());
-        assertEquals("ve-3", response.getPrivat().get(0).getId());
+        assertEquals(ENHET_1, response.getEgetLandsting().get(0).getId());
+        assertEquals(ENHET_2, response.getPrivat().get(0).getId());
+        assertEquals(ENHET_3, response.getAnnatLandsting().get(0).getId());
+
+    }
+
+    @Test
+    public void testFiltersCorrectly() {
+        when(registreradVardenhetRepository.findByVardgivareHsaId(anyString())).thenReturn(buildRegVardenhetList());
+        when(hsaOrganizationsService.getVardenhet(anyString())).thenAnswer(
+                invocation -> buildVardEnhet(invocation.getArgument(0)));
+
+        // Should match all
+        ListVardenheterForVardgivareResponse response = testee.findVardenheterForVardgivareWithFilter(VARDGIVARE_ID, buildFilter(null));
+        assertEquals(3, response.getTotalCount());
+
+        // freetext should match 1
+        response = testee.findVardenheterForVardgivareWithFilter(VARDGIVARE_ID, buildFilter("ve-2-na"));
+        assertEquals(1, response.getTotalCount());
+        assertEquals(ENHET_2, response.getVardenheter().get(0).getVardenhetHsaId());
+
+        // No match
+        response = testee.findVardenheterForVardgivareWithFilter(VARDGIVARE_ID, buildFilter("XXX"));
+        assertEquals(0, response.getTotalCount());
+
+    }
+
+    private ListVardenheterForVardgivareRequest buildFilter(String freeText) {
+        ListVardenheterForVardgivareRequest req = new ListVardenheterForVardgivareRequest();
+        req.setPageSize(10);
+        req.setCurrentPage(0);
+        req.setFreeText(freeText);
+        return req;
+    }
+
+    private Vardenhet buildVardEnhet(String id) {
+        Vardenhet vardenhet = new Vardenhet();
+        vardenhet.setId(id);
+        vardenhet.setNamn(id + "-name");
+        return vardenhet;
     }
 
     private List<RegistreradVardenhet> buildRegVardenhetList() {
         RegistreradVardenhet ve1 = RegistreradVardenhet.RegistreradVardenhetBuilder.aRegistreradVardenhet()
-                .withVardenhetVardgivareHsaId("vg-1")
-                .withVardgivareHsaId("vg-1")
-                .withVardenhetHsaId("ve-1")
-                .withVardenhetNamn("VE1")
-                .withVardenhetRegiForm(RegiFormTyp.LANDSTING)
+                .withVardenhetVardgivareHsaId(VARDGIVARE_ID)
+                .withVardgivareHsaId(VARDGIVARE_ID)
+                .withVardenhetHsaId(ENHET_1)
+                .withVardenhetNamn(ENHET_1 + "-name")
+                .withVardenhetRegiForm(RegiFormTyp.EGET_LANDSTING)
                 .build();
 
         RegistreradVardenhet ve2 = RegistreradVardenhet.RegistreradVardenhetBuilder.aRegistreradVardenhet()
                 .withVardenhetVardgivareHsaId("vg-2")
-                .withVardgivareHsaId("vg-1")
-                .withVardenhetHsaId("ve-2")
-                .withVardenhetNamn("VE2")
-                .withVardenhetRegiForm(RegiFormTyp.LANDSTING)
+                .withVardgivareHsaId(VARDGIVARE_ID)
+                .withVardenhetHsaId(ENHET_2)
+                .withVardenhetNamn(ENHET_2 + "-name")
+                .withVardenhetRegiForm(RegiFormTyp.PRIVAT)
                 .build();
-
         RegistreradVardenhet ve3 = RegistreradVardenhet.RegistreradVardenhetBuilder.aRegistreradVardenhet()
                 .withVardenhetVardgivareHsaId("vg-3")
-                .withVardgivareHsaId("vg-1")
-                .withVardenhetHsaId("ve-3")
-                .withVardenhetNamn("VE3")
-                .withVardenhetRegiForm(RegiFormTyp.PRIVAT)
+                .withVardgivareHsaId(VARDGIVARE_ID)
+                .withVardenhetHsaId(ENHET_3)
+                .withVardenhetNamn(ENHET_3 + "-name")
+                .withVardenhetRegiForm(RegiFormTyp.ANNAT_LANDSTING)
                 .build();
 
         return Arrays.asList(ve1, ve2, ve3);

@@ -19,7 +19,12 @@
 package se.inera.intyg.intygsbestallning.service.vardgivare;
 
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetVardenheterForVardgivareResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListVardenheterForVardgivareRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListVardenheterForVardgivareResponse;
 
 public interface VardgivareService {
     GetVardenheterForVardgivareResponse listVardenheterForVardgivare(String vardgivareHsaId);
+
+    ListVardenheterForVardgivareResponse findVardenheterForVardgivareWithFilter(String vardgivareHsaId,
+            ListVardenheterForVardgivareRequest request);
 }

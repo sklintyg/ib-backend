@@ -16,29 +16,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.persistence.model.type;
+angular.module('ibApp').directive('enhetFilter',
+    function($timeout) {
+        'use strict';
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+        return {
+            restrict: 'E',
+            scope: {
+                'filter': '=',
+                'filterChanged':'&'
+            },
+            templateUrl: '/app/samordnare/hanteraEnheter/enhetFilter/enhetFilter.directive.html',
+            link: function($scope) {
 
-@JsonFormat(shape = JsonFormat.Shape.OBJECT)
-public enum RegiFormTyp {
-    EGET_LANDSTING("Eget landsting"),
-    ANNAT_LANDSTING("Annat landsting"),
-    PRIVAT("Privat");
+                $scope.onChange = function() {
+                    $timeout(function() {
+                        $scope.filterChanged();
+                    });
+                };
 
-    private final String id;
-    private final String label;
-
-    RegiFormTyp(String label) {
-        this.id = this.name();
-        this.label = label;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-}
+                $scope.resetFilter = function() {
+                    $scope.filter.reset();
+                    $scope.filterChanged();
+                };
+            }
+        };
+    } );

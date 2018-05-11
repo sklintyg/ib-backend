@@ -18,18 +18,18 @@
  */
 package se.inera.intyg.intygsbestallning.service.vardgivare.dto;
 
-import se.inera.intyg.intygsbestallning.persistence.model.type.RegiFormTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.RegistreradVardenhet;
+import se.inera.intyg.intygsbestallning.persistence.model.type.RegiFormTyp;
 
 public class VardenhetItem {
     private String id;
     private String label;
     private RegiFormTyp regiForm;
 
-    public static VardenhetItem from(RegistreradVardenhet hsaVardenhet) {
+    public static VardenhetItem from(RegistreradVardenhet hsaVardenhet, String vardenhetsNamn) {
         return VardenhetItemBuilder.aVardenhetItem()
                 .withId(hsaVardenhet.getVardenhetHsaId())
-                .withLabel(hsaVardenhet.getVardenhetNamn())
+                .withLabel(vardenhetsNamn)
                 .withRegiForm(hsaVardenhet.getVardenhetRegiForm())
                 .build();
     }

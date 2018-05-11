@@ -1,0 +1,9 @@
+<div class="btn-group" uib-dropdown is-open="status.isopen">
+  <button ng-attr-id="{{::menuId}}" type="button" class="btn btn-default" uib-dropdown-toggle ng-disabled="disabled">
+    Hantera <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="{{::menuId}}">
+    <li role="menuitem"><a href ng-attr-id="{{::menuId}}-edit" ng-click="onEdit({'row': row})">Ändra regi</a></li>
+    <li role="menuitem"><a href ng-attr-id="{{::menuId}}-delete" ng-click="onDelete({'row': row})">Ta bort</a></li>
+  </ul>
+</div>

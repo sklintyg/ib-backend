@@ -16,29 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.persistence.model.type;
+package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+/**
+ * Created by marced on 2018-05-11.
+ */
+public class ListVardenheterForVardgivareRequest extends ListRequest {
+    private String freeText;
 
-@JsonFormat(shape = JsonFormat.Shape.OBJECT)
-public enum RegiFormTyp {
-    EGET_LANDSTING("Eget landsting"),
-    ANNAT_LANDSTING("Annat landsting"),
-    PRIVAT("Privat");
-
-    private final String id;
-    private final String label;
-
-    RegiFormTyp(String label) {
-        this.id = this.name();
-        this.label = label;
+    public String getFreeText() {
+        return freeText;
     }
 
-    public String getId() {
-        return id;
+    public void setFreeText(String freeText) {
+        this.freeText = freeText;
     }
 
-    public String getLabel() {
-        return label;
-    }
 }

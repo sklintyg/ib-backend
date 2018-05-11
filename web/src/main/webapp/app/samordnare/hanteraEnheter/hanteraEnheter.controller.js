@@ -19,8 +19,44 @@
 
 angular.module('ibApp')
     .controller('HanteraEnheterCtrl',
-        function() {
+        function($scope, $log, ibEnhetFilterModel, VardgivareProxy) {
             'use strict';
+
+            $scope.filter = ibEnhetFilterModel.build();
+
+
+            $scope.onEditRow = function (row) {
+                $log.debug('Edit! ' + row);
+            };
+            $scope.onDeleteRow = function (row) {
+                $log.debug('Delete! ' + row);
+            };
+
+            $scope.getVardenheterWithFilter = function(appendResults) {
+
+                if (!appendResults) {
+                    $scope.filter.currentPage = 0;
+                }
+
+                VardgivareProxy.getVardenheterWithFilter($scope.filter.convertToPayload()).then(function(data) {
+                    if (appendResults) {
+                        $scope.vardenheter = $scope.vardenheter.concat(data.vardenheter);
+                    }
+                    else {
+                         $scope.vardenheter = data.vardenheter;
+                    }
+                    $scope.vardenheterTotal = data.totalCount;
+                }, function(error) {
+                    $log.error(error);
+                });
+            };
+
+            $scope.getMore = function() {
+                $scope.filter.currentPage++;
+                $scope.getVardenheterWithFilter(true);
+            };
+
+            $scope.getVardenheterWithFilter();
 
         }
     );

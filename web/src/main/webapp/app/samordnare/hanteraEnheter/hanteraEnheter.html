@@ -1,3 +1,53 @@
-<div class="container hanteraEnheter-page">
-  Hantera enheter
+<div class="hanteraEnheter-page centered-constrained-content">
+
+  <enhet-filter filter="filter" filter-changed="getVardenheterWithFilter()"></enhet-filter>
+
+  <span id="samordnare-lista-vardenheter-resulttext">Sökresultat: {{vardenheter.length}} av {{vardenheterTotal}} vårdenheter</span>
+
+  <table id="samordnare-lista-vardenheter-table" class="table table-striped ib-table-striped">
+    <thead>
+      <tr>
+        <th ib-table-head filter="filter" filter-changed="getVardenheterWithFilter()" order-by-key="namn" label-key="hantera-enheter.label.table.vardenheter.column.namn"></th>
+        <th ib-table-head filter="filter" filter-changed="getVardenheterWithFilter()" order-by-key="postadress" label-key="hantera-enheter.label.table.vardenheter.column.postadress"></th>
+        <th ib-table-head filter="filter" filter-changed="getVardenheterWithFilter()" order-by-key="postnummer" label-key="hantera-enheter.label.table.vardenheter.column.postnummer"></th>
+        <th ib-table-head filter="filter" filter-changed="getVardenheterWithFilter()" order-by-key="postort" label-key="hantera-enheter.label.table.vardenheter.column.postort"></th>
+        <th ib-table-head filter="filter" filter-changed="getVardenheterWithFilter()" order-by-key="telefon" label-key="hantera-enheter.label.table.vardenheter.column.telefon"></th>
+        <th ib-table-head filter="filter" filter-changed="getVardenheterWithFilter()" order-by-key="epost" label-key="hantera-enheter.label.table.vardenheter.column.epost"></th>
+        <th ib-table-head filter="filter" filter-changed="getVardenheterWithFilter()" order-by-key="regiFormLabel" label-key="hantera-enheter.label.table.vardenheter.column.regiForm"></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="row in vardenheter">
+        <td>{{::row.namn}}</td>
+        <td>{{::row.postadress}}</td>
+        <td>{{::row.postnummer}}</td>
+        <td>{{::row.postort}}</td>
+        <td>{{::row.telefon}}</td>
+        <td>{{::row.epost}}</td>
+        <td>{{::row.regiFormLabel}}</td>
+        <td>
+          <row-action-menu
+            menu-id="editVardenhetMenu-{{row.vardenhetHsaId}}"
+            row="row"
+            on-edit="onEditRow(row)"
+            on-delete="onDeleteRow(row)">
+        </row-action-menu>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div>
+    <button class="btn btn-primary"
+            ng-click="getMore()"
+            ng-if="vardenheterTotal > vardenheter.length">
+      <message key="common.more.results"></message>
+    </button>
+  </div>
+
+  <div id="samordnare-lista-vardenheter-no-results" ng-if="!vardenheter.length">
+    <span message key="common.no.results"></span>
+  </div>
+
 </div>
