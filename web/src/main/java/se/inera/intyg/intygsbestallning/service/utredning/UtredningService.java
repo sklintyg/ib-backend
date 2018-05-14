@@ -42,8 +42,6 @@ public interface UtredningService {
      */
     List<UtredningListItem> findExternForfraganByLandstingHsaId(String landstingHsaId);
 
-    GetUtredningResponse getUtredning(String utredningId, String landstingHsaId);
-
     GetUtredningListResponse findExternForfraganByLandstingHsaIdWithFilter(String landstingHsaId, ListUtredningRequest request);
 
     /**

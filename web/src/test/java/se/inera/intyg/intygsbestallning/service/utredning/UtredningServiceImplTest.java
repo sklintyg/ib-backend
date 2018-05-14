@@ -25,6 +25,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
+import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
@@ -82,6 +84,9 @@ public class UtredningServiceImplTest {
 
     @Mock
     private UtredningRepository utredningRepository;
+
+    @Mock
+    private HsaOrganizationsService organizationUnitService;
 
     @InjectMocks
     private UtredningServiceImpl utredningService;
@@ -405,6 +410,40 @@ public class UtredningServiceImplTest {
         assertNotNull(response);
         assertEquals(utredningId, response.getUtredningsId());
     }
+
+    @Test
+    public void testGetUtredningWithInternforfraganSuccess() {
+        final String utredningId = "utredningId";
+        final String landstingHsaId = "landstingHsaId";
+        final String vardenhetHsaId = "vardenhetHsaId";
+        final String vardenhetNamn = "vardenhetens namn";
+
+        when(organizationUnitService.getVardenhet(vardenhetHsaId)).thenReturn(new Vardenhet(vardenhetHsaId, vardenhetNamn));
+
+        when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
+                .withUtredningId(utredningId)
+                .withUtredningsTyp(AFU)
+                .withExternForfragan(anExternForfragan()
+                        .withLandstingHsaId(landstingHsaId)
+                        .withInkomDatum(LocalDateTime.now())
+                        .withBesvarasSenastDatum(LocalDateTime.now())
+                        .withInternForfraganList(ImmutableList.of(anInternForfragan()
+                                .withVardenhetHsaId(vardenhetHsaId)
+                                .build()))
+                        .build())
+                .withInvanare(anInvanare()
+                        .build())
+                .withHandlaggare(aHandlaggare()
+                        .build())
+                .build()));
+
+        GetUtredningResponse response = utredningService.getExternForfragan(utredningId, landstingHsaId);
+
+        assertNotNull(response);
+        assertEquals(utredningId, response.getUtredningsId());
+        assertEquals(vardenhetNamn, response.getInternforfraganList().get(0).getVardenhetNamn());
+    }
+
 
     @Test(expected = IbAuthorizationException.class)
     public void testGetUtredningIncorrectLandsting() {

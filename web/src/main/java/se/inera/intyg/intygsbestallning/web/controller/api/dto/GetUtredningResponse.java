@@ -18,11 +18,14 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
+import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
+import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 
@@ -55,6 +58,10 @@ public class GetUtredningResponse {
 
     private String handlaggareEpost;
 
+    private List<UtredningInternForfraganListItem> internforfraganList;
+
+    private List<UtredningHandelseListItem> handelseList;
+
     public static GetUtredningResponse from(Utredning utredning) {
 
         return GetUtredningResponseBuilder.aGetUtredningResponse()
@@ -74,6 +81,8 @@ public class GetUtredningResponse {
                 .withHandlaggareNamn(utredning.getHandlaggare().getFullstandigtNamn())
                 .withHandlaggareTelefonnummer(utredning.getHandlaggare().getTelefonnummer())
                 .withHandlaggareEpost(utredning.getHandlaggare().getEmail())
+                .withInternForfraganList(utredning, utredning.getExternForfragan().getInternForfraganList())
+                .withHandelseList(utredning.getHandelseList())
                 .build();
 
     }
@@ -182,6 +191,22 @@ public class GetUtredningResponse {
         this.handlaggareEpost = handlaggareEpost;
     }
 
+    public List<UtredningInternForfraganListItem> getInternforfraganList() {
+        return internforfraganList;
+    }
+
+    public void setInternforfraganList(List<UtredningInternForfraganListItem> internforfraganList) {
+        this.internforfraganList = internforfraganList;
+    }
+
+    public List<UtredningHandelseListItem> getHandelseList() {
+        return handelseList;
+    }
+
+    public void setHandelseList(List<UtredningHandelseListItem> handelseList) {
+        this.handelseList = handelseList;
+    }
+
     public static final class GetUtredningResponseBuilder {
         private static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
         private String utredningsId;
@@ -189,7 +214,7 @@ public class GetUtredningResponse {
         private String besvarasSenastDatum;
         private String bostadsort;
         private boolean tidigareUtredd;
-        List<FelaktigEnhet> felaktigaEnheter;
+        private List<FelaktigEnhet> felaktigaEnheter;
         private boolean behovTolk;
         private String tolkSprak;
         private String sarskildaBehov;
@@ -197,6 +222,8 @@ public class GetUtredningResponse {
         private String handlaggareNamn;
         private String handlaggareTelefonnummer;
         private String handlaggareEpost;
+        private List<UtredningInternForfraganListItem> internForfraganList;
+        private List<UtredningHandelseListItem> handelseList;
 
         private GetUtredningResponseBuilder() {
         }
@@ -270,6 +297,20 @@ public class GetUtredningResponse {
             return this;
         }
 
+        public GetUtredningResponseBuilder withInternForfraganList(Utredning utredning, List<InternForfragan> internForfraganList) {
+            this.internForfraganList = internForfraganList.stream()
+                    .map(internForfragan -> UtredningInternForfraganListItem.from(utredning, internForfragan))
+                    .collect(Collectors.toList());
+            return this;
+        }
+
+        public GetUtredningResponseBuilder withHandelseList(List<Handelse> handelseList) {
+            this.handelseList = handelseList.stream()
+                    .map(UtredningHandelseListItem::from)
+                    .collect(Collectors.toList());
+            return this;
+        }
+
         public GetUtredningResponse build() {
             GetUtredningResponse getUtredningResponse = new GetUtredningResponse();
             getUtredningResponse.setUtredningsId(utredningsId);
@@ -285,8 +326,11 @@ public class GetUtredningResponse {
             getUtredningResponse.setHandlaggareNamn(handlaggareNamn);
             getUtredningResponse.setHandlaggareTelefonnummer(handlaggareTelefonnummer);
             getUtredningResponse.setHandlaggareEpost(handlaggareEpost);
+            getUtredningResponse.setInternforfraganList(internForfraganList);
+            getUtredningResponse.setHandelseList(handelseList);
             return getUtredningResponse;
         }
+
     }
 
     public static final class FelaktigEnhet {

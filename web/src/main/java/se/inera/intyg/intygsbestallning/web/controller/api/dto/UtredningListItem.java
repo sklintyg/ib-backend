@@ -31,7 +31,7 @@ import java.util.Optional;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
-public class UtredningListItem implements FreeTextSearchable, FilterableListItem {
+public class UtredningListItem implements FreeTextSearchable, FilterableListItem, VardenhetEnrichable {
 
     private String utredningsId;
     private String utredningsTyp;
@@ -114,6 +114,7 @@ public class UtredningListItem implements FreeTextSearchable, FilterableListItem
         this.utredningsTyp = utredningsTyp;
     }
 
+    @Override
     public String getVardenhetHsaId() {
         return vardenhetHsaId;
     }
@@ -126,6 +127,7 @@ public class UtredningListItem implements FreeTextSearchable, FilterableListItem
         return vardenhetNamn;
     }
 
+    @Override
     public void setVardenhetNamn(String vardenhetNamn) {
         this.vardenhetNamn = vardenhetNamn;
     }

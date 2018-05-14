@@ -71,6 +71,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningListR
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardenhetEnrichable;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
 
 import java.text.MessageFormat;
@@ -160,21 +161,11 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                             + landstingHsaId + "'");
         }
 
-        return GetUtredningResponse.from(utredning);
-    }
+        GetUtredningResponse getUtredningResponse = GetUtredningResponse.from(utredning);
 
-    @Override
-    public GetUtredningResponse getUtredning(String utredningId, String landstingHsaId) {
-        Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
-                () -> new IbNotFoundException("Utredning with assessmentId '" + utredningId + "' does not exist."));
+        enrichWithVardenhetNames(getUtredningResponse.getInternforfraganList());
 
-        if (!Objects.equals(utredning.getExternForfragan().getLandstingHsaId(), landstingHsaId)) {
-            throw new IbNotFoundException(
-                    "Utredning with assessmentId '" + utredningId + "' does not have ExternForfragan for landsting with id '"
-                            + landstingHsaId + "'");
-        }
-
-        return GetUtredningResponse.from(utredning);
+        return getUtredningResponse;
     }
 
     @Override
@@ -390,14 +381,14 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         return toUpdate;
     }
 
-    private void enrichWithVardenhetNames(List<UtredningListItem> items) {
-        items.stream().forEach(uli -> {
-            if (!Strings.isNullOrEmpty(uli.getVardenhetHsaId())) {
-                Vardenhet vardenhet = organizationUnitService.getVardenhet(uli.getVardenhetHsaId());
+    private void enrichWithVardenhetNames(List<? extends VardenhetEnrichable> items) {
+        items.stream().forEach(item -> {
+            if (!Strings.isNullOrEmpty(item.getVardenhetHsaId())) {
+                Vardenhet vardenhet = organizationUnitService.getVardenhet(item.getVardenhetHsaId());
                 if (vardenhet != null) {
-                    uli.setVardenhetNamn(vardenhet.getNamn());
+                    item.setVardenhetNamn(vardenhet.getNamn());
                 } else {
-                    LOG.warn("Could not fetch name for Vardenhet '{}' from HSA", uli.getVardenhetHsaId());
+                    LOG.warn("Could not fetch name for Vardenhet '{}' from HSA", item.getVardenhetHsaId());
                 }
             }
         });
