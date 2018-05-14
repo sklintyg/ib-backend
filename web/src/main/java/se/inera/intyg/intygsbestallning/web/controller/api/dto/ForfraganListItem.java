@@ -123,7 +123,7 @@ public class ForfraganListItem implements FreeTextSearchable {
         if (besvarasSenastDatum.toLocalDate().compareTo(LocalDate.now()) < 0) {
             return false;
         }
-        return businessDays.daysBetween(LocalDate.now(), besvarasSenastDatum.toLocalDate()) < BESVARA_FORFRAGAN_ARBETSDAGAR;
+        return businessDays.daysBetween(LocalDate.now(), besvarasSenastDatum.toLocalDate(), false) < BESVARA_FORFRAGAN_ARBETSDAGAR;
     }
 
     public String getUtredningsId() {

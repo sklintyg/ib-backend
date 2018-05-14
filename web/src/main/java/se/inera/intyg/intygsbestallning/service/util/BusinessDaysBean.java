@@ -66,20 +66,18 @@ public class BusinessDaysBean {
      * @throws IllegalArgumentException if the date is outside the supported range
      */
     public boolean isBusinessDay(LocalDate date) {
-        if (date.getDayOfWeek() == SATURDAY || date.getDayOfWeek() == SUNDAY) {
-            return false;
-        }
         return isBusinessDay(date, true);
     }
 
     /**
      * Checks whether the specified date is a working day by
      * considering holidays and, optionally, vacation periods.
+     * Saturdays and Sundays are considered as holidays.
      * <p>
      * A weekend is treated as a holiday.
      *
      * @param date  the date to check
-     * @param accountForVacationPeriods  take into account the vacation periods
+     * @param accountForVacationPeriods  takes into account the vacation periods
      * @return true if the specified date is a business day
      * @throws IllegalArgumentException if the date is outside the supported range
      */
@@ -106,8 +104,26 @@ public class BusinessDaysBean {
      * @throws IllegalArgumentException if the calculation is outside the supported range
      */
     public int daysBetween(LocalDate startInclusive, LocalDate endExclusive) {
+        return daysBetween(startInclusive, endExclusive, true);
+    }
+
+    /**
+     * Calculates the number of business days between two dates with an
+     * option of taking into account the vacation periods.
+     * <p>
+     * This calculates the number of business days within the range.
+     * If the dates are equal, zero is returned.
+     * If the end is before the start, an exception is thrown.
+     *
+     * @param startInclusive  the start date
+     * @param endExclusive  the end date
+     * @param accountForVacationPeriods  takes into account the vacation periods
+     * @return the total number of business days between the start and end date
+     * @throws IllegalArgumentException if the calculation is outside the supported range
+     */
+    public int daysBetween(LocalDate startInclusive, LocalDate endExclusive, boolean accountForVacationPeriods) {
         return Math.toIntExact(LocalDateUtil.stream(startInclusive, endExclusive)
-                .filter(this::isBusinessDay)
+                .filter(o -> isBusinessDay(o, accountForVacationPeriods))
                 .count());
     }
 

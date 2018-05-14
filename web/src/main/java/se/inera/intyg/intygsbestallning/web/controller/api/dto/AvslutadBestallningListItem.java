@@ -45,7 +45,7 @@ public class AvslutadBestallningListItem implements FreeTextSearchable, Vardgiva
     private String utbetald;
 
     public static AvslutadBestallningListItem from(Utredning utredning, UtredningStatusResolver utredningStatusResolver,
-                                                   BusinessDaysBean businessDaysBean) {
+                                                   BusinessDaysBean businessDays) {
 
         return AvslutadBestallningListItemBuilder.anAvslutadBestallningListItem()
                 .withUtredningsId(utredning.getUtredningId())
@@ -54,7 +54,7 @@ public class AvslutadBestallningListItem implements FreeTextSearchable, Vardgiva
                 .withVardgivareHsaId(utredning.getExternForfragan().getLandstingHsaId())
                 .withVardgivareNamn("Enriched later")
                 .withAvslutsDatum(resolveAvslutsDatum(utredning))
-                .withErsatts(ErsattsResolver.resolveUtredningErsatts(utredning, businessDaysBean))
+                .withErsatts(ErsattsResolver.resolveUtredningErsatts(utredning, businessDays))
                 .withFakturerad(nonNull(utredning.getBetalning()) ? utredning.getBetalning().getFakturaId() : null)
                 .withUtbetald(nonNull(utredning.getBetalning()) ? utredning.getBetalning().getBetalningsId() : null)
                 .build();

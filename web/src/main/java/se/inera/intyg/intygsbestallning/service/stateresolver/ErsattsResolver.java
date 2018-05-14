@@ -145,7 +145,7 @@ public final class ErsattsResolver {
         LocalDate kallelseDatum = LocalDate.from(besoksDatum.toLocalDate());
         while (days < arbetsDagar) {
             kallelseDatum = kallelseDatum.minusDays(1);
-            days = businessDays.daysBetween(kallelseDatum, besoksDatum.toLocalDate());
+            days = businessDays.daysBetween(kallelseDatum, besoksDatum.toLocalDate(), false);
         }
         return kallelseDatum;
     }

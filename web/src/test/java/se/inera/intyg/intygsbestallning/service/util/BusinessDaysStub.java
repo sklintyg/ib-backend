@@ -32,6 +32,11 @@ public class BusinessDaysStub extends BusinessDaysBean {
 
     @Override
     public boolean isBusinessDay(LocalDate date) {
+        return isBusinessDay(date, false);
+    }
+
+    @Override
+    public boolean isBusinessDay(LocalDate date, boolean accountForVacationPeriods) {
         // In this stub we only care about Swedish holidays, not the vacation period
         if (date.getDayOfWeek() == SATURDAY || date.getDayOfWeek() == SUNDAY) {
             return false;
