@@ -20,9 +20,11 @@ package se.inera.intyg.intygsbestallning.testutil;
 
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.aCv;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
+import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
 import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
 import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU_UTVIDGAD;
 
@@ -36,10 +38,14 @@ import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.IbUserDetailsService;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.util.SystemRolesParser;
+import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
+import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest;
 import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentType;
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
 import se.riv.intygsbestallning.certificate.order.v1.AddressType;
@@ -193,9 +199,31 @@ public final class TestDataGen {
                 .withExternForfragan(createExternForfragan())
                 .withHandlaggare(createHandlaggare())
                 .withBestallning(createBestallning())
+                .withIntygList(createIntyg())
                 .build();
 
         return utredning;
+    }
+
+    private static List<Intyg> createIntyg() {
+        return ImmutableList.of(anIntyg()
+                .withId(1L)
+                .withMottagetDatum(DATE_TIME)
+                .withSkickatDatum(DATE_TIME)
+                .build());
+    }
+
+    public static List<Besok> createBesok(final RegisterBesokRequest request) {
+        return ImmutableList.of(aBesok()
+                .withKallelseDatum(request.getKallelseDatum())
+                .withKallelseForm(request.getKallelseForm())
+                .withBesokStartTid(LocalDateTime.of(request.getBesokDatum(), request.getBesokStartTid()))
+                .withBesokSlutTid(LocalDateTime.of(request.getBesokDatum(), request.getBesokSlutTid()))
+                .withDeltagareProfession(request.getProffesion())
+                .withTolkStatus(request.getTolkStatus())
+                .withDeltagareFullstandigtNamn(request.getUtredandeVardPersonalNamn().orElse(null))
+                .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
+                .build());
     }
 
     public static Handlaggare createHandlaggare() {

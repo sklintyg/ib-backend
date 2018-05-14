@@ -16,10 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.common.dto;
+package se.inera.intyg.intygsbestallning.common.exception;
 
-public enum ResponseResult {
-    OK,
-    INFO,
-    ERROR
+public class IBExternalServiceException extends RuntimeException {
+    private final IbErrorCodeEnum errorCode;
+
+    public IBExternalServiceException(final IbErrorCodeEnum errorCode, final String message) {
+        super(message);
+        this.errorCode = errorCode;
+    }
+
+    public IbErrorCodeEnum getErrorCode() {
+        return errorCode;
+    }
+
 }

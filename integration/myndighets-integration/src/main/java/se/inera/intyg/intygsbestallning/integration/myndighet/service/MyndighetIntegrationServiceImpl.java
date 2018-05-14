@@ -18,15 +18,27 @@
  */
 package se.inera.intyg.intygsbestallning.integration.myndighet.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.intygsbestallning.common.exception.IBExternalServiceException;
+import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.integration.myndighet.client.MyndighetIntegrationClientService;
-import se.inera.intyg.intygsbestallning.common.dto.ReportCareContactRequestDto;
-import se.inera.intyg.intygsbestallning.common.dto.UpdateAssessmentResponseDto;
+import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto;
 import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.ReportCareContactResponseType;
+import se.riv.intygsbestallning.certificate.order.updateassessment.v1.UpdateAssessmentResponseType;
+import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
+import se.riv.intygsbestallning.certificate.order.v1.ResultType;
+
+import java.lang.invoke.MethodHandles;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class MyndighetIntegrationServiceImpl implements MyndighetIntegrationService {
+
+    private static Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     @Autowired
     private MyndighetIntegrationClientService clientService;
@@ -38,12 +50,28 @@ public class MyndighetIntegrationServiceImpl implements MyndighetIntegrationServ
     }
 
     @Override
-    public ReportCareContactResponseType reportCareContactInteraction(final ReportCareContactRequestDto request) {
-        return clientService.reportCareContact(request);
+    public void reportCareContactInteraction(final ReportCareContactRequestDto request) {
+        final ReportCareContactResponseType response = clientService.reportCareContact(request);
+        handleResponse(response.getResult());
     }
 
     @Override
-    public UpdateAssessmentResponseDto updateAssessment(String id, String certificateType) {
-        return UpdateAssessmentResponseDto.from(clientService.updateAssessment(id, certificateType));
+    public LocalDate updateAssessment(final String id, final String certificateType) {
+        final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyMMdd");
+        final UpdateAssessmentResponseType response = clientService.updateAssessment(id, certificateType);
+        handleResponse(response.getResult());
+        return LocalDate.parse(response.getLastDateForCertificateReceival(), dateTimeFormatter);
+    }
+
+    private void handleResponse(final ResultType resultType) {
+        final ResultCodeType resultCode = resultType.getResultCode();
+        final String resultText = resultType.getResultText();
+
+        if (resultCode.equals(ResultCodeType.ERROR)) {
+            log.error(resultText);
+            throw new IBExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, resultText);
+        } else if (resultCode.equals(ResultCodeType.INFO)) {
+            log.info(resultText);
+        }
     }
 }

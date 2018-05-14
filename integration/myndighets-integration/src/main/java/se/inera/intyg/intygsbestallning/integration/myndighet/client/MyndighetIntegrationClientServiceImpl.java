@@ -18,12 +18,12 @@
  */
 package se.inera.intyg.intygsbestallning.integration.myndighet.client;
 
-import static se.inera.intyg.intygsbestallning.common.util.TjanstekontraktUtils.aReportCareContact;
+import static se.inera.intyg.intygsbestallning.integration.myndighet.service.TjanstekontraktUtils.aReportCareContact;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import se.inera.intyg.intygsbestallning.common.dto.ReportCareContactRequestDto;
+import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto;
 import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.ReportCareContactResponseType;
 import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.rivtabp21.ReportCareContactResponderInterface;
 import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.RespondToPerformerRequestResponseType;
@@ -47,20 +47,23 @@ public class MyndighetIntegrationClientServiceImpl implements MyndighetIntegrati
     @Autowired
     private UpdateAssessmentResponderInterface updateAssessmentResponderInterface;
 
+    @Value("${source.system.hsaid:}")
+    private String sourceSystemHsaId;
+
+
     @Override
     public RespondToPerformerRequestResponseType respondToPerformerRequest(String assessmentId) {
         RespondToPerformerRequestType request = new RespondToPerformerRequestType();
-
         IIType assID = new IIType();
         assID.setExtension(assessmentId);
         request.setAssessmentId(assID);
 
-        return respondToPerformerRequestResponder.respondToPerformerRequest("ID?", request);
+        return respondToPerformerRequestResponder.respondToPerformerRequest(sourceSystemHsaId, request);
     }
 
     @Override
     public ReportCareContactResponseType reportCareContact(final ReportCareContactRequestDto request) {
-        return reportCareContactResponder.reportCareContact("ID?", aReportCareContact(request));
+        return reportCareContactResponder.reportCareContact(sourceSystemHsaId, aReportCareContact(request));
     }
 
     @Override
@@ -74,7 +77,7 @@ public class MyndighetIntegrationClientServiceImpl implements MyndighetIntegrati
         certType.setCode(certificateType);
         request.setCertificateType(certType);
 
-        return updateAssessmentResponderInterface.updateAssessment("ID?", request);
+        return updateAssessmentResponderInterface.updateAssessment(sourceSystemHsaId, request);
     }
 
 }

@@ -40,6 +40,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningListR
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
 
 import java.util.List;
@@ -98,7 +99,7 @@ public class UtredningController {
     }
 
     @PutMapping("/besok")
-    public void createBesok(final RegisterBesokRequest request) {
+    public RegisterBesokResponse createBesok(final RegisterBesokRequest request) {
 
         final IbUser user = userService.getUser();
         authoritiesValidator.given(user)
@@ -106,6 +107,6 @@ public class UtredningController {
                 .privilege(AuthoritiesConstants.ROLE_FMU_VARDADMIN)
                 .orThrow(new IbAuthorizationException(EDIT_NOT_ALLOWED));
 
-        besokService.registerNewBesok(request);
+        return besokService.registerNewBesok(request);
     }
 }

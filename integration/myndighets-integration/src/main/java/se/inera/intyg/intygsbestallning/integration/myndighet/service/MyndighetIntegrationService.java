@@ -18,15 +18,15 @@
  */
 package se.inera.intyg.intygsbestallning.integration.myndighet.service;
 
-import se.inera.intyg.intygsbestallning.common.dto.ReportCareContactRequestDto;
-import se.inera.intyg.intygsbestallning.common.dto.UpdateAssessmentResponseDto;
-import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.ReportCareContactResponseType;
+import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto;
+
+import java.time.LocalDate;
 
 public interface MyndighetIntegrationService {
 
     void respondToPerformerRequest(String id);
 
-    ReportCareContactResponseType reportCareContactInteraction(ReportCareContactRequestDto request);
+    void reportCareContactInteraction(ReportCareContactRequestDto request);
 
-    UpdateAssessmentResponseDto updateAssessment(String id, String certificateType);
+    LocalDate updateAssessment(String id, String certificateType);
 }

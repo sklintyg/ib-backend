@@ -385,7 +385,6 @@ public class UtredningServiceImplTest {
 
     @Test
     public void uppdateraOrderUtanForandringNok() {
-        final Utredning utredning = createUtredning();
 
         doReturn(Optional.of(createUtredning()))
                 .when(utredningRepository)

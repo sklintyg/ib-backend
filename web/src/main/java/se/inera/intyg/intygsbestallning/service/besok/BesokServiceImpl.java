@@ -18,32 +18,40 @@
  */
 package se.inera.intyg.intygsbestallning.service.besok;
 
-import static se.inera.intyg.intygsbestallning.common.dto.ReportCareContactRequestDto.ReportCareContactRequestDtoBuilder.aReportCareContactRequestDto;
-import static se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum.BAD_STATE;
+import static java.util.Objects.isNull;
+import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto.ReportCareContactRequestDtoBuilder.aReportCareContactRequestDto;
 import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
+import static se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus.BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR;
+import static se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus.HANDLINGAR_MOTTAGNA_BOKA_BESOK;
+import static se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus.UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR;
+import static se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus.UTREDNING_PAGAR;
 import static se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest.validate;
 
-import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto;
 import se.inera.intyg.intygsbestallning.integration.myndighet.service.MyndighetIntegrationService;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
+import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokResponse;
 
 import java.lang.invoke.MethodHandles;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -51,19 +59,17 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private static final List<UtredningStatus> GODKANDA_STATE = ImmutableList.of(
-            UtredningStatus.TILLDELAD_VANTAR_PA_BESTALLNING,
-            UtredningStatus.UTREDNING_PAGAR);
+    private static final List<UtredningStatus> REGISTRERA_BESOK_GODKANDA_STATES = Arrays.asList(
+            BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR,
+            UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR,
+            HANDLINGAR_MOTTAGNA_BOKA_BESOK,
+            UTREDNING_PAGAR);
 
-    private final MyndighetIntegrationService myndighetIntegrationService;
-
-    public BesokServiceImpl(final MyndighetIntegrationService myndighetIntegrationService) {
-        this.myndighetIntegrationService = myndighetIntegrationService;
-    }
+    @Autowired
+    private MyndighetIntegrationService myndighetIntegrationService;
 
     @Override
-    @Transactional
-    public void registerNewBesok(final RegisterBesokRequest request) {
+    public RegisterBesokResponse registerNewBesok(final RegisterBesokRequest request) {
         validate(request);
 
         LOG.debug(MessageFormat.format("Received a request to register new besok for utredning with id {0}", request.getUtredningId()));
@@ -71,12 +77,50 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
         final Utredning utredning = utredningRepository.findById(request.getUtredningId())
                 .orElseThrow(() -> new IbNotFoundException("Utredning with id '" + request.getUtredningId() + "' does not exist."));
 
-        if (GODKANDA_STATE.contains(UtredningStatusResolver.resolveStaticStatus(utredning))) {
-            throw new IbServiceException(
-                    BAD_STATE, MessageFormat.format("Assessment with id '{0}' is in an incorrect state", utredning.getUtredningId()));
+        if (!REGISTRERA_BESOK_GODKANDA_STATES.contains(UtredningStatusResolver.resolveStaticStatus(utredning))) {
+            throw new IbServiceException(IbErrorCodeEnum.BAD_STATE,
+                    MessageFormat.format("Assessment with id {0} is in an incorrect state", utredning.getUtredningId()));
         }
 
-        final Besok besok = aBesok()
+        final Besok besok = createBesok(request);
+
+        utredning.getBesokList().add(besok);
+
+        if (isOtherProfessionThanLakare(utredning, besok)) {
+            utredning.setUtredningsTyp(UtredningsTyp.AFU_UTVIDGAD);
+            utredningRepository.save(utredning);
+            reportBesok(utredning, besok);
+            final LocalDateTime nyttSistaDatum = updateUtredningWithUtredningsTypAfuUtvidgad(utredning);
+            return RegisterBesokResponse.withUpdatedUtredningsTyp(nyttSistaDatum.toString());
+        } else {
+            utredningRepository.save(utredning);
+            reportBesok(utredning, besok);
+            return RegisterBesokResponse.withNotUpdatedUtredgningsTyp();
+        }
+    }
+
+    private LocalDateTime updateUtredningWithUtredningsTypAfuUtvidgad(Utredning utredning) {
+
+        final LocalDateTime nyttSistaDatum = myndighetIntegrationService
+                .updateAssessment(utredning.getUtredningId(), UtredningsTyp.AFU_UTVIDGAD.name()).atStartOfDay();
+
+        if (utredning.getIntygList().size() == 1 && isNull(utredning.getIntygList().get(0).getKompletteringsId())) {
+            utredning.getIntygList().get(0).setSistaDatum(nyttSistaDatum);
+            utredningRepository.save(utredning);
+            return nyttSistaDatum;
+        }
+
+
+        throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, MessageFormat.format(
+                "assessment with id {0} is in an incorrect state", utredning.getUtredningId()));
+    }
+
+    private void reportBesok(final Utredning utredning, final Besok besok) {
+        myndighetIntegrationService.reportCareContactInteraction(createReportCareContactRequestDto(utredning, besok));
+    }
+
+    private Besok createBesok(final RegisterBesokRequest request) {
+        return aBesok()
                 .withKallelseDatum(request.getKallelseDatum())
                 .withKallelseForm(request.getKallelseForm())
                 .withBesokStartTid(LocalDateTime.of(request.getBesokDatum(), request.getBesokStartTid()))
@@ -84,15 +128,12 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
                 .withDeltagareProfession(request.getProffesion())
                 .withTolkStatus(request.getTolkStatus())
                 .withDeltagareFullstandigtNamn(request.getUtredandeVardPersonalNamn().orElse(null))
+                .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
                 .build();
+    }
 
-        utredning.getBesokList().add(besok);
-
-        if (besok.getDeltagareProfession() != DeltagarProfessionTyp.LK && utredning.getUtredningsTyp() == UtredningsTyp.AFU) {
-            uppdateraUtredningUtokadAFU(utredning.getUtredningId());
-        }
-
-        myndighetIntegrationService.reportCareContactInteraction(aReportCareContactRequestDto()
+    private ReportCareContactRequestDto createReportCareContactRequestDto(final Utredning utredning, final Besok besok) {
+        return aReportCareContactRequestDto()
                 .withAssessmentId(utredning.getUtredningId())
                 .withAssessmentCareContactId(utredning.getBestallning()
                         .map(Bestallning::getId)
@@ -105,14 +146,10 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
                 .withStartTime(besok.getBesokStartTid())
                 .withEndTime(besok.getBesokSlutTid())
                 .withVisitStatus(besok.getBesokStatus().getCvValue())
-                .build());
-
-        utredningRepository.save(utredning);
+                .build();
     }
 
-    private void uppdateraUtredningUtokadAFU(final String utredningId) {
-        myndighetIntegrationService.updateAssessment(utredningId, UtredningsTyp.AFU_UTVIDGAD.name());
+    private boolean isOtherProfessionThanLakare(final Utredning utredning, final Besok besok) {
+        return besok.getDeltagareProfession() != DeltagarProfessionTyp.LK && utredning.getUtredningsTyp() == UtredningsTyp.AFU;
     }
-
-
 }

@@ -16,7 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.common.dto;
+package se.inera.intyg.intygsbestallning.integration.myndighet.dto;
+
+import com.google.common.base.Objects;
 
 import java.time.LocalDateTime;
 
@@ -144,5 +146,38 @@ public final class ReportCareContactRequestDto {
             reportCareContactRequestDto.assessmentCareContactId = this.assessmentCareContactId;
             return reportCareContactRequestDto;
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ReportCareContactRequestDto)) {
+            return false;
+        }
+        final ReportCareContactRequestDto dto = (ReportCareContactRequestDto) o;
+        return Objects.equal(assessmentId, dto.assessmentId)
+                && Objects.equal(assessmentCareContactId, dto.assessmentCareContactId)
+                && Objects.equal(participatingProfession, dto.participatingProfession)
+                && Objects.equal(interpreterStatus, dto.interpreterStatus)
+                && Objects.equal(invitationDate, dto.invitationDate)
+                && Objects.equal(invitationChannel, dto.invitationChannel)
+                && Objects.equal(startTime, dto.startTime)
+                && Objects.equal(endTime, dto.endTime)
+                && Objects.equal(visitStatus, dto.visitStatus);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(assessmentId,
+                assessmentCareContactId,
+                participatingProfession,
+                interpreterStatus,
+                invitationDate,
+                invitationChannel,
+                startTime,
+                endTime,
+                visitStatus);
     }
 }

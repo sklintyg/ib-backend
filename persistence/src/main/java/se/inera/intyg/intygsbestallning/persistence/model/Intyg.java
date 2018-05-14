@@ -119,6 +119,7 @@ public final class Intyg {
                 .withKompletteringsId(intyg.getKompletteringsId())
                 .withSistaDatum(intyg.getSistaDatum())
                 .withMottagetDatum(intyg.getMottagetDatum())
+                .withSkickatDatum(intyg.getSkickatDatum())
                 .withSistaDatumKompletteringsbegaran(intyg.getSistaDatumKompletteringsbegaran())
                 .build();
     }

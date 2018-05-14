@@ -19,8 +19,9 @@
 package se.inera.intyg.intygsbestallning.service.besok;
 
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokResponse;
 
 public interface BesokService {
 
-    void registerNewBesok(final RegisterBesokRequest request);
+    RegisterBesokResponse registerNewBesok(final RegisterBesokRequest request);
 }
