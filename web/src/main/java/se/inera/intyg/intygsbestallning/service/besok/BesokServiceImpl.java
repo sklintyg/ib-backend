@@ -36,7 +36,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStateResolver;
+import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest;
@@ -71,7 +71,7 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
         final Utredning utredning = utredningRepository.findById(request.getUtredningId())
                 .orElseThrow(() -> new IbNotFoundException("Utredning with id '" + request.getUtredningId() + "' does not exist."));
 
-        if (GODKANDA_STATE.contains(UtredningStateResolver.resolveStaticStatus(utredning))) {
+        if (GODKANDA_STATE.contains(UtredningStatusResolver.resolveStaticStatus(utredning))) {
             throw new IbServiceException(
                     BAD_STATE, MessageFormat.format("Assessment with id '{0}' is in an incorrect state", utredning.getUtredningId()));
         }

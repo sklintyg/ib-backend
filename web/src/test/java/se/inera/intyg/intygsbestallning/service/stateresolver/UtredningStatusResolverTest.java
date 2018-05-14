@@ -35,10 +35,10 @@ import java.time.LocalDateTime;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UtredningStateResolverTest extends BaseResolverTest {
+public class UtredningStatusResolverTest extends BaseResolverTest {
 
     @InjectMocks
-    private UtredningStateResolver testee;
+    private UtredningStatusResolver testee;
 
     @Test
     public void testAvbruten() {
@@ -172,6 +172,47 @@ public class UtredningStateResolverTest extends BaseResolverTest {
         assertEquals(UtredningStatus.UTREDNING_PAGAR, status);
         assertEquals(UtredningFas.UTREDNING, status.getUtredningFas());
         assertEquals(Actor.UTREDARE, status.getNextActor());
+    }
+
+    @Test
+    public void testResolvesUtlatandeSkickat() {
+        Utredning utr = buildBaseUtredning();
+        utr.getExternForfragan().getInternForfraganList().add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
+        utr.setBestallning(buildBestallning(null));
+        Intyg intyg = buildBestalltIntyg();
+        intyg.setSkickatDatum(LocalDateTime.now());
+        utr.getIntygList().add(intyg);
+        utr.getHandlingList().add(buildHandling(LocalDateTime.now(), null));
+        utr.getBesokList().add(Besok.BesokBuilder.aBesok()
+                .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
+                .withDeltagareProfession(DeltagarProfessionTyp.FT)
+                .build());
+
+        UtredningStatus status = testee.resolveStatus(utr);
+        assertEquals(UtredningStatus.UTLATANDE_SKICKAT, status);
+        assertEquals(UtredningFas.UTREDNING, status.getUtredningFas());
+        assertEquals(Actor.FK, status.getNextActor());
+    }
+
+    @Test
+    public void testResolvesUtlatandeMottaget() {
+        Utredning utr = buildBaseUtredning();
+        utr.getExternForfragan().getInternForfraganList().add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
+        utr.setBestallning(buildBestallning(null));
+        Intyg intyg = buildBestalltIntyg();
+        intyg.setSkickatDatum(LocalDateTime.now());
+        intyg.setMottagetDatum(LocalDateTime.now());
+        utr.getIntygList().add(intyg);
+        utr.getHandlingList().add(buildHandling(LocalDateTime.now(), null));
+        utr.getBesokList().add(Besok.BesokBuilder.aBesok()
+                .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
+                .withDeltagareProfession(DeltagarProfessionTyp.FT)
+                .build());
+
+        UtredningStatus status = testee.resolveStatus(utr);
+        assertEquals(UtredningStatus.UTLATANDE_MOTTAGET, status);
+        assertEquals(UtredningFas.UTREDNING, status.getUtredningFas());
+        assertEquals(Actor.FK, status.getNextActor());
     }
 
     private Handling buildHandling(LocalDateTime inkomDatum, LocalDateTime skickadDatum) {

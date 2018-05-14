@@ -25,7 +25,7 @@ import se.inera.intyg.intygsbestallning.persistence.repository.UtredningReposito
 import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
 import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStateResolver;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStateResolver;
+import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.SamordnarStatisticsResponse;
@@ -38,7 +38,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardadminStatisti
 @Service
 public class StatisticsServiceImpl implements StatisticsService {
 
-    protected UtredningStateResolver utredningStateResolver = new UtredningStateResolver();
+    protected UtredningStatusResolver utredningStatusResolver = new UtredningStatusResolver();
     protected InternForfraganStateResolver internForfraganStateResolver = new InternForfraganStateResolver();
 
     @Autowired
@@ -49,7 +49,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         long requireSamordnarActionCount = utredningRepository
                 .findByExternForfragan_LandstingHsaId_AndArkiveradFalse(vardgivarHsaId)
                 .stream()
-                .map(u -> UtredningListItem.from(u, utredningStateResolver.resolveStatus(u)))
+                .map(u -> UtredningListItem.from(u, utredningStatusResolver.resolveStatus(u)))
                 .filter(uli -> uli.getStatus().getNextActor().equals(Actor.SAMORDNARE)).count();
         return new SamordnarStatisticsResponse(requireSamordnarActionCount);
     }
@@ -69,7 +69,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         long bestallningarRequiringActionCount = utredningRepository
                 .findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(enhetsHsaId)
                 .stream()
-                .map(u -> BestallningListItem.from(u, utredningStateResolver.resolveStatus(u), Actor.VARDADMIN))
+                .map(u -> BestallningListItem.from(u, utredningStatusResolver.resolveStatus(u), Actor.VARDADMIN))
                 .filter(bli -> bli.getKraverAtgard() && !bli.getFas().equals(UtredningFas.AVSLUTAD)
                         && !bli.getFas().equals(UtredningFas.FORFRAGAN))
                 .count();

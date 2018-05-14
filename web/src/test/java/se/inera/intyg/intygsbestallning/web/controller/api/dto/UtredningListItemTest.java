@@ -20,7 +20,7 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
 import org.junit.Test;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStateResolver;
+import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -35,7 +35,7 @@ import static se.inera.intyg.intygsbestallning.persistence.model.type.Utrednings
 
 public class UtredningListItemTest {
 
-    private UtredningStateResolver utredningStateResolver = new UtredningStateResolver();
+    private UtredningStatusResolver utredningStatusResolver = new UtredningStatusResolver();
 
     @Test
     public void testFrom() {
@@ -52,7 +52,7 @@ public class UtredningListItemTest {
                         .build())
                 .build();
 
-        UtredningListItem response = UtredningListItem.from(utredning, utredningStateResolver.resolveStatus(utredning));
+        UtredningListItem response = UtredningListItem.from(utredning, utredningStatusResolver.resolveStatus(utredning));
 
         assertNotNull(response);
         assertEquals("Förfrågan", response.getFas().getLabel());

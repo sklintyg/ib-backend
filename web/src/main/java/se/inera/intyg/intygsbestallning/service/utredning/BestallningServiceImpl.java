@@ -86,7 +86,7 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
                             + vardenhetHsaId + "'");
         }
 
-        return GetBestallningResponse.from(utredning, utredningStateResolver.resolveStatus(utredning));
+        return GetBestallningResponse.from(utredning, utredningStatusResolver.resolveStatus(utredning));
     }
 
     @Override
@@ -109,7 +109,7 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
             ListAvslutadeBestallningarRequest requestFilter) {
         List<AvslutadBestallningListItem> avslutadeBestallningar = utredningRepository
                 .findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradTrue(vardenhetHsaId)
-                .stream().map(utr -> AvslutadBestallningListItem.from(utr, utredningStateResolver))
+                .stream().map(utr -> AvslutadBestallningListItem.from(utr, utredningStatusResolver))
                 .collect(Collectors.toList());
 
         boolean enrichedWithVardgivareNames = false;
@@ -200,10 +200,10 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
                 return true;
             }
             if (filterVal == YesNoAllFilter.YES) {
-                return bli.isErsatts();
+                return bli.getErsatts();
             }
             if (filterVal == YesNoAllFilter.NO) {
-                return !bli.isErsatts();
+                return !bli.getErsatts();
             }
         } catch (IllegalArgumentException e) {
             throw new IbServiceException(IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Unknown enum value for YesNoAll: '" + enumValue + "'");
@@ -227,9 +227,10 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
 
     @Override
     public List<BestallningListItem> findOngoingBestallningarForVardenhet(String vardenhetHsaId, ListBestallningRequest requestFilter) {
-        List<BestallningListItem> bestallningListItems = utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId(vardenhetHsaId)
+        List<BestallningListItem> bestallningListItems = utredningRepository
+                .findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(vardenhetHsaId)
                 .stream()
-                .map(u -> BestallningListItem.from(u, utredningStateResolver.resolveStatus(u), Actor.VARDADMIN))
+                .map(u -> BestallningListItem.from(u, utredningStatusResolver.resolveStatus(u), Actor.VARDADMIN))
                 .collect(Collectors.toList());
 
         // We may need to fetch names for patients and vardgivare prior to filtering if free text search is

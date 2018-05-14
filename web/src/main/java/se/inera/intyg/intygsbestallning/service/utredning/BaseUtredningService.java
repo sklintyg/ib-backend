@@ -26,7 +26,7 @@ import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
 import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStateResolver;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStateResolver;
+import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
@@ -47,7 +47,7 @@ public abstract class BaseUtredningService {
     @Autowired
     protected HsaOrganizationsService organizationUnitService;
 
-    protected UtredningStateResolver utredningStateResolver = new UtredningStateResolver();
+    protected UtredningStatusResolver utredningStatusResolver = new UtredningStatusResolver();
     protected InternForfraganStateResolver internForfraganStateResolver = new InternForfraganStateResolver();
 
 

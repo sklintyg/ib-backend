@@ -1,5 +1,5 @@
 {
-  "utredningId": "utredning-bootstrap-6",
+  "utredningId": "utredning-bootstrap-12",
   "utredningsTyp": "AFU",
   "arkiverad": false,
   "externForfragan": {
@@ -29,6 +29,17 @@
       }
     ]
   },
+  "besokList": [
+    {
+      "ersatts": true,
+      "besokStartTid":"2018-04-13T11:00:00.000",
+      "besokSlutTid":"2018-04-13T12:00:00.000",
+      "besokStatus": "AVSLUTAD_VARDKONTAKT",
+      "kallelseDatum":"2018-03-23T00:00:00.000",
+      "kallelseForm":"BREVKONTAKT",
+      "deltagareProfession":"LK"
+    }
+  ],
   "invanare": {
     "personId": "19121212-1212",
     "fullstandigtNamn": "Tolvan Tolvansson",
@@ -52,15 +63,21 @@
     "planeradeAktiviteter": "Bowla med gänget",
     "kommentar": "Detta är faktiskt testdata..."
   },
+  "betalning": {
+    "fakturaId": "faktura-123",
+    "betalningsId": "betalning-123"
+  },
   "handlingList": [
     {
-      "skickatDatum": "2018-05-27T00:00:00",
+      "skickatDatum": "2018-04-27T00:00:00",
       "ursprung": "BESTALLNING"
     }
   ],
   "intygList": [
     {
-      "sistaDatum": "2018-06-25T00:00:00.000"
+      "sistaDatum": "2018-05-25T00:00:00.000",
+      "skickatDatum": "2018-04-15T00:00:00.000",
+      "mottagetDatum": "2018-04-15T00:00:00.000"
     }
   ],
   "sprakTolk": "sv"

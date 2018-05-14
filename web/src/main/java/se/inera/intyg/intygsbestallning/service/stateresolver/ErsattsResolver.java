@@ -108,7 +108,7 @@ public final class ErsattsResolver {
         // för den valda kallelseformen.
         if (besok.getAvvikelse() != null && besok.getAvvikelse().getInvanareUteblev() && besok.getKallelseDatum() != null
                 && besok.getKallelseDatum().toLocalDate()
-                        .isAfter(resolveSenasteKallelseDatum(besok.getKallelseDatum(), besok.getKallelseForm()))) {
+                        .isAfter(resolveSenasteKallelseDatum(besok.getBesokStartTid(), besok.getKallelseForm()))) {
             return false;
         }
 
@@ -116,7 +116,7 @@ public final class ErsattsResolver {
         // (se FMU-G005 Ersättningsberäkning), oavsett när avvikelsetidpunkten inträffade.
         if (besok.getAvvikelse() != null && besok.getKallelseDatum() != null
                 && besok.getKallelseDatum().toLocalDate()
-                .isAfter(resolveSenasteKallelseDatum(besok.getKallelseDatum(), besok.getKallelseForm()))) {
+                .isAfter(resolveSenasteKallelseDatum(besok.getBesokStartTid(), besok.getKallelseForm()))) {
             return false;
         }
 

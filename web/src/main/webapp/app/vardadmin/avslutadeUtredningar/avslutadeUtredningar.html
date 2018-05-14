@@ -24,10 +24,10 @@
       <td>{{::row.vardgivareNamn}}</td>
       <td>{{::row.status.label}}</td>
       <td>{{::row.avslutsDatum}}</td>
-      <td>{{::row.ersatts}}</td>
-      <td>{{::row.fakturerad}}</td>
-      <td>{{::row.utbetald}}</td>
-      <td><button class="btn btn-primary" ng-click="visaBestallning(row.utredningsId)"><span message key="common.show"></span></button></td>
+      <td><ib-yes-no value="::row.ersatts"></ib-yes-no></td>
+      <td><ib-fakturerad fakturerad="::row.fakturerad"></ib-fakturerad></td>
+      <td><ib-utbetald utbetald="::row.utbetald"></ib-utbetald></td>
+      <td><button class="btn btn-primary"><span message key="common.show"></span></button></td>
     </tr>
     </tbody>
   </table>

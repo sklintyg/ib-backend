@@ -25,9 +25,10 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
-public class UtredningStateResolver {
+public class UtredningStatusResolver {
 
     public UtredningStatus resolveStatus(Utredning utredning) {
         return resolveStaticStatus(utredning);
@@ -98,27 +99,41 @@ public class UtredningStateResolver {
             }
 
             // UTREDNING_PAGAR
-            if (utredning.getHandlingList().size() > 0 && utredning.getBesokList().size() > 0) {
+            if (utredning.getHandlingList().size() > 0 && utredning.getBesokList().size() > 0
+                    && utredning.getIntygList().stream().noneMatch(intyg -> intyg.getSkickatDatum() != null)) {
                 return UtredningStatus.UTREDNING_PAGAR;
             }
 
-            // SKICKAT - om det finns en skickad handling...
-            // if (utredning.getHandlingList().stream().anyMatch(handling -> handling.getSkickatDatum() != null)) {
-            // return UtredningStatus.UTLATANDE_SKICKAT;
-            // }
+            // Skickat - ursprungsintyget är skickat.
+            if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getSkickatDatum() != null
+                    && intyg.getMottagetDatum() == null
+                    && intyg.getKompletteringsId() == null
+                    && (intyg.getSistaDatum() == null || intyg.getSistaDatum().isAfter(LocalDateTime.now())))) {
+                return UtredningStatus.UTLATANDE_SKICKAT;
+            }
+
+            // Skickat - ursprungsintyget är skickat.
+            if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getSkickatDatum() != null
+                    && intyg.getMottagetDatum() != null
+                    && intyg.getKompletteringsId() == null
+                    && (intyg.getSistaDatum() == null || intyg.getSistaDatum().isAfter(LocalDateTime.now())))) {
+                return UtredningStatus.UTLATANDE_MOTTAGET;
+            }
+
         }
 
         if (utredning.getIntygList().size() > 0) {
 
             // Om sista datum för kompletteringsbegäran EJ passerats.
-            if (utredning.getIntygList().stream().noneMatch(intyg -> intyg.getSistaDatumKompletteringsbegaran() != null
-                    && LocalDate.now().isBefore(intyg.getSistaDatumKompletteringsbegaran().toLocalDate()))) {
-                return UtredningStatus.UTLATANDE_MOTTAGET;
-            }
+//            if (utredning.getIntygList().stream().noneMatch(intyg -> intyg.getSistaDatumKompletteringsbegaran() != null
+//                    && LocalDate.now().isBefore(intyg.getSistaDatumKompletteringsbegaran().toLocalDate()))) {
+//                return UtredningStatus.UTLATANDE_MOTTAGET;
+//            }
 
             // Om ingen komplettering finns utstående.
             if (utredning.getIntygList().stream()
-                    .noneMatch(intyg -> LocalDate.now().isAfter(intyg.getSistaDatumKompletteringsbegaran().toLocalDate()))) {
+                    .noneMatch(intyg -> intyg.getSistaDatumKompletteringsbegaran() != null
+                            && LocalDate.now().isAfter(intyg.getSistaDatumKompletteringsbegaran().toLocalDate()))) {
 
                 // Om något besök inkluderade deltagande tolk...
                 if (utredning.getBesokList().stream()
@@ -132,17 +147,29 @@ public class UtredningStateResolver {
                     } else {
                         return UtredningStatus.REDOVISA_TOLK;
                     }
+                } else {
+                    return UtredningStatus.AVSLUTAD;
                 }
             }
 
-            // Om det finns kompletteringar (om alla var avslutade så tog förra blocket hand om dem)
-//            if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getKompletteringsId() != null)) {
-//
-//            }
+            // Komplettering är skickad.
+            if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getSkickatDatum() != null
+                    && intyg.getKompletteringsId() != null
+                    && intyg.getMottagetDatum() == null)) {
+                return UtredningStatus.KOMPLETTERING_SKICKAD;
+            }
+
+            // Komplettering mottagen.
+            if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getSkickatDatum() != null
+                    && intyg.getKompletteringsId() != null
+                    && intyg.getMottagetDatum() != null)) {
+                return UtredningStatus.KOMPLETTERING_MOTTAGEN;
+            }
+
 
         }
 
-        // Third phase - Komplettering?
+
 
         throw new IllegalStateException("Unhandled state!");
     }

@@ -99,7 +99,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     public List<UtredningListItem> findExternForfraganByLandstingHsaId(String landstingHsaId) {
         return utredningRepository.findAllByExternForfragan_LandstingHsaId(landstingHsaId)
                 .stream()
-                .map(u -> UtredningListItem.from(u, utredningStateResolver.resolveStatus(u)))
+                .map(u -> UtredningListItem.from(u, utredningStatusResolver.resolveStatus(u)))
                 .collect(Collectors.toList());
     }
 
@@ -107,7 +107,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     public GetUtredningListResponse findExternForfraganByLandstingHsaIdWithFilter(String landstingHsaId, ListUtredningRequest request) {
         List<UtredningListItem> list = utredningRepository.findByExternForfragan_LandstingHsaId_AndArkiveradFalse(landstingHsaId)
                 .stream()
-                .map(u -> UtredningListItem.from(u, utredningStateResolver.resolveStatus(u)))
+                .map(u -> UtredningListItem.from(u, utredningStatusResolver.resolveStatus(u)))
                 .collect(Collectors.toList());
 
         // Get status mapper

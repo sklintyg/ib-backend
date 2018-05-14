@@ -39,7 +39,8 @@ import static org.junit.Assert.assertTrue;
 
 public class ErsattsResolverTest {
 
-    private static final LocalDateTime FEB_20 = LocalDateTime.of(2018,2,20, 0,0);
+    private static final LocalDateTime FEB_20 = LocalDateTime.of(2018,2,20, 11,0);
+    private static final LocalDateTime FEB_20_MORGON = LocalDateTime.of(2018,2,20, 8,0);
     private static final LocalDateTime FEB_13 = LocalDateTime.of(2018,2,13, 0,0);
     private static final LocalDateTime FEB_8 = LocalDateTime.of(2018,2,8, 0,0);
 
@@ -65,45 +66,107 @@ public class ErsattsResolverTest {
     // Slutdatum för utredningen passeras innan utlåtandet är mottaget av Försäkringskassan
     @Test
     public void testErsattsEjNarSlutdatumPasseratsForeMottagetAvFK() {
-        List<Utredning> utredningList = ServiceTestUtil.buildBestallningar(1);
-        assertFalse(ErsattsResolver.resolveUtredningErsatts(utredningList.get(0)));
+        Utredning utredning = ServiceTestUtil.buildBestallningar(1).get(0); 
+        assertFalse(ErsattsResolver.resolveUtredningErsatts(utredning));
     }
 
     @Test
     public void testErsattsEjNarMottagetAvFKForeSlutdatumMenBesokEjFinns() {
-        List<Utredning> utredningList = ServiceTestUtil.buildBestallningar(1);
+        Utredning utredning = ServiceTestUtil.buildBestallningar(1).get(0); 
 
-        utredningList.get(0).getIntygList().get(0).setSistaDatum(LocalDateTime.now().minusDays(10L));
-        utredningList.get(0).getIntygList().get(0).setMottagetDatum(LocalDateTime.now().minusDays(20L));
-        assertFalse(ErsattsResolver.resolveUtredningErsatts(utredningList.get(0)));
+        utredning.getIntygList().get(0).setSistaDatum(LocalDateTime.now().minusDays(10L));
+        utredning.getIntygList().get(0).setMottagetDatum(LocalDateTime.now().minusDays(20L));
+        assertFalse(ErsattsResolver.resolveUtredningErsatts(utredning));
     }
 
     @Test
     public void testErsattsEjNarMottagetAvFKForeSlutdatumMenBesokFinnsDockEjErsatts() {
-        List<Utredning> utredningList = ServiceTestUtil.buildBestallningar(1);
-        utredningList.get(0).setBesokList(buildBesokList(false, FEB_20));
-        utredningList.get(0).getIntygList().get(0).setSistaDatum(LocalDateTime.now().minusDays(10L));
-        utredningList.get(0).getIntygList().get(0).setMottagetDatum(LocalDateTime.now().minusDays(20L));
-        assertFalse(ErsattsResolver.resolveUtredningErsatts(utredningList.get(0)));
+        Utredning utredning = ServiceTestUtil.buildBestallningar(1).get(0); 
+        utredning.setBesokList(buildBesokList(false, FEB_20));
+        utredning.getIntygList().get(0).setSistaDatum(LocalDateTime.now().minusDays(10L));
+        utredning.getIntygList().get(0).setMottagetDatum(LocalDateTime.now().minusDays(20L));
+        assertFalse(ErsattsResolver.resolveUtredningErsatts(utredning));
     }
 
     @Test
     public void testErsattsNarMottagetAvFKForeSlutdatumOchBesokFinns() {
-        List<Utredning> utredningList = ServiceTestUtil.buildBestallningar(1);
-        utredningList.get(0).setBesokList(buildBesokList(true, FEB_20));
-        utredningList.get(0).getIntygList().get(0).setSistaDatum(LocalDateTime.now().minusDays(10L));
-        utredningList.get(0).getIntygList().get(0).setMottagetDatum(LocalDateTime.now().minusDays(20L));
-        assertTrue(ErsattsResolver.resolveUtredningErsatts(utredningList.get(0)));
+        Utredning utredning = ServiceTestUtil.buildBestallningar(1).get(0); 
+        utredning.setBesokList(buildBesokList(true, FEB_20));
+        utredning.getIntygList().get(0).setSistaDatum(LocalDateTime.now().minusDays(10L));
+        utredning.getIntygList().get(0).setMottagetDatum(LocalDateTime.now().minusDays(20L));
+        assertTrue(ErsattsResolver.resolveUtredningErsatts(utredning));
     }
 
     @Test
     public void testResolveBesokErsattsEjPgaPatientAvvikelseForeSistaAvbokning() {
-        List<Utredning> utredningList = ServiceTestUtil.buildBestallningar(1);
-        utredningList.get(0).setBesokList(buildBesokList(true, FEB_20));
+        Utredning utredning = ServiceTestUtil.buildBestallningar(1).get(0);
+        utredning.setBesokList(buildBesokList(true, FEB_20));
 
         Avvikelse avvikelse = buildAvvikelse(false, AvvikelseOrsak.PATIENT, FEB_13);
-        utredningList.get(0).getBesokList().get(0).setAvvikelse(avvikelse);
-        assertFalse(ErsattsResolver.resolveBesokErsatts(utredningList.get(0), utredningList.get(0).getBesokList().get(0)));
+        utredning.getBesokList().get(0).setAvvikelse(avvikelse);
+        assertFalse(ErsattsResolver.resolveBesokErsatts(utredning, utredning.getBesokList().get(0)));
+    }
+
+    @Test
+    public void testResolveBesokErsattsPgaPatientAvvikelseEfterSistaAvbokning() {
+        Utredning utredning = ServiceTestUtil.buildBestallningar(1).get(0);
+        utredning.setBesokList(buildBesokList(true, FEB_20));
+
+        Avvikelse avvikelse = buildAvvikelse(false, AvvikelseOrsak.PATIENT, FEB_20_MORGON);
+        utredning.getBesokList().get(0).setAvvikelse(avvikelse);
+        assertTrue(ErsattsResolver.resolveBesokErsatts(utredning, utredning.getBesokList().get(0)));
+    }
+    
+    // Anrop till EndAssessment har inkommit mer än MAX_AVBOKNING_TIMMAR timmar innan besökets starttidpunkt.
+    @Test
+    public void testErsattsEjNarEndAssessmentInkomIGodTid() {
+        Utredning utredning = ServiceTestUtil.buildBestallningar(1).get(0);
+        utredning.setBesokList(buildBesokList(true, FEB_20));
+        utredning.setAvbrutenAnledning(EndReason.UTREDNING_AVBRUTEN);
+        utredning.setAvbrutenDatum(FEB_13);
+        assertFalse(ErsattsResolver.resolveBesokErsatts(utredning, utredning.getBesokList().get(0)));
+    }
+
+    @Test
+    public void testResolveBesokErsattsEjPgaAvvikelseOrsakadAvVarden() {
+        Utredning utredning = ServiceTestUtil.buildBestallningar(1).get(0);
+        utredning.setBesokList(buildBesokList(true, FEB_20));
+
+        Avvikelse avvikelse = buildAvvikelse(false, AvvikelseOrsak.VARDEN, FEB_13);
+        utredning.getBesokList().get(0).setAvvikelse(avvikelse);
+        assertFalse(ErsattsResolver.resolveBesokErsatts(utredning, utredning.getBesokList().get(0)));
+    }
+
+    @Test
+    public void testResolveBesokErsattsEjPgaPatientUteblevOchKallelseSkickadesITid() {
+        Utredning utredning = ServiceTestUtil.buildBestallningar(1).get(0);
+        utredning.setBesokList(buildBesokList(true, FEB_20, FEB_13, KallelseFormTyp.BREVKONTAKT));
+
+        Avvikelse avvikelse = buildAvvikelse(true, AvvikelseOrsak.PATIENT, FEB_20);
+        utredning.getBesokList().get(0).setAvvikelse(avvikelse);
+        assertFalse(ErsattsResolver.resolveBesokErsatts(utredning, utredning.getBesokList().get(0)));
+    }
+
+    @Test
+    public void testResolveBesokErsattsPgaPatientUteblevMenKallelseSkickadesEjITid() {
+        Utredning utredning = ServiceTestUtil.buildBestallningar(1).get(0);
+        utredning.setBesokList(buildBesokList(true, FEB_20, FEB_8, KallelseFormTyp.TELEFONKONTAKT));
+
+        Avvikelse avvikelse = buildAvvikelse(true, AvvikelseOrsak.PATIENT, FEB_20);
+        utredning.getBesokList().get(0).setAvvikelse(avvikelse);
+        assertTrue(ErsattsResolver.resolveBesokErsatts(utredning, utredning.getBesokList().get(0)));
+    }
+
+    // Avvikelse rapporteras för ett besök där invånaren har kallats > Senast kallelsedatum
+    // (se FMU-G005 Ersättningsberäkning), oavsett när avvikelsetidpunkten inträffade.
+    @Test
+    public void testResolveBesokErsattsEjPgaAvvikelseDarPatientKalladesITid() {
+        Utredning utredning = ServiceTestUtil.buildBestallningar(1).get(0);
+        utredning.setBesokList(buildBesokList(true, FEB_20, FEB_13, KallelseFormTyp.BREVKONTAKT));
+
+        Avvikelse avvikelse = buildAvvikelse(false, AvvikelseOrsak.PATIENT, FEB_20);
+        utredning.getBesokList().get(0).setAvvikelse(avvikelse);
+        assertFalse(ErsattsResolver.resolveBesokErsatts(utredning, utredning.getBesokList().get(0)));
     }
 
     private Avvikelse buildAvvikelse(boolean invanareUteblev, AvvikelseOrsak orsak, LocalDateTime avvikelseTidpunkt) {
@@ -137,8 +200,14 @@ public class ErsattsResolverTest {
     }
 
     private List<Besok> buildBesokList(boolean ersatts, LocalDateTime besokStartTid) {
+        return buildBesokList(ersatts, besokStartTid, null, null);
+    }
+
+    private List<Besok> buildBesokList(boolean ersatts, LocalDateTime besokStartTid, LocalDateTime kallelseDatum, KallelseFormTyp kallelseFormTyp) {
         Besok b = Besok.BesokBuilder.aBesok()
                 .withBesokStartTid(besokStartTid)
+                .withKallelseDatum(kallelseDatum)
+                .withKallelseForm(kallelseFormTyp)
                 .withErsatts(ersatts)
                 .build();
         return Arrays.asList(b);

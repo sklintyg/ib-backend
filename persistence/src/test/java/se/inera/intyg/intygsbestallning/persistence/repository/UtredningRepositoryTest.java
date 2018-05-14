@@ -323,7 +323,7 @@ public class UtredningRepositoryTest {
         utr.setBestallning(buildBestallning());
         utredningRepository.save(utr);
 
-        List<Utredning> resultList = utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId(VE_HSA_ID);
+        List<Utredning> resultList = utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(VE_HSA_ID);
         assertEquals(1, resultList.size());
         assertNotNull(resultList.get(0).getBestallning());
     }

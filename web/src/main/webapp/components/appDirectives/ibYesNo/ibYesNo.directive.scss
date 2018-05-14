@@ -1,0 +1,19 @@
+ib-yes-no {
+
+  .icon-container .ib-yes {
+    display: inline-block;
+    color: $ib-color-16;
+    .material-icons {
+      font-size: 16px;
+    }
+  }
+
+  .icon-container .ib-no {
+    display: inline-block;
+    color: $ib-color-04;
+    .material-icons {
+      font-size: 16px;
+    }
+  }
+
+}

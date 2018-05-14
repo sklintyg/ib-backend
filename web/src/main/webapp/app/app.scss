@@ -66,11 +66,14 @@
 @import 'appDirectives/ibAppHeader/ibHeaderUser/ibHeaderUser.directive.scss';
 @import 'appDirectives/ibBestallningSlutdatumFas/ibBestallningSlutdatumFas.directive.scss';
 @import 'appDirectives/ibBestallningStatus/ibBestallningStatus.directive.scss';
+@import 'appDirectives/ibFakturerad/ibFakturerad.directive.scss';
 @import 'appDirectives/ibForfraganStatus/ibForfraganStatus.directive.scss';
 @import 'appDirectives/ibForfraganSvarsdatum/ibForfraganSvarsdatum.directive.scss';
 @import 'appDirectives/ibTableHead/ibTableHead.directive.scss';
+@import 'appDirectives/ibUtbetald/ibUtbetald.directive.scss';
 @import 'appDirectives/ibUtredningSlutdatumFas/ibUtredningSlutdatumFas.directive.scss';
 @import 'appDirectives/ibUtredningStatus/ibUtredningStatus.directive.scss';
+@import 'appDirectives/ibYesNo/ibYesNo.directive.scss';
 @import 'card.scss';
 @import 'commonDirectives/form/ibCheckboxWrapper/ibCheckboxWrapper.directive.scss';
 @import 'commonDirectives/form/ibCheckgroup/ibCheckgroup.directive.scss';

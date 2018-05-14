@@ -21,7 +21,7 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.stateresolver.ErsattsResolver;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStateResolver;
+import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 
 import java.time.format.DateTimeFormatter;
@@ -43,11 +43,11 @@ public class AvslutadBestallningListItem implements FreeTextSearchable, Vardgiva
     private String fakturerad;
     private String utbetald;
 
-    public static AvslutadBestallningListItem from(Utredning utredning, UtredningStateResolver utredningStateResolver) {
+    public static AvslutadBestallningListItem from(Utredning utredning, UtredningStatusResolver utredningStatusResolver) {
         return AvslutadBestallningListItemBuilder.anAvslutadBestallningListItem()
                 .withUtredningsId(utredning.getUtredningId())
                 .withUtredningsTyp(utredning.getUtredningsTyp().name())
-                .withStatus(utredningStateResolver.resolveStatus(utredning))
+                .withStatus(utredningStatusResolver.resolveStatus(utredning))
                 .withVardgivareHsaId(utredning.getExternForfragan().getLandstingHsaId())
                 .withVardgivareNamn("Enriched later")
                 .withAvslutsDatum(resolveAvslutsDatum(utredning))
@@ -122,7 +122,7 @@ public class AvslutadBestallningListItem implements FreeTextSearchable, Vardgiva
         this.avslutsDatum = avslutsDatum;
     }
 
-    public boolean isErsatts() {
+    public boolean getErsatts() {
         return ersatts;
     }
 
