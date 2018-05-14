@@ -37,6 +37,7 @@ public interface HolidayCalendar extends BusinessCalendar {
      * @return true if the specified date is a business day
      * @throws IllegalArgumentException if the date is outside the supported range
      */
+    @Override
     default boolean isBusinessDay(LocalDate date) {
         return !isHoliday(date);
     }
