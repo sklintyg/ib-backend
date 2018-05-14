@@ -87,6 +87,10 @@ public class UtredningInternForfraganListItem implements VardenhetEnrichable {
         this.vardenhetNamn = vardenhetNamn;
     }
 
+    @Override
+    public void setVardenhetFelmeddelande(String vardenhetFelmeddelande) {
+    }
+
     public InternForfraganStatus getStatus() {
         return status;
     }

@@ -132,6 +132,10 @@ public class UtredningListItem implements FreeTextSearchable, FilterableListItem
         this.vardenhetNamn = vardenhetNamn;
     }
 
+    @Override
+    public void setVardenhetFelmeddelande(String vardenhetFelmeddelande) {
+    }
+
     public UtredningFas getFas() {
         return fas;
     }

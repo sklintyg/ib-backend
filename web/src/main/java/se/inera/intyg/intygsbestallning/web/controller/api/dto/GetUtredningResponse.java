@@ -20,10 +20,10 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
+import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,7 +42,7 @@ public class GetUtredningResponse {
 
     private boolean tidigareUtredd;
 
-    List<FelaktigEnhet> felaktigaEnheter;
+    List<VardenhetListItem> tidigareEnheter;
 
     private boolean behovTolk;
 
@@ -58,7 +58,7 @@ public class GetUtredningResponse {
 
     private String handlaggareEpost;
 
-    private List<UtredningInternForfraganListItem> internforfraganList;
+    private List<UtredningInternForfraganListItem> internForfraganList;
 
     private List<UtredningHandelseListItem> handelseList;
 
@@ -72,8 +72,8 @@ public class GetUtredningResponse {
                         ? utredning.getExternForfragan().getBesvarasSenastDatum().format(formatter) : null)
                 .withBostadsort(!isNull(utredning.getInvanare())
                         ? utredning.getInvanare().getPostort() : null)
-                .withTidigareUtredd(false)
-                .withFelaktigaEnheter(new ArrayList<>())
+                .withTidigareUtredd(!utredning.getInvanare().getTidigareUtforare().isEmpty())
+                .withTidigareEnheter(utredning.getInvanare().getTidigareUtforare())
                 .withBehovTolk(utredning.getTolkBehov() != null)
                 .withTolkSprak(utredning.getTolkSprak())
                 .withSarskildaBehov(utredning.getInvanare().getSarskildaBehov())
@@ -127,12 +127,12 @@ public class GetUtredningResponse {
         this.tidigareUtredd = tidigareUtredd;
     }
 
-    public List<FelaktigEnhet> getFelaktigaEnheter() {
-        return felaktigaEnheter;
+    public List<VardenhetListItem> getTidigareEnheter() {
+        return tidigareEnheter;
     }
 
-    public void setFelaktigaEnheter(List<FelaktigEnhet> felaktigaEnheter) {
-        this.felaktigaEnheter = felaktigaEnheter;
+    public void setTidigareEnheter(List<VardenhetListItem> tidigareEnheter) {
+        this.tidigareEnheter = tidigareEnheter;
     }
 
     public boolean isBehovTolk() {
@@ -191,12 +191,12 @@ public class GetUtredningResponse {
         this.handlaggareEpost = handlaggareEpost;
     }
 
-    public List<UtredningInternForfraganListItem> getInternforfraganList() {
-        return internforfraganList;
+    public List<UtredningInternForfraganListItem> getInternForfraganList() {
+        return internForfraganList;
     }
 
-    public void setInternforfraganList(List<UtredningInternForfraganListItem> internforfraganList) {
-        this.internforfraganList = internforfraganList;
+    public void setInternForfraganList(List<UtredningInternForfraganListItem> internForfraganList) {
+        this.internForfraganList = internForfraganList;
     }
 
     public List<UtredningHandelseListItem> getHandelseList() {
@@ -214,7 +214,7 @@ public class GetUtredningResponse {
         private String besvarasSenastDatum;
         private String bostadsort;
         private boolean tidigareUtredd;
-        private List<FelaktigEnhet> felaktigaEnheter;
+        private List<VardenhetListItem> tidigareEnheter;
         private boolean behovTolk;
         private String tolkSprak;
         private String sarskildaBehov;
@@ -257,8 +257,10 @@ public class GetUtredningResponse {
             return this;
         }
 
-        public GetUtredningResponseBuilder withFelaktigaEnheter(List<FelaktigEnhet> felaktigaEnheter) {
-            this.felaktigaEnheter = felaktigaEnheter;
+        public GetUtredningResponseBuilder withTidigareEnheter(List<TidigareUtforare> tidigareEnheter) {
+            this.tidigareEnheter = tidigareEnheter.stream()
+                    .map(tidigareUtforare ->  new VardenhetListItem(tidigareUtforare.getTidigareEnhetId()))
+                    .collect(Collectors.toList());
             return this;
         }
 
@@ -318,7 +320,7 @@ public class GetUtredningResponse {
             getUtredningResponse.setBesvarasSenastDatum(besvarasSenastDatum);
             getUtredningResponse.setBostadsort(bostadsort);
             getUtredningResponse.setTidigareUtredd(tidigareUtredd);
-            getUtredningResponse.setFelaktigaEnheter(felaktigaEnheter);
+            getUtredningResponse.setTidigareEnheter(tidigareEnheter);
             getUtredningResponse.setBehovTolk(behovTolk);
             getUtredningResponse.setTolkSprak(tolkSprak);
             getUtredningResponse.setSarskildaBehov(sarskildaBehov);
@@ -326,15 +328,10 @@ public class GetUtredningResponse {
             getUtredningResponse.setHandlaggareNamn(handlaggareNamn);
             getUtredningResponse.setHandlaggareTelefonnummer(handlaggareTelefonnummer);
             getUtredningResponse.setHandlaggareEpost(handlaggareEpost);
-            getUtredningResponse.setInternforfraganList(internForfraganList);
+            getUtredningResponse.setInternForfraganList(internForfraganList);
             getUtredningResponse.setHandelseList(handelseList);
             return getUtredningResponse;
         }
 
-    }
-
-    public static final class FelaktigEnhet {
-        private String hsaId;
-        private String errorMessage;
     }
 }

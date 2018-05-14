@@ -74,6 +74,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardenhetEnrichable;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
 
+import javax.xml.ws.WebServiceException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -163,7 +164,8 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
         GetUtredningResponse getUtredningResponse = GetUtredningResponse.from(utredning);
 
-        enrichWithVardenhetNames(getUtredningResponse.getInternforfraganList());
+        enrichWithVardenhetNames(getUtredningResponse.getInternForfraganList());
+        enrichWithVardenhetNames(getUtredningResponse.getTidigareEnheter());
 
         return getUtredningResponse;
     }
@@ -384,11 +386,13 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     private void enrichWithVardenhetNames(List<? extends VardenhetEnrichable> items) {
         items.stream().forEach(item -> {
             if (!Strings.isNullOrEmpty(item.getVardenhetHsaId())) {
-                Vardenhet vardenhet = organizationUnitService.getVardenhet(item.getVardenhetHsaId());
-                if (vardenhet != null) {
+                try {
+                    Vardenhet vardenhet = organizationUnitService.getVardenhet(item.getVardenhetHsaId());
                     item.setVardenhetNamn(vardenhet.getNamn());
-                } else {
-                    LOG.warn("Could not fetch name for Vardenhet '{}' from HSA", item.getVardenhetHsaId());
+                } catch (WebServiceException e) {
+                    item.setVardenhetFelmeddelande(e.getMessage());
+                    LOG.warn("Could not fetch name for Vardenhet '{}' from HSA. ErrorMessage: '{}'", item.getVardenhetHsaId(),
+                            e.getMessage());
                 }
             }
         });

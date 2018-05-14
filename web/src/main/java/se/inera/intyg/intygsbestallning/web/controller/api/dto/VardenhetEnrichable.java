@@ -21,4 +21,5 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 public interface VardenhetEnrichable {
     String getVardenhetHsaId();
     void setVardenhetNamn(String vardenhetNamn);
+    void setVardenhetFelmeddelande(String vardenhetFelmeddelande);
 }

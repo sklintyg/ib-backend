@@ -25,8 +25,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.infra.integration.hsa.client.OrganizationUnitService;
+import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
+import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsServiceImpl;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
@@ -43,6 +46,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningRespo
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
 
+import javax.xml.ws.WebServiceException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -64,6 +68,7 @@ import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan
 import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
 import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
 import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
+import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp.BESTALLNING;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU;
@@ -87,6 +92,9 @@ public class UtredningServiceImplTest {
 
     @Mock
     private HsaOrganizationsService organizationUnitService;
+
+//    @Mock
+//    private OrganizationUnitService organizationUnitService;
 
     @InjectMocks
     private UtredningServiceImpl utredningService;
@@ -441,9 +449,49 @@ public class UtredningServiceImplTest {
 
         assertNotNull(response);
         assertEquals(utredningId, response.getUtredningsId());
-        assertEquals(vardenhetNamn, response.getInternforfraganList().get(0).getVardenhetNamn());
+        assertEquals(vardenhetNamn, response.getInternForfraganList().get(0).getVardenhetNamn());
     }
 
+    @Test
+    public void testGetUtredningWithTidigareUtforareHsaLookupFails() {
+        final String utredningId = "utredningId";
+        final String landstingHsaId = "landstingHsaId";
+        final String tidigareVardenhetHsaId1 = "vardenhetHsaId1";
+        final String tidigareVardenhetNamn1 = "vardenhetens namn";
+        final String tidigareVardenhetHsaId2 = "vardenhetHsaId2";
+        final String hsaError2 = "Fel från HSA";
+
+        when(organizationUnitService.getVardenhet(tidigareVardenhetHsaId1)).thenReturn(new Vardenhet(tidigareVardenhetHsaId1, tidigareVardenhetNamn1));
+        when(organizationUnitService.getVardenhet(tidigareVardenhetHsaId2)).thenThrow(new WebServiceException(hsaError2));
+
+        when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
+                .withUtredningId(utredningId)
+                .withUtredningsTyp(AFU)
+                .withExternForfragan(anExternForfragan()
+                        .withLandstingHsaId(landstingHsaId)
+                        .withInkomDatum(LocalDateTime.now())
+                        .withBesvarasSenastDatum(LocalDateTime.now())
+                        .build())
+                .withInvanare(anInvanare()
+                        .withTidigareUtforare(ImmutableList.of(aTidigareUtforare()
+                                .withTidigareEnhetId(tidigareVardenhetHsaId1)
+                                .build(), aTidigareUtforare()
+                                .withTidigareEnhetId(tidigareVardenhetHsaId2)
+                                .build()))
+                        .build())
+                .withHandlaggare(aHandlaggare()
+                        .build())
+                .build()));
+
+        GetUtredningResponse response = utredningService.getExternForfragan(utredningId, landstingHsaId);
+
+        assertNotNull(response);
+        assertEquals(utredningId, response.getUtredningsId());
+        assertEquals(tidigareVardenhetNamn1, response.getTidigareEnheter().get(0).getVardenhetNamn());
+        assertNull(response.getTidigareEnheter().get(0).getVardenhetFelmeddelande());
+        assertNull(response.getTidigareEnheter().get(1).getVardenhetNamn());
+        assertEquals(hsaError2, response.getTidigareEnheter().get(1).getVardenhetFelmeddelande());
+    }
 
     @Test(expected = IbAuthorizationException.class)
     public void testGetUtredningIncorrectLandsting() {
