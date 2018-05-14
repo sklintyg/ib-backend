@@ -116,7 +116,7 @@ public final class ErsattsResolver {
         // (se FMU-G005 Ersättningsberäkning), oavsett när avvikelsetidpunkten inträffade.
         if (besok.getAvvikelse() != null && besok.getKallelseDatum() != null
                 && besok.getKallelseDatum().toLocalDate()
-                .isAfter(resolveSenasteKallelseDatum(besok.getBesokStartTid(), besok.getKallelseForm(),businessDays))) {
+                        .isAfter(resolveSenasteKallelseDatum(besok.getBesokStartTid(), besok.getKallelseForm(), businessDays))) {
             return false;
         }
 
@@ -137,8 +137,7 @@ public final class ErsattsResolver {
     // arbetsdagar exklusive semesterperioder
     // - Senast kallelsedatum vid kallelse per telefon = Besöksdatum - KALLELSE_ARBETSDAGAR arbetsdagar exklusive
     // semesterperioder
-    static LocalDate resolveSenasteKallelseDatum(LocalDateTime besoksDatum, KallelseFormTyp kallelseForm
-            , BusinessDaysBean businessDays) {
+    static LocalDate resolveSenasteKallelseDatum(LocalDateTime besoksDatum, KallelseFormTyp kallelseForm, BusinessDaysBean businessDays) {
 
         int arbetsDagar = resolveNumberOfWorkingDays(kallelseForm);
 

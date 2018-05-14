@@ -39,8 +39,8 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardadminStatisti
 @Service
 public class StatisticsServiceImpl implements StatisticsService {
 
-    protected UtredningStatusResolver utredningStatusResolver = new UtredningStatusResolver();
-    protected InternForfraganStateResolver internForfraganStateResolver = new InternForfraganStateResolver();
+    private UtredningStatusResolver utredningStatusResolver = new UtredningStatusResolver();
+    private InternForfraganStateResolver internForfraganStateResolver = new InternForfraganStateResolver();
 
     @Autowired
     private UtredningRepository utredningRepository;
@@ -54,7 +54,8 @@ public class StatisticsServiceImpl implements StatisticsService {
                 .findByExternForfragan_LandstingHsaId_AndArkiveradFalse(vardgivarHsaId)
                 .stream()
                 .map(u -> UtredningListItem.from(u, utredningStatusResolver.resolveStatus(u)))
-                .filter(uli -> uli.getStatus().getNextActor().equals(Actor.SAMORDNARE)).count();
+                .filter(uli -> uli.getStatus().getNextActor().equals(Actor.SAMORDNARE))
+                .count();
         return new SamordnarStatisticsResponse(requireSamordnarActionCount);
     }
 
@@ -66,7 +67,8 @@ public class StatisticsServiceImpl implements StatisticsService {
                 .findAllByExternForfragan_InternForfraganList_VardenhetHsaId_AndArkiveradFalse(enhetsHsaId)
                 .stream()
                 .map(utr -> ForfraganListItem.from(utr, enhetsHsaId, internForfraganStateResolver, businessDays))
-                .filter(ffli -> ffli.getStatus().getNextActor().equals(Actor.VARDADMIN)).count();
+                .filter(ffli -> ffli.getStatus().getNextActor().equals(Actor.VARDADMIN))
+                .count();
 
         // Calculate nr of bestallningar for this vardenhet where action is required from actor VARDADMIN and not in AVSLUTAD or
         // FORFRAGAN fas.
