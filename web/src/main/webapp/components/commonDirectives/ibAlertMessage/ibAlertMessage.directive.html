@@ -7,6 +7,6 @@
     <i ng-switch-when="success" class="material-icons">check</i>
     <i ng-switch-when="komplettering" class="icon-wc-ikon-alert02 icon-wc-18"></i>
   </div>
-  <span message key="{{alertMessageId}}" class="multiline"></span>
+  <span ng-if="alertMessageId" message key="{{alertMessageId}}" class="multiline"></span>
   <ng-transclude></ng-transclude>
 </div>

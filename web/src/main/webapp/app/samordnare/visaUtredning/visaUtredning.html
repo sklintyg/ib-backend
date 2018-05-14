@@ -40,7 +40,12 @@
                   </card-value>
                   <h4>Tidigare utredd</h4>
                   <card-value>
-                    {{utredning.tidigareUtredd | ibBoolFilter}}
+                    {{utredning.tidigareUtredd | ibBoolFilter}}<span ng-if="utredning.tidigareEnheter">, vid {{utredning.tidigareEnheter}}</span>
+                    <ib-alert-message alert-id=""
+                                      alert-severity="danger"
+                                      ng-if="utredning.felaktigaEnheter">
+                      Felaktig enhet(er): {{utredning.felaktigaEnheter}}
+                    </ib-alert-message>
                   </card-value>
                 </card-body>
               </card>

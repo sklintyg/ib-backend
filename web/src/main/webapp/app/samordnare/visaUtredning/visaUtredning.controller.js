@@ -31,6 +31,25 @@ angular.module('ibApp')
 
                 utredningViewModel.behovAvTolk = utredning.behovTolk ? $filter('ibBoolFilter')(utredning.behovTolk) +
                     ', ' + utredning.tolkSprak : $filter('ibBoolFilter')(utredning.behovTolk);
+
+                utredningViewModel.tidigareEnheter = utredning.tidigareEnheter
+                    .filter(function(tidigareEnhet) {
+                        return tidigareEnhet.vardenhetFelmeddelande === null;
+                    })
+                    .map(function(tidigareEnhet) {
+                        return tidigareEnhet.vardenhetNamn;
+                    })
+                    .join(', ');
+
+                utredningViewModel.felaktigaEnheter = utredning.tidigareEnheter
+                    .filter(function(tidigareEnhet) {
+                        return tidigareEnhet.vardenhetFelmeddelande !== null;
+                    })
+                    .map(function(tidigareEnhet) {
+                        return tidigareEnhet.vardenhetHsaId + ' - ' + tidigareEnhet.vardenhetFelmeddelande;
+                    })
+                    .join(', ');
+
                 return utredningViewModel;
             }
 
