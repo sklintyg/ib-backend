@@ -19,15 +19,22 @@
 
 angular.module('ibApp')
     .controller('VisaUtredningCtrl',
-        function($log, $scope, $stateParams, UtredningarProxy) {
+        function($log, $scope, $filter, $stateParams, UtredningarProxy) {
             'use strict';
 
             $scope.vm = {
                 loading: true
             };
 
+            function convertUtredningToViewModel(utredning) {
+                var utredningViewModel = angular.copy(utredning);
+
+                utredningViewModel.behovAvTolk = utredning.behovTolk ? $filter('ibBoolFilter')(utredning.behovTolk) + ', ' + utredning.tolkSprak : $filter('ibBoolFilter')(utredning.behovTolk);
+                return utredningViewModel;
+            }
+
             UtredningarProxy.getUtredning($stateParams.utredningsId).then(function(utredning) {
-                $scope.utredning = utredning;
+                $scope.utredning = convertUtredningToViewModel(utredning);
             }, function(error) {
                 $log.error(error);
             }).finally(function() { // jshint ignore:line

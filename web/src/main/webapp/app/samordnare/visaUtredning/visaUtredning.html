@@ -40,7 +40,7 @@
                   </card-value>
                   <h4>Tidigare utredd</h4>
                   <card-value>
-                    {{utredning.tidigareUtredd}}
+                    {{utredning.tidigareUtredd | ibBoolFilter}}
                   </card-value>
                 </card-body>
               </card>
@@ -49,8 +49,7 @@
                 <card-body>
                   <h4>Behov av tolk</h4>
                   <card-value>
-                    {{utredning.behovTolk}}<br>
-                    {{utredning.tolkSprak}}
+                    {{utredning.behovAvTolk}}
                   </card-value>
                   <h4>Särskilda behov</h4>
                   <card-value>

@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
@@ -16,36 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+angular.module('ibApp').filter('ibBoolFilter',
+    function() {
+        'use strict';
 
-.ib-page-header {
-  display: block;
-  padding: 18px 0px 18px 0;
-  background-color: $ib-color-00;
-  box-shadow: 0 2px 4px 0 $black_12;
-  border-bottom: 1px solid $ib-color-27;
-
-  .page-heading1 {
-    @extend %ib-typo-04;
-    color: $ib-color-07;
-    padding: 10px 0 0 0;
-    margin:0;
-  }
-
-  .page-heading2 {
-    @extend %ib-typo-01;
-    color: $ib-color-19;
-    display: inline-block;
-    padding: 0;
-    margin: 0;
-  }
-
-  /* intyg/utkast headers */
-  a {
-    &.backlink-icon {
-      display: inline-block;
-      width: 24px;
-      height: 24px;
-      margin: 0 10px 0 0;
-    }
-  }
-}
+        return function(value) {
+            return angular.isUndefined(value) || value === '' || value === 'false' || value === false ? 'Nej' : 'Ja';
+        };
+    });
