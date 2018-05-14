@@ -18,6 +18,19 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toList;
+import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
+import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
+import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
+import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
+import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
+
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.commons.lang3.BooleanUtils;
@@ -70,19 +83,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static com.google.common.base.Strings.isNullOrEmpty;
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toList;
-import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
-import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
-import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
-import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
-import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
-import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 
 @Service
 @Transactional
@@ -348,12 +348,12 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
         Utredning toUpdate = Utredning.copyFrom(original);
 
+        update.getTolkBehov().ifPresent(toUpdate::setTolkBehov);
+        update.getTolkSprak().ifPresent(toUpdate::setTolkSprak);
         update.getLastDateIntyg().ifPresent(date -> toUpdate.getIntygList().stream()
                 .filter(i -> isNull(i.getKompletteringsId()))
                 .findFirst()
                 .ifPresent(i -> i.setSistaDatum(date)));
-        update.getTolkBehov().ifPresent(toUpdate::setTolkBehov);
-        update.getTolkSprak().ifPresent(toUpdate::setTolkSprak);
         update.getBestallare().ifPresent(bestallare -> toUpdate.setHandlaggare(aHandlaggare()
                 .withEmail(bestallare.getEmail())
                 .withFullstandigtNamn(bestallare.getFullstandigtNamn())
@@ -369,7 +369,16 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
             throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, "No info to update");
         }
 
-        update.getKommentar().ifPresent(kommentar -> toUpdate.getBestallning().get().setKommentar(kommentar));
+        final LocalDateTime now = LocalDateTime.now();
+        update.getHandling()
+                .filter(BooleanUtils::isTrue)
+                .ifPresent(isHandling -> toUpdate.getHandlingList().add(aHandling()
+                        .withInkomDatum(now)
+                        .withSkickatDatum(now)
+                        .withUrsprung(HandlingUrsprungTyp.UPPDATERING)
+                        .build()));
+
+        //Händelse ska skapas - se separat jira för detta
 
         if (!BooleanUtils.toBoolean(toUpdate.getTolkBehov()) && !isNullOrEmpty(toUpdate.getTolkSprak())) {
             throw new IbServiceException(
@@ -434,14 +443,14 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         }
 
         switch (bli.getStatus().getUtredningFas()) {
-        case AVSLUTAD:
-            return false;
-        case REDOVISA_TOLK:
-            return Strings.isNullOrEmpty(fromDate);
-        case UTREDNING:
-        case KOMPLETTERING:
-        case FORFRAGAN:
-            return fromDate.compareTo(bli.getSlutdatumFas()) <= 0 && toDate.compareTo(bli.getSlutdatumFas()) >= 0;
+            case AVSLUTAD:
+                return false;
+            case REDOVISA_TOLK:
+                return Strings.isNullOrEmpty(fromDate);
+            case UTREDNING:
+            case KOMPLETTERING:
+            case FORFRAGAN:
+                return fromDate.compareTo(bli.getSlutdatumFas()) <= 0 && toDate.compareTo(bli.getSlutdatumFas()) >= 0;
         }
         return true;
     }
