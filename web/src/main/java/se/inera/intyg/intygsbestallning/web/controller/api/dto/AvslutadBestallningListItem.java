@@ -23,6 +23,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.stateresolver.ErsattsResolver;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
+import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
@@ -43,7 +44,9 @@ public class AvslutadBestallningListItem implements FreeTextSearchable, Vardgiva
     private String fakturerad;
     private String utbetald;
 
-    public static AvslutadBestallningListItem from(Utredning utredning, UtredningStatusResolver utredningStatusResolver) {
+    public static AvslutadBestallningListItem from(Utredning utredning, UtredningStatusResolver utredningStatusResolver,
+                                                   BusinessDaysBean businessDaysBean) {
+
         return AvslutadBestallningListItemBuilder.anAvslutadBestallningListItem()
                 .withUtredningsId(utredning.getUtredningId())
                 .withUtredningsTyp(utredning.getUtredningsTyp().name())
@@ -51,7 +54,7 @@ public class AvslutadBestallningListItem implements FreeTextSearchable, Vardgiva
                 .withVardgivareHsaId(utredning.getExternForfragan().getLandstingHsaId())
                 .withVardgivareNamn("Enriched later")
                 .withAvslutsDatum(resolveAvslutsDatum(utredning))
-                .withErsatts(ErsattsResolver.resolveUtredningErsatts(utredning))
+                .withErsatts(ErsattsResolver.resolveUtredningErsatts(utredning, businessDaysBean))
                 .withFakturerad(nonNull(utredning.getBetalning()) ? utredning.getBetalning().getFakturaId() : null)
                 .withUtbetald(nonNull(utredning.getBetalning()) ? utredning.getBetalning().getBetalningsId() : null)
                 .build();

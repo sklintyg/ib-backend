@@ -26,6 +26,8 @@ import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.AvvikelseOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
 import se.inera.intyg.intygsbestallning.persistence.model.type.KallelseFormTyp;
+import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
+import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
 import se.inera.intyg.intygsbestallning.service.utredning.ServiceTestUtil;
 
 import java.time.LocalDate;
@@ -44,6 +46,7 @@ public class ErsattsResolverTest {
     private static final LocalDateTime FEB_13 = LocalDateTime.of(2018,2,13, 0,0);
     private static final LocalDateTime FEB_8 = LocalDateTime.of(2018,2,8, 0,0);
 
+    private BusinessDaysBean businessDays = new BusinessDaysStub();
 
     @Test
     public void testErsattsEjVidJav() {
@@ -51,7 +54,7 @@ public class ErsattsResolverTest {
                 .withAvbrutenDatum(LocalDateTime.now())
                 .withAvbrutenAnledning(EndReason.JAV)
                 .build();
-        assertFalse(ErsattsResolver.resolveUtredningErsatts(utr));
+        assertFalse(ErsattsResolver.resolveUtredningErsatts(utr, businessDays));
     }
 
     @Test
@@ -60,41 +63,41 @@ public class ErsattsResolverTest {
                 .withAvbrutenDatum(LocalDateTime.now())
                 .withAvbrutenAnledning(EndReason.INGEN_BESTALLNING)
                 .build();
-        assertFalse(ErsattsResolver.resolveUtredningErsatts(utr));
+        assertFalse(ErsattsResolver.resolveUtredningErsatts(utr, businessDays));
     }
 
     // Slutdatum för utredningen passeras innan utlåtandet är mottaget av Försäkringskassan
     @Test
     public void testErsattsEjNarSlutdatumPasseratsForeMottagetAvFK() {
-        Utredning utredning = ServiceTestUtil.buildBestallningar(1).get(0); 
-        assertFalse(ErsattsResolver.resolveUtredningErsatts(utredning));
+        Utredning utredning = ServiceTestUtil.buildBestallningar(1).get(0);
+        assertFalse(ErsattsResolver.resolveUtredningErsatts(utredning, businessDays));
     }
 
     @Test
     public void testErsattsEjNarMottagetAvFKForeSlutdatumMenBesokEjFinns() {
-        Utredning utredning = ServiceTestUtil.buildBestallningar(1).get(0); 
+        Utredning utredning = ServiceTestUtil.buildBestallningar(1).get(0);
 
         utredning.getIntygList().get(0).setSistaDatum(LocalDateTime.now().minusDays(10L));
         utredning.getIntygList().get(0).setMottagetDatum(LocalDateTime.now().minusDays(20L));
-        assertFalse(ErsattsResolver.resolveUtredningErsatts(utredning));
+        assertFalse(ErsattsResolver.resolveUtredningErsatts(utredning, businessDays));
     }
 
     @Test
     public void testErsattsEjNarMottagetAvFKForeSlutdatumMenBesokFinnsDockEjErsatts() {
-        Utredning utredning = ServiceTestUtil.buildBestallningar(1).get(0); 
+        Utredning utredning = ServiceTestUtil.buildBestallningar(1).get(0);
         utredning.setBesokList(buildBesokList(false, FEB_20));
         utredning.getIntygList().get(0).setSistaDatum(LocalDateTime.now().minusDays(10L));
         utredning.getIntygList().get(0).setMottagetDatum(LocalDateTime.now().minusDays(20L));
-        assertFalse(ErsattsResolver.resolveUtredningErsatts(utredning));
+        assertFalse(ErsattsResolver.resolveUtredningErsatts(utredning, businessDays));
     }
 
     @Test
     public void testErsattsNarMottagetAvFKForeSlutdatumOchBesokFinns() {
-        Utredning utredning = ServiceTestUtil.buildBestallningar(1).get(0); 
+        Utredning utredning = ServiceTestUtil.buildBestallningar(1).get(0);
         utredning.setBesokList(buildBesokList(true, FEB_20));
         utredning.getIntygList().get(0).setSistaDatum(LocalDateTime.now().minusDays(10L));
         utredning.getIntygList().get(0).setMottagetDatum(LocalDateTime.now().minusDays(20L));
-        assertTrue(ErsattsResolver.resolveUtredningErsatts(utredning));
+        assertTrue(ErsattsResolver.resolveUtredningErsatts(utredning, businessDays));
     }
 
     @Test
@@ -104,7 +107,7 @@ public class ErsattsResolverTest {
 
         Avvikelse avvikelse = buildAvvikelse(false, AvvikelseOrsak.PATIENT, FEB_13);
         utredning.getBesokList().get(0).setAvvikelse(avvikelse);
-        assertFalse(ErsattsResolver.resolveBesokErsatts(utredning, utredning.getBesokList().get(0)));
+        assertFalse(ErsattsResolver.resolveBesokErsatts(utredning, utredning.getBesokList().get(0), businessDays));
     }
 
     @Test
@@ -114,9 +117,9 @@ public class ErsattsResolverTest {
 
         Avvikelse avvikelse = buildAvvikelse(false, AvvikelseOrsak.PATIENT, FEB_20_MORGON);
         utredning.getBesokList().get(0).setAvvikelse(avvikelse);
-        assertTrue(ErsattsResolver.resolveBesokErsatts(utredning, utredning.getBesokList().get(0)));
+        assertTrue(ErsattsResolver.resolveBesokErsatts(utredning, utredning.getBesokList().get(0), businessDays));
     }
-    
+
     // Anrop till EndAssessment har inkommit mer än MAX_AVBOKNING_TIMMAR timmar innan besökets starttidpunkt.
     @Test
     public void testErsattsEjNarEndAssessmentInkomIGodTid() {
@@ -124,7 +127,7 @@ public class ErsattsResolverTest {
         utredning.setBesokList(buildBesokList(true, FEB_20));
         utredning.setAvbrutenAnledning(EndReason.UTREDNING_AVBRUTEN);
         utredning.setAvbrutenDatum(FEB_13);
-        assertFalse(ErsattsResolver.resolveBesokErsatts(utredning, utredning.getBesokList().get(0)));
+        assertFalse(ErsattsResolver.resolveBesokErsatts(utredning, utredning.getBesokList().get(0), businessDays));
     }
 
     @Test
@@ -134,7 +137,7 @@ public class ErsattsResolverTest {
 
         Avvikelse avvikelse = buildAvvikelse(false, AvvikelseOrsak.VARDEN, FEB_13);
         utredning.getBesokList().get(0).setAvvikelse(avvikelse);
-        assertFalse(ErsattsResolver.resolveBesokErsatts(utredning, utredning.getBesokList().get(0)));
+        assertFalse(ErsattsResolver.resolveBesokErsatts(utredning, utredning.getBesokList().get(0), businessDays));
     }
 
     @Test
@@ -144,7 +147,7 @@ public class ErsattsResolverTest {
 
         Avvikelse avvikelse = buildAvvikelse(true, AvvikelseOrsak.PATIENT, FEB_20);
         utredning.getBesokList().get(0).setAvvikelse(avvikelse);
-        assertFalse(ErsattsResolver.resolveBesokErsatts(utredning, utredning.getBesokList().get(0)));
+        assertFalse(ErsattsResolver.resolveBesokErsatts(utredning, utredning.getBesokList().get(0), businessDays));
     }
 
     @Test
@@ -154,7 +157,7 @@ public class ErsattsResolverTest {
 
         Avvikelse avvikelse = buildAvvikelse(true, AvvikelseOrsak.PATIENT, FEB_20);
         utredning.getBesokList().get(0).setAvvikelse(avvikelse);
-        assertTrue(ErsattsResolver.resolveBesokErsatts(utredning, utredning.getBesokList().get(0)));
+        assertTrue(ErsattsResolver.resolveBesokErsatts(utredning, utredning.getBesokList().get(0), businessDays));
     }
 
     // Avvikelse rapporteras för ett besök där invånaren har kallats > Senast kallelsedatum
@@ -166,7 +169,7 @@ public class ErsattsResolverTest {
 
         Avvikelse avvikelse = buildAvvikelse(false, AvvikelseOrsak.PATIENT, FEB_20);
         utredning.getBesokList().get(0).setAvvikelse(avvikelse);
-        assertFalse(ErsattsResolver.resolveBesokErsatts(utredning, utredning.getBesokList().get(0)));
+        assertFalse(ErsattsResolver.resolveBesokErsatts(utredning, utredning.getBesokList().get(0), businessDays));
     }
 
     private Avvikelse buildAvvikelse(boolean invanareUteblev, AvvikelseOrsak orsak, LocalDateTime avvikelseTidpunkt) {
@@ -184,7 +187,7 @@ public class ErsattsResolverTest {
         // 20th of february was a tuesday.
         LocalDate kallelseDatum = ErsattsResolver.resolveSenasteKallelseDatum(
                 LocalDateTime.of(2018, 02, 20, 0, 0, 0),
-                KallelseFormTyp.BREVKONTAKT);
+                KallelseFormTyp.BREVKONTAKT, businessDays);
         // 5 + 3 + four weekend days
         assertEquals(8, kallelseDatum.getDayOfMonth());
     }
@@ -194,7 +197,7 @@ public class ErsattsResolverTest {
         // 20th of february was a tuesday.
         LocalDate kallelseDatum = ErsattsResolver.resolveSenasteKallelseDatum(
                 LocalDateTime.of(2018, 02, 20, 0, 0, 0),
-                KallelseFormTyp.TELEFONKONTAKT);
+                KallelseFormTyp.TELEFONKONTAKT, businessDays);
         // 5 + sat & sun == 13.
         assertEquals(13, kallelseDatum.getDayOfMonth());
     }

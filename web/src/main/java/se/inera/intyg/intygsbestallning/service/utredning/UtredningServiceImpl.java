@@ -57,6 +57,7 @@ import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
 import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
+import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.util.GenericComparator;
 import se.inera.intyg.intygsbestallning.service.util.PagingUtil;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
@@ -95,6 +96,9 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
     @Autowired
     private PUService puService;
+
+    @Autowired
+    private BusinessDaysBean businessDays;
 
     @Override
     public List<UtredningListItem> findExternForfraganByLandstingHsaId(String landstingHsaId) {
@@ -174,7 +178,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     public List<ForfraganListItem> findForfragningarForVardenhetHsaId(String vardenhetHsaId) {
         return utredningRepository.findAllByExternForfragan_InternForfraganList_VardenhetHsaId(vardenhetHsaId)
                 .stream()
-                .map(utr -> ForfraganListItem.from(utr, vardenhetHsaId, internForfraganStateResolver))
+                .map(utr -> ForfraganListItem.from(utr, vardenhetHsaId, internForfraganStateResolver, businessDays))
                 .collect(toList());
     }
 

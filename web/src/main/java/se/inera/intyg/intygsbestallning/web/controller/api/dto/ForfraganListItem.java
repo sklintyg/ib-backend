@@ -24,7 +24,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
 import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStateResolver;
 import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
-import se.inera.intyg.intygsbestallning.service.util.holidays.Holidays;
+import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListForfraganFilterStatus;
 
 import java.time.LocalDate;
@@ -60,7 +60,9 @@ public class ForfraganListItem implements FreeTextSearchable {
     private List<ListForfraganFilterStatus> filterStatusar;
     private boolean kraverAtgard;
 
-    public static ForfraganListItem from(Utredning utredning, String vardenhetId, InternForfraganStateResolver statusResolver) {
+    public static ForfraganListItem from(Utredning utredning, String vardenhetId,
+                                         InternForfraganStateResolver statusResolver, BusinessDaysBean businessDays) {
+
         InternForfragan internForfragan = utredning.getExternForfragan().getInternForfraganList()
                 .stream()
                 .filter(i -> Objects.equals(i.getVardenhetHsaId(), vardenhetId))
@@ -73,12 +75,13 @@ public class ForfraganListItem implements FreeTextSearchable {
                 .withBesvarasSenastDatum(nonNull(internForfragan.getBesvarasSenastDatum())
                         ? internForfragan.getBesvarasSenastDatum().format(formatter)
                         : null)
-                .withBesvarasSenastDatumPaVagPasseras(resolveBesvarasSenastPaVagPasseras(internForfragan.getBesvarasSenastDatum()))
+                .withBesvarasSenastDatumPaVagPasseras(
+                        resolveBesvarasSenastPaVagPasseras(internForfragan.getBesvarasSenastDatum(), businessDays))
                 .withBesvarasSenastDatumPasserat(resolveBesvaraSenastPasserat(internForfragan))
                 .withInkomDatum(nonNull(internForfragan.getSkapadDatum())
                         ? internForfragan.getSkapadDatum().format(formatter)
                         : null)
-                .withPlaneringsDatum(resolvePlaneringsDatum(utredning.getBestallning()))
+                .withPlaneringsDatum(resolvePlaneringsDatum(utredning.getBestallning(), businessDays))
                 .withStatus(status)
                 .withUtredningsId(utredning.getUtredningId())
                 .withUtredningsTyp(utredning.getUtredningsTyp().name())
@@ -88,7 +91,7 @@ public class ForfraganListItem implements FreeTextSearchable {
                 .build();
     }
 
-    private static String resolvePlaneringsDatum(Optional<Bestallning> bestallning) {
+    private static String resolvePlaneringsDatum(Optional<Bestallning> bestallning, BusinessDaysBean businessDays) {
 
         // Om redan beställd, ska vi då utgå från orderdatumet istället?? Dvs planeringsdatum blir orderdatum + 31 arbetsdagar?
         if (bestallning.isPresent() && bestallning.get().getOrderDatum() != null) {
@@ -98,7 +101,7 @@ public class ForfraganListItem implements FreeTextSearchable {
         LocalDate startDatum = LocalDate.now();
         LocalDate planeringsDatum = LocalDate.from(startDatum);
         int total = POSTGANG_ARBETSDAGAR + AFU_UTREDNING_ARBETSDAGAR + POSTGANG_ARBETSDAGAR;
-        while (Holidays.SWE.daysBetween(startDatum, planeringsDatum) < total) {
+        while (businessDays.daysBetween(startDatum, planeringsDatum) < total) {
             planeringsDatum = planeringsDatum.plusDays(1);
         }
         return planeringsDatum.format(formatter);
@@ -111,7 +114,7 @@ public class ForfraganListItem implements FreeTextSearchable {
         return LocalDateTime.now().compareTo(internForfragan.getBesvarasSenastDatum()) > 0;
     }
 
-    private static boolean resolveBesvarasSenastPaVagPasseras(LocalDateTime besvarasSenastDatum) {
+    private static boolean resolveBesvarasSenastPaVagPasseras(LocalDateTime besvarasSenastDatum, BusinessDaysBean businessDays) {
         if (besvarasSenastDatum == null) {
             return false;
         }
@@ -120,7 +123,7 @@ public class ForfraganListItem implements FreeTextSearchable {
         if (besvarasSenastDatum.toLocalDate().compareTo(LocalDate.now()) < 0) {
             return false;
         }
-        return Holidays.SWE.daysBetween(LocalDate.now(), besvarasSenastDatum.toLocalDate()) < BESVARA_FORFRAGAN_ARBETSDAGAR;
+        return businessDays.daysBetween(LocalDate.now(), besvarasSenastDatum.toLocalDate()) < BESVARA_FORFRAGAN_ARBETSDAGAR;
     }
 
     public String getUtredningsId() {

@@ -41,6 +41,7 @@ import se.inera.intyg.intygsbestallning.service.pdl.LogService;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
 import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
+import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.util.GenericComparator;
 import se.inera.intyg.intygsbestallning.service.util.PagingUtil;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.AvslutadBestallningListItem;
@@ -68,13 +69,16 @@ import static java.util.stream.Collectors.toList;
 @Service
 public class BestallningServiceImpl extends BaseUtredningService implements BestallningService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(BestallningServiceImpl.class);
+
     @Autowired
     private PatientNameEnricher patientNameEnricher;
 
     @Autowired
     private LogService logService;
 
-    private static final Logger LOG = LoggerFactory.getLogger(BestallningServiceImpl.class);
+    @Autowired
+    private BusinessDaysBean businessDays;
 
     @Override
     public GetBestallningResponse getBestallning(String utredningId, String vardenhetHsaId) {
@@ -141,7 +145,7 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
             ListAvslutadeBestallningarRequest requestFilter) {
         List<AvslutadBestallningListItem> avslutadeBestallningar = utredningRepository
                 .findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradTrue(vardenhetHsaId)
-                .stream().map(utr -> AvslutadBestallningListItem.from(utr, utredningStatusResolver))
+                .stream().map(utr -> AvslutadBestallningListItem.from(utr, utredningStatusResolver, businessDays))
                 .collect(Collectors.toList());
 
         boolean enrichedWithVardgivareNames = false;

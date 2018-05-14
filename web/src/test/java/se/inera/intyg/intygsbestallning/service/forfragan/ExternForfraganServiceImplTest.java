@@ -22,12 +22,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.ExternForfraganRepository;
+import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
+import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListForfraganRequest;
 
@@ -43,6 +46,9 @@ public class ExternForfraganServiceImplTest {
 
     @Mock
     private ExternForfraganRepository externForfraganRepository;
+
+    @Spy
+    private BusinessDaysBean businessDays = new BusinessDaysStub();
 
     @InjectMocks
     private ExternForfraganServiceImpl testee;

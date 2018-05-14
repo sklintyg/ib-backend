@@ -26,6 +26,7 @@ import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
 import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStateResolver;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
+import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.SamordnarStatisticsResponse;
@@ -44,6 +45,9 @@ public class StatisticsServiceImpl implements StatisticsService {
     @Autowired
     private UtredningRepository utredningRepository;
 
+    @Autowired
+    private BusinessDaysBean businessDays;
+
     @Override
     public SamordnarStatisticsResponse getStatsForSamordnare(String vardgivarHsaId) {
         long requireSamordnarActionCount = utredningRepository
@@ -61,7 +65,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         long forfraganRequiringActionCount = utredningRepository
                 .findAllByExternForfragan_InternForfraganList_VardenhetHsaId_AndArkiveradFalse(enhetsHsaId)
                 .stream()
-                .map(utr -> ForfraganListItem.from(utr, enhetsHsaId, internForfraganStateResolver))
+                .map(utr -> ForfraganListItem.from(utr, enhetsHsaId, internForfraganStateResolver, businessDays))
                 .filter(ffli -> ffli.getStatus().getNextActor().equals(Actor.VARDADMIN)).count();
 
         // Calculate nr of bestallningar for this vardenhet where action is required from actor VARDADMIN and not in AVSLUTAD or

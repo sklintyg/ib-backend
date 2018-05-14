@@ -29,6 +29,7 @@ import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.repository.ExternForfraganRepository;
 import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
 import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
+import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.util.GenericComparator;
 import se.inera.intyg.intygsbestallning.service.util.PagingUtil;
 import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
@@ -62,6 +63,9 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
     @Autowired
     private HsaOrganizationsService hsaOrganizationsService;
 
+    @Autowired
+    private BusinessDaysBean businessDays;
+
     @Override
     public ForfraganSvarResponse besvaraForfragan(Long forfraganId, ForfraganSvarRequest svarRequest) {
         return null;
@@ -72,7 +76,7 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
         List<ForfraganListItem> forfraganList = externForfraganRepository
                 .findByExternForfraganAndVardenhetHsaIdAndArkiveradFalse(vardenhetHsaId)
                 .stream()
-                .map(utr -> ForfraganListItem.from(utr, vardenhetHsaId, internForfraganStateResolver))
+                .map(utr -> ForfraganListItem.from(utr, vardenhetHsaId, internForfraganStateResolver, businessDays))
                 .collect(toList());
 
         Map<InternForfraganStatus, List<ListForfraganFilterStatus>> statusMap = buildFilterStatusesForForfragan();

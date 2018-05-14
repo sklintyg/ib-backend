@@ -24,7 +24,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.AvvikelseOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
 import se.inera.intyg.intygsbestallning.persistence.model.type.KallelseFormTyp;
-import se.inera.intyg.intygsbestallning.service.util.holidays.Holidays;
+import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -44,7 +44,7 @@ public final class ErsattsResolver {
 
     }
 
-    public static boolean resolveUtredningErsatts(Utredning utredning) {
+    public static boolean resolveUtredningErsatts(Utredning utredning, BusinessDaysBean businessDays) {
 
         // Utredningen avslutad med orsak ”Jäv” eller ”Ingen beställning"
         if (utredning.getAvbrutenDatum() != null) {
@@ -67,7 +67,7 @@ public final class ErsattsResolver {
         // Det finns Inget besök i utredning som är ersättningsberättigat.
         boolean minstEttBesokErsatts = false;
         for (Besok besok : utredning.getBesokList()) {
-            if (besok.getErsatts() && resolveBesokErsatts(utredning, besok)) {
+            if (besok.getErsatts() && resolveBesokErsatts(utredning, besok, businessDays)) {
                 minstEttBesokErsatts = true;
                 break;
             }
@@ -81,7 +81,7 @@ public final class ErsattsResolver {
         return true;
     }
 
-    public static boolean resolveBesokErsatts(Utredning utredning, Besok besok) {
+    public static boolean resolveBesokErsatts(Utredning utredning, Besok besok, BusinessDaysBean businessDays) {
         // Det finns en avvikelse där avvikelsetidpunkten som anges i avvikelsen ligger mer än MAX_AVBOKNING_TIMMAR timmar
         // innan besökets starttidpunkt. Gäller enbart avvikelser som är orsakade av patient.
         if (besok.getErsatts() && besok.getAvvikelse() != null
@@ -108,7 +108,7 @@ public final class ErsattsResolver {
         // för den valda kallelseformen.
         if (besok.getAvvikelse() != null && besok.getAvvikelse().getInvanareUteblev() && besok.getKallelseDatum() != null
                 && besok.getKallelseDatum().toLocalDate()
-                        .isAfter(resolveSenasteKallelseDatum(besok.getBesokStartTid(), besok.getKallelseForm()))) {
+                        .isAfter(resolveSenasteKallelseDatum(besok.getBesokStartTid(), besok.getKallelseForm(), businessDays))) {
             return false;
         }
 
@@ -116,7 +116,7 @@ public final class ErsattsResolver {
         // (se FMU-G005 Ersättningsberäkning), oavsett när avvikelsetidpunkten inträffade.
         if (besok.getAvvikelse() != null && besok.getKallelseDatum() != null
                 && besok.getKallelseDatum().toLocalDate()
-                .isAfter(resolveSenasteKallelseDatum(besok.getBesokStartTid(), besok.getKallelseForm()))) {
+                .isAfter(resolveSenasteKallelseDatum(besok.getBesokStartTid(), besok.getKallelseForm(),businessDays))) {
             return false;
         }
 
@@ -137,14 +137,16 @@ public final class ErsattsResolver {
     // arbetsdagar exklusive semesterperioder
     // - Senast kallelsedatum vid kallelse per telefon = Besöksdatum - KALLELSE_ARBETSDAGAR arbetsdagar exklusive
     // semesterperioder
-    static LocalDate resolveSenasteKallelseDatum(LocalDateTime besoksDatum, KallelseFormTyp kallelseForm) {
+    static LocalDate resolveSenasteKallelseDatum(LocalDateTime besoksDatum, KallelseFormTyp kallelseForm
+            , BusinessDaysBean businessDays) {
+
         int arbetsDagar = resolveNumberOfWorkingDays(kallelseForm);
 
         int days = 0;
         LocalDate kallelseDatum = LocalDate.from(besoksDatum.toLocalDate());
         while (days < arbetsDagar) {
             kallelseDatum = kallelseDatum.minusDays(1);
-            days = Holidays.SWE.daysBetween(kallelseDatum, besoksDatum.toLocalDate());
+            days = businessDays.daysBetween(kallelseDatum, besoksDatum.toLocalDate());
         }
         return kallelseDatum;
     }

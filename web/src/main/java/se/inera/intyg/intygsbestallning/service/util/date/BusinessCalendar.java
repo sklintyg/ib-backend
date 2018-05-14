@@ -16,32 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.service.util.holidays;
+package se.inera.intyg.intygsbestallning.service.util.date;
 
-import se.inera.intyg.intygsbestallning.service.util.LocalDateUtils;
+import se.inera.intyg.intygsbestallning.common.util.LocalDateUtil;
 
 import java.time.LocalDate;
 
 /**
  * @author Magnus Ekstrand on 2018-04-26.
  */
-public interface HolidayCalendar {
-
-    boolean isHoliday(LocalDate localDate);
+public interface BusinessCalendar {
 
     /**
      * Checks if the specified date is a business day.
      * <p>
-     * This is the opposite of {@link #isHoliday(LocalDate)}.
      * A weekend is treated as a holiday.
      *
      * @param date  the date to check
      * @return true if the specified date is a business day
      * @throws IllegalArgumentException if the date is outside the supported range
      */
-    default boolean isBusinessDay(LocalDate date) {
-        return !isHoliday(date);
-    }
+    boolean isBusinessDay(LocalDate date);
 
     /**
      * Calculates the number of business days between two dates.
@@ -56,7 +51,7 @@ public interface HolidayCalendar {
      * @throws IllegalArgumentException if the calculation is outside the supported range
      */
     default int daysBetween(LocalDate startInclusive, LocalDate endExclusive) {
-        return Math.toIntExact(LocalDateUtils.stream(startInclusive, endExclusive)
+        return Math.toIntExact(LocalDateUtil.stream(startInclusive, endExclusive)
                 .filter(this::isBusinessDay)
                 .count());
     }

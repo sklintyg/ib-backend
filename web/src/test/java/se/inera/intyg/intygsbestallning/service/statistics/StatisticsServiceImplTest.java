@@ -23,11 +23,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
+import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
+import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.SamordnarStatisticsResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardadminStatisticsResponse;
 
@@ -58,6 +60,9 @@ public class StatisticsServiceImplTest {
 
     @Mock
     private UtredningRepository utredningRepository;
+
+    @Spy
+    private BusinessDaysBean businessDays = new BusinessDaysStub();
 
     @InjectMocks
     private StatisticsServiceImpl testee;

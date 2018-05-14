@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.service.util;
+package se.inera.intyg.intygsbestallning.common.util;
 
 import java.time.LocalDate;
 import java.util.Iterator;
@@ -28,10 +28,9 @@ import java.util.stream.StreamSupport;
 /**
  * @author Magnus Ekstrand on 2018-04-26.
  */
-public final class LocalDateUtils {
+public final class LocalDateUtil {
 
-    private LocalDateUtils() {
-
+    private LocalDateUtil() {
     }
 
     /**

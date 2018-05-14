@@ -19,14 +19,20 @@
 package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStateResolver;
 import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
+import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
+import se.inera.intyg.intygsbestallning.service.util.date.Holidays;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 
+import static java.time.DayOfWeek.SATURDAY;
+import static java.time.DayOfWeek.SUNDAY;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -37,9 +43,12 @@ import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ForfraganListItemTest {
 
     private static final String VARDENHET_HSA_ID = "enhet";
+
+    private BusinessDaysBean businessDays = new BusinessDaysStub();
 
     @Test
     public void testFrom() {
@@ -60,7 +69,8 @@ public class ForfraganListItemTest {
                         .build())
                 .build();
 
-        ForfraganListItem response = ForfraganListItem.from(utredning, VARDENHET_HSA_ID, new InternForfraganStateResolver());
+        ForfraganListItem response =
+                ForfraganListItem.from(utredning, VARDENHET_HSA_ID, new InternForfraganStateResolver(), businessDays);
 
         assertNotNull(response);
         assertEquals("utredningId", response.getUtredningsId());
@@ -75,7 +85,7 @@ public class ForfraganListItemTest {
     @Test
     public void testBesvaraSenastSnartFlaggaShowForClose() {
         final Utredning utredning = buildUtredningWithBesvaraSenastDatum(LocalDate.now().plusDays(1).atStartOfDay());
-        ForfraganListItem response = ForfraganListItem.from(utredning, VARDENHET_HSA_ID, new InternForfraganStateResolver());
+        ForfraganListItem response = ForfraganListItem.from(utredning, VARDENHET_HSA_ID, new InternForfraganStateResolver(), businessDays);
 
         assertNotNull(response);
         assertTrue(response.isBesvarasSenastDatumPaVagPasseras());
@@ -85,7 +95,7 @@ public class ForfraganListItemTest {
     @Test
     public void testBesvaraSenastSnartFlaggaNotShownForFar() {
         final Utredning utredning = buildUtredningWithBesvaraSenastDatum(LocalDate.now().plusYears(1).atStartOfDay());
-        ForfraganListItem response = ForfraganListItem.from(utredning, VARDENHET_HSA_ID, new InternForfraganStateResolver());
+        ForfraganListItem response = ForfraganListItem.from(utredning, VARDENHET_HSA_ID, new InternForfraganStateResolver(), businessDays);
 
         assertNotNull(response);
         assertFalse(response.isBesvarasSenastDatumPaVagPasseras());
@@ -95,7 +105,7 @@ public class ForfraganListItemTest {
     @Test
     public void testBesvaraSenastPasserat() {
         final Utredning utredning = buildUtredningWithBesvaraSenastDatum(LocalDate.now().minusDays(1).atStartOfDay());
-        ForfraganListItem response = ForfraganListItem.from(utredning, VARDENHET_HSA_ID, new InternForfraganStateResolver());
+        ForfraganListItem response = ForfraganListItem.from(utredning, VARDENHET_HSA_ID, new InternForfraganStateResolver(), businessDays);
 
         assertNotNull(response);
         assertFalse(response.isBesvarasSenastDatumPaVagPasseras());
@@ -114,4 +124,18 @@ public class ForfraganListItemTest {
                             .build())
                     .build();
     }
+
+    private static class BusinessDaysStub extends BusinessDaysBean {
+
+        @Override
+        public boolean isBusinessDay(LocalDate date) {
+            // In this test we only care about Swedish holidays, not the vacation period
+            if (date.getDayOfWeek() == SATURDAY || date.getDayOfWeek() == SUNDAY) {
+                return false;
+            }
+            return Holidays.SWE.isBusinessDay(date);
+        }
+
+    }
+
 }
