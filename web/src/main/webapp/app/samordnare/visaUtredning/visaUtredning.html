@@ -14,39 +14,18 @@
           <div id="utredning" class="row utredning">
             <div class="col-md-12 utredning-body">
               <card>
-                <h3>Beställning</h3>
+                <h3>Förfrågan</h3>
                 <card-body>
-                  <h4>Utredningstyp</h4>
-                  <card-value>
-                    {{utredning.utredningsTyp}}
-                  </card-value>
                   <h4>Datum</h4>
                   <card-table>
                     <table class="table table-striped ib-table-striped">
                       <tr>
-                        <th>Beställningsdatum</th>
-                        <th>Slutdatum utlåtande</th>
-                        <th>Slutdatum komplettering</th>
+                        <th>Inkom</th>
+                        <th>Besvaras senast</th>
                       </tr>
                       <tr>
                         <td>{{utredning.inkomDatum}}</td>
-                        <td>{{utredning.intygSistaDatum}}</td>
-                        <td>{{utredning.intygSistaDatumKomplettering}}</td>
-                      </tr>
-                    </table>
-                  </card-table>
-                  <h4>Avslutsvillkor</h4>
-                  <card-table>
-                    <table class="table table-striped ib-table-striped">
-                      <tr>
-                        <th>Avslutsdatum</th>
-                        <th>Ersätts</th>
-                        <th>Orsak</th>
-                      </tr>
-                      <tr>
-                        <td>{{utredning.avbrutenDatum}}</td>
-                        <td>{{utredning.ersatts}}</td>
-                        <td>{{utredning.avbrutenAnledning}}</td>
+                        <td>{{utredning.besvarasSenastDatum}}</td>
                       </tr>
                     </table>
                   </card-table>
@@ -55,18 +34,19 @@
               <card>
                 <h3>Invånare</h3>
                 <card-body>
-                  <h4>Personnummer/Samordningsnummer</h4>
+                  <h4>Personuppgifter</h4>
                   <card-value>
-                    {{utredning.invanare.personId}}
+                    {{utredning.bostadsort}}
                   </card-value>
-                  <h4>Namn</h4>
+                  <h4>Tidigare utredd</h4>
                   <card-value>
-                    {{utredning.invanare.name}}
+                    {{utredning.tidigareUtredd}}
                   </card-value>
-                  <h4>Kön</h4>
-                  <card-value>
-                    {{utredning.invanare.kon}}
-                  </card-value>
+                </card-body>
+              </card>
+              <card>
+                <h3>Meddelande</h3>
+                <card-body>
                   <h4>Behov av tolk</h4>
                   <card-value>
                     {{utredning.behovTolk}}<br>
@@ -74,26 +54,12 @@
                   </card-value>
                   <h4>Särskilda behov</h4>
                   <card-value>
-                    {{utredning.invanare.sarskildaBehov}}
+                    {{utredning.sarskildaBehov}}
                   </card-value>
-                </card-body>
-              </card>
-              <card>
-                <h3>Meddelande</h3>
-                <card-body>
-                  <h4>Meddelande från handläggare</h4>
-                  <card-table>
-                    <table class="table table-striped ib-table-striped">
-                      <tr>
-                        <th>Datum</th>
-                        <th>Meddelande</th>
-                      </tr>
-                      <tr>
-                        <td>{{utredning.inkomDatum}}</td>
-                        <td>{{utredning.meddelandeFromHandlaggare}}</td>
-                      </tr>
-                    </table>
-                  </card-table>
+                  <h4>Andra kommentarer</h4>
+                  <card-value>
+                    {{utredning.kommentar}}
+                  </card-value>
                 </card-body>
               </card>
               <card>
