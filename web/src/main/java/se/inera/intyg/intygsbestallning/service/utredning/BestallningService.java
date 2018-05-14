@@ -18,15 +18,16 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
-import java.util.List;
-
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.AvslutadBestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetBestallningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListAvslutadeBestallningarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListBestallningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.SaveFakturaForUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListAvslutadeBestallningarFilter;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListBestallningFilter;
+
+import java.util.List;
 
 public interface BestallningService {
     /**
@@ -60,4 +61,5 @@ public interface BestallningService {
      */
     GetBestallningResponse getBestallning(String utredningId, String vardenhetHsaId);
 
+    void saveFakturaIdForUtredning(String utredningsId, SaveFakturaForUtredningRequest request, String fakturaId);
 }

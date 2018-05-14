@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.infra.logmessages.ResourceType;
@@ -33,6 +34,7 @@ import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationExceptio
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.persistence.model.Betalning;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.patient.PatientNameEnricher;
 import se.inera.intyg.intygsbestallning.service.pdl.LogService;
@@ -47,6 +49,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListIte
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetBestallningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListAvslutadeBestallningarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListBestallningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.SaveFakturaForUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardgivareEnrichable;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListAvslutadeBestallningarFilter;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListBestallningFilter;
@@ -87,6 +90,35 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
         }
 
         return GetBestallningResponse.from(utredning, utredningStatusResolver.resolveStatus(utredning));
+    }
+
+    @Override
+    @Transactional
+    public void saveFakturaIdForUtredning(String utredningsId, SaveFakturaForUtredningRequest request, String loggedInAtVardenhetHsaId) {
+        Utredning utredning = utredningRepository.findById(utredningsId).orElseThrow(
+                () -> new IbNotFoundException("Utredning with assessmentId '" + utredningsId + "' does not exist."));
+
+        // Verify that the current vardenhet has a Bestallning.
+        if (!utredning.getBestallning().isPresent()) {
+            throw new IbServiceException(IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
+                    "Utredning with assessmentId '" + utredningsId + "' does not have a Beställning.");
+        }
+
+
+        if (!utredning.getBestallning().get().getTilldeladVardenhetHsaId().equals(loggedInAtVardenhetHsaId)) {
+            throw new IbAuthorizationException("The current user cannot mark Utredning with assessmentId '" + utredningsId
+                    + "' as fakturerad, the Beställning is for another vardenhet");
+        }
+
+        if (utredning.getBetalning() != null) {
+            utredning.getBetalning().setFakturaId(request.getFakturaId());
+        } else {
+            Betalning betalning = Betalning.BetalningBuilder.aBetalning()
+                    .withFakturaId(request.getFakturaId())
+                    .build();
+            utredning.setBetalning(betalning);
+        }
+        utredningRepository.save(utredning);
     }
 
     @Override
