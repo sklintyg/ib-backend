@@ -30,14 +30,14 @@ public class UtredningHandelseListItem {
     private String skapad;
     private HandelseTyp typ;
     private String anvandare;
-    private String kommentar;
+    private String handelseText;
 
     public static UtredningHandelseListItem from(Handelse handelse) {
         return UtredningHandelseListItemBuilder.aUtredningHandelseListItem()
                 .withSkapad(handelse.getSkapad().format(formatter))
                 .withTyp(handelse.getHandelseTyp())
                 .withAnvandare(handelse.getAnvandare())
-                .withKommentar(handelse.getKommentar())
+                .withHandelseText(handelse.getHandelseText())
                 .build();
     }
 
@@ -65,19 +65,19 @@ public class UtredningHandelseListItem {
         this.anvandare = anvandare;
     }
 
-    public String getKommentar() {
-        return kommentar;
+    public String getHandelseText() {
+        return handelseText;
     }
 
-    public void setKommentar(String kommentar) {
-        this.kommentar = kommentar;
+    public void setHandelseText(String handelseText) {
+        this.handelseText = handelseText;
     }
 
     public static final class UtredningHandelseListItemBuilder {
         private String skapad;
         private HandelseTyp typ;
         private String anvandare;
-        private String kommentar;
+        private String handelseText;
 
         private UtredningHandelseListItemBuilder() {
         }
@@ -101,15 +101,15 @@ public class UtredningHandelseListItem {
             return this;
         }
 
-        public UtredningHandelseListItem.UtredningHandelseListItemBuilder withKommentar(String kommentar) {
-            this.kommentar = kommentar;
+        public UtredningHandelseListItem.UtredningHandelseListItemBuilder withHandelseText(String handelseText) {
+            this.handelseText = handelseText;
             return this;
         }
 
         public UtredningHandelseListItem build() {
             UtredningHandelseListItem utredningHandelseListItem = new UtredningHandelseListItem();
             utredningHandelseListItem.setAnvandare(anvandare);
-            utredningHandelseListItem.setKommentar(kommentar);
+            utredningHandelseListItem.setHandelseText(handelseText);
             utredningHandelseListItem.setSkapad(skapad);
             utredningHandelseListItem.setTyp(typ);
             return utredningHandelseListItem;

@@ -16,5 +16,12 @@
     "telefonnummer": "031-9999999",
     "email": "epost@inera.se"
   },
-  "sprakTolk": "sv"
+  "sprakTolk": "sv",
+  "handelseList": [{
+    "handelseTyp":"FORFRAGAN_MOTTAGEN",
+    "skapad":"2018-04-11T11:03:50.903",
+    "anvandare":"",
+    "handelseText":"Förfrågan mottagen av WebCert-Vårdgivare1",
+    "kommentar":""
+  }]
 }
