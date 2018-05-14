@@ -56,7 +56,8 @@ public class BusinessDaysBean {
     }
 
     /**
-     * Checks if the specified date is a business day.
+     * Checks whether the specified date is a working day by
+     * considering both holidays and vacation periods.
      * <p>
      * A weekend is treated as a holiday.
      *
@@ -68,7 +69,28 @@ public class BusinessDaysBean {
         if (date.getDayOfWeek() == SATURDAY || date.getDayOfWeek() == SUNDAY) {
             return false;
         }
-        return holidays.isBusinessDay(date) && vacations.isBusinessDay(date);
+        return isBusinessDay(date, true);
+    }
+
+    /**
+     * Checks whether the specified date is a working day by
+     * considering holidays and, optionally, vacation periods.
+     * <p>
+     * A weekend is treated as a holiday.
+     *
+     * @param date  the date to check
+     * @param accountForVacationPeriods  take into account the vacation periods
+     * @return true if the specified date is a business day
+     * @throws IllegalArgumentException if the date is outside the supported range
+     */
+    public boolean isBusinessDay(LocalDate date, boolean accountForVacationPeriods) {
+        if (date.getDayOfWeek() == SATURDAY || date.getDayOfWeek() == SUNDAY) {
+            return false;
+        }
+        if (accountForVacationPeriods) {
+            return holidays.isBusinessDay(date) && vacations.isBusinessDay(date);
+        }
+        return holidays.isBusinessDay(date);
     }
 
     /**
