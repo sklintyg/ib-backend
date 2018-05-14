@@ -29,7 +29,8 @@ angular.module('ibApp')
             function convertUtredningToViewModel(utredning) {
                 var utredningViewModel = angular.copy(utredning);
 
-                utredningViewModel.behovAvTolk = utredning.behovTolk ? $filter('ibBoolFilter')(utredning.behovTolk) + ', ' + utredning.tolkSprak : $filter('ibBoolFilter')(utredning.behovTolk);
+                utredningViewModel.behovAvTolk = utredning.behovTolk ? $filter('ibBoolFilter')(utredning.behovTolk) +
+                    ', ' + utredning.tolkSprak : $filter('ibBoolFilter')(utredning.behovTolk);
                 return utredningViewModel;
             }
 
