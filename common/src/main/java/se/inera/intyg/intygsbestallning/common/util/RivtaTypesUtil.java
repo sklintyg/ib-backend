@@ -22,11 +22,8 @@ import se.riv.intygsbestallning.certificate.order.v1.CVType;
 import se.riv.intygsbestallning.certificate.order.v1.IIType;
 
 public final class RivtaTypesUtil {
-    private RivtaTypesUtil() {
-    }
 
-    public static IIType anII(final String extension) {
-        return anII("", extension);
+    private RivtaTypesUtil() {
     }
 
     public static IIType anII(String root, String extension) {

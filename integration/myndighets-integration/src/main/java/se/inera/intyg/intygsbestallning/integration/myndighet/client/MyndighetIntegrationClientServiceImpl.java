@@ -63,7 +63,7 @@ public class MyndighetIntegrationClientServiceImpl implements MyndighetIntegrati
 
     @Override
     public ReportCareContactResponseType reportCareContact(final ReportCareContactRequestDto request) {
-        return reportCareContactResponder.reportCareContact(sourceSystemHsaId, aReportCareContact(request));
+        return reportCareContactResponder.reportCareContact(sourceSystemHsaId, aReportCareContact(sourceSystemHsaId, request));
     }
 
     @Override

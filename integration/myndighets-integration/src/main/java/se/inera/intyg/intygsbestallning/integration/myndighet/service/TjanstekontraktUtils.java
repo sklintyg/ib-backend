@@ -32,10 +32,10 @@ public final class TjanstekontraktUtils {
     private TjanstekontraktUtils() {
     }
 
-    public static ReportCareContactType aReportCareContact(final ReportCareContactRequestDto dto) {
+    public static ReportCareContactType aReportCareContact(final String sourceSystemHsaId, final ReportCareContactRequestDto dto) {
         ReportCareContactType request = new ReportCareContactType();
-        request.setAssessmentId(anII(dto.getAssessmentId()));
-        request.setAssessmentCareContactId(anII(dto.getAssessmentCareContactId()));
+        request.setAssessmentId(anII(sourceSystemHsaId, dto.getAssessmentId()));
+        request.setAssessmentCareContactId(anII(sourceSystemHsaId, dto.getAssessmentCareContactId()));
         request.setParticipatingProfession(aCv(dto.getParticipatingProfession()));
         request.setInterpreterStatus(aCv(dto.getInterpreterStatus()));
         request.setInvitationDate(dto.getInvitationDate());
