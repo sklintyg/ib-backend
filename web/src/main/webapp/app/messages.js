@@ -37,6 +37,7 @@ var ibMessages = {
         'common.reset': 'Återställ',
         'common.approve': 'Godkänn',
         'common.show': 'Visa',
+        'common.select': 'Välj',
 
         'common.label.loading': 'Laddar',
 
