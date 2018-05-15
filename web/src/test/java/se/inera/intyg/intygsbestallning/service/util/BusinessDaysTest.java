@@ -22,12 +22,10 @@ package se.inera.intyg.intygsbestallning.service.util;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.test.context.ContextConfiguration;
 import se.inera.intyg.intygsbestallning.common.util.LocalDateUtil;
 import se.inera.intyg.intygsbestallning.service.util.date.EasterCalculator;
 
@@ -45,19 +43,18 @@ import static org.junit.Assert.assertTrue;
  * @author Magnus Ekstrand on 2018-05-09.
  */
 @RunWith(MockitoJUnitRunner.class)
-@ContextConfiguration(classes = BusinessDaysTest.Config.class)
 public class BusinessDaysTest {
 
     private static final String VACATIONPERIODS = "29-31,51-52";
 
-    @InjectMocks
     private BusinessDaysBean testee;
 
     private EasterCalculator easter = EasterCalculator.of(2018);
 
     @Before
     public void setUp() {
-        testee.init(VACATIONPERIODS);
+        testee = new BusinessDaysBean(VACATIONPERIODS);
+        testee.init();
     }
 
     @Test

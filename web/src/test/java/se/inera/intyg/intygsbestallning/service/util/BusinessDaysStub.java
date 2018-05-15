@@ -30,6 +30,12 @@ import static java.time.DayOfWeek.SUNDAY;
  */
 public class BusinessDaysStub extends BusinessDaysBean {
 
+    public BusinessDaysStub() {
+        // Do not set any vacation period for current testing.
+        // Might change in a future near you.
+        super("");
+    }
+
     @Override
     public boolean isBusinessDay(LocalDate date) {
         return isBusinessDay(date, false);
@@ -43,5 +49,6 @@ public class BusinessDaysStub extends BusinessDaysBean {
         }
         return Holidays.SWE.isBusinessDay(date);
     }
+
 
 }
