@@ -114,6 +114,17 @@ var ibMessages = {
         'label.table.forfragningar.column.planeringsdatum.tooltip': 'Potentiellt slutdatum för utredningen om beställning sker idag.',
         'label.table.forfragningar.column.status': 'Status',
 
+        // Visa utredingar - förfrågningar tabell
+        'label.table.utredning.forfragningar.column.vardenhet': 'Vårdenhet',
+        'label.table.utredning.forfragningar.column.status': 'Status förfrågan',
+        'label.table.utredning.forfragningar.column.mojligtstartdatum': 'Möjligt startdatum',
+
+        // Visa utredingar - händelser tabell
+        'label.table.utredning.handelser.column.handelseDatum': 'Händelsedatum',
+        'label.table.utredning.handelser.column.typ': 'Typ',
+        'label.table.utredning.handelser.column.anvandare': 'Användare',
+        'label.table.utredning.handelser.column.handelse': 'Händelse',
+
         // Lista pågående utredningar (vårdadmin) tabell
         'label.table.bestallningar.column.id': 'Id',
         'label.table.bestallningar.column.typ': 'Utredningstyp',

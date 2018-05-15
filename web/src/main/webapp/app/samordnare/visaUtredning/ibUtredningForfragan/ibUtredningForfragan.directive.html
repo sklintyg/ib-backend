@@ -1,1 +1,24 @@
-<button class="btn btn-primary" ng-click="skickaForfragan()">Skicka förfrågan</button>
+<div>
+  <div class="table-actionbar">
+    <button class="btn btn-primary" ng-click="skickaForfragan()">Skicka förfrågan</button>
+  </div>
+
+  <table id="samordnare-utredning-forfragan-table" class="table table-striped ib-table-striped">
+    <thead>
+    <tr>
+      <th ib-table-head filter="filter" filter-changed="getUtredningarFiltered()" order-by-key="utredningsId" label-key="label.table.utredning.forfragningar.column.vardenhet"></th>
+      <th ib-table-head filter="filter" filter-changed="getUtredningarFiltered()" order-by-key="utredningsTyp" label-key="label.table.utredning.forfragningar.column.status"></th>
+      <th ib-table-head filter="filter" filter-changed="getUtredningarFiltered()" order-by-key="vardenhetNamn" label-key="label.table.utredning.forfragningar.column.mojligtstartdatum"></th>
+      <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="row in utredning.internForfraganList">
+      <td>{{::row.vardenhetNamn}}</td>
+      <td>{{::row.status.label}}</td>
+      <td>{{::row.borjaDatum}}</td>
+      <td></td>
+    </tr>
+    </tbody>
+  </table>
+</div>

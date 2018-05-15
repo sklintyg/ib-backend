@@ -1,4 +1,4 @@
-<div ng-class="{'col-xs-{{labelColSize}}' : labelColSize}">
+<div ng-class="{'col-xs-{{labelColSize}}' : labelColSize}" ng-if="labelKey">
   <label ng-attr-for="{{::inputId}}" class="control-label">
     <span ng-if="required" class="required">*</span>
     <span message key="{{::labelKey}}"></span>
