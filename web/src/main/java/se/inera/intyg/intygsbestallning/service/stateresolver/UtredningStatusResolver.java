@@ -130,9 +130,9 @@ public class UtredningStatusResolver {
 //                return UtredningStatus.UTLATANDE_MOTTAGET;
 //            }
 
-            // Om ingen komplettering finns utstående.
+            // Om ingen komplettering finns utstående men intyget är mottaget.
             if (utredning.getIntygList().stream()
-                    .noneMatch(intyg -> intyg.getSistaDatumKompletteringsbegaran() != null
+                    .noneMatch(intyg -> intyg.getMottagetDatum() != null && intyg.getSistaDatumKompletteringsbegaran() != null
                             && LocalDate.now().isAfter(intyg.getSistaDatumKompletteringsbegaran().toLocalDate()))) {
 
                 // Om något besök inkluderade deltagande tolk...

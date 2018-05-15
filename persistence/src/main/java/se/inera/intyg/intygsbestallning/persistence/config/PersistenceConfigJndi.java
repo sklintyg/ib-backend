@@ -18,15 +18,17 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.config;
 
-import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jndi.JndiTemplate;
+
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 import liquibase.integration.spring.SpringLiquibase;
 
@@ -36,17 +38,38 @@ import liquibase.integration.spring.SpringLiquibase;
 @EnableJpaRepositories(basePackages = "se.inera.intyg.intygsbestallning.persistence")
 public class PersistenceConfigJndi extends PersistenceConfig {
 
+    @Value("${db.driver}")
+    private String databaseDriver;
+    @Value("${db.url}")
+    private String databaseUrl;
+    @Value("${db.username}")
+    private String databaseUsername;
+    @Value("${db.password}")
+    private String databasePassword;
+
     // CHECKSTYLE:OFF EmptyBlock
+//    @Bean(destroyMethod = "close")
+//    DataSource jndiDataSource() {
+//        DataSource dataSource = null;
+//        JndiTemplate jndi = new JndiTemplate();
+//        try {
+//            dataSource = (DataSource) jndi.lookup("java:comp/env/jdbc/intygsbestallning");
+//        } catch (NamingException e) {
+//        }
+//        return dataSource;
+//    }
+
     @Bean(destroyMethod = "close")
-    DataSource jndiDataSource() {
-        DataSource dataSource = null;
-        JndiTemplate jndi = new JndiTemplate();
-        try {
-            dataSource = (DataSource) jndi.lookup("java:comp/env/jdbc/intygsbestallning");
-        } catch (NamingException e) {
-        }
-        return dataSource;
+    DataSource standaloneDataSource() {
+        HikariConfig dataSourceConfig = new HikariConfig();
+        dataSourceConfig.setDriverClassName(databaseDriver);
+        dataSourceConfig.setJdbcUrl(databaseUrl);
+        dataSourceConfig.setUsername(databaseUsername);
+        dataSourceConfig.setPassword(databasePassword);
+
+        return new HikariDataSource(dataSourceConfig);
     }
+
     // CHECKSTYLE:ON EmptyBlock
 
     // @Bean(name = "dbUpdate")

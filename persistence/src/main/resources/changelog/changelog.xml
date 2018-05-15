@@ -723,6 +723,10 @@
             <column name="SISTA_DATUM_KOMPLETTERINGSBEGARAN" type="datetime">
                 <constraints nullable="true"/>
             </column>
+
+            <column name="FRAGESTALLNING_MOTTAGEN_DATUM" type="datetime">
+                <constraints nullable="true"/>
+            </column>
         </createTable>
 
         <addAutoIncrement columnDataType="bigint"

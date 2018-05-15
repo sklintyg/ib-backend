@@ -18,9 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
-import static java.util.Objects.isNull;
-import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
-
 import com.google.common.base.MoreObjects;
 import org.hibernate.annotations.Type;
 
@@ -31,6 +28,9 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.Objects;
+
+import static java.util.Objects.isNull;
+import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
 
 @Entity
 @Table(name = "INTYG")
@@ -59,6 +59,10 @@ public final class Intyg {
     @Column(name = "SISTA_DATUM_KOMPLETTERINGSBEGARAN")
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime sistaDatumKompletteringsbegaran;
+
+    @Column(name = "FRAGESTALLNING_MOTTAGEN_DATUM")
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
+    private LocalDateTime fragestallningMottagenDatum;
 
     public Long getId() {
         return id;
@@ -108,6 +112,14 @@ public final class Intyg {
         this.skickatDatum = skickatDatum;
     }
 
+    public LocalDateTime getFragestallningMottagenDatum() {
+        return fragestallningMottagenDatum;
+    }
+
+    public void setFragestallningMottagenDatum(LocalDateTime fragestallningMottagenDatum) {
+        this.fragestallningMottagenDatum = fragestallningMottagenDatum;
+    }
+
     public static Intyg copyFrom(final Intyg intyg) {
 
         if (isNull(intyg)) {
@@ -121,6 +133,7 @@ public final class Intyg {
                 .withMottagetDatum(intyg.getMottagetDatum())
                 .withSkickatDatum(intyg.getSkickatDatum())
                 .withSistaDatumKompletteringsbegaran(intyg.getSistaDatumKompletteringsbegaran())
+                .withFragestallningMottagenDatum(intyg.getFragestallningMottagenDatum())
                 .build();
     }
 
@@ -138,13 +151,15 @@ public final class Intyg {
                 && Objects.equals(sistaDatum, intyg.sistaDatum)
                 && Objects.equals(skickatDatum, intyg.skickatDatum)
                 && Objects.equals(mottagetDatum, intyg.mottagetDatum)
-                && Objects.equals(sistaDatumKompletteringsbegaran, intyg.sistaDatumKompletteringsbegaran);
+                && Objects.equals(sistaDatumKompletteringsbegaran, intyg.sistaDatumKompletteringsbegaran)
+                && Objects.equals(fragestallningMottagenDatum, intyg.fragestallningMottagenDatum);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, kompletteringsId, sistaDatum, skickatDatum, mottagetDatum, sistaDatumKompletteringsbegaran);
+        return Objects.hash(id, kompletteringsId, sistaDatum, skickatDatum, mottagetDatum, sistaDatumKompletteringsbegaran,
+                fragestallningMottagenDatum);
     }
 
     @Override
@@ -156,6 +171,7 @@ public final class Intyg {
                 .add("skickatDatum", skickatDatum)
                 .add("mottagetDatum", mottagetDatum)
                 .add("sistaDatumKompletteringsbegaran", sistaDatumKompletteringsbegaran)
+                .add("fragestallningMottagenDatum", fragestallningMottagenDatum)
                 .toString();
     }
 
@@ -166,6 +182,7 @@ public final class Intyg {
         private LocalDateTime skickatDatum;
         private LocalDateTime mottagetDatum;
         private LocalDateTime sistaDatumKompletteringsbegaran;
+        private LocalDateTime fragestallningMottagenDatum;
 
         private IntygBuilder() {
         }
@@ -204,6 +221,11 @@ public final class Intyg {
             return this;
         }
 
+        public IntygBuilder withFragestallningMottagenDatum(LocalDateTime fragestallningMottagenDatum) {
+            this.fragestallningMottagenDatum = fragestallningMottagenDatum;
+            return this;
+        }
+
         public Intyg build() {
             Intyg intyg = new Intyg();
             intyg.setId(id);
@@ -212,6 +234,7 @@ public final class Intyg {
             intyg.setSkickatDatum(skickatDatum);
             intyg.setMottagetDatum(mottagetDatum);
             intyg.setSistaDatumKompletteringsbegaran(sistaDatumKompletteringsbegaran);
+            intyg.setFragestallningMottagenDatum(fragestallningMottagenDatum);
             return intyg;
         }
     }
