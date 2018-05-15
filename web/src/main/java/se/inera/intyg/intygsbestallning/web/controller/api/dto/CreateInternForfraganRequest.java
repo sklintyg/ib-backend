@@ -16,26 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
-angular.module('ibApp').directive('ibCheckgroup', function() {
-    'use strict';
-    return {
-        restrict: 'E',
-        scope: {
-            labelKey: '@',
-            model: '=',
-            items: '=',
-            itemsDisabled: '=',
-            disabledTooltipKey: '@',
-            onChange: '&'
-        },
-        templateUrl: '/components/commonDirectives/form/ibCheckgroup/ibCheckgroup.directive.html',
-        link: function($scope, element, attr) {
+import java.util.List;
 
-            attr.$observe('id', function(id) {
-                $scope.inputId = id + '-input';
-            });
+public class CreateInternForfraganRequest {
+    private List<String> vardenheter;
+    private String kommentar;
 
-        }
-    };
-});
+    public List<String> getVardenheter() {
+        return vardenheter;
+    }
+
+    public void setVardenheter(List<String> vardenheter) {
+        this.vardenheter = vardenheter;
+    }
+
+    public String getKommentar() {
+        return kommentar;
+    }
+
+    public void setKommentar(String kommentar) {
+        this.kommentar = kommentar;
+    }
+}

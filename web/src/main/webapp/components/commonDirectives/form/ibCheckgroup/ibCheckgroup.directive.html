@@ -4,10 +4,19 @@
     <span ng-if="required" class="required">*</span>
     <message key="{{::labelKey}}"></message>
   </label>
-
-  <div data-ng-repeat="item in ::items">
+  <div data-ng-repeat="item in ::items"
+       uib-popover="{{disabledTooltipKey | message}}"
+       popover-enable="itemsDisabled[item.id]"
+       popover-trigger="mouseenter"
+       popover-placement="top-left"
+       popover-popup-delay="300"
+       popover-append-to-body="true">
     <ib-checkbox-wrapper>
-      <input ng-attr-id="{{::inputId}}-{{::item.id|ibDomIdFilter}}" type="checkbox" ng-model="model[choice.id]" value="">
+      <input ng-attr-id="{{::inputId}}-{{::item.id|ibDomIdFilter}}"
+             type="checkbox"
+             ng-model="model[item.id]"
+             ng-disabled="itemsDisabled[item.id]"
+             ng-change="onChange()">
       <label ng-attr-for="{{::inputId}}-{{::item.id|ibDomIdFilter}}">
         {{::item.label}}
       </label>

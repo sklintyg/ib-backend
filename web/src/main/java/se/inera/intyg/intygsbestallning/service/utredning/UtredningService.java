@@ -23,6 +23,7 @@ import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.CreateInternForfraganRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningListResponse;
@@ -120,4 +121,11 @@ public interface UtredningService {
 
     Utredning updateOrder(UpdateOrderRequest update);
 
+    /**
+     * Creates InternForfragan for selected vardenheter.
+     *
+     * @param request
+     * @return
+     */
+    GetUtredningResponse createInternForfragan(String utredningsId, String landstingHsaId, CreateInternForfraganRequest request);
 }

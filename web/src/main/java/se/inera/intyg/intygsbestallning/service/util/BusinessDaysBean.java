@@ -151,4 +151,25 @@ public class BusinessDaysBean {
                 .count());
     }
 
+    /**
+     * Adds businessDays business days to the incoming start date .
+     *
+     * @param date the start date
+     * @param businessDays number of business days tp add
+     * @return the new date
+     */
+    public LocalDate addBusinessDays(LocalDate date, int businessDays) {
+        LocalDate addedDate = date;
+        int businessDaysLeft = businessDays;
+
+        while (businessDaysLeft > 0) {
+            addedDate = addedDate.plusDays(1);
+            if (isBusinessDay(addedDate)) {
+                businessDaysLeft--;
+            }
+        }
+
+        return addedDate;
+    }
+
 }

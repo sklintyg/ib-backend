@@ -65,7 +65,10 @@ var ibMessages = {
 
         // Skicka forfragan modal
         'skicka.forfragan.vardenheter.no.results': 'Det finns inga vårdenheter tillagda i landstinget.',
+        'skicka.forfragan.vardenheter.error':'Ett tekniskt fel uppstod när information om vårdenheter skulle hämtas. Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraNationellKundservice>',
         'skicka.forfragan.vardenheter.heading': 'Nedan visas de vårdenheter som finns avtalade för landstinget.',
+        'skicka.forfragan.vardenheter.validation': 'Minst en vårdenhet måste väljas',
+        'skicka.forfragan.redanskickad.tooltip': 'En förfrågan har redan skickats till enheten.',
         'skicka.forfragan.egna.label': 'Vårdenheter i det egna landstingets regi',
         'skicka.forfragan.annat.label': 'Vårdenheter i andra landstings regi',
         'skicka.forfragan.privat.label': 'Vårdenheter i privat regi',
@@ -188,7 +191,9 @@ var ibMessages = {
         'server.error.setvardenhetpreference.title': 'Kunde inte spara vårdenhetens uppgifter',
         'server.error.setvardenhetpreference.text': 'Försök igen eller kontakta support',
         'server.error.getutredning.title': 'Kunde inte hämta utredning',
-        'server.error.getutredning.text': 'Försök igen eller kontakta support'
+        'server.error.getutredning.text': 'Försök igen eller kontakta support',
+        'server.error.createinternforfragan.title': 'Kunde inte skicka förfrågan',
+        'server.error.createinternforfragan.text': 'Försök igen eller kontakta support'
     },
     'en': {
         'common.ok': 'OK',

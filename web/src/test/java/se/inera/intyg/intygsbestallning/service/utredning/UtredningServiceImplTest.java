@@ -31,19 +31,23 @@ import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsServiceImpl;
+import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
+import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
+import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.CreateInternForfraganRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
@@ -95,6 +99,9 @@ public class UtredningServiceImplTest {
 
     @Mock
     private HsaOrganizationsService organizationUnitService;
+
+    @Mock
+    private UserService userService;
 
     @Spy
     private BusinessDaysBean businessDays = new BusinessDaysStub();
@@ -601,4 +608,106 @@ public class UtredningServiceImplTest {
             throw ise;
         }
     }
+
+    @Test
+    public void testCreateInternForfragan() {
+        final String utredningId = "utredningId";
+        final String landstingHsaId = "landstingHsaId";
+        final String kommentar = "Ingen kommentar";
+        final String vardenhetId1 = "vardenhetId1";
+        final String vardenhetId2 = "vardenhetId2";
+        final String vardenhetNamn1 = "vardenhetId1";
+        final String vardenhetNamn2 = "vardenhetId2";
+        final String userName = "TestUser";
+
+        when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
+                .withUtredningId(utredningId)
+                .withUtredningsTyp(AFU)
+                .withExternForfragan(anExternForfragan()
+                        .withLandstingHsaId(landstingHsaId)
+                        .withInkomDatum(LocalDateTime.now())
+                        .withBesvarasSenastDatum(LocalDateTime.now())
+                        .build())
+                .withInvanare(anInvanare()
+                        .withPersonId("personnummer")
+                        .build())
+                .withHandlaggare(aHandlaggare()
+                        .build())
+                .build()));
+
+        when(userService.getUser()).thenReturn(new IbUser("", userName));
+
+        when(organizationUnitService.getVardenhet(vardenhetId1)).thenReturn(new Vardenhet(vardenhetId1, vardenhetNamn1));
+        when(organizationUnitService.getVardenhet(vardenhetId2)).thenReturn(new Vardenhet(vardenhetId2, vardenhetNamn2));
+
+        CreateInternForfraganRequest request = new CreateInternForfraganRequest();
+        request.setVardenheter(ImmutableList.of(vardenhetId1, vardenhetId2));
+        request.setKommentar(kommentar);
+
+        GetUtredningResponse response = utredningService.createInternForfragan(utredningId, landstingHsaId, request);
+
+        ArgumentCaptor<Utredning> savedUtredning = ArgumentCaptor.forClass(Utredning.class);
+        verify(utredningRepository).save(savedUtredning.capture());
+
+        assertEquals(kommentar, savedUtredning.getValue().getExternForfragan().getInternForfraganList().get(0).getKommentar());
+        assertEquals(kommentar, savedUtredning.getValue().getExternForfragan().getInternForfraganList().get(1).getKommentar());
+
+        assertEquals(2, response.getInternForfraganList().size());
+        assertEquals(vardenhetId1, response.getInternForfraganList().get(0).getVardenhetHsaId());
+        assertEquals(vardenhetNamn1, response.getInternForfraganList().get(0).getVardenhetNamn());
+        assertEquals(vardenhetId2, response.getInternForfraganList().get(1).getVardenhetHsaId());
+        assertEquals(vardenhetNamn2, response.getInternForfraganList().get(1).getVardenhetNamn());
+
+        assertEquals(2, response.getHandelseList().size());
+        assertEquals(HandelseTyp.FORFRAGAN_SKICKAD, response.getHandelseList().get(0).getTyp());
+        assertEquals(userName, response.getHandelseList().get(0).getAnvandare());
+        assertEquals("Förfrågan skickades till " + vardenhetNamn1, response.getHandelseList().get(0).getHandelseText());
+        assertEquals(HandelseTyp.FORFRAGAN_SKICKAD, response.getHandelseList().get(1).getTyp());
+        assertEquals(userName, response.getHandelseList().get(1).getAnvandare());
+        assertEquals("Förfrågan skickades till " + vardenhetNamn2, response.getHandelseList().get(1).getHandelseText());
+    }
+
+    @Test(expected = IbNotFoundException.class)
+    public void testCreateInternForfraganFailUtredningNotExisting() {
+        final String utredningId = "utredningId";
+        final String landstingHsaId = "landstingHsaId";
+
+        when(utredningRepository.findById(utredningId)).thenReturn(Optional.empty());
+
+        utredningService.createInternForfragan(utredningId, landstingHsaId, new CreateInternForfraganRequest());
+    }
+
+    @Test(expected = IbAuthorizationException.class)
+    public void testCreateInternForfraganFailDifferentLandsting() {
+        final String utredningId = "utredningId";
+        final String landstingHsaId = "landstingHsaId";
+
+        when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
+                .withUtredningId(utredningId)
+                .withUtredningsTyp(AFU)
+                .withExternForfragan(anExternForfragan()
+                        .withLandstingHsaId(landstingHsaId)
+                        .withInkomDatum(LocalDateTime.now())
+                        .withBesvarasSenastDatum(LocalDateTime.now())
+                        .build())
+                .withInvanare(anInvanare()
+                        .withPersonId("personnummer")
+                        .build())
+                .withHandlaggare(aHandlaggare()
+                        .build())
+                .build()));
+
+        utredningService.createInternForfragan(utredningId, "annatLandsting", new CreateInternForfraganRequest());
+    }
+
+    @Test(expected = IbServiceException.class)
+    public void testCreateInternForfraganFailNoVardenhetSelected() {
+        final String utredningId = "utredningId";
+        final String landstingHsaId = "landstingHsaId";
+
+        when(utredningRepository.findById(utredningId)).thenReturn(Optional.empty());
+
+        utredningService.createInternForfragan(utredningId, landstingHsaId, new CreateInternForfraganRequest());
+    }
+
 }

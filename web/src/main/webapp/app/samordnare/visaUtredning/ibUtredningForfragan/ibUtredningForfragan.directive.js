@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-angular.module('ibApp').directive('ibUtredningForfragan', function($log, $uibModal, VardgivareProxy) {
+angular.module('ibApp').directive('ibUtredningForfragan', function($log, $uibModal, VardgivareProxy, UtredningarProxy) {
     'use strict';
 
     return {
@@ -28,7 +28,16 @@ angular.module('ibApp').directive('ibUtredningForfragan', function($log, $uibMod
         link: function($scope) {
 
             $scope.skickaForfragan = function(){
-                $uibModal.open({
+
+                // If an InternForfragan already exists, show as selected and disabled checkboxes
+                var internForfraganCreatedVardenheter = {};
+                angular.forEach($scope.utredning.internForfraganList, function(internForfragan) {
+                    internForfraganCreatedVardenheter[internForfragan.vardenhetHsaId] = true;
+                });
+
+                var utredning = $scope.utredning;
+
+                var skickaForfraganModal = $uibModal.open({
                     templateUrl: '/app/samordnare/visaUtredning/ibUtredningForfragan/skickaForfragan.modal.html',
                     size: 'md',
                     controller: function($scope) {
@@ -36,7 +45,12 @@ angular.module('ibApp').directive('ibUtredningForfragan', function($log, $uibMod
                         $scope.vm = {
                             loading: true,
                             hasVardenheter: false,
-                            vardenheter: []
+                            vardenheter: [],
+                            disabledVardenheter: internForfraganCreatedVardenheter,
+                            selectedVardenheter: angular.copy(internForfraganCreatedVardenheter),
+                            createInternForfraganInProgress: false,
+                            vardenheterError: false,
+                            vardenheterValidationError: false
                         };
 
                         VardgivareProxy.getVardenheter().then(function(vardenheter) {
@@ -47,10 +61,47 @@ angular.module('ibApp').directive('ibUtredningForfragan', function($log, $uibMod
                                }
                             });
                         }, function(error) {
+                            $scope.vm.vardenheterError = 'skicka.forfragan.vardenheter.error';
                             $log.error('failed to load vardenheter for vardgivare!' + error);
                         }).finally(function() { // jshint ignore:line
                             $scope.vm.loading = false;
                         });
+
+                        $scope.vardenheterChanged = function() {
+                            $scope.vm.vardenheterValidationError = false;
+                        };
+
+                        $scope.skicka = function() {
+                            $scope.vm.createInternForfraganInProgress = true;
+
+                            // ng-model for checkboxes requires an object with true/false for each value
+                            // 1. convert it into an array containing only true values
+                            // 2. filter out already created internforfragan (they show as selected in the checkboxlist)
+                            var selectedVardenheterArray = [];
+                            angular.forEach($scope.vm.selectedVardenheter, function(value, key) {
+                                if (value && !internForfraganCreatedVardenheter[key]) {
+                                    selectedVardenheterArray.push(key);
+                                }
+                            });
+
+                            if (selectedVardenheterArray.length === 0) {
+                                $scope.vm.vardenheterValidationError = true;
+                            }
+                            else {
+                                UtredningarProxy.createInternForfragan(utredning.utredningsId, {
+                                    'vardenheter': selectedVardenheterArray,
+                                    'kommentar': $scope.vm.meddelande
+                                }).then(function(data) {
+                                    utredning.internForfraganList = data.internForfraganList;
+                                    utredning.handelseList = data.handelseList;
+                                    skickaForfraganModal.close();
+                                }, function(error) {
+                                    $log.error('failed to create InternForfragan!' + error);
+                                }).finally(function() { // jshint ignore:line
+                                    $scope.vm.createInternForfraganInProgress = false;
+                                });
+                            }
+                        };
 
                     }
                 });

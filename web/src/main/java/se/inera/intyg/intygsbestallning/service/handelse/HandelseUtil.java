@@ -46,4 +46,13 @@ public final class HandelseUtil {
                                 .orElse("inte angivet")))
                 .build();
     }
+
+    public static Handelse createForfraganSkickad(String samordnare, String vardenhet) {
+        return aHandelse()
+                .withSkapad(LocalDateTime.now())
+                .withHandelseTyp(HandelseTyp.FORFRAGAN_SKICKAD)
+                .withAnvandare(samordnare)
+                .withHandelseText(String.format("Förfrågan skickades till %s", vardenhet))
+                .build();
+    }
 }

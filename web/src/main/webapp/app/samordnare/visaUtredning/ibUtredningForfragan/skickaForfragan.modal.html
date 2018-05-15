@@ -6,13 +6,13 @@
   <div class="modal-body">
 
     <ib-spinner show-spinner="vm.loading" label="common.label.loading">
-      <div ng-switch="vm.hasVardenheter">
+      <div ng-switch="vm.hasVardenheter" ng-if="!vm.vardenheterError">
         <div ng-switch-when="false">
           <ib-alert-message alert-id="skicka-forfragan-modal-vardenheter-no-results"
                             alert-message-id="skicka.forfragan.vardenheter.no.results"
                             alert-severity="info"></ib-alert-message>
         </div>
-        <div ng-switch-when="true">
+        <div ng-switch-when="true" ng-class="{ 'validation-error' : vm.vardenheterValidationError }">
 
             <p><span message key="skicka.forfragan.vardenheter.heading"></span></p>
 
@@ -21,21 +21,30 @@
                            class="form-group"
                            label-key="skicka.forfragan.egna.label"
                            model="vm.selectedVardenheter"
-                           items="vm.vardenheter.egetLandsting"></ib-checkgroup>
+                           on-change="vardenheterChanged()"
+                           items="vm.vardenheter.egetLandsting"
+                           items-disabled="vm.disabledVardenheter"
+                           disabled-tooltip-key="skicka.forfragan.redanskickad.tooltip"></ib-checkgroup>
 
             <ib-checkgroup id="skicka-forfragan-modal-vardenheter-annat-landsting"
                            ng-if="vm.vardenheter.annatLandsting.length > 0"
                            class="form-group"
                            label-key="skicka.forfragan.annat.label"
                            model="vm.selectedVardenheter"
-                           items="vm.vardenheter.annatLandsting"></ib-checkgroup>
+                           on-change="vardenheterChanged()"
+                           items="vm.vardenheter.annatLandsting"
+                           items-disabled="vm.disabledVardenheter"
+                           disabled-tooltip-key="skicka.forfragan.redanskickad.tooltip"></ib-checkgroup>
 
             <ib-checkgroup id="skicka-forfragan-modal-vardenheter-privat"
                            ng-if="vm.vardenheter.privat.length > 0"
                            class="form-group"
                            label-key="skicka.forfragan.privat.label"
                            model="vm.selectedVardenheter"
-                           items="vm.vardenheter.privat"></ib-checkgroup>
+                           on-change="vardenheterChanged()"
+                           items="vm.vardenheter.privat"
+                           items-disabled="vm.disabledVardenheter"
+                           disabled-tooltip-key="skicka.forfragan.redanskickad.tooltip"></ib-checkgroup>
 
             <ib-textarea id="skicka-forfragan-modal-meddelande"
                          class="form-group"
@@ -47,7 +56,17 @@
         </div>
 
       </div>
+
+      <ib-alert-message alert-id="skicka-forfragan-vardenheter-error"
+                        alert-severity="danger"
+                        alert-message-id="{{vm.vardenheterError}}"
+                        ng-if="vm.vardenheterError"></ib-alert-message>
+
     </ib-spinner>
+
+    <div class="validation-erorr-message" id="skicka-forfragan-validation" ng-if="vm.vardenheterValidationError">
+      <message key="skicka.forfragan.vardenheter.validation"></message>
+    </div>
 
   </div>
   <div class="modal-footer">

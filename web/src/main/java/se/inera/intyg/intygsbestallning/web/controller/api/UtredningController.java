@@ -36,6 +36,7 @@ import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.service.besok.BesokService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.CreateInternForfraganRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListUtredningRequest;
@@ -96,6 +97,17 @@ public class UtredningController {
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_VISA_UTREDNING)
                 .orThrow(new IbAuthorizationException(VIEW_NOT_ALLOWED));
         return ResponseEntity.ok(utredningService.getExternForfragan(utredningsId, user.getCurrentlyLoggedInAt().getId()));
+    }
+
+    @PrometheusTimeMethod(name = "send_utredning_duration_seconds", help = "Some helpful info here")
+    @PostMapping(path = "/{utredningsId}/createinternforfragan",
+            produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GetUtredningResponse> createInternForfragan(@PathVariable("utredningsId") String utredningsId,
+                                                                      @RequestBody CreateInternForfraganRequest req) {
+        IbUser user = userService.getUser();
+        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_VISA_UTREDNING)
+                .orThrow(new IbAuthorizationException(EDIT_NOT_ALLOWED));
+        return ResponseEntity.ok(utredningService.createInternForfragan(utredningsId, user.getCurrentlyLoggedInAt().getId(), req));
     }
 
     @PutMapping("/besok")

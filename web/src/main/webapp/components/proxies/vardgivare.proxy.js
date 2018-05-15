@@ -28,10 +28,6 @@ angular.module('ibApp').factory('VardgivareProxy',
             var restPath = '/api/vardgivare/vardenheter';
 
             var config =  {
-                errorMessageConfig: {
-                    errorTitleKey: 'server.error.getvardenheter.title',
-                    errorTextKey: 'server.error.getvardenheter.text'
-                },
                 timeout: networkConfig.defaultTimeout
             };
 
