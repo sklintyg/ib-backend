@@ -61,7 +61,7 @@ public class HealthCheckServiceImpl implements HealthCheckService {
     private JmsTemplate jmsAggregatedPDLLogTemplate;
 
     @Autowired
-    @Qualifier("jmsFactory")
+    @Qualifier("connectionFactory")
     private ConnectionFactory connectionFactory;
 
     // User count

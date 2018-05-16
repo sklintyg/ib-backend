@@ -5,5 +5,4 @@
   become: no
   roles:
     - ib-jarfiler
-    - ib-resurser
     - app-resources

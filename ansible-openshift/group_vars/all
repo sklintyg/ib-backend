@@ -16,28 +16,4 @@ app_resources_src: "{{ playbook_dir }}/../web/src/main/resources/"
 app_ext_resources_src: "{{ playbook_dir }}/../src/main/resources/"
 app_resources_folder: "{{ inera_root }}/resources"
 
-# Database configuration
-database_server: ${database_server}
-database_port: ${database_port}
-database_name: intygsbestallning
-database_username: ${database_username}
-database_password: ${database_password}
-database_driver: com.mysql.jdbc.Driver
-database_url: "jdbc:mysql://{{ database_server }}:{{ database_port }}/{{ database_name }}?useCompression=true&amp;useSSL=false"
-database_pool_maxActive: 20
-database_pool_maxIdle: 20
-database_pool_minIdle: 10
-database_pool_initialSize: 10
-
-database_provisioning_username: root
-database_provisioning_password: ""
-
-# ActiveMQ configuration
-activemq_version : 5.13.0
-activemq_server: ${activemq_server}
-activemq_port: ${activemq_port}
-activemq_broker_url: "tcp://{{ activemq_server }}:{{ activemq_port }}"
-activemq_username: ${activemq_username}
-activemq_password: ${activemq_password}
-
 environment_name: openshift
