@@ -23,13 +23,11 @@ import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.CreateInternForfraganRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListUtredningRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.TilldelaDirektRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
 
 import java.util.List;
@@ -122,23 +120,5 @@ public interface UtredningService {
 
     Utredning updateOrder(UpdateOrderRequest update);
 
-    /**
-     * Creates InternForfragan for selected vardenheter.
-     *
-     * @param utredningsId
-     * @param landstingHsaId
-     * @param request
-     * @return
-     */
-    GetUtredningResponse createInternForfragan(Long utredningsId, String landstingHsaId, CreateInternForfraganRequest request);
-
-    /**
-     * Tilldela utredning direkt to selected vardenhet.
-     *
-     * @param utredningsId
-     * @param landstingHsaId
-     * @param request
-     * @return
-     */
-    GetUtredningResponse tilldelaDirekt(Long utredningsId, String landstingHsaId, TilldelaDirektRequest request);
+    GetUtredningResponse createGetUtredningResponse(Utredning utredning);
 }

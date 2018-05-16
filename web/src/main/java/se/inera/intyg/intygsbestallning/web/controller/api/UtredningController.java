@@ -34,6 +34,7 @@ import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesV
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.service.besok.BesokService;
+import se.inera.intyg.intygsbestallning.service.forfragan.InternForfraganService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.CreateInternForfraganRequest;
@@ -62,6 +63,9 @@ public class UtredningController {
 
     @Autowired
     private BesokService besokService;
+
+    @Autowired
+    private InternForfraganService internForfraganService;
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
@@ -108,7 +112,7 @@ public class UtredningController {
         IbUser user = userService.getUser();
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_VISA_UTREDNING)
                 .orThrow(new IbAuthorizationException(EDIT_NOT_ALLOWED));
-        return ResponseEntity.ok(utredningService.createInternForfragan(utredningsId, user.getCurrentlyLoggedInAt().getId(), req));
+        return ResponseEntity.ok(internForfraganService.createInternForfragan(utredningsId, user.getCurrentlyLoggedInAt().getId(), req));
     }
 
     @PrometheusTimeMethod(name = "tilldela_direkt_duration_seconds", help = "Some helpful info here")
@@ -119,7 +123,7 @@ public class UtredningController {
         IbUser user = userService.getUser();
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_VISA_UTREDNING)
                 .orThrow(new IbAuthorizationException(EDIT_NOT_ALLOWED));
-        return ResponseEntity.ok(utredningService.tilldelaDirekt(utredningsId, user.getCurrentlyLoggedInAt().getId(), req));
+        return ResponseEntity.ok(internForfraganService.tilldelaDirekt(utredningsId, user.getCurrentlyLoggedInAt().getId(), req));
     }
 
     @PutMapping("/besok")
