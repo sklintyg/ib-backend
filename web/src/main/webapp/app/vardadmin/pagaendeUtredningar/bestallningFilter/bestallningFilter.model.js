@@ -35,7 +35,7 @@ angular.module('ibApp').factory('ibBestallningFilterModel',
             pageSize: 50,
             freetext: '',
             vardgivareNamn: undefined,
-            status: null,
+            status: 'ALL',
             slutdatumFas: {
                 from:null,
                 to:null
