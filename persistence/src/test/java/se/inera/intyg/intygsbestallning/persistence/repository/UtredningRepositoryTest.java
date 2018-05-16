@@ -62,7 +62,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildAnteckning;
 import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildBesok;
 import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildBestallning;
@@ -220,7 +219,7 @@ public class UtredningRepositoryTest {
         assertNotNull(avvikelse);
         assertNotNull(avvikelse.getTidpunkt());
         assertEquals(AvvikelseOrsak.PATIENT, avvikelse.getOrsakatAv());
-        assertEquals("avvikelseId", avvikelse.getAvvikelseId());
+        assertEquals(savedUtredning.getBesokList().get(0).getAvvikelse().getAvvikelseId(), avvikelse.getAvvikelseId());
         assertEquals("avvikelseBeskrivning", avvikelse.getBeskrivning());
         assertTrue(avvikelse.getInvanareUteblev());
 
@@ -241,7 +240,6 @@ public class UtredningRepositoryTest {
         assertNotNull(intyg.getSistaDatum());
         assertNotNull(intyg.getSistaDatumKompletteringsbegaran());
         assertNotNull(intyg.getSkickatDatum());
-
 
     }
 

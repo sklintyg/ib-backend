@@ -581,7 +581,7 @@
         </createTable>
 
         <createTable tableName="AVVIKELSE">
-            <column name="AVVIKELSE_ID" type="varchar(64)">
+            <column name="AVVIKELSE_ID" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
 
@@ -602,6 +602,12 @@
             </column>
         </createTable>
 
+        <addAutoIncrement columnDataType="bigint"
+                          columnName="AVVIKELSE_ID"
+                          incrementBy="1"
+                          startWith="1"
+                          tableName="AVVIKELSE"/>
+
         <createTable tableName="BESOK">
 
             <column name="ID" type="bigint">
@@ -612,7 +618,7 @@
                 <constraints nullable="false"/>
             </column>
 
-            <column name="AVVIKELSE_ID" type="varchar(64)">
+            <column name="AVVIKELSE_ID" type="bigint">
                 <constraints nullable="true"/>
             </column>
 

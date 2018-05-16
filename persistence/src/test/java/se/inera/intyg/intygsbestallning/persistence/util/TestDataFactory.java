@@ -191,7 +191,7 @@ public final class TestDataFactory {
                         .withOrsakatAv(AvvikelseOrsak.PATIENT)
                         .withInvanareUteblev(true)
                         .withBeskrivning("avvikelseBeskrivning")
-                        .withAvvikelseId("avvikelseId")
+                        .withAvvikelseId(1L)
                         .build())
                 .build();
     }

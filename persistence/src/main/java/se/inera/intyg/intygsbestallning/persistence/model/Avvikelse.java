@@ -40,7 +40,7 @@ public final class Avvikelse {
 
     @Id
     @Column(name = "AVVIKELSE_ID", nullable = false)
-    private String avvikelseId;
+    private Long avvikelseId;
 
     @Column(name = "ORSAKAT_AV")
     @Enumerated(EnumType.STRING)
@@ -70,11 +70,11 @@ public final class Avvikelse {
                 .build();
     }
 
-    public String getAvvikelseId() {
+    public Long getAvvikelseId() {
         return avvikelseId;
     }
 
-    public void setAvvikelseId(String avvikelseId) {
+    public void setAvvikelseId(Long avvikelseId) {
         this.avvikelseId = avvikelseId;
     }
 
@@ -111,7 +111,7 @@ public final class Avvikelse {
     }
 
     public static final class AvvikelseBuilder {
-        private String avvikelseId;
+        private Long avvikelseId;
         private AvvikelseOrsak orsakatAv;
         private String beskrivning;
         private LocalDateTime tidpunkt;
@@ -124,7 +124,7 @@ public final class Avvikelse {
             return new AvvikelseBuilder();
         }
 
-        public AvvikelseBuilder withAvvikelseId(String avvikelseId) {
+        public AvvikelseBuilder withAvvikelseId(Long avvikelseId) {
             this.avvikelseId = avvikelseId;
             return this;
         }

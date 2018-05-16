@@ -136,7 +136,7 @@ public class UtredningTest {
                         .withDeltagareProfession(DeltagarProfessionTyp.AT)
                         .withDeltagareFullstandigtNamn("namn")
                         .withAvvikelse(anAvvikelse()
-                                .withAvvikelseId("id")
+                                .withAvvikelseId(1L)
                                 .withOrsakatAv(AvvikelseOrsak.PATIENT)
                                 .withBeskrivning("beskrivning")
                                 .withTidpunkt(datum)
