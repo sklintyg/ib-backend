@@ -99,8 +99,11 @@ public class UtredningStatusResolver {
         // Slutfas. Denna kontroll måste ske före vi tittar detaljerat på kompletteringar.
 
         // Om alla intyg/kompletteringar står som mottagna är vi klara OCH om sista datum för komplettering passerats.
-        LocalDateTime senasteDatumForKomplettering = utredning.getIntygList().stream().map(Intyg::getSistaDatumKompletteringsbegaran)
+        LocalDateTime senasteDatumForKomplettering = utredning.getIntygList().stream()
+                .filter(intyg -> intyg.getSistaDatumKompletteringsbegaran() != null)
+                .map(Intyg::getSistaDatumKompletteringsbegaran)
                 .max(LocalDateTime::compareTo).orElse(null);
+
         if (utredning.getIntygList().stream().allMatch(intyg -> intyg.getMottagetDatum() != null)
                 && LocalDateTime.now().isAfter(senasteDatumForKomplettering)) {
 
