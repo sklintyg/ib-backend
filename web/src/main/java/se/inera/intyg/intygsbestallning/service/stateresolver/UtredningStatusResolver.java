@@ -18,6 +18,12 @@
  */
 package se.inera.intyg.intygsbestallning.service.stateresolver;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
@@ -25,10 +31,9 @@ import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 public class UtredningStatusResolver {
+
+    private static final Logger LOG = LoggerFactory.getLogger(UtredningStatusResolver.class);
 
     public UtredningStatus resolveStatus(Utredning utredning) {
         return resolveStaticStatus(utredning);
@@ -155,7 +160,9 @@ public class UtredningStatusResolver {
             return UtredningStatus.KOMPLETTERING_MOTTAGEN;
         }
 
-        throw new IllegalStateException("Unhandled state!");
+        LOG.error("Utredning '{}' is in an unhandled or invalid state. This indicates a bug in the state resolver or "
+                + "invalid state in the Utredning. Returning ", utredning.getUtredningId());
+        return UtredningStatus.INVALID;
     }
 
     private static UtredningStatus resolveAvslutEllerTolk(Utredning utredning) {

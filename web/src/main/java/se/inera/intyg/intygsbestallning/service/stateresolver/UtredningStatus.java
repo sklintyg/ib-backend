@@ -60,8 +60,11 @@ public enum UtredningStatus implements SortableLabel {
     // Statuses in AVSLUTAD
     AVVISAD("Avvisad", UtredningFas.AVSLUTAD, NONE),
     AVBRUTEN("Avbruten", UtredningFas.AVSLUTAD, NONE),
-    AVSLUTAD("Avslutad", UtredningFas.AVSLUTAD, NONE);
+    AVSLUTAD("Avslutad", UtredningFas.AVSLUTAD, NONE),
 
+    // Tillfälligt tillstånd som skall tas bort efter utveckling är klara med datamodell och state resolver.
+
+    INVALID("Åtgiltigt tillstånd", UtredningFas.AVSLUTAD, NONE);
     private final String id;
     private final String label;
     private final UtredningFas utredningFas;
