@@ -16,4 +16,7 @@ app_resources_src: "{{ playbook_dir }}/../web/src/main/resources/"
 app_ext_resources_src: "{{ playbook_dir }}/../src/main/resources/"
 app_resources_folder: "{{ inera_root }}/resources"
 
+# ActiveMQ configuration
+activemq_version : 5.13.0
+
 environment_name: openshift
