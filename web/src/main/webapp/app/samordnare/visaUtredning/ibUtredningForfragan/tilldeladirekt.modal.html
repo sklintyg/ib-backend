@@ -1,0 +1,52 @@
+<div id="tilldela-direkt-modal">
+  <div class="modal-header">
+    <button class="close" data-dismiss="modal" data-ng-click="$dismiss()">×</button>
+    <h4 class="modal-title">Tilldela direkt</h4>
+  </div>
+  <div class="modal-body">
+
+    <div ng-switch="vm.hasVardenheter">
+      <div ng-switch-when="false">
+        <ib-alert-message alert-id="tilldela-direkt-modal-vardenheter-no-results"
+                          alert-message-id="skicka.forfragan.vardenheter.no.results"
+                          alert-severity="info"></ib-alert-message>
+      </div>
+      <div ng-switch-when="true" ng-class="{ 'validation-error' : vm.vardenheterValidationError }">
+
+          <p><span message key="tilldela.direkt.vardenheter.heading"></span></p>
+
+          <ib-radiogroup id="tilldela-direkt-modal-vardenheter-eget-landsting"
+                         ng-if="vm.vardenheter.egetLandsting.length > 0"
+                         class="form-group"
+                         label-key="skicka.forfragan.egna.label"
+                         model="vm.selectedVardenhet"
+                         on-change="vardenheterChanged()"
+                         items="vm.vardenheter.egetLandsting"
+                         items-disabled="vm.disabledVardenheter"
+                         disabled-tooltip-key="skicka.forfragan.redanskickad.tooltip"></ib-radiogroup>
+
+          <ib-textarea id="tilldela-direkt-modal-meddelande"
+                       class="form-group"
+                       label-key="skicka.forfragan.meddelande.label"
+                       help-key="skicka.forfragan.meddelande.help"
+                       placeholder-text="{{'skicka.forfragan.meddelande.placeholder' | message}}"
+                       model="vm.meddelande"></ib-textarea>
+
+      </div>
+
+    </div>
+
+    <div class="validation-erorr-message" id="tilldela-direkt-validation" ng-if="vm.vardenheterValidationError">
+      <message key="skicka.forfragan.vardenheter.validation"></message>
+    </div>
+
+  </div>
+  <div class="modal-footer">
+    <button type="button" id="tilldela-direkt-modal-skicka" class="btn btn-primary" ng-click="skicka()">
+      Tilldela förfrågan
+    </button>
+    <button type="button" id="tilldela-direkt-modal-cancel" class="btn btn-default" ng-click="$dismiss()">
+      <span message key="common.cancel"></span>
+    </button>
+  </div>
+</div>

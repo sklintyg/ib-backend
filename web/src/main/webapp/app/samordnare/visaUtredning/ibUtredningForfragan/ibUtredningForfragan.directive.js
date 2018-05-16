@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-angular.module('ibApp').directive('ibUtredningForfragan', function($log, $uibModal, UtredningarProxy, ibVardgivareService) {
+angular.module('ibApp').directive('ibUtredningForfragan', function($log, $uibModal, ibVardgivareService) {
     'use strict';
 
     return {
@@ -50,70 +50,27 @@ angular.module('ibApp').directive('ibUtredningForfragan', function($log, $uibMod
                 return veModel.hasEgnaVardenheter;
             };
 
-            $scope.skickaForfragan = function(){
-
-                // If an InternForfragan already exists, show as selected and disabled checkboxes
-                var internForfraganCreatedVardenheter = {};
-                angular.forEach($scope.utredning.internForfraganList, function(internForfragan) {
-                    internForfraganCreatedVardenheter[internForfragan.vardenhetHsaId] = true;
-                });
-
-                var utredning = $scope.utredning;
-
-                var skickaForfraganModal = $uibModal.open({
-                    templateUrl: '/app/samordnare/visaUtredning/ibUtredningForfragan/skickaForfragan.modal.html',
-                    size: 'md',
-                    controller: function($scope) {
-
-                        $scope.vm = {
-                            hasVardenheter: veModel.hasVardenheter,
-                            vardenheter: veModel.vardenheter,
-                            disabledVardenheter: internForfraganCreatedVardenheter,
-                            selectedVardenheter: angular.copy(internForfraganCreatedVardenheter),
-                            createInternForfraganInProgress: false,
-                            vardenheterValidationError: false
-                        };
-
-                        $scope.vardenheterChanged = function() {
-                            $scope.vm.vardenheterValidationError = false;
-                        };
-
-                        $scope.skicka = function() {
-                            $scope.vm.createInternForfraganInProgress = true;
-
-                            // ng-model for checkboxes requires an object with true/false for each value
-                            // 1. convert it into an array containing only true values
-                            // 2. filter out already created internforfragan (they show as selected in the checkboxlist)
-                            var selectedVardenheterArray = [];
-                            angular.forEach($scope.vm.selectedVardenheter, function(value, key) {
-                                if (value && !internForfraganCreatedVardenheter[key]) {
-                                    selectedVardenheterArray.push(key);
-                                }
-                            });
-
-                            if (selectedVardenheterArray.length === 0) {
-                                $scope.vm.vardenheterValidationError = true;
-                            }
-                            else {
-                                UtredningarProxy.createInternForfragan(utredning.utredningsId, {
-                                    'vardenheter': selectedVardenheterArray,
-                                    'kommentar': $scope.vm.meddelande
-                                }).then(function(data) {
-                                    utredning.internForfraganList = data.internForfraganList;
-                                    utredning.handelseList = data.handelseList;
-                                    skickaForfraganModal.close();
-                                }, function(error) {
-                                    $log.error('failed to create InternForfragan!' + error);
-                                }).finally(function() { // jshint ignore:line
-                                    $scope.vm.createInternForfraganInProgress = false;
-                                });
-                            }
-                        };
-
-                    }
-                });
+            $scope.skickaForfragan = function() {
+                openModal('skickaForfragan.modal.html', 'SkickaForfraganModalCtrl');
             };
 
+            $scope.tilldelaDirekt = function() {
+                openModal('tilldelaDirekt.modal.html', 'TilldelaDirektModalCtrl');
+            };
+
+            function openModal(templateUrl, controller) {
+                var modalInstance = $uibModal.open({
+                    templateUrl: '/app/samordnare/visaUtredning/ibUtredningForfragan/' + templateUrl,
+                    size: 'md',
+                    controller: controller,
+                    resolve: {
+                        utredning: $scope.utredning,
+                        veModel: veModel
+                    }
+                });
+                //angular > 1.5 warns if promise rejection is not handled (e.g backdrop-click == rejection)
+                modalInstance.result.catch(function () {}); //jshint ignore:line
+            }
         }
     };
 });

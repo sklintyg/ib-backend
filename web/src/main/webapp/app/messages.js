@@ -78,6 +78,9 @@ var ibMessages = {
         'skicka.forfragan.meddelande.help': 'Meddelandet visas för vårdenheten och för Försäkringskassans handläggare.',
         'skicka.forfragan.meddelande.placeholder': 'Skriv meddelande här',
 
+        // Tilldela direkt modal
+        'tilldela.direkt.vardenheter.heading': 'Nedan visas de vårdenheter som finns avtalade för landstinget. Den enhet som väljs blir direkttilldelad förfrågan.',
+
         //Registrerade vårdenheter
         'hantera-enheter.label.table.vardenheter.column.namn': 'Namn',
         'hantera-enheter.label.table.vardenheter.column.postadress': 'Postadress',
@@ -201,6 +204,8 @@ var ibMessages = {
         'server.error.getutredning.text': 'Försök igen eller kontakta support',
         'server.error.createinternforfragan.title': 'Kunde inte skicka förfrågan',
         'server.error.createinternforfragan.text': 'Försök igen eller kontakta support',
+        'server.error.tilldeladirekt.title': 'Kunde inte tilldela direkt',
+        'server.error.tilldeladirekt.text': 'Försök igen eller kontakta support',
         'server.error.updateregiform.title': 'Kunde inte spara ny regiform',
         'server.error.updateregiform.text': 'Försök igen eller kontakta support',
         'server.error.deletevardenhet.title': 'Kunde inte ta bort vårdenheten',

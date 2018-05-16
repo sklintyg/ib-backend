@@ -46,6 +46,7 @@
 @import 'samordnare/listaUtredningar/utredningFilter/utredningFilter.directive.scss';
 @import 'samordnare/visaUtredning/ibUtredningForfragan/ibUtredningForfragan.scss';
 @import 'samordnare/visaUtredning/ibUtredningForfragan/skickaForfragan.modal.scss';
+@import 'samordnare/visaUtredning/ibUtredningForfragan/tilldeladirekt.modal.scss';
 @import 'samordnare/visaUtredning/utredningHeader/ibUtredningHeader/ibUtredningHeader.directive.scss';
 @import 'samordnare/visaUtredning/utredningHeader/ibUtredningHeaderButtonBar/ibUtredningButtonBar.directive.scss';
 @import 'samordnare/visaUtredning/utredningHeader/ibUtredningHeaderStatus/ibUtredningHeaderStatus.directive.scss';
@@ -83,6 +84,8 @@
 @import 'commonDirectives/form/ibCheckboxWrapper/ibCheckboxWrapper.directive.scss';
 @import 'commonDirectives/form/ibCheckgroup/ibCheckgroup.directive.scss';
 @import 'commonDirectives/form/ibDropdown/ibDropdown.directive.scss';
+@import 'commonDirectives/form/ibRadioWrapper/ibRadioWrapper.directive.scss';
+@import 'commonDirectives/form/ibRadiogroup/ibRadiogroup.directive.scss';
 @import 'commonDirectives/form/ibTextarea/ibTextarea.directive.scss';
 @import 'commonDirectives/form/ibTextfield/ibTextfield.directive.scss';
 @import 'commonDirectives/ibAlertMessage/ibAlertMessage.directive.scss';

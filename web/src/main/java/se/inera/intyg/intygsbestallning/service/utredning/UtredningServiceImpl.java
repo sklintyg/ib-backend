@@ -43,6 +43,8 @@ import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
 import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
 import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
@@ -62,6 +64,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganRespo
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListUtredningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.TilldelaDirektRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardenhetEnrichable;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
@@ -84,6 +87,7 @@ import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar;
 import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
 import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
 import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
@@ -339,25 +343,12 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     @Override
     @Transactional
     public GetUtredningResponse createInternForfragan(Long utredningId, String landstingHsaId, CreateInternForfraganRequest request) {
-        Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
-                () -> new IbNotFoundException("Could not find the assessment with id " + utredningId));
 
-        if (!Objects.equals(utredning.getExternForfragan().getLandstingHsaId(), landstingHsaId)) {
-            throw new IbAuthorizationException(
-                    "Utredning with assessmentId '" + utredningId + "' does not have ExternForfragan for landsting with id '"
-                            + landstingHsaId + "'");
-        }
+        Utredning utredning = getUredningForCreateInternForfragan(utredningId, landstingHsaId);
 
         if (isNull(request.getVardenheter()) || request.getVardenheter().size() == 0) {
             throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST,
                     "At least one vardenhet must be selected to create an InternForfragan");
-        }
-
-        UtredningStatus utredningStatus = utredningStatusResolver.resolveStatus(utredning);
-        if (utredningStatus != UtredningStatus.FORFRAGAN_INKOMMEN && utredningStatus != UtredningStatus.VANTAR_PA_SVAR
-                && utredningStatus != UtredningStatus.TILLDELA_UTREDNING) {
-            throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, MessageFormat.format(
-                    "Assessment with id {0} is in an incorrect state", utredning.getUtredningId()));
         }
 
         LocalDateTime skapadDatum = LocalDateTime.now();
@@ -390,6 +381,71 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         utredningRepository.save(utredning);
 
         return createGetUtredningResponse(utredning);
+    }
+
+    @Override
+    public GetUtredningResponse tilldelaDirekt(Long utredningId, String landstingHsaId, TilldelaDirektRequest request) {
+
+        Utredning utredning = getUredningForCreateInternForfragan(utredningId, landstingHsaId);
+
+        if (isNull(request.getVardenhet())) {
+            throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST,
+                    "At least one vardenhet must be selected to create an InternForfragan");
+        }
+
+        if (utredning.getExternForfragan().getInternForfraganList().stream()
+                    .map(InternForfragan::getVardenhetHsaId)
+                    .anyMatch(request.getVardenhet()::equals)) {
+            throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, MessageFormat.format(
+                    "InternForfragan already exists for assessment with id {0} and vardenhet {1} ", utredningId, request.getVardenhet()));
+        }
+
+        LocalDateTime besvarasSenastDatum = LocalDateTime.of(
+                businessDays.addBusinessDays(LocalDate.now(), besvaraForfraganArbetsdagar), LocalTime.now());
+
+        utredning.getExternForfragan().getInternForfraganList().add(
+                anInternForfragan()
+                        .withVardenhetHsaId(request.getVardenhet())
+                        .withSkapadDatum(LocalDateTime.now())
+                        .withKommentar(request.getKommentar())
+                        .withBesvarasSenastDatum(besvarasSenastDatum)
+                        .withForfraganSvar(aForfraganSvar()
+                                .withSvarTyp(SvarTyp.ACCEPTERA)
+                                .withUtforareAdress("")
+                                .withUtforareEpost("")
+                                .withUtforareNamn("")
+                                .withUtforarePostnr("")
+                                .withUtforarePostort("")
+                                .withUtforareTyp(UtforareTyp.ENHET)
+                                .build())
+                        .build());
+
+        utredning.getExternForfragan().setDirekttilldelad(true);
+
+        utredningRepository.save(utredning);
+
+        return createGetUtredningResponse(utredning);
+    }
+
+    private Utredning getUredningForCreateInternForfragan(Long utredningId, String landstingHsaId) {
+
+        Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
+                () -> new IbNotFoundException("Could not find the assessment with id " + utredningId));
+
+        if (!Objects.equals(utredning.getExternForfragan().getLandstingHsaId(), landstingHsaId)) {
+            throw new IbAuthorizationException(
+                    "Utredning with assessmentId '" + utredningId + "' does not have ExternForfragan for landsting with id '"
+                            + landstingHsaId + "'");
+        }
+
+        UtredningStatus utredningStatus = utredningStatusResolver.resolveStatus(utredning);
+        if (utredningStatus != UtredningStatus.FORFRAGAN_INKOMMEN && utredningStatus != UtredningStatus.VANTAR_PA_SVAR
+                && utredningStatus != UtredningStatus.TILLDELA_UTREDNING) {
+            throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, MessageFormat.format(
+                    "Assessment with id {0} is in an incorrect state", utredning.getUtredningId()));
+        }
+
+        return utredning;
     }
 
     private Utredning qualifyForUpdatering(final UpdateOrderRequest update, final Utredning original) {

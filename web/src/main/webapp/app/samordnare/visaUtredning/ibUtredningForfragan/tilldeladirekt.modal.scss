@@ -1,0 +1,21 @@
+#tilldela-direkt-modal {
+
+  ib-radiogroup .control-label {
+    @extend %ib-typo-05;
+    color: $ib-color-09;
+  }
+
+  .control-label {
+    @extend %ib-typo-06;
+    color: $ib-color-09;
+  }
+
+  .validation-error ib-radio-wrapper label:before {
+    border: 1px solid $ib-color-11;
+  }
+
+  .validation-erorr-message {
+    margin-top: 10px;
+    color: $ib-color-11;
+  }
+}

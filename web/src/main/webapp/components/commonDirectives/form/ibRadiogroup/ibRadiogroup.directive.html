@@ -1,0 +1,26 @@
+<div class="form-horizontal">
+
+  <label class="control-label" ng-if="labelKey">
+    <span ng-if="required" class="required">*</span>
+    <message key="{{::labelKey}}"></message>
+  </label>
+  <div data-ng-repeat="item in ::items"
+       uib-popover="{{disabledTooltipKey | message}}"
+       popover-enable="itemsDisabled[item.id]"
+       popover-trigger="mouseenter"
+       popover-placement="top-left"
+       popover-popup-delay="300"
+       popover-append-to-body="true">
+    <ib-radio-wrapper>
+      <input ng-attr-id="{{::inputId}}-{{::item.id|ibDomIdFilter}}"
+             type="radio"
+             value="{{item.id}}"
+             ng-model="model.selected"
+             ng-disabled="itemsDisabled[item.id]"
+             ng-change="onChange()">
+      <label ng-attr-for="{{::inputId}}-{{::item.id|ibDomIdFilter}}">
+        {{::item.label}}
+      </label>
+    </ib-radio-wrapper>
+  </div>
+</div>

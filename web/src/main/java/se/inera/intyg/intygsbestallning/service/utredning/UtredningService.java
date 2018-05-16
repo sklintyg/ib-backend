@@ -29,6 +29,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganRespo
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListUtredningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.TilldelaDirektRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
 
 import java.util.List;
@@ -124,8 +125,20 @@ public interface UtredningService {
     /**
      * Creates InternForfragan for selected vardenheter.
      *
+     * @param utredningsId
+     * @param landstingHsaId
      * @param request
      * @return
      */
     GetUtredningResponse createInternForfragan(Long utredningsId, String landstingHsaId, CreateInternForfraganRequest request);
+
+    /**
+     * Tilldela utredning direkt to selected vardenhet.
+     *
+     * @param utredningsId
+     * @param landstingHsaId
+     * @param request
+     * @return
+     */
+    GetUtredningResponse tilldelaDirekt(Long utredningsId, String landstingHsaId, TilldelaDirektRequest request);
 }

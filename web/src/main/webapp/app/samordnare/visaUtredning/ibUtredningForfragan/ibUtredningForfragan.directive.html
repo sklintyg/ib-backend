@@ -10,8 +10,8 @@
                       ng-if="veModel.error"></ib-alert-message>
 
     <div class="table-actionbar" ng-show="showForfraganButtons()">
-      <button class="btn btn-primary" ng-click="skickaForfragan()" ng-disabled="disableForfraganButtons">Skicka förfrågan</button>
-      <button class="btn btn-primary" ng-click="tilldelaDirekt()" ng-show="showTilldelaDirekt()" ng-disabled="disableForfraganButtons">Tilldela direkt</button>
+      <button class="btn btn-primary" ng-click="skickaForfragan()" ng-disabled="disableForfraganButtons()">Skicka förfrågan</button>
+      <button class="btn btn-primary" ng-click="tilldelaDirekt()" ng-show="showTilldelaDirekt()" ng-disabled="disableForfraganButtons()">Tilldela direkt</button>
     </div>
 
     <table id="samordnare-utredning-forfragan-table" class="table table-striped ib-table-striped">

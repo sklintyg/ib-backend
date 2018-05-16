@@ -48,6 +48,7 @@ import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.CreateInternForfraganRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.TilldelaDirektRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
 
@@ -755,4 +756,135 @@ public class UtredningServiceImplTest {
         utredningService.createInternForfragan(utredningId, landstingHsaId, new CreateInternForfraganRequest());
     }
 
+    @Test
+    public void testTilldelaDirektSuccess() {
+        final Long utredningId = 1L;
+        final String landstingHsaId = "landstingHsaId";
+        final String kommentar = "Ingen kommentar";
+        final String vardenhetId1 = "vardenhetId1";
+        final String vardenhetNamn1 = "vardenhetId1";
+        final String userName = "TestUser";
+
+        when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
+                .withUtredningId(utredningId)
+                .withUtredningsTyp(AFU)
+                .withExternForfragan(anExternForfragan()
+                        .withLandstingHsaId(landstingHsaId)
+                        .withInkomDatum(LocalDateTime.now())
+                        .withBesvarasSenastDatum(LocalDateTime.now())
+                        .build())
+                .withInvanare(anInvanare()
+                        .withPersonId("personnummer")
+                        .build())
+                .withHandlaggare(aHandlaggare()
+                        .build())
+                .build()));
+
+        when(organizationUnitService.getVardenhet(vardenhetId1)).thenReturn(new Vardenhet(vardenhetId1, vardenhetNamn1));
+
+        TilldelaDirektRequest request = new TilldelaDirektRequest();
+        request.setVardenhet(vardenhetId1);
+        request.setKommentar(kommentar);
+
+        GetUtredningResponse response = utredningService.tilldelaDirekt(utredningId, landstingHsaId, request);
+
+        ArgumentCaptor<Utredning> savedUtredning = ArgumentCaptor.forClass(Utredning.class);
+        verify(utredningRepository).save(savedUtredning.capture());
+
+        assertEquals(kommentar, savedUtredning.getValue().getExternForfragan().getInternForfraganList().get(0).getKommentar());
+        assertTrue(savedUtredning.getValue().getExternForfragan().getDirekttilldelad());
+
+        assertEquals(1, response.getInternForfraganList().size());
+        assertEquals(vardenhetId1, response.getInternForfraganList().get(0).getVardenhetHsaId());
+        assertEquals(vardenhetNamn1, response.getInternForfraganList().get(0).getVardenhetNamn());
+    }
+
+    @Test(expected = IbNotFoundException.class)
+    public void testTilldelaDirektFailUtredningNotExisting() {
+        final Long utredningId = 1L;
+        final String landstingHsaId = "landstingHsaId";
+
+        when(utredningRepository.findById(utredningId)).thenReturn(Optional.empty());
+
+        utredningService.tilldelaDirekt(utredningId, landstingHsaId, new TilldelaDirektRequest());
+    }
+
+    @Test(expected = IbAuthorizationException.class)
+    public void testTilldelaDirektFailDifferentLandsting() {
+        final Long utredningId = 1L;
+        final String landstingHsaId = "landstingHsaId";
+
+        when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
+                .withUtredningId(utredningId)
+                .withUtredningsTyp(AFU)
+                .withExternForfragan(anExternForfragan()
+                        .withLandstingHsaId(landstingHsaId)
+                        .withInkomDatum(LocalDateTime.now())
+                        .withBesvarasSenastDatum(LocalDateTime.now())
+                        .build())
+                .withInvanare(anInvanare()
+                        .withPersonId("personnummer")
+                        .build())
+                .withHandlaggare(aHandlaggare()
+                        .build())
+                .build()));
+
+        utredningService.tilldelaDirekt(utredningId, "annatLandsting", new TilldelaDirektRequest());
+    }
+
+    @Test(expected = IbServiceException.class)
+    public void testTilldelaDirektFailIncorrectState() {
+        final Long utredningId = 1L;
+        final String landstingHsaId = "landstingHsaId";
+        final String vardenhetId1 = "vardenhetId1";
+
+        when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
+                .withUtredningId(utredningId)
+                .withUtredningsTyp(AFU)
+                .withExternForfragan(anExternForfragan()
+                        .withLandstingHsaId(landstingHsaId)
+                        .withInkomDatum(LocalDateTime.now())
+                        .withBesvarasSenastDatum(LocalDateTime.now())
+                        .withInternForfraganList(ImmutableList.of(anInternForfragan()
+                                .withTilldeladDatum(LocalDateTime.now())
+                                .withForfraganSvar(aForfraganSvar()
+                                        .withSvarTyp(SvarTyp.ACCEPTERA)
+                                        .build())
+                                .build()))
+                        .build())
+                .withInvanare(anInvanare()
+                        .withPersonId("personnummer")
+                        .build())
+                .withHandlaggare(aHandlaggare()
+                        .build())
+                .build()));
+
+        TilldelaDirektRequest request = new TilldelaDirektRequest();
+        request.setVardenhet(vardenhetId1);
+
+        utredningService.tilldelaDirekt(utredningId, landstingHsaId, request);
+    }
+
+    @Test(expected = IbServiceException.class)
+    public void testTilldelaDirektFailNoVardenhetSelected() {
+        final Long utredningId = 1L;
+        final String landstingHsaId = "landstingHsaId";
+
+        when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
+                .withUtredningId(utredningId)
+                .withUtredningsTyp(AFU)
+                .withExternForfragan(anExternForfragan()
+                        .withLandstingHsaId(landstingHsaId)
+                        .withInkomDatum(LocalDateTime.now())
+                        .withBesvarasSenastDatum(LocalDateTime.now())
+                        .build())
+                .withInvanare(anInvanare()
+                        .withPersonId("personnummer")
+                        .build())
+                .withHandlaggare(aHandlaggare()
+                        .build())
+                .build()));
+
+        utredningService.tilldelaDirekt(utredningId, landstingHsaId, new TilldelaDirektRequest());
+    }
 }

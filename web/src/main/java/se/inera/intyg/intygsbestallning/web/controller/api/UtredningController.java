@@ -42,6 +42,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningRespo
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.TilldelaDirektRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
 
 import java.util.List;
@@ -99,7 +100,7 @@ public class UtredningController {
         return ResponseEntity.ok(utredningService.getExternForfragan(utredningsId, user.getCurrentlyLoggedInAt().getId()));
     }
 
-    @PrometheusTimeMethod(name = "send_utredning_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod(name = "create_internforfragan_duration_seconds", help = "Some helpful info here")
     @PostMapping(path = "/{utredningsId}/createinternforfragan",
             produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetUtredningResponse> createInternForfragan(@PathVariable("utredningsId") Long utredningsId,
@@ -108,6 +109,17 @@ public class UtredningController {
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_VISA_UTREDNING)
                 .orThrow(new IbAuthorizationException(EDIT_NOT_ALLOWED));
         return ResponseEntity.ok(utredningService.createInternForfragan(utredningsId, user.getCurrentlyLoggedInAt().getId(), req));
+    }
+
+    @PrometheusTimeMethod(name = "tilldela_direkt_duration_seconds", help = "Some helpful info here")
+    @PostMapping(path = "/{utredningsId}/tilldeladirekt",
+            produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GetUtredningResponse> createInternForfragan(@PathVariable("utredningsId") Long utredningsId,
+                                                                      @RequestBody TilldelaDirektRequest req) {
+        IbUser user = userService.getUser();
+        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_VISA_UTREDNING)
+                .orThrow(new IbAuthorizationException(EDIT_NOT_ALLOWED));
+        return ResponseEntity.ok(utredningService.tilldelaDirekt(utredningsId, user.getCurrentlyLoggedInAt().getId(), req));
     }
 
     @PutMapping("/besok")
