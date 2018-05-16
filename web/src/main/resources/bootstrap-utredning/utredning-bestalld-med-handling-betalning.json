@@ -52,6 +52,17 @@
     "planeradeAktiviteter": "Bowla med gänget",
     "kommentar": "Detta är faktiskt testdata..."
   },
+  "besokList": [
+    {
+      "ersatts": true,
+      "besokStartTid":"2018-04-13T11:00:00.000",
+      "besokSlutTid":"2018-04-13T12:00:00.000",
+      "besokStatus": "AVSLUTAD_VARDKONTAKT",
+      "kallelseDatum":"2018-03-23T00:00:00.000",
+      "kallelseForm":"BREVKONTAKT",
+      "deltagareProfession":"LK"
+    }
+  ],
   "betalning": {
       "fakturaId": "faktura-123",
       "betalningsId": "betalning-123"
@@ -64,7 +75,10 @@
   ],
   "intygList": [
     {
-      "sistaDatum": "2018-03-25T00:00:00.000"
+      "sistaDatum": "2018-04-25T00:00:00.000",
+      "mottagetDatum": "2018-05-15T00:00:00.000",
+      "skickatDatum": "2018-05-05T00:00:00.000",
+      "sistaDatumKompletteringsbegaran": "2018-05-15T00:00:00.000"
     }
   ],
   "sprakTolk": "sv"

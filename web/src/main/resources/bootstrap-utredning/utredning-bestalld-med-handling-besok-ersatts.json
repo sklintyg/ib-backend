@@ -75,8 +75,10 @@
   ],
   "intygList": [
     {
-      "sistaDatum": "2018-06-25T00:00:00.000",
-      "mottagetDatum": "2018-06-15T00:00:00.000"
+      "sistaDatum": "2018-04-25T00:00:00.000",
+      "mottagetDatum": "2018-04-15T00:00:00.000",
+      "skickatDatum": "2018-05-05T00:00:00.000",
+      "sistaDatumKompletteringsbegaran": "2018-05-15T00:00:00.000"
     }
   ],
   "sprakTolk": "sv"

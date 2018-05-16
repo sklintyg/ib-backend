@@ -76,7 +76,8 @@
   "intygList": [
     {
       "sistaDatum": "2018-05-19T00:00:00.000",
-      "skickatDatum": "2018-04-25T00:00:00.000"
+      "skickatDatum": "2018-04-25T00:00:00.000",
+      "sistaDatumKompletteringsbegaran": "2018-05-25T00:00:00.000"
     }
   ],
   "sprakTolk": "sv"

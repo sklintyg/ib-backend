@@ -40,6 +40,12 @@ public class JmsConfig {
     @Value("${activemq.broker.url}")
     private String activeMqBrokerUrl;
 
+    @Value("${activemq.broker.username}")
+    private String activeMqBrokerUsername;
+
+    @Value("${activemq.broker.password}")
+    private String activeMqBrokerPassword;
+
     @Value("${pdl.logging.queue.name}")
     private String loggingQueueName;
 
@@ -53,7 +59,7 @@ public class JmsConfig {
 
     @Bean
     public ConnectionFactory connectionFactory() {
-        return new ActiveMQConnectionFactory(activeMqBrokerUrl);
+        return new ActiveMQConnectionFactory(activeMqBrokerUsername, activeMqBrokerPassword, activeMqBrokerUrl);
     }
 
     @Bean
