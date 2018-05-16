@@ -1,31 +1,41 @@
 <div>
 
-  <ib-alert-message alert-severity="success">Förfrågan accepterades.</ib-alert-message>
+  <ib-spinner show-spinner="veModel.loading" label="common.label.loading">
 
-  <div class="table-actionbar">
-    <button class="btn btn-primary" ng-click="skickaForfragan()">Skicka förfrågan</button>
-    <button class="btn btn-primary" ng-click="tilldelaDirekt()">Tilldela direkt</button>
-  </div>
+    <ib-alert-message alert-severity="success">Förfrågan accepterades.</ib-alert-message>
 
-  <table id="samordnare-utredning-forfragan-table" class="table table-striped ib-table-striped">
-    <thead>
-      <tr>
-        <th ib-table-head filter="filter" filter-changed="getUtredningarFiltered()" order-by-key="utredningsId" label-key="label.table.utredning.forfragningar.column.vardenhet"></th>
-        <th ib-table-head filter="filter" filter-changed="getUtredningarFiltered()" order-by-key="utredningsTyp" label-key="label.table.utredning.forfragningar.column.status"></th>
-        <th ib-table-head filter="filter" filter-changed="getUtredningarFiltered()" order-by-key="vardenhetNamn" label-key="label.table.utredning.forfragningar.column.mojligtstartdatum"></th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr ng-if="utredning.internForfraganList.length == 0">
-        <td colspan="4">Förfrågan har inte skickats till några vårdenheter än.</td>
-      </tr>
-      <tr ng-repeat="row in utredning.internForfraganList">
-        <td>{{::row.vardenhetNamn}}</td>
-        <td>{{::row.status.label}}</td>
-        <td>{{::row.borjaDatum}}</td>
-        <td><button class="btn btn-primary" ng-click="selectForfragan(row.utredningsId)"><span message key="common.select"></span></button></td>
-      </tr>
-    </tbody>
-  </table>
+    <ib-alert-message alert-id="skicka-forfragan-vardenheter-error"
+                      alert-severity="danger"
+                      alert-message-id="{{veModel.error}}"
+                      ng-if="veModel.error"></ib-alert-message>
+
+    <div class="table-actionbar" ng-show="showForfraganButtons()">
+      <button class="btn btn-primary" ng-click="skickaForfragan()" ng-disabled="disableForfraganButtons">Skicka förfrågan</button>
+      <button class="btn btn-primary" ng-click="tilldelaDirekt()" ng-show="showTilldelaDirekt()" ng-disabled="disableForfraganButtons">Tilldela direkt</button>
+    </div>
+
+    <table id="samordnare-utredning-forfragan-table" class="table table-striped ib-table-striped">
+      <thead>
+        <tr>
+          <th ib-table-head filter="filter" filter-changed="getUtredningarFiltered()" order-by-key="utredningsId" label-key="label.table.utredning.forfragningar.column.vardenhet"></th>
+          <th ib-table-head filter="filter" filter-changed="getUtredningarFiltered()" order-by-key="utredningsTyp" label-key="label.table.utredning.forfragningar.column.status"></th>
+          <th ib-table-head filter="filter" filter-changed="getUtredningarFiltered()" order-by-key="vardenhetNamn" label-key="label.table.utredning.forfragningar.column.mojligtstartdatum"></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-if="utredning.internForfraganList.length == 0">
+          <td colspan="4">Förfrågan har inte skickats till några vårdenheter än.</td>
+        </tr>
+        <tr ng-repeat="row in utredning.internForfraganList">
+          <td>{{::row.vardenhetNamn}}</td>
+          <td>{{::row.status.label}}</td>
+          <td>{{::row.borjaDatum}}</td>
+          <td><button class="btn btn-primary" ng-click="selectForfragan(row.utredningsId)"><span message key="common.select"></span></button></td>
+        </tr>
+      </tbody>
+    </table>
+
+  </ib-spinner>
+
 </div>

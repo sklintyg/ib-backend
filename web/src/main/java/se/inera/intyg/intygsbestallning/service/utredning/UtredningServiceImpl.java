@@ -358,6 +358,13 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                     "At least one vardenhet must be selected to create an InternForfragan");
         }
 
+        UtredningStatus utredningStatus = utredningStatusResolver.resolveStatus(utredning);
+        if (utredningStatus != UtredningStatus.FORFRAGAN_INKOMMEN && utredningStatus != UtredningStatus.VANTAR_PA_SVAR
+                && utredningStatus != UtredningStatus.TILLDELA_UTREDNING) {
+            throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, MessageFormat.format(
+                    "Assessment with id {0} is in an incorrect state", utredning.getUtredningId()));
+        }
+
         LocalDateTime skapadDatum = LocalDateTime.now();
         LocalDateTime besvarasSenastDatum = LocalDateTime.of(
                 businessDays.addBusinessDays(LocalDate.now(), besvaraForfraganArbetsdagar), LocalTime.now());
@@ -518,7 +525,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
     @NotNull
     private GetUtredningResponse createGetUtredningResponse(Utredning utredning) {
-        GetUtredningResponse getUtredningResponse = GetUtredningResponse.from(utredning);
+        GetUtredningResponse getUtredningResponse = GetUtredningResponse.from(utredning, utredningStatusResolver.resolveStatus(utredning));
 
         enrichWithVardenhetNames(getUtredningResponse.getInternForfraganList());
         enrichWithVardenhetNames(getUtredningResponse.getTidigareEnheter());

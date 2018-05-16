@@ -39,6 +39,7 @@ import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
@@ -72,6 +73,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar;
 import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
 import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
 import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
@@ -701,11 +703,57 @@ public class UtredningServiceImplTest {
     }
 
     @Test(expected = IbServiceException.class)
+    public void testCreateInternForfraganFailIncorrectState() {
+        final String utredningId = "utredningId";
+        final String landstingHsaId = "landstingHsaId";
+        final String vardenhetId1 = "vardenhetId1";
+
+        when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
+                .withUtredningId(utredningId)
+                .withUtredningsTyp(AFU)
+                .withExternForfragan(anExternForfragan()
+                        .withLandstingHsaId(landstingHsaId)
+                        .withInkomDatum(LocalDateTime.now())
+                        .withBesvarasSenastDatum(LocalDateTime.now())
+                        .withInternForfraganList(ImmutableList.of(anInternForfragan()
+                                .withTilldeladDatum(LocalDateTime.now())
+                                .withForfraganSvar(aForfraganSvar()
+                                        .withSvarTyp(SvarTyp.ACCEPTERA)
+                                        .build())
+                                .build()))
+                        .build())
+                .withInvanare(anInvanare()
+                        .withPersonId("personnummer")
+                        .build())
+                .withHandlaggare(aHandlaggare()
+                        .build())
+                .build()));
+
+        CreateInternForfraganRequest request = new CreateInternForfraganRequest();
+        request.setVardenheter(ImmutableList.of(vardenhetId1));
+
+        utredningService.createInternForfragan(utredningId, landstingHsaId, request);
+    }
+
+    @Test(expected = IbServiceException.class)
     public void testCreateInternForfraganFailNoVardenhetSelected() {
         final String utredningId = "utredningId";
         final String landstingHsaId = "landstingHsaId";
 
-        when(utredningRepository.findById(utredningId)).thenReturn(Optional.empty());
+        when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
+                .withUtredningId(utredningId)
+                .withUtredningsTyp(AFU)
+                .withExternForfragan(anExternForfragan()
+                        .withLandstingHsaId(landstingHsaId)
+                        .withInkomDatum(LocalDateTime.now())
+                        .withBesvarasSenastDatum(LocalDateTime.now())
+                        .build())
+                .withInvanare(anInvanare()
+                        .withPersonId("personnummer")
+                        .build())
+                .withHandlaggare(aHandlaggare()
+                        .build())
+                .build()));
 
         utredningService.createInternForfragan(utredningId, landstingHsaId, new CreateInternForfraganRequest());
     }

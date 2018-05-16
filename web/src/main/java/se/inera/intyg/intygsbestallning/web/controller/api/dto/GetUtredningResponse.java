@@ -22,6 +22,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -33,6 +34,8 @@ public class GetUtredningResponse {
     private static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
 
     private String utredningsId;
+
+    private UtredningStatus status;
 
     private String inkomDatum;
 
@@ -62,10 +65,11 @@ public class GetUtredningResponse {
 
     private List<UtredningHandelseListItem> handelseList;
 
-    public static GetUtredningResponse from(Utredning utredning) {
+    public static GetUtredningResponse from(Utredning utredning, UtredningStatus status) {
 
         return GetUtredningResponseBuilder.aGetUtredningResponse()
                 .withUtredningsId(utredning.getUtredningId())
+                .withStatus(status)
                 .withInkomDatum(!isNull(utredning.getExternForfragan())
                         ? utredning.getExternForfragan().getInkomDatum().format(formatter) : null)
                 .withBesvarasSenastDatum(!isNull(utredning.getExternForfragan())
@@ -93,6 +97,14 @@ public class GetUtredningResponse {
 
     public void setUtredningsId(String utredningsId) {
         this.utredningsId = utredningsId;
+    }
+
+    public UtredningStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(UtredningStatus status) {
+        this.status = status;
     }
 
     public String getInkomDatum() {
@@ -210,6 +222,7 @@ public class GetUtredningResponse {
     public static final class GetUtredningResponseBuilder {
         private static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
         private String utredningsId;
+        private UtredningStatus status;
         private String inkomDatum;
         private String besvarasSenastDatum;
         private String bostadsort;
@@ -234,6 +247,11 @@ public class GetUtredningResponse {
 
         public GetUtredningResponseBuilder withUtredningsId(String utredningsId) {
             this.utredningsId = utredningsId;
+            return this;
+        }
+
+        public GetUtredningResponseBuilder withStatus(UtredningStatus status) {
+            this.status = status;
             return this;
         }
 
@@ -316,6 +334,7 @@ public class GetUtredningResponse {
         public GetUtredningResponse build() {
             GetUtredningResponse getUtredningResponse = new GetUtredningResponse();
             getUtredningResponse.setUtredningsId(utredningsId);
+            getUtredningResponse.setStatus(status);
             getUtredningResponse.setInkomDatum(inkomDatum);
             getUtredningResponse.setBesvarasSenastDatum(besvarasSenastDatum);
             getUtredningResponse.setBostadsort(bostadsort);

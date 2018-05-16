@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-angular.module('ibApp').directive('ibUtredningForfragan', function($log, $uibModal, VardgivareProxy, UtredningarProxy) {
+angular.module('ibApp').directive('ibUtredningForfragan', function($log, $uibModal, UtredningarProxy, ibVardgivareService) {
     'use strict';
 
     return {
@@ -26,6 +26,29 @@ angular.module('ibApp').directive('ibUtredningForfragan', function($log, $uibMod
         },
         templateUrl: '/app/samordnare/visaUtredning/ibUtredningForfragan/ibUtredningForfragan.directive.html',
         link: function($scope) {
+
+            var veModel = $scope.veModel = ibVardgivareService.model;
+            ibVardgivareService.getVardenheter();
+
+            $scope.showForfraganButtons = function() {
+                return !veModel.error &&
+                    $scope.utredning.status.utredningFas.id === 'FORFRAGAN' &&
+                    $scope.utredning.status.id !== 'TILLDELAD_VANTAR_PA_BESTALLNING';
+            };
+
+            $scope.disableForfraganButtons = function() {
+                // Inaktiverad om en vårdenhet har blivit direkttilldelad utredningen.
+                return $scope.utredning.internForfraganList.filter(function(internForfragan) {
+                    if (internForfragan.status.id === 'DIREKTTILLDELAD') {
+                        return true;
+                    }
+                }).length > 0;
+            };
+
+            $scope.showTilldelaDirekt = function() {
+                // Knappen är dold om landstinget inte har några vårdenheter i egen regi
+                return veModel.hasEgnaVardenheter;
+            };
 
             $scope.skickaForfragan = function(){
 
@@ -43,29 +66,13 @@ angular.module('ibApp').directive('ibUtredningForfragan', function($log, $uibMod
                     controller: function($scope) {
 
                         $scope.vm = {
-                            loading: true,
-                            hasVardenheter: false,
-                            vardenheter: [],
+                            hasVardenheter: veModel.hasVardenheter,
+                            vardenheter: veModel.vardenheter,
                             disabledVardenheter: internForfraganCreatedVardenheter,
                             selectedVardenheter: angular.copy(internForfraganCreatedVardenheter),
                             createInternForfraganInProgress: false,
-                            vardenheterError: false,
                             vardenheterValidationError: false
                         };
-
-                        VardgivareProxy.getVardenheter().then(function(vardenheter) {
-                            $scope.vm.vardenheter = vardenheter;
-                            angular.forEach(vardenheter, function(vardenheterList) {
-                               if (vardenheterList.length > 0) {
-                                   $scope.vm.hasVardenheter = true;
-                               }
-                            });
-                        }, function(error) {
-                            $scope.vm.vardenheterError = 'skicka.forfragan.vardenheter.error';
-                            $log.error('failed to load vardenheter for vardgivare!' + error);
-                        }).finally(function() { // jshint ignore:line
-                            $scope.vm.loading = false;
-                        });
 
                         $scope.vardenheterChanged = function() {
                             $scope.vm.vardenheterValidationError = false;

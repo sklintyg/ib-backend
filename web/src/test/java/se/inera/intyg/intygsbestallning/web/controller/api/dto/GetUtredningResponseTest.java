@@ -57,7 +57,7 @@ public class GetUtredningResponseTest {
                         .withPersonId("personnummer")
                         .build())
                 .build();
-        GetUtredningResponse response = GetUtredningResponse.from(utredning);
+        GetUtredningResponse response = GetUtredningResponse.from(utredning, UtredningStatus.FORFRAGAN_INKOMMEN);
 
         assertNotNull(response);
         assertEquals("utredningId", response.getUtredningsId());
