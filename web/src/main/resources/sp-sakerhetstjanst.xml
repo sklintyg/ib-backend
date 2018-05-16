@@ -15,4 +15,15 @@
             <md:RequestedAttribute Name="urn:sambi:names:attribute:authnMethod" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="authnMethod" isRequired="true"/>
         </md:AttributeConsumingService>
     </md:SPSSODescriptor>
+    <md:Organization>
+        <md:OrganizationName xml:lang="sv">Inera AB</md:OrganizationName>
+        <md:OrganizationDisplayName xml:lang="sv">Inera AB</md:OrganizationDisplayName>
+        <md:OrganizationURL xml:lang="sv">https://inera.se</md:OrganizationURL>
+    </md:Organization>
+    <md:ContactPerson xml:lang="sv" contactType="technical">
+        <md:Company>Inera AB</md:Company>
+        <md:GivenName>Antoine</md:GivenName>
+        <md:SurName>Solis</md:SurName>
+        <md:EmailAddress>antoine.solis@inera.se</md:EmailAddress>
+    </md:ContactPerson>
 </md:EntityDescriptor>
