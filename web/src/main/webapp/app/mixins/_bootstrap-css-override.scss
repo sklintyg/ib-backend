@@ -85,13 +85,21 @@
 
 .btn-link {
   color: inherit;
+  outline: none;
+
+  &:active {
+    outline: none;
+  }
+
   &:hover {
     color: $ib-color-21;
+    outline: none;
   }
 
   &__purelink {
     padding: 0;
     margin: -1px;
+    outline: none;
   }
 }
 

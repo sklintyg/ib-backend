@@ -1,0 +1,10 @@
+<div>
+  <button type="button" class="btn btn-link btn-link__purelink" ng-click="toggle()" ng-switch="isCollapsed">
+    <span ng-switch-when="true">Visa {{::label}} <i class="material-icons">expand_more</i></span>
+    <span ng-switch-when="false" >Dölj {{::label}} <i class="material-icons">expand_less</i></span>
+  </button>
+
+  <div uib-collapse="isCollapsed">
+    <ng-transclude></ng-transclude>
+  </div>
+</div>

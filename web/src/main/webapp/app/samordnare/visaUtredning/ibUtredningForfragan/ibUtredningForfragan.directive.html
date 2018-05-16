@@ -16,23 +16,38 @@
 
     <table id="samordnare-utredning-forfragan-table" class="table table-striped ib-table-striped">
       <thead>
-        <tr>
-          <th ib-table-head filter="filter" filter-changed="getUtredningarFiltered()" order-by-key="utredningsId" label-key="label.table.utredning.forfragningar.column.vardenhet"></th>
-          <th ib-table-head filter="filter" filter-changed="getUtredningarFiltered()" order-by-key="utredningsTyp" label-key="label.table.utredning.forfragningar.column.status"></th>
-          <th ib-table-head filter="filter" filter-changed="getUtredningarFiltered()" order-by-key="vardenhetNamn" label-key="label.table.utredning.forfragningar.column.mojligtstartdatum"></th>
-          <th></th>
-        </tr>
+      <tr>
+        <th ib-table-head label-key="label.table.utredning.forfragningar.column.vardenhet"></th>
+        <th ib-table-head label-key="label.table.utredning.forfragningar.column.status"></th>
+        <th ib-table-head label-key="label.table.utredning.forfragningar.column.mojligtstartdatum"></th>
+        <th></th>
+      </tr>
       </thead>
       <tbody>
-        <tr ng-if="utredning.internForfraganList.length == 0">
-          <td colspan="4">Förfrågan har inte skickats till några vårdenheter än.</td>
-        </tr>
-        <tr ng-repeat="row in utredning.internForfraganList">
-          <td>{{::row.vardenhetNamn}}</td>
-          <td>{{::row.status.label}}</td>
-          <td>{{::row.borjaDatum}}</td>
-          <td><button class="btn btn-primary" ng-click="selectForfragan(row.utredningsId)"><span message key="common.select"></span></button></td>
-        </tr>
+      <tr ng-if="utredning.internForfraganList.length == 0">
+        <td colspan="4">Förfrågan har inte skickats till några vårdenheter än.</td>
+      </tr>
+      <tr ng-repeat="row in utredning.internForfraganList">
+        <td>{{::row.vardenhetNamn}}<br>
+          <ib-expand label="vårdenhetens detaljer">
+            <h3>Meddelande</h3>
+            <card-value>
+              {{::row.meddelande}}
+            </card-value>
+            <h3>Kontaktinformation</h3>
+            <card-value>
+              {{::row.vardenhetNamn}}<br>
+              {{::row.adress}}<br>
+              {{::row.postkod}} {{::row.postort}}<br>
+              {{::row.telefon}}<br>
+              {{::row.epost}}
+            </card-value>
+          </ib-expand>
+        </td>
+        <td>{{::row.status.label}}</td>
+        <td>{{::row.borjaDatum}}</td>
+        <td><button class="btn btn-primary" ng-click="selectForfragan(row.utredningsId)"><span message key="common.select"></span></button></td>
+      </tr>
       </tbody>
     </table>
 

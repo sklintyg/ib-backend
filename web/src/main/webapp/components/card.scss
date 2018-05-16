@@ -56,37 +56,6 @@ card {
     padding: $card-body-padding;
   }
 
-  card-value {
-    display: inline-block;
-    background: $card-body-bg;
-    padding: $card-body-padding;
-    border-radius: 0 0 4px 4px;
-    h3 {
-      @extend %ib-typo-06;
-      font-family: $font-0, $font-3;
-      padding: $card-h3-padding;
-      color: $ib-color-08;
-      span {
-        padding-top: 5px;
-        display: inline-block;
-        &:empty {
-          display: none;
-        }
-      }
-    }
-
-    h4 {
-      @extend %ib-typo-10;
-      color: $ib-color-09;
-      padding: 4px 0;
-    }
-
-    card-section .section-body {
-      background-color: transparent;
-      padding: 0;
-    }
-  }
-
   $utredning-table-bg: $ib-color-00 !default;
   $utredning-table-bg-accent: $ib-color-20 !default;
 
@@ -188,5 +157,36 @@ card-modal {
     background: $card-body-bg;
     padding: $card-body-padding;
     border-radius: 4px;
+  }
+}
+
+card-value {
+  display: inline-block;
+  background: $card-body-bg;
+  padding: $card-body-padding;
+  border-radius: 0 0 4px 4px;
+  h3 {
+    @extend %ib-typo-06;
+    font-family: $font-0, $font-3;
+    padding: $card-h3-padding;
+    color: $ib-color-08;
+    span {
+      padding-top: 5px;
+      display: inline-block;
+      &:empty {
+        display: none;
+      }
+    }
+  }
+
+  h4 {
+    @extend %ib-typo-10;
+    color: $ib-color-09;
+    padding: 4px 0;
+  }
+
+  card-section .section-body {
+    background-color: transparent;
+    padding: 0;
   }
 }
