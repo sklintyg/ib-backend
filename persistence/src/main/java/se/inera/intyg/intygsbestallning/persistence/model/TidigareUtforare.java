@@ -18,9 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
-import static java.util.Objects.isNull;
-import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
-
 import com.google.common.base.MoreObjects;
 
 import javax.persistence.Column;
@@ -30,6 +27,9 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Objects;
 
+import static java.util.Objects.isNull;
+import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
+
 @Entity
 @Table(name = "TIDIGARE_UTFORARE")
 public final class TidigareUtforare {
@@ -37,7 +37,7 @@ public final class TidigareUtforare {
     @Id
     @GeneratedValue
     @Column(name = "ID", nullable = false)
-    private long id;
+    private Long id;
 
     @Column(name = "TIDIGARE_ENHET_ID")
     private String tidigareEnhetId;
@@ -65,41 +65,12 @@ public final class TidigareUtforare {
         this.tidigareEnhetId = tidigareEnhetId;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
-    }
-
-    public static final class TidigareUtforareBuilder {
-        private long id;
-        private String tidigareEnhetId;
-
-        private TidigareUtforareBuilder() {
-        }
-
-        public static TidigareUtforareBuilder aTidigareUtforare() {
-            return new TidigareUtforareBuilder();
-        }
-
-        public TidigareUtforareBuilder withId(long id) {
-            this.id = id;
-            return this;
-        }
-
-        public TidigareUtforareBuilder withTidigareEnhetId(String tidigareEnhetId) {
-            this.tidigareEnhetId = tidigareEnhetId;
-            return this;
-        }
-
-        public TidigareUtforare build() {
-            TidigareUtforare tidigareUtforare = new TidigareUtforare();
-            tidigareUtforare.setId(id);
-            tidigareUtforare.setTidigareEnhetId(tidigareEnhetId);
-            return tidigareUtforare;
-        }
     }
 
     @Override
@@ -111,7 +82,7 @@ public final class TidigareUtforare {
             return false;
         }
         final TidigareUtforare that = (TidigareUtforare) o;
-        return id == that.id
+        return Objects.equals(id, that.id)
                 && Objects.equals(tidigareEnhetId, that.tidigareEnhetId);
     }
 
@@ -127,5 +98,34 @@ public final class TidigareUtforare {
                 .add("id", id)
                 .add("tidigareEnhetId", tidigareEnhetId)
                 .toString();
+    }
+
+    public static final class TidigareUtforareBuilder {
+        private Long id;
+        private String tidigareEnhetId;
+
+        private TidigareUtforareBuilder() {
+        }
+
+        public static TidigareUtforareBuilder aTidigareUtforare() {
+            return new TidigareUtforareBuilder();
+        }
+
+        public TidigareUtforareBuilder withId(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public TidigareUtforareBuilder withTidigareEnhetId(String tidigareEnhetId) {
+            this.tidigareEnhetId = tidigareEnhetId;
+            return this;
+        }
+
+        public TidigareUtforare build() {
+            TidigareUtforare tidigareUtforare = new TidigareUtforare();
+            tidigareUtforare.setId(id);
+            tidigareUtforare.setTidigareEnhetId(tidigareEnhetId);
+            return tidigareUtforare;
+        }
     }
 }

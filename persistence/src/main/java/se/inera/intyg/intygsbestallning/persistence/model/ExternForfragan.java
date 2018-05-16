@@ -46,7 +46,7 @@ public final class ExternForfragan {
     @Id
     @GeneratedValue
     @Column(name = "ID", nullable = false)
-    private long id;
+    private Long id;
 
     @Column(name = "LANDSTING_HSA_ID", nullable = false)
     private String landstingHsaId;
@@ -148,11 +148,11 @@ public final class ExternForfragan {
         this.internForfraganList = internForfraganList;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -174,7 +174,7 @@ public final class ExternForfragan {
     }
 
     public static final class ExternForfraganBuilder {
-        private long id;
+        private Long id;
         private String landstingHsaId;
         private LocalDateTime besvarasSenastDatum;
         private String kommentar;
@@ -191,7 +191,7 @@ public final class ExternForfragan {
             return new ExternForfraganBuilder();
         }
 
-        public ExternForfraganBuilder withId(long id) {
+        public ExternForfraganBuilder withId(Long id) {
             this.id = id;
             return this;
         }
@@ -262,7 +262,7 @@ public final class ExternForfragan {
 
         final ExternForfragan that = (ExternForfragan) o;
 
-        if (id != that.id) {
+        if (!Objects.equals(id, that.id)) {
             return false;
         }
         if (landstingHsaId != null ? !landstingHsaId.equals(that.landstingHsaId) : that.landstingHsaId != null) {

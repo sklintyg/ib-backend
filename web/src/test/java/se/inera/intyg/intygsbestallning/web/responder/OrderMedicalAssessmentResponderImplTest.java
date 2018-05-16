@@ -59,12 +59,13 @@ public class OrderMedicalAssessmentResponderImplTest {
     @Test
     public void orderMedicalAssessmentSuccessFmu() {
 
-        final String utredningId = "utredningId";
+        final Long utredningId = 1L;
+        final String utredningIdString = utredningId.toString();
         final String utredningRoot = "utredningRoot";
         when(utredningService.registerOrder(any(OrderRequest.class))).thenReturn(anUtredning().withUtredningId(utredningId).build());
 
         OrderMedicalAssessmentType request = new OrderMedicalAssessmentType();
-        request.setAssessmentId(anII(utredningRoot, utredningId));
+        request.setAssessmentId(anII(utredningRoot, utredningIdString));
         request.setCertificateType(aCv(AFU.name(), null, null));
         request.setAuthorityAdministrativeOfficial(new AuthorityAdministrativeOfficialType());
         request.setCareUnitId(anII(null, "enhet"));
@@ -81,13 +82,13 @@ public class OrderMedicalAssessmentResponderImplTest {
         assertNotNull(response);
         assertEquals(ResultCodeType.OK, response.getResult().getResultCode());
         assertEquals(utredningRoot, response.getAssessmentId().getRoot());
-        assertEquals(utredningId, response.getAssessmentId().getExtension());
+        assertEquals(utredningIdString, response.getAssessmentId().getExtension());
     }
 
     @Test
     public void orderMedicalAssessmentSuccessAf() {
 
-        final String utredningId = "utredningId";
+        final Long utredningId = 1L;
         final String utredningRoot = "utredningRoot";
         Field field = Objects.requireNonNull(ReflectionUtils.findField(OrderMedicalAssessmentResponderImpl.class, "sourceSystemHsaId"));
         field.setAccessible(true);
@@ -106,7 +107,7 @@ public class OrderMedicalAssessmentResponderImplTest {
         assertNotNull(response);
         assertEquals(ResultCodeType.OK, response.getResult().getResultCode());
         assertEquals(utredningRoot, response.getAssessmentId().getRoot());
-        assertEquals(utredningId, response.getAssessmentId().getExtension());
+        assertEquals(utredningId.toString(), response.getAssessmentId().getExtension());
     }
 
     @Test(expected = IbServiceException.class)

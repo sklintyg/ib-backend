@@ -28,5 +28,5 @@ public interface MyndighetIntegrationClientService {
 
     ReportCareContactResponseType reportCareContact(ReportCareContactRequestDto request);
 
-    UpdateAssessmentResponseType updateAssessment(String assessmentId, String certificateType);
+    UpdateAssessmentResponseType updateAssessment(Long assessmentId, String certificateType);
 }

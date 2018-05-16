@@ -27,27 +27,27 @@ import static com.jayway.restassured.RestAssured.given;
 
 public class UtredningControllerIT extends BaseRestIntegrationTest {
 
-    private static final String UTREDNING_API_ENDPOINT = "/api/utredningar" ;
+    private static final String UTREDNING_API_ENDPOINT = "/api/utredningar";
 
     @Test
     public void testListUtredningar() {
         RestAssured.sessionId = getAuthSession(DEFAULT_SAMORDNARE);
         given().expect().statusCode(OK).when().get(UTREDNING_API_ENDPOINT)
-        .then()
+                .then()
                 .body("utredningar", Matchers.notNullValue());
     }
 
     @Test
     public void testGetUtredningById() {
         RestAssured.sessionId = getAuthSession(DEFAULT_SAMORDNARE);
-        given().expect().statusCode(OK).when().get(UTREDNING_API_ENDPOINT + "/utredning-bootstrap-1")
-        .then()
-                .body("utredningsId", Matchers.is("utredning-bootstrap-1"));
+        given().expect().statusCode(OK).when().get(UTREDNING_API_ENDPOINT + "/1")
+                .then()
+                .body("utredningsId", Matchers.is(1));
     }
 
     @Test
     public void testGetUtredningByIdUnauthorized() {
         RestAssured.sessionId = getAuthSession(OTHER_SAMORDNARE);
-        given().expect().statusCode(403).when().get(UTREDNING_API_ENDPOINT + "/utredning-bootstrap-1");
+        given().expect().statusCode(403).when().get(UTREDNING_API_ENDPOINT + "/1");
     }
 }

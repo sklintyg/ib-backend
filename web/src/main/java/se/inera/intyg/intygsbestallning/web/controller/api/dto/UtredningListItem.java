@@ -33,7 +33,7 @@ import static java.util.Objects.nonNull;
 
 public class UtredningListItem implements FreeTextSearchable, FilterableListItem, VardenhetEnrichable {
 
-    private String utredningsId;
+    private Long utredningsId;
     private String utredningsTyp;
     private String vardenhetHsaId;
     private String vardenhetNamn;
@@ -98,11 +98,11 @@ public class UtredningListItem implements FreeTextSearchable, FilterableListItem
         return null;
     }
 
-    public String getUtredningsId() {
+    public Long getUtredningsId() {
         return utredningsId;
     }
 
-    public void setUtredningsId(String utredningsId) {
+    public void setUtredningsId(Long utredningsId) {
         this.utredningsId = utredningsId;
     }
 
@@ -173,7 +173,7 @@ public class UtredningListItem implements FreeTextSearchable, FilterableListItem
     }
 
     public static final class UtredningListItemBuilder {
-        private String utredningsId;
+        private Long utredningsId;
         private String utredningsTyp;
         private String vardenhetHsaId;
         private String vardenhetNamn;
@@ -188,7 +188,7 @@ public class UtredningListItem implements FreeTextSearchable, FilterableListItem
             return new UtredningListItemBuilder();
         }
 
-        public UtredningListItemBuilder withUtredningsId(String utredningsId) {
+        public UtredningListItemBuilder withUtredningsId(Long utredningsId) {
             this.utredningsId = utredningsId;
             return this;
         }

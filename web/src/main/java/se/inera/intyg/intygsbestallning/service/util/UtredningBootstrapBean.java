@@ -82,7 +82,6 @@ public class UtredningBootstrapBean {
         LocalDateTime date = startDate;
         for (int i = 0; i < EXTRA_TEST_DATA; i++) {
             Utredning utredning = new Utredning();
-            utredning.setUtredningId("utredning-test-" + i);
             utredning.setUtredningsTyp(UtredningsTyp.AFU);
             utredning.setExternForfragan(anExternForfragan()
                     .withLandstingHsaId("IFV1239877878-1041")

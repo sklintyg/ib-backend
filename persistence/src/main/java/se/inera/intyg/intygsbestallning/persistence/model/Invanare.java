@@ -45,7 +45,7 @@ public final class Invanare {
     @Id
     @GeneratedValue
     @Column(name = "ID", nullable = false)
-    private long id;
+    private Long id;
 
     @Column(name = "PERSON_ID", length = 64)
     private String personId;
@@ -128,11 +128,11 @@ public final class Invanare {
         this.tidigareUtforare = tidigareUtforare;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -155,7 +155,7 @@ public final class Invanare {
 
         final Invanare invanare = (Invanare) o;
 
-        if (id != invanare.id) {
+        if (!Objects.equals(id, invanare.id)) {
             return false;
         }
         if (personId != null ? !personId.equals(invanare.personId) : invanare.personId != null) {
@@ -196,7 +196,7 @@ public final class Invanare {
     }
 
     public static final class InvanareBuilder {
-        private long id;
+        private Long id;
         private String personId;
         private String fullstandigtNamn;
         private String sarskildaBehov;
@@ -211,7 +211,7 @@ public final class Invanare {
             return new InvanareBuilder();
         }
 
-        public InvanareBuilder withId(long id) {
+        public InvanareBuilder withId(Long id) {
             this.id = id;
             return this;
         }

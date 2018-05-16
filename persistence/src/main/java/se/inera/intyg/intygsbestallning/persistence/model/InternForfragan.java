@@ -42,7 +42,7 @@ public final class InternForfragan {
     @Id
     @GeneratedValue
     @Column(name = "ID", nullable = false)
-    private long id;
+    private Long id;
 
     @Column(name = "VARDENHET_HSA_ID", nullable = false)
     private String vardenhetHsaId;
@@ -86,11 +86,11 @@ public final class InternForfragan {
                 .build();
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -143,7 +143,7 @@ public final class InternForfragan {
     }
 
     public static final class InternForfraganBuilder {
-        private long id;
+        private Long id;
         private String vardenhetHsaId;
         private LocalDateTime tilldeladDatum;
         private LocalDateTime besvarasSenastDatum;
@@ -158,7 +158,7 @@ public final class InternForfragan {
             return new InternForfraganBuilder();
         }
 
-        public InternForfraganBuilder withId(long id) {
+        public InternForfraganBuilder withId(Long id) {
             this.id = id;
             return this;
         }
@@ -215,7 +215,7 @@ public final class InternForfragan {
             return false;
         }
         final InternForfragan that = (InternForfragan) o;
-        return id == that.id
+        return Objects.equals(id, that.id)
                 && Objects.equals(vardenhetHsaId, that.vardenhetHsaId)
                 && Objects.equals(tilldeladDatum, that.tilldeladDatum)
                 && Objects.equals(besvarasSenastDatum, that.besvarasSenastDatum)

@@ -35,7 +35,7 @@ import static java.util.Objects.isNull;
 public class GetBestallningResponse {
     private static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
 
-    private String utredningsId;
+    private Long utredningsId;
 
     private String utredningsTyp;
 
@@ -108,11 +108,11 @@ public class GetBestallningResponse {
 
     }
 
-    public String getUtredningsId() {
+    public Long getUtredningsId() {
         return utredningsId;
     }
 
-    public void setUtredningsId(final String utredningsId) {
+    public void setUtredningsId(final Long utredningsId) {
         this.utredningsId = utredningsId;
     }
 
@@ -245,8 +245,7 @@ public class GetBestallningResponse {
     }
 
     public static final class GetUtredningResponseBuilder {
-        private static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
-        private String utredningsId;
+        private Long utredningsId;
         private String utredningsTyp;
         private String vardgivareHsaId;
         private String inkomDatum;
@@ -271,7 +270,7 @@ public class GetBestallningResponse {
             return new GetUtredningResponseBuilder();
         }
 
-        public GetUtredningResponseBuilder withUtredningsId(String utredningsId) {
+        public GetUtredningResponseBuilder withUtredningsId(Long utredningsId) {
             this.utredningsId = utredningsId;
             return this;
         }

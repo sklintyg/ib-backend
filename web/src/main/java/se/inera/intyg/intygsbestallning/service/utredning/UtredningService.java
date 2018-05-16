@@ -52,7 +52,7 @@ public interface UtredningService {
      * @param landstingHsaId
      * @return
      */
-    GetUtredningResponse getExternForfragan(String utredningId, String landstingHsaId);
+    GetUtredningResponse getExternForfragan(Long utredningId, String landstingHsaId);
 
     /**
      * Gets all the {@link se.inera.intyg.intygsbestallning.persistence.model.InternForfragan} for the unit with HSA-id
@@ -75,7 +75,7 @@ public interface UtredningService {
      *            the hsaId of the vardenhet of which have received an InternForfragan
      * @return The information of the InternForfragan
      */
-    GetForfraganResponse getForfragan(String utredningId, String vardenhetHsaId);
+    GetForfraganResponse getForfragan(Long utredningId, String vardenhetHsaId);
 
     /**
      * Handles the new incomming order for FMU.
@@ -127,5 +127,5 @@ public interface UtredningService {
      * @param request
      * @return
      */
-    GetUtredningResponse createInternForfragan(String utredningsId, String landstingHsaId, CreateInternForfraganRequest request);
+    GetUtredningResponse createInternForfragan(Long utredningsId, String landstingHsaId, CreateInternForfraganRequest request);
 }

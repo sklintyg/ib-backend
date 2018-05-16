@@ -18,18 +18,19 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning.dto;
 
-import static se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare.BestallareBuilder;
-import static se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare.BestallareBuilder.aBestallare;
-import static se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest.UpdateOrderRequestBuilder.anUpdateOrderRequest;
-
+import com.google.common.primitives.Longs;
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import static se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare.BestallareBuilder;
+import static se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare.BestallareBuilder.aBestallare;
+import static se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest.UpdateOrderRequestBuilder.anUpdateOrderRequest;
+
 public class UpdateOrderRequest {
 
-    private String utredningId;
+    private Long utredningId;
     private String kommentar;
     private Bestallare bestallare;
     private Boolean tolkBehov;
@@ -40,7 +41,7 @@ public class UpdateOrderRequest {
     public static UpdateOrderRequest from(final UpdateOrderType request) {
 
         UpdateOrderRequestBuilder updateOrderRequestBuilder = anUpdateOrderRequest()
-                .withUtredningId(request.getAssessmentId().getExtension())
+                .withUtredningId(Longs.tryParse(request.getAssessmentId().getExtension()))
                 .withKommentar(request.getComment())
                 .withHandling(request.isDocumentsByPost());
 
@@ -72,7 +73,7 @@ public class UpdateOrderRequest {
         return updateOrderRequestBuilder.build();
     }
 
-    public String getUtredningId() {
+    public Long getUtredningId() {
         return utredningId;
     }
 
@@ -101,7 +102,7 @@ public class UpdateOrderRequest {
     }
 
     public static final class UpdateOrderRequestBuilder {
-        private String utredningId;
+        private Long utredningId;
         private String kommentar;
         private Bestallare bestallare;
         private Boolean tolkBehov;
@@ -116,7 +117,7 @@ public class UpdateOrderRequest {
             return new UpdateOrderRequestBuilder();
         }
 
-        public UpdateOrderRequestBuilder withUtredningId(String utredningId) {
+        public UpdateOrderRequestBuilder withUtredningId(Long utredningId) {
             this.utredningId = utredningId;
             return this;
         }

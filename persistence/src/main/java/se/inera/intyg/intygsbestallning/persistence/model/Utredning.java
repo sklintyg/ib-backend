@@ -29,6 +29,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
@@ -49,8 +51,9 @@ import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.Utred
 public final class Utredning {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "UTREDNING_ID", nullable = false)
-    private String utredningId;
+    private Long utredningId;
 
     @Column(name = "UTREDNINGS_TYP", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -152,11 +155,11 @@ public final class Utredning {
                 .build();
     }
 
-    public String getUtredningId() {
+    public Long getUtredningId() {
         return utredningId;
     }
 
-    public void setUtredningId(final String utredningId) {
+    public void setUtredningId(final Long utredningId) {
         this.utredningId = utredningId;
     }
 
@@ -289,7 +292,7 @@ public final class Utredning {
     }
 
     public static final class UtredningBuilder {
-        private String utredningId;
+        private Long utredningId;
         private UtredningsTyp utredningsTyp;
         private Bestallning bestallning;
         private Boolean tolkBehov;
@@ -314,7 +317,7 @@ public final class Utredning {
             return new UtredningBuilder();
         }
 
-        public UtredningBuilder withUtredningId(String utredningId) {
+        public UtredningBuilder withUtredningId(Long utredningId) {
             this.utredningId = utredningId;
             return this;
         }

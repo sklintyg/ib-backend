@@ -18,14 +18,14 @@
  */
 package se.inera.intyg.intygsbestallning.integration.myndighet.service;
 
-import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.aCv;
-import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
-
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto;
 import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.ReportCareContactType;
 import se.riv.intygsbestallning.certificate.order.v1.TimePeriodType;
 
 import java.time.LocalDateTime;
+
+import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.aCv;
+import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
 
 public final class TjanstekontraktUtils {
 
@@ -34,7 +34,7 @@ public final class TjanstekontraktUtils {
 
     public static ReportCareContactType aReportCareContact(final String sourceSystemHsaId, final ReportCareContactRequestDto dto) {
         ReportCareContactType request = new ReportCareContactType();
-        request.setAssessmentId(anII(sourceSystemHsaId, dto.getAssessmentId()));
+        request.setAssessmentId(anII(sourceSystemHsaId, dto.getAssessmentId().toString()));
         request.setAssessmentCareContactId(anII(sourceSystemHsaId, dto.getAssessmentCareContactId()));
         request.setParticipatingProfession(aCv(dto.getParticipatingProfession()));
         request.setInterpreterStatus(aCv(dto.getInterpreterStatus()));

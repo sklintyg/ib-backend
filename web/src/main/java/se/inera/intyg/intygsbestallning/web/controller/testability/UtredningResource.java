@@ -44,7 +44,7 @@ public class UtredningResource {
     protected UtredningRepository utredningRepository;
 
     @GetMapping(path = "/{utredningId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Utredning> getUtredning(@PathVariable("utredningId") String utredningId) {
+    public ResponseEntity<Utredning> getUtredning(@PathVariable("utredningId") Long utredningId) {
         Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
                 () -> new IbNotFoundException("Utredning with assessmentId '" + utredningId + "' does not exist."));
         return ResponseEntity.ok(utredning);
@@ -57,7 +57,7 @@ public class UtredningResource {
     }
 
     @DeleteMapping(path = "/{utredningId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response deleteUtredning(@PathVariable("utredningId") String utredningId) {
+    public Response deleteUtredning(@PathVariable("utredningId") Long utredningId) {
         Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
                 () -> new IbNotFoundException("Utredning with assessmentId '" + utredningId + "' does not exist."));
         utredningRepository.delete(utredning);

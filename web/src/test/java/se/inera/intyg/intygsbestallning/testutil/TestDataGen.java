@@ -69,6 +69,7 @@ public final class TestDataGen {
     private static final String USER_NAME = "Läkar Läkarsson";
     private static final String CAREUNIT_ID = "careunit-1";
     private static final String CAREUNIT_NAME = "Vårdenhet 1";
+    private static final Long UTREDNING_ID = 1L;
 
     private TestDataGen() {
 
@@ -154,7 +155,7 @@ public final class TestDataGen {
 
     public static UpdateOrderType createUpdateOrderType(final Boolean tolkBehov, final String tolkSprak) {
         UpdateOrderType type = new UpdateOrderType();
-        type.setAssessmentId(anII("root", "utredningsId"));
+        type.setAssessmentId(anII("root", "1"));
         type.setComment("kommentar");
         type.setLastDateForCertificateReceival(DATE_TIME.toString());
         type.setNeedForInterpreter(tolkBehov);
@@ -191,10 +192,8 @@ public final class TestDataGen {
     }
 
     public static Utredning createUtredning() {
-
-
         final Utredning utredning = anUtredning()
-                .withUtredningId("utredningsId")
+                .withUtredningId(UTREDNING_ID)
                 .withUtredningsTyp(AFU_UTVIDGAD)
                 .withExternForfragan(createExternForfragan())
                 .withHandlaggare(createHandlaggare())

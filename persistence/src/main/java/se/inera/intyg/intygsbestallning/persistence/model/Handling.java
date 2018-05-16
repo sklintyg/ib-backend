@@ -43,7 +43,7 @@ public final class Handling {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID", nullable = false)
-    private long id;
+    private Long id;
 
     @Column(name = "SKICKAT_DATUM", nullable = false)
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
@@ -73,11 +73,11 @@ public final class Handling {
                 .build();
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -106,7 +106,7 @@ public final class Handling {
     }
 
     public static final class HandlingBuilder {
-        private long id;
+        private Long id;
         private LocalDateTime skickatDatum;
         private LocalDateTime inkomDatum;
         private HandlingUrsprungTyp ursprung;
@@ -118,7 +118,7 @@ public final class Handling {
             return new HandlingBuilder();
         }
 
-        public HandlingBuilder withId(long id) {
+        public HandlingBuilder withId(Long id) {
             this.id = id;
             return this;
         }
@@ -157,7 +157,7 @@ public final class Handling {
             return false;
         }
         final Handling handling = (Handling) o;
-        return id == handling.id
+        return Objects.equals(id, handling.id)
                 && Objects.equals(skickatDatum, handling.skickatDatum)
                 && Objects.equals(inkomDatum, handling.inkomDatum)
                 && ursprung == handling.ursprung;

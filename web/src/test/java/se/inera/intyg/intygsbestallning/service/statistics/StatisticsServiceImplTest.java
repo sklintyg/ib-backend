@@ -69,8 +69,8 @@ public class StatisticsServiceImplTest {
 
     private static List<Utredning> buildUtredningarWithExternforfragningar(int num, boolean addInternForfragning) {
         List<Utredning> utredningList = new ArrayList<>();
-        for (int a = 0; a < num; a++) {
-            Utredning.UtredningBuilder utrBuilder = anUtredning().withUtredningsTyp(AFU).withUtredningId("id-" + a);
+        for (long a = 0; a < num; a++) {
+            Utredning.UtredningBuilder utrBuilder = anUtredning().withUtredningsTyp(AFU).withUtredningId(a);
 
             if (addInternForfragning) {
                 utrBuilder.withExternForfragan(anExternForfragan().withLandstingHsaId(VG_ID).withBesvarasSenastDatum(LocalDateTime.now())
@@ -88,10 +88,10 @@ public class StatisticsServiceImplTest {
 
     private static List<Utredning> buildBestallningar(int num, boolean handlingarMottagna) {
         List<Utredning> utredningList = new ArrayList<>();
-        for (int a = 0; a < num; a++) {
+        for (long a = 0; a < num; a++) {
             Utredning utr = anUtredning()
                     .withUtredningsTyp(AFU)
-                    .withUtredningId("id-" + a)
+                    .withUtredningId(a)
                     .withExternForfragan(anExternForfragan()
                             .withInternForfraganList(ImmutableList.of(
                                     anInternForfragan()
@@ -124,7 +124,8 @@ public class StatisticsServiceImplTest {
     @Test
     public void testGetStatsForVardadmin() {
         List<Utredning> repoContents = buildUtredningarWithExternforfragningar(3, true);
-        when(utredningRepository.findAllByExternForfragan_InternForfraganList_VardenhetHsaId_AndArkiveradFalse(VE_ID)).thenReturn(repoContents);
+        when(utredningRepository.findAllByExternForfragan_InternForfraganList_VardenhetHsaId_AndArkiveradFalse(VE_ID))
+                .thenReturn(repoContents);
 
         List<Utredning> bestallningsUtredningar = buildBestallningar(4, true);
         // Add one that will resolve to the an irrelevant status

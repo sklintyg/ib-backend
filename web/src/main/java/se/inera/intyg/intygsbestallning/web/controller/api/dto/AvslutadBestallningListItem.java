@@ -32,7 +32,7 @@ import static java.util.Objects.nonNull;
 
 public class AvslutadBestallningListItem implements FreeTextSearchable, VardgivareEnrichable {
 
-    private String utredningsId;
+    private Long utredningsId;
     private String utredningsTyp;
     private String vardgivareHsaId;
     private String vardgivareNamn;
@@ -75,11 +75,11 @@ public class AvslutadBestallningListItem implements FreeTextSearchable, Vardgiva
                 .orElse("Fixme");
     }
 
-    public String getUtredningsId() {
+    public Long getUtredningsId() {
         return utredningsId;
     }
 
-    public void setUtredningsId(String utredningsId) {
+    public void setUtredningsId(Long utredningsId) {
         this.utredningsId = utredningsId;
     }
 
@@ -163,7 +163,7 @@ public class AvslutadBestallningListItem implements FreeTextSearchable, Vardgiva
     }
 
     public static final class AvslutadBestallningListItemBuilder {
-        private String utredningsId;
+        private Long utredningsId;
         private String utredningsTyp;
         private String vardgivareHsaId;
         private String vardgivareNamn;
@@ -180,7 +180,7 @@ public class AvslutadBestallningListItem implements FreeTextSearchable, Vardgiva
             return new AvslutadBestallningListItemBuilder();
         }
 
-        public AvslutadBestallningListItemBuilder withUtredningsId(String utredningsId) {
+        public AvslutadBestallningListItemBuilder withUtredningsId(Long utredningsId) {
             this.utredningsId = utredningsId;
             return this;
         }

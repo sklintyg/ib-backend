@@ -246,7 +246,7 @@
 
 
         <createTable tableName="UTREDNING">
-            <column name="UTREDNING_ID" type="varchar(64)">
+            <column name="UTREDNING_ID" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
 
@@ -294,6 +294,12 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+
+        <addAutoIncrement columnDataType="bigint"
+                          columnName="UTREDNING_ID"
+                          incrementBy="1"
+                          startWith="1"
+                          tableName="UTREDNING"/>
 
         <addForeignKeyConstraint baseTableName="UTREDNING"
                                  baseColumnNames="BESTALLNING_ID"
@@ -448,7 +454,7 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
 
-            <column name="UTREDNING_ID" type="varchar(64)">
+            <column name="UTREDNING_ID" type="bigint">
                 <constraints nullable="true"/>
             </column>
 
@@ -513,7 +519,7 @@
             <column name="ID" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="UTREDNING_ID" type="varchar(64)">
+            <column name="UTREDNING_ID" type="bigint">
                 <constraints nullable="false"/>
             </column>
             <column name="SKICKAT_DATUM" type="datetime">
@@ -602,7 +608,7 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
 
-            <column name="UTREDNING_ID" type="varchar(64)">
+            <column name="UTREDNING_ID" type="bigint">
                 <constraints nullable="false"/>
             </column>
 
@@ -700,7 +706,7 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
 
-            <column name="UTREDNING_ID" type="varchar(64)">
+            <column name="UTREDNING_ID" type="bigint">
                 <constraints nullable="false"/>
             </column>
 
@@ -746,7 +752,7 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
 
-            <column name="UTREDNING_ID" type="varchar(64)">
+            <column name="UTREDNING_ID" type="bigint">
                 <constraints nullable="false"/>
             </column>
 
@@ -780,4 +786,5 @@
                                  referencedColumnNames="UTREDNING_ID"/>
 
     </changeSet>
+    
 </databaseChangeLog>

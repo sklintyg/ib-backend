@@ -64,7 +64,7 @@ public class OrderMedicalAssessmentResponderImpl implements OrderMedicalAssessme
         OrderMedicalAssessmentResponseType response = new OrderMedicalAssessmentResponseType();
         response.setAssessmentId(
                 anII(isNull(request.getAssessmentId()) ? sourceSystemHsaId : request.getAssessmentId().getRoot(),
-                        utredning.getUtredningId()));
+                        utredning.getUtredningId().toString()));
         response.setResult(ResultTypeUtil.ok());
         return response;
     }

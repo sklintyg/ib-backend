@@ -34,7 +34,7 @@ public class BestallningListItem implements PDLLoggable, FreeTextSearchable, Fil
 
     private static final long DEFAULT_DAYS = 5L;
 
-    private String utredningsId;
+    private Long utredningsId;
     private String utredningsTyp;
     private String vardgivareHsaId;
     private String vardgivareNamn;
@@ -109,11 +109,11 @@ public class BestallningListItem implements PDLLoggable, FreeTextSearchable, Fil
 
 
 
-    public String getUtredningsId() {
+    public Long getUtredningsId() {
         return utredningsId;
     }
 
-    public void setUtredningsId(String utredningsId) {
+    public void setUtredningsId(Long utredningsId) {
         this.utredningsId = utredningsId;
     }
 
@@ -235,7 +235,7 @@ public class BestallningListItem implements PDLLoggable, FreeTextSearchable, Fil
     }
 
     public static final class BestallningListItemBuilder {
-        private String utredningsId;
+        private Long utredningsId;
         private String utredningsTyp;
         private String vardgivareHsaId;
         private String vardgivareNamn;
@@ -256,7 +256,7 @@ public class BestallningListItem implements PDLLoggable, FreeTextSearchable, Fil
             return new BestallningListItemBuilder();
         }
 
-        public BestallningListItemBuilder withUtredningsId(String utredningsId) {
+        public BestallningListItemBuilder withUtredningsId(Long utredningsId) {
             this.utredningsId = utredningsId;
             return this;
         }

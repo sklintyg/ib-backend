@@ -58,7 +58,7 @@ public class RequestHealthcarePerformerForAssessmentResponderImpl
 
         RequestHealthcarePerformerForAssessmentResponseType response = new RequestHealthcarePerformerForAssessmentResponseType();
         response.setResult(ok());
-        response.setAssessmentId(anII(sourceSystemHsaId, sparadUtredning.getUtredningId()));
+        response.setAssessmentId(anII(sourceSystemHsaId, sparadUtredning.getUtredningId().toString()));
         return response;
     }
 }

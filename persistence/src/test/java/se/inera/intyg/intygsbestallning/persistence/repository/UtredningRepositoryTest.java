@@ -62,6 +62,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildAnteckning;
 import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildBesok;
 import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildBestallning;
@@ -85,7 +86,6 @@ public class UtredningRepositoryTest {
 
     private static final String VE_HSA_ID = "enhet-1";
     private static final String VG_HSA_ID = "vg-1";
-    private static final String UTREDNING_ID = "abc-123";
 
     @Autowired
     private UtredningRepository utredningRepository;
@@ -121,13 +121,13 @@ public class UtredningRepositoryTest {
 
         utr.setBetalning(buildBetalning());
 
-        utredningRepository.save(utr);
+        Utredning savedUtredning = utredningRepository.save(utr);
 
-        Optional<Utredning> saved = utredningRepository.findById(UTREDNING_ID);
-        assertTrue(saved.isPresent());
-        Utredning utredning = saved.get();
+        Optional<Utredning> savedAndRetreived = utredningRepository.findById(savedUtredning.getUtredningId());
+        assertTrue(savedAndRetreived.isPresent());
+        Utredning utredning = savedAndRetreived.get();
 
-        assertEquals(UTREDNING_ID, utredning.getUtredningId());
+        assertEquals(savedUtredning.getUtredningId(), utredning.getUtredningId());
         assertEquals(UtredningsTyp.AFU, utredning.getUtredningsTyp());
         assertFalse(utredning.getTolkBehov());
         assertNotNull(utredning.getAvbrutenDatum());
@@ -251,7 +251,7 @@ public class UtredningRepositoryTest {
         utr.setArkiverad(true);
         utr.setBestallning(buildBestallning());
         utr.setExternForfragan(buildExternForfragan());
-        utredningRepository.save(utr);
+        utr = utredningRepository.save(utr);
 
         List<Utredning> response = utredningRepository
                 .findAllByExternForfragan_InternForfraganList_VardenhetHsaId_AndArkiveradFalse(VE_HSA_ID);
@@ -259,11 +259,9 @@ public class UtredningRepositoryTest {
         assertTrue(response.isEmpty());
 
         utr.setArkiverad(false);
-        utredningRepository.save(utr);
         response = utredningRepository.findAllByExternForfragan_InternForfraganList_VardenhetHsaId_AndArkiveradFalse(VE_HSA_ID);
         assertNotNull(response);
         assertEquals(1, response.size());
-
     }
 
     @Test

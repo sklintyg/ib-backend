@@ -36,7 +36,7 @@ public final class Handlaggare {
     @Id
     @GeneratedValue
     @Column(name = "ID", nullable = false)
-    private long id;
+    private Long id;
 
     @Column(name = "FULLSTANDIGT_NAMN")
     private String fullstandigtNamn;
@@ -87,11 +87,11 @@ public final class Handlaggare {
                 .build();
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -168,7 +168,7 @@ public final class Handlaggare {
     }
 
     public static final class HandlaggareBuilder {
-        private long id;
+        private Long id;
         private String fullstandigtNamn;
         private String telefonnummer;
         private String email;
@@ -186,7 +186,7 @@ public final class Handlaggare {
             return new HandlaggareBuilder();
         }
 
-        public HandlaggareBuilder withId(long id) {
+        public HandlaggareBuilder withId(Long id) {
             this.id = id;
             return this;
         }
@@ -261,7 +261,7 @@ public final class Handlaggare {
             return false;
         }
         final Handlaggare that = (Handlaggare) o;
-        return id == that.id
+        return Objects.equals(id, that.id)
                 && Objects.equals(fullstandigtNamn, that.fullstandigtNamn)
                 && Objects.equals(telefonnummer, that.telefonnummer)
                 && Objects.equals(email, that.email)

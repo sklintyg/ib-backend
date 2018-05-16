@@ -34,7 +34,7 @@ public final class Betalning {
     @Id
     @GeneratedValue
     @Column(name = "ID", nullable = false)
-    private long id;
+    private Long id;
 
     @Column(name = "FAKTURA_ID")
     private String fakturaId;
@@ -49,11 +49,11 @@ public final class Betalning {
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime betalningsDatum;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -91,7 +91,7 @@ public final class Betalning {
 
 
     public static final class BetalningBuilder {
-        private long id;
+        private Long id;
         private String fakturaId;
         private String utbetalningsId;
         private String betalningsId;
@@ -104,7 +104,7 @@ public final class Betalning {
             return new BetalningBuilder();
         }
 
-        public BetalningBuilder withId(long id) {
+        public BetalningBuilder withId(Long id) {
             this.id = id;
             return this;
         }

@@ -32,21 +32,13 @@ import static java.util.Objects.isNull;
 
 public class GetUtredningResponse {
     private static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
-
-    private String utredningsId;
-
-    private UtredningStatus status;
-
-    private String inkomDatum;
-
-    private String besvarasSenastDatum;
-
-    private String bostadsort;
-
-    private boolean tidigareUtredd;
-
     List<VardenhetListItem> tidigareEnheter;
-
+    private Long utredningsId;
+    private UtredningStatus status;
+    private String inkomDatum;
+    private String besvarasSenastDatum;
+    private String bostadsort;
+    private boolean tidigareUtredd;
     private boolean behovTolk;
 
     private String tolkSprak;
@@ -91,11 +83,11 @@ public class GetUtredningResponse {
 
     }
 
-    public String getUtredningsId() {
+    public Long getUtredningsId() {
         return utredningsId;
     }
 
-    public void setUtredningsId(String utredningsId) {
+    public void setUtredningsId(Long utredningsId) {
         this.utredningsId = utredningsId;
     }
 
@@ -220,9 +212,8 @@ public class GetUtredningResponse {
     }
 
     public static final class GetUtredningResponseBuilder {
-        private static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
-        private String utredningsId;
         private UtredningStatus status;
+        private Long utredningsId;
         private String inkomDatum;
         private String besvarasSenastDatum;
         private String bostadsort;
@@ -245,7 +236,7 @@ public class GetUtredningResponse {
             return new GetUtredningResponseBuilder();
         }
 
-        public GetUtredningResponseBuilder withUtredningsId(String utredningsId) {
+        public GetUtredningResponseBuilder withUtredningsId(Long utredningsId) {
             this.utredningsId = utredningsId;
             return this;
         }
@@ -277,7 +268,7 @@ public class GetUtredningResponse {
 
         public GetUtredningResponseBuilder withTidigareEnheter(List<TidigareUtforare> tidigareEnheter) {
             this.tidigareEnheter = tidigareEnheter.stream()
-                    .map(tidigareUtforare ->  new VardenhetListItem(tidigareUtforare.getTidigareEnhetId()))
+                    .map(tidigareUtforare -> new VardenhetListItem(tidigareUtforare.getTidigareEnhetId()))
                     .collect(Collectors.toList());
             return this;
         }

@@ -43,7 +43,7 @@ public final class ForfraganSvar {
     @Id
     @GeneratedValue
     @Column(name = "ID", nullable = false)
-    private long id;
+    private Long id;
 
     @Column(name = "SVAR_TYP", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -103,11 +103,11 @@ public final class ForfraganSvar {
                 .build();
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -192,7 +192,7 @@ public final class ForfraganSvar {
     }
 
     public static final class ForfraganSvarBuilder {
-        private long id;
+        private Long id;
         private SvarTyp svarTyp;
         private UtforareTyp utforareTyp;
         private String utforareNamn;
@@ -211,7 +211,7 @@ public final class ForfraganSvar {
             return new ForfraganSvarBuilder();
         }
 
-        public ForfraganSvarBuilder withId(long id) {
+        public ForfraganSvarBuilder withId(Long id) {
             this.id = id;
             return this;
         }
@@ -292,7 +292,7 @@ public final class ForfraganSvar {
             return false;
         }
         final ForfraganSvar that = (ForfraganSvar) o;
-        return id == that.id
+        return Objects.equals(id, that.id)
                 && svarTyp == that.svarTyp
                 && utforareTyp == that.utforareTyp
                 && Objects.equals(utforareNamn, that.utforareNamn)

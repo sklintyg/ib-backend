@@ -39,7 +39,7 @@ public final class Bestallning {
     @Id
     @GeneratedValue
     @Column(name = "ID", nullable = false)
-    private long id;
+    private Long id;
 
     @Column(name = "TILLDELAD_VARDENHET_HSA_ID", nullable = false)
     private String tilldeladVardenhetHsaId;
@@ -81,11 +81,11 @@ public final class Bestallning {
                 .build();
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -138,7 +138,7 @@ public final class Bestallning {
     }
 
     public static final class BestallningBuilder {
-        private long id;
+        private Long id;
         private String tilldeladVardenhetHsaId;
         private LocalDateTime orderDatum;
         private LocalDateTime uppdateradDatum;
@@ -153,7 +153,7 @@ public final class Bestallning {
             return new BestallningBuilder();
         }
 
-        public BestallningBuilder withId(long id) {
+        public BestallningBuilder withId(Long id) {
             this.id = id;
             return this;
         }
@@ -210,7 +210,7 @@ public final class Bestallning {
             return false;
         }
         final Bestallning that = (Bestallning) o;
-        return id == that.id
+        return Objects.equals(id, that.id)
                 && Objects.equals(tilldeladVardenhetHsaId, that.tilldeladVardenhetHsaId)
                 && Objects.equals(orderDatum, that.orderDatum)
                 && Objects.equals(uppdateradDatum, that.uppdateradDatum)

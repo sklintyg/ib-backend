@@ -19,6 +19,7 @@
 package se.inera.intyg.intygsbestallning.service.utredning.dto;
 
 import com.google.common.base.Joiner;
+import com.google.common.primitives.Longs;
 import org.apache.commons.lang3.BooleanUtils;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
@@ -32,9 +33,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 public final class OrderRequest {
-    private String utredningId;
+    private Long utredningId;
     private String enhetId;
     private UtredningsTyp utredningsTyp;
     private Bestallare bestallare;
@@ -92,7 +94,7 @@ public final class OrderRequest {
                 .withTolkBehov(BooleanUtils.toBoolean(source.isNeedForInterpreter()))
                 .withTolkSprak((!isNull(source.isNeedForInterpreter()) && source.isNeedForInterpreter())
                         ? source.getInterpreterLanguage().getCode() : null)
-                .withUtredningId(!isNull(source.getAssessmentId()) ? source.getAssessmentId().getExtension() : null)
+                .withUtredningId(!isNull(source.getAssessmentId()) ? Longs.tryParse(source.getAssessmentId().getExtension()) : null)
                 .withUtredningsTyp(UtredningsTyp.valueOf(source.getCertificateType().getCode()))
                 .build();
     }
@@ -104,11 +106,14 @@ public final class OrderRequest {
         } catch (IllegalArgumentException iae) {
             errors.add("CertificateType is not of a known type");
         }
-        if (!isNull(source.isNeedForInterpreter()) && source.isNeedForInterpreter() && isNull(source.getInterpreterLanguage())) {
+        if (nonNull(source.isNeedForInterpreter()) && source.isNeedForInterpreter() && isNull(source.getInterpreterLanguage())) {
             errors.add("InterpreterLanguage is required when the need is declared");
         }
         // if FMU-order
-        if (!isNull(source.getAssessmentId())) {
+        if (nonNull(source.getAssessmentId())) {
+            if (isNull(Longs.tryParse(source.getAssessmentId().getExtension()))) {
+                errors.add("AssessmentId is not parseable as a Long");
+            }
             if (isNull(source.getOrderDate())) {
                 errors.add("OrderDate is required when assessmentId is present");
             }
@@ -126,11 +131,11 @@ public final class OrderRequest {
 
     }
 
-    public String getUtredningId() {
+    public Long getUtredningId() {
         return utredningId;
     }
 
-    public void setUtredningId(final String utredningId) {
+    public void setUtredningId(final Long utredningId) {
         this.utredningId = utredningId;
     }
 
@@ -255,7 +260,7 @@ public final class OrderRequest {
     }
 
     public static final class OrderRequestBuilder {
-        private String utredningId;
+        private Long utredningId;
         private String enhetId;
         private UtredningsTyp utredningsTyp;
         private Bestallare bestallare;
@@ -279,7 +284,7 @@ public final class OrderRequest {
             return new OrderRequestBuilder();
         }
 
-        public OrderRequestBuilder withUtredningId(String utredningId) {
+        public OrderRequestBuilder withUtredningId(Long utredningId) {
             this.utredningId = utredningId;
             return this;
         }

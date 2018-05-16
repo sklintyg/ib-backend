@@ -81,7 +81,7 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
     private BusinessDaysBean businessDays;
 
     @Override
-    public GetBestallningResponse getBestallning(String utredningId, String vardenhetHsaId) {
+    public GetBestallningResponse getBestallning(Long utredningId, String vardenhetHsaId) {
         Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
                 () -> new IbNotFoundException("Utredning with assessmentId '" + utredningId + "' does not exist."));
 
@@ -98,7 +98,7 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
 
     @Override
     @Transactional
-    public void saveFakturaIdForUtredning(String utredningsId, SaveFakturaForUtredningRequest request, String loggedInAtVardenhetHsaId) {
+    public void saveFakturaIdForUtredning(Long utredningsId, SaveFakturaForUtredningRequest request, String loggedInAtVardenhetHsaId) {
         Utredning utredning = utredningRepository.findById(utredningsId).orElseThrow(
                 () -> new IbNotFoundException("Utredning with assessmentId '" + utredningsId + "' does not exist."));
 
@@ -107,7 +107,6 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
             throw new IbServiceException(IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
                     "Utredning with assessmentId '" + utredningsId + "' does not have a Beställning.");
         }
-
 
         if (!utredning.getBestallning().get().getTilldeladVardenhetHsaId().equals(loggedInAtVardenhetHsaId)) {
             throw new IbAuthorizationException("The current user cannot mark Utredning with assessmentId '" + utredningsId

@@ -38,7 +38,7 @@ public final class AnvandarPreference {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID", nullable = false)
-    private long id;
+    private Long id;
 
     @Column(name = "HSA_ID", nullable = false)
     private String hsaId;
@@ -59,11 +59,11 @@ public final class AnvandarPreference {
         this.value = value;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(final long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -100,7 +100,7 @@ public final class AnvandarPreference {
             return false;
         }
         final AnvandarPreference that = (AnvandarPreference) o;
-        return id == that.id
+        return Objects.equals(id, that.id)
                 && Objects.equals(hsaId, that.hsaId)
                 && Objects.equals(key, that.key)
                 && Objects.equals(value, that.value);

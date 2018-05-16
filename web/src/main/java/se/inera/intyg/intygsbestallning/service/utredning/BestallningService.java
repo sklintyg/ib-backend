@@ -59,7 +59,7 @@ public interface BestallningService {
      * @param vardenhetHsaId
      * @return
      */
-    GetBestallningResponse getBestallning(String utredningId, String vardenhetHsaId);
+    GetBestallningResponse getBestallning(Long utredningId, String vardenhetHsaId);
 
-    void saveFakturaIdForUtredning(String utredningsId, SaveFakturaForUtredningRequest request, String fakturaId);
+    void saveFakturaIdForUtredning(Long utredningsId, SaveFakturaForUtredningRequest request, String fakturaId);
 }

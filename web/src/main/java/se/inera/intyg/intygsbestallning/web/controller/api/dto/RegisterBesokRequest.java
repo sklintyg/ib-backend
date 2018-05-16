@@ -32,7 +32,7 @@ import java.util.Optional;
 
 public class RegisterBesokRequest {
 
-    private String utredningId;
+    private Long utredningId;
 
     private String utredandeVardPersonalNamn;
     private DeltagarProfessionTyp proffesion;
@@ -45,11 +45,11 @@ public class RegisterBesokRequest {
     private LocalTime besokStartTid;
     private LocalTime besokSlutTid;
 
-    public String getUtredningId() {
+    public Long getUtredningId() {
         return utredningId;
     }
 
-    public void setUtredningId(final String utredningId) {
+    public void setUtredningId(final Long utredningId) {
         this.utredningId = utredningId;
     }
 

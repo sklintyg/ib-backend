@@ -27,7 +27,7 @@ import java.util.List;
 
 //CHECKSTYLE:OFF MethodName
 //CHECKSTYLE:OFF LineLength
-public interface UtredningRepository extends JpaRepository<Utredning, String> {
+public interface UtredningRepository extends JpaRepository<Utredning, Long> {
     List<Utredning> findAllByExternForfragan_InternForfraganList_VardenhetHsaId(String vardenhetHsaId);
 
     /**

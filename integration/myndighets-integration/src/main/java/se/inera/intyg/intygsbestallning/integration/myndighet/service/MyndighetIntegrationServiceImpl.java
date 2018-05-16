@@ -56,7 +56,7 @@ public class MyndighetIntegrationServiceImpl implements MyndighetIntegrationServ
     }
 
     @Override
-    public LocalDate updateAssessment(final String id, final String certificateType) {
+    public LocalDate updateAssessment(final Long id, final String certificateType) {
         final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyMMdd");
         final UpdateAssessmentResponseType response = clientService.updateAssessment(id, certificateType);
         handleResponse(response.getResult());

@@ -38,7 +38,7 @@ public class GetUtredningResponseTest {
     @Test
     public void testFrom() {
         Utredning utredning = anUtredning()
-                .withUtredningId("utredningId")
+                .withUtredningId(123321L)
                 .withUtredningsTyp(AFU)
                 .withTolkBehov(true)
                 .withTolkSprak("sv")
@@ -60,7 +60,7 @@ public class GetUtredningResponseTest {
         GetUtredningResponse response = GetUtredningResponse.from(utredning, UtredningStatus.FORFRAGAN_INKOMMEN);
 
         assertNotNull(response);
-        assertEquals("utredningId", response.getUtredningsId());
+        assertEquals(Long.valueOf(123321L), response.getUtredningsId());
         assertEquals("2019-01-01", response.getBesvarasSenastDatum());
         assertEquals("email", response.getHandlaggareEpost());
         assertEquals("fullstandigtnamn", response.getHandlaggareNamn());

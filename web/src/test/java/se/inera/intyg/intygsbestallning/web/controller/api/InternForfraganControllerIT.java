@@ -18,21 +18,28 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.restassured.RestAssured;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import se.inera.intyg.intygsbestallning.web.BaseRestIntegrationTest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListForfraganRequest;
 
 import static com.jayway.restassured.RestAssured.given;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 public class InternForfraganControllerIT extends BaseRestIntegrationTest {
 
     private static final String FORFRAGAN_API_ENDPOINT = "/api/forfragningar";
 
     @Test
-    public void testListForfragningar() {
+    public void testListForfragningar() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
         RestAssured.sessionId = getAuthSession(DEFAULT_VARDADMIN);
-        given().expect().statusCode(OK).when().get(FORFRAGAN_API_ENDPOINT)
+        given().contentType(APPLICATION_JSON)
+                .body(mapper.writeValueAsString(new ListForfraganRequest()))
+                .expect().statusCode(OK).when().post(FORFRAGAN_API_ENDPOINT)
                 .then()
                 .body("forfragningar", Matchers.notNullValue());
     }
@@ -40,9 +47,9 @@ public class InternForfraganControllerIT extends BaseRestIntegrationTest {
     @Test
     public void testGetForfraganById() {
         RestAssured.sessionId = getAuthSession(DEFAULT_VARDADMIN);
-        given().expect().statusCode(OK).when().get(FORFRAGAN_API_ENDPOINT + "/utredning-bootstrap-2")
+        given().expect().statusCode(OK).when().get(FORFRAGAN_API_ENDPOINT + "/1")
                 .then()
-                .body("kommentar", Matchers.is("Bered skyndsamt!"));
+                .body("status", Matchers.notNullValue());
     }
 
     @Test

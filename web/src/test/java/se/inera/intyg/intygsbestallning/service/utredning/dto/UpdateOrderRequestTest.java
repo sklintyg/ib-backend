@@ -34,7 +34,7 @@ public class UpdateOrderRequestTest {
     public void testConvertFranOrderUpdateType() {
         final UpdateOrderRequest request = UpdateOrderRequest.from(createUpdateOrderType());
 
-        assertEquals("utredningsId", request.getUtredningId());
+        assertEquals(Long.valueOf(1L), request.getUtredningId());
         assertEquals("kommentar", request.getKommentar().get());
 
         assertTrue(request.getTolkBehov().get());
@@ -59,7 +59,7 @@ public class UpdateOrderRequestTest {
     public void testConvertFranOrderUpdateTypeMedTolkBehovUtanTolkSprak() {
         final UpdateOrderRequest request = UpdateOrderRequest.from(createUpdateOrderType(true, null));
 
-        assertEquals("utredningsId", request.getUtredningId());
+        assertEquals(Long.valueOf(1L), request.getUtredningId());
         assertEquals("kommentar", request.getKommentar().get());
 
         assertTrue(request.getTolkBehov().get());
@@ -84,7 +84,7 @@ public class UpdateOrderRequestTest {
     public void testConvertFranOrderUpdateTypeUtanTolkBehovUtanTolkSprak() {
         final UpdateOrderRequest request = UpdateOrderRequest.from(createUpdateOrderType(false, null));
 
-        assertEquals("utredningsId", request.getUtredningId());
+        assertEquals(Long.valueOf(1L), request.getUtredningId());
         assertEquals("kommentar", request.getKommentar().get());
 
         assertFalse(request.getTolkBehov().get());

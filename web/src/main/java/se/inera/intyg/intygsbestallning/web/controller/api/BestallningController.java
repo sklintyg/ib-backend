@@ -126,7 +126,7 @@ public class BestallningController {
 
     @PrometheusTimeMethod(name = "get_utredning_duration_seconds", help = "Some helpful info here")
     @GetMapping(path = "/{utredningsId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetBestallningResponse> getUtredning(@PathVariable("utredningsId") String utredningsId) {
+    public ResponseEntity<GetBestallningResponse> getUtredning(@PathVariable("utredningsId") Long utredningsId) {
         IbUser user = userService.getUser();
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_VISA_BESTALLNING)
                 .orThrow(new IbAuthorizationException("User does not have required privilege VISA_BESTALLNING"));
@@ -135,7 +135,7 @@ public class BestallningController {
 
     @PrometheusTimeMethod(name = "post_save_faktura_for_utredning_duration_seconds", help = "Some helpful info here")
     @PostMapping(path = "/{utredningsId}/faktura", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> saveFakturaIdForUtredning(@PathVariable("utredningsId") String utredningsId,
+    public ResponseEntity<Void> saveFakturaIdForUtredning(@PathVariable("utredningsId") Long utredningsId,
             @RequestBody SaveFakturaForUtredningRequest request) {
         IbUser user = userService.getUser();
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_BESTALLNINGAR)

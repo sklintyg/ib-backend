@@ -57,7 +57,7 @@ public class MyndighetIntegrationServiceImplTest {
     public void testReportCareContactInteraction() {
 
         final ReportCareContactRequestDto requestDto = aReportCareContactRequestDto()
-                .withAssessmentId("assessment-id")
+                .withAssessmentId(1L)
                 .withAssessmentCareContactId("assessment-care-contact-id")
                 .withParticipatingProfession(DeltagarProfessionTyp.LK.getLabel())
                 .withInterpreterStatus(TolkStatusTyp.BOKAT.getLabel())
@@ -84,7 +84,7 @@ public class MyndighetIntegrationServiceImplTest {
     public void testUpdateAssessment() {
 
         final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        final String assessmentId = "assessment-id";
+        final Long assessmentId = 1L;
         final String certificateType = UtredningsTyp.AFU_UTVIDGAD.name();
 
         UpdateAssessmentResponseType response = new UpdateAssessmentResponseType();

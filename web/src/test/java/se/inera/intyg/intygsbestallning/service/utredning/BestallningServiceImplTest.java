@@ -99,7 +99,7 @@ public class BestallningServiceImplTest {
         when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
         when(utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(anyString())).thenReturn(ServiceTestUtil.buildBestallningar(7));
         List<BestallningListItem> list = bestallningService.findOngoingBestallningarForVardenhet("enhet",
-                buildFilter(ListFilterStatus.ALL, "id-3"));
+                buildFilter(ListFilterStatus.ALL, "3"));
         assertEquals(1, list.size());
     }
 

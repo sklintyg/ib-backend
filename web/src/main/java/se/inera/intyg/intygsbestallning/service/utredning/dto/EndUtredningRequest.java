@@ -19,6 +19,7 @@
 package se.inera.intyg.intygsbestallning.service.utredning.dto;
 
 import com.google.common.base.Joiner;
+import com.google.common.primitives.Longs;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
@@ -30,7 +31,7 @@ import java.util.List;
 import static java.util.Objects.isNull;
 
 public final class EndUtredningRequest {
-    private String utredningId;
+    private Long utredningId;
     private EndReason endReason;
 
     private EndUtredningRequest() {
@@ -43,7 +44,7 @@ public final class EndUtredningRequest {
         return EndUtredningRequestBuilder.anEndUtredningRequest()
                 .withEndReason(!isNull(endAssessmentType.getEndingCondition())
                         ? EndReason.valueOf(endAssessmentType.getEndingCondition().getCode()) : null)
-                .withUtredningId(endAssessmentType.getAssessmentId().getExtension())
+                .withUtredningId(Longs.tryParse(endAssessmentType.getAssessmentId().getExtension()))
                 .build();
     }
 
@@ -62,7 +63,7 @@ public final class EndUtredningRequest {
         }
     }
 
-    public String getUtredningId() {
+    public Long getUtredningId() {
         return utredningId;
     }
 
@@ -71,7 +72,7 @@ public final class EndUtredningRequest {
     }
 
     public static final class EndUtredningRequestBuilder {
-        private String utredningId;
+        private Long utredningId;
         private EndReason endReason;
 
         private EndUtredningRequestBuilder() {
@@ -81,7 +82,7 @@ public final class EndUtredningRequest {
             return new EndUtredningRequestBuilder();
         }
 
-        public EndUtredningRequestBuilder withUtredningId(String utredningId) {
+        public EndUtredningRequestBuilder withUtredningId(Long utredningId) {
             this.utredningId = utredningId;
             return this;
         }

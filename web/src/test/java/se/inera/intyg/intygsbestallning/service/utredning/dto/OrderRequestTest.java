@@ -53,7 +53,7 @@ public class OrderRequestTest {
         assertEquals("kommentar", result.getKommentar());
         assertEquals("syfte", result.getSyfte());
         assertEquals("sv", result.getTolkSprak());
-        assertEquals("utredningId", result.getUtredningId());
+        assertEquals(Long.valueOf(1L), result.getUtredningId());
         assertEquals(LocalDate.of(2019, 1, 1), result.getLastDateIntyg());
         assertEquals(LocalDate.of(2018, 1, 1), result.getOrderDate());
         assertEquals(AFU, result.getUtredningsTyp());
@@ -149,7 +149,7 @@ public class OrderRequestTest {
         citizen.setSituationBackground("bakgrund");
         citizen.setSpecialNeeds("behov");
         request.setCitizen(citizen);
-        request.setAssessmentId(anII(null, "utredningId"));
+        request.setAssessmentId(anII(null, "1"));
         request.setComment("kommentar");
         request.setDocumentsByPost(true);
         request.setNeedForInterpreter(true);

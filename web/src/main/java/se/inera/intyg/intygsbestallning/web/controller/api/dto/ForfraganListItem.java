@@ -47,7 +47,7 @@ public class ForfraganListItem implements FreeTextSearchable {
     private static final int AFU_UTREDNING_ARBETSDAGAR = 25;
     private static final int POSTGANG_ARBETSDAGAR = 3;
 
-    private String utredningsId;
+    private Long utredningsId;
     private String utredningsTyp;
     private String vardgivareHsaId;
     private String vardgivareNamn;
@@ -126,11 +126,11 @@ public class ForfraganListItem implements FreeTextSearchable {
         return businessDays.daysBetween(LocalDate.now(), besvarasSenastDatum.toLocalDate(), false) < BESVARA_FORFRAGAN_ARBETSDAGAR;
     }
 
-    public String getUtredningsId() {
+    public Long getUtredningsId() {
         return utredningsId;
     }
 
-    public void setUtredningsId(String utredningsId) {
+    public void setUtredningsId(Long utredningsId) {
         this.utredningsId = utredningsId;
     }
 
@@ -235,7 +235,7 @@ public class ForfraganListItem implements FreeTextSearchable {
     }
 
     public static final class ForfraganListItemBuilder {
-        private String utredningsId;
+        private Long utredningsId;
         private String utredningsTyp;
         private String vardgivareHsaId;
         private String vardgivareNamn;
@@ -255,7 +255,7 @@ public class ForfraganListItem implements FreeTextSearchable {
             return new ForfraganListItemBuilder();
         }
 
-        public ForfraganListItemBuilder withUtredningsId(String utredningsId) {
+        public ForfraganListItemBuilder withUtredningsId(Long utredningsId) {
             this.utredningsId = utredningsId;
             return this;
         }

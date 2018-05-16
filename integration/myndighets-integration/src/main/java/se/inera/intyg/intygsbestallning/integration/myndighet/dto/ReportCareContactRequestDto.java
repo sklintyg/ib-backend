@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 
 public final class ReportCareContactRequestDto {
 
-    private String assessmentId;
+    private Long assessmentId;
     private String assessmentCareContactId;
     private String participatingProfession;
     private String interpreterStatus;
@@ -34,7 +34,7 @@ public final class ReportCareContactRequestDto {
     private LocalDateTime endTime;
     private String visitStatus;
 
-    public String getAssessmentId() {
+    public Long getAssessmentId() {
         return assessmentId;
     }
 
@@ -70,8 +70,41 @@ public final class ReportCareContactRequestDto {
         return visitStatus;
     }
 
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ReportCareContactRequestDto)) {
+            return false;
+        }
+        final ReportCareContactRequestDto dto = (ReportCareContactRequestDto) o;
+        return Objects.equal(assessmentId, dto.assessmentId)
+                && Objects.equal(assessmentCareContactId, dto.assessmentCareContactId)
+                && Objects.equal(participatingProfession, dto.participatingProfession)
+                && Objects.equal(interpreterStatus, dto.interpreterStatus)
+                && Objects.equal(invitationDate, dto.invitationDate)
+                && Objects.equal(invitationChannel, dto.invitationChannel)
+                && Objects.equal(startTime, dto.startTime)
+                && Objects.equal(endTime, dto.endTime)
+                && Objects.equal(visitStatus, dto.visitStatus);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(assessmentId,
+                assessmentCareContactId,
+                participatingProfession,
+                interpreterStatus,
+                invitationDate,
+                invitationChannel,
+                startTime,
+                endTime,
+                visitStatus);
+    }
+
     public static final class ReportCareContactRequestDtoBuilder {
-        private String assessmentId;
+        private Long assessmentId;
         private String assessmentCareContactId;
         private String participatingProfession;
         private String interpreterStatus;
@@ -88,7 +121,7 @@ public final class ReportCareContactRequestDto {
             return new ReportCareContactRequestDtoBuilder();
         }
 
-        public ReportCareContactRequestDtoBuilder withAssessmentId(String assessmentId) {
+        public ReportCareContactRequestDtoBuilder withAssessmentId(Long assessmentId) {
             this.assessmentId = assessmentId;
             return this;
         }
@@ -146,38 +179,5 @@ public final class ReportCareContactRequestDto {
             reportCareContactRequestDto.assessmentCareContactId = this.assessmentCareContactId;
             return reportCareContactRequestDto;
         }
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof ReportCareContactRequestDto)) {
-            return false;
-        }
-        final ReportCareContactRequestDto dto = (ReportCareContactRequestDto) o;
-        return Objects.equal(assessmentId, dto.assessmentId)
-                && Objects.equal(assessmentCareContactId, dto.assessmentCareContactId)
-                && Objects.equal(participatingProfession, dto.participatingProfession)
-                && Objects.equal(interpreterStatus, dto.interpreterStatus)
-                && Objects.equal(invitationDate, dto.invitationDate)
-                && Objects.equal(invitationChannel, dto.invitationChannel)
-                && Objects.equal(startTime, dto.startTime)
-                && Objects.equal(endTime, dto.endTime)
-                && Objects.equal(visitStatus, dto.visitStatus);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(assessmentId,
-                assessmentCareContactId,
-                participatingProfession,
-                interpreterStatus,
-                invitationDate,
-                invitationChannel,
-                startTime,
-                endTime,
-                visitStatus);
     }
 }

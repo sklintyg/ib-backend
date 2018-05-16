@@ -39,7 +39,7 @@ public final class RegistreradVardenhet {
     @Id
     @GeneratedValue
     @Column(name = "ID", nullable = false)
-    private long id;
+    private Long id;
 
     @Column(name = "VARDGIVARE_HSA_ID", nullable = false)
     private String vardgivareHsaId;
@@ -54,11 +54,11 @@ public final class RegistreradVardenhet {
     @Column(name = "VARDENHET_REGIFORM", nullable = false)
     private RegiFormTyp vardenhetRegiForm;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -103,7 +103,7 @@ public final class RegistreradVardenhet {
             return false;
         }
         final RegistreradVardenhet that = (RegistreradVardenhet) o;
-        return id == that.id
+        return Objects.equals(id, that.id)
                 && Objects.equals(vardgivareHsaId, that.vardgivareHsaId)
                 && Objects.equals(vardenhetVardgivareHsaId, that.vardenhetVardgivareHsaId)
                 && Objects.equals(vardenhetHsaId, that.vardenhetHsaId)

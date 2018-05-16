@@ -18,9 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
-import static java.util.Objects.isNull;
-import static se.inera.intyg.intygsbestallning.persistence.model.Anteckning.AnteckningBuilder.anAnteckning;
-
 import com.google.common.base.Objects;
 import org.hibernate.annotations.Type;
 
@@ -31,6 +28,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
+
+import static java.util.Objects.isNull;
+import static se.inera.intyg.intygsbestallning.persistence.model.Anteckning.AnteckningBuilder.anAnteckning;
 
 @Entity
 @Table(name = "ANTECKNING")
@@ -53,6 +53,19 @@ public class Anteckning {
     @Column(name = "SKAPAT", nullable = false)
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime skapat;
+
+    public static Anteckning copyFrom(final Anteckning anteckning) {
+        if (isNull(anteckning)) {
+            return null;
+        }
+
+        return anAnteckning()
+                .withVardenhetHsaId(anteckning.getVardenhetHsaId())
+                .withText(anteckning.getText())
+                .withAnvandare(anteckning.getAnvandare())
+                .withSkapat(anteckning.getSkapat())
+                .build();
+    }
 
     public Long getId() {
         return id;
@@ -94,17 +107,25 @@ public class Anteckning {
         this.skapat = skapat;
     }
 
-    public static Anteckning copyFrom(final Anteckning anteckning) {
-        if (isNull(anteckning)) {
-            return null;
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
         }
+        if (!(o instanceof Anteckning)) {
+            return false;
+        }
+        final Anteckning that = (Anteckning) o;
+        return Objects.equal(id, that.id)
+                && Objects.equal(vardenhetHsaId, that.vardenhetHsaId)
+                && Objects.equal(text, that.text)
+                && Objects.equal(anvandare, that.anvandare)
+                && Objects.equal(skapat, that.skapat);
+    }
 
-        return anAnteckning()
-                .withVardenhetHsaId(anteckning.getVardenhetHsaId())
-                .withText(anteckning.getText())
-                .withAnvandare(anteckning.getAnvandare())
-                .withSkapat(anteckning.getSkapat())
-                .build();
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id, vardenhetHsaId, text, anvandare, skapat);
     }
 
     public static final class AnteckningBuilder {
@@ -148,26 +169,5 @@ public class Anteckning {
             anteckning.setSkapat(skapat);
             return anteckning;
         }
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Anteckning)) {
-            return false;
-        }
-        final Anteckning that = (Anteckning) o;
-        return Objects.equal(id, that.id)
-                && Objects.equal(vardenhetHsaId, that.vardenhetHsaId)
-                && Objects.equal(text, that.text)
-                && Objects.equal(anvandare, that.anvandare)
-                && Objects.equal(skapat, that.skapat);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id, vardenhetHsaId, text, anvandare, skapat);
     }
 }

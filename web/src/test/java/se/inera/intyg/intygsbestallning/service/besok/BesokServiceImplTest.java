@@ -52,7 +52,7 @@ import java.util.Optional;
 @RunWith(MockitoJUnitRunner.class)
 public class BesokServiceImplTest {
 
-    private static final String UTREDNING_ID = "utredningsId";
+    private static final Long UTREDNING_ID = 1L;
     private static final UtredningsTyp UTREDNING_TYP = UtredningsTyp.AFU_UTVIDGAD;
     private static final LocalDateTime DATE_TIME = LocalDateTime.of(2011, 11, 11, 11, 11, 11, 11);
 

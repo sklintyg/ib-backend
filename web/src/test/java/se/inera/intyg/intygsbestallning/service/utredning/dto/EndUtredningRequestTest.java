@@ -32,13 +32,13 @@ public class EndUtredningRequestTest {
     @Test
     public void testFrom() {
         EndAssessmentType endAssessmentType = new EndAssessmentType();
-        endAssessmentType.setAssessmentId(anII(null, "utredningId"));
+        endAssessmentType.setAssessmentId(anII(null, "1"));
         endAssessmentType.setEndingCondition(aCv(EndReason.JAV.name(), null, null));
 
         EndUtredningRequest result = EndUtredningRequest.from(endAssessmentType);
 
         assertNotNull(result);
-        assertEquals("utredningId", result.getUtredningId());
+        assertEquals(Long.valueOf(1L), result.getUtredningId());
         assertEquals(EndReason.JAV, result.getEndReason());
     }
 }

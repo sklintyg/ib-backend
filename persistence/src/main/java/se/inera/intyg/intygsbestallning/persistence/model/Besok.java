@@ -48,7 +48,7 @@ public final class Besok {
     @Id
     @GeneratedValue
     @Column(name = "ID", nullable = false)
-    private long id;
+    private Long id;
 
     @Column(name = "BESOK_START_TID")
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
@@ -88,11 +88,11 @@ public final class Besok {
     @JoinColumn(name = "AVVIKELSE_ID")
     private Avvikelse avvikelse;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -199,7 +199,7 @@ public final class Besok {
 
 
     public static final class BesokBuilder {
-        private long id;
+        private Long id;
         private LocalDateTime besokStartTid;
         private LocalDateTime besokSlutTid;
         private LocalDateTime kallelseDatum;
@@ -218,7 +218,7 @@ public final class Besok {
             return new BesokBuilder();
         }
 
-        public BesokBuilder withId(long id) {
+        public BesokBuilder withId(Long id) {
             this.id = id;
             return this;
         }
@@ -299,7 +299,7 @@ public final class Besok {
             return false;
         }
         final Besok besok = (Besok) o;
-        return id == besok.id
+        return Objects.equals(id, besok.id)
                 && Objects.equals(besokStartTid, besok.besokStartTid)
                 && Objects.equals(besokSlutTid, besok.besokSlutTid)
                 && Objects.equals(kallelseDatum, besok.kallelseDatum)

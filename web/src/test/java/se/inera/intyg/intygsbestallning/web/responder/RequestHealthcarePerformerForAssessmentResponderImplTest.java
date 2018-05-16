@@ -58,7 +58,7 @@ public class RequestHealthcarePerformerForAssessmentResponderImplTest {
     @Test
     public void requestHealthcarePerformerForAssessmentOk() {
 
-        final String utredningId = "utredning-id";
+        final Long utredningId = 1L;
 
         CitizenLimitedType citizen = new CitizenLimitedType();
         citizen.setPostalCity("11111");
@@ -77,7 +77,7 @@ public class RequestHealthcarePerformerForAssessmentResponderImplTest {
                 assessmentResponder.requestHealthcarePerformerForAssessment(LOGICAL_ADDRESS, request);
 
         assertNotNull(response);
-        assertEquals(utredningId, response.getAssessmentId().getExtension());
+        assertEquals(utredningId.toString(), response.getAssessmentId().getExtension());
 
         assertNotNull(response.getResult());
         assertEquals(ResultCodeType.OK, response.getResult().getResultCode());

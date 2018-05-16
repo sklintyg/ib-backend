@@ -26,11 +26,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-import se.inera.intyg.infra.integration.hsa.client.OrganizationUnitService;
-import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
-import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
-import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsServiceImpl;
+import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
@@ -67,7 +64,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -114,7 +111,7 @@ public class UtredningServiceImplTest {
     @Test
     public void findForfragningarForVardenhetHsaId() {
         final String enhetId = "enhet";
-        final String utredningId = "utredningId";
+        final Long utredningId = 1L;
         // Almost bare minimum, converting is not in the scope of utredningService
         Utredning utr = anUtredning()
                 .withUtredningsTyp(AFU)
@@ -138,7 +135,7 @@ public class UtredningServiceImplTest {
 
     @Test
     public void registerOrder() {
-        final String utredningId = "utredningId";
+        final Long utredningId = 1L;
 
         when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
                 .withUtredningId(utredningId)
@@ -214,7 +211,7 @@ public class UtredningServiceImplTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void registerOrderNoForfragan() {
-        final String utredningId = "utredningId";
+        final Long utredningId = 1L;
 
         when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
                 .withUtredningId(utredningId)
@@ -231,7 +228,7 @@ public class UtredningServiceImplTest {
 
     @Test(expected = IbNotFoundException.class)
     public void registerOrderNoPreviousUtredning() {
-        final String utredningId = "utredningId";
+        final Long utredningId = 1L;
 
         when(utredningRepository.findById(utredningId)).thenReturn(Optional.empty());
 
@@ -272,7 +269,6 @@ public class UtredningServiceImplTest {
         Utredning response = utredningService.registerNewUtredning(order);
 
         assertNotNull(response);
-        assertNotNull(response.getUtredningId());
         assertTrue(response.getTolkBehov());
         assertEquals("sv", response.getTolkSprak());
         assertEquals(LIAG, response.getUtredningsTyp());
@@ -310,7 +306,7 @@ public class UtredningServiceImplTest {
         final LocalDateTime dateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 12);
 
         final Utredning utredning = anUtredning()
-                .withUtredningId("id")
+                .withUtredningId(1L)
                 .withUtredningsTyp(AFU_UTVIDGAD)
                 .withExternForfragan(anExternForfragan()
                         .withLandstingHsaId("id")
@@ -376,7 +372,7 @@ public class UtredningServiceImplTest {
 
         doReturn(Optional.of(createUtredning()))
                 .when(utredningRepository)
-                .findById(anyString());
+                .findById(anyLong());
 
         doReturn(modifieradUtrening)
                 .when(utredningRepository)
@@ -397,17 +393,17 @@ public class UtredningServiceImplTest {
 
         doReturn(Optional.of(createUtredning()))
                 .when(utredningRepository)
-                .findById(anyString());
+                .findById(anyLong());
 
         UpdateOrderType update = new UpdateOrderType();
-        update.setAssessmentId(anII("root", "utredningsId"));
+        update.setAssessmentId(anII("root", "1"));
 
         assertThatThrownBy(() -> utredningService.updateOrder(UpdateOrderRequest.from(update)));
     }
 
     @Test
     public void testGetUtredningSuccess() {
-        final String utredningId = "utredningId";
+        final Long utredningId = 1L;
         final String landstingHsaId = "landstingHsaId";
 
         when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
@@ -432,7 +428,7 @@ public class UtredningServiceImplTest {
 
     @Test
     public void testGetUtredningWithInternforfraganSuccess() {
-        final String utredningId = "utredningId";
+        final Long utredningId = 1L;
         final String landstingHsaId = "landstingHsaId";
         final String vardenhetHsaId = "vardenhetHsaId";
         final String vardenhetNamn = "vardenhetens namn";
@@ -465,14 +461,15 @@ public class UtredningServiceImplTest {
 
     @Test
     public void testGetUtredningWithTidigareUtforareHsaLookupFails() {
-        final String utredningId = "utredningId";
+        final Long utredningId = 1L;
         final String landstingHsaId = "landstingHsaId";
         final String tidigareVardenhetHsaId1 = "vardenhetHsaId1";
         final String tidigareVardenhetNamn1 = "vardenhetens namn";
         final String tidigareVardenhetHsaId2 = "vardenhetHsaId2";
         final String hsaError2 = "Fel från HSA";
 
-        when(organizationUnitService.getVardenhet(tidigareVardenhetHsaId1)).thenReturn(new Vardenhet(tidigareVardenhetHsaId1, tidigareVardenhetNamn1));
+        when(organizationUnitService.getVardenhet(tidigareVardenhetHsaId1))
+                .thenReturn(new Vardenhet(tidigareVardenhetHsaId1, tidigareVardenhetNamn1));
         when(organizationUnitService.getVardenhet(tidigareVardenhetHsaId2)).thenThrow(new WebServiceException(hsaError2));
 
         when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
@@ -506,7 +503,7 @@ public class UtredningServiceImplTest {
 
     @Test(expected = IbAuthorizationException.class)
     public void testGetUtredningIncorrectLandsting() {
-        final String utredningId = "utredningId";
+        final Long utredningId = 1L;
         final String landstingHsaId = "landstingHsaId";
         when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
                 .withUtredningId(utredningId)
@@ -519,7 +516,7 @@ public class UtredningServiceImplTest {
 
     @Test(expected = IbNotFoundException.class)
     public void testGetUtredningNoUtredning() {
-        final String utredningId = "utredningId";
+        final Long utredningId = 1L;
         final String landstingHsaId = "landstingHsaId";
         when(utredningRepository.findById(utredningId)).thenReturn(Optional.empty());
         utredningService.getExternForfragan(utredningId, landstingHsaId);
@@ -530,7 +527,7 @@ public class UtredningServiceImplTest {
         final String landstingHsaId = "landstingHsaId";
         when(utredningRepository.findAllByExternForfragan_LandstingHsaId(landstingHsaId)).thenReturn(
                 ImmutableList.of(anUtredning()
-                        .withUtredningId("utredningId")
+                        .withUtredningId(1L)
                         .withUtredningsTyp(AFU)
                         .withExternForfragan(anExternForfragan()
                                 .withLandstingHsaId(landstingHsaId)
@@ -546,13 +543,13 @@ public class UtredningServiceImplTest {
         assertNotNull(response);
         assertEquals(1, response.size());
         // assertEquals(landstingHsaId, response.get(0).getVardenhetNamn());
-        assertEquals("utredningId", response.get(0).getUtredningsId());
+        assertEquals(Long.valueOf(1L), response.get(0).getUtredningsId());
         assertEquals(AFU.name(), response.get(0).getUtredningsTyp());
     }
 
     @Test
     public void testEndUtredningSuccess() {
-        final String utredningId = "utredningId";
+        final Long utredningId = 1L;
 
         when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
                 .withUtredningId(utredningId)
@@ -577,7 +574,7 @@ public class UtredningServiceImplTest {
 
     @Test(expected = IbNotFoundException.class)
     public void testEndUtredningFailUtredningNotExisting() {
-        final String utredningId = "utredningId";
+        final Long utredningId = 1L;
 
         when(utredningRepository.findById(utredningId)).thenReturn(Optional.empty());
 
@@ -591,7 +588,7 @@ public class UtredningServiceImplTest {
 
     @Test(expected = IbServiceException.class)
     public void testEndUtredningFailAlreadyEnded() {
-        final String utredningId = "utredningId";
+        final Long utredningId = 1L;
 
         when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
                 .withUtredningId(utredningId)
@@ -613,7 +610,7 @@ public class UtredningServiceImplTest {
 
     @Test
     public void testCreateInternForfragan() {
-        final String utredningId = "utredningId";
+        final Long utredningId = 1L;
         final String landstingHsaId = "landstingHsaId";
         final String kommentar = "Ingen kommentar";
         final String vardenhetId1 = "vardenhetId1";
@@ -671,7 +668,7 @@ public class UtredningServiceImplTest {
 
     @Test(expected = IbNotFoundException.class)
     public void testCreateInternForfraganFailUtredningNotExisting() {
-        final String utredningId = "utredningId";
+        final Long utredningId = 1L;
         final String landstingHsaId = "landstingHsaId";
 
         when(utredningRepository.findById(utredningId)).thenReturn(Optional.empty());
@@ -681,7 +678,7 @@ public class UtredningServiceImplTest {
 
     @Test(expected = IbAuthorizationException.class)
     public void testCreateInternForfraganFailDifferentLandsting() {
-        final String utredningId = "utredningId";
+        final Long utredningId = 1L;
         final String landstingHsaId = "landstingHsaId";
 
         when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
@@ -704,7 +701,7 @@ public class UtredningServiceImplTest {
 
     @Test(expected = IbServiceException.class)
     public void testCreateInternForfraganFailIncorrectState() {
-        final String utredningId = "utredningId";
+        final Long utredningId = 1L;
         final String landstingHsaId = "landstingHsaId";
         final String vardenhetId1 = "vardenhetId1";
 
@@ -737,7 +734,7 @@ public class UtredningServiceImplTest {
 
     @Test(expected = IbServiceException.class)
     public void testCreateInternForfraganFailNoVardenhetSelected() {
-        final String utredningId = "utredningId";
+        final Long utredningId = 1L;
         final String landstingHsaId = "landstingHsaId";
 
         when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()

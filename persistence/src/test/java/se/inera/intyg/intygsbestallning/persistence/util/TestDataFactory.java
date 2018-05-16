@@ -35,6 +35,7 @@ import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.Utred
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 
 import com.google.common.collect.ImmutableList;
@@ -69,7 +70,6 @@ public final class TestDataFactory {
 
     public static final String VE_HSA_ID = "enhet-1";
     public static final String VG_HSA_ID = "vg-1";
-    public static final String UTREDNING_ID = "abc-123";
 
     private TestDataFactory() {
     }
@@ -120,7 +120,7 @@ public final class TestDataFactory {
                 .withAvvisatKommentar("avvisatKommentar")
                 .withKommentar("kommentar")
                 .withInkomDatum(LocalDateTime.now())
-                .withInternForfraganList(ImmutableList.of(
+                .withInternForfraganList(Arrays.asList(
                         anInternForfragan()
                                 .withForfraganSvar(buildForfraganSvar())
                                 .withVardenhetHsaId(VE_HSA_ID)
@@ -154,7 +154,6 @@ public final class TestDataFactory {
 
     public static Utredning buildUtredning() {
         return anUtredning()
-                .withUtredningId(UTREDNING_ID)
                 .withUtredningsTyp(UtredningsTyp.AFU)
                 .withTolkBehov(false)
                 .withAvbrutenAnledning(EndReason.JAV)

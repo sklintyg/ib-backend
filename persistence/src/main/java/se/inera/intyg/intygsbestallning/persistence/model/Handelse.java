@@ -42,7 +42,7 @@ public final class Handelse {
     @Id
     @GeneratedValue
     @Column(name = "ID", nullable = false)
-    private long id;
+    private Long id;
 
     @Column(name = "HANDELSE_TYP", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -79,11 +79,11 @@ public final class Handelse {
                 .build();
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -128,7 +128,7 @@ public final class Handelse {
     }
 
     public static final class HandelseBuilder {
-        private long id;
+        private Long id;
         private HandelseTyp handelseTyp;
         private LocalDateTime skapad;
         private String anvandare;
@@ -142,7 +142,7 @@ public final class Handelse {
             return new HandelseBuilder();
         }
 
-        public HandelseBuilder withId(long id) {
+        public HandelseBuilder withId(Long id) {
             this.id = id;
             return this;
         }
@@ -193,7 +193,7 @@ public final class Handelse {
             return false;
         }
         final Handelse handelse = (Handelse) o;
-        return id == handelse.id
+        return Objects.equals(id, handelse.id)
                 && handelseTyp == handelse.handelseTyp
                 && Objects.equals(skapad, handelse.skapad)
                 && Objects.equals(anvandare, handelse.anvandare)

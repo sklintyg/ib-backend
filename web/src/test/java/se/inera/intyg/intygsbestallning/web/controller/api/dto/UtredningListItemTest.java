@@ -41,7 +41,7 @@ public class UtredningListItemTest {
     public void testFrom() {
 
         final Utredning utredning = anUtredning()
-                .withUtredningId("utredningId")
+                .withUtredningId(21L)
                 .withUtredningsTyp(AFU)
                 .withInvanare(anInvanare()
                         .withPersonId("personnummer")
@@ -58,7 +58,7 @@ public class UtredningListItemTest {
         assertEquals("Förfrågan", response.getFas().getLabel());
         assertEquals(LocalDate.now().format(DateTimeFormatter.ISO_DATE), response.getSlutdatumFas());
         assertEquals("Förfrågan inkommen", response.getStatus().getLabel());
-        assertEquals("utredningId", response.getUtredningsId());
+        assertEquals(Long.valueOf(21L), response.getUtredningsId());
         assertEquals(AFU.name(), response.getUtredningsTyp());
         // assertEquals("landstingHsaId", response.getVardenhetNamn());
     }

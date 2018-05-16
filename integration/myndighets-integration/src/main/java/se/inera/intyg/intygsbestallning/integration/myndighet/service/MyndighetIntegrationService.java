@@ -28,5 +28,5 @@ public interface MyndighetIntegrationService {
 
     void reportCareContactInteraction(ReportCareContactRequestDto request);
 
-    LocalDate updateAssessment(String id, String certificateType);
+    LocalDate updateAssessment(Long id, String certificateType);
 }

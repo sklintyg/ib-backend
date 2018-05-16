@@ -47,7 +47,7 @@ public class UpdateOrderResponderImplTest {
     @Test
     public void uppdateraOk() {
 
-        final String utrednignsId = "utredning-id";
+        final Long utrednignsId = 1L;
 
         doReturn(anUtredning()
                 .withUtredningId(utrednignsId).build())
@@ -63,10 +63,10 @@ public class UpdateOrderResponderImplTest {
     @Test
     public void uppdateraMedTolkBehovUtanTolkSprakOk() {
 
-        final String utrednignsId = "utredning-id";
+        final Long utredningId = 1L;
 
         doReturn(anUtredning()
-                .withUtredningId(utrednignsId).build())
+                .withUtredningId(utredningId).build())
                 .when(utredningService)
                 .updateOrder(any(UpdateOrderRequest.class));
 

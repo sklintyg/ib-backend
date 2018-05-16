@@ -67,10 +67,10 @@ public class MyndighetIntegrationClientServiceImpl implements MyndighetIntegrati
     }
 
     @Override
-    public UpdateAssessmentResponseType updateAssessment(String assessmentId, String certificateType) {
+    public UpdateAssessmentResponseType updateAssessment(Long assessmentId, String certificateType) {
         UpdateAssessmentType request = new UpdateAssessmentType();
         IIType assID = new IIType();
-        assID.setExtension(assessmentId);
+        assID.setExtension(assessmentId.toString());
         request.setAssessmentId(assID);
 
         CVType certType = new CVType();

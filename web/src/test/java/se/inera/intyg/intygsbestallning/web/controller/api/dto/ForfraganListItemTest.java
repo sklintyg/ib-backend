@@ -52,7 +52,7 @@ public class ForfraganListItemTest {
     public void testFrom() {
 
         final Utredning utredning = anUtredning()
-                .withUtredningId("utredningId")
+                .withUtredningId(31L)
                 .withUtredningsTyp(AFU)
                 .withExternForfragan(anExternForfragan()
                         .withLandstingHsaId("landstingHsaId")
@@ -71,7 +71,7 @@ public class ForfraganListItemTest {
                 ForfraganListItem.from(utredning, VARDENHET_HSA_ID, new InternForfraganStateResolver(), businessDays);
 
         assertNotNull(response);
-        assertEquals("utredningId", response.getUtredningsId());
+        assertEquals(Long.valueOf(31L), response.getUtredningsId());
         assertEquals(AFU.name(), response.getUtredningsTyp());
         assertEquals("2019-01-01", response.getBesvarasSenastDatum());
         assertEquals("2018-01-01", response.getInkomDatum());

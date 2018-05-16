@@ -18,20 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toList;
-import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
-import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
-import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
-import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
-import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
-import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
-
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.commons.lang3.BooleanUtils;
@@ -90,8 +76,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toList;
+import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
+import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
+import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
+import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
+import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 
 @Service
 @Transactional
@@ -165,7 +164,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     }
 
     @Override
-    public GetUtredningResponse getExternForfragan(String utredningId, String landstingHsaId) {
+    public GetUtredningResponse getExternForfragan(Long utredningId, String landstingHsaId) {
         Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
                 () -> new IbNotFoundException("Utredning with assessmentId '" + utredningId + "' does not exist."));
 
@@ -187,7 +186,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     }
 
     @Override
-    public GetForfraganResponse getForfragan(String utredningId, String vardenhetHsaId) {
+    public GetForfraganResponse getForfragan(Long utredningId, String vardenhetHsaId) {
         Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
                 () -> new IbNotFoundException("Utredning with assessmentId '" + utredningId + "' does not exist."));
 
@@ -247,7 +246,6 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                     .build());
         }
         utredning.getHandelseList().add(HandelseUtil.createOrderReceived(order.getBestallare().getMyndighet(), order.getOrderDate()));
-        utredningRepository.save(utredning);
         return utredning;
     }
 
@@ -262,14 +260,12 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
             throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, "Assessment does not have a Bestallning");
         }
 
-        final Utredning updatedUtredning = qualifyForUpdatering(update, utredning);
-        return utredningRepository.save(updatedUtredning);
+        return utredningRepository.save(qualifyForUpdatering(update, utredning));
     }
 
     @Override
     public Utredning registerNewUtredning(OrderRequest order) {
         Utredning utredning = anUtredning()
-                .withUtredningId(UUID.randomUUID().toString())
                 .withUtredningsTyp(order.getUtredningsTyp())
                 .withInvanare(updateInvanareFromOrder(new Invanare(), order))
                 .withTolkBehov(order.isTolkBehov())
@@ -316,7 +312,6 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .build();
 
         return utredningRepository.save(anUtredning()
-                .withUtredningId(UUID.randomUUID().toString())
                 .withUtredningsTyp(request.getUtredningsTyp())
                 .withExternForfragan(externForfragan)
                 .withInvanare(invanare)
@@ -343,7 +338,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
     @Override
     @Transactional
-    public GetUtredningResponse createInternForfragan(String utredningId, String landstingHsaId, CreateInternForfraganRequest request) {
+    public GetUtredningResponse createInternForfragan(Long utredningId, String landstingHsaId, CreateInternForfraganRequest request) {
         Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
                 () -> new IbNotFoundException("Could not find the assessment with id " + utredningId));
 
@@ -502,14 +497,14 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         }
 
         switch (bli.getStatus().getUtredningFas()) {
-            case AVSLUTAD:
-                return false;
-            case REDOVISA_TOLK:
-                return Strings.isNullOrEmpty(fromDate);
-            case UTREDNING:
-            case KOMPLETTERING:
-            case FORFRAGAN:
-                return fromDate.compareTo(bli.getSlutdatumFas()) <= 0 && toDate.compareTo(bli.getSlutdatumFas()) >= 0;
+        case AVSLUTAD:
+            return false;
+        case REDOVISA_TOLK:
+            return Strings.isNullOrEmpty(fromDate);
+        case UTREDNING:
+        case KOMPLETTERING:
+        case FORFRAGAN:
+            return fromDate.compareTo(bli.getSlutdatumFas()) <= 0 && toDate.compareTo(bli.getSlutdatumFas()) >= 0;
         }
         return true;
     }
@@ -521,7 +516,6 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         UtredningFas utredningFas = UtredningFas.valueOf(fas);
         return uli.getFas() == utredningFas;
     }
-
 
     @NotNull
     private GetUtredningResponse createGetUtredningResponse(Utredning utredning) {

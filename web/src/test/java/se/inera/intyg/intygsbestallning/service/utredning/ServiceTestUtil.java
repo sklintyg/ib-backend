@@ -49,10 +49,10 @@ public final class ServiceTestUtil {
 
     public static List<Utredning> buildBestallningar(int num) {
         List<Utredning> utredningList = new ArrayList<>();
-        for (int a = 0; a < num; a++) {
+        for (long a = 0; a < num; a++) {
             Utredning utr = anUtredning()
                     .withUtredningsTyp(AFU)
-                    .withUtredningId("id-" + a)
+                    .withUtredningId(a)
                     .withExternForfragan(anExternForfragan()
                             .withInternForfraganList(ImmutableList.of(
                                     anInternForfragan()
