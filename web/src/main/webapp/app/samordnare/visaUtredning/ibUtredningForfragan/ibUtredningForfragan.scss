@@ -26,4 +26,9 @@ ib-utredning-forfragan {
     @extend %ib-typo-05;
     color: $ib-color-09;
   }
+
+  .accept {
+    font-size: inherit;
+    color: $ib-color-16;
+  }
 }
