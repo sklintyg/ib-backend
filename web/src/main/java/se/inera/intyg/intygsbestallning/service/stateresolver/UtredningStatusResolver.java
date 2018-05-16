@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.service.stateresolver;
 
-import org.jetbrains.annotations.NotNull;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
@@ -104,26 +103,17 @@ public class UtredningStatusResolver {
                 .map(Intyg::getSistaDatumKompletteringsbegaran)
                 .max(LocalDateTime::compareTo).orElse(null);
 
+        // Om senasteDatumForKomplettering saknas (bör ej inträffa) så
+        // betraktar vi den som att vara i avslutsfas.
+        if (senasteDatumForKomplettering == null) {
+            return resolveAvslutEllerTolk(utredning);
+        }
+
         if (utredning.getIntygList().stream().allMatch(intyg -> intyg.getMottagetDatum() != null)
                 && LocalDateTime.now().isAfter(senasteDatumForKomplettering)) {
 
             // Om något besök inkluderade deltagande tolk...
-            if (utredning.getBesokList().stream()
-                    .anyMatch(besok -> besok.getTolkStatus() != null)) {
-
-                // Kolla om samtliga tolkar redovisats.
-                if (utredning.getBesokList().stream()
-                        .filter(besok -> besok.getTolkStatus() != null)
-                        .allMatch(besok -> besok.getTolkStatus() == TolkStatusTyp.DELTAGIT)) {
-                    return UtredningStatus.AVSLUTAD;
-                } else {
-
-                    // Dvs om vi har något TolkStatus BOKAD så måste denna redovisas (dvs sättas i DELTAGIT)
-                    return UtredningStatus.REDOVISA_TOLK;
-                }
-            } else {
-                return UtredningStatus.AVSLUTAD;
-            }
+            return resolveAvslutEllerTolk(utredning);
         } else if (utredning.getIntygList().stream().allMatch(intyg -> intyg.getMottagetDatum() != null)
                 && !LocalDateTime.now().isAfter(senasteDatumForKomplettering)) {
 
@@ -168,7 +158,25 @@ public class UtredningStatusResolver {
         throw new IllegalStateException("Unhandled state!");
     }
 
-    @NotNull
+    private static UtredningStatus resolveAvslutEllerTolk(Utredning utredning) {
+        if (utredning.getBesokList().stream()
+                .anyMatch(besok -> besok.getTolkStatus() != null)) {
+
+            // Kolla om samtliga tolkar redovisats.
+            if (utredning.getBesokList().stream()
+                    .filter(besok -> besok.getTolkStatus() != null)
+                    .allMatch(besok -> besok.getTolkStatus() == TolkStatusTyp.DELTAGIT)) {
+                return UtredningStatus.AVSLUTAD;
+            } else {
+
+                // Dvs om vi har något TolkStatus BOKAD så måste denna redovisas (dvs sättas i DELTAGIT)
+                return UtredningStatus.REDOVISA_TOLK;
+            }
+        } else {
+            return UtredningStatus.AVSLUTAD;
+        }
+    }
+
     private static UtredningStatus handleForfraganFas(Utredning utredning) {
         // AVVISAD
         if (utredning.getExternForfragan() != null && utredning.getExternForfragan().getAvvisatDatum() != null) {
