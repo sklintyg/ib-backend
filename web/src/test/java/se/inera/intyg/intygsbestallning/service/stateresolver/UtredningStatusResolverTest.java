@@ -329,7 +329,8 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
     // Den post som skapas i samband med inkommen beställning. Dvs EJ komplettering.
     private Intyg buildBestalltIntyg() {
         return Intyg.IntygBuilder.anIntyg()
-                .withId(123L)
+                .withId(1L)
+                .withKomplettering(false)
                 .withSistaDatum(LocalDateTime.now().plusDays(25))
                 .build();
     }

@@ -28,8 +28,6 @@ import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 
 import java.time.LocalDateTime;
 
-import static java.util.Objects.isNull;
-
 public class BestallningListItem implements PDLLoggable, FreeTextSearchable, FilterableListItem, VardgivareEnrichable {
 
     private static final long DEFAULT_DAYS = 5L;
@@ -55,7 +53,7 @@ public class BestallningListItem implements PDLLoggable, FreeTextSearchable, Fil
                 .withPatientNamn(null)
                 .withSlutdatumFas(SlutDatumFasResolver.resolveSlutDatumFas(utredning, utredningStatus))
                 .withSlutdatumPasserat(LocalDateTime.now().isAfter(utredning.getIntygList().stream()
-                        .filter(i -> isNull(i.getKompletteringsId()))
+                        .filter(i -> !i.isKomplettering())
                         .findFirst()
                         .map(Intyg::getSistaDatum)
                         .orElseThrow(IllegalStateException::new)))
@@ -89,13 +87,14 @@ public class BestallningListItem implements PDLLoggable, FreeTextSearchable, Fil
         switch (utredningStatus.getUtredningFas()) {
         case KOMPLETTERING:
             timestamp = utredning.getIntygList().stream()
+                    .filter(Intyg::isKomplettering)
                     .map(Intyg::getSistaDatum)
                     .max(LocalDateTime::compareTo)
                     .orElseThrow(IllegalStateException::new);
             break;
         case UTREDNING:
             timestamp = utredning.getIntygList().stream()
-                    .filter(i -> isNull(i.getKompletteringsId()))
+                    .filter(i -> !i.isKomplettering())
                     .map(Intyg::getSistaDatum)
                     .findAny()
                     .orElseThrow(IllegalStateException::new);
@@ -106,8 +105,6 @@ public class BestallningListItem implements PDLLoggable, FreeTextSearchable, Fil
         return LocalDateTime.now().isBefore(timestamp)
                 && LocalDateTime.now().isAfter(timestamp.minusDays(DEFAULT_DAYS));
     }
-
-
 
     public Long getUtredningsId() {
         return utredningsId;

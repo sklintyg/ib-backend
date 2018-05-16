@@ -41,10 +41,10 @@ import static org.junit.Assert.assertTrue;
 
 public class ErsattsResolverTest {
 
-    private static final LocalDateTime FEB_20 = LocalDateTime.of(2018,2,20, 11,0);
-    private static final LocalDateTime FEB_20_MORGON = LocalDateTime.of(2018,2,20, 8,0);
-    private static final LocalDateTime FEB_13 = LocalDateTime.of(2018,2,13, 0,0);
-    private static final LocalDateTime FEB_8 = LocalDateTime.of(2018,2,8, 0,0);
+    private static final LocalDateTime FEB_20 = LocalDateTime.of(2018, 2, 20, 11, 0);
+    private static final LocalDateTime FEB_20_MORGON = LocalDateTime.of(2018, 2, 20, 8, 0);
+    private static final LocalDateTime FEB_13 = LocalDateTime.of(2018, 2, 13, 0, 0);
+    private static final LocalDateTime FEB_8 = LocalDateTime.of(2018, 2, 8, 0, 0);
 
     private BusinessDaysBean businessDays = new BusinessDaysStub();
 
@@ -206,7 +206,8 @@ public class ErsattsResolverTest {
         return buildBesokList(ersatts, besokStartTid, null, null);
     }
 
-    private List<Besok> buildBesokList(boolean ersatts, LocalDateTime besokStartTid, LocalDateTime kallelseDatum, KallelseFormTyp kallelseFormTyp) {
+    private List<Besok> buildBesokList(boolean ersatts, LocalDateTime besokStartTid, LocalDateTime kallelseDatum,
+            KallelseFormTyp kallelseFormTyp) {
         Besok b = Besok.BesokBuilder.aBesok()
                 .withBesokStartTid(besokStartTid)
                 .withKallelseDatum(kallelseDatum)
@@ -218,7 +219,8 @@ public class ErsattsResolverTest {
 
     private List<Intyg> buildIntygList() {
         return Arrays.asList(Intyg.IntygBuilder.anIntyg()
-            .withMottagetDatum(LocalDateTime.now())
+                .withKomplettering(false)
+                .withMottagetDatum(LocalDateTime.now())
                 .build());
 
     }

@@ -716,8 +716,8 @@
                 <constraints nullable="false"/>
             </column>
 
-            <column name="KOMPLETTERINGS_ID" type="varchar(64)">
-                <constraints nullable="true"/>
+            <column name="KOMPLETTERING" type="tinyint(1)" defaultValue="0">
+                <constraints nullable="false"/>
             </column>
 
             <column name="SISTA_DATUM" type="datetime">

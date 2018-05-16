@@ -235,6 +235,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         // Inserts new information from order
         utredning.setBestallning(createBestallning(order));
         utredning.getIntygList().add(anIntyg()
+                .withKomplettering(false)
                 .withSistaDatum(order.getLastDateIntyg().atStartOfDay())
                 .build());
         updateInvanareFromOrder(utredning.getInvanare(), order);
@@ -274,6 +275,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .withHandlaggare(createHandlaggare(order.getBestallare()))
                 .withHandelseList(Collections.singletonList(HandelseUtil.createOrderReceived(order.getBestallare().getMyndighet(), null)))
                 .withIntygList(Collections.singletonList(anIntyg()
+                        .withKomplettering(false)
                         .withSistaDatum(Optional.ofNullable(order.getLastDateIntyg()).map(LocalDate::atStartOfDay).orElse(null))
                         .build()))
                 .build();
@@ -403,7 +405,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         update.getTolkBehov().ifPresent(toUpdate::setTolkBehov);
         update.getTolkSprak().ifPresent(toUpdate::setTolkSprak);
         update.getLastDateIntyg().ifPresent(date -> toUpdate.getIntygList().stream()
-                .filter(i -> isNull(i.getKompletteringsId()))
+                .filter(i -> !i.isKomplettering())
                 .findFirst()
                 .ifPresent(i -> i.setSistaDatum(date)));
         update.getBestallare().ifPresent(bestallare -> toUpdate.setHandlaggare(aHandlaggare()

@@ -104,6 +104,7 @@ public class StatisticsServiceImplTest {
                             .build())
                     .withInvanare(anInvanare().withPersonId("19121212-121" + a).build())
                     .withIntygList(Collections.singletonList(anIntyg()
+                            .withKomplettering(false)
                             .withSistaDatum(LocalDateTime.now().plusDays(10L))
                             .build()))
                     .build();
