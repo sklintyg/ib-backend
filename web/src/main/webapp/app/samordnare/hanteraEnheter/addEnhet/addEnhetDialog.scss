@@ -1,0 +1,23 @@
+.add-enhet-dialog-window-class {
+
+  .modal-body {
+    overflow-y: auto;
+    max-height: 90vh;
+
+
+
+    #add-enhet-searchterm {
+      display: inline-block;
+      padding-right: 20px;
+
+      input {
+        width: 380px;
+      }
+
+    }
+
+    .result-section {
+      padding-left: 20px;
+    }
+  }
+ }

@@ -28,6 +28,7 @@ var ibMessages = {
         'common.no.caps': 'NEJ',
         'common.ok': 'OK',
         'common.cancel': 'Avbryt',
+        'common.confirm': 'Bekräfta',
         'common.goback': 'Tillbaka',
         'common.save': 'Spara',
         'common.change': 'Ändra',
@@ -88,6 +89,11 @@ var ibMessages = {
         'hantera-enheter.filter.fritext.label': 'Fritextsökning',
         'hantera-enheter.filter.fritext.placeholder': 'Skriv sökord',
         'hantera-enheter.filter.addunit.label': 'Lägg till vårdenhet',
+        'hantera-enheter.addunit.searchterm.hint': 'HSA-Id',
+        'hantera-enheter.addunit.searchterm.label': 'Sök vårdenhet med HSA-id.',
+        'hantera-enheter.addunit.searchterm.searchbtn.label': 'Sök',
+        'hantera-enheter.addunit.selectregi.label': 'Regi',
+
 
         // Lista utredningar tabell
         'label.table.utredningar.column.id': 'Id',
@@ -194,7 +200,11 @@ var ibMessages = {
         'server.error.getutredning.title': 'Kunde inte hämta utredning',
         'server.error.getutredning.text': 'Försök igen eller kontakta support',
         'server.error.createinternforfragan.title': 'Kunde inte skicka förfrågan',
-        'server.error.createinternforfragan.text': 'Försök igen eller kontakta support'
+        'server.error.createinternforfragan.text': 'Försök igen eller kontakta support',
+        'server.error.updateregiform.title': 'Kunde inte spara ny regiform',
+        'server.error.updateregiform.text': 'Försök igen eller kontakta support',
+        'server.error.deletevardenhet.title': 'Kunde inte ta bort vårdenheten',
+        'server.error.deletevardenhet.text': 'Försök igen eller kontakta support'
     },
     'en': {
         'common.ok': 'OK',

@@ -19,9 +19,12 @@
 package se.inera.intyg.intygsbestallning.persistence.repository;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -71,6 +74,24 @@ public class RegistreradVardenhetRepositoryTest {
 
         List<RegistreradVardenhet> list = registreradVardenhetRepository.findByVardgivareHsaId("vg-2");
         assertEquals(0, list.size());
+    }
+
+    @Test
+    public void testFindByVardgivareHsaIdAndVardenhetHsaId() {
+        RegistreradVardenhet saved = buildRegistreradVardenhet();
+        registreradVardenhetRepository.save(saved);
+
+        Optional<RegistreradVardenhet> found = registreradVardenhetRepository.findByVardgivareHsaIdAndVardenhetHsaId("vg-1", "ve-1");
+        assertTrue(found.isPresent());
+        assertEquals(found.get().getId(), saved.getId());
+    }
+    @Test
+    public void testFindByVardgivareHsaIdAndVardenhetHsaIdEmptyResultForNonexistentCombination() {
+        RegistreradVardenhet saved = buildRegistreradVardenhet();
+        registreradVardenhetRepository.save(saved);
+
+        Optional<RegistreradVardenhet> found = registreradVardenhetRepository.findByVardgivareHsaIdAndVardenhetHsaId("vg-1", "ve-2");
+        assertFalse(found.isPresent());
     }
 
     private RegistreradVardenhet buildRegistreradVardenhet() {

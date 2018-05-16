@@ -1,0 +1,66 @@
+<div class="modal-header">
+  <button type="button" class="close" data-ng-click="$dismiss()"><i class="material-icons">close</i></button>
+  <h3>Lägg till vårdenhet</h3>
+</div>
+
+<div class="modal-body">
+  <form class="form-inline">
+    <div class="form-group">
+      <ib-textfield
+          id="add-enhet-searchterm"
+          model="vm.searchTerm"
+          label-key="hantera-enheter.addunit.searchterm.label"
+          max-length="255"
+          placeholder-key="hantera-enheter.addunit.searchterm.hint">
+      </ib-textfield>
+    </div>
+    <div class="form-group">
+      <ib-button
+        btn-id="add-enhet-search-btn"
+        btn-class="btn-primary"
+        busy="vm.busy"
+        btn-click="onSearch()">
+          <i class="material-icons">search</i>
+          <span message key="hantera-enheter.addunit.searchterm.searchbtn.label"></span>
+      </ib-button>
+    </div>
+  </form>
+  <div ng-if="vm.result.vardenhet" class="result-section">
+    <card-modal>
+      <h3>Vårdenhet</h3>
+      <div>
+        {{vm.result.vardenhet.namn}}
+      </div>
+    </card-modal>
+
+    <card-modal>
+      <h3>Kontaktuppgifter</h3>
+      <div>
+        {{vm.result.vardenhet.postadress}}<br>
+        {{vm.result.vardenhet.postnummer}} {{vm.result.vardenhet.postort}}<br>
+        {{vm.result.vardenhet.telefonnummer}}<br>
+        {{vm.result.vardenhet.epost}}<br>
+      </div>
+    </card-modal>
+    <ib-dropdown
+        id="regiFromDropDown"
+        required="true"
+        label-key="hantera-enheter.addunit.selectregi.label"
+        ng-model="vm.selectedRegiForm"
+        items="vm.regiFormOptions">
+    </ib-dropdown>
+
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button class="btn btn-primary"
+          id="add-enhet-save-btn"
+          ng-click="onConfirmDelete()">
+    <span message key="common.confirm"></span>
+  </button>
+  <button class="btn btn-default" id="add-enhet-cancel-btn"
+          ng-click="$dismiss()">
+    <span message key="common.cancel"></span>
+  </button>
+</div>

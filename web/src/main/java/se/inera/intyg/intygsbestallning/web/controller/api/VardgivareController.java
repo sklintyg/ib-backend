@@ -18,11 +18,16 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api;
 
+import javax.ws.rs.core.Response;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,9 +40,12 @@ import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationExceptio
 import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.vardgivare.VardgivareService;
+import se.inera.intyg.intygsbestallning.service.vardgivare.dto.VardgivarVardenhetListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetVardenheterForVardgivareResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListVardenheterForVardgivareRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListVardenheterForVardgivareResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.SearchForVardenhetResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.UpdateRegiFormRequest;
 
 @RestController
 @RequestMapping("/api/vardgivare")
@@ -67,6 +75,44 @@ public class VardgivareController {
     public ResponseEntity<ListVardenheterForVardgivareResponse> findVardenheterForVardgivareWithFilter(
             @RequestBody ListVardenheterForVardgivareRequest request) {
         IbUser user = userService.getUser();
+        ensureAuthPreconditions(user);
+
+        return ResponseEntity.ok(vardgivareService.findVardenheterForVardgivareWithFilter(user.getCurrentlyLoggedInAt().getId(), request));
+    }
+
+    @PrometheusTimeMethod(name = "update_regiform_for_registered_vardenhet_duration_seconds", help = "Some helpful info here")
+    @PutMapping(path = "/vardenheter/{vardenhetHsaId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<VardgivarVardenhetListItem> updateRegiform(
+            @PathVariable("vardenhetHsaId") String vardenhetHsaId, @RequestBody UpdateRegiFormRequest request) {
+        IbUser user = userService.getUser();
+        ensureAuthPreconditions(user);
+
+        return ResponseEntity
+                .ok(vardgivareService.updateRegiForm(user.getCurrentlyLoggedInAt().getId(), vardenhetHsaId, request.getRegiForm()));
+    }
+
+    @PrometheusTimeMethod(name = "delete_registered_vardenhet_duration_seconds", help = "Some helpful info here")
+    @DeleteMapping(path = "/vardenheter/{vardenhetHsaId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public Response deleteRegistreradVardenhet(
+            @PathVariable("vardenhetHsaId") String vardenhetHsaId) {
+        IbUser user = userService.getUser();
+        ensureAuthPreconditions(user);
+
+        vardgivareService.delete(user.getCurrentlyLoggedInAt().getId(), vardenhetHsaId);
+        return Response.ok().build();
+    }
+
+    @PrometheusTimeMethod(name = "search_vardenhetbyhsaid__duration_seconds", help = "Some helpful info here")
+    @GetMapping(path = "/vardenheter/{vardenhetHsaId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<SearchForVardenhetResponse> searchVardenhetByHsaId(@PathVariable("vardenhetHsaId") String vardenhetHsaId) {
+        IbUser user = userService.getUser();
+        ensureAuthPreconditions(user);
+
+        return ResponseEntity.ok(vardgivareService.searchVardenhetByHsaId(vardenhetHsaId));
+    }
+
+    private void ensureAuthPreconditions(IbUser user) {
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_VARDENHETER_FOR_VARDGIVARE)
                 .orThrow(
                         new IbAuthorizationException("User does not have required privilege PRIVILEGE_HANTERA_VARDENHETER_FOR_VARDGIVARE"));
@@ -74,7 +120,5 @@ public class VardgivareController {
         if (user.getCurrentlyLoggedInAt().getType() != SelectableHsaEntityType.VG) {
             throw new IbAuthorizationException("User is not logged in at a Vardgivare");
         }
-
-        return ResponseEntity.ok(vardgivareService.findVardenheterForVardgivareWithFilter(user.getCurrentlyLoggedInAt().getId(), request));
     }
 }

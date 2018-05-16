@@ -18,39 +18,40 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
-import java.util.List;
-
 import se.inera.intyg.intygsbestallning.service.vardgivare.dto.VardgivarVardenhetListItem;
 
 /**
- * Created by marced on 2018-05-11.
+ * Created by marced on 2018-05-16.
  */
-public class ListVardenheterForVardgivareResponse {
-    private List<VardgivarVardenhetListItem> vardenheter;
-    private int totalCount;
+public class SearchForVardenhetResponse {
 
-    private ListVardenheterForVardgivareResponse() {
+    private VardgivarVardenhetListItem vardenhet;
+    private String errorMessage;
+
+    public SearchForVardenhetResponse() {
     }
 
-    public ListVardenheterForVardgivareResponse(List<VardgivarVardenhetListItem> vardenheter, int totalCount) {
-        this.vardenheter = vardenheter;
-        this.totalCount = totalCount;
+    public SearchForVardenhetResponse(VardgivarVardenhetListItem vardenhet, String errorMessage) {
+        this.vardenhet = vardenhet;
+        this.errorMessage = errorMessage;
     }
 
-    public List<VardgivarVardenhetListItem> getVardenheter() {
-        return vardenheter;
+    public String getErrorMessage() {
+        return errorMessage;
     }
 
-    public void setVardenheter(List<VardgivarVardenhetListItem> vardenheter) {
-        this.vardenheter = vardenheter;
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 
-    public int getTotalCount() {
-        return totalCount;
+
+    public VardgivarVardenhetListItem getVardenhet() {
+        return vardenhet;
     }
 
-    public void setTotalCount(int totalCount) {
-        this.totalCount = totalCount;
+    public void setVardenhet(VardgivarVardenhetListItem vardenhet) {
+        this.vardenhet = vardenhet;
     }
+
 
 }

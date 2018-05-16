@@ -1,0 +1,19 @@
+<button
+    type="button"
+    id="{{::btnId}}"
+    class="btn {{::btnClass}}"
+    data-ng-disabled="btnDisabled || busy"
+    data-ng-click="btnClick()"
+
+    uib-popover="{{::btnTooltip}}"
+    popover-placement="auto top"
+    popover-enable="!(btnDisabled || busy)"
+    popover-append-to-body="true"
+    popover-trigger="mouseenter"
+    popover-popup-delay="300">
+  <div ng-if="busy" class="busy">
+    <i class="material-icons animate-spin">rotate_right</i>
+  </div>
+  <span ng-transclude></span>
+</button>
+

@@ -1,6 +1,6 @@
 <div class="hanteraEnheter-page centered-constrained-content">
 
-  <enhet-filter filter="filter" filter-changed="getVardenheterWithFilter()"></enhet-filter>
+  <enhet-filter filter="filter" filter-changed="getVardenheterWithFilter()" on-add-unit="onAddUnit()"></enhet-filter>
 
   <span id="samordnare-lista-vardenheter-resulttext">Sökresultat: {{vardenheter.length}} av {{vardenheterTotal}} vårdenheter</span>
 
@@ -25,8 +25,8 @@
         <td>{{::row.postort}}</td>
         <td>{{::row.telefon}}</td>
         <td>{{::row.epost}}</td>
-        <td>{{::row.regiFormLabel}}</td>
-        <td>
+        <td>{{row.regiFormLabel}}</td>
+        <td class="action-buttons">
           <row-action-menu
             menu-id="editVardenhetMenu-{{row.vardenhetHsaId}}"
             row="row"
@@ -40,6 +40,7 @@
 
   <div>
     <button class="btn btn-primary"
+            id="fetch-more-btn"
             ng-click="getMore()"
             ng-if="vardenheterTotal > vardenheter.length">
       <message key="common.more.results"></message>

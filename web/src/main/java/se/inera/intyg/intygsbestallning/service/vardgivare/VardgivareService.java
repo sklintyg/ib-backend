@@ -18,13 +18,62 @@
  */
 package se.inera.intyg.intygsbestallning.service.vardgivare;
 
+import se.inera.intyg.intygsbestallning.service.vardgivare.dto.VardgivarVardenhetListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetVardenheterForVardgivareResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListVardenheterForVardgivareRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListVardenheterForVardgivareResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.SearchForVardenhetResponse;
 
 public interface VardgivareService {
+    /**
+     * Return a list of all registered {@link se.inera.intyg.intygsbestallning.service.vardgivare.dto.VardenhetItem} for a
+     * vardgivare, grouped by {@link se.inera.intyg.intygsbestallning.persistence.model.type.RegiFormTyp}.
+     *
+     * @param vardgivareHsaId
+     *            - Id for the vardgivare to list vardenheter for.
+     * @return
+     */
     GetVardenheterForVardgivareResponse listVardenheterForVardgivare(String vardgivareHsaId);
 
+    /**
+     * Return a filtered and paged list of {@link VardgivarVardenhetListItem}
+     * for a
+     * vardgivare.
+     *
+     * @param vardgivareHsaId
+     *            - Id for the vardgivare to list vardenheter for.
+     * @return
+     */
     ListVardenheterForVardgivareResponse findVardenheterForVardgivareWithFilter(String vardgivareHsaId,
             ListVardenheterForVardgivareRequest request);
+
+    /**
+     * Return a filtered and paged list of {@link VardgivarVardenhetListItem}
+     * for a
+     * vardgivare.
+     *
+     * @param vardgivareHsaId
+     *            - Id for the vardgivare to update vardenhet regiForm for.
+     * @param vardenhetHsaId
+     *            - Id for the vardenehet to update vardenhet regiForm for.
+     * @param regiForm
+     *            - Enum value compatible with to update vardenhet regiForm to.
+     * @return
+     */
+    VardgivarVardenhetListItem updateRegiForm(String vardgivareHsaId, String vardenhetHsaId, String regiForm);
+
+    /**
+     * Remove the registered vardenhet identified by vardgivareHsaId and vardenhetHsaId.
+     *
+     * @param vardgivareHsaId
+     * @param vardenhetHsaId
+     */
+    void delete(String vardgivareHsaId, String vardenhetHsaId);
+
+    /**
+     * Search for vardenhet in hsa identified by vardenhetHsaId.
+     *
+     * @param vardenhetHsaId
+     */
+    SearchForVardenhetResponse searchVardenhetByHsaId(String vardenhetHsaId);
 }

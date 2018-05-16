@@ -26,7 +26,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.FreeTextSearchabl
 /**
  * Created by marced on 2018-05-11.
  */
-public class VardenhetListItem implements FreeTextSearchable {
+public class VardgivarVardenhetListItem implements FreeTextSearchable {
     private String vardgivarHsaId;
     private String vardenhetVardgivarHsaId;
     private String vardenhetHsaId;
@@ -39,7 +39,7 @@ public class VardenhetListItem implements FreeTextSearchable {
     private RegiFormTyp regiForm;
     private String regiFormLabel;
 
-    public static VardenhetListItem from(RegistreradVardenhet rv, Vardenhet hsaVardenhet) {
+    public static VardgivarVardenhetListItem from(RegistreradVardenhet rv, Vardenhet hsaVardenhet) {
         return VardenhetListItemBuilder.anVardenhetListItem()
                 .withVardgivarHsaId(rv.getVardgivareHsaId())
                 .withVardenhetHsaId(rv.getVardenhetHsaId())
@@ -51,6 +51,20 @@ public class VardenhetListItem implements FreeTextSearchable {
                 .withTelefon(hsaVardenhet.getTelefonnummer())
                 .withEpost(hsaVardenhet.getEpost())
                 .withRegiForm(rv.getVardenhetRegiForm())
+                .build();
+    }
+    public static VardgivarVardenhetListItem from(Vardenhet hsaVardenhet) {
+        return VardenhetListItemBuilder.anVardenhetListItem()
+                .withVardgivarHsaId(null)
+                .withVardenhetHsaId(hsaVardenhet.getId())
+                .withVardenhetVardgivarHsaId(hsaVardenhet.getVardgivareHsaId())
+                .withNamn(hsaVardenhet.getNamn())
+                .withPostadress(hsaVardenhet.getPostadress())
+                .withPostnummer(hsaVardenhet.getPostnummer())
+                .withPostort(hsaVardenhet.getPostort())
+                .withTelefon(hsaVardenhet.getTelefonnummer())
+                .withEpost(hsaVardenhet.getEpost())
+                .withRegiForm(null)
                 .build();
     }
 
@@ -158,8 +172,8 @@ public class VardenhetListItem implements FreeTextSearchable {
         private VardenhetListItemBuilder() {
         }
 
-        public static VardenhetListItem.VardenhetListItemBuilder anVardenhetListItem() {
-            return new VardenhetListItem.VardenhetListItemBuilder();
+        public static VardgivarVardenhetListItem.VardenhetListItemBuilder anVardenhetListItem() {
+            return new VardgivarVardenhetListItem.VardenhetListItemBuilder();
         }
 
         public VardenhetListItemBuilder withVardgivarHsaId(String vardgivarHsaId) {
@@ -212,8 +226,8 @@ public class VardenhetListItem implements FreeTextSearchable {
             return this;
         }
 
-        public VardenhetListItem build() {
-            VardenhetListItem veli = new VardenhetListItem();
+        public VardgivarVardenhetListItem build() {
+            VardgivarVardenhetListItem veli = new VardgivarVardenhetListItem();
             veli.setVardgivarHsaId(vardgivarHsaId);
             veli.setVardenhetVardgivarHsaId(vardenhetVardgivarHsaId);
             veli.setVardenhetHsaId(vardenhetHsaId);

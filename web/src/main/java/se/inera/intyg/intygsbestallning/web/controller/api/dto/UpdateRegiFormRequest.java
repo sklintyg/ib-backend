@@ -18,39 +18,24 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
-import java.util.List;
-
-import se.inera.intyg.intygsbestallning.service.vardgivare.dto.VardgivarVardenhetListItem;
-
 /**
  * Created by marced on 2018-05-11.
  */
-public class ListVardenheterForVardgivareResponse {
-    private List<VardgivarVardenhetListItem> vardenheter;
-    private int totalCount;
+public class UpdateRegiFormRequest {
+    private String regiForm;
 
-    private ListVardenheterForVardgivareResponse() {
+    public UpdateRegiFormRequest() {
     }
 
-    public ListVardenheterForVardgivareResponse(List<VardgivarVardenhetListItem> vardenheter, int totalCount) {
-        this.vardenheter = vardenheter;
-        this.totalCount = totalCount;
+    public UpdateRegiFormRequest(String regiForm) {
+        this.regiForm = regiForm;
     }
 
-    public List<VardgivarVardenhetListItem> getVardenheter() {
-        return vardenheter;
+    public String getRegiForm() {
+        return regiForm;
     }
 
-    public void setVardenheter(List<VardgivarVardenhetListItem> vardenheter) {
-        this.vardenheter = vardenheter;
+    public void setRegiForm(String regiForm) {
+        this.regiForm = regiForm;
     }
-
-    public int getTotalCount() {
-        return totalCount;
-    }
-
-    public void setTotalCount(int totalCount) {
-        this.totalCount = totalCount;
-    }
-
 }

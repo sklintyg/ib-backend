@@ -1,0 +1,25 @@
+<div class="modal-header">
+  <button type="button" class="close" data-ng-click="$dismiss()"><i class="material-icons">close</i></button>
+  <h3>Ändra regi</h3>
+</div>
+
+<div class="modal-body">
+  Sätt regi för {{::vm.row.namn}}
+  <ib-dropdown
+      id="regiFromDropDown"
+      ng-model="vm.row.regiForm.id"
+      items="vm.regiFormOptions">
+  </ib-dropdown>
+</div>
+
+<div class="modal-footer">
+  <button class="btn btn-primary"
+          id="edit-enhet-save-btn"
+          ng-click="saveChanges()">
+    <span message key="common.save"></span>
+  </button>
+  <button class="btn btn-default" id="edit-enhet-cancel-btn"
+          ng-click="$dismiss()">
+    <span message key="common.cancel"></span>
+  </button>
+</div>

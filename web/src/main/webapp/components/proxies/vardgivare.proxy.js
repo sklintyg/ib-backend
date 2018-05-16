@@ -18,22 +18,19 @@
  */
 
 angular.module('ibApp').factory('VardgivareProxy',
-    function($http, $log, $q,
-        networkConfig) {
+    function($http, $log, $q, networkConfig) {
         'use strict';
+
+        var endpointBaseUrl = '/api/vardgivare/vardenheter';
 
         function _getVardenheter() {
             var promise = $q.defer();
-
-            var restPath = '/api/vardgivare/vardenheter';
 
             var config =  {
                 timeout: networkConfig.defaultTimeout
             };
 
-            $http.get(restPath, config).then(function(response) {
-                $log.debug(restPath + ' - success');
-
+            $http.get(endpointBaseUrl, config).then(function(response) {
                 if (typeof response !== 'undefined') {
                     promise.resolve(response.data);
                 } else {
@@ -42,7 +39,6 @@ angular.module('ibApp').factory('VardgivareProxy',
                 }
             }, function(response) {
                 $log.error('error ' + response.status);
-                // Let calling code handle the error of no data response
                 promise.reject(response.data);
             });
 
@@ -52,14 +48,11 @@ angular.module('ibApp').factory('VardgivareProxy',
         function _getVardenheterWithFilter(query) {
             var promise = $q.defer();
 
-            var restPath = '/api/vardgivare/vardenheter';
-
             var config =  {
                 timeout: networkConfig.defaultTimeout
             };
 
-            $http.post(restPath, query, config).then(function(response) {
-                $log.debug(restPath + ' - success');
+            $http.post(endpointBaseUrl, query, config).then(function(response) {
 
                 if (typeof response !== 'undefined') {
                     promise.resolve(response.data);
@@ -69,9 +62,87 @@ angular.module('ibApp').factory('VardgivareProxy',
                 }
             }, function(response) {
                 $log.error('error ' + response.status);
-                // Let calling code handle the error of no data response
                 promise.reject(response.data);
             });
+
+            return promise.promise;
+        }
+
+        function _updateRegiForm(vardenhetHsaId, regiForm) {
+            var promise = $q.defer();
+
+            var payload = {
+                regiForm: regiForm
+            };
+
+            var config =  {
+                errorMessageConfig: {
+                    errorTitleKey: 'server.error.updateregiform.title',
+                    errorTextKey: 'server.error.updateregiform.text'
+                },
+                timeout: networkConfig.defaultTimeout
+            };
+
+            $http.put(endpointBaseUrl + '/' + vardenhetHsaId, payload, config).then(function(response) {
+                if (typeof response !== 'undefined') {
+                    promise.resolve(response.data);
+                } else {
+                    $log.debug('JSON response syntax error. Rejected.');
+                    promise.reject(null);
+                }
+            }, function(response) {
+                $log.error('error ' + response.status);
+                promise.reject(response.data);
+            });
+
+            return promise.promise;
+        }
+
+        function _deleteVardenhet(vardenhetHsaId) {
+            var promise = $q.defer();
+
+            var config =  {
+                errorMessageConfig: {
+                    errorTitleKey: 'server.error.deletevardenhet.title',
+                    errorTextKey: 'server.error.deletevardenhet.text'
+                },
+                timeout: networkConfig.defaultTimeout
+            };
+
+            $http.delete(endpointBaseUrl + '/' + vardenhetHsaId, config).then(function(response) { // jshint ignore:line
+                if (typeof response !== 'undefined') {
+                    promise.resolve(response.data);
+                } else {
+                    $log.debug('JSON response syntax error. Rejected.');
+                    promise.reject(null);
+                }
+            }, function(response) {
+                $log.error('error ' + response.status);
+                promise.reject(response.data);
+            });
+
+            return promise.promise;
+        }
+
+        function _findVardenhetByHsaId(vardenhetHsaId) {
+            var promise = $q.defer();
+
+
+            var config =  {
+                timeout: networkConfig.defaultTimeout
+            };
+
+                $http.get(endpointBaseUrl + '/' + vardenhetHsaId, config).then(function(response) {
+                    if (typeof response !== 'undefined') {
+                        promise.resolve(response.data);
+                    } else {
+                        $log.debug('JSON response syntax error. Rejected.');
+                        promise.reject(null);
+                    }
+                }, function(response) {
+                    $log.error('error ' + response.status);
+                    promise.reject(response.data);
+                });
 
             return promise.promise;
         }
@@ -79,6 +150,9 @@ angular.module('ibApp').factory('VardgivareProxy',
         // Return public API for the service
         return {
             getVardenheter: _getVardenheter,
-            getVardenheterWithFilter: _getVardenheterWithFilter
+            getVardenheterWithFilter: _getVardenheterWithFilter,
+            updateRegiForm: _updateRegiForm,
+            deleteVardenhet: _deleteVardenhet,
+            findVardenhetByHsaId: _findVardenhetByHsaId
         };
     });

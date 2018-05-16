@@ -19,13 +19,19 @@
 package se.inera.intyg.intygsbestallning.service.vardgivare;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -33,9 +39,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
+import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.persistence.model.RegistreradVardenhet;
 import se.inera.intyg.intygsbestallning.persistence.model.type.RegiFormTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
+import se.inera.intyg.intygsbestallning.service.vardgivare.dto.VardgivarVardenhetListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetVardenheterForVardgivareResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListVardenheterForVardgivareRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListVardenheterForVardgivareResponse;
@@ -47,13 +55,12 @@ public class VardgivareServiceImplTest {
     private static final String ENHET_1 = "ve-1";
     private static final String ENHET_2 = "ve-2";
     private static final String ENHET_3 = "ve-3";
-
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
     @Mock
     private RegistreradVardenhetRepository registreradVardenhetRepository;
-
     @Mock
     private HsaOrganizationsService hsaOrganizationsService;
-
     @InjectMocks
     private VardgivareServiceImpl testee;
 
@@ -93,6 +100,54 @@ public class VardgivareServiceImplTest {
         // No match
         response = testee.findVardenheterForVardgivareWithFilter(VARDGIVARE_ID, buildFilter("XXX"));
         assertEquals(0, response.getTotalCount());
+
+    }
+
+    @Test
+    public void testUpdateRegiformSuccess() {
+        when(registreradVardenhetRepository.findByVardgivareHsaIdAndVardenhetHsaId(anyString(), anyString()))
+                .thenReturn(Optional.of(buildRegVardenhetList().get(0)));
+        when(registreradVardenhetRepository.save(any(RegistreradVardenhet.class))).thenAnswer(
+                invocation -> invocation.getArgument(0));
+        when(hsaOrganizationsService.getVardenhet(anyString())).thenAnswer(
+                invocation -> buildVardEnhet(invocation.getArgument(0)));
+
+        final VardgivarVardenhetListItem vardgivarVardenhetListItem = testee.updateRegiForm(VARDGIVARE_ID, ENHET_1, RegiFormTyp.PRIVAT.name());
+
+        assertEquals(RegiFormTyp.PRIVAT, vardgivarVardenhetListItem.getRegiForm());
+
+    }
+
+    @Test
+    public void testUpdateRegiformFailsWhenEntityNotFound() {
+        when(registreradVardenhetRepository.findByVardgivareHsaIdAndVardenhetHsaId(anyString(), anyString()))
+                .thenReturn(Optional.empty());
+
+        thrown.expect(IbNotFoundException.class);
+        testee.updateRegiForm(VARDGIVARE_ID, ENHET_1, RegiFormTyp.PRIVAT.name());
+
+    }
+
+    @Test
+    public void testDeleteSuccess() {
+        RegistreradVardenhet rv = buildRegVardenhetList().get(0);
+        when(registreradVardenhetRepository.findByVardgivareHsaIdAndVardenhetHsaId(anyString(), anyString()))
+                .thenReturn(Optional.of(rv));
+
+        testee.delete(VARDGIVARE_ID, ENHET_1);
+
+        verify(registreradVardenhetRepository, times(1))
+                .delete(rv);
+
+    }
+
+    @Test
+    public void testDeleteFailsWhenEntityNotFound() {
+        when(registreradVardenhetRepository.findByVardgivareHsaIdAndVardenhetHsaId(anyString(), anyString()))
+                .thenReturn(Optional.empty());
+
+        thrown.expect(IbNotFoundException.class);
+        testee.delete(VARDGIVARE_ID, ENHET_1);
 
     }
 

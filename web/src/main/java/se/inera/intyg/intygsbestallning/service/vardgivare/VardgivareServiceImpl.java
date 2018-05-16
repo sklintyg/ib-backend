@@ -21,6 +21,8 @@ package se.inera.intyg.intygsbestallning.service.vardgivare;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
@@ -29,20 +31,26 @@ import com.google.common.base.Strings;
 
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
+import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.persistence.model.RegistreradVardenhet;
 import se.inera.intyg.intygsbestallning.persistence.model.type.RegiFormTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
 import se.inera.intyg.intygsbestallning.service.util.GenericComparator;
 import se.inera.intyg.intygsbestallning.service.util.PagingUtil;
 import se.inera.intyg.intygsbestallning.service.vardgivare.dto.VardenhetItem;
-import se.inera.intyg.intygsbestallning.service.vardgivare.dto.VardenhetListItem;
+import se.inera.intyg.intygsbestallning.service.vardgivare.dto.VardgivarVardenhetListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FreeTextSearchable;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetVardenheterForVardgivareResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListVardenheterForVardgivareRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListVardenheterForVardgivareResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.SearchForVardenhetResponse;
+
+import javax.xml.ws.WebServiceException;
 
 @Service
 public class VardgivareServiceImpl implements VardgivareService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(VardgivareService.class);
 
     @Autowired
     private RegistreradVardenhetRepository registreradVardenhetRepository;
@@ -76,11 +84,11 @@ public class VardgivareServiceImpl implements VardgivareService {
     @Override
     public ListVardenheterForVardgivareResponse findVardenheterForVardgivareWithFilter(String vardgivareHsaId,
             ListVardenheterForVardgivareRequest requestFilter) {
-        List<VardenhetListItem> enheter = registreradVardenhetRepository.findByVardgivareHsaId(vardgivareHsaId)
+        List<VardgivarVardenhetListItem> enheter = registreradVardenhetRepository.findByVardgivareHsaId(vardgivareHsaId)
                 .stream()
-                .map(rv -> VardenhetListItem.from(rv, hsaOrganizationsService.getVardenhet(rv.getVardenhetHsaId())))
+                .map(rv -> VardgivarVardenhetListItem.from(rv, hsaOrganizationsService.getVardenhet(rv.getVardenhetHsaId())))
                 .filter(veli -> buildFreeTextPredicate(veli, requestFilter.getFreeText()))
-                .sorted((o1, o2) -> GenericComparator.compare(VardenhetListItem.class, o1, o2, requestFilter.getOrderBy(),
+                .sorted((o1, o2) -> GenericComparator.compare(VardgivarVardenhetListItem.class, o1, o2, requestFilter.getOrderBy(),
                         requestFilter.isOrderByAsc()))
                 .collect(Collectors.toList());
 
@@ -91,9 +99,47 @@ public class VardgivareServiceImpl implements VardgivareService {
         }
 
         Pair<Integer, Integer> bounds = PagingUtil.getBounds(total, requestFilter.getPageSize(), requestFilter.getCurrentPage());
-        List<VardenhetListItem> paged = enheter.subList(bounds.getFirst(), bounds.getSecond() + 1);
+        List<VardgivarVardenhetListItem> paged = enheter.subList(bounds.getFirst(), bounds.getSecond() + 1);
 
         return new ListVardenheterForVardgivareResponse(paged, total);
+
+    }
+
+    @Override
+    public VardgivarVardenhetListItem updateRegiForm(String vardgivareHsaId, String vardenhetHsaId, String regiForm) {
+        RegistreradVardenhet rv = registreradVardenhetRepository
+                .findByVardgivareHsaIdAndVardenhetHsaId(vardgivareHsaId, vardenhetHsaId)
+                .orElseThrow(() -> new IbNotFoundException(
+                        "Could not update Regiform - a registered vardenhet with vardenhetHsaId '" + vardenhetHsaId
+                                + "' does not exist for vardgivare with vardgivareHsaId '" + vardgivareHsaId + "'"));
+        rv.setVardenhetRegiFormTyp(RegiFormTyp.valueOf(regiForm));
+        RegistreradVardenhet updated = registreradVardenhetRepository.save(rv);
+
+        return VardgivarVardenhetListItem.from(updated, hsaOrganizationsService.getVardenhet(updated.getVardenhetHsaId()));
+
+    }
+
+    @Override
+    public void delete(String vardgivareHsaId, String vardenhetHsaId) {
+        RegistreradVardenhet rv = registreradVardenhetRepository
+                .findByVardgivareHsaIdAndVardenhetHsaId(vardgivareHsaId, vardenhetHsaId)
+                .orElseThrow(() -> new IbNotFoundException("Could not delete - registrered vardenhet with vardenhetHsaId '" + vardenhetHsaId
+                        + "' does not exist for vardgivare with vardgivareHsaId '" + vardgivareHsaId + "'"));
+
+        registreradVardenhetRepository.delete(rv);
+    }
+
+    @Override
+    public SearchForVardenhetResponse searchVardenhetByHsaId(String vardenhetHsaId) {
+        try {
+            final Vardenhet vardenhet = hsaOrganizationsService.getVardenhet(vardenhetHsaId);
+
+            return new SearchForVardenhetResponse(VardgivarVardenhetListItem.from(vardenhet), null);
+
+        } catch (WebServiceException e) {
+            LOG.error("Error while looking up hsaId " + vardenhetHsaId, e);
+            return new SearchForVardenhetResponse(null, e.getMessage());
+        }
 
     }
 

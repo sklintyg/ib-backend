@@ -1,7 +1,16 @@
 .hanteraEnheter-page {
+  height: 100%;
+  padding-bottom: 20px;
   @extend %page;
 
   table {
     margin-top: 10px;
+    td.action-buttons {
+      width: 100px;
+    }
+  }
+  i.material-icons {
+    font-size: inherit;
   }
 }
+

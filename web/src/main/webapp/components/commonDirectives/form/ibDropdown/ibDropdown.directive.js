@@ -33,6 +33,7 @@ angular.module('ibApp').directive('ibDropdown',
                     useDynamicLabel: '=',
                     disabled:'<ngDisabled',
                     labelKey: '@',
+                    required: '=',
                     labelColSize: '@',
                     inputColSize: '@'
                 },

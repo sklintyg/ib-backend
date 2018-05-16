@@ -24,7 +24,8 @@ angular.module('ibApp').directive('enhetFilter',
             restrict: 'E',
             scope: {
                 'filter': '=',
-                'filterChanged':'&'
+                'filterChanged':'&',
+                'onAddUnit': '&'
             },
             templateUrl: '/app/samordnare/hanteraEnheter/enhetFilter/enhetFilter.directive.html',
             link: function($scope) {

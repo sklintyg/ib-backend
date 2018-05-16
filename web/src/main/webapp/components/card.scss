@@ -171,3 +171,22 @@ card {
   }
 
 }
+//Inline cards in modals
+card-modal {
+  display: block;
+  padding-top: 20px;
+
+  h3 {
+    @extend %ib-typo-06;
+    color: $ib-color-09;
+    margin: 0;
+    padding: $card-header-padding;
+  }
+
+  div {
+    display: inline-block;
+    background: $card-body-bg;
+    padding: $card-body-padding;
+    border-radius: 4px;
+  }
+}

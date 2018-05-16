@@ -215,4 +215,18 @@ Color and background should be specified at the extension point, eg:
 .material-icons.md-light { color: rgba(255, 255, 255, 1); }
 .material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
 
+// Spinner animation class
+.animate-spin {
+  animation: spin 2s infinite linear;
+  display: inline-block;
+}
 
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(359deg);
+  }
+}

@@ -1,6 +1,6 @@
 <div class="btn-group" uib-dropdown is-open="status.isopen">
   <button ng-attr-id="{{::menuId}}" type="button" class="btn btn-default" uib-dropdown-toggle ng-disabled="disabled">
-    Hantera <span class="caret"></span>
+    Hantera <i class="material-icons md-18">{{status.isopen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}</i>
   </button>
   <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="{{::menuId}}">
     <li role="menuitem"><a href ng-attr-id="{{::menuId}}-edit" ng-click="onEdit({'row': row})">Ändra regi</a></li>

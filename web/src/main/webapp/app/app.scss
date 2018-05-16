@@ -36,8 +36,12 @@
 @import 'footer/footer.scss';
 @import 'login/login.page.scss';
 @import 'samordnare/avslutadeArenden/avslutadeArenden.page.scss';
+@import 'samordnare/hanteraEnheter/addEnhet/addEnhetDialog.scss';
+@import 'samordnare/hanteraEnheter/deleteEnhet/deleteEnhetDialog.scss';
+@import 'samordnare/hanteraEnheter/editEnhet/editEnhetDialog.scss';
 @import 'samordnare/hanteraEnheter/enhetFilter/enhetFilter.directive.scss';
 @import 'samordnare/hanteraEnheter/hanteraEnheter.page.scss';
+@import 'samordnare/hanteraEnheter/rowActionMenu/rowActionMenu.directive.scss';
 @import 'samordnare/listaUtredningar/listaUtredningar.page.scss';
 @import 'samordnare/listaUtredningar/utredningFilter/utredningFilter.directive.scss';
 @import 'samordnare/visaUtredning/ibUtredningForfragan/skickaForfragan.modal.scss';
@@ -82,6 +86,7 @@
 @import 'commonDirectives/form/ibTextfield/ibTextfield.directive.scss';
 @import 'commonDirectives/ibAlertMessage/ibAlertMessage.directive.scss';
 @import 'commonDirectives/ibBottomFadeout/ibBottomFadeout.directive.scss';
+@import 'commonDirectives/ibButton/ibButton.directive.scss';
 @import 'commonDirectives/ibCookieBanner/ibCookieBanner.directive.scss';
 @import 'commonDirectives/ibDateRangePicker/ibDateRangePicker.directive.scss';
 @import 'commonDirectives/ibHelpChevron/ibHelpChevron.directive.scss';
