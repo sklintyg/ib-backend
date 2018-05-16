@@ -22,13 +22,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.intygsbestallning.persistence.model.Avvikelse;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
+import se.inera.intyg.intygsbestallning.persistence.model.Handling;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.type.AvvikelseOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.Handling;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
 
 import java.time.LocalDateTime;
 
@@ -157,9 +160,33 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
     }
 
     @Test
+    public void testResolvesAvvikelseMottagen() {
+        Utredning utr = buildBaseUtredning();
+        utr.getExternForfragan().getInternForfraganList()
+                .add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
+        utr.setBestallning(buildBestallning(null));
+        utr.getIntygList().add(buildBestalltIntyg());
+        utr.getHandlingList().add(buildHandling(LocalDateTime.now(), null));
+        utr.getBesokList().add(Besok.BesokBuilder.aBesok()
+                .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
+                .withDeltagareProfession(DeltagarProfessionTyp.FT)
+                .withAvvikelse(Avvikelse.AvvikelseBuilder.anAvvikelse()
+                        .withOrsakatAv(AvvikelseOrsak.PATIENT)
+                        .withTidpunkt(LocalDateTime.now())
+                        .build())
+                .build());
+
+        UtredningStatus status = testee.resolveStatus(utr);
+        assertEquals(UtredningStatus.AVVIKELSE_MOTTAGEN, status);
+        assertEquals(UtredningFas.UTREDNING, status.getUtredningFas());
+        assertEquals(Actor.VARDADMIN, status.getNextActor());
+    }
+
+    @Test
     public void testResolvesUtredningPagar() {
         Utredning utr = buildBaseUtredning();
-        utr.getExternForfragan().getInternForfraganList().add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
+        utr.getExternForfragan().getInternForfraganList()
+                .add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
         utr.setBestallning(buildBestallning(null));
         utr.getIntygList().add(buildBestalltIntyg());
         utr.getHandlingList().add(buildHandling(LocalDateTime.now(), null));
@@ -177,7 +204,8 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
     @Test
     public void testResolvesUtlatandeSkickat() {
         Utredning utr = buildBaseUtredning();
-        utr.getExternForfragan().getInternForfraganList().add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
+        utr.getExternForfragan().getInternForfraganList()
+                .add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
         utr.setBestallning(buildBestallning(null));
         Intyg intyg = buildBestalltIntyg();
         intyg.setSkickatDatum(LocalDateTime.now());
@@ -197,11 +225,13 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
     @Test
     public void testResolvesUtlatandeMottaget() {
         Utredning utr = buildBaseUtredning();
-        utr.getExternForfragan().getInternForfraganList().add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
+        utr.getExternForfragan().getInternForfraganList()
+                .add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
         utr.setBestallning(buildBestallning(null));
         Intyg intyg = buildBestalltIntyg();
         intyg.setSkickatDatum(LocalDateTime.now());
         intyg.setMottagetDatum(LocalDateTime.now());
+        intyg.setSistaDatumKompletteringsbegaran(LocalDateTime.now().plusDays(1));
         utr.getIntygList().add(intyg);
         utr.getHandlingList().add(buildHandling(LocalDateTime.now(), null));
         utr.getBesokList().add(Besok.BesokBuilder.aBesok()
@@ -213,6 +243,80 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
         assertEquals(UtredningStatus.UTLATANDE_MOTTAGET, status);
         assertEquals(UtredningFas.UTREDNING, status.getUtredningFas());
         assertEquals(Actor.FK, status.getNextActor());
+    }
+
+    @Test
+    public void testResolveAvslutadEjTolkEjKomplt() {
+        Utredning utr = buildBaseUtredning();
+        utr.getExternForfragan().getInternForfraganList()
+                .add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
+        utr.setBestallning(buildBestallning(null));
+        Intyg intyg = buildBestalltIntyg();
+        intyg.setSkickatDatum(LocalDateTime.now());
+        intyg.setMottagetDatum(LocalDateTime.now());
+        intyg.setSistaDatumKompletteringsbegaran(LocalDateTime.now().minusDays(1));
+        utr.getIntygList().add(intyg);
+        utr.getHandlingList().add(buildHandling(LocalDateTime.now(), null));
+        utr.getBesokList().add(Besok.BesokBuilder.aBesok()
+                .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
+                .withDeltagareProfession(DeltagarProfessionTyp.FT)
+                .withTolkStatus(null)
+                .build());
+
+        UtredningStatus status = testee.resolveStatus(utr);
+        assertEquals(UtredningStatus.AVSLUTAD, status);
+        assertEquals(UtredningFas.AVSLUTAD, status.getUtredningFas());
+        assertEquals(Actor.NONE, status.getNextActor());
+    }
+
+    @Test
+    public void testResolveAvslutadTolkRedovisadEjKomplt() {
+        Utredning utr = buildBaseUtredning();
+        utr.getExternForfragan().getInternForfraganList()
+                .add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
+        utr.setBestallning(buildBestallning(null));
+        Intyg intyg = buildBestalltIntyg();
+        intyg.setSkickatDatum(LocalDateTime.now());
+        intyg.setMottagetDatum(LocalDateTime.now());
+        intyg.setSistaDatumKompletteringsbegaran(LocalDateTime.now().minusDays(1));
+        utr.getIntygList().add(intyg);
+        utr.getHandlingList().add(buildHandling(LocalDateTime.now(), null));
+        utr.getBesokList().add(Besok.BesokBuilder.aBesok()
+                .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
+                .withDeltagareProfession(DeltagarProfessionTyp.FT)
+                .withTolkStatus(TolkStatusTyp.DELTAGIT)
+                .withErsatts(true)
+                .build());
+
+        UtredningStatus status = testee.resolveStatus(utr);
+        assertEquals(UtredningStatus.AVSLUTAD, status);
+        assertEquals(UtredningFas.AVSLUTAD, status.getUtredningFas());
+        assertEquals(Actor.NONE, status.getNextActor());
+    }
+
+    @Test
+    public void testResolveAvslutadTolkEjRedovisadEjKomplt() {
+        Utredning utr = buildBaseUtredning();
+        utr.getExternForfragan().getInternForfraganList()
+                .add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
+        utr.setBestallning(buildBestallning(null));
+        Intyg intyg = buildBestalltIntyg();
+        intyg.setSkickatDatum(LocalDateTime.now());
+        intyg.setMottagetDatum(LocalDateTime.now());
+        intyg.setSistaDatumKompletteringsbegaran(LocalDateTime.now().minusDays(1));
+        utr.getIntygList().add(intyg);
+        utr.getHandlingList().add(buildHandling(LocalDateTime.now(), null));
+        utr.getBesokList().add(Besok.BesokBuilder.aBesok()
+                .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
+                .withDeltagareProfession(DeltagarProfessionTyp.FT)
+                .withTolkStatus(TolkStatusTyp.BOKAT)
+                .withErsatts(true)
+                .build());
+
+        UtredningStatus status = testee.resolveStatus(utr);
+        assertEquals(UtredningStatus.REDOVISA_TOLK, status);
+        assertEquals(UtredningFas.REDOVISA_TOLK, status.getUtredningFas());
+        assertEquals(Actor.VARDADMIN, status.getNextActor());
     }
 
     private Handling buildHandling(LocalDateTime inkomDatum, LocalDateTime skickadDatum) {

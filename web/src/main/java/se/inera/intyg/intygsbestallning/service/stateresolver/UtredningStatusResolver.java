@@ -18,13 +18,14 @@
  */
 package se.inera.intyg.intygsbestallning.service.stateresolver;
 
+import org.jetbrains.annotations.NotNull;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
+import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -43,38 +44,11 @@ public class UtredningStatusResolver {
 
         // First phase - there can be no Bestallning - i.e. Forfragan
         if (!utredning.getBestallning().isPresent()) {
-
-            // AVVISAD
-            if (utredning.getExternForfragan() != null && utredning.getExternForfragan().getAvvisatDatum() != null) {
-                return UtredningStatus.AVVISAD;
-            }
-
-            // FORFRAGAN_INKOMMEN - får ej finnas några internförfrågan alls.
-            if (utredning.getExternForfragan() != null && utredning.getExternForfragan().getInternForfraganList().size() == 0) {
-                return UtredningStatus.FORFRAGAN_INKOMMEN;
-            }
-
-            // VANTAR_PA_SVAR - måste finnas internförfrågan - men ingen får vara tilldelad eller accepterad.
-            if (utredning.getExternForfragan() != null && !isAccepterad(utredning.getExternForfragan().getInternForfraganList())
-                    && !isTilldelad(utredning.getExternForfragan().getInternForfraganList())) {
-                return UtredningStatus.VANTAR_PA_SVAR;
-            }
-
-            // TILLDELA_UTREDNING - måste finnas internförfrågan som är accepterad - men får ej vara tilldelad.
-            if (utredning.getExternForfragan() != null && isAccepterad(utredning.getExternForfragan().getInternForfraganList())
-                    && !isTilldelad(utredning.getExternForfragan().getInternForfraganList())) {
-                return UtredningStatus.TILLDELA_UTREDNING;
-            }
-
-            // TILLDELAD_VANTAR_PA_BESTALLNING - måste finnas internförfrågan som är accepterad - som är tilldelad.
-            if (utredning.getExternForfragan() != null
-                    && isAccepteradAndTilldelad(utredning.getExternForfragan().getInternForfraganList())) {
-                return UtredningStatus.TILLDELAD_VANTAR_PA_BESTALLNING;
-            }
-            throw new IllegalStateException("Invalid sub-state in phase FORFRAGAN!");
+            return handleForfraganFas(utredning);
         }
 
-        // Second phase - Utredning. We ALWAYS have a Bestallning here and one intyg.
+        // Second phase - Utredning. We ALWAYS have a Bestallning here and one intyg. There can never be a komplettering
+        // if intyg.size == 1.
         if (utredning.getIntygList().size() == 1) {
 
             // UTREDNING_PAGAR_AVVIKELSE
@@ -116,62 +90,111 @@ public class UtredningStatusResolver {
             if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getSkickatDatum() != null
                     && intyg.getMottagetDatum() != null
                     && intyg.getKompletteringsId() == null
-                    && (intyg.getSistaDatum() == null || intyg.getSistaDatum().isAfter(LocalDateTime.now())))) {
+                    && (intyg.getSistaDatumKompletteringsbegaran() != null
+                            && intyg.getSistaDatumKompletteringsbegaran().isAfter(LocalDateTime.now())))) {
                 return UtredningStatus.UTLATANDE_MOTTAGET;
             }
-
         }
 
-        if (utredning.getIntygList().size() > 0) {
+        // Slutfas. Denna kontroll måste ske före vi tittar detaljerat på kompletteringar.
 
-            // Om sista datum för kompletteringsbegäran EJ passerats.
-//            if (utredning.getIntygList().stream().noneMatch(intyg -> intyg.getSistaDatumKompletteringsbegaran() != null
-//                    && LocalDate.now().isBefore(intyg.getSistaDatumKompletteringsbegaran().toLocalDate()))) {
-//                return UtredningStatus.UTLATANDE_MOTTAGET;
-//            }
+        // Om alla intyg/kompletteringar står som mottagna är vi klara OCH om sista datum för komplettering passerats.
+        LocalDateTime senasteDatumForKomplettering = utredning.getIntygList().stream().map(Intyg::getSistaDatumKompletteringsbegaran)
+                .max(LocalDateTime::compareTo).orElse(null);
+        if (utredning.getIntygList().stream().allMatch(intyg -> intyg.getMottagetDatum() != null)
+                && LocalDateTime.now().isAfter(senasteDatumForKomplettering)) {
 
-            // Om ingen komplettering finns utstående men intyget är mottaget.
-            if (utredning.getIntygList().stream()
-                    .noneMatch(intyg -> intyg.getMottagetDatum() != null && intyg.getSistaDatumKompletteringsbegaran() != null
-                            && LocalDate.now().isAfter(intyg.getSistaDatumKompletteringsbegaran().toLocalDate()))) {
+            // Om något besök inkluderade deltagande tolk...
+            if (utredning.getBesokList().stream()
+                    .anyMatch(besok -> besok.getTolkStatus() != null)) {
 
-                // Om något besök inkluderade deltagande tolk...
+                // Kolla om samtliga tolkar redovisats.
                 if (utredning.getBesokList().stream()
-                        .anyMatch(besok -> besok.getTolkStatus() != null && besok.getTolkStatus() == TolkStatusTyp.DELTAGIT)) {
-
-                    // Kolla om samtliga tolkar redovisats.
-                    if (utredning.getBesokList().stream()
-                            .filter(besok -> besok.getTolkStatus() != null && besok.getTolkStatus() == TolkStatusTyp.DELTAGIT)
-                            .allMatch(besok -> besok.getErsatts() != null && besok.getErsatts())) {
-                        return UtredningStatus.AVSLUTAD;
-                    } else {
-                        return UtredningStatus.REDOVISA_TOLK;
-                    }
-                } else {
+                        .filter(besok -> besok.getTolkStatus() != null)
+                        .allMatch(besok -> besok.getTolkStatus() == TolkStatusTyp.DELTAGIT)) {
                     return UtredningStatus.AVSLUTAD;
+                } else {
+
+                    // Dvs om vi har något TolkStatus BOKAD så måste denna redovisas (dvs sättas i DELTAGIT)
+                    return UtredningStatus.REDOVISA_TOLK;
                 }
+            } else {
+                return UtredningStatus.AVSLUTAD;
             }
+        } else if (utredning.getIntygList().stream().allMatch(intyg -> intyg.getMottagetDatum() != null)
+                && !LocalDateTime.now().isAfter(senasteDatumForKomplettering)) {
 
-            // Komplettering är skickad.
-            if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getSkickatDatum() != null
-                    && intyg.getKompletteringsId() != null
-                    && intyg.getMottagetDatum() == null)) {
-                return UtredningStatus.KOMPLETTERING_SKICKAD;
-            }
-
-            // Komplettering mottagen.
-            if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getSkickatDatum() != null
-                    && intyg.getKompletteringsId() != null
-                    && intyg.getMottagetDatum() != null)) {
+            // Om det funnits någon komplettering...
+            if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getKompletteringsId() != null)) {
                 return UtredningStatus.KOMPLETTERING_MOTTAGEN;
+            } else {
+                return UtredningStatus.UTLATANDE_MOTTAGET;
             }
-
-
         }
 
+        // Kompletteringar.
 
+        // Det finns komplettering, men ingen kompletterande frågetällning än samt att sistadatum ej har passerats.
+        if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getKompletteringsId() != null
+                && intyg.getFragestallningMottagenDatum() == null
+                && intyg.getSistaDatum().isAfter(LocalDateTime.now()))) {
+            return UtredningStatus.KOMPLETTERINGSBEGARAN_MOTTAGEN_VANTAR_PA_FRAGESTALLNING;
+        }
+
+        // Det finns komplettering med kompletterande frågetällning, men sistadatum ej har passerats.
+        if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getKompletteringsId() != null
+                && intyg.getFragestallningMottagenDatum() != null
+                && intyg.getSistaDatum().isAfter(LocalDateTime.now()))) {
+            return UtredningStatus.KOMPLETTERANDE_FRAGESTALLNING_MOTTAGEN;
+        }
+
+        // Komplettering är skickad till FK.
+        if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getSkickatDatum() != null
+                && intyg.getKompletteringsId() != null
+                && intyg.getMottagetDatum() == null)) {
+            return UtredningStatus.KOMPLETTERING_SKICKAD;
+        }
+
+        // Komplettering mottagen av FK.
+        if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getSkickatDatum() != null
+                && intyg.getKompletteringsId() != null
+                && intyg.getMottagetDatum() != null)) {
+            return UtredningStatus.KOMPLETTERING_MOTTAGEN;
+        }
 
         throw new IllegalStateException("Unhandled state!");
+    }
+
+    @NotNull
+    private static UtredningStatus handleForfraganFas(Utredning utredning) {
+        // AVVISAD
+        if (utredning.getExternForfragan() != null && utredning.getExternForfragan().getAvvisatDatum() != null) {
+            return UtredningStatus.AVVISAD;
+        }
+
+        // FORFRAGAN_INKOMMEN - får ej finnas några internförfrågan alls.
+        if (utredning.getExternForfragan() != null && utredning.getExternForfragan().getInternForfraganList().size() == 0) {
+            return UtredningStatus.FORFRAGAN_INKOMMEN;
+        }
+
+        // VANTAR_PA_SVAR - måste finnas internförfrågan - men ingen får vara tilldelad eller accepterad.
+        if (utredning.getExternForfragan() != null && !isAccepterad(utredning.getExternForfragan().getInternForfraganList())
+                && !isTilldelad(utredning.getExternForfragan().getInternForfraganList())) {
+            return UtredningStatus.VANTAR_PA_SVAR;
+        }
+
+        // TILLDELA_UTREDNING - måste finnas internförfrågan som är accepterad - men får ej vara tilldelad.
+        if (utredning.getExternForfragan() != null && isAccepterad(utredning.getExternForfragan().getInternForfraganList())
+                && !isTilldelad(utredning.getExternForfragan().getInternForfraganList())) {
+            return UtredningStatus.TILLDELA_UTREDNING;
+        }
+
+        // TILLDELAD_VANTAR_PA_BESTALLNING - måste finnas internförfrågan som är accepterad - som är tilldelad.
+        if (utredning.getExternForfragan() != null
+                && isAccepteradAndTilldelad(utredning.getExternForfragan().getInternForfraganList())) {
+            return UtredningStatus.TILLDELAD_VANTAR_PA_BESTALLNING;
+        }
+        throw new IllegalStateException("Invalid sub-state in phase FORFRAGAN!");
     }
 
     private static boolean isAccepteradAndTilldelad(List<InternForfragan> internForfraganList) {
