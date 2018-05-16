@@ -152,10 +152,10 @@ public class BusinessDaysBean {
     }
 
     /**
-     * Adds businessDays business days to the incoming start date .
+     * Adds a number of business days to the incoming start date.
      *
      * @param date the start date
-     * @param businessDays number of business days tp add
+     * @param businessDays the number of business days to add
      * @return the new date
      */
     public LocalDate addBusinessDays(LocalDate date, int businessDays) {
