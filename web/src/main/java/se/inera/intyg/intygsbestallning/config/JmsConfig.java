@@ -46,6 +46,13 @@ public class JmsConfig {
     @Value("${aggregated.pdl.logging.queue.name}")
     private String aggregatedLoggingQueueName;
 
+    @Value("${erik_test_property}")
+    private String erikTestProperty;
+
+    @Value("${environment.erik_test_property}")
+    private String erikEnvTestProperty;
+
+
     @Bean
     public JmsTransactionManager jmsTransactionManager() {
         return new JmsTransactionManager(connectionFactory());
@@ -53,6 +60,9 @@ public class JmsConfig {
 
     @Bean
     public ConnectionFactory connectionFactory() {
+        System.out.println("ENTER - connectionFactory()");
+        System.out.println("Experiment: test_property value: " + erikTestProperty);
+        System.out.println("Experiment: env_test_property value: " + erikEnvTestProperty);
         return new ActiveMQConnectionFactory(activeMqBrokerUrl);
     }
 
