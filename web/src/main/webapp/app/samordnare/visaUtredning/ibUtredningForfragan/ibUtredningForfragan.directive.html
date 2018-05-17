@@ -27,8 +27,8 @@
         <tr ng-if="utredning.internForfraganList.length == 0">
           <td colspan="4" id="internforfragan-no-results">Förfrågan har inte skickats till några vårdenheter än.</td>
         </tr>
-        <tr ng-repeat="row in utredning.internForfraganList">
-          <td>{{::row.vardenhetNamn}}<br>
+        <tr ng-repeat="row in utredning.internForfraganList track by $index">
+          <td><span id="vardenhetNamn-{{$index}}">{{::row.vardenhetNamn}}</span><br>
             <ib-expand label="vårdenhetens detaljer">
               <h3>Meddelande</h3>
               <card-value>

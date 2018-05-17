@@ -52,7 +52,7 @@ public class RegistreradVardenhetResource {
     }
 
     @DeleteMapping(path = "/vardgivare/{vardgivareHsaId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response deleteRegistreradeVardenhetertForVardgivare(@PathVariable("vardgivareHsaId") String vardgivareHsaId) {
+    public Response deleteRegistreradeVardenheterForVardgivare(@PathVariable("vardgivareHsaId") String vardgivareHsaId) {
         registreradVardenhetRepository.findByVardgivareHsaId(vardgivareHsaId)
                 .stream()
                 .forEach(vardenhet -> registreradVardenhetRepository.delete(vardenhet));
