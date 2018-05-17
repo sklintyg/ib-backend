@@ -147,12 +147,43 @@ angular.module('ibApp').factory('VardgivareProxy',
             return promise.promise;
         }
 
+        function _addVardenhet(vardenhetHsaId, regiForm) {
+            var promise = $q.defer();
+
+            var payload = {
+                regiForm: regiForm
+            };
+
+            var config =  {
+                errorMessageConfig: {
+                    errorTitleKey: 'server.error.addvardenhet.title',
+                    errorTextKey: 'server.error.addvardenhet.text'
+                },
+                timeout: networkConfig.defaultTimeout
+            };
+
+            $http.post(endpointBaseUrl + '/' + vardenhetHsaId, payload, config).then(function(response) {
+                if (typeof response !== 'undefined') {
+                    promise.resolve(response.data);
+                } else {
+                    $log.debug('JSON response syntax error. Rejected.');
+                    promise.reject(null);
+                }
+            }, function(response) {
+                $log.error('error ' + response.status);
+                promise.reject(response.data);
+            });
+
+            return promise.promise;
+        }
+
         // Return public API for the service
         return {
             getVardenheter: _getVardenheter,
             getVardenheterWithFilter: _getVardenheterWithFilter,
             updateRegiForm: _updateRegiForm,
             deleteVardenhet: _deleteVardenhet,
-            findVardenhetByHsaId: _findVardenhetByHsaId
+            findVardenhetByHsaId: _findVardenhetByHsaId,
+            addVardenhet: _addVardenhet
         };
     });

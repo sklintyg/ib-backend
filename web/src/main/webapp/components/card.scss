@@ -143,7 +143,7 @@ card {
 //Inline cards in modals
 card-modal {
   display: block;
-  padding-top: 20px;
+  padding-bottom: 8px;
 
   h3 {
     @extend %ib-typo-06;
@@ -155,7 +155,7 @@ card-modal {
   div {
     display: inline-block;
     background: $card-body-bg;
-    padding: $card-body-padding;
+    padding: 8px;
     border-radius: 4px;
   }
 }

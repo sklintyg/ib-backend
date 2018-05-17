@@ -75,7 +75,7 @@ public class VardgivareController {
     public ResponseEntity<ListVardenheterForVardgivareResponse> findVardenheterForVardgivareWithFilter(
             @RequestBody ListVardenheterForVardgivareRequest request) {
         IbUser user = userService.getUser();
-        ensureAuthPreconditions(user);
+        ensureVGAuthPreconditions(user);
 
         return ResponseEntity.ok(vardgivareService.findVardenheterForVardgivareWithFilter(user.getCurrentlyLoggedInAt().getId(), request));
     }
@@ -86,10 +86,22 @@ public class VardgivareController {
     public ResponseEntity<VardgivarVardenhetListItem> updateRegiform(
             @PathVariable("vardenhetHsaId") String vardenhetHsaId, @RequestBody UpdateRegiFormRequest request) {
         IbUser user = userService.getUser();
-        ensureAuthPreconditions(user);
+        ensureVGAuthPreconditions(user);
 
         return ResponseEntity
                 .ok(vardgivareService.updateRegiForm(user.getCurrentlyLoggedInAt().getId(), vardenhetHsaId, request.getRegiForm()));
+    }
+
+    @PrometheusTimeMethod(name = "add_registered_vardenhet_duration_seconds", help = "Some helpful info here")
+    @PostMapping(path = "/vardenheter/{vardenhetHsaId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<VardgivarVardenhetListItem> addVardenhet(
+            @PathVariable("vardenhetHsaId") String vardenhetHsaId, @RequestBody UpdateRegiFormRequest request) {
+        IbUser user = userService.getUser();
+        ensureVGAuthPreconditions(user);
+
+        return ResponseEntity
+                .ok(vardgivareService.addVardenhet(user.getCurrentlyLoggedInAt().getId(), vardenhetHsaId, request.getRegiForm()));
     }
 
     @PrometheusTimeMethod(name = "delete_registered_vardenhet_duration_seconds", help = "Some helpful info here")
@@ -97,7 +109,7 @@ public class VardgivareController {
     public Response deleteRegistreradVardenhet(
             @PathVariable("vardenhetHsaId") String vardenhetHsaId) {
         IbUser user = userService.getUser();
-        ensureAuthPreconditions(user);
+        ensureVGAuthPreconditions(user);
 
         vardgivareService.delete(user.getCurrentlyLoggedInAt().getId(), vardenhetHsaId);
         return Response.ok().build();
@@ -107,12 +119,12 @@ public class VardgivareController {
     @GetMapping(path = "/vardenheter/{vardenhetHsaId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<SearchForVardenhetResponse> searchVardenhetByHsaId(@PathVariable("vardenhetHsaId") String vardenhetHsaId) {
         IbUser user = userService.getUser();
-        ensureAuthPreconditions(user);
+        ensureVGAuthPreconditions(user);
 
-        return ResponseEntity.ok(vardgivareService.searchVardenhetByHsaId(vardenhetHsaId));
+        return ResponseEntity.ok(vardgivareService.searchVardenhetByHsaId(user.getCurrentlyLoggedInAt().getId(), vardenhetHsaId));
     }
 
-    private void ensureAuthPreconditions(IbUser user) {
+    private void ensureVGAuthPreconditions(IbUser user) {
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_VARDENHETER_FOR_VARDGIVARE)
                 .orThrow(
                         new IbAuthorizationException("User does not have required privilege PRIVILEGE_HANTERA_VARDENHETER_FOR_VARDGIVARE"));

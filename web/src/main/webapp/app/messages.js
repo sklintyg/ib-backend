@@ -96,6 +96,10 @@ var ibMessages = {
         'hantera-enheter.addunit.searchterm.label': 'Sök vårdenhet med HSA-id.',
         'hantera-enheter.addunit.searchterm.searchbtn.label': 'Sök',
         'hantera-enheter.addunit.selectregi.label': 'Regi',
+        'hantera-enheter.addunit.result.alreadyexists': 'Vårdenheten är redan tillagd.',
+        'hantera-enheter.addunit.result.nomatch': 'Ingen matchande vårdenhet kunde hittas. Kontrollera att angivet HSA id är korrekt.',
+        'hantera-enheter.addunit.result.invalidunittype': 'Hittades i hsa men är inte en vårdenhet.',
+        'hantera-enheter.addunit.result.searcherror': 'Ett tekniskt fel uppstod när vårdenheten skulle hämtas. Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraNationellKundservice>',
 
 
         // Lista utredningar tabell
@@ -209,7 +213,10 @@ var ibMessages = {
         'server.error.updateregiform.title': 'Kunde inte spara ny regiform',
         'server.error.updateregiform.text': 'Försök igen eller kontakta support',
         'server.error.deletevardenhet.title': 'Kunde inte ta bort vårdenheten',
-        'server.error.deletevardenhet.text': 'Försök igen eller kontakta support'
+        'server.error.deletevardenhet.text': 'Försök igen eller kontakta support',
+        'server.error.addvardenhet.title': 'Kunde inte spara vårdenhet',
+        'server.error.addvardenhet.text': 'Försök igen eller kontakta support',
+        'server.error.listvardenhet.text': 'Ett tekniskt fel uppstod när information om vårdenheterna skulle hämtas. Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraNationellKundservice>'
     },
     'en': {
         'common.ok': 'OK',

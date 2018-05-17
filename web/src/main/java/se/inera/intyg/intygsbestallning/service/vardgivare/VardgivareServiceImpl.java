@@ -29,9 +29,13 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
 
+import se.inera.intyg.infra.integration.hsa.client.OrganizationUnitService;
+import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
+import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
+import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.RegistreradVardenhet;
 import se.inera.intyg.intygsbestallning.persistence.model.type.RegiFormTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
@@ -44,8 +48,8 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetVardenheterFor
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListVardenheterForVardgivareRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListVardenheterForVardgivareResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.SearchForVardenhetResponse;
-
-import javax.xml.ws.WebServiceException;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.SearchFormVardenhetResultCodesEnum;
+import se.riv.infrastructure.directory.organization.gethealthcareunitresponder.v1.HealthCareUnitType;
 
 @Service
 public class VardgivareServiceImpl implements VardgivareService {
@@ -57,6 +61,9 @@ public class VardgivareServiceImpl implements VardgivareService {
 
     @Autowired
     private HsaOrganizationsService hsaOrganizationsService;
+
+    @Autowired
+    private OrganizationUnitService organizationUnitService;
 
     @Override
     public GetVardenheterForVardgivareResponse listVardenheterForVardgivare(String vardgivareHsaId) {
@@ -123,24 +130,65 @@ public class VardgivareServiceImpl implements VardgivareService {
     public void delete(String vardgivareHsaId, String vardenhetHsaId) {
         RegistreradVardenhet rv = registreradVardenhetRepository
                 .findByVardgivareHsaIdAndVardenhetHsaId(vardgivareHsaId, vardenhetHsaId)
-                .orElseThrow(() -> new IbNotFoundException("Could not delete - registrered vardenhet with vardenhetHsaId '" + vardenhetHsaId
-                        + "' does not exist for vardgivare with vardgivareHsaId '" + vardgivareHsaId + "'"));
+                .orElseThrow(() -> new IbNotFoundException(String.format(
+                        "Could not delete - registrered vardenhetHsaId '%s' does not exist for vardgivareHsaId '%s'",
+                        vardenhetHsaId, vardgivareHsaId)));
 
         registreradVardenhetRepository.delete(rv);
     }
 
     @Override
-    public SearchForVardenhetResponse searchVardenhetByHsaId(String vardenhetHsaId) {
+    public SearchForVardenhetResponse searchVardenhetByHsaId(String vardgivarHsaId, String vardenhetHsaId) {
         try {
+            // We use getHealthCareUnit first to make sure this is a VE type unit
+            final HealthCareUnitType healthCareUnit = organizationUnitService.getHealthCareUnit(vardenhetHsaId);
+            if (!Boolean.TRUE.equals(healthCareUnit.isUnitIsHealthCareUnit())) {
+                return new SearchForVardenhetResponse(null, SearchFormVardenhetResultCodesEnum.INVALID_UNIT_TYPE);
+            }
+
             final Vardenhet vardenhet = hsaOrganizationsService.getVardenhet(vardenhetHsaId);
+            // Vardenhet retrieved using GetUnit does not have vardgivarHsaId set - use vardgivarHsaId from HealthCareUnitType
+            vardenhet.setVardgivareHsaId(healthCareUnit.getHealthCareProviderHsaId());
 
-            return new SearchForVardenhetResponse(VardgivarVardenhetListItem.from(vardenhet), null);
+            // Check if this enhet already exists for this vardgivare
+            if (registreradVardenhetRepository.findByVardgivareHsaIdAndVardenhetHsaId(vardgivarHsaId, vardenhetHsaId).isPresent()) {
+                return new SearchForVardenhetResponse(VardgivarVardenhetListItem.from(vardenhet),
+                        SearchFormVardenhetResultCodesEnum.ALREADY_EXISTS);
+            }
 
-        } catch (WebServiceException e) {
-            LOG.error("Error while looking up hsaId " + vardenhetHsaId, e);
-            return new SearchForVardenhetResponse(null, e.getMessage());
+            return new SearchForVardenhetResponse(VardgivarVardenhetListItem.from(vardenhet), SearchFormVardenhetResultCodesEnum.OK_TO_ADD);
+
+        } catch (HsaServiceCallException e) {
+            LOG.error("HsaServiceCallException (HSA returned no result) while querying HSA for hsaId " + vardenhetHsaId, e);
+            return new SearchForVardenhetResponse(null, SearchFormVardenhetResultCodesEnum.NO_MATCH, e.getMessage());
+        } catch (RuntimeException e) {
+            LOG.error("RuntimeException while while querying HSA for hsaId " + vardenhetHsaId, e);
+            return new SearchForVardenhetResponse(null, SearchFormVardenhetResultCodesEnum.SEARCH_ERROR, e.getMessage());
         }
 
+    }
+
+    @Override
+    public VardgivarVardenhetListItem addVardenhet(String vardgivarHsaId, String vardenhetHsaId, String regiForm) {
+
+        // retrieve the candidate we should add
+        final SearchForVardenhetResponse candidate = searchVardenhetByHsaId(vardgivarHsaId, vardenhetHsaId);
+        if (!SearchFormVardenhetResultCodesEnum.OK_TO_ADD.equals(candidate.getResultCode())) {
+            throw new IbServiceException(IbErrorCodeEnum.BAD_STATE,
+                    String.format(
+                            "Could not add vardenhet '%s' to vardgivare '%s', precondition that failed was '%s' and errorMessage '%s'",
+                            vardenhetHsaId, vardgivarHsaId, candidate.getResultCode(), candidate.getErrorMessage()));
+        }
+
+        RegistreradVardenhet rv = RegistreradVardenhet.RegistreradVardenhetBuilder
+                .aRegistreradVardenhet()
+                .withVardgivareHsaId(vardgivarHsaId)
+                .withVardenhetHsaId(vardenhetHsaId)
+                .withVardenhetVardgivareHsaId(candidate.getVardenhet().getVardenhetVardgivarHsaId())
+                .withVardenhetRegiForm(RegiFormTyp.valueOf(regiForm))
+                .build();
+        registreradVardenhetRepository.save(rv);
+        return candidate.getVardenhet();
     }
 
     private boolean buildFreeTextPredicate(FreeTextSearchable veli, String freeText) {

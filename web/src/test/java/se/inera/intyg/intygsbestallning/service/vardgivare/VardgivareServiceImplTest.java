@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.service.vardgivare;
 
+import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -37,6 +38,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import se.inera.intyg.infra.integration.hsa.client.OrganizationUnitService;
+import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
@@ -47,6 +50,9 @@ import se.inera.intyg.intygsbestallning.service.vardgivare.dto.VardgivarVardenhe
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetVardenheterForVardgivareResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListVardenheterForVardgivareRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListVardenheterForVardgivareResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.SearchForVardenhetResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.SearchFormVardenhetResultCodesEnum;
+import se.riv.infrastructure.directory.organization.gethealthcareunitresponder.v1.HealthCareUnitType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class VardgivareServiceImplTest {
@@ -55,12 +61,19 @@ public class VardgivareServiceImplTest {
     private static final String ENHET_1 = "ve-1";
     private static final String ENHET_2 = "ve-2";
     private static final String ENHET_3 = "ve-3";
+
     @Rule
     public ExpectedException thrown = ExpectedException.none();
+
     @Mock
     private RegistreradVardenhetRepository registreradVardenhetRepository;
+
     @Mock
     private HsaOrganizationsService hsaOrganizationsService;
+
+    @Mock
+    private OrganizationUnitService organizationUnitService;
+
     @InjectMocks
     private VardgivareServiceImpl testee;
 
@@ -112,7 +125,8 @@ public class VardgivareServiceImplTest {
         when(hsaOrganizationsService.getVardenhet(anyString())).thenAnswer(
                 invocation -> buildVardEnhet(invocation.getArgument(0)));
 
-        final VardgivarVardenhetListItem vardgivarVardenhetListItem = testee.updateRegiForm(VARDGIVARE_ID, ENHET_1, RegiFormTyp.PRIVAT.name());
+        final VardgivarVardenhetListItem vardgivarVardenhetListItem = testee.updateRegiForm(VARDGIVARE_ID, ENHET_1,
+                RegiFormTyp.PRIVAT.name());
 
         assertEquals(RegiFormTyp.PRIVAT, vardgivarVardenhetListItem.getRegiForm());
 
@@ -150,6 +164,93 @@ public class VardgivareServiceImplTest {
         testee.delete(VARDGIVARE_ID, ENHET_1);
 
     }
+
+    @Test
+    public void testSearchForNonMatchingHsaId() throws HsaServiceCallException {
+        when(organizationUnitService.getHealthCareUnit(anyString()))
+                .thenThrow(new HsaServiceCallException("Error"));
+        final SearchForVardenhetResponse result = testee.searchVardenhetByHsaId(VARDGIVARE_ID, ENHET_1);
+
+        assertEquals(SearchFormVardenhetResultCodesEnum.NO_MATCH, result.getResultCode());
+    }
+
+    @Test
+    public void testSearchForInvalidUnitType() throws HsaServiceCallException {
+        when(organizationUnitService.getHealthCareUnit(anyString()))
+                .thenReturn(buildHealthCareUnit(false));
+        final SearchForVardenhetResponse result = testee.searchVardenhetByHsaId(VARDGIVARE_ID, ENHET_1);
+
+        assertEquals(SearchFormVardenhetResultCodesEnum.INVALID_UNIT_TYPE, result.getResultCode());
+    }
+
+    @Test
+    public void testSearchForAlreadyAddedUnit() throws HsaServiceCallException {
+
+        when(organizationUnitService.getHealthCareUnit(anyString()))
+                .thenReturn(buildHealthCareUnit(true));
+        when(hsaOrganizationsService.getVardenhet(anyString())).thenAnswer(
+                invocation -> buildVardEnhet(invocation.getArgument(0)));
+        when(registreradVardenhetRepository.findByVardgivareHsaIdAndVardenhetHsaId(anyString(), anyString()))
+                .thenReturn(Optional.of(buildRegVardenhetList().get(0)));
+
+        final SearchForVardenhetResponse result = testee.searchVardenhetByHsaId(VARDGIVARE_ID, ENHET_1);
+
+        assertEquals(SearchFormVardenhetResultCodesEnum.ALREADY_EXISTS, result.getResultCode());
+    }
+
+    @Test
+    public void testSearchAndUnknownExceptionHappensReturnsSearchError() throws HsaServiceCallException {
+        when(organizationUnitService.getHealthCareUnit(anyString()))
+                .thenThrow(new RuntimeException("Something bad happened!"));
+        final SearchForVardenhetResponse result = testee.searchVardenhetByHsaId(VARDGIVARE_ID, ENHET_1);
+
+        assertEquals(SearchFormVardenhetResultCodesEnum.SEARCH_ERROR, result.getResultCode());
+    }
+
+    @Test
+    public void testSearchSuccess() throws HsaServiceCallException {
+
+        when(organizationUnitService.getHealthCareUnit(anyString()))
+                .thenReturn(buildHealthCareUnit(true));
+        when(hsaOrganizationsService.getVardenhet(anyString())).thenAnswer(
+                invocation -> buildVardEnhet(invocation.getArgument(0)));
+        when(registreradVardenhetRepository.findByVardgivareHsaIdAndVardenhetHsaId(anyString(), anyString()))
+                .thenReturn(Optional.empty());
+
+        final SearchForVardenhetResponse result = testee.searchVardenhetByHsaId(VARDGIVARE_ID, ENHET_1);
+
+        assertEquals(SearchFormVardenhetResultCodesEnum.OK_TO_ADD, result.getResultCode());
+    }
+
+    @Test
+    public void testAddSuccess() throws HsaServiceCallException {
+
+        when(organizationUnitService.getHealthCareUnit(anyString()))
+                .thenReturn(buildHealthCareUnit(true));
+        when(hsaOrganizationsService.getVardenhet(anyString())).thenAnswer(
+                invocation -> buildVardEnhet(invocation.getArgument(0)));
+        RegistreradVardenhet rv = buildRegVardenhetList().get(0);
+        when(registreradVardenhetRepository.findByVardgivareHsaIdAndVardenhetHsaId(anyString(), anyString()))
+                .thenReturn(Optional.empty());
+
+        final VardgivarVardenhetListItem vardgivarVardenhetListItem = testee.addVardenhet(VARDGIVARE_ID, ENHET_1,
+                RegiFormTyp.EGET_LANDSTING.getId());
+
+        assertNotNull(vardgivarVardenhetListItem);
+        verify(registreradVardenhetRepository, times(1))
+                .save(rv);
+    }
+
+    private HealthCareUnitType buildHealthCareUnit(boolean isVardenhet) {
+        HealthCareUnitType hcut = new HealthCareUnitType();
+        hcut.setHealthCareUnitHsaId(ENHET_1);
+        hcut.setHealthCareProviderHsaId(VARDGIVARE_ID);
+        hcut.setUnitIsHealthCareUnit(isVardenhet);
+        return hcut;
+    }
+
+    // test variants of search
+    // test add
 
     private ListVardenheterForVardgivareRequest buildFilter(String freeText) {
         ListVardenheterForVardgivareRequest req = new ListVardenheterForVardgivareRequest();

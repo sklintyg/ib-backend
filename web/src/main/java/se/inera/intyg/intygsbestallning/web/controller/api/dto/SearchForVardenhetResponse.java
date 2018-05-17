@@ -26,14 +26,30 @@ import se.inera.intyg.intygsbestallning.service.vardgivare.dto.VardgivarVardenhe
 public class SearchForVardenhetResponse {
 
     private VardgivarVardenhetListItem vardenhet;
+    private SearchFormVardenhetResultCodesEnum resultCode;
     private String errorMessage;
 
     public SearchForVardenhetResponse() {
     }
 
-    public SearchForVardenhetResponse(VardgivarVardenhetListItem vardenhet, String errorMessage) {
+    public SearchForVardenhetResponse(VardgivarVardenhetListItem vardenhet, SearchFormVardenhetResultCodesEnum resultCode) {
         this.vardenhet = vardenhet;
+        this.resultCode = resultCode;
+    }
+
+    public SearchForVardenhetResponse(VardgivarVardenhetListItem vardenhet, SearchFormVardenhetResultCodesEnum resultCode,
+            String errorMessage) {
+        this.vardenhet = vardenhet;
+        this.resultCode = resultCode;
         this.errorMessage = errorMessage;
+    }
+
+    public SearchFormVardenhetResultCodesEnum getResultCode() {
+        return resultCode;
+    }
+
+    public void setResultCode(SearchFormVardenhetResultCodesEnum resultCode) {
+        this.resultCode = resultCode;
     }
 
     public String getErrorMessage() {
@@ -44,7 +60,6 @@ public class SearchForVardenhetResponse {
         this.errorMessage = errorMessage;
     }
 
-
     public VardgivarVardenhetListItem getVardenhet() {
         return vardenhet;
     }
@@ -52,6 +67,5 @@ public class SearchForVardenhetResponse {
     public void setVardenhet(VardgivarVardenhetListItem vardenhet) {
         this.vardenhet = vardenhet;
     }
-
 
 }

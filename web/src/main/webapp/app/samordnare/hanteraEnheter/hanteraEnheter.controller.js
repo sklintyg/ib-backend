@@ -26,6 +26,10 @@ angular.module('ibApp')
 
             $scope.filter = ibEnhetFilterModel.build();
 
+            $scope.showHasNoVardenheter = function() {
+                //No server error and no base results
+                return !$scope.activeErrorKey && $scope.filter.freetext === '' && $scope.vardenheterTotal === 0;
+            };
 
             $scope.onAddUnit = function () {
                 _addModalInstance = $uibModal.open({
@@ -37,14 +41,13 @@ angular.module('ibApp')
                     backdrop: 'static'
                 });
                 _addModalInstance.result.then(function (newRow) {
-                    //TODO: reload or add first instead?
-                    $scope.vardenheter.push(newRow);
+                    $log.debug('newRow:' + newRow);
+                    $scope.getVardenheterWithFilter();
                 }).catch(function () {}); //jshint ignore:line
 
             };
 
             $scope.onEditRow = function (row) {
-                var srcRow = row;
                 _editModalInstance = $uibModal.open({
                     templateUrl: '/app/samordnare/hanteraEnheter/editEnhet/editEnhetDialog.template.html',
                     controller: 'editEnhetDialogCtrl',
@@ -58,14 +61,12 @@ angular.module('ibApp')
                 });
                 _editModalInstance.result.then(function (updatedRow) {
                     $log.debug('updatedRow:' + updatedRow);
-                    srcRow.regiForm = updatedRow.regiForm;
-                    srcRow.regiFormLabel = updatedRow.regiFormLabel;
+                    $scope.getVardenheterWithFilter();
                 }).catch(function () {}); //jshint ignore:line
 
             };
 
             $scope.onDeleteRow = function (row) {
-                var srcRow = row;
                 _deleteModalInstance = $uibModal.open({
                     templateUrl: '/app/samordnare/hanteraEnheter/deleteEnhet/deleteEnhetDialog.template.html',
                     controller: 'deleteEnhetDialogCtrl',
@@ -79,8 +80,7 @@ angular.module('ibApp')
                 });
                 _deleteModalInstance.result.then(function (deletedRow) {
                     $log.debug('deleted row :' + deletedRow);
-                    //remove it from list locally
-                    $scope.vardenheter.pop(srcRow);
+                    $scope.getVardenheterWithFilter();
                 }).catch(function () {}); //jshint ignore:line
             };
 
@@ -98,7 +98,7 @@ angular.module('ibApp')
 
 
             $scope.getVardenheterWithFilter = function(appendResults) {
-
+                $scope.activeErrorKey = undefined;
                 if (!appendResults) {
                     $scope.filter.currentPage = 0;
                 }
@@ -110,8 +110,8 @@ angular.module('ibApp')
                       $scope.vardenheter = data.vardenheter;
                     }
                     $scope.vardenheterTotal = data.totalCount;
-                }, function(error) {
-                    $log.error(error);
+                }, function() {
+                    $scope.activeErrorKey = 'server.error.listvardenhet.text';
                 });
             };
 

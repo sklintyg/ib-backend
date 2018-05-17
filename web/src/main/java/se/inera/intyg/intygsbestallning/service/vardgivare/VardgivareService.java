@@ -71,9 +71,23 @@ public interface VardgivareService {
     void delete(String vardgivareHsaId, String vardenhetHsaId);
 
     /**
-     * Search for vardenhet in hsa identified by vardenhetHsaId.
+     * Search for vardenhet in hsa identified by vardenhetHsaId and correlate against existing vardeneheter for
+     * vardgivarHsaId.
      *
+     * @param vardgivarHsaId
      * @param vardenhetHsaId
+     * @return
      */
-    SearchForVardenhetResponse searchVardenhetByHsaId(String vardenhetHsaId);
+    SearchForVardenhetResponse searchVardenhetByHsaId(String vardgivarHsaId, String vardenhetHsaId);
+
+    /**
+     * Creates a new RegistreradVardenhet for the @vardenhetHsaId. If the vardenhet is already added, and error is thrown.
+     *
+     * @param vardgivarHsaId
+     * @param vardenhetHsaId
+     * @param regiForm
+     * @return
+     */
+    VardgivarVardenhetListItem addVardenhet(String vardgivarHsaId, String vardenhetHsaId, String regiForm);
+
 }

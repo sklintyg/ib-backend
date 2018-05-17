@@ -22,8 +22,9 @@ angular.module('ibApp').controller('addEnhetDialogCtrl',
 
             $scope.vm = {
                 result: undefined,
-                busy: false,
-                searchTerm: 'TSTNMT2321000156-105N',
+                busySearching: false,
+                busySaving: false,
+                searchTerm: '',
                 selectedRegiForm: undefined,
                 regiFormOptions: [{
                     id: undefined,
@@ -41,15 +42,26 @@ angular.module('ibApp').controller('addEnhetDialogCtrl',
             };
 
             $scope.onSearch = function() {
-                $scope.vm.busy = true;
+                $scope.vm.busySearching = true;
                 VardgivareProxy.findVardenhetByHsaId($scope.vm.searchTerm).then(function(result) {
                     //$uibModalInstance.close(result);
                     $scope.vm.result = result;
-                }, function (error) {
-                    $scope.vm.result.error = error;
-
+                }, function () {
+                    $scope.vm.result = {
+                        resultCode: 'SEARCH_ERROR'
+                    };
                 }).finally(function() { // jshint ignore:line
-                    $scope.vm.busy = false;
+                    $scope.vm.busySearching = false;
+                });
+
+            };
+
+            $scope.onAddUnit = function() {
+                $scope.vm.busySaving = true;
+                VardgivareProxy.addVardenhet($scope.vm.result.vardenhet.vardenhetHsaId, $scope.vm.selectedRegiForm).then(function(result) {
+                    $uibModalInstance.close(result);
+                }).finally(function() { // jshint ignore:line
+                    $scope.vm.busySaving = false;
                 });
 
             };

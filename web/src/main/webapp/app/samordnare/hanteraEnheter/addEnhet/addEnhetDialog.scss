@@ -1,23 +1,40 @@
 .add-enhet-dialog-window-class {
 
   .modal-body {
-    overflow-y: auto;
-    max-height: 90vh;
-
-
+    overflow-y: visible;
+    max-height: none;
+    .search-section {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      padding-bottom: 10px;
+    }
 
     #add-enhet-searchterm {
-      display: inline-block;
+      flex: 1;
       padding-right: 20px;
-
-      input {
-        width: 380px;
-      }
 
     }
 
     .result-section {
       padding-left: 20px;
     }
+
+    ib-alert-message {
+      padding-top: 20px;
+    }
+
+    .validation-error-message {
+      margin-top: 10px;
+      color: $ib-color-11;
+    }
+
   }
- }
+
+  .modal-footer {
+    ib-button {
+      display: inline-block;
+      margin-right: 10px;
+    }
+  }
+}
