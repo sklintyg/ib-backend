@@ -10,8 +10,8 @@
                       ng-if="veModel.error"></ib-alert-message>
 
     <div class="table-actionbar" ng-show="showForfraganButtons()">
-      <button class="btn btn-primary" ng-click="skickaForfragan()" ng-disabled="disableForfraganButtons()">Skicka förfrågan</button>
-      <button class="btn btn-primary" ng-click="tilldelaDirekt()" ng-show="showTilldelaDirekt()" ng-disabled="disableForfraganButtons()">Tilldela direkt</button>
+      <button class="btn btn-primary" id="skicka-forfragan-button" ng-click="skickaForfragan()" ng-disabled="disableForfraganButtons()">Skicka förfrågan</button>
+      <button class="btn btn-primary" id="tilldela-direkt-button" ng-click="tilldelaDirekt()" ng-show="showTilldelaDirekt()" ng-disabled="disableForfraganButtons()">Tilldela direkt</button>
     </div>
 
     <table id="samordnare-utredning-forfragan-table" class="table table-striped ib-table-striped">
@@ -25,7 +25,7 @@
       </thead>
       <tbody>
         <tr ng-if="utredning.internForfraganList.length == 0">
-          <td colspan="4">Förfrågan har inte skickats till några vårdenheter än.</td>
+          <td colspan="4" id="internforfragan-no-results">Förfrågan har inte skickats till några vårdenheter än.</td>
         </tr>
         <tr ng-repeat="row in utredning.internForfraganList">
           <td>{{::row.vardenhetNamn}}<br>

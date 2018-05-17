@@ -30,45 +30,32 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
+import se.inera.intyg.intygsbestallning.persistence.model.RegistreradVardenhet;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 
 import javax.ws.rs.core.Response;
 
 @RestController
-@RequestMapping("/api/test/utredningar")
+@RequestMapping("/api/test/registreradvardenhet")
 @Profile({ "dev", "testability-api" })
-public class UtredningResource {
+public class RegistreradVardenhetResource {
 
     @Autowired
-    protected UtredningRepository utredningRepository;
-
-    @GetMapping(path = "/{utredningId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Utredning> getUtredning(@PathVariable("utredningId") Long utredningId) {
-        Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
-                () -> new IbNotFoundException("Utredning with assessmentId '" + utredningId + "' does not exist."));
-        return ResponseEntity.ok(utredning);
-    }
+    protected RegistreradVardenhetRepository registreradVardenhetRepository;
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response createUtredning(@RequestBody Utredning utredning) {
-        utredning = utredningRepository.save(utredning);
-        return Response.ok(utredning.getUtredningId()).build();
-    }
-
-    @DeleteMapping(path = "/{utredningId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response deleteUtredning(@PathVariable("utredningId") Long utredningId) {
-        Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
-                () -> new IbNotFoundException("Utredning with assessmentId '" + utredningId + "' does not exist."));
-        utredningRepository.delete(utredning);
+    public Response createRegistreradVardenhet(@RequestBody RegistreradVardenhet registreradVardenhet) {
+        registreradVardenhetRepository.save(registreradVardenhet);
         return Response.ok().build();
     }
 
-    @DeleteMapping(path = "/vardgivare/{landstingHsaId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response deleteUtredningarForVardgivare(@PathVariable("landstingHsaId") String landstingHsaId) {
-        utredningRepository.findAllByExternForfragan_LandstingHsaId(landstingHsaId)
+    @DeleteMapping(path = "/vardgivare/{vardgivareHsaId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response deleteRegistreradeVardenhetertForVardgivare(@PathVariable("vardgivareHsaId") String vardgivareHsaId) {
+        registreradVardenhetRepository.findByVardgivareHsaId(vardgivareHsaId)
                 .stream()
-                .forEach(utredning -> utredningRepository.delete(utredning));
+                .forEach(vardenhet -> registreradVardenhetRepository.delete(vardenhet));
         return Response.ok().build();
     }
 
