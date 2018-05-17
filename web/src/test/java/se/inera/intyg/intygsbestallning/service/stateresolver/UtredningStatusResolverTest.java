@@ -18,15 +18,10 @@
  */
 package se.inera.intyg.intygsbestallning.service.stateresolver;
 
-import static org.junit.Assert.assertEquals;
-
-import java.time.LocalDateTime;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import se.inera.intyg.intygsbestallning.persistence.model.Avvikelse;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
@@ -37,6 +32,10 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
+
+import java.time.LocalDateTime;
+
+import static org.junit.Assert.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtredningStatusResolverTest extends BaseResolverTest {
