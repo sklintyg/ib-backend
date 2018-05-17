@@ -121,4 +121,5 @@ public interface UtredningService {
     Utredning updateOrder(UpdateOrderRequest update);
 
     GetUtredningResponse createGetUtredningResponse(Utredning utredning);
+
 }

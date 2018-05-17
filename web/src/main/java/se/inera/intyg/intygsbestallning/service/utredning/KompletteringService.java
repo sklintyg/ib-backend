@@ -16,29 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.service.stateresolver;
+package se.inera.intyg.intygsbestallning.service.utredning;
 
-public enum Actor {
-    FK("Försäkringskassan"),
-    VARDADMIN("Vårdadministratör"),
-    SAMORDNARE("Samordnare"),
-    UTREDARE("Utredare"),
-    AF("Arbetsförmedlingen"),
-    NONE("Ingen");
+import se.riv.intygsbestallning.certificate.order.requestmedicalcertificatesupplement.v1.RequestMedicalCertificateSupplementType;
 
-    private final String id;
-    private final String label;
-
-    Actor(String label) {
-        this.id = this.name();
-        this.label = label;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getLabel() {
-        return label;
-    }
+public interface KompletteringService {
+    long registerNewKomplettering(RequestMedicalCertificateSupplementType request);
 }

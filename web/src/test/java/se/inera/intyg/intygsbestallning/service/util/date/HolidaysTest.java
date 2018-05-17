@@ -50,6 +50,7 @@ public class HolidaysTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testSweHol() {
         Object[][] data = dataSweHol();
         for (Object[] aData : data) {

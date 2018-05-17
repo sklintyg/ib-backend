@@ -20,6 +20,7 @@ package se.inera.intyg.intygsbestallning.service.handelse;
 
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
+import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -53,6 +54,16 @@ public final class HandelseUtil {
                 .withHandelseTyp(HandelseTyp.FORFRAGAN_SKICKAD)
                 .withAnvandare(samordnare)
                 .withHandelseText(String.format("Förfrågan skickades till %s", vardenhet))
+                .build();
+    }
+
+    public static Handelse createKompletteringBegard() {
+        return aHandelse()
+                .withSkapad(LocalDateTime.now())
+                .withHandelseTyp(HandelseTyp.KOMPLETTERINGSBEGARAN_MOTTAGEN)
+                .withAnvandare(Actor.FK.getLabel())
+                .withHandelseText(String.format("Kompletteringsbegäran mottagen från Försäkringskassan %s",
+                        LocalDateTime.now().format(formatter)))
                 .build();
     }
 }

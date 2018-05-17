@@ -24,6 +24,7 @@ import org.springframework.data.repository.query.Param;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 
 import java.util.List;
+import java.util.Optional;
 
 //CHECKSTYLE:OFF MethodName
 //CHECKSTYLE:OFF LineLength
@@ -64,6 +65,9 @@ public interface UtredningRepository extends JpaRepository<Utredning, Long> {
 
     @Query("SELECT ef.landstingHsaId FROM Utredning u JOIN u.bestallning b JOIN u.externForfragan ef WHERE b.tilldeladVardenhetHsaId = :vardenhetHsaId AND u.arkiverad = true")
     List<String> findDistinctLandstingHsaIdByVardenhetHsaIdHavingBestallningAndIsArkiverad(@Param("vardenhetHsaId") String vardenhetHsaId);
+
+    @Query("SELECT MAX(il.id) FROM Utredning u JOIN u.intygList il WHERE il.komplettering = true")
+    Optional<Long> findNewestKompletteringOnUtredning(Long utredningId);
 }
 //CHECKSTYLE:ON MethodName
 //CHECKSTYLE:ON LineLength

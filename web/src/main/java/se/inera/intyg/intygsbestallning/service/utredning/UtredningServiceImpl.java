@@ -367,7 +367,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                         .withUrsprung(HandlingUrsprungTyp.UPPDATERING)
                         .build()));
 
-        //Händelse ska skapas - se separat jira för detta
+        // Händelse ska skapas - se separat jira för detta
 
         if (!BooleanUtils.toBoolean(toUpdate.getTolkBehov()) && !isNullOrEmpty(toUpdate.getTolkSprak())) {
             throw new IbServiceException(
@@ -463,5 +463,4 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
         return getUtredningResponse;
     }
-
 }

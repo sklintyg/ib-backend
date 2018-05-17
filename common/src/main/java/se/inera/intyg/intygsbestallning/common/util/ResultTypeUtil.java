@@ -32,4 +32,11 @@ public final class ResultTypeUtil {
         return result;
     }
 
+    public static ResultType error(String text) {
+        ResultType result = new ResultType();
+        result.setResultCode(ResultCodeType.ERROR);
+        result.setResultText(text);
+        return result;
+    }
+
 }

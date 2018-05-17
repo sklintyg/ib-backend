@@ -48,4 +48,20 @@ Vi har integrationstester skrivna med [REST-Assured](https://github.com/jayway/r
 De körs inte automatiskt vid bygge av applikationen utan man behöver köra dem med kommandot
 
     $ cd ib-backend
-    $ ./gradlew integrationTest
+    $ ./gradlew restassured
+    
+Man kan exekvera enskilda tester genom exempelvis:
+
+    $ ./gradlew restassured --tests *RequestMedicalCertificateSupplementIT.requestRequestMedicalCertificateSupplementWorks
+    
+För att debugga själva testet, lägg på --debug-jvm dvs:
+
+    $ ./gradlew restassured --debug-jvm
+    ... loggar ...
+    Listening for transport dt_socket at address: 5005
+
+Anslut nu remote debugging i IDEA.
+
+För att logga från testet till stdout:
+
+    $ ./gradlew restassured -info

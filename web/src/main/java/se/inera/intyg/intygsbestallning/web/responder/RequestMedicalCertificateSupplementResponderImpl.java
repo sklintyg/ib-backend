@@ -18,47 +18,56 @@
  */
 package se.inera.intyg.intygsbestallning.web.responder;
 
-import org.apache.cxf.annotations.SchemaValidation;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Preconditions;
-
+import org.apache.cxf.annotations.SchemaValidation;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import se.inera.intyg.intygsbestallning.service.utredning.KompletteringService;
 import se.riv.intygsbestallning.certificate.order.requestmedicalcertificatesupplement.v1.RequestMedicalCertificateSupplementResponseType;
 import se.riv.intygsbestallning.certificate.order.requestmedicalcertificatesupplement.v1.RequestMedicalCertificateSupplementType;
 import se.riv.intygsbestallning.certificate.order.requestmedicalcertificatesupplement.v1.rivtabp21.RequestMedicalCertificateSupplementResponderInterface;
-import se.riv.intygsbestallning.certificate.order.v1.IIType;
-import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
-import se.riv.intygsbestallning.certificate.order.v1.ResultType;
+
+import java.util.Objects;
+
+import static se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil.error;
+import static se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil.ok;
+import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
 
 @Service
 @SchemaValidation
 public class RequestMedicalCertificateSupplementResponderImpl implements RequestMedicalCertificateSupplementResponderInterface {
 
+    @Value("${source.system.hsaid:}")
+    private String sourceSystemHsaId;
+
+    private final KompletteringService kompletteringService;
+
+    public RequestMedicalCertificateSupplementResponderImpl(final KompletteringService kompletteringService) {
+        this.kompletteringService = kompletteringService;
+    }
+
     @Override
     public RequestMedicalCertificateSupplementResponseType requestMedicalCertificateSupplement(
             final String logicalAddress, final RequestMedicalCertificateSupplementType request) {
+        RequestMedicalCertificateSupplementResponseType response = new RequestMedicalCertificateSupplementResponseType();
 
         Preconditions.checkArgument(null != logicalAddress);
         Preconditions.checkArgument(null != request);
 
-        return createDummyResponse();
+        if (Objects.isNull(request.getAssessmentId()) || Objects.isNull(request.getAssessmentId().getExtension())) {
+            response.setResult(error("Request is missing required field assessmentId"));
+            return response;
+        }
+
+        try {
+            long kompletteringsId = kompletteringService.registerNewKomplettering(request);
+            response.setResult(ok());
+            response.setSupplementRequestId(anII(sourceSystemHsaId, String.valueOf(kompletteringsId)));
+            return response;
+        } catch (Exception e) {
+            response.setResult(error(e.getMessage()));
+            return response;
+        }
     }
 
-    private RequestMedicalCertificateSupplementResponseType createDummyResponse() {
-
-        IIType iiType = new IIType();
-        iiType.setRoot("DUMMY_ROOT");
-        iiType.setExtension("DUMMY_EXTENSION");
-
-        ResultType resultType = new ResultType();
-        resultType.setResultText("DUMMY_RESULT_TEXT");
-        resultType.setLogId("DUMMY_LOG_ID");
-        resultType.setResultCode(ResultCodeType.OK);
-
-        RequestMedicalCertificateSupplementResponseType response = new RequestMedicalCertificateSupplementResponseType();
-        response.setResult(resultType);
-        response.setSupplementRequestId(iiType);
-
-        return response;
-    }
 }

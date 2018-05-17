@@ -52,8 +52,8 @@ public class UtredningResource {
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public Response createUtredning(@RequestBody Utredning utredning) {
-        utredningRepository.save(utredning);
-        return Response.ok().build();
+        Utredning savedUtredning = utredningRepository.save(utredning);
+        return Response.ok(savedUtredning).build();
     }
 
     @DeleteMapping(path = "/{utredningId}", produces = MediaType.APPLICATION_JSON_VALUE)

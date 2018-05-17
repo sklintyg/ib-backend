@@ -241,6 +241,10 @@ public class UtredningRepositoryTest {
         assertNotNull(intyg.getSistaDatumKompletteringsbegaran());
         assertNotNull(intyg.getSkickatDatum());
 
+        Optional<Long> kompletteringsId = utredningRepository.findNewestKompletteringOnUtredning(utredning.getUtredningId());
+        assertTrue(kompletteringsId.isPresent());
+        assertEquals(new Long(1L), kompletteringsId.get());
+
     }
 
     @Test

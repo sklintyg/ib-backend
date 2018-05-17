@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.service.util.date;
 
+import com.google.common.base.Splitter;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,7 +97,7 @@ public final class Vacations {
         }
     }
 
-    static void vacationParser(final String[] vacationPeriods, final List<LocalDate> output) {
+    private static void vacationParser(final String[] vacationPeriods, final List<LocalDate> output) {
         Arrays.stream(vacationPeriods).forEach(s -> vacationParser(s, output));
     }
 
@@ -105,17 +106,16 @@ public final class Vacations {
      * should be <start date>-<end date> or <start week>-<end week>
      */
     static void rangeParser(final String range, final List<LocalDate> output) {
-        String[] ranges = range.split("-");
-
-        if (ranges.length == 1) {
-            valueParser(ranges[0], output);
-        } else if (ranges.length > 2) {
+        List<String> ranges = Splitter.on('-').splitToList(range);
+        if (ranges.size() == 1) {
+            valueParser(ranges.get(0), output);
+        } else if (ranges.size() > 2) {
             // What to do?
             LOG.debug("Cannot parse range. Perhaps invalid date format? Correct date format is yyyyMMdd: " + range);
         }
 
-        String lowRange = ranges[0];
-        String highRange = ranges[1];
+        String lowRange = ranges.get(0);
+        String highRange = ranges.get(1);
 
         rangeParser(lowRange, highRange, output);
     }
