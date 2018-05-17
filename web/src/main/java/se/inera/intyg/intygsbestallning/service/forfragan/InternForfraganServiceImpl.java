@@ -41,9 +41,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningRespo
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.TilldelaDirektRequest;
 
 import java.text.MessageFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -76,8 +74,8 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
                     "At least one vardenhet must be selected to create an InternForfragan");
         }
 
-        LocalDateTime skapadDatum = LocalDateTime.now();
-        LocalDateTime besvarasSenastDatum = getBesvarasSenastDatum();
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime besvarasSenastDatum = getBesvarasSenastDatum(now);
 
         // Remove duplicates
         List<String> newVardenheter = request.getVardenheter().stream()
@@ -90,7 +88,7 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
                 newVardenheter.stream()
                         .map(vardenhetHsaId -> anInternForfragan()
                                 .withVardenhetHsaId(vardenhetHsaId)
-                                .withSkapadDatum(skapadDatum)
+                                .withSkapadDatum(now)
                                 .withKommentar(request.getKommentar())
                                 .withBesvarasSenastDatum(besvarasSenastDatum)
                                 .build())
@@ -125,12 +123,14 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
                     "InternForfragan already exists for assessment with id {0} and vardenhet {1} ", utredningId, request.getVardenhet()));
         }
 
+        LocalDateTime now = LocalDateTime.now();
         utredning.getExternForfragan().getInternForfraganList().add(
                 anInternForfragan()
                         .withVardenhetHsaId(request.getVardenhet())
-                        .withSkapadDatum(LocalDateTime.now())
+                        .withSkapadDatum(now)
                         .withKommentar(request.getKommentar())
-                        .withBesvarasSenastDatum(getBesvarasSenastDatum())
+                        .withBesvarasSenastDatum(getBesvarasSenastDatum(now))
+                        .withDirekttilldelad(true)
                         .withForfraganSvar(aForfraganSvar()
                                 .withSvarTyp(SvarTyp.ACCEPTERA)
                                 .withUtforareAdress("")
@@ -141,8 +141,6 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
                                 .withUtforareTyp(UtforareTyp.ENHET)
                                 .build())
                         .build());
-
-        utredning.getExternForfragan().setDirekttilldelad(true);
 
         utredningRepository.save(utredning);
 
@@ -172,9 +170,9 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
     }
 
     @NotNull
-    private LocalDateTime getBesvarasSenastDatum() {
+    private LocalDateTime getBesvarasSenastDatum(LocalDateTime now) {
         return LocalDateTime.of(
-                businessDays.addBusinessDays(LocalDate.now(), besvaraForfraganArbetsdagar), LocalTime.now());
+                businessDays.addBusinessDays(now.toLocalDate(), besvaraForfraganArbetsdagar), now.toLocalTime());
     }
 
 }

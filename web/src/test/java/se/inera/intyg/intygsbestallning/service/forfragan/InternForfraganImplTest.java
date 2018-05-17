@@ -263,7 +263,7 @@ public class InternForfraganImplTest {
 
         Utredning utredning = utredningArgument.getValue();
         assertEquals(kommentar, utredning.getExternForfragan().getInternForfraganList().get(0).getKommentar());
-        assertTrue(utredning.getExternForfragan().getDirekttilldelad());
+        assertTrue(utredning.getExternForfragan().getInternForfraganList().get(0).getDirekttilldelad());
 
         assertEquals(1, utredning.getExternForfragan().getInternForfraganList().size());
         assertEquals(vardenhetId1, utredning.getExternForfragan().getInternForfraganList().get(0).getVardenhetHsaId());

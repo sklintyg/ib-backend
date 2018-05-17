@@ -69,9 +69,6 @@ public final class ExternForfragan {
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime inkomDatum;
 
-    @Column(name = "DIREKTTILLDELAD")
-    private Boolean direkttilldelad;
-
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "EXTERN_FORFRAGAN_ID", referencedColumnName = "ID", nullable = false)
     private List<InternForfragan> internForfraganList = new ArrayList<>();
@@ -93,7 +90,6 @@ public final class ExternForfragan {
                 .withAvvisatKommentar(externForfragan.getAvvisatKommentar())
                 .withAvvisatDatum(externForfragan.getAvvisatDatum())
                 .withInkomDatum(externForfragan.getInkomDatum())
-                .withDirekttilldelad(externForfragan.getDirekttilldelad())
                 .withInternForfraganList(externForfragan.getInternForfraganList().stream()
                         .map(InternForfragan::from)
                         .collect(Collectors.toList()))
@@ -165,14 +161,6 @@ public final class ExternForfragan {
     }
 
 
-    public Boolean getDirekttilldelad() {
-        return direkttilldelad;
-    }
-
-    public void setDirekttilldelad(Boolean direkttilldelad) {
-        this.direkttilldelad = direkttilldelad;
-    }
-
     public static final class ExternForfraganBuilder {
         private Long id;
         private String landstingHsaId;
@@ -181,7 +169,6 @@ public final class ExternForfragan {
         private String avvisatKommentar;
         private LocalDateTime avvisatDatum;
         private LocalDateTime inkomDatum;
-        private Boolean direkttilldelad;
         private List<InternForfragan> internForfraganList = new ArrayList<>();
 
         private ExternForfraganBuilder() {
@@ -226,11 +213,6 @@ public final class ExternForfragan {
             return this;
         }
 
-        public ExternForfraganBuilder withDirekttilldelad(Boolean direkttilldelad) {
-            this.direkttilldelad = direkttilldelad;
-            return this;
-        }
-
         public ExternForfraganBuilder withInternForfraganList(List<InternForfragan> internForfraganList) {
             this.internForfraganList = internForfraganList;
             return this;
@@ -245,7 +227,6 @@ public final class ExternForfragan {
             externForfragan.setAvvisatKommentar(avvisatKommentar);
             externForfragan.setAvvisatDatum(avvisatDatum);
             externForfragan.setInkomDatum(inkomDatum);
-            externForfragan.setDirekttilldelad(direkttilldelad);
             externForfragan.setInternForfraganList(internForfraganList);
             return externForfragan;
         }
@@ -283,9 +264,7 @@ public final class ExternForfragan {
         if (inkomDatum != null ? !inkomDatum.equals(that.inkomDatum) : that.inkomDatum != null) {
             return false;
         }
-        if (direkttilldelad != null ? !direkttilldelad.equals(that.direkttilldelad) : that.direkttilldelad != null) {
-            return false;
-        }
+
         return ListUtils.isEqualList(internForfraganList, that.internForfraganList);
     }
 
@@ -299,7 +278,6 @@ public final class ExternForfragan {
                 avvisatKommentar,
                 avvisatDatum,
                 inkomDatum,
-                direkttilldelad,
                 internForfraganList);
     }
 
@@ -313,7 +291,6 @@ public final class ExternForfragan {
                 .add("avvisatKommentar", avvisatKommentar)
                 .add("avvisatDatum", avvisatDatum)
                 .add("inkomDatum", inkomDatum)
-                .add("direkttilldelad", direkttilldelad)
                 .add("internForfraganList", internForfraganList)
                 .toString();
     }

@@ -90,17 +90,17 @@ public class InternForfraganStateResolverTest extends BaseResolverTest {
         Utredning utredning = buildBaseUtredning();
         ExternForfragan externForfragan = buildBaseExternForfragan();
         utredning.setExternForfragan(externForfragan);
-        InternForfragan internForfragan1 = buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now());
+        InternForfragan internForfragan1 = buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), null);
         InternForfragan internForfragan2 = buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), null);
         externForfragan.getInternForfraganList().add(internForfragan1);
         externForfragan.getInternForfraganList().add(internForfragan2);
-        externForfragan.setDirekttilldelad(true);
+        internForfragan1.setDirekttilldelad(true);
 
         InternForfraganStatus status = testee.resolveStatus(utredning, internForfragan1);
         assertEquals(InternForfraganStatus.DIREKTTILLDELAD, status);
 
         InternForfraganStatus statusOther = testee.resolveStatus(utredning, internForfragan2);
-        assertEquals(InternForfraganStatus.EJ_TILLDELAD, statusOther);
+        assertEquals(InternForfraganStatus.ACCEPTERAD_VANTAR_PA_TILLDELNINGSBESLUT, statusOther);
     }
 
     @Test
@@ -112,7 +112,7 @@ public class InternForfraganStateResolverTest extends BaseResolverTest {
         InternForfragan internForfragan2 = buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), null);
         externForfragan.getInternForfraganList().add(internForfragan1);
         externForfragan.getInternForfraganList().add(internForfragan2);
-        externForfragan.setDirekttilldelad(false);
+        internForfragan1.setDirekttilldelad(false);
 
         InternForfraganStatus status = testee.resolveStatus(utredning, internForfragan1);
         assertEquals(InternForfraganStatus.TILLDELAD_VANTAR_PA_BESTALLNING, status);
@@ -131,7 +131,7 @@ public class InternForfraganStateResolverTest extends BaseResolverTest {
         InternForfragan internForfragan2 = buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), null);
         externForfragan.getInternForfraganList().add(internForfragan1);
         externForfragan.getInternForfraganList().add(internForfragan2);
-        externForfragan.setDirekttilldelad(false);
+        internForfragan1.setDirekttilldelad(false);
 
         InternForfraganStatus status = testee.resolveStatus(utredning, internForfragan1);
         assertEquals(InternForfraganStatus.INGEN_BESTALLNING, status);
@@ -150,7 +150,7 @@ public class InternForfraganStateResolverTest extends BaseResolverTest {
         InternForfragan internForfragan2 = buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), null);
         externForfragan.getInternForfraganList().add(internForfragan1);
         externForfragan.getInternForfraganList().add(internForfragan2);
-        externForfragan.setDirekttilldelad(false);
+        internForfragan1.setDirekttilldelad(false);
 
         InternForfraganStatus status = testee.resolveStatus(utredning, internForfragan1);
         assertEquals(InternForfraganStatus.BESTALLD, status);

@@ -62,6 +62,9 @@ public final class InternForfragan {
     @Column(name = "KOMMENTAR")
     private String kommentar;
 
+    @Column(name = "DIREKTTILLDELAD")
+    private Boolean direkttilldelad;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "FORFRAGAN_SVAR_ID")
     private ForfraganSvar forfraganSvar;
@@ -83,6 +86,7 @@ public final class InternForfragan {
                 .withSkapadDatum(internForfragan.getSkapadDatum())
                 .withKommentar(internForfragan.getKommentar())
                 .withForfraganSvar(ForfraganSvar.copyFrom(internForfragan.getForfraganSvar()))
+                .withDirekttilldelad(internForfragan.getDirekttilldelad())
                 .build();
     }
 
@@ -142,6 +146,14 @@ public final class InternForfragan {
         this.skapadDatum = skapadDatum;
     }
 
+    public Boolean getDirekttilldelad() {
+        return direkttilldelad;
+    }
+
+    public void setDirekttilldelad(Boolean direkttilldelad) {
+        this.direkttilldelad = direkttilldelad;
+    }
+
     public static final class InternForfraganBuilder {
         private Long id;
         private String vardenhetHsaId;
@@ -150,6 +162,7 @@ public final class InternForfragan {
         private LocalDateTime skapadDatum;
         private String kommentar;
         private ForfraganSvar forfraganSvar;
+        private Boolean direkttilldelad;
 
         private InternForfraganBuilder() {
         }
@@ -193,6 +206,11 @@ public final class InternForfragan {
             return this;
         }
 
+        public InternForfraganBuilder withDirekttilldelad(Boolean direkttilldelad) {
+            this.direkttilldelad = direkttilldelad;
+            return this;
+        }
+
         public InternForfragan build() {
             InternForfragan internForfragan = new InternForfragan();
             internForfragan.setId(id);
@@ -202,6 +220,7 @@ public final class InternForfragan {
             internForfragan.setSkapadDatum(skapadDatum);
             internForfragan.setKommentar(kommentar);
             internForfragan.setForfraganSvar(forfraganSvar);
+            internForfragan.setDirekttilldelad(direkttilldelad);
             return internForfragan;
         }
     }
@@ -221,13 +240,15 @@ public final class InternForfragan {
                 && Objects.equals(besvarasSenastDatum, that.besvarasSenastDatum)
                 && Objects.equals(skapadDatum, that.skapadDatum)
                 && Objects.equals(kommentar, that.kommentar)
-                && Objects.equals(forfraganSvar, that.forfraganSvar);
+                && Objects.equals(forfraganSvar, that.forfraganSvar)
+                && Objects.equals(direkttilldelad, that.direkttilldelad);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, vardenhetHsaId, tilldeladDatum, besvarasSenastDatum, skapadDatum, kommentar, forfraganSvar);
+        return Objects.hash(id, vardenhetHsaId, tilldeladDatum, besvarasSenastDatum, skapadDatum, kommentar, forfraganSvar,
+                direkttilldelad);
     }
 
     @Override
@@ -240,6 +261,7 @@ public final class InternForfragan {
                 .add("skapadDatum", skapadDatum)
                 .add("kommentar", kommentar)
                 .add("forfraganSvar", forfraganSvar)
+                .add("direktTilldelad", direkttilldelad)
                 .toString();
     }
 }

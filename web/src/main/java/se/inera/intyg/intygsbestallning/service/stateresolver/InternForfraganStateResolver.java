@@ -45,6 +45,12 @@ public class InternForfraganStateResolver {
             return InternForfraganStatus.AVVISAD;
         }
 
+        // Direkttilldelad, lite förvirrat då isTilldelad ej är true ännu. När detta sker går status över till
+        // TILLDELAD_VANTAR_PA_BESTALLNING
+        if (internForfragan.getDirekttilldelad() != null && internForfragan.getDirekttilldelad() && !isTilldelad(utredning)) {
+            return InternForfraganStatus.DIREKTTILLDELAD;
+        }
+
         // Accepterad - får ej vara tilldelad till någon alls.
         if (internForfragan.getForfraganSvar().getSvarTyp() == SvarTyp.ACCEPTERA && !isTilldelad(utredning)) {
             return InternForfraganStatus.ACCEPTERAD_VANTAR_PA_TILLDELNINGSBESLUT;
@@ -71,12 +77,7 @@ public class InternForfraganStateResolver {
                 return InternForfraganStatus.BESTALLD;
             }
 
-            // Tilldelad enligt ovanstående kriterier, Direktilldelad
-            if (utredning.getExternForfragan().getDirekttilldelad() != null && utredning.getExternForfragan().getDirekttilldelad()) {
-                return InternForfraganStatus.DIREKTTILLDELAD;
-            }
-
-            // Tilldelad enligt ovanstående kriterier, Ej direkttilldelad.
+            // Tilldelad enligt ovanstående kriterier, kan komma från DIREKTTILLDELAD eller ACCEPTERAD_VANTAR_PA_TILLDELNINGSBESLUT.
             if (!utredning.getBestallning().isPresent()) {
                 // Tilldelad, väntar på...
                 return InternForfraganStatus.TILLDELAD_VANTAR_PA_BESTALLNING;
