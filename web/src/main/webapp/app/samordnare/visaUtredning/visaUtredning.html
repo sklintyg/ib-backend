@@ -19,14 +19,18 @@
                   <h4>Datum</h4>
                   <card-table>
                     <table class="table table-striped ib-table-striped">
-                      <tr>
-                        <th>Inkom</th>
-                        <th>Besvaras senast</th>
-                      </tr>
-                      <tr>
-                        <td>{{utredning.inkomDatum}}</td>
-                        <td>{{utredning.besvarasSenastDatum}}</td>
-                      </tr>
+                        <thead>
+                        <tr>
+                          <th>Inkom</th>
+                          <th>Besvaras senast</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>{{utredning.inkomDatum}}</td>
+                          <td>{{utredning.besvarasSenastDatum}}</td>
+                        </tr>
+                      </tbody>
                     </table>
                   </card-table>
                 </card-body>
