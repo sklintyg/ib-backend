@@ -19,6 +19,7 @@
 package se.inera.intyg.intygsbestallning.persistence.model;
 
 import com.google.common.base.MoreObjects;
+import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
@@ -41,8 +42,8 @@ public final class Intyg {
     @Column(name = "ID", nullable = false)
     private Long id;
 
-    @Column(name = "KOMPLETTERINGS_ID")
-    private String kompletteringsId;
+    @Column(name = "KOMPLETTERING", nullable = false, columnDefinition = "tinyint(1) default 0", updatable = false)
+    private Boolean komplettering;
 
     @Column(name = "SISTA_DATUM")
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
@@ -64,6 +65,23 @@ public final class Intyg {
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime fragestallningMottagenDatum;
 
+    public static Intyg copyFrom(final Intyg intyg) {
+
+        if (isNull(intyg)) {
+            return null;
+        }
+
+        return anIntyg()
+                .withId(intyg.getId())
+                .withKomplettering(intyg.isKomplettering())
+                .withSistaDatum(intyg.getSistaDatum())
+                .withMottagetDatum(intyg.getMottagetDatum())
+                .withSkickatDatum(intyg.getSkickatDatum())
+                .withSistaDatumKompletteringsbegaran(intyg.getSistaDatumKompletteringsbegaran())
+                .withFragestallningMottagenDatum(intyg.getFragestallningMottagenDatum())
+                .build();
+    }
+
     public Long getId() {
         return id;
     }
@@ -72,12 +90,12 @@ public final class Intyg {
         this.id = id;
     }
 
-    public String getKompletteringsId() {
-        return kompletteringsId;
+    public Boolean isKomplettering() {
+        return BooleanUtils.toBoolean(komplettering);
     }
 
-    public void setKompletteringsId(String kompletteringsId) {
-        this.kompletteringsId = kompletteringsId;
+    public void setKomplettering(Boolean komplettering) {
+        this.komplettering = komplettering;
     }
 
     public LocalDateTime getSistaDatum() {
@@ -120,23 +138,6 @@ public final class Intyg {
         this.fragestallningMottagenDatum = fragestallningMottagenDatum;
     }
 
-    public static Intyg copyFrom(final Intyg intyg) {
-
-        if (isNull(intyg)) {
-            return null;
-        }
-
-        return anIntyg()
-                .withId(intyg.getId())
-                .withKompletteringsId(intyg.getKompletteringsId())
-                .withSistaDatum(intyg.getSistaDatum())
-                .withMottagetDatum(intyg.getMottagetDatum())
-                .withSkickatDatum(intyg.getSkickatDatum())
-                .withSistaDatumKompletteringsbegaran(intyg.getSistaDatumKompletteringsbegaran())
-                .withFragestallningMottagenDatum(intyg.getFragestallningMottagenDatum())
-                .build();
-    }
-
     @Override
     public boolean equals(final Object o) {
         if (this == o) {
@@ -147,7 +148,7 @@ public final class Intyg {
         }
         final Intyg intyg = (Intyg) o;
         return Objects.equals(id, intyg.id)
-                && Objects.equals(kompletteringsId, intyg.kompletteringsId)
+                && Objects.equals(komplettering, intyg.komplettering)
                 && Objects.equals(sistaDatum, intyg.sistaDatum)
                 && Objects.equals(skickatDatum, intyg.skickatDatum)
                 && Objects.equals(mottagetDatum, intyg.mottagetDatum)
@@ -158,7 +159,7 @@ public final class Intyg {
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, kompletteringsId, sistaDatum, skickatDatum, mottagetDatum, sistaDatumKompletteringsbegaran,
+        return Objects.hash(id, komplettering, sistaDatum, skickatDatum, mottagetDatum, sistaDatumKompletteringsbegaran,
                 fragestallningMottagenDatum);
     }
 
@@ -166,7 +167,7 @@ public final class Intyg {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("id", id)
-                .add("kompletteringsId", kompletteringsId)
+                .add("komplettering", komplettering)
                 .add("sistaDatum", sistaDatum)
                 .add("skickatDatum", skickatDatum)
                 .add("mottagetDatum", mottagetDatum)
@@ -177,7 +178,7 @@ public final class Intyg {
 
     public static final class IntygBuilder {
         private Long id;
-        private String kompletteringsId;
+        private Boolean komplettering;
         private LocalDateTime sistaDatum;
         private LocalDateTime skickatDatum;
         private LocalDateTime mottagetDatum;
@@ -196,8 +197,8 @@ public final class Intyg {
             return this;
         }
 
-        public IntygBuilder withKompletteringsId(String kompletteringsId) {
-            this.kompletteringsId = kompletteringsId;
+        public IntygBuilder withKomplettering(Boolean komplettering) {
+            this.komplettering = komplettering;
             return this;
         }
 
@@ -229,7 +230,7 @@ public final class Intyg {
         public Intyg build() {
             Intyg intyg = new Intyg();
             intyg.setId(id);
-            intyg.setKompletteringsId(kompletteringsId);
+            intyg.setKomplettering(komplettering);
             intyg.setSistaDatum(sistaDatum);
             intyg.setSkickatDatum(skickatDatum);
             intyg.setMottagetDatum(mottagetDatum);

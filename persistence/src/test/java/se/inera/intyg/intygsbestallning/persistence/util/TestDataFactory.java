@@ -220,7 +220,7 @@ public final class TestDataFactory {
                 .withSistaDatumKompletteringsbegaran(LocalDateTime.now())
                 .withSistaDatum(LocalDateTime.now())
                 .withMottagetDatum(LocalDateTime.now())
-                .withKompletteringsId("kompletteringsId")
+                .withKomplettering(true)
                 .withSkickatDatum(LocalDateTime.now())
                 .build();
     }

@@ -45,7 +45,6 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-import static java.util.Objects.isNull;
 import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto.ReportCareContactRequestDtoBuilder.aReportCareContactRequestDto;
 import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
 import static se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus.BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR;
@@ -104,7 +103,7 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
         final LocalDateTime nyttSistaDatum = myndighetIntegrationService
                 .updateAssessment(utredning.getUtredningId(), UtredningsTyp.AFU_UTVIDGAD.name()).atStartOfDay();
 
-        if (utredning.getIntygList().size() == 1 && isNull(utredning.getIntygList().get(0).getKompletteringsId())) {
+        if (utredning.getIntygList().size() == 1 && !utredning.getIntygList().get(0).isKomplettering()) {
             utredning.getIntygList().get(0).setSistaDatum(nyttSistaDatum);
             utredningRepository.save(utredning);
             return nyttSistaDatum;

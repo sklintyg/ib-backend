@@ -24,8 +24,6 @@ import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static java.util.Objects.isNull;
-
 public final class SlutDatumFasResolver {
 
     private SlutDatumFasResolver() {
@@ -39,21 +37,21 @@ public final class SlutDatumFasResolver {
      */
     public static String resolveSlutDatumFas(Utredning utredning, UtredningStatus utredningStatus) {
         switch (utredningStatus.getUtredningFas()) {
-            case UTREDNING:
-                return utredning.getIntygList().stream()
-                        .filter(i -> isNull(i.getKompletteringsId()))
-                        .findAny()
-                        .map(Intyg::getSistaDatum)
-                        .map(datum -> datum.format(DateTimeFormatter.ISO_DATE))
-                        .orElseThrow(IllegalStateException::new);
-            case KOMPLETTERING:
-                return utredning.getIntygList().stream()
-                        .map(Intyg::getSistaDatum)
-                        .max(LocalDateTime::compareTo)
-                        .map(datum -> datum.format(DateTimeFormatter.ISO_DATE))
-                        .orElseThrow(IllegalStateException::new);
-            default:
-                return null;
+        case UTREDNING:
+            return utredning.getIntygList().stream()
+                    .filter(i -> !i.isKomplettering())
+                    .findAny()
+                    .map(Intyg::getSistaDatum)
+                    .map(datum -> datum.format(DateTimeFormatter.ISO_DATE))
+                    .orElseThrow(IllegalStateException::new);
+        case KOMPLETTERING:
+            return utredning.getIntygList().stream()
+                    .map(Intyg::getSistaDatum)
+                    .max(LocalDateTime::compareTo)
+                    .map(datum -> datum.format(DateTimeFormatter.ISO_DATE))
+                    .orElseThrow(IllegalStateException::new);
+        default:
+            return null;
         }
     }
 }

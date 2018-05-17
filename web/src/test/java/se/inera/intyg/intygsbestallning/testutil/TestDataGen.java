@@ -207,6 +207,7 @@ public final class TestDataGen {
     private static List<Intyg> createIntyg() {
         return ImmutableList.of(anIntyg()
                 .withId(1L)
+                .withKomplettering(false)
                 .withMottagetDatum(DATE_TIME)
                 .withSkickatDatum(DATE_TIME)
                 .build());

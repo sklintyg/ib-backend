@@ -235,7 +235,7 @@ public class UtredningRepositoryTest {
         assertEquals(1, utredning.getIntygList().size());
         Intyg intyg = utredning.getIntygList().get(0);
         assertNotNull(intyg);
-        assertEquals("kompletteringsId", intyg.getKompletteringsId());
+        assertTrue(intyg.isKomplettering());
         assertNotNull(intyg.getMottagetDatum());
         assertNotNull(intyg.getSistaDatum());
         assertNotNull(intyg.getSistaDatumKompletteringsbegaran());

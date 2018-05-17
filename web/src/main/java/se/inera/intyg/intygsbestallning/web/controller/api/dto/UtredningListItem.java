@@ -28,7 +28,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 public class UtredningListItem implements FreeTextSearchable, FilterableListItem, VardenhetEnrichable {
@@ -79,14 +78,14 @@ public class UtredningListItem implements FreeTextSearchable, FilterableListItem
             return utredning.getExternForfragan().getBesvarasSenastDatum().format(DateTimeFormatter.ISO_DATE);
         case UTREDNING:
             return utredning.getIntygList().stream()
-                    .filter(i -> isNull(i.getKompletteringsId()))
+                    .filter(i -> !i.isKomplettering())
                     .map(Intyg::getSistaDatum)
                     .findAny()
                     .map(datum -> datum.format(DateTimeFormatter.ISO_DATE))
                     .orElseThrow(IllegalArgumentException::new);
         case KOMPLETTERING:
             return utredning.getIntygList().stream()
-                    .filter(i -> nonNull(i.getKompletteringsId()))
+                    .filter(Intyg::isKomplettering)
                     .map(Intyg::getSistaDatum)
                     .max(LocalDateTime::compareTo)
                     .map(datum -> datum.format(DateTimeFormatter.ISO_DATE))

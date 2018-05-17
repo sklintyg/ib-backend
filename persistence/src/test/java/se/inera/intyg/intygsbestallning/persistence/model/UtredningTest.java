@@ -145,7 +145,7 @@ public class UtredningTest {
                         .build()))
                 .withIntygList(ImmutableList.of(anIntyg()
                         .withId(1L)
-                        .withKompletteringsId("id")
+                        .withKomplettering(true)
                         .withSistaDatum(datum.plusMonths(1))
                         .withMottagetDatum(datum)
                         .withSistaDatumKompletteringsbegaran(datum.plusMonths(2))

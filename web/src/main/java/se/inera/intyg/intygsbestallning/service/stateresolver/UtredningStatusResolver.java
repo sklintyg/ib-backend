@@ -85,7 +85,7 @@ public class UtredningStatusResolver {
             // Skickat - ursprungsintyget är skickat.
             if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getSkickatDatum() != null
                     && intyg.getMottagetDatum() == null
-                    && intyg.getKompletteringsId() == null
+                    && !intyg.isKomplettering()
                     && (intyg.getSistaDatum() == null || intyg.getSistaDatum().isAfter(LocalDateTime.now())))) {
                 return UtredningStatus.UTLATANDE_SKICKAT;
             }
@@ -93,7 +93,7 @@ public class UtredningStatusResolver {
             // Skickat - ursprungsintyget är skickat.
             if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getSkickatDatum() != null
                     && intyg.getMottagetDatum() != null
-                    && intyg.getKompletteringsId() == null
+                    && !intyg.isKomplettering()
                     && (intyg.getSistaDatumKompletteringsbegaran() != null
                             && intyg.getSistaDatumKompletteringsbegaran().isAfter(LocalDateTime.now())))) {
                 return UtredningStatus.UTLATANDE_MOTTAGET;
@@ -123,7 +123,7 @@ public class UtredningStatusResolver {
                 && !LocalDateTime.now().isAfter(senasteDatumForKomplettering)) {
 
             // Om det funnits någon komplettering...
-            if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getKompletteringsId() != null)) {
+            if (utredning.getIntygList().stream().anyMatch(Intyg::isKomplettering)) {
                 return UtredningStatus.KOMPLETTERING_MOTTAGEN;
             } else {
                 return UtredningStatus.UTLATANDE_MOTTAGET;
@@ -133,14 +133,14 @@ public class UtredningStatusResolver {
         // Kompletteringar.
 
         // Det finns komplettering, men ingen kompletterande frågetällning än samt att sistadatum ej har passerats.
-        if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getKompletteringsId() != null
+        if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.isKomplettering()
                 && intyg.getFragestallningMottagenDatum() == null
                 && intyg.getSistaDatum().isAfter(LocalDateTime.now()))) {
             return UtredningStatus.KOMPLETTERINGSBEGARAN_MOTTAGEN_VANTAR_PA_FRAGESTALLNING;
         }
 
         // Det finns komplettering med kompletterande frågetällning, men sistadatum ej har passerats.
-        if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getKompletteringsId() != null
+        if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.isKomplettering()
                 && intyg.getFragestallningMottagenDatum() != null
                 && intyg.getSistaDatum().isAfter(LocalDateTime.now()))) {
             return UtredningStatus.KOMPLETTERANDE_FRAGESTALLNING_MOTTAGEN;
@@ -148,14 +148,14 @@ public class UtredningStatusResolver {
 
         // Komplettering är skickad till FK.
         if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getSkickatDatum() != null
-                && intyg.getKompletteringsId() != null
+                && intyg.isKomplettering()
                 && intyg.getMottagetDatum() == null)) {
             return UtredningStatus.KOMPLETTERING_SKICKAD;
         }
 
         // Komplettering mottagen av FK.
         if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getSkickatDatum() != null
-                && intyg.getKompletteringsId() != null
+                && intyg.isKomplettering()
                 && intyg.getMottagetDatum() != null)) {
             return UtredningStatus.KOMPLETTERING_MOTTAGEN;
         }
