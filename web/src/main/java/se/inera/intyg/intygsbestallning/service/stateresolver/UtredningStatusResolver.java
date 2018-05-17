@@ -18,18 +18,17 @@
  */
 package se.inera.intyg.intygsbestallning.service.stateresolver;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 public class UtredningStatusResolver {
 
@@ -135,6 +134,7 @@ public class UtredningStatusResolver {
         // Det finns komplettering, men ingen kompletterande frågetällning än samt att sistadatum ej har passerats.
         if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.isKomplettering()
                 && intyg.getFragestallningMottagenDatum() == null
+                && intyg.getSkickatDatum() == null
                 && intyg.getSistaDatum().isAfter(LocalDateTime.now()))) {
             return UtredningStatus.KOMPLETTERINGSBEGARAN_MOTTAGEN_VANTAR_PA_FRAGESTALLNING;
         }
@@ -142,6 +142,7 @@ public class UtredningStatusResolver {
         // Det finns komplettering med kompletterande frågetällning, men sistadatum ej har passerats.
         if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.isKomplettering()
                 && intyg.getFragestallningMottagenDatum() != null
+                && intyg.getSkickatDatum() == null
                 && intyg.getSistaDatum().isAfter(LocalDateTime.now()))) {
             return UtredningStatus.KOMPLETTERANDE_FRAGESTALLNING_MOTTAGEN;
         }

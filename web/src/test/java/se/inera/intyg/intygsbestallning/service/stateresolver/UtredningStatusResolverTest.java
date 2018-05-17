@@ -18,10 +18,15 @@
  */
 package se.inera.intyg.intygsbestallning.service.stateresolver;
 
+import static org.junit.Assert.assertEquals;
+
+import java.time.LocalDateTime;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
+
 import se.inera.intyg.intygsbestallning.persistence.model.Avvikelse;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
@@ -32,10 +37,6 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
-
-import java.time.LocalDateTime;
-
-import static org.junit.Assert.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtredningStatusResolverTest extends BaseResolverTest {
@@ -296,6 +297,73 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
 
     @Test
     public void testResolveAvslutadTolkEjRedovisadEjKomplt() {
+        Utredning utr = buildBasicUtredningForKompletteringTest();
+
+        UtredningStatus status = testee.resolveStatus(utr);
+        assertEquals(UtredningStatus.REDOVISA_TOLK, status);
+        assertEquals(UtredningFas.REDOVISA_TOLK, status.getUtredningFas());
+        assertEquals(Actor.VARDADMIN, status.getNextActor());
+    }
+
+    @Test
+    public void testResolveKompletteringBegard() {
+        Utredning utr = buildBasicUtredningForKompletteringTest();
+
+        Intyg komplt = buildKompletteringIntyg();
+        utr.getIntygList().add(komplt);
+
+        UtredningStatus status = testee.resolveStatus(utr);
+        assertEquals(UtredningStatus.KOMPLETTERINGSBEGARAN_MOTTAGEN_VANTAR_PA_FRAGESTALLNING, status);
+        assertEquals(UtredningFas.KOMPLETTERING, status.getUtredningFas());
+        assertEquals(Actor.FK, status.getNextActor());
+    }
+
+    @Test
+    public void testResolveKompletteringFragestallningMottagen() {
+        Utredning utr = buildBasicUtredningForKompletteringTest();
+
+        Intyg komplt = buildKompletteringIntyg();
+        komplt.setFragestallningMottagenDatum(LocalDateTime.now());
+        utr.getIntygList().add(komplt);
+
+        UtredningStatus status = testee.resolveStatus(utr);
+        assertEquals(UtredningStatus.KOMPLETTERANDE_FRAGESTALLNING_MOTTAGEN, status);
+        assertEquals(UtredningFas.KOMPLETTERING, status.getUtredningFas());
+        assertEquals(Actor.UTREDARE, status.getNextActor());
+    }
+
+    @Test
+    public void testResolveKompletteringSkickad() {
+        Utredning utr = buildBasicUtredningForKompletteringTest();
+
+        Intyg komplt = buildKompletteringIntyg();
+        komplt.setFragestallningMottagenDatum(LocalDateTime.now());
+        komplt.setSkickatDatum(LocalDateTime.now());
+        utr.getIntygList().add(komplt);
+
+        UtredningStatus status = testee.resolveStatus(utr);
+        assertEquals(UtredningStatus.KOMPLETTERING_SKICKAD, status);
+        assertEquals(UtredningFas.KOMPLETTERING, status.getUtredningFas());
+        assertEquals(Actor.FK, status.getNextActor());
+    }
+
+    @Test
+    public void testResolveKompletteringMottagenSistaDatumEjPasserat() {
+        Utredning utr = buildBasicUtredningForKompletteringTest();
+
+        Intyg komplt = buildKompletteringIntyg();
+        komplt.setFragestallningMottagenDatum(LocalDateTime.now());
+        komplt.setSkickatDatum(LocalDateTime.now());
+        komplt.setMottagetDatum(LocalDateTime.now());
+        utr.getIntygList().add(komplt);
+
+        UtredningStatus status = testee.resolveStatus(utr);
+        assertEquals(UtredningStatus.KOMPLETTERING_MOTTAGEN, status);
+        assertEquals(UtredningFas.KOMPLETTERING, status.getUtredningFas());
+        assertEquals(Actor.FK, status.getNextActor());
+    }
+
+    private Utredning buildBasicUtredningForKompletteringTest() {
         Utredning utr = buildBaseUtredning();
         utr.getExternForfragan().getInternForfraganList()
                 .add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
@@ -312,11 +380,7 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
                 .withTolkStatus(TolkStatusTyp.BOKAT)
                 .withErsatts(true)
                 .build());
-
-        UtredningStatus status = testee.resolveStatus(utr);
-        assertEquals(UtredningStatus.REDOVISA_TOLK, status);
-        assertEquals(UtredningFas.REDOVISA_TOLK, status.getUtredningFas());
-        assertEquals(Actor.VARDADMIN, status.getNextActor());
+        return utr;
     }
 
     private Handling buildHandling(LocalDateTime inkomDatum, LocalDateTime skickadDatum) {
@@ -332,6 +396,16 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
                 .withId(1L)
                 .withKomplettering(false)
                 .withSistaDatum(LocalDateTime.now().plusDays(25))
+                .build();
+    }
+
+    // Den post som skapas i samband med inkommen beställning. Dvs EJ komplettering.
+    private Intyg buildKompletteringIntyg() {
+        return Intyg.IntygBuilder.anIntyg()
+                .withId(2L)
+                .withKomplettering(true)
+                .withSistaDatum(LocalDateTime.now().plusDays(25))
+                .withSistaDatumKompletteringsbegaran(LocalDateTime.now().plusDays(35))
                 .build();
     }
 
