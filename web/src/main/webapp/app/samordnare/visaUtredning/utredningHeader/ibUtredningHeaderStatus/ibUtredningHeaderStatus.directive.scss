@@ -17,22 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-ib-utredning-status {
-
-  @extend %ib-typo-09;
-  color: $ib-color-06;
-
-  .status {
-    min-width: 140px;
-    margin-right: 38px;
-  }
-
-  #showallstatusesLink {
-    float: right;
-  }
-
-  ib-alert-message .alert {
-    margin-top: -13px;
-    margin-bottom: 0;
-  }
+ib-utredning-header-status {
+  min-width: 300px;
+  margin-right: 38px;
 }

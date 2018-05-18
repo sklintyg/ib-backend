@@ -22,7 +22,8 @@ angular.module('ibApp').directive('ibUtredningForfragan', function($log, $uibMod
     return {
         restrict: 'E',
         scope: {
-            utredning: '='
+            utredning: '=',
+            utredningVm: '='
         },
         templateUrl: '/app/samordnare/visaUtredning/ibUtredningForfragan/ibUtredningForfragan.directive.html',
         link: function($scope) {
@@ -32,7 +33,7 @@ angular.module('ibApp').directive('ibUtredningForfragan', function($log, $uibMod
 
             $scope.showForfraganButtons = function() {
                 return !veModel.error &&
-                    $scope.utredning.status.utredningFas.id === 'FORFRAGAN' &&
+                    $scope.utredning.fas.id === 'FORFRAGAN' &&
                     $scope.utredning.status.id !== 'TILLDELAD_VANTAR_PA_BESTALLNING';
             };
 

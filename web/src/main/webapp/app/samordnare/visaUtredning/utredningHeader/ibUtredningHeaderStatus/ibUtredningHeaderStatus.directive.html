@@ -1,15 +1,3 @@
 <span>
-
-  <!-- error from button interaction -->
-  <ib-alert-message id="intyg-inline-error"
-                    ng-show="intygViewState.common.inlineErrorMessageKey"
-                    alert-severity="danger"
-                    alert-message-id="{{intygViewState.common.inlineErrorMessageKey}}">
-  </ib-alert-message>
-
-  <span ng-show="!intygViewState.common.inlineErrorMessageKey">
-    <ib-utredning-status-slot id="intygstatus1" intygstatus="intygstatus1[0]"></ib-utredning-status-slot>
-    <ib-utredning-status-slot id="intygstatus2" intygstatus="intygstatus2[0]"></ib-utredning-status-slot>
-  </span>
-
+  {{utredning.status.label}}
 </span>

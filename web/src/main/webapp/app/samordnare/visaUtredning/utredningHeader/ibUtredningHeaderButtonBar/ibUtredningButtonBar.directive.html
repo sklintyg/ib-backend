@@ -1,17 +1,16 @@
-<div class="white-space-no-wrap" ng-cloak>
-  <!--button type="button"
-          id="makuleraBtn"
+<div class="white-space-no-wrap" ng-cloak ng-if="utredning.fas.id === 'FORFRAGAN'">
+  <button type="button"
+          id="accepteraBtn"
           class="btn btn-secondary"
-          ng-if="showMakuleraButton()"
-          ng-click="makulera(viewState.intygModel)"
-          ib-check-vardenhet
-          vardenhet="{{viewState.enhetsId}}"
-          uib-popover="{{makuleraBtnTooltipText}}"
-          popover-trigger="mouseenter"
-          popover-popup-delay="300"
-          popover-append-to-body="true"
-          popover-placement="auto top"
-          popover-class="z-low">
-    <i class="material-icons">delete</i> Makulera
-  </button-->
+          ng-disabled="accepteraBtnDisabled()"
+          ng-click="acceptera()">
+    <i class="material-icons">check</i> Acceptera förfrågan
+  </button>
+  <button type="button"
+          id="avvisaBtn"
+          class="btn btn-secondary"
+          ng-disabled="avvisaBtnDisabled()"
+          ng-click="avvvisa()">
+    <i class="material-icons">block</i> Avvisa förfrågan
+  </button>
 </div>

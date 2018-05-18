@@ -86,6 +86,7 @@ public enum UtredningStatus implements SortableLabel {
         return label;
     }
 
+    @JsonIgnore
     public UtredningFas getUtredningFas() {
         return utredningFas;
     }

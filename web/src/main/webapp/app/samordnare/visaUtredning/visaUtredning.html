@@ -1,6 +1,6 @@
 <div class="visaUtredning-page ib-workarea">
 
-  <ib-utredning-header utredning="utredning" utredning-view-state="utredningViewState"></ib-utredning-header>
+  <ib-utredning-header utredning="utredning" utredning-vm="vm"></ib-utredning-header>
 
   <div class="ib-workarea-hflex-container centered-constrained-content" id="edit-{{utredning.utredningsId}}">
 
@@ -91,7 +91,7 @@
 
       <uib-tabset active="active">
         <uib-tab index="0" heading="Förfrågan">
-          <ib-utredning-forfragan utredning="utredning"></ib-utredning-forfragan>
+          <ib-utredning-forfragan utredning="utredning" utredning-vm="vm"></ib-utredning-forfragan>
         </uib-tab>
         <uib-tab index="1" heading="Händelser">
           <ib-utredning-handelser utredning="utredning"></ib-utredning-handelser>

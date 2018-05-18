@@ -31,4 +31,10 @@ ib-utredning-forfragan {
     font-size: inherit;
     color: $ib-color-16;
   }
+
+  .ib-table-striped {
+    .btn {
+      min-width: 60px;
+    }
+  }
 }

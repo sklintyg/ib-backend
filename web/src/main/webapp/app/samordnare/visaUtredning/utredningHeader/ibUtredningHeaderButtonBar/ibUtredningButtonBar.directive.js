@@ -24,10 +24,21 @@ angular.module('ibApp').directive('ibUtredningButtonBar',
         restrict: 'E',
         scope: {
             utredning: '=',
-            viewState: '='
+            utredningVm: '='
         },
         templateUrl: '/app/samordnare/visaUtredning/utredningHeader/ibUtredningHeaderButtonBar/ibUtredningButtonBar.directive.html',
-        link: function() {
+        link: function($scope) {
+
+            $scope.accepteraBtnDisabled = function() {
+                return $scope.utredning.status.id === 'TILLDELAD_VANTAR_PA_BESTALLNING' || !$scope.utredningVm.selectedInternforfragan;
+            };
+            $scope.avvisaBtnDisabled = function() {
+                return $scope.utredning.status.id === 'TILLDELAD_VANTAR_PA_BESTALLNING';
+            };
+
+            $scope.acceptera = function() {
+                // acceptera $scope.utredningVm.selectedInternforfragan
+            };
         }
     };
 });

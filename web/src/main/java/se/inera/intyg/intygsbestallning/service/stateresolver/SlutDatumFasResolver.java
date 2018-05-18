@@ -31,12 +31,15 @@ public final class SlutDatumFasResolver {
     }
 
     /*
+     * Om utredningsfas = Förfrågan är slutdatum = Utredning.förfrågan.svarsdatum.
      * Om utredningsfas = utredning är slutdatum= Utredning.intyg.sista datum för mottagning
      * Om utredningsfas = komplettering är slutdatum = Utredning.kompletteringsbegäran.komplettering.sista datum för
      * mottagning
      */
     public static String resolveSlutDatumFas(Utredning utredning, UtredningStatus utredningStatus) {
         switch (utredningStatus.getUtredningFas()) {
+        case FORFRAGAN:
+            return utredning.getExternForfragan().getBesvarasSenastDatum().format(DateTimeFormatter.ISO_DATE);
         case UTREDNING:
             return utredning.getIntygList().stream()
                     .filter(i -> !i.isKomplettering())
@@ -46,6 +49,7 @@ public final class SlutDatumFasResolver {
                     .orElseThrow(IllegalStateException::new);
         case KOMPLETTERING:
             return utredning.getIntygList().stream()
+                    .filter(Intyg::isKomplettering)
                     .map(Intyg::getSistaDatum)
                     .max(LocalDateTime::compareTo)
                     .map(datum -> datum.format(DateTimeFormatter.ISO_DATE))

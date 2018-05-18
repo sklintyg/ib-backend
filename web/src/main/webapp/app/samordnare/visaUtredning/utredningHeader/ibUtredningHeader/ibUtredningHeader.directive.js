@@ -23,7 +23,7 @@ angular.module('ibApp').directive('ibUtredningHeader', function($window, $state)
         restrict: 'E',
         scope: {
             utredning: '=',
-            intygViewState: '='
+            utredningVm: '='
         },
         templateUrl: '/app/samordnare/visaUtredning/utredningHeader/ibUtredningHeader/ibUtredningHeader.directive.html',
         link: function($scope) {

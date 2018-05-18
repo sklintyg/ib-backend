@@ -22,6 +22,8 @@ import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.service.stateresolver.SlutDatumFasResolver;
+import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 
 import java.time.format.DateTimeFormatter;
@@ -32,13 +34,16 @@ import static java.util.Objects.isNull;
 
 public class GetUtredningResponse {
     private static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
-    List<VardenhetListItem> tidigareEnheter;
+
     private Long utredningsId;
     private UtredningStatus status;
+    private UtredningFas fas;
+    private String slutdatumFas;
     private String inkomDatum;
     private String besvarasSenastDatum;
     private String bostadsort;
     private boolean tidigareUtredd;
+    List<VardenhetListItem> tidigareEnheter;
     private boolean behovTolk;
 
     private String tolkSprak;
@@ -61,7 +66,8 @@ public class GetUtredningResponse {
 
         return GetUtredningResponseBuilder.aGetUtredningResponse()
                 .withUtredningsId(utredning.getUtredningId())
-                .withStatus(status)
+                .withStatusAndFas(status)
+                .withSlutdatumFas(SlutDatumFasResolver.resolveSlutDatumFas(utredning, status))
                 .withInkomDatum(!isNull(utredning.getExternForfragan())
                         ? utredning.getExternForfragan().getInkomDatum().format(formatter) : null)
                 .withBesvarasSenastDatum(!isNull(utredning.getExternForfragan())
@@ -97,6 +103,22 @@ public class GetUtredningResponse {
 
     public void setStatus(UtredningStatus status) {
         this.status = status;
+    }
+
+    public UtredningFas getFas() {
+        return fas;
+    }
+
+    public void setFas(UtredningFas fas) {
+        this.fas = fas;
+    }
+
+    public String getSlutdatumFas() {
+        return slutdatumFas;
+    }
+
+    public void setSlutdatumFas(String slutdatumFas) {
+        this.slutdatumFas = slutdatumFas;
     }
 
     public String getInkomDatum() {
@@ -212,8 +234,10 @@ public class GetUtredningResponse {
     }
 
     public static final class GetUtredningResponseBuilder {
-        private UtredningStatus status;
         private Long utredningsId;
+        private UtredningStatus status;
+        private UtredningFas fas;
+        private String slutdatumFas;
         private String inkomDatum;
         private String besvarasSenastDatum;
         private String bostadsort;
@@ -241,8 +265,14 @@ public class GetUtredningResponse {
             return this;
         }
 
-        public GetUtredningResponseBuilder withStatus(UtredningStatus status) {
+        public GetUtredningResponseBuilder withStatusAndFas(UtredningStatus status) {
             this.status = status;
+            this.fas = status.getUtredningFas();
+            return this;
+        }
+
+        public GetUtredningResponseBuilder withSlutdatumFas(String slutdatumFas) {
+            this.slutdatumFas = slutdatumFas;
             return this;
         }
 
@@ -326,6 +356,8 @@ public class GetUtredningResponse {
             GetUtredningResponse getUtredningResponse = new GetUtredningResponse();
             getUtredningResponse.setUtredningsId(utredningsId);
             getUtredningResponse.setStatus(status);
+            getUtredningResponse.setFas(fas);
+            getUtredningResponse.setSlutdatumFas(slutdatumFas);
             getUtredningResponse.setInkomDatum(inkomDatum);
             getUtredningResponse.setBesvarasSenastDatum(besvarasSenastDatum);
             getUtredningResponse.setBostadsort(bostadsort);

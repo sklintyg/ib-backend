@@ -20,29 +20,8 @@
 ib-utredning-button-bar {
   padding-left: 60px;
 
-  .dropdown-menu {
-    border: 1px solid $ib-color-21;
-    padding: 0;
-
-    >li>a {
-      background: none;
-      padding: 8px 10px;
-      text-decoration: none;
-    }
-
-    >li>a:hover {
-      background-color: $ib-color-21;
-      color: $ib-color-00;
-    }
-  }
-
   .btn[disabled] {
     pointer-events: none;
   }
-  .button-tooltip {
-    display: inline-block;
-    .disabled {
-      cursor: not-allowed;
-    }
-  }
+
 }

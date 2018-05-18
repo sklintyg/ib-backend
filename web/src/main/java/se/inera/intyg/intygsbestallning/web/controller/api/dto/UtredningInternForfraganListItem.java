@@ -21,6 +21,7 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 import se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStateResolver;
 import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
 
@@ -36,6 +37,7 @@ public class UtredningInternForfraganListItem implements VardenhetEnrichable {
     private String vardenhetHsaId;
     private String vardenhetNamn;
     private InternForfraganStatus status;
+    private InternForfraganFas fas;
     private String borjaDatum;
     private String meddelande;
     private String mottagare;
@@ -49,7 +51,7 @@ public class UtredningInternForfraganListItem implements VardenhetEnrichable {
         final ForfraganSvar forfraganSvar = internForfragan.getForfraganSvar();
         return UtredningInternForfraganListItemBuilder.aUtredningInternForfraganListItem()
                 .withVardenhetHsaId(internForfragan.getVardenhetHsaId())
-                .withStatus(internForfraganStateResolver.resolveStatus(utredning, internForfragan))
+                .withStatusAndFas(internForfraganStateResolver.resolveStatus(utredning, internForfragan))
                 .withBorjaDatum(nonNull(forfraganSvar) && nonNull(forfraganSvar.getBorjaDatum())
                         ? forfraganSvar.getBorjaDatum().format(formatter) : null)
                 .withMeddelande(nonNull(forfraganSvar) ? forfraganSvar.getKommentar() : null)
@@ -98,6 +100,14 @@ public class UtredningInternForfraganListItem implements VardenhetEnrichable {
 
     public void setStatus(InternForfraganStatus status) {
         this.status = status;
+    }
+
+    public InternForfraganFas getFas() {
+        return fas;
+    }
+
+    public void setFas(InternForfraganFas fas) {
+        this.fas = fas;
     }
 
     public String getBorjaDatum() {
@@ -167,6 +177,7 @@ public class UtredningInternForfraganListItem implements VardenhetEnrichable {
     public static final class UtredningInternForfraganListItemBuilder {
         private String vardenhetHsaId;
         private InternForfraganStatus status;
+        private InternForfraganFas fas;
         private String borjaDatum;
         private String meddelande;
         private String mottagare;
@@ -188,8 +199,9 @@ public class UtredningInternForfraganListItem implements VardenhetEnrichable {
             return this;
         }
 
-        public UtredningInternForfraganListItem.UtredningInternForfraganListItemBuilder withStatus(InternForfraganStatus status) {
+        public UtredningInternForfraganListItem.UtredningInternForfraganListItemBuilder withStatusAndFas(InternForfraganStatus status) {
             this.status = status;
+            this.fas = status.getInternForfraganFas();
             return this;
         }
 
@@ -244,6 +256,7 @@ public class UtredningInternForfraganListItem implements VardenhetEnrichable {
             utredningInternForfraganListItem.setPostkod(postkod);
             utredningInternForfraganListItem.setPostort(postort);
             utredningInternForfraganListItem.setStatus(status);
+            utredningInternForfraganListItem.setFas(fas);
             utredningInternForfraganListItem.setTelefon(telefon);
             return utredningInternForfraganListItem;
         }

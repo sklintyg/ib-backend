@@ -38,7 +38,8 @@
   &:focus,
   &:active,
   &:active:focus,
-  &.active {
+  &.active,
+  &.active:focus {
     background-color: $btn-common-hover-background-color;
     border-color: $btn-common-hover-background-color;
     color: $ib-color-00;
@@ -50,7 +51,8 @@
   &:focus,
   &:active,
   &:active:focus,
-  &.active {
+  &.active,
+  &.active:focus {
     &:disabled {
       background-color: $ib-color-13;
       border-color: $ib-color-13;

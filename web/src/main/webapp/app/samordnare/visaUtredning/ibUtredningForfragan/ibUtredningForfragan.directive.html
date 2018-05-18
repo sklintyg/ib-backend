@@ -2,7 +2,11 @@
 
   <ib-spinner show-spinner="veModel.loading" label="common.label.loading">
 
-    <ib-alert-message alert-severity="success">Förfrågan accepterades.</ib-alert-message>
+    <ib-alert-message alert-id="status-forfragan-accepterades"
+                      alert-severity="success"
+                      ng-if="utredning.status.id === 'TILLDELAD_VANTAR_PA_BESTALLNING' || utredning.fas.id === 'UTREDNING'">
+      Förfrågan accepterades.
+    </ib-alert-message>
 
     <ib-alert-message alert-id="skicka-forfragan-vardenheter-error"
                       alert-severity="danger"
@@ -46,7 +50,20 @@
           </td>
           <td><i ng-if="row.status.id == 'TILLDELAD_VANTAR_PA_BESTALLNING'" class="material-icons accept">check_circle</i> {{::row.status.label}}</td>
           <td>{{::row.borjaDatum}}</td>
-          <td><button class="btn btn-primary" ng-click="selectForfragan(row.utredningsId)" data-ng-disabled="true"><span message key="common.select"></span></button></td>
+          <td>
+            <button uib-btn-radio="row"
+                    ng-model="utredningVm.selectedInternforfragan"
+                    class="btn btn-primary"
+                    ng-click="selectForfragan(row.utredningsId)"
+                    ng-disabled="row.status.id !== 'ACCEPTERAD_VANTAR_PA_TILLDELNINGSBESLUT'"
+                    ng-if="row.fas.id === 'FORFRAGAN'"
+                    data-ng-disabled="true">
+              <span ng-switch="utredningVm.selectedInternforfragan == row">
+                <span ng-switch-when="false" message key="common.select"></span>
+                <span ng-switch-when="true" message key="common.selected"></span>
+              </span>
+            </button>
+          </td>
         </tr>
       </tbody>
     </table>

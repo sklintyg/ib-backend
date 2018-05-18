@@ -19,13 +19,11 @@
 package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
-import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.service.stateresolver.SlutDatumFasResolver;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 import static java.util.Objects.nonNull;
@@ -44,7 +42,7 @@ public class UtredningListItem implements FreeTextSearchable, FilterableListItem
 
         return UtredningListItemBuilder.anUtredningListItem()
                 .withFas(utredningStatus.getUtredningFas())
-                .withSlutdatumFas(resolveSlutDatum(utredning, utredningStatus))
+                .withSlutdatumFas(SlutDatumFasResolver.resolveSlutDatumFas(utredning, utredningStatus))
                 .withStatus(utredningStatus)
                 .withUtredningsId(utredning.getUtredningId())
                 .withUtredningsTyp(utredning.getUtredningsTyp().name())
@@ -61,38 +59,6 @@ public class UtredningListItem implements FreeTextSearchable, FilterableListItem
                     .findFirst();
 
             return optionalVardenhetHsaId.orElse(null);
-        }
-        return null;
-    }
-
-    /**
-     * Om utredningsfas = Förfrågan är slutdatum = Utredning.förfrågan.svarsdatum.
-     * Om utredningsfas = Utredning är slutdatum = Utredning.intyg.sista datum för mottagning
-     * Om utredningsfas = Komplettering är slutdatum = Utredning.kompletteringsbegäran.komplettering.sista datum för
-     * mottagning.
-     * Om utredningsfas = Redovisa tolk så är fältet tomt.
-     */
-    private static String resolveSlutDatum(Utredning utredning, UtredningStatus utredningStatus) {
-        switch (utredningStatus.getUtredningFas()) {
-        case FORFRAGAN:
-            return utredning.getExternForfragan().getBesvarasSenastDatum().format(DateTimeFormatter.ISO_DATE);
-        case UTREDNING:
-            return utredning.getIntygList().stream()
-                    .filter(i -> !i.isKomplettering())
-                    .map(Intyg::getSistaDatum)
-                    .findAny()
-                    .map(datum -> datum.format(DateTimeFormatter.ISO_DATE))
-                    .orElseThrow(IllegalArgumentException::new);
-        case KOMPLETTERING:
-            return utredning.getIntygList().stream()
-                    .filter(Intyg::isKomplettering)
-                    .map(Intyg::getSistaDatum)
-                    .max(LocalDateTime::compareTo)
-                    .map(datum -> datum.format(DateTimeFormatter.ISO_DATE))
-                    .orElseThrow(IllegalArgumentException::new);
-        case REDOVISA_TOLK:
-        case AVSLUTAD:
-            return null;
         }
         return null;
     }

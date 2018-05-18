@@ -23,7 +23,8 @@ angular.module('ibApp')
             'use strict';
 
             $scope.vm = {
-                loading: true
+                loading: true,
+                selectedInternforfragan: null
             };
 
             function convertUtredningToViewModel(utredning) {
