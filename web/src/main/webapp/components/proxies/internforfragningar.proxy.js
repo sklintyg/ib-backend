@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('ibApp').factory('ForfragningarProxy',
+angular.module('ibApp').factory('InternForfragningarProxy',
     function($http, $log, $q,
         networkConfig) {
         'use strict';
@@ -25,7 +25,7 @@ angular.module('ibApp').factory('ForfragningarProxy',
         function _getForfragningar(query) {
             var promise = $q.defer();
 
-            var restPath = '/api/forfragningar';
+            var restPath = '/api/internforfragningar';
 
             var config =  {
                 timeout: networkConfig.defaultTimeout
@@ -52,7 +52,7 @@ angular.module('ibApp').factory('ForfragningarProxy',
         function _getForfragningarFilterValues() {
             var promise = $q.defer();
 
-            var restPath = '/api/forfragningar/list/filter';
+            var restPath = '/api/internforfragningar/list/filter';
 
             var config =  {
                 timeout: networkConfig.defaultTimeout

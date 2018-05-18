@@ -31,7 +31,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 public class InternForfraganControllerIT extends BaseRestIntegrationTest {
 
-    private static final String FORFRAGAN_API_ENDPOINT = "/api/forfragningar";
+    private static final String INTERN_FORFRAGAN_API_ENDPOINT = "/api/internforfragningar";
 
     @Test
     public void testListForfragningar() throws JsonProcessingException {
@@ -39,7 +39,7 @@ public class InternForfraganControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_VARDADMIN);
         given().contentType(APPLICATION_JSON)
                 .body(mapper.writeValueAsString(new ListForfraganRequest()))
-                .expect().statusCode(OK).when().post(FORFRAGAN_API_ENDPOINT)
+                .expect().statusCode(OK).when().post(INTERN_FORFRAGAN_API_ENDPOINT)
                 .then()
                 .body("forfragningar", Matchers.notNullValue());
     }
@@ -47,14 +47,14 @@ public class InternForfraganControllerIT extends BaseRestIntegrationTest {
     @Test
     public void testGetForfraganById() {
         RestAssured.sessionId = getAuthSession(DEFAULT_VARDADMIN);
-        given().expect().statusCode(OK).when().get(FORFRAGAN_API_ENDPOINT + "/1")
+        given().expect().statusCode(OK).when().get(INTERN_FORFRAGAN_API_ENDPOINT + "/1")
                 .then()
                 .body("status", Matchers.notNullValue());
     }
 
     @Test
-    public void testGetForfraganByIdReturns404WhenNotExistss() {
+    public void testGetForfraganByIdReturns404WhenNotExists() {
         RestAssured.sessionId = getAuthSession(DEFAULT_VARDADMIN);
-        given().expect().statusCode(404).when().get(FORFRAGAN_API_ENDPOINT + "/999191919");
+        given().expect().statusCode(404).when().get(INTERN_FORFRAGAN_API_ENDPOINT + "/999191919");
     }
 }
