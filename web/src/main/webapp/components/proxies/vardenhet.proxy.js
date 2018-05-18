@@ -18,70 +18,33 @@
  */
 
 angular.module('ibApp').factory('VardenhetProxy',
-    function($http, $log, $q,
-        networkConfig) {
+    function(ProxyTemplate) {
         'use strict';
 
         function _getVardenhetPreference() {
-            var promise = $q.defer();
-
             var restPath = '/api/vardenhet/preference';
 
             var config =  {
                 errorMessageConfig: {
                     errorTitleKey: 'server.error.getvardenhetpreference.title',
                     errorTextKey: 'server.error.getvardenhetpreference.text'
-                },
-                timeout: networkConfig.defaultTimeout
+                }
             };
 
-            $http.get(restPath, config).then(function(response) {
-                $log.debug(restPath + ' - success');
-
-                if (typeof response !== 'undefined') {
-                    promise.resolve(response.data);
-                } else {
-                    $log.debug('JSON response syntax error. Rejected.');
-                    promise.reject(null);
-                }
-            }, function(response) {
-                $log.error('error ' + response.status);
-                // Let calling code handle the error of no data response
-                promise.reject(response.data);
-            });
-
-            return promise.promise;
+            return ProxyTemplate.getTemplate(restPath, config);
         }
 
         function _setVardenhetPreference(vardenhetPreferenceRequest) {
-            var promise = $q.defer();
-
             var restPath = '/api/vardenhet/preference';
 
             var config =  {
                 errorMessageConfig: {
                     errorTitleKey: 'server.error.setvardenhetpreference.title',
                     errorTextKey: 'server.error.setvardenhetpreference.text'
-                },
-                timeout: networkConfig.defaultTimeout
+                }
             };
 
-            $http.put(restPath, vardenhetPreferenceRequest, config).then(function(response) {
-                $log.debug(restPath + ' - success');
-
-                if (typeof response !== 'undefined') {
-                    promise.resolve(response.data);
-                } else {
-                    $log.debug('JSON response syntax error. Rejected.');
-                    promise.reject(null);
-                }
-            }, function(response) {
-                $log.error('error ' + response.status);
-                // Let calling code handle the error of no data response
-                promise.reject(response.data);
-            });
-
-            return promise.promise;
+            return ProxyTemplate.putTemplate(restPath, vardenhetPreferenceRequest, config);
         }
 
         // Return public API for the service

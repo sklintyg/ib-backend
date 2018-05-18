@@ -18,59 +18,20 @@
  */
 
 angular.module('ibApp').factory('VardgivareProxy',
-    function($http, $log, $q, networkConfig) {
+    function(ProxyTemplate) {
         'use strict';
 
         var endpointBaseUrl = '/api/vardgivare/vardenheter';
 
         function _getVardenheter() {
-            var promise = $q.defer();
-
-            var config =  {
-                timeout: networkConfig.defaultTimeout
-            };
-
-            $http.get(endpointBaseUrl, config).then(function(response) {
-                if (typeof response !== 'undefined') {
-                    promise.resolve(response.data);
-                } else {
-                    $log.debug('JSON response syntax error. Rejected.');
-                    promise.reject(null);
-                }
-            }, function(response) {
-                $log.error('error ' + response.status);
-                promise.reject(response.data);
-            });
-
-            return promise.promise;
+            return ProxyTemplate.getTemplate(endpointBaseUrl, {});
         }
 
         function _getVardenheterWithFilter(query) {
-            var promise = $q.defer();
-
-            var config =  {
-                timeout: networkConfig.defaultTimeout
-            };
-
-            $http.post(endpointBaseUrl, query, config).then(function(response) {
-
-                if (typeof response !== 'undefined') {
-                    promise.resolve(response.data);
-                } else {
-                    $log.debug('JSON response syntax error. Rejected.');
-                    promise.reject(null);
-                }
-            }, function(response) {
-                $log.error('error ' + response.status);
-                promise.reject(response.data);
-            });
-
-            return promise.promise;
+            return ProxyTemplate.postTemplate(endpointBaseUrl, query, {});
         }
 
         function _updateRegiForm(vardenhetHsaId, regiForm) {
-            var promise = $q.defer();
-
             var payload = {
                 regiForm: regiForm
             };
@@ -79,77 +40,28 @@ angular.module('ibApp').factory('VardgivareProxy',
                 errorMessageConfig: {
                     errorTitleKey: 'server.error.updateregiform.title',
                     errorTextKey: 'server.error.updateregiform.text'
-                },
-                timeout: networkConfig.defaultTimeout
+                }
             };
 
-            $http.put(endpointBaseUrl + '/' + vardenhetHsaId, payload, config).then(function(response) {
-                if (typeof response !== 'undefined') {
-                    promise.resolve(response.data);
-                } else {
-                    $log.debug('JSON response syntax error. Rejected.');
-                    promise.reject(null);
-                }
-            }, function(response) {
-                $log.error('error ' + response.status);
-                promise.reject(response.data);
-            });
-
-            return promise.promise;
+            return ProxyTemplate.putTemplate(endpointBaseUrl + '/' + vardenhetHsaId, payload, config);
         }
 
         function _deleteVardenhet(vardenhetHsaId) {
-            var promise = $q.defer();
-
             var config =  {
                 errorMessageConfig: {
                     errorTitleKey: 'server.error.deletevardenhet.title',
                     errorTextKey: 'server.error.deletevardenhet.text'
-                },
-                timeout: networkConfig.defaultTimeout
+                }
             };
 
-            $http.delete(endpointBaseUrl + '/' + vardenhetHsaId, config).then(function(response) { // jshint ignore:line
-                if (typeof response !== 'undefined') {
-                    promise.resolve(response.data);
-                } else {
-                    $log.debug('JSON response syntax error. Rejected.');
-                    promise.reject(null);
-                }
-            }, function(response) {
-                $log.error('error ' + response.status);
-                promise.reject(response.data);
-            });
-
-            return promise.promise;
+            return ProxyTemplate.deleteTemplate(endpointBaseUrl + '/' + vardenhetHsaId, config);
         }
 
         function _findVardenhetByHsaId(vardenhetHsaId) {
-            var promise = $q.defer();
-
-
-            var config =  {
-                timeout: networkConfig.defaultTimeout
-            };
-
-                $http.get(endpointBaseUrl + '/' + vardenhetHsaId, config).then(function(response) {
-                    if (typeof response !== 'undefined') {
-                        promise.resolve(response.data);
-                    } else {
-                        $log.debug('JSON response syntax error. Rejected.');
-                        promise.reject(null);
-                    }
-                }, function(response) {
-                    $log.error('error ' + response.status);
-                    promise.reject(response.data);
-                });
-
-            return promise.promise;
+            return ProxyTemplate.getTemplate(endpointBaseUrl + '/' + vardenhetHsaId, {});
         }
 
         function _addVardenhet(vardenhetHsaId, regiForm) {
-            var promise = $q.defer();
-
             var payload = {
                 regiForm: regiForm
             };
@@ -158,23 +70,11 @@ angular.module('ibApp').factory('VardgivareProxy',
                 errorMessageConfig: {
                     errorTitleKey: 'server.error.addvardenhet.title',
                     errorTextKey: 'server.error.addvardenhet.text'
-                },
-                timeout: networkConfig.defaultTimeout
+                }
             };
 
-            $http.post(endpointBaseUrl + '/' + vardenhetHsaId, payload, config).then(function(response) {
-                if (typeof response !== 'undefined') {
-                    promise.resolve(response.data);
-                } else {
-                    $log.debug('JSON response syntax error. Rejected.');
-                    promise.reject(null);
-                }
-            }, function(response) {
-                $log.error('error ' + response.status);
-                promise.reject(response.data);
-            });
+            return ProxyTemplate.postTemplate(endpointBaseUrl + '/' + vardenhetHsaId, payload, config);
 
-            return promise.promise;
         }
 
         // Return public API for the service

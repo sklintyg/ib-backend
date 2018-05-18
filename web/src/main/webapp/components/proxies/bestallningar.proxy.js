@@ -18,147 +18,44 @@
  */
 
 angular.module('ibApp').factory('BestallningarProxy',
-    function($http, $log, $q,
-        networkConfig) {
+    function(ProxyTemplate) {
         'use strict';
 
         function _getBestallning(utredningsId) {
-            var promise = $q.defer();
-
             var restPath = '/api/vardadmin/bestallningar/' + utredningsId;
 
             var config =  {
                 errorMessageConfig: {
                     errorTitleKey: 'server.error.getbestallning.title',
                     errorTextKey: 'server.error.getbestallning.text'
-                },
-                timeout: networkConfig.defaultTimeout
+                }
             };
 
-            $http.get(restPath, config).then(function(response) {
-                $log.debug(restPath + ' - success');
-
-                if (typeof response !== 'undefined') {
-                    promise.resolve(response.data);
-                } else {
-                    $log.debug('JSON response syntax error. Rejected.');
-                    promise.reject(null);
-                }
-            }, function(response) {
-                $log.error('error ' + response.status);
-                // Let calling code handle the error of no data response
-                promise.reject(response.data);
-            });
-
-            return promise.promise;
+            return ProxyTemplate.getTemplate(restPath, config);
         }
 
         function _getBestallningarWithFilter(query) {
-            var promise = $q.defer();
-
             var restPath = '/api/vardadmin/bestallningar';
 
-            var config =  {
-                timeout: networkConfig.defaultTimeout
-            };
-
-            $http.post(restPath, query, config).then(function(response) {
-                $log.debug(restPath + ' - success');
-
-                if (typeof response !== 'undefined') {
-                    promise.resolve(response.data);
-                } else {
-                    $log.debug('JSON response syntax error. Rejected.');
-                    promise.reject(null);
-                }
-            }, function(response) {
-                $log.error('error ' + response.status);
-                // Let calling code handle the error of no data response
-                promise.reject(response.data);
-            });
-
-            return promise.promise;
+            return ProxyTemplate.postTemplate(restPath, query, {});
         }
 
         function _getBestallningarFilterValues() {
-            var promise = $q.defer();
-
             var restPath = '/api/vardadmin/bestallningar/list/filter';
 
-            var config =  {
-                timeout: networkConfig.defaultTimeout
-            };
-
-            $http.get(restPath, null, config).then(function(response) {
-                $log.debug(restPath + ' - success');
-
-                if (typeof response !== 'undefined') {
-                    promise.resolve(response.data);
-                } else {
-                    $log.debug('JSON response syntax error. Rejected.');
-                    promise.reject(null);
-                }
-            }, function(response) {
-                $log.error('error ' + response.status);
-                // Let calling code handle the error of no data response
-                promise.reject(response.data);
-            });
-
-            return promise.promise;
+            return ProxyTemplate.getTemplate(restPath, {});
         }
 
         function _getAvslutadeBestallningarWithFilter(query) {
-            var promise = $q.defer();
-
             var restPath = '/api/vardadmin/bestallningar/avslutade';
 
-            var config =  {
-                timeout: networkConfig.defaultTimeout
-            };
-
-            $http.post(restPath, query, config).then(function(response) {
-                $log.debug(restPath + ' - success');
-
-                if (typeof response !== 'undefined') {
-                    promise.resolve(response.data);
-                } else {
-                    $log.debug('JSON response syntax error. Rejected.');
-                    promise.reject(null);
-                }
-            }, function(response) {
-                $log.error('error ' + response.status);
-                // Let calling code handle the error of no data response
-                promise.reject(response.data);
-            });
-
-            return promise.promise;
+            return ProxyTemplate.postTemplate(restPath, query, {});
         }
 
         function _getAvslutadeBestallningarFilterValues() {
-            var promise = $q.defer();
-
             var restPath = '/api/vardadmin/bestallningar/avslutade/list/filter';
 
-            var config =  {
-                timeout: networkConfig.defaultTimeout
-            };
-
-            $http.get(restPath, null, config).then(function(response) {
-                $log.debug(restPath + ' - success');
-
-                if (typeof response !== 'undefined') {
-                    promise.resolve(response.data);
-                } else {
-                    $log.debug('JSON response syntax error. Rejected.');
-                    promise.reject(null);
-                }
-            }, function(response) {
-                $log.error('error ' + response.status);
-                // Let calling code handle the error of no data response
-                promise.reject(response.data);
-            });
-
-            return promise.promise;
+            return ProxyTemplate.getTemplate(restPath, {});
         }
 
         // Return public API for the service

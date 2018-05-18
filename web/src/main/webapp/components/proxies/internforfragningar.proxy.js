@@ -18,62 +18,19 @@
  */
 
 angular.module('ibApp').factory('InternForfragningarProxy',
-    function($http, $log, $q,
-        networkConfig) {
+    function(ProxyTemplate) {
         'use strict';
 
         function _getForfragningar(query) {
-            var promise = $q.defer();
-
             var restPath = '/api/internforfragningar';
 
-            var config =  {
-                timeout: networkConfig.defaultTimeout
-            };
-
-            $http.post(restPath, query, config).then(function(response) {
-                $log.debug(restPath + ' - success');
-
-                if (typeof response !== 'undefined') {
-                    promise.resolve(response.data);
-                } else {
-                    $log.debug('JSON response syntax error. Rejected.');
-                    promise.reject(null);
-                }
-            }, function(response) {
-                $log.error('error ' + response.status);
-                // Let calling code handle the error of no data response
-                promise.reject(response.data);
-            });
-
-            return promise.promise;
+            return ProxyTemplate.postTemplate(restPath, query, {});
         }
 
         function _getForfragningarFilterValues() {
-            var promise = $q.defer();
-
             var restPath = '/api/internforfragningar/list/filter';
 
-            var config =  {
-                timeout: networkConfig.defaultTimeout
-            };
-
-            $http.get(restPath, null, config).then(function(response) {
-                $log.debug(restPath + ' - success');
-
-                if (typeof response !== 'undefined') {
-                    promise.resolve(response.data);
-                } else {
-                    $log.debug('JSON response syntax error. Rejected.');
-                    promise.reject(null);
-                }
-            }, function(response) {
-                $log.error('error ' + response.status);
-                // Let calling code handle the error of no data response
-                promise.reject(response.data);
-            });
-
-            return promise.promise;
+            return ProxyTemplate.getTemplate(restPath, {});
         }
 
         // Return public API for the service

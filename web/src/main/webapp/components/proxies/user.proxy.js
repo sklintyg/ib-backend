@@ -18,8 +18,7 @@
  */
 
 angular.module('ibApp').factory('UserProxy',
-    function($http, $log, $q,
-        networkConfig) {
+    function($log, ProxyTemplate) {
         'use strict';
 
         /*
@@ -27,8 +26,6 @@ angular.module('ibApp').factory('UserProxy',
          */
         function _changeSelectedUnit(newUnitId) {
             $log.debug('_changeSelectedUnit');
-
-            var promise = $q.defer();
 
             var restPath = '/api/user/andraenhet';
             var dto = {
@@ -38,26 +35,11 @@ angular.module('ibApp').factory('UserProxy',
                 errorMessageConfig: {
                     errorTitleKey: 'server.error.changeunit.title',
                     errorTextKey: 'server.error.changeunit.text'
-                },
-                timeout: networkConfig.defaultTimeout
+                }
             };
             $log.debug('REST call: _changeSelectedUnit ' + restPath);
-            $http.post(restPath, dto, config).then(function(response) {
-                $log.debug(restPath + ' - success');
 
-                if (typeof response !== 'undefined') {
-                    promise.resolve(response.data);
-                } else {
-                    $log.debug('JSON response syntax error. Rejected.');
-                    promise.reject(null);
-                }
-            }, function(response) {
-                $log.error('error ' + response.status);
-                // Let calling code handle the error of no data response
-                promise.reject(response.data);
-            });
-
-            return promise.promise;
+            return ProxyTemplate.postTemplate(restPath, dto, config);
         }
 
 
