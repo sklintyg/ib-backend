@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 describe('Samordnare lista utredningar', function() {
 
     var landstingHsaId = 'IFV1239877878-1043';
@@ -10,15 +12,21 @@ describe('Samordnare lista utredningar', function() {
         cy.fixture('utredningar/utredning-1.json').as('utredning1');
     });
 
+
     var utredningsId1, utredningsId2, utredningsId3;
+
+    var date0,date1,date2,date3;
 
     it('Skapa utredningar', function() {
 
+        date0 = moment().add(30, 'days');
+        this.utredning1.externForfragan.besvarasSenastDatum = date0;
         cy.createUtredning(this.utredning1);
 
+        date1 = moment().add(3, 'days').format('YYYY-MM-DD');
         cy.requestHealthPerformerAssesment({
             utredningsTyp: 'AFU',
-            besvaraSenastDatum: '2018-05-20',
+            besvaraSenastDatum: date1,
             landstingHsaId: landstingHsaId,
             invanare: {
                 ort: 'hemma'
@@ -30,9 +38,10 @@ describe('Samordnare lista utredningar', function() {
             utredningsId1 = data.assessmentId;
         });
 
+        date2 = moment().add(20, 'days').format('YYYY-MM-DD');
         cy.requestHealthPerformerAssesment({
             utredningsTyp: 'AFU_UTVIDGAD',
-            besvaraSenastDatum: '2018-06-13',
+            besvaraSenastDatum: date2,
             landstingHsaId: landstingHsaId,
             invanare: {
                 ort: 'hemma'
@@ -44,9 +53,10 @@ describe('Samordnare lista utredningar', function() {
             utredningsId2 = data.assessmentId;
         });
 
+        date3 = moment().add(35, 'days').format('YYYY-MM-DD');
         cy.requestHealthPerformerAssesment({
             utredningsTyp: 'AFU',
-            besvaraSenastDatum: '2018-07-04',
+            besvaraSenastDatum: date3,
             landstingHsaId: landstingHsaId,
             invanare: {
                 ort: 'hemma'
@@ -70,17 +80,16 @@ describe('Samordnare lista utredningar', function() {
         cy.get('#samordnare-lista-utredningar-table tr:nth-child(1) td:nth-child(4)').should('have.text', 'Förfrågan');
         cy.get('#samordnare-lista-utredningar-table tr:nth-child(1) td:nth-child(5) .slutdatum-paminnelse').should('not.be.visible');
         cy.get('#samordnare-lista-utredningar-table tr:nth-child(1) td:nth-child(5) .slutdatum-passed').should('not.be.visible');
-        cy.get('#samordnare-lista-utredningar-table tr:nth-child(1) td:nth-child(5)').should('contain', '2018-07-04');
+        cy.get('#samordnare-lista-utredningar-table tr:nth-child(1) td:nth-child(5)').should('contain', date3);
         cy.get('#samordnare-lista-utredningar-table tr:nth-child(1) td:nth-child(6) .status-kraver-atgard').should('be.visible');
         cy.get('#samordnare-lista-utredningar-table tr:nth-child(1) td:nth-child(6)').should('contain', 'Förfrågan inkommen');
 
-        cy.get('#samordnare-lista-utredningar-table tr:nth-child(2) td:nth-child(1)').should('have.text', 'utredning-cypress-1');
         cy.get('#samordnare-lista-utredningar-table tr:nth-child(2) td:nth-child(2)').should('have.text', 'AFU');
         cy.get('#samordnare-lista-utredningar-table tr:nth-child(2) td:nth-child(3)').should('have.text', 'WebCert-Enhet1');
         cy.get('#samordnare-lista-utredningar-table tr:nth-child(2) td:nth-child(4)').should('have.text', 'Förfrågan');
         cy.get('#samordnare-lista-utredningar-table tr:nth-child(2) td:nth-child(5) .slutdatum-paminnelse').should('not.be.visible');
         cy.get('#samordnare-lista-utredningar-table tr:nth-child(2) td:nth-child(5) .slutdatum-passed').should('not.be.visible');
-        cy.get('#samordnare-lista-utredningar-table tr:nth-child(2) td:nth-child(5)').should('contain', '2018-07-02');
+        cy.get('#samordnare-lista-utredningar-table tr:nth-child(2) td:nth-child(5)').should('contain', date0.format('YYYY-MM-DD'));
         cy.get('#samordnare-lista-utredningar-table tr:nth-child(2) td:nth-child(6) .status-kraver-atgard').should('not.be.visible');
         cy.get('#samordnare-lista-utredningar-table tr:nth-child(2) td:nth-child(6)').should('contain', 'Tilldelad, väntar på beställning');
 
@@ -90,7 +99,7 @@ describe('Samordnare lista utredningar', function() {
         cy.get('#samordnare-lista-utredningar-table tr:nth-child(3) td:nth-child(4)').should('have.text', 'Förfrågan');
         cy.get('#samordnare-lista-utredningar-table tr:nth-child(3) td:nth-child(5) .slutdatum-paminnelse').should('not.be.visible');
         cy.get('#samordnare-lista-utredningar-table tr:nth-child(3) td:nth-child(5) .slutdatum-passed').should('not.be.visible');
-        cy.get('#samordnare-lista-utredningar-table tr:nth-child(3) td:nth-child(5)').should('contain', '2018-06-13');
+        cy.get('#samordnare-lista-utredningar-table tr:nth-child(3) td:nth-child(5)').should('contain', date2);
         cy.get('#samordnare-lista-utredningar-table tr:nth-child(3) td:nth-child(6) .status-kraver-atgard').should('be.visible');
         cy.get('#samordnare-lista-utredningar-table tr:nth-child(3) td:nth-child(6)').should('contain', 'Förfrågan inkommen');
 
@@ -98,9 +107,9 @@ describe('Samordnare lista utredningar', function() {
         cy.get('#samordnare-lista-utredningar-table tr:nth-child(4) td:nth-child(2)').should('have.text', 'AFU');
         cy.get('#samordnare-lista-utredningar-table tr:nth-child(4) td:nth-child(3)').should('have.text', '');
         cy.get('#samordnare-lista-utredningar-table tr:nth-child(4) td:nth-child(4)').should('have.text', 'Förfrågan');
-        cy.get('#samordnare-lista-utredningar-table tr:nth-child(4) td:nth-child(5) .slutdatum-paminnelse').should('not.be.visible');
+        cy.get('#samordnare-lista-utredningar-table tr:nth-child(4) td:nth-child(5) .slutdatum-paminnelse').should('be.visible');
         cy.get('#samordnare-lista-utredningar-table tr:nth-child(4) td:nth-child(5) .slutdatum-passed').should('not.be.visible');
-        cy.get('#samordnare-lista-utredningar-table tr:nth-child(4) td:nth-child(5)').should('contain', '2018-05-20');
+        cy.get('#samordnare-lista-utredningar-table tr:nth-child(4) td:nth-child(5)').should('contain', date1);
         cy.get('#samordnare-lista-utredningar-table tr:nth-child(4) td:nth-child(6) .status-kraver-atgard').should('be.visible');
         cy.get('#samordnare-lista-utredningar-table tr:nth-child(4) td:nth-child(6)').should('contain', 'Förfrågan inkommen');
 

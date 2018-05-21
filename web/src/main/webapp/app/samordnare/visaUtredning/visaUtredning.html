@@ -20,16 +20,16 @@
                   <card-table>
                     <table class="table table-striped ib-table-striped">
                         <thead>
-                        <tr>
-                          <th>Inkom</th>
-                          <th>Besvaras senast</th>
-                        </tr>
+                      <tr>
+                        <th>Inkom</th>
+                        <th>Besvaras senast</th>
+                      </tr>
+                      <tr>
+                        <td id="inkomDatum">{{utredning.inkomDatum}}</td>
+                        <td id="besvarasSenastDatum">{{utredning.besvarasSenastDatum}}</td>
+                      </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <td>{{utredning.inkomDatum}}</td>
-                          <td>{{utredning.besvarasSenastDatum}}</td>
-                        </tr>
                       </tbody>
                     </table>
                   </card-table>
@@ -39,13 +39,13 @@
                 <h3>Invånare</h3>
                 <card-body>
                   <h4>Personuppgifter</h4>
-                  <card-value>
+                  <card-value id="bostadsort">
                     {{utredning.bostadsort}}
                   </card-value>
                   <h4>Tidigare utredd</h4>
-                  <card-value>
+                  <card-value id="tidigareUtredd">
                     {{utredning.tidigareUtredd | ibBoolFilter}}<span ng-if="utredning.tidigareEnheter">, vid {{utredning.tidigareEnheter}}</span>
-                    <ib-alert-message alert-id=""
+                    <ib-alert-message alert-id="felaktiga-enheter"
                                       alert-severity="danger"
                                       ng-if="utredning.felaktigaEnheter">
                       Felaktig enhet(er): {{utredning.felaktigaEnheter}}
@@ -57,15 +57,15 @@
                 <h3>Meddelande</h3>
                 <card-body>
                   <h4>Behov av tolk</h4>
-                  <card-value>
+                  <card-value id="behovAvTolk">
                     {{utredning.behovAvTolk}}
                   </card-value>
                   <h4>Särskilda behov</h4>
-                  <card-value>
+                  <card-value id="sarskildaBehov">
                     {{utredning.sarskildaBehov}}
                   </card-value>
                   <h4>Andra kommentarer</h4>
-                  <card-value>
+                  <card-value id="kommentar">
                     {{utredning.kommentar}}
                   </card-value>
                 </card-body>
@@ -75,9 +75,9 @@
                 <card-body>
                   <h4>Kontaktuppgifter</h4>
                   <card-value>
-                    {{utredning.handlaggareNamn}}<br>
-                    {{utredning.handlaggareTelefonnummer}}<br>
-                    {{utredning.handlaggareEpost}}
+                    <span id="handlaggareNamn">{{utredning.handlaggareNamn}}</span><br>
+                    <span id="handlaggareTelefonnummer">{{utredning.handlaggareTelefonnummer}}</span><br>
+                    <span id="handlaggareEpost">{{utredning.handlaggareEpost}}</span>
                   </card-value>
                 </card-body>
               </card>

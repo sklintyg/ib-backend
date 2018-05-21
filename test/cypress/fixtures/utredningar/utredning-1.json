@@ -1,7 +1,6 @@
 {
-  "utredningId": "utredning-cypress-1",
   "utredningsTyp": "AFU",
-  "tolkBehov": false,
+  "behovTolk": false,
   "tolkSprak": null,
   "avbrutenDatum": null,
   "avbrutenAnledning": null,
@@ -9,17 +8,17 @@
   "externForfragan": {
     "landstingHsaId": "IFV1239877878-1043",
     "besvarasSenastDatum": "2018-07-02T00:00:00",
-    "kommentar": null,
+    "kommentar": "externForfragan kommentar",
     "avvisatKommentar": null,
     "avvisatDatum": null,
     "inkomDatum": "2018-05-04T16:28:16.545",
-    "direkttilldelad": null,
     "internForfraganList": [{
       "vardenhetHsaId": "IFV1239877878-1042",
       "besvarasSenastDatum": "2018-04-30T10:07:12.396",
       "kommentar": "Bered skyndsamt!",
       "skapadDatum": "2018-04-26T10:07:12.127",
       "tilldeladDatum":"2018-04-28T10:07:12.127",
+      "direkttilldelad": null,
       "forfraganSvar": {
         "svarTyp": "ACCEPTERA",
         "utforareTyp": "ENHET",
@@ -38,21 +37,21 @@
   "handlingList": [ ],
   "besokList": [ ],
   "handlaggare": {
-    "fullstandigtNamn": null,
+    "fullstandigtNamn": "En handläggare",
     "telefonnummer": "123465789",
-    "email": null,
+    "email": "En handläggare email",
     "myndighet": "FKASSA",
     "kontor": null,
     "kostnadsstalle": null,
-    "adress": null,
-    "postkod": null,
-    "stad": null
+    "adress": "En handläggare adress",
+    "postkod": "En handläggare postkod",
+    "stad": "En handläggare stad"
   },
   "invanare": {
-    "personId": null,
-    "sarskildaBehov": null,
+    "personId": "1912121212-1212",
+    "sarskildaBehov": "Massor",
     "bakgrundNulage": null,
-    "postkod": "hemma",
+    "postort": "hemma",
     "tidigareUtforare": [ ]
   }
 }
