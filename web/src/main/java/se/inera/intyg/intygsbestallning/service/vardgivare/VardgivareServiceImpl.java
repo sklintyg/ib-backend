@@ -44,11 +44,11 @@ import se.inera.intyg.intygsbestallning.service.util.PagingUtil;
 import se.inera.intyg.intygsbestallning.service.vardgivare.dto.VardenhetItem;
 import se.inera.intyg.intygsbestallning.service.vardgivare.dto.VardgivarVardenhetListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FreeTextSearchable;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetVardenheterForVardgivareResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListVardenheterForVardgivareRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListVardenheterForVardgivareResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.SearchForVardenhetResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.SearchFormVardenhetResultCodesEnum;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.GetVardenheterForVardgivareResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.ListVardenheterForVardgivareRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.ListVardenheterForVardgivareResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.SearchForVardenhetResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.SearchFormVardenhetResultCodesEnum;
 import se.riv.infrastructure.directory.organization.gethealthcareunitresponder.v1.HealthCareUnitType;
 
 @Service

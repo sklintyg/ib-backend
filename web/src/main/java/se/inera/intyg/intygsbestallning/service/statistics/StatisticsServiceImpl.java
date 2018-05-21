@@ -27,11 +27,11 @@ import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganSta
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.SamordnarStatisticsResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.BestallningListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.statistics.SamordnarStatisticsResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardadminStatisticsResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.statistics.VardadminStatisticsResponse;
 
 /**
  * Created by marced on 2018-05-04.
@@ -66,7 +66,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         long forfraganRequiringActionCount = utredningRepository
                 .findAllByExternForfragan_InternForfraganList_VardenhetHsaId_AndArkiveradFalse(enhetsHsaId)
                 .stream()
-                .map(utr -> ForfraganListItem.from(utr, enhetsHsaId, internForfraganStateResolver, businessDays))
+                .map(utr -> InternForfraganListItem.from(utr, enhetsHsaId, internForfraganStateResolver, businessDays))
                 .filter(ffli -> ffli.getStatus().getNextActor().equals(Actor.VARDADMIN))
                 .count();
 

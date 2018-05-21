@@ -19,10 +19,10 @@
 package se.inera.intyg.intygsbestallning.service.vardgivare;
 
 import se.inera.intyg.intygsbestallning.service.vardgivare.dto.VardgivarVardenhetListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetVardenheterForVardgivareResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListVardenheterForVardgivareRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListVardenheterForVardgivareResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.SearchForVardenhetResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.GetVardenheterForVardgivareResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.ListVardenheterForVardgivareRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.ListVardenheterForVardgivareResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.SearchForVardenhetResponse;
 
 public interface VardgivareService {
     /**

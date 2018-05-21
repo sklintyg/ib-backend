@@ -18,11 +18,11 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.AvslutadBestallningListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetBestallningResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListAvslutadeBestallningarRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListBestallningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.AvslutadBestallningListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.BestallningListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.GetBestallningResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.ListAvslutadeBestallningarRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.ListBestallningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.SaveFakturaForUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListAvslutadeBestallningarFilter;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListBestallningFilter;

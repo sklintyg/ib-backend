@@ -33,11 +33,11 @@ import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.util.GenericComparator;
 import se.inera.intyg.intygsbestallning.service.util.PagingUtil;
 import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganSvarRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganSvarResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganListResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListForfraganRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.ForfraganSvarRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.ForfraganSvarResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.GetForfraganListResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.ListForfraganRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListForfraganFilter;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListForfraganFilterStatus;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.SelectItem;
@@ -73,16 +73,16 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
 
     @Override
     public GetForfraganListResponse findForfragningarForVardenhetHsaIdWithFilter(String vardenhetHsaId, ListForfraganRequest request) {
-        List<ForfraganListItem> forfraganList = externForfraganRepository
+        List<InternForfraganListItem> forfraganList = externForfraganRepository
                 .findByExternForfraganAndVardenhetHsaIdAndArkiveradFalse(vardenhetHsaId)
                 .stream()
-                .map(utr -> ForfraganListItem.from(utr, vardenhetHsaId, internForfraganStateResolver, businessDays))
+                .map(utr -> InternForfraganListItem.from(utr, vardenhetHsaId, internForfraganStateResolver, businessDays))
                 .collect(toList());
 
         Map<InternForfraganStatus, List<ListForfraganFilterStatus>> statusMap = buildFilterStatusesForForfragan();
 
         // Set the "filterStatusar" on each item. This is context dependent.
-        for (ForfraganListItem fli : forfraganList) {
+        for (InternForfraganListItem fli : forfraganList) {
             fli.setFilterStatusar(statusMap.get(fli.getStatus()));
         }
 
@@ -90,14 +90,14 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
         boolean enrichedWithVardgivareNames = false;
         if (request.getFreeText() != null || request.getOrderBy().equals("vardgivareNamn")) {
             // Enrich with vårdgivare namn from HSA
-            for (ForfraganListItem fli : forfraganList) {
+            for (InternForfraganListItem fli : forfraganList) {
                 fli.setVardgivareNamn(getVardgivareNamn(fli.getVardgivareHsaId()));
             }
             enrichedWithVardgivareNames = true;
         }
 
         // Apply the filter from the request.
-        List<ForfraganListItem> filtered = forfraganList.stream()
+        List<InternForfraganListItem> filtered = forfraganList.stream()
                 .filter(fli -> buildForfroganStatusPredicate(fli, request.getStatus()))
                 .filter(fli -> buildToFromPredicate(fli.getInkomDatum(), request.getInkommetFromDate(), request.getInkommetToDate()))
                 .filter(fli -> buildToFromPredicate(fli.getBesvarasSenastDatum(), request.getBesvarasSenastDatumFromDate(),
@@ -105,7 +105,7 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
                 .filter(fli -> buildToFromPredicate(fli.getPlaneringsDatum(), request.getPlaneringFromDate(), request.getPlaneringToDate()))
                 .filter(fli -> buildFreeTextPredicate(fli, request.getFreeText()))
                 .filter(fli -> buildVardgivareHsaIdPredicate(fli.getVardgivareHsaId(), request.getVardgivareHsaId()))
-                .sorted((o1, o2) -> GenericComparator.compare(ForfraganListItem.class, o1, o2, request.getOrderBy(),
+                .sorted((o1, o2) -> GenericComparator.compare(InternForfraganListItem.class, o1, o2, request.getOrderBy(),
                         request.isOrderByAsc()))
                 .collect(toList());
 
@@ -116,11 +116,11 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
 
         // Paging...
         Pair<Integer, Integer> bounds = PagingUtil.getBounds(total, request.getPageSize(), request.getCurrentPage());
-        List<ForfraganListItem> paged = filtered.subList(bounds.getFirst(), bounds.getSecond() + 1);
+        List<InternForfraganListItem> paged = filtered.subList(bounds.getFirst(), bounds.getSecond() + 1);
 
         if (!enrichedWithVardgivareNames) {
             // Enrich with vardenhet namn from HSA
-            for (ForfraganListItem fli : paged) {
+            for (InternForfraganListItem fli : paged) {
                 fli.setVardgivareNamn(getVardgivareNamn(fli.getVardgivareHsaId()));
             }
         }
@@ -148,7 +148,7 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
         return Arrays.asList(ListForfraganFilterStatus.values());
     }
 
-    private boolean buildForfroganStatusPredicate(ForfraganListItem fli, String forfraganListStatus) {
+    private boolean buildForfroganStatusPredicate(InternForfraganListItem fli, String forfraganListStatus) {
         if (Strings.isNullOrEmpty(forfraganListStatus)) {
             return true;
         }

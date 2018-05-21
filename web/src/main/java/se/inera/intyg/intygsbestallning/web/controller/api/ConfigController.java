@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.infra.dynamiclink.model.DynamicLink;
 import se.inera.intyg.infra.dynamiclink.service.DynamicLinkService;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetConfigResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.user.GetConfigResponse;
 
 import java.util.Map;
 

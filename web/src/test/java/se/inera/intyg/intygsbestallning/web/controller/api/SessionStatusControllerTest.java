@@ -31,7 +31,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetSessionStatusResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.user.GetSessionStatusResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;

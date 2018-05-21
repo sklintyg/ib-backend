@@ -23,7 +23,7 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetSessionStatusResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.user.GetSessionStatusResponse;
 import se.inera.intyg.intygsbestallning.web.filters.SessionTimeoutFilter;
 
 import javax.servlet.http.HttpServletRequest;

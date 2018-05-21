@@ -42,7 +42,7 @@ import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
@@ -120,7 +120,7 @@ public class UtredningServiceImplTest {
                 .build();
         when(utredningRepository.findAllByExternForfragan_InternForfraganList_VardenhetHsaId(enhetId)).thenReturn(ImmutableList.of(utr));
 
-        List<ForfraganListItem> response = utredningService.findForfragningarForVardenhetHsaId(enhetId);
+        List<InternForfraganListItem> response = utredningService.findForfragningarForVardenhetHsaId(enhetId);
 
         assertNotNull(response);
         assertEquals(1, response.size());

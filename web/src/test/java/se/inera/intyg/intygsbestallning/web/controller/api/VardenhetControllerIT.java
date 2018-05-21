@@ -28,7 +28,7 @@ import org.junit.Test;
 import com.jayway.restassured.RestAssured;
 
 import se.inera.intyg.intygsbestallning.web.BaseRestIntegrationTest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardenhetPreferenceRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.VardenhetPreferenceRequest;
 
 /**
  * Created by marced on 2018-04-24.

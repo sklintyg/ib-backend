@@ -18,11 +18,22 @@
  */
 package se.inera.intyg.intygsbestallning.service.forfragan;
 
+import static java.util.Objects.isNull;
+import static java.util.stream.Collectors.toList;
+import static se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar;
+import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
+
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
+
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
@@ -36,19 +47,9 @@ import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.CreateInternForfraganRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.TilldelaDirektRequest;
-
-import java.text.MessageFormat;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
-
-import static java.util.Objects.isNull;
-import static java.util.stream.Collectors.toList;
-import static se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar;
-import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.CreateInternForfraganRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.TilldelaDirektRequest;
 
 @Service
 @Transactional

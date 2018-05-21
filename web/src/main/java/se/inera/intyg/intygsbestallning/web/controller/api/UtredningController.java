@@ -37,13 +37,13 @@ import se.inera.intyg.intygsbestallning.service.besok.BesokService;
 import se.inera.intyg.intygsbestallning.service.forfragan.InternForfraganService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.CreateInternForfraganRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.CreateInternForfraganRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.TilldelaDirektRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.TilldelaDirektRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
 
 import java.util.List;

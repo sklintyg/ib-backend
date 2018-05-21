@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.intygsbestallning.service.statistics;
 
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.SamordnarStatisticsResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardadminStatisticsResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.statistics.SamordnarStatisticsResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.statistics.VardadminStatisticsResponse;
 
 /**
  * Created by marced on 2018-05-04.

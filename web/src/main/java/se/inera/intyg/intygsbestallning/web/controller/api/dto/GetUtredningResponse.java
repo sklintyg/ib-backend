@@ -25,6 +25,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.stateresolver.SlutDatumFasResolver;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.VardenhetListItem;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;

@@ -23,8 +23,8 @@ import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.GetInternForfraganResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListUtredningRequest;
@@ -59,14 +59,14 @@ public interface UtredningService {
      *
      * @param vardenhetHsaId
      *            the HSA-id of the unit
-     * @return a list of the InternForfragan represented as a {@link ForfraganListItem}
+     * @return a list of the InternForfragan represented as a {@link InternForfraganListItem}
      */
-    List<ForfraganListItem> findForfragningarForVardenhetHsaId(String vardenhetHsaId);
+    List<InternForfraganListItem> findForfragningarForVardenhetHsaId(String vardenhetHsaId);
 
     /**
      * Get the {@link se.inera.intyg.intygsbestallning.persistence.model.InternForfragan} associated with the utredningid
      * and
-     * vardenhetHsaId as a {@link GetForfraganResponse}.
+     * vardenhetHsaId as a {@link GetInternForfraganResponse}.
      *
      * @param utredningId
      *            the id of the utredning
@@ -74,7 +74,7 @@ public interface UtredningService {
      *            the hsaId of the vardenhet of which have received an InternForfragan
      * @return The information of the InternForfragan
      */
-    GetForfraganResponse getForfragan(Long utredningId, String vardenhetHsaId);
+    GetInternForfraganResponse getInternForfragan(Long utredningId, String vardenhetHsaId);
 
     /**
      * Handles the new incomming order for FMU.

@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.intygsbestallning.service.forfragan;
 
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.CreateInternForfraganRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.CreateInternForfraganRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.TilldelaDirektRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.TilldelaDirektRequest;
 
 public interface InternForfraganService {
 

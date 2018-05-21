@@ -26,8 +26,8 @@ import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.intygsbestallning.persistence.model.VardenhetPreference;
 import se.inera.intyg.intygsbestallning.persistence.repository.VardenhetPreferenceRepository;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardenhetPreferenceRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardenhetPreferenceResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.VardenhetPreferenceRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.VardenhetPreferenceResponse;
 
 /**
  * Created by marced on 2018-04-23.

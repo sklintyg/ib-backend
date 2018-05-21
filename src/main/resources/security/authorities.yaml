@@ -57,6 +57,7 @@ knownPrivileges:
   - &kp060 LISTA_BESTALLNINGAR
   - &kp070 HANTERA_VARDENHETER_FOR_VARDGIVARE
   - &kp080 VISA_BESTALLNING
+  - &kp090 HANTERA_INTERNFORFRAGAN #Visa och besvara
 
 # De roller som systemet har
 knownRoles:
@@ -112,6 +113,11 @@ privileges:
       desc: Visa beställning
       intygstyper: # Implicit alla
       requestOrigins: # Implicit alla
+  - &p090
+      name: *kp090
+      desc: Hantera Internförfrågningar
+      intygstyper: # Implicit alla
+      requestOrigins: # Implicit alla
 
 # Roller
 roles:
@@ -124,6 +130,7 @@ roles:
       - *p050 # SPARA_VARDENHETPREFERENS
       - *p060 # LISTA_BESTALLNINGAR
       - *p080 # VISA_BESTALLNING
+      - *p090 # HANTERA_INTERNFORFRAGAN
   - &r020
     name: *kr020 # FMU_SAMORDNARE
     desc: FMU Samordnare

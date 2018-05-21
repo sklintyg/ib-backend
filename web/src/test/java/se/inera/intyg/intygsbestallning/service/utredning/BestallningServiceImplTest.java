@@ -29,8 +29,8 @@ import se.inera.intyg.intygsbestallning.persistence.repository.UtredningReposito
 import se.inera.intyg.intygsbestallning.service.patient.PatientNameEnricher;
 import se.inera.intyg.intygsbestallning.service.pdl.LogService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.BestallningListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListBestallningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.BestallningListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.ListBestallningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
 
 import java.util.List;

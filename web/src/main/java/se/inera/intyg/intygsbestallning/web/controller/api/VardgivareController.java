@@ -41,11 +41,11 @@ import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.vardgivare.VardgivareService;
 import se.inera.intyg.intygsbestallning.service.vardgivare.dto.VardgivarVardenhetListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetVardenheterForVardgivareResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListVardenheterForVardgivareRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListVardenheterForVardgivareResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.SearchForVardenhetResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.UpdateRegiFormRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.GetVardenheterForVardgivareResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.ListVardenheterForVardgivareRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.ListVardenheterForVardgivareResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.SearchForVardenhetResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.UpdateRegiFormRequest;
 
 @RestController
 @RequestMapping("/api/vardgivare")

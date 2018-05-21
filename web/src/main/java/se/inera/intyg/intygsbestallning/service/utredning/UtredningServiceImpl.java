@@ -36,6 +36,7 @@ import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
+import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
 import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
@@ -53,8 +54,8 @@ import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningReques
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.GetInternForfraganResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListUtredningRequest;
@@ -169,28 +170,30 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     }
 
     @Override
-    public List<ForfraganListItem> findForfragningarForVardenhetHsaId(String vardenhetHsaId) {
+    public List<InternForfraganListItem> findForfragningarForVardenhetHsaId(String vardenhetHsaId) {
         return utredningRepository.findAllByExternForfragan_InternForfraganList_VardenhetHsaId(vardenhetHsaId)
                 .stream()
-                .map(utr -> ForfraganListItem.from(utr, vardenhetHsaId, internForfraganStateResolver, businessDays))
+                .map(utr -> InternForfraganListItem.from(utr, vardenhetHsaId, internForfraganStateResolver, businessDays))
                 .collect(toList());
     }
 
     @Override
-    public GetForfraganResponse getForfragan(Long utredningId, String vardenhetHsaId) {
+    public GetInternForfraganResponse getInternForfragan(Long utredningId, String vardenhetHsaId) {
         Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
                 () -> new IbNotFoundException("Utredning with assessmentId '" + utredningId + "' does not exist."));
 
-        boolean internForfraganExists = utredning.getExternForfragan().getInternForfraganList()
+        // Must have an internforfragan for this vardenhet
+        InternForfragan internForfragan = utredning.getExternForfragan().getInternForfraganList()
                 .stream()
-                .anyMatch(internForfragan -> Objects.equals(internForfragan.getVardenhetHsaId(), vardenhetHsaId));
+                .filter(iff -> Objects.equals(iff.getVardenhetHsaId(), vardenhetHsaId))
+                .findFirst().orElseThrow(() -> new IbNotFoundException("Utredning with id '" + utredningId
+                        + "' does not have an InternForfragan for enhet with id '" + vardenhetHsaId + "'"));
 
-        if (!internForfraganExists) {
-            throw new IbNotFoundException(
-                    "Utredning with id '" + utredningId + "' does not have an InternForfragan for enhet with id '" + vardenhetHsaId + "'");
-        }
-
-        return GetForfraganResponse.from(utredning, vardenhetHsaId);
+        final GetInternForfraganResponse result = GetInternForfraganResponse.from(utredning,
+                utredningStatusResolver.resolveStatus(utredning), internForfragan,
+                internForfraganStateResolver, businessDays);
+        enrichWithVardenhetNames(result.getUtredning().getTidigareEnheter());
+        return result;
     }
 
     @Override

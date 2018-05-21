@@ -24,7 +24,7 @@ import com.jayway.restassured.RestAssured;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import se.inera.intyg.intygsbestallning.web.BaseRestIntegrationTest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListForfraganRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.ListForfraganRequest;
 
 import static com.jayway.restassured.RestAssured.given;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;

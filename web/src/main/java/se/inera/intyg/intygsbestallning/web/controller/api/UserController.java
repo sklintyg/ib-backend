@@ -32,8 +32,8 @@ import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.persistence.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ChangeSelectedUnitRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUserResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.user.ChangeSelectedUnitRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.user.GetUserResponse;
 
 import java.util.Arrays;
 

@@ -31,8 +31,8 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.ExternForfraganRepository;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganListResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListForfraganRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.GetForfraganListResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.ListForfraganRequest;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

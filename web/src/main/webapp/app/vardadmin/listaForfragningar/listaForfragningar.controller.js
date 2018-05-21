@@ -19,10 +19,14 @@
 
 angular.module('ibApp')
     .controller('ListaForfragningarCtrl',
-        function($log, $scope, ibForfraganFilterModel, InternForfragningarProxy) {
+        function($log, $scope, $state, ibForfraganFilterModel, InternForfraganProxy) {
             'use strict';
 
             $scope.filter = ibForfraganFilterModel.build();
+
+            $scope.visaInternForfragan = function(utredningsId){
+                $state.go('.visaInternForfragan', {utredningsId: utredningsId});
+            };
 
             $scope.getForfragningarFiltered = function(appendResults) {
 
@@ -30,7 +34,7 @@ angular.module('ibApp')
                     $scope.filter.currentPage = 0;
                 }
 
-                InternForfragningarProxy.getForfragningar($scope.filter.convertToPayload()).then(function(data) {
+                InternForfraganProxy.getForfragningar($scope.filter.convertToPayload()).then(function(data) {
                     if (appendResults) {
                         $scope.forfragningar = $scope.forfragningar.concat(data.forfragningar);
                     }
@@ -44,7 +48,7 @@ angular.module('ibApp')
             };
 
 
-            InternForfragningarProxy.getForfragningarFilterValues().then(function(data) {
+            InternForfraganProxy.getForfragningarFilterValues().then(function(data) {
                 $scope.filter.populateFilter(data);
             }, function(error) {
                 $log.error(error);

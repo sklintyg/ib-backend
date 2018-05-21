@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.intygsbestallning.service.vardenhet;
 
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardenhetPreferenceRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardenhetPreferenceResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.VardenhetPreferenceRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.VardenhetPreferenceResponse;
 
 /**
  * Created by marced on 2018-04-23.

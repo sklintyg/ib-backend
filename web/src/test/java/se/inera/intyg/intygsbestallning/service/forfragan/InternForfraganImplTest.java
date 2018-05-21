@@ -40,10 +40,8 @@ import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
-import se.inera.intyg.intygsbestallning.service.utredning.UtredningServiceImpl;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.CreateInternForfraganRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.TilldelaDirektRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.CreateInternForfraganRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.TilldelaDirektRequest;
 
 import java.time.LocalDateTime;
 import java.util.Optional;

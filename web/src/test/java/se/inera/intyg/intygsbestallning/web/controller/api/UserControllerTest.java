@@ -36,7 +36,7 @@ import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.model.IbVardgivare;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ChangeSelectedUnitRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.user.ChangeSelectedUnitRequest;
 
 import java.util.Collections;
 

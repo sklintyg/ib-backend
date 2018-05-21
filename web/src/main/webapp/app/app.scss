@@ -59,6 +59,10 @@
 @import 'vardadmin/pagaendeUtredningar/bestallningFilter/bestallningFilter.directive.scss';
 @import 'vardadmin/pagaendeUtredningar/pagaendeUtredningar.page.scss';
 @import 'vardadmin/visaBestallning/visaBestallning.page.scss';
+@import 'vardadmin/visaInternForfragan/ibBesvaraInternForfraganPanel/ibBesvaraInternForfraganPanel.directive.scss';
+@import 'vardadmin/visaInternForfragan/ibBesvaradInternForfraganPanel/ibBesvaradInternForfraganPanel.directive.scss';
+@import 'vardadmin/visaInternForfragan/ibInternForfraganHeader/ibInternForfraganHeader.directive.scss';
+@import 'vardadmin/visaInternForfragan/visaInternForfragan.page.scss';
 @import 'appDirectives/ibAppHeader/ibAppHeader.directive.scss';
 @import 'appDirectives/ibAppHeader/ibAppHeader.variables.scss';
 @import 'appDirectives/ibAppHeader/ibHeaderActions/about/aboutDialog.template.scss';

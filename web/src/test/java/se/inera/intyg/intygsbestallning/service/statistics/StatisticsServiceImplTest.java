@@ -30,8 +30,8 @@ import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.SamordnarStatisticsResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardadminStatisticsResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.statistics.SamordnarStatisticsResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.statistics.VardadminStatisticsResponse;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

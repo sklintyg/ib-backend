@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.intygsbestallning.service.forfragan;
 
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganSvarRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ForfraganSvarResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetForfraganListResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListForfraganRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.ForfraganSvarRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.ForfraganSvarResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.GetForfraganListResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.ListForfraganRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListForfraganFilter;
 
 public interface ExternForfraganService {

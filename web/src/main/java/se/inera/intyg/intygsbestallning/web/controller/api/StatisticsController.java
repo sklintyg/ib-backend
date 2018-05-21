@@ -31,8 +31,8 @@ import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationExceptio
 import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.service.statistics.StatisticsService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.SamordnarStatisticsResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardadminStatisticsResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.statistics.SamordnarStatisticsResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.statistics.VardadminStatisticsResponse;
 
 /**
  * Created by marced on 2018-05-02.
