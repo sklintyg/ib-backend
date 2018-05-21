@@ -95,11 +95,11 @@ public class BestallningServiceImplTest {
     }
 
     @Test
-    public void testFilterListBestallningarWithFreeTextMatchingSingleId() {
+    public void testFilterListBestallningarWithFreeTextMatchingSingleBestallningInvanarId() {
         when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
         when(utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(anyString())).thenReturn(ServiceTestUtil.buildBestallningar(7));
         List<BestallningListItem> list = bestallningService.findOngoingBestallningarForVardenhet("enhet",
-                buildFilter(ListFilterStatus.ALL, "3"));
+                buildFilter(ListFilterStatus.ALL, "19121212-1216"));
         assertEquals(1, list.size());
     }
 
