@@ -20,6 +20,7 @@ package se.inera.intyg.intygsbestallning.service.handelse;
 
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
 
 import java.time.LocalDate;
@@ -54,6 +55,22 @@ public final class HandelseUtil {
                 .withHandelseTyp(HandelseTyp.FORFRAGAN_SKICKAD)
                 .withAnvandare(samordnare)
                 .withHandelseText(String.format("Förfrågan skickades till %s", vardenhet))
+                .build();
+    }
+
+    public static Handelse createForfraganBesvarad(SvarTyp svarTyp, String samordnare, String vardenhet) {
+
+        String handelseText;
+        if (svarTyp == SvarTyp.ACCEPTERA) {
+            handelseText = String.format("Förfrågan accepterades av landstinget. Utredningen tilldelad till %s", vardenhet);
+        } else {
+            handelseText = "Förfrågan avvisades av landstinget.";
+        }
+        return aHandelse()
+                .withSkapad(LocalDateTime.now())
+                .withHandelseTyp(HandelseTyp.FORFRAGAN_BESVARAD)
+                .withAnvandare(samordnare)
+                .withHandelseText(handelseText)
                 .build();
     }
 

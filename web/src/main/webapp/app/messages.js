@@ -209,6 +209,8 @@ var ibMessages = {
         'server.error.getutredning.text': 'Försök igen eller kontakta support',
         'server.error.createinternforfragan.title': 'Kunde inte skicka förfrågan',
         'server.error.createinternforfragan.text': 'Försök igen eller kontakta support',
+        'server.error.acceptinternforfragan.title': 'Kunde inte acceptera förfrågan',
+        'server.error.acceptinternforfragan.text': 'Försök igen eller kontakta support',
         'server.error.tilldeladirekt.title': 'Kunde inte tilldela direkt',
         'server.error.tilldeladirekt.text': 'Försök igen eller kontakta support',
         'server.error.updateregiform.title': 'Kunde inte spara ny regiform',

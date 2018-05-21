@@ -26,7 +26,9 @@ import se.inera.intyg.intygsbestallning.common.exception.IBExternalServiceExcept
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.integration.myndighet.client.MyndighetIntegrationClientService;
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto;
+import se.inera.intyg.intygsbestallning.integration.myndighet.dto.RespondToPerformerRequestDto;
 import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.ReportCareContactResponseType;
+import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.RespondToPerformerRequestResponseType;
 import se.riv.intygsbestallning.certificate.order.updateassessment.v1.UpdateAssessmentResponseType;
 import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
 import se.riv.intygsbestallning.certificate.order.v1.ResultType;
@@ -44,9 +46,9 @@ public class MyndighetIntegrationServiceImpl implements MyndighetIntegrationServ
     private MyndighetIntegrationClientService clientService;
 
     @Override
-    public void respondToPerformerRequest(String id) {
-        // Do something meaningful here
-        clientService.respondToPerformerRequest(id);
+    public void respondToPerformerRequest(final RespondToPerformerRequestDto request) {
+        RespondToPerformerRequestResponseType response = clientService.respondToPerformerRequest(request);
+        handleResponse(response.getResult());
     }
 
     @Override

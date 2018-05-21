@@ -126,6 +126,18 @@ public class UtredningController {
         return ResponseEntity.ok(internForfraganService.tilldelaDirekt(utredningsId, user.getCurrentlyLoggedInAt().getId(), req));
     }
 
+    @PrometheusTimeMethod(name = "accept_internforfragan_duration_seconds", help = "Some helpful info here")
+    @PostMapping(path = "/{utredningsId}/acceptinternforfragan",
+            produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GetUtredningResponse> acceptInternForfragan(@PathVariable("utredningsId") Long utredningsId,
+                                                                      @RequestBody String vardenhetHsaId) {
+        IbUser user = userService.getUser();
+        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_VISA_UTREDNING)
+                .orThrow(new IbAuthorizationException(EDIT_NOT_ALLOWED));
+        return ResponseEntity.ok(internForfraganService.acceptInternForfragan(utredningsId, user.getCurrentlyLoggedInAt().getId(),
+                vardenhetHsaId));
+    }
+
     @PutMapping("/besok")
     public RegisterBesokResponse createBesok(final RegisterBesokRequest request) {
 

@@ -72,12 +72,26 @@ angular.module('ibApp').factory('UtredningarProxy',
             return ProxyTemplate.postTemplate(restPath, requestBody, config);
         }
 
+        function _acceptInternforfragan(utredningsId, requestBody) {
+            var restPath = '/api/utredningar/' + utredningsId + '/acceptinternforfragan';
+
+            var config = {
+                errorMessageConfig: {
+                    errorTitleKey: 'server.error.acceptinternforfragan.title',
+                    errorTextKey: 'server.error.acceptinternforfragan.text'
+                }
+            };
+
+            return ProxyTemplate.postTemplate(restPath, requestBody, config);
+        }
+
         // Return public API for the service
         return {
             getUtredning: _getUtredning,
             getUtredningar: _getUtredningar,
             getUtredningarWithFilter: _getUtredningarWithFilter,
             createInternForfragan: _createInternForfragan,
-            tilldelaDirekt: _tillDelaDirekt
+            tilldelaDirekt: _tillDelaDirekt,
+            acceptInternForfragan: _acceptInternforfragan
         };
     });

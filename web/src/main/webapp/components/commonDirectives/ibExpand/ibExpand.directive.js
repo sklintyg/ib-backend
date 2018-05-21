@@ -30,8 +30,7 @@ angular.module('ibApp').directive('ibExpand',
                     label: '@'
                 },
                 templateUrl: 'components/commonDirectives/ibExpand/ibExpand.directive.html',
-                link: function($scope) {
-
+                controller: function($scope) {
                     $scope.isCollapsed = true;
 
                     $scope.toggle = function(){

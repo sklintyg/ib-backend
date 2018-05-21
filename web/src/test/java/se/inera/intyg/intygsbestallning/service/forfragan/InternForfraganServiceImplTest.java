@@ -60,7 +60,7 @@ import static se.inera.intyg.intygsbestallning.persistence.model.type.Utrednings
 
 
 @RunWith(MockitoJUnitRunner.class)
-public class InternForfraganImplTest {
+public class InternForfraganServiceImplTest {
 
     @Mock
     private UtredningRepository utredningRepository;

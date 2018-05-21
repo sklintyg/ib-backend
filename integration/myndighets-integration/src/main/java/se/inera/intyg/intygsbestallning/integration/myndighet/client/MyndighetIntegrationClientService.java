@@ -19,12 +19,13 @@
 package se.inera.intyg.intygsbestallning.integration.myndighet.client;
 
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto;
+import se.inera.intyg.intygsbestallning.integration.myndighet.dto.RespondToPerformerRequestDto;
 import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.ReportCareContactResponseType;
 import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.RespondToPerformerRequestResponseType;
 import se.riv.intygsbestallning.certificate.order.updateassessment.v1.UpdateAssessmentResponseType;
 
 public interface MyndighetIntegrationClientService {
-    RespondToPerformerRequestResponseType respondToPerformerRequest(String assessmentId);
+    RespondToPerformerRequestResponseType respondToPerformerRequest(RespondToPerformerRequestDto request);
 
     ReportCareContactResponseType reportCareContact(ReportCareContactRequestDto request);
 

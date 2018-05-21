@@ -19,12 +19,13 @@
 package se.inera.intyg.intygsbestallning.integration.myndighet.service;
 
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto;
+import se.inera.intyg.intygsbestallning.integration.myndighet.dto.RespondToPerformerRequestDto;
 
 import java.time.LocalDate;
 
 public interface MyndighetIntegrationService {
 
-    void respondToPerformerRequest(String id);
+    void respondToPerformerRequest(RespondToPerformerRequestDto request);
 
     void reportCareContactInteraction(ReportCareContactRequestDto request);
 

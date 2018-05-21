@@ -19,15 +19,16 @@
 package se.inera.intyg.intygsbestallning.integration.myndighet.client;
 
 import static se.inera.intyg.intygsbestallning.integration.myndighet.service.TjanstekontraktUtils.aReportCareContact;
+import static se.inera.intyg.intygsbestallning.integration.myndighet.service.TjanstekontraktUtils.aRespondToPerformerRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto;
+import se.inera.intyg.intygsbestallning.integration.myndighet.dto.RespondToPerformerRequestDto;
 import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.ReportCareContactResponseType;
 import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.rivtabp21.ReportCareContactResponderInterface;
 import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.RespondToPerformerRequestResponseType;
-import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.RespondToPerformerRequestType;
 import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.rivtabp21.RespondToPerformerRequestResponderInterface;
 import se.riv.intygsbestallning.certificate.order.updateassessment.v1.UpdateAssessmentResponseType;
 import se.riv.intygsbestallning.certificate.order.updateassessment.v1.UpdateAssessmentType;
@@ -50,15 +51,10 @@ public class MyndighetIntegrationClientServiceImpl implements MyndighetIntegrati
     @Value("${source.system.hsaid:}")
     private String sourceSystemHsaId;
 
-
     @Override
-    public RespondToPerformerRequestResponseType respondToPerformerRequest(String assessmentId) {
-        RespondToPerformerRequestType request = new RespondToPerformerRequestType();
-        IIType assID = new IIType();
-        assID.setExtension(assessmentId);
-        request.setAssessmentId(assID);
-
-        return respondToPerformerRequestResponder.respondToPerformerRequest(sourceSystemHsaId, request);
+    public RespondToPerformerRequestResponseType respondToPerformerRequest(final RespondToPerformerRequestDto request) {
+        return respondToPerformerRequestResponder.respondToPerformerRequest(sourceSystemHsaId, aRespondToPerformerRequest(sourceSystemHsaId,
+                request));
     }
 
     @Override
