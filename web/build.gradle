@@ -134,6 +134,7 @@ dependencies {
     compileOnly "javax.servlet:javax.servlet-api:${javaxServletVersion}"
     compileOnly "jstl:jstl:${jstlVersion}"
 
+    testCompile "nl.jqno.equalsverifier:equalsverifier:${equalsVerifierVersion}"
     testCompile "org.assertj:assertj-core:${assertJVersion}"
     testCompile "com.jayway.restassured:rest-assured:${restAssuredVersion}"
     testCompile "com.jayway.restassured:json-schema-validator:${restAssuredVersion}"

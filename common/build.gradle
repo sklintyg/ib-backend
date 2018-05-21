@@ -16,6 +16,7 @@ dependencies {
     compile "org.springframework:spring-context-support:${springContextVersion}"
     compile "org.springframework:spring-webmvc:${springContextVersion}"
 
+    testCompile "org.assertj:assertj-core:${assertJVersion}"
     testCompile "junit:junit:${junitVersion}"
     testCompile "org.mockito:mockito-core:${mockitoVersion}"
     testCompile "org.aspectj:aspectjweaver:${aspectjWeaverVersion}"

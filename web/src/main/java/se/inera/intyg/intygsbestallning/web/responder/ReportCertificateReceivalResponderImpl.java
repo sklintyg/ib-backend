@@ -19,40 +19,36 @@
 package se.inera.intyg.intygsbestallning.web.responder;
 
 import org.apache.cxf.annotations.SchemaValidation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.google.common.base.Preconditions;
-
+import se.inera.intyg.intygsbestallning.service.utlatande.UtlatandeService;
+import se.inera.intyg.intygsbestallning.web.responder.dto.RegistreraUtlatandeMottagetRequest;
 import se.riv.intygsbestallning.certificate.order.reportcertificatereceival.v1.ReportCertificateReceivalResponseType;
 import se.riv.intygsbestallning.certificate.order.reportcertificatereceival.v1.ReportCertificateReceivalType;
 import se.riv.intygsbestallning.certificate.order.reportcertificatereceival.v1.rivtabp21.ReportCertificateReceivalResponderInterface;
-import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
-import se.riv.intygsbestallning.certificate.order.v1.ResultType;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Objects.nonNull;
+import static se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil.ok;
 
 @Service
 @SchemaValidation
 public class ReportCertificateReceivalResponderImpl implements ReportCertificateReceivalResponderInterface {
 
+    @Autowired
+    private UtlatandeService utlatandeService;
+
     @Override
     public ReportCertificateReceivalResponseType reportCertificateReceival(
             final String logicalAddress, final ReportCertificateReceivalType request) {
 
-        Preconditions.checkArgument(null != logicalAddress);
-        Preconditions.checkArgument(null != request);
+        checkArgument(nonNull(logicalAddress));
+        checkArgument(nonNull(request));
 
-        return createDummyResponse();
-    }
-
-    private ReportCertificateReceivalResponseType createDummyResponse() {
-
-        ResultType resultType = new ResultType();
-        resultType.setResultCode(ResultCodeType.OK);
-        resultType.setLogId("DUMMY_LOG_ID");
-        resultType.setResultText("DUMMY_RESULT_TEXT");
+        utlatandeService.registreraUtlatandeMottaget(RegistreraUtlatandeMottagetRequest.from(request));
 
         ReportCertificateReceivalResponseType response = new ReportCertificateReceivalResponseType();
-        response.setResult(resultType);
-
+        response.setResult(ok());
         return response;
     }
 }

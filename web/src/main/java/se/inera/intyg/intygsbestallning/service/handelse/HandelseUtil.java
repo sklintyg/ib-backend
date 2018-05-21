@@ -23,6 +23,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
 
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -32,6 +33,7 @@ import static se.inera.intyg.intygsbestallning.persistence.model.Handelse.Handel
 
 public final class HandelseUtil {
     private static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
+    private static final String FK_LABEL = Actor.FK.getLabel();
 
     private HandelseUtil() {
     }
@@ -41,7 +43,7 @@ public final class HandelseUtil {
                 .withSkapad(LocalDateTime.now())
                 .withHandelseTyp(HandelseTyp.BESTALLNING_MOTTAGEN)
                 .withAnvandare(myndighet)
-                .withHandelseText(String.format("Beställning mottagen från %s. Slutdatum: %s",
+                .withHandelseText(MessageFormat.format("Beställning mottagen från {0}. Slutdatum: {1}",
                         myndighet,
                         Optional.ofNullable(endDate)
                                 .map(d -> d.format(formatter))
@@ -54,7 +56,7 @@ public final class HandelseUtil {
                 .withSkapad(LocalDateTime.now())
                 .withHandelseTyp(HandelseTyp.FORFRAGAN_SKICKAD)
                 .withAnvandare(samordnare)
-                .withHandelseText(String.format("Förfrågan skickades till %s", vardenhet))
+                .withHandelseText(MessageFormat.format("Förfrågan skickades till {0}", vardenhet))
                 .build();
     }
 
@@ -78,9 +80,19 @@ public final class HandelseUtil {
         return aHandelse()
                 .withSkapad(LocalDateTime.now())
                 .withHandelseTyp(HandelseTyp.KOMPLETTERINGSBEGARAN_MOTTAGEN)
-                .withAnvandare(Actor.FK.getLabel())
-                .withHandelseText(String.format("Kompletteringsbegäran mottagen från Försäkringskassan %s",
+                .withAnvandare(FK_LABEL)
+                .withHandelseText(MessageFormat.format("Kompletteringsbegäran mottagen från Försäkringskassan {0}",
                         LocalDateTime.now().format(formatter)))
+                .build();
+    }
+
+    public static Handelse createUtlatandeMottaget(final LocalDateTime mottagetDatum) {
+        return aHandelse()
+                .withSkapad(LocalDateTime.now())
+                .withHandelseTyp(HandelseTyp.UTLATANDE_MOTTAGET)
+                .withAnvandare(FK_LABEL)
+                .withHandelseText(MessageFormat.format("Utlåtandet mottaget av Försäkringskassan {0}",
+                        mottagetDatum.format(formatter)))
                 .build();
     }
 }
