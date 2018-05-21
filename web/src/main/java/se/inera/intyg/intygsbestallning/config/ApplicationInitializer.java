@@ -52,6 +52,7 @@ public class ApplicationInitializer implements WebApplicationInitializer {
 
         appContext.register(
                 ApplicationConfig.class,
+                CacheConfigurationFromInfra.class,
                 HsaConfiguration.class,
                 PuConfiguration.class,
                 PuCacheConfiguration.class,
