@@ -19,7 +19,7 @@ describe('Samordnare visa utredning', () => {
     it('Skapa testdata', function() {
         this.utredning1.externForfragan.internForfraganList = [];
         cy.createUtredning(this.utredning1).then(function(data){
-            utredningsId = data.body.entity;
+            utredningsId = data.body.entity.utredningId;
         });
         cy.createVardenhet(this.vardenhet1).then(function(data){
             vardenhetId = data.body.entity;
