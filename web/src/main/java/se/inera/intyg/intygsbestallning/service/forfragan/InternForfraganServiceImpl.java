@@ -31,6 +31,8 @@ import java.util.Objects;
 
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -38,8 +40,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
+import se.inera.intyg.intygsbestallning.common.exception.IbExternalServiceException;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
+import se.inera.intyg.intygsbestallning.common.exception.IbExternalSystemEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.RespondToPerformerRequestDto;
@@ -62,6 +66,8 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.Tilldel
 @Service
 @Transactional
 public class InternForfraganServiceImpl extends BaseUtredningService implements InternForfraganService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(InternForfraganServiceImpl.class);
 
     private static final String KV_SVAR_BESTALLNING_ACCEPTERAT = "ACCEPTERAT";
 
@@ -174,24 +180,31 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
                 .filter(i -> i.getVardenhetHsaId().equals(vardenhetHsaId))
                 .findAny()
                 .orElseThrow(() -> new IbNotFoundException(MessageFormat.format(
-                        "Could not find internforfragan for '{}' in utredning '{}'", vardenhetHsaId, utredningId)));
+                        "Could not find internforfragan for {0} in utredning {1}", vardenhetHsaId, utredningId)));
 
         InternForfraganStatus internForfraganStatus = internForfraganStateResolver.resolveStatus(utredning, internForfragan);
         if (internForfraganStatus != InternForfraganStatus.ACCEPTERAD_VANTAR_PA_TILLDELNINGSBESLUT
                 && internForfraganStatus != InternForfraganStatus.DIREKTTILLDELAD) {
             throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, MessageFormat.format(
-                    "Internforfragan for '{}' in utredning '{}' is in an incorrect state", internForfragan.getVardenhetHsaId(),
+                    "Internforfragan for {0} in utredning {1} is in an incorrect state", internForfragan.getVardenhetHsaId(),
                     utredning.getUtredningId()));
         }
 
-        Vardenhet vardenhet = organizationUnitService.getVardenhet(internForfragan.getVardenhetHsaId());
-        String vardgivareHsaId = organizationUnitService.getVardgivareOfVardenhet(internForfragan.getVardenhetHsaId());
-        Vardgivare vardgivare = organizationUnitService.getVardgivareInfo(vardgivareHsaId);
+        Vardenhet vardenhet;
+        Vardgivare vardgivare;
+        try {
+            vardenhet = organizationUnitService.getVardenhet(internForfragan.getVardenhetHsaId());
+            String vardgivareHsaId = organizationUnitService.getVardgivareOfVardenhet(internForfragan.getVardenhetHsaId());
+            vardgivare = organizationUnitService.getVardgivareInfo(vardgivareHsaId);
+        } catch (RuntimeException re) {
+            LOG.error("RuntimeException while while querying HSA for hsaId " + internForfragan.getVardenhetHsaId(), re);
+            throw new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.HSA, re.getMessage());
+        }
 
         ForfraganSvar forfraganSvar = internForfragan.getForfraganSvar();
         RespondToPerformerRequestDto request = aRespondToPerformerRequestDto()
                 .withAssessmentId(utredning.getUtredningId())
-                .withCareGiverId(vardgivareHsaId)
+                .withCareGiverId(vardgivare.getId())
                 .withCareGiverName(vardgivare.getNamn())
                 .withCareUnitId(internForfragan.getVardenhetHsaId())
                 .withCareUnitName(vardenhet.getNamn())

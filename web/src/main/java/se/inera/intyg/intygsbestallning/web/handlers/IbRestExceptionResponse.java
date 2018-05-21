@@ -19,15 +19,24 @@
 package se.inera.intyg.intygsbestallning.web.handlers;
 
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
+import se.inera.intyg.intygsbestallning.common.exception.IbExternalSystemEnum;
 
 public class IbRestExceptionResponse {
 
     private IbErrorCodeEnum errorCode;
 
+    private IbExternalSystemEnum externalSystem;
+
     private String message;
 
     public IbRestExceptionResponse(IbErrorCodeEnum errorCode, String message) {
         this.errorCode = errorCode;
+        this.message = message;
+    }
+
+    public IbRestExceptionResponse(IbErrorCodeEnum errorCode, IbExternalSystemEnum externalSystem, String message) {
+        this.errorCode = errorCode;
+        this.externalSystem = externalSystem;
         this.message = message;
     }
 
@@ -37,6 +46,14 @@ public class IbRestExceptionResponse {
 
     public void setErrorCode(IbErrorCodeEnum errorCode) {
         this.errorCode = errorCode;
+    }
+
+    public IbExternalSystemEnum getExternalSystemId() {
+        return externalSystem;
+    }
+
+    public void setExternalSystemId(IbExternalSystemEnum externalSystem) {
+        this.externalSystem = externalSystem;
     }
 
     public String getMessage() {

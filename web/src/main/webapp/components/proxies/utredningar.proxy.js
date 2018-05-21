@@ -78,7 +78,9 @@ angular.module('ibApp').factory('UtredningarProxy',
             var config = {
                 errorMessageConfig: {
                     errorTitleKey: 'server.error.acceptinternforfragan.title',
-                    errorTextKey: 'server.error.acceptinternforfragan.text'
+                    errorTextKey: 'server.error.acceptinternforfragan.text',
+                    errorHsaTextKey: 'server.error.acceptinternforfragan.hsa.text',
+                    errorMyndighetTextKey: 'server.error.acceptinternforfragan.myndighet.text'
                 }
             };
 

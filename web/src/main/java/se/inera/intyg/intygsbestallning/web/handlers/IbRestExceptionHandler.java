@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import se.inera.intyg.intygsbestallning.common.exception.IbExternalServiceException;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbJMSException;
@@ -78,6 +79,16 @@ public class IbRestExceptionHandler {
         LOG.error("Unhandled IbJMSException occured!", re);
         IbRestExceptionResponse response = new IbRestExceptionResponse(
                 IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, re.getMessage());
+        return response;
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseBody
+    public IbRestExceptionResponse serviceExceptionHandler(HttpServletRequest request, IbExternalServiceException e) {
+        LOG.error("External service exception occured!", e);
+        IbRestExceptionResponse response = new IbRestExceptionResponse(
+                IbErrorCodeEnum.EXTERNAL_ERROR, e.getExternalSystem(), e.getMessage());
         return response;
     }
 

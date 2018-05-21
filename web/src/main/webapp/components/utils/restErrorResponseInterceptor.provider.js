@@ -39,7 +39,7 @@ angular.module('ibApp').provider('restErrorResponseInterceptor',
             function responseError(rejection) {
                 if (rejection.status === 500 || rejection.status === -1) {
                     if (rejection.config.errorMessageConfig) {
-                        $rootScope.$emit('rehab.rest.exception', rejection.config.errorMessageConfig);
+                        $rootScope.$emit('ib.rest.exception', rejection.config.errorMessageConfig, rejection.data);
                     }
                 }
 

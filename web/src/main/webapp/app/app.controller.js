@@ -36,13 +36,19 @@ angular.module('ibApp')
             };
 
             // Eventhandler that takes care of showing rest exceptions
-            var unregisterFn = $rootScope.$on('rehab.rest.exception', function(event, msgConfig) {
-                 var texts = {
-                     title: messageService.getProperty(msgConfig.errorTitleKey),
-                     body: messageService.getProperty(msgConfig.errorTextKey)
-                 };
-                 $scope.showErrorDialog(texts);
-             });
+            var unregisterFn = $rootScope.$on('ib.rest.exception', function(event, msgConfig, response) {
+                var texts = {
+                    title: messageService.getProperty(msgConfig.errorTitleKey),
+                    body: messageService.getProperty(msgConfig.errorTextKey)
+                };
+                if (response.externalSystemId === 'HSA' && msgConfig.errorHsaTextKey) {
+                    texts.body = messageService.getProperty(msgConfig.errorHsaTextKey);
+                }
+                if (response.externalSystemId === 'MYNDIGHET' && msgConfig.errorMyndighetTextKey) {
+                    texts.body = messageService.getProperty(msgConfig.errorMyndighetTextKey);
+                }
+                $scope.showErrorDialog(texts);
+            });
 
             // Eventhandler that performs the actual switching of current unit/role regardless of where it was requested.
             // Selection of destination view is delegated to routing rules in app.run.js

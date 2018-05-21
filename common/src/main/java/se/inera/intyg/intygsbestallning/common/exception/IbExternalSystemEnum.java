@@ -18,16 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.common.exception;
 
-public class IBExternalServiceException extends RuntimeException {
-    private final IbErrorCodeEnum errorCode;
-
-    public IBExternalServiceException(final IbErrorCodeEnum errorCode, final String message) {
-        super(message);
-        this.errorCode = errorCode;
-    }
-
-    public IbErrorCodeEnum getErrorCode() {
-        return errorCode;
-    }
-
+public enum IbExternalSystemEnum {
+    HSA,
+    MYNDIGHET
 }

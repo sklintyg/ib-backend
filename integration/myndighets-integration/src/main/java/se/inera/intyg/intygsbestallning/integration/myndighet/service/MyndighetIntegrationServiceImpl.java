@@ -22,8 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.intygsbestallning.common.exception.IBExternalServiceException;
+import se.inera.intyg.intygsbestallning.common.exception.IbExternalServiceException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
+import se.inera.intyg.intygsbestallning.common.exception.IbExternalSystemEnum;
 import se.inera.intyg.intygsbestallning.integration.myndighet.client.MyndighetIntegrationClientService;
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto;
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.RespondToPerformerRequestDto;
@@ -71,7 +72,7 @@ public class MyndighetIntegrationServiceImpl implements MyndighetIntegrationServ
 
         if (resultCode.equals(ResultCodeType.ERROR)) {
             log.error(resultText);
-            throw new IBExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, resultText);
+            throw new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.MYNDIGHET, resultText);
         } else if (resultCode.equals(ResultCodeType.INFO)) {
             log.info(resultText);
         }
