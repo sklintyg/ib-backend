@@ -30,8 +30,11 @@ import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.BestallningListItemFactory;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItemFactory;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.statistics.SamordnarStatisticsResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.statistics.VardadminStatisticsResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItemFactory;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -60,6 +63,15 @@ public class StatisticsServiceImplTest {
 
     @Mock
     private UtredningRepository utredningRepository;
+
+    @Spy
+    private BestallningListItemFactory bestallningListItemFactory;
+
+    @Spy
+    private UtredningListItemFactory utredningListItemFactory;
+
+    @Spy
+    private InternForfraganListItemFactory internForfraganListItemFactory = new InternForfraganListItemFactory(new BusinessDaysStub());
 
     @Spy
     private BusinessDaysBean businessDays = new BusinessDaysStub();

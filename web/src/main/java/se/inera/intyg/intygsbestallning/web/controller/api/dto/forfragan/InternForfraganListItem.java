@@ -18,35 +18,13 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan;
 
-import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
-import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
-import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
-import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStateResolver;
 import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
-import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FreeTextSearchable;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListForfraganFilterStatus;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import static java.util.Objects.nonNull;
 
 public class InternForfraganListItem implements FreeTextSearchable {
-    private static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
-
-    // Temp hard-coded, replace by parameterized stuff.
-    private static final int BESVARA_FORFRAGAN_ARBETSDAGAR = 2;
-
-    // Planeringsdatum = Dagens datum + POSTGÅNG_DAGAR arbetsdagar + AFU_UTREDNING_ARBETSDAGAR arbetsdagar exklusive
-    // semesterperioder + POSTGANG_ARBETSDAGAR arbetsdagar
-    private static final int AFU_UTREDNING_ARBETSDAGAR = 25;
-    private static final int POSTGANG_ARBETSDAGAR = 3;
 
     private Long utredningsId;
     private String utredningsTyp;
@@ -60,72 +38,6 @@ public class InternForfraganListItem implements FreeTextSearchable {
     private InternForfraganStatus status;
     private List<ListForfraganFilterStatus> filterStatusar;
     private boolean kraverAtgard;
-
-    public static InternForfraganListItem from(Utredning utredning, String vardenhetId,
-                                               InternForfraganStateResolver statusResolver, BusinessDaysBean businessDays) {
-
-        InternForfragan internForfragan = utredning.getExternForfragan().getInternForfraganList()
-                .stream()
-                .filter(i -> Objects.equals(i.getVardenhetHsaId(), vardenhetId))
-                .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
-
-        InternForfraganStatus status = statusResolver.resolveStatus(utredning, internForfragan);
-
-        return ForfraganListItemBuilder.aForfraganListItem()
-                .withBesvarasSenastDatum(nonNull(internForfragan.getBesvarasSenastDatum())
-                        ? internForfragan.getBesvarasSenastDatum().format(formatter)
-                        : null)
-                .withBesvarasSenastDatumPaVagPasseras(
-                        resolveBesvarasSenastPaVagPasseras(internForfragan.getBesvarasSenastDatum(), businessDays))
-                .withBesvarasSenastDatumPasserat(resolveBesvaraSenastPasserat(internForfragan))
-                .withInkomDatum(nonNull(internForfragan.getSkapadDatum())
-                        ? internForfragan.getSkapadDatum().format(formatter)
-                        : null)
-                .withPlaneringsDatum(resolvePlaneringsDatum(utredning.getBestallning(), businessDays))
-                .withStatus(status)
-                .withUtredningsId(utredning.getUtredningId())
-                .withUtredningsTyp(utredning.getUtredningsTyp().name())
-                .withVardgivareHsaId(utredning.getExternForfragan().getLandstingHsaId())
-                .withVardgivareNamn(utredning.getExternForfragan().getLandstingHsaId())
-                .withKraverAtgard(status.getNextActor() == Actor.VARDADMIN)
-                .build();
-    }
-
-    private static String resolvePlaneringsDatum(Optional<Bestallning> bestallning, BusinessDaysBean businessDays) {
-
-        // Om redan beställd, ska vi då utgå från orderdatumet istället?? Dvs planeringsdatum blir orderdatum + 31 arbetsdagar?
-        if (bestallning.isPresent() && bestallning.get().getOrderDatum() != null) {
-            return null;
-        }
-
-        LocalDate startDatum = LocalDate.now();
-        LocalDate planeringsDatum = LocalDate.from(startDatum);
-        int total = POSTGANG_ARBETSDAGAR + AFU_UTREDNING_ARBETSDAGAR + POSTGANG_ARBETSDAGAR;
-        while (businessDays.daysBetween(startDatum, planeringsDatum) < total) {
-            planeringsDatum = planeringsDatum.plusDays(1);
-        }
-        return planeringsDatum.format(formatter);
-    }
-
-    private static boolean resolveBesvaraSenastPasserat(InternForfragan internForfragan) {
-        if (internForfragan.getBesvarasSenastDatum() == null) {
-            return false;
-        }
-        return LocalDateTime.now().compareTo(internForfragan.getBesvarasSenastDatum()) > 0;
-    }
-
-    private static boolean resolveBesvarasSenastPaVagPasseras(LocalDateTime besvarasSenastDatum, BusinessDaysBean businessDays) {
-        if (besvarasSenastDatum == null) {
-            return false;
-        }
-
-        // Om datumet redan passerats skall vi ej flagga.
-        if (besvarasSenastDatum.toLocalDate().compareTo(LocalDate.now()) < 0) {
-            return false;
-        }
-        return businessDays.daysBetween(LocalDate.now(), besvarasSenastDatum.toLocalDate(), false) < BESVARA_FORFRAGAN_ARBETSDAGAR;
-    }
 
     public Long getUtredningsId() {
         return utredningsId;

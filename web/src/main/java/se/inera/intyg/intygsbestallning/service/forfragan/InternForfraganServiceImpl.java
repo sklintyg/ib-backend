@@ -18,17 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.service.forfragan;
 
-import static java.util.Objects.isNull;
-import static java.util.stream.Collectors.toList;
-import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.RespondToPerformerRequestDto.RespondToPerformerRequestDtoBuilder.aRespondToPerformerRequestDto;
-import static se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar;
-import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
-
-import java.text.MessageFormat;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
-
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -37,12 +26,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
-import se.inera.intyg.intygsbestallning.common.exception.IbExternalServiceException;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
+import se.inera.intyg.intygsbestallning.common.exception.IbExternalServiceException;
 import se.inera.intyg.intygsbestallning.common.exception.IbExternalSystemEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
@@ -59,9 +47,20 @@ import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.CreateInternForfraganRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.TilldelaDirektRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
+
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
+
+import static java.util.Objects.isNull;
+import static java.util.stream.Collectors.toList;
+import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.RespondToPerformerRequestDto.RespondToPerformerRequestDtoBuilder.aRespondToPerformerRequestDto;
+import static se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar;
+import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
 
 @Service
 @Transactional
@@ -118,7 +117,7 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
         utredning.getHandelseList().addAll(
                 newVardenheter.stream()
                         .map(vardenhetHsaId -> HandelseUtil.createForfraganSkickad(userService.getUser().getNamn(),
-                                organizationUnitService.getVardenhet(vardenhetHsaId).getNamn()))
+                                hsaOrganizationsService.getVardenhet(vardenhetHsaId).getNamn()))
                         .collect(toList()));
 
         utredningRepository.save(utredning);
@@ -193,9 +192,9 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
         Vardenhet vardenhet;
         Vardgivare vardgivare;
         try {
-            vardenhet = organizationUnitService.getVardenhet(internForfragan.getVardenhetHsaId());
-            String vardgivareHsaId = organizationUnitService.getVardgivareOfVardenhet(internForfragan.getVardenhetHsaId());
-            vardgivare = organizationUnitService.getVardgivareInfo(vardgivareHsaId);
+            vardenhet = hsaOrganizationsService.getVardenhet(internForfragan.getVardenhetHsaId());
+            String vardgivareHsaId = hsaOrganizationsService.getVardgivareOfVardenhet(internForfragan.getVardenhetHsaId());
+            vardgivare = hsaOrganizationsService.getVardgivareInfo(vardgivareHsaId);
         } catch (RuntimeException re) {
             LOG.error("RuntimeException while while querying HSA for hsaId " + internForfragan.getVardenhetHsaId(), re);
             throw new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.HSA, re.getMessage());

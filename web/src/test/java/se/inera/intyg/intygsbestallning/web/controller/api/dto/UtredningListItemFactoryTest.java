@@ -19,8 +19,12 @@
 package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItemFactory;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,9 +37,11 @@ import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.Invana
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU;
 
-public class UtredningListItemTest {
+@RunWith(MockitoJUnitRunner.class)
+public class UtredningListItemFactoryTest {
 
-    private UtredningStatusResolver utredningStatusResolver = new UtredningStatusResolver();
+    @InjectMocks
+    private UtredningListItemFactory testee = new UtredningListItemFactory();
 
     @Test
     public void testFrom() {
@@ -52,7 +58,7 @@ public class UtredningListItemTest {
                         .build())
                 .build();
 
-        UtredningListItem response = UtredningListItem.from(utredning, utredningStatusResolver.resolveStatus(utredning));
+        UtredningListItem response = testee.from(utredning);
 
         assertNotNull(response);
         assertEquals("Förfrågan", response.getFas().getLabel());

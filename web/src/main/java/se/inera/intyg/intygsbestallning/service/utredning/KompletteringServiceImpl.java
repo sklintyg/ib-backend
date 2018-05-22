@@ -38,7 +38,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -46,7 +45,7 @@ import java.util.function.Predicate;
 @Transactional
 public class KompletteringServiceImpl extends BaseUtredningService implements KompletteringService {
 
-    private static final List<UtredningStatus> GODKANDA_STATUSAR_KOMPLETTERING_MOTTAGEN = ImmutableList.of(
+    private static final ImmutableList<UtredningStatus> GODKANDA_STATUSAR_KOMPLETTERING_MOTTAGEN = ImmutableList.of(
             UtredningStatus.KOMPLETTERINGSBEGARAN_MOTTAGEN_VANTAR_PA_FRAGESTALLNING,
             UtredningStatus.KOMPLETTERANDE_FRAGESTALLNING_MOTTAGEN,
             UtredningStatus.KOMPLETTERING_SKICKAD);

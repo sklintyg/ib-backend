@@ -16,17 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.web.controller.api.dto;
+package se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning;
 
-import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
-import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.service.stateresolver.SlutDatumFasResolver;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
-
-import java.util.Optional;
-
-import static java.util.Objects.nonNull;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.FreeTextSearchable;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardenhetEnrichable;
 
 public class UtredningListItem implements FreeTextSearchable, FilterableListItem, VardenhetEnrichable {
 
@@ -37,31 +33,6 @@ public class UtredningListItem implements FreeTextSearchable, FilterableListItem
     private UtredningFas fas;
     private String slutdatumFas;
     private UtredningStatus status;
-
-    public static UtredningListItem from(Utredning utredning, UtredningStatus utredningStatus) {
-
-        return UtredningListItemBuilder.anUtredningListItem()
-                .withFas(utredningStatus.getUtredningFas())
-                .withSlutdatumFas(SlutDatumFasResolver.resolveSlutDatumFas(utredning, utredningStatus))
-                .withStatus(utredningStatus)
-                .withUtredningsId(utredning.getUtredningId())
-                .withUtredningsTyp(utredning.getUtredningsTyp().name())
-                .withVardenhetHsaId(resolveTilldeladVardenhetHsaId(utredning))
-                .withVardenhetNamn("")
-                .build();
-    }
-
-    private static String resolveTilldeladVardenhetHsaId(Utredning utredning) {
-        if (utredning.getExternForfragan() != null) {
-            Optional<String> optionalVardenhetHsaId = utredning.getExternForfragan().getInternForfraganList().stream()
-                    .filter(intf -> nonNull(intf.getTilldeladDatum()))
-                    .map(InternForfragan::getVardenhetHsaId)
-                    .findFirst();
-
-            return optionalVardenhetHsaId.orElse(null);
-        }
-        return null;
-    }
 
     public Long getUtredningsId() {
         return utredningsId;

@@ -23,20 +23,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
-import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.repository.ExternForfraganRepository;
 import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
 import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
-import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.util.GenericComparator;
 import se.inera.intyg.intygsbestallning.service.util.PagingUtil;
 import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.ForfraganSvarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.ForfraganSvarResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.GetForfraganListResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItemFactory;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.ListForfraganRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListForfraganFilter;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListForfraganFilterStatus;
@@ -61,10 +60,7 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
     private RegistreradVardenhetRepository registreradVardenhetRepository;
 
     @Autowired
-    private HsaOrganizationsService hsaOrganizationsService;
-
-    @Autowired
-    private BusinessDaysBean businessDays;
+    private InternForfraganListItemFactory internForfraganListItemFactory;
 
     @Override
     public ForfraganSvarResponse besvaraForfragan(Long forfraganId, ForfraganSvarRequest svarRequest) {
@@ -76,7 +72,7 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
         List<InternForfraganListItem> forfraganList = externForfraganRepository
                 .findByExternForfraganAndVardenhetHsaIdAndArkiveradFalse(vardenhetHsaId)
                 .stream()
-                .map(utr -> InternForfraganListItem.from(utr, vardenhetHsaId, internForfraganStateResolver, businessDays))
+                .map(utr -> internForfraganListItemFactory.from(utr, vardenhetHsaId))
                 .collect(toList());
 
         Map<InternForfraganStatus, List<ListForfraganFilterStatus>> statusMap = buildFilterStatusesForForfragan();
@@ -163,7 +159,7 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
 
     private String getVardgivareNamn(String vardgivareHsaId) {
         try {
-            Vardgivare vardgivareInfo = organizationUnitService.getVardgivareInfo(vardgivareHsaId);
+            Vardgivare vardgivareInfo = hsaOrganizationsService.getVardgivareInfo(vardgivareHsaId);
             if (vardgivareInfo != null) {
                 return vardgivareInfo.getNamn();
             }

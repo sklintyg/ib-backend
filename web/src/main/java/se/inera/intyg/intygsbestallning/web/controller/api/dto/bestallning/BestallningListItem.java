@@ -18,22 +18,14 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning;
 
-import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
-import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
-import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
-import se.inera.intyg.intygsbestallning.service.stateresolver.SlutDatumFasResolver;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FreeTextSearchable;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardgivareEnrichable;
 
-import java.time.LocalDateTime;
-
 public class BestallningListItem implements PDLLoggable, FreeTextSearchable, FilterableListItem, VardgivareEnrichable {
-
-    private static final long DEFAULT_DAYS = 5L;
 
     private Long utredningsId;
     private String utredningsTyp;
@@ -48,66 +40,6 @@ public class BestallningListItem implements PDLLoggable, FreeTextSearchable, Fil
     private String patientNamn;
     private String nextActor;
     private boolean kraverAtgard;
-
-    public static BestallningListItem from(Utredning utredning, UtredningStatus utredningStatus, Actor actorInThisContext) {
-        return BestallningListItemBuilder.anBestallningListItem()
-                .withFas(utredningStatus.getUtredningFas())
-                .withPatientId(utredning.getInvanare().getPersonId())
-                .withPatientNamn(null)
-                .withSlutdatumFas(SlutDatumFasResolver.resolveSlutDatumFas(utredning, utredningStatus))
-                .withSlutdatumPasserat(LocalDateTime.now().isAfter(utredning.getIntygList().stream()
-                        .filter(i -> !i.isKomplettering())
-                        .findFirst()
-                        .map(Intyg::getSistaDatum)
-                        .orElseThrow(IllegalStateException::new)))
-                .withSlutdatumPaVagPasseras(resolveSlutDatumPaVagPasseras(utredning, utredningStatus))
-                .withStatus(utredningStatus)
-                .withNextActor(utredningStatus.getNextActor().name())
-                .withKraverAtgard(actorInThisContext == utredningStatus.getNextActor())
-                .withUtredningsId(utredning.getUtredningId())
-                .withUtredningsTyp(utredning.getUtredningsTyp().name())
-                .withVardgivareHsaId(utredning.getExternForfragan().getLandstingHsaId())
-                .withVardgivareNamn(null)
-                .build();
-    }
-
-    /**
-     * Systemet ska signalera när en utredning eller komplettering snart kommer att passera sitt slutdatum.
-     * <p>
-     * Antalet arbetsdagar innan utredningens slutdatum som påminnelsen ska ske i systemet måste vara konfigurerbart
-     * (UTREDNING_PAMINNELSE_DAGAR). Default är UTREDNING_PAMINNELSE_DAGAR= 5.
-     * <p>
-     * Systemet varnar om:
-     * <p>
-     * Utredningsfas inte är Redovisa tolk (se FMU-G001 Statusflöde för utredning)
-     * Idag > (slutdatum - UTREDNING_PAMINNELSE_DAGAR arbetsdagar)
-     * Idag <= slutdatum
-     * där slutdatum avser slutdatum för utredningen (intyg.sista datum för mottagning) om ingen kompletteringsbegärans har
-     * mottagits, annars slutdatum för kompletteringsbegäran (komplettering.sista datum för mottagning)
-     */
-    private static boolean resolveSlutDatumPaVagPasseras(Utredning utredning, UtredningStatus utredningStatus) {
-        LocalDateTime timestamp;
-        switch (utredningStatus.getUtredningFas()) {
-        case KOMPLETTERING:
-            timestamp = utredning.getIntygList().stream()
-                    .filter(Intyg::isKomplettering)
-                    .map(Intyg::getSistaDatum)
-                    .max(LocalDateTime::compareTo)
-                    .orElseThrow(IllegalStateException::new);
-            break;
-        case UTREDNING:
-            timestamp = utredning.getIntygList().stream()
-                    .filter(i -> !i.isKomplettering())
-                    .map(Intyg::getSistaDatum)
-                    .findAny()
-                    .orElseThrow(IllegalStateException::new);
-            break;
-        default:
-            return false;
-        }
-        return LocalDateTime.now().isBefore(timestamp)
-                && LocalDateTime.now().isAfter(timestamp.minusDays(DEFAULT_DAYS));
-    }
 
     public Long getUtredningsId() {
         return utredningsId;

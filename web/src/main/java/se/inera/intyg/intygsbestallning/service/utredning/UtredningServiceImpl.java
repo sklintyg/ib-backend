@@ -28,7 +28,6 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
-import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
@@ -54,13 +53,16 @@ import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningReques
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.GetInternForfraganResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningListResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.ListUtredningRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardenhetEnrichable;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.GetInternForfraganResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItemFactory;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganSvarItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningListResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListUtredningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItemFactory;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
 
 import javax.xml.ws.WebServiceException;
@@ -95,7 +97,10 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     private static final Logger LOG = LoggerFactory.getLogger(UtredningService.class);
 
     @Autowired
-    private PUService puService;
+    private InternForfraganListItemFactory internForfraganListItemFactory;
+
+    @Autowired
+    private UtredningListItemFactory utredningListItemFactory;
 
     @Autowired
     private BusinessDaysBean businessDays;
@@ -104,7 +109,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     public List<UtredningListItem> findExternForfraganByLandstingHsaId(String landstingHsaId) {
         return utredningRepository.findAllByExternForfragan_LandstingHsaId(landstingHsaId)
                 .stream()
-                .map(u -> UtredningListItem.from(u, utredningStatusResolver.resolveStatus(u)))
+                .map(u -> utredningListItemFactory.from(u))
                 .collect(Collectors.toList());
     }
 
@@ -112,7 +117,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     public GetUtredningListResponse findExternForfraganByLandstingHsaIdWithFilter(String landstingHsaId, ListUtredningRequest request) {
         List<UtredningListItem> list = utredningRepository.findByExternForfragan_LandstingHsaId_AndArkiveradFalse(landstingHsaId)
                 .stream()
-                .map(u -> UtredningListItem.from(u, utredningStatusResolver.resolveStatus(u)))
+                .map(u -> utredningListItemFactory.from(u))
                 .collect(Collectors.toList());
 
         // Get status mapper
@@ -173,7 +178,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     public List<InternForfraganListItem> findForfragningarForVardenhetHsaId(String vardenhetHsaId) {
         return utredningRepository.findAllByExternForfragan_InternForfraganList_VardenhetHsaId(vardenhetHsaId)
                 .stream()
-                .map(utr -> InternForfraganListItem.from(utr, vardenhetHsaId, internForfraganStateResolver, businessDays))
+                .map(utr -> internForfraganListItemFactory.from(utr, vardenhetHsaId))
                 .collect(toList());
     }
 
@@ -189,11 +194,19 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .findFirst().orElseThrow(() -> new IbNotFoundException("Utredning with id '" + utredningId
                         + "' does not have an InternForfragan for enhet with id '" + vardenhetHsaId + "'"));
 
-        final GetInternForfraganResponse result = GetInternForfraganResponse.from(utredning,
-                utredningStatusResolver.resolveStatus(utredning), internForfragan,
-                internForfraganStateResolver, businessDays);
-        enrichWithVardenhetNames(result.getUtredning().getTidigareEnheter());
-        return result;
+        final GetUtredningResponse utredningsResponse = GetUtredningResponse.from(utredning,
+                utredningStatusResolver.resolveStatus(utredning));
+
+        // Vardadmins should not see händelser or InternforfraganList
+        utredningsResponse.getHandelseList().clear();
+        utredningsResponse.getInternForfraganList().clear();
+
+        final InternForfraganListItem internForfraganListItem = internForfraganListItemFactory.from(utredning,
+                internForfragan.getVardenhetHsaId());
+        final InternForfraganSvarItem internForfraganSvarItem = InternForfraganSvarItem.from(internForfragan.getForfraganSvar());
+
+        return new GetInternForfraganResponse(internForfraganListItem, internForfraganSvarItem, utredningsResponse);
+
     }
 
     @Override
@@ -386,7 +399,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         items.stream().forEach(item -> {
             if (!Strings.isNullOrEmpty(item.getVardenhetHsaId())) {
                 try {
-                    Vardenhet vardenhet = organizationUnitService.getVardenhet(item.getVardenhetHsaId());
+                    Vardenhet vardenhet = hsaOrganizationsService.getVardenhet(item.getVardenhetHsaId());
                     item.setVardenhetNamn(vardenhet.getNamn());
                 } catch (WebServiceException e) {
                     item.setVardenhetFelmeddelande(e.getMessage());

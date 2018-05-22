@@ -20,13 +20,13 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStateResolver;
 import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
-import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItemFactory;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -43,11 +43,12 @@ import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.Utred
 import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU;
 
 @RunWith(MockitoJUnitRunner.class)
-public class InternForfraganListItemTest {
+public class InternForfraganListItemFactoryTest {
 
     private static final String VARDENHET_HSA_ID = "enhet";
 
-    private BusinessDaysBean businessDays = new BusinessDaysStub();
+    @InjectMocks
+    private InternForfraganListItemFactory testee = new InternForfraganListItemFactory(new BusinessDaysStub());
 
     @Test
     public void testFrom() {
@@ -69,7 +70,7 @@ public class InternForfraganListItemTest {
                 .build();
 
         InternForfraganListItem response =
-                InternForfraganListItem.from(utredning, VARDENHET_HSA_ID, new InternForfraganStateResolver(), businessDays);
+                testee.from(utredning, VARDENHET_HSA_ID);
 
         assertNotNull(response);
         assertEquals(Long.valueOf(31L), response.getUtredningsId());
@@ -84,7 +85,7 @@ public class InternForfraganListItemTest {
     @Test
     public void testBesvaraSenastSnartFlaggaShowForClose() {
         final Utredning utredning = buildUtredningWithBesvaraSenastDatum(LocalDate.now().plusDays(1).atStartOfDay());
-        InternForfraganListItem response = InternForfraganListItem.from(utredning, VARDENHET_HSA_ID, new InternForfraganStateResolver(), businessDays);
+        InternForfraganListItem response = testee.from(utredning, VARDENHET_HSA_ID);
 
         assertNotNull(response);
         assertTrue(response.isBesvarasSenastDatumPaVagPasseras());
@@ -94,7 +95,7 @@ public class InternForfraganListItemTest {
     @Test
     public void testBesvaraSenastSnartFlaggaNotShownForFar() {
         final Utredning utredning = buildUtredningWithBesvaraSenastDatum(LocalDate.now().plusYears(1).atStartOfDay());
-        InternForfraganListItem response = InternForfraganListItem.from(utredning, VARDENHET_HSA_ID, new InternForfraganStateResolver(), businessDays);
+        InternForfraganListItem response = testee.from(utredning, VARDENHET_HSA_ID);
 
         assertNotNull(response);
         assertFalse(response.isBesvarasSenastDatumPaVagPasseras());
@@ -104,7 +105,7 @@ public class InternForfraganListItemTest {
     @Test
     public void testBesvaraSenastPasserat() {
         final Utredning utredning = buildUtredningWithBesvaraSenastDatum(LocalDate.now().minusDays(1).atStartOfDay());
-        InternForfraganListItem response = InternForfraganListItem.from(utredning, VARDENHET_HSA_ID, new InternForfraganStateResolver(), businessDays);
+        InternForfraganListItem response = testee.from(utredning, VARDENHET_HSA_ID);
 
         assertNotNull(response);
         assertFalse(response.isBesvarasSenastDatumPaVagPasseras());

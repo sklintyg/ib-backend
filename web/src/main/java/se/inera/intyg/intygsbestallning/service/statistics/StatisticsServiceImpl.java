@@ -20,18 +20,17 @@ package se.inera.intyg.intygsbestallning.service.statistics;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
 import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStateResolver;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.BestallningListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.BestallningListItemFactory;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItemFactory;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.statistics.SamordnarStatisticsResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.UtredningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.statistics.VardadminStatisticsResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItemFactory;
 
 /**
  * Created by marced on 2018-05-04.
@@ -41,6 +40,15 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     private UtredningStatusResolver utredningStatusResolver = new UtredningStatusResolver();
     private InternForfraganStateResolver internForfraganStateResolver = new InternForfraganStateResolver();
+
+    @Autowired
+    private BestallningListItemFactory bestallningListItemFactory;
+
+    @Autowired
+    private InternForfraganListItemFactory internForfraganListItemFactory;
+
+    @Autowired
+    private UtredningListItemFactory utredningListItemFactory;
 
     @Autowired
     private UtredningRepository utredningRepository;
@@ -53,7 +61,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         long requireSamordnarActionCount = utredningRepository
                 .findByExternForfragan_LandstingHsaId_AndArkiveradFalse(vardgivarHsaId)
                 .stream()
-                .map(u -> UtredningListItem.from(u, utredningStatusResolver.resolveStatus(u)))
+                .map(u -> utredningListItemFactory.from(u))
                 .filter(uli -> uli.getStatus().getNextActor().equals(Actor.SAMORDNARE))
                 .count();
         return new SamordnarStatisticsResponse(requireSamordnarActionCount);
@@ -66,7 +74,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         long forfraganRequiringActionCount = utredningRepository
                 .findAllByExternForfragan_InternForfraganList_VardenhetHsaId_AndArkiveradFalse(enhetsHsaId)
                 .stream()
-                .map(utr -> InternForfraganListItem.from(utr, enhetsHsaId, internForfraganStateResolver, businessDays))
+                .map(utr -> internForfraganListItemFactory.from(utr, enhetsHsaId))
                 .filter(ffli -> ffli.getStatus().getNextActor().equals(Actor.VARDADMIN))
                 .count();
 
@@ -75,7 +83,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         long bestallningarRequiringActionCount = utredningRepository
                 .findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(enhetsHsaId)
                 .stream()
-                .map(u -> BestallningListItem.from(u, utredningStatusResolver.resolveStatus(u), Actor.VARDADMIN))
+                .map(u -> bestallningListItemFactory.from(u, Actor.VARDADMIN))
                 .filter(bli -> bli.getKraverAtgard() && !bli.getFas().equals(UtredningFas.AVSLUTAD)
                         && !bli.getFas().equals(UtredningFas.FORFRAGAN))
                 .count();

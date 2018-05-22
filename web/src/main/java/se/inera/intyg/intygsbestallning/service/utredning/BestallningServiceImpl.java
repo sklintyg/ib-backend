@@ -47,6 +47,7 @@ import se.inera.intyg.intygsbestallning.service.util.PagingUtil;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.AvslutadBestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.BestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.BestallningListItemFactory;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.GetBestallningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.ListAvslutadeBestallningarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.ListBestallningRequest;
@@ -79,6 +80,9 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
 
     @Autowired
     private BusinessDaysBean businessDays;
+
+    @Autowired
+    private BestallningListItemFactory bestallningListItemFactory;
 
     @Override
     public GetBestallningResponse getBestallning(Long utredningId, String vardenhetHsaId) {
@@ -129,7 +133,7 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
         List<SelectItem> distinctVardgivare = utredningRepository
                 .findDistinctLandstingHsaIdByVardenhetHsaIdHavingBestallning(vardenhetHsaId)
                 .stream()
-                .map(vgHsaId -> new SelectItem(vgHsaId, organizationUnitService.getVardgivareInfo(vgHsaId).getNamn()))
+                .map(vgHsaId -> new SelectItem(vgHsaId, hsaOrganizationsService.getVardgivareInfo(vgHsaId).getNamn()))
                 .distinct()
                 .sorted(Comparator.comparing(SelectItem::getLabel))
                 .collect(Collectors.toList());
@@ -251,7 +255,7 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
         List<SelectItem> distinctVardgivare = utredningRepository
                 .findDistinctLandstingHsaIdByVardenhetHsaIdHavingBestallningAndIsArkiverad(vardenhetHsaId)
                 .stream()
-                .map(vgHsaId -> new SelectItem(vgHsaId, organizationUnitService.getVardgivareInfo(vgHsaId).getNamn()))
+                .map(vgHsaId -> new SelectItem(vgHsaId, hsaOrganizationsService.getVardgivareInfo(vgHsaId).getNamn()))
                 .distinct()
                 .sorted(Comparator.comparing(SelectItem::getLabel))
                 .collect(Collectors.toList());
@@ -265,7 +269,7 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
         List<BestallningListItem> bestallningListItems = utredningRepository
                 .findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(vardenhetHsaId)
                 .stream()
-                .map(u -> BestallningListItem.from(u, utredningStatusResolver.resolveStatus(u), Actor.VARDADMIN))
+                .map(u -> bestallningListItemFactory.from(u, Actor.VARDADMIN))
                 .collect(Collectors.toList());
 
         // We may need to fetch names for patients and vardgivare prior to filtering if free text search is
@@ -366,7 +370,7 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
     private void enrichWithVardgivareNames(List<? extends VardgivareEnrichable> items) {
         items.stream().forEach(bli -> {
             if (!Strings.isNullOrEmpty(bli.getVardgivareHsaId())) {
-                Vardgivare vardgivareInfo = organizationUnitService.getVardgivareInfo(bli.getVardgivareHsaId());
+                Vardgivare vardgivareInfo = hsaOrganizationsService.getVardgivareInfo(bli.getVardgivareHsaId());
                 if (vardgivareInfo != null) {
                     bli.setVardgivareNamn(vardgivareInfo.getNamn());
                 } else {

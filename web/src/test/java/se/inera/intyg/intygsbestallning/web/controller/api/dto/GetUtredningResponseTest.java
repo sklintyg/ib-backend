@@ -21,6 +21,7 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 import org.junit.Test;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
 
 import java.time.LocalDateTime;
 

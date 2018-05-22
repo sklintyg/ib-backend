@@ -29,9 +29,9 @@ import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.ExternForfraganRepository;
-import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.GetForfraganListResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItemFactory;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.ListForfraganRequest;
 
 import java.time.LocalDateTime;
@@ -48,10 +48,16 @@ public class ExternForfraganServiceImplTest {
     private ExternForfraganRepository externForfraganRepository;
 
     @Spy
-    private BusinessDaysBean businessDays = new BusinessDaysStub();
+    private InternForfraganListItemFactory internForfraganListItemFactory = new InternForfraganListItemFactory(new BusinessDaysStub());
 
     @InjectMocks
     private ExternForfraganServiceImpl testee;
+
+//    @Before
+//    public void initMocks() {
+//        internForfraganListItemFactory = spy(InternForfraganListItemFactory.class);
+//        internForfraganListItemFactory.setBusinessDays(new BusinessDaysStub());
+//    }
 
     @Test
     public void testListForfragningar() {

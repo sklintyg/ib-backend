@@ -18,12 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan;
 
-import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
-import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStateResolver;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
-import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.GetUtredningResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
 
 public class GetInternForfraganResponse {
 
@@ -33,32 +28,23 @@ public class GetInternForfraganResponse {
 
     private GetUtredningResponse utredning;
 
-    public static GetInternForfraganResponse from(Utredning utredning, UtredningStatus status, InternForfragan internForfragan,
-            InternForfraganStateResolver internForfraganStateResolver, BusinessDaysBean businessDays) {
+    private GetInternForfraganResponse() {
 
+    }
 
-        final GetUtredningResponse utredningsResponse = GetUtredningResponse.from(utredning, status);
-        // Vardadmins should not see händelser or InternforfraganList
-        utredningsResponse.getHandelseList().clear();
-        utredningsResponse.getInternForfraganList().clear();
-
-        final InternForfraganListItem internForfraganListItem = InternForfraganListItem.from(utredning, internForfragan.getVardenhetHsaId(),
-                internForfraganStateResolver, businessDays);
-        final InternForfraganSvarItem internForfraganSvarItem = InternForfraganSvarItem.from(internForfragan.getForfraganSvar());
-
-        return GetForfraganResponseBuilder.aGetForfraganResponse()
-                .withInternForfragan(internForfraganListItem)
-                .withInternForfraganSvar(internForfraganSvarItem)
-                .withUtredning(utredningsResponse)
-                .build();
+    public GetInternForfraganResponse(InternForfraganListItem internForfragan, InternForfraganSvarItem internForfraganSvar,
+            GetUtredningResponse utredning) {
+        this.internForfragan = internForfragan;
+        this.internForfraganSvar = internForfraganSvar;
+        this.utredning = utredning;
     }
 
     public InternForfraganListItem getInternForfragan() {
         return internForfragan;
     }
 
-    public void setInternForfragan(InternForfraganListItem internforfragan) {
-        this.internForfragan = internforfragan;
+    public void setInternForfragan(InternForfraganListItem internForfragan) {
+        this.internForfragan = internForfragan;
     }
 
     public GetUtredningResponse getUtredning() {
@@ -75,41 +61,5 @@ public class GetInternForfraganResponse {
 
     public void setInternForfraganSvar(InternForfraganSvarItem internForfraganSvar) {
         this.internForfraganSvar = internForfraganSvar;
-    }
-
-    public static final class GetForfraganResponseBuilder {
-        private InternForfraganListItem internForfraganListItem;
-        private InternForfraganSvarItem internForfraganSvarItem;
-        private GetUtredningResponse utredning;
-
-        private GetForfraganResponseBuilder() {
-        }
-
-        public static GetForfraganResponseBuilder aGetForfraganResponse() {
-            return new GetForfraganResponseBuilder();
-        }
-
-        public GetForfraganResponseBuilder withUtredning(GetUtredningResponse utredningResponse) {
-            this.utredning = utredningResponse;
-            return this;
-        }
-
-        public GetForfraganResponseBuilder withInternForfragan(InternForfraganListItem internForfraganListItem) {
-            this.internForfraganListItem = internForfraganListItem;
-            return this;
-        }
-        public GetForfraganResponseBuilder withInternForfraganSvar(InternForfraganSvarItem internForfraganSvarItem) {
-            this.internForfraganSvarItem = internForfraganSvarItem;
-            return this;
-        }
-
-
-        public GetInternForfraganResponse build() {
-            GetInternForfraganResponse getForfraganResponse = new GetInternForfraganResponse();
-            getForfraganResponse.setInternForfragan(internForfraganListItem);
-            getForfraganResponse.setInternForfraganSvar(internForfraganSvarItem);
-            getForfraganResponse.setUtredning(utredning);
-            return getForfraganResponse;
-        }
     }
 }

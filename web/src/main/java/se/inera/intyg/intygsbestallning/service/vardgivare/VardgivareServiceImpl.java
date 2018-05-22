@@ -23,10 +23,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.integration.hsa.client.OrganizationUnitService;
 import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
-import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
@@ -55,12 +53,6 @@ public class VardgivareServiceImpl extends BaseUtredningService implements Vardg
 
     @Autowired
     private RegistreradVardenhetRepository registreradVardenhetRepository;
-
-    @Autowired
-    private HsaOrganizationsService hsaOrganizationsService;
-
-    @Autowired
-    private OrganizationUnitService organizationUnitService;
 
     @Override
     public GetVardenheterForVardgivareResponse listVardenheterForVardgivare(String vardgivareHsaId) {

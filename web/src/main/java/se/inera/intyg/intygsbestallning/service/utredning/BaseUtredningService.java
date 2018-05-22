@@ -20,14 +20,15 @@ package se.inera.intyg.intygsbestallning.service.utredning;
 
 import com.google.common.base.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.infra.integration.hsa.client.OrganizationUnitService;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
 import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStateResolver;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
+import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FreeTextSearchable;
@@ -45,7 +46,10 @@ public abstract class BaseUtredningService {
     protected UserService userService;
 
     @Autowired
-    protected HsaOrganizationsService organizationUnitService;
+    protected HsaOrganizationsService hsaOrganizationsService;
+
+    @Autowired
+    protected OrganizationUnitService organizationUnitService;
 
     protected UtredningStatusResolver utredningStatusResolver = new UtredningStatusResolver();
     protected InternForfraganStateResolver internForfraganStateResolver = new InternForfraganStateResolver();
