@@ -29,13 +29,13 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.nonNull;
 import static se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil.toLocalDateTimeFromDateType;
 
-public final class RegistreraUtlatandeMottagetRequest {
+public final class ReportUtlatandeMottagetRequest {
 
     private final Long utredningId;
     private final LocalDateTime mottagetDatum;
     private final LocalDateTime sistaKompletteringsDatum;
 
-    private RegistreraUtlatandeMottagetRequest(
+    private ReportUtlatandeMottagetRequest(
             final Long utredningId,
             final LocalDateTime mottagetDatum,
             final LocalDateTime sistaKompletteringsDatum) {
@@ -56,7 +56,7 @@ public final class RegistreraUtlatandeMottagetRequest {
         return sistaKompletteringsDatum;
     }
 
-    public static RegistreraUtlatandeMottagetRequest from(final ReportCertificateReceivalType external) {
+    public static ReportUtlatandeMottagetRequest from(final ReportCertificateReceivalType external) {
 
         checkArgument(nonNull(external));
         checkArgument(nonNull(external.getAssessmentId()));
@@ -67,7 +67,7 @@ public final class RegistreraUtlatandeMottagetRequest {
         final LocalDateTime mottagetDatum = toLocalDateTimeFromDateType(external.getReceivedDate());
         final LocalDateTime sistaKompletteringsDatum = toLocalDateTimeFromDateType(external.getLastDateForSupplementRequest());
 
-        return new RegistreraUtlatandeMottagetRequest(assessmentId, mottagetDatum, sistaKompletteringsDatum);
+        return new ReportUtlatandeMottagetRequest(assessmentId, mottagetDatum, sistaKompletteringsDatum);
     }
 
     // CHECKSTYLE:OFF MagicNumber
@@ -82,7 +82,7 @@ public final class RegistreraUtlatandeMottagetRequest {
             return false;
         }
 
-        RegistreraUtlatandeMottagetRequest request = (RegistreraUtlatandeMottagetRequest) o;
+        ReportUtlatandeMottagetRequest request = (ReportUtlatandeMottagetRequest) o;
 
         return new EqualsBuilder()
                 .append(utredningId, request.utredningId)

@@ -19,7 +19,6 @@
 package se.inera.intyg.intygsbestallning.service.utlatande;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -30,15 +29,13 @@ import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
-import se.inera.intyg.intygsbestallning.web.responder.ReportCertificateReceivalResponderImpl;
-import se.inera.intyg.intygsbestallning.web.responder.dto.RegistreraUtlatandeMottagetRequest;
+import se.inera.intyg.intygsbestallning.web.responder.dto.ReportUtlatandeMottagetRequest;
 import se.riv.intygsbestallning.certificate.order.reportcertificatereceival.v1.ReportCertificateReceivalType;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doReturn;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
 import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
@@ -77,14 +74,13 @@ public class UtlatandeServiceImplTest {
         type.setReceivedDate(RECEIVAL_DATE);
         type.setLastDateForSupplementRequest(LAST_DATE_FOR_SUPPLEMENT_REQUEST);
 
-
-        final RegistreraUtlatandeMottagetRequest request = RegistreraUtlatandeMottagetRequest.from(type);
+        final ReportUtlatandeMottagetRequest request = ReportUtlatandeMottagetRequest.from(type);
 
         doReturn(Optional.of(utredning))
                 .when(utredningRepository)
                 .findById(request.getUtredningId());
 
-        utlatandeService.registreraUtlatandeMottaget(request);
+        utlatandeService.reportUtlatandeMottaget(request);
     }
 
     @Test
@@ -98,13 +94,13 @@ public class UtlatandeServiceImplTest {
         type.setLastDateForSupplementRequest(LAST_DATE_FOR_SUPPLEMENT_REQUEST);
 
 
-        final RegistreraUtlatandeMottagetRequest request = RegistreraUtlatandeMottagetRequest.from(type);
+        final ReportUtlatandeMottagetRequest request = ReportUtlatandeMottagetRequest.from(type);
 
         doReturn(Optional.of(utredning))
                 .when(utredningRepository)
                 .findById(request.getUtredningId());
 
-        assertThatThrownBy(() -> utlatandeService.registreraUtlatandeMottaget(request))
+        assertThatThrownBy(() -> utlatandeService.reportUtlatandeMottaget(request))
                 .isExactlyInstanceOf(IbServiceException.class);
     }
 }

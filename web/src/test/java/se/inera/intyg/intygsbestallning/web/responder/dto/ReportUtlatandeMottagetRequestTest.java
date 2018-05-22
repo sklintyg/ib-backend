@@ -21,11 +21,9 @@ package se.inera.intyg.intygsbestallning.web.responder.dto;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
 
-public class RegistreraUtlatandeMottagetRequestTest {
-
+public class ReportUtlatandeMottagetRequestTest {
     @Test
     public void equalsTest() {
-        EqualsVerifier.forClass(RegistreraUtlatandeMottagetRequest.class).verify();
+        EqualsVerifier.forClass(ReportUtlatandeMottagetRequest.class).verify();
     }
-
 }

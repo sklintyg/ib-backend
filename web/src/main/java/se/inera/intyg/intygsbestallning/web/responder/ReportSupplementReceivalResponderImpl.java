@@ -19,40 +19,43 @@
 package se.inera.intyg.intygsbestallning.web.responder;
 
 import org.apache.cxf.annotations.SchemaValidation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.google.common.base.Preconditions;
-
+import se.inera.intyg.intygsbestallning.service.utredning.KompletteringService;
+import se.inera.intyg.intygsbestallning.web.responder.dto.ReportKompletteringMottagenRequest;
 import se.riv.intygsbestallning.certificate.order.reportsupplementreceival.v1.ReportSupplementReceivalResponseType;
 import se.riv.intygsbestallning.certificate.order.reportsupplementreceival.v1.ReportSupplementReceivalType;
 import se.riv.intygsbestallning.certificate.order.reportsupplementreceival.v1.rivtabp21.ReportSupplementReceivalResponderInterface;
-import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
-import se.riv.intygsbestallning.certificate.order.v1.ResultType;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.lang.invoke.MethodHandles.lookup;
+import static java.util.Objects.nonNull;
+import static se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil.ok;
 
 @Service
 @SchemaValidation
 public class ReportSupplementReceivalResponderImpl implements ReportSupplementReceivalResponderInterface {
 
+    private final Logger log = LoggerFactory.getLogger(lookup().lookupClass());
+
+    @Autowired
+    private KompletteringService kompletteringService;
+
     @Override
     public ReportSupplementReceivalResponseType reportSupplementReceival(
             final String logicalAddress, final ReportSupplementReceivalType request) {
 
-        Preconditions.checkArgument(null != logicalAddress);
-        Preconditions.checkArgument(null != request);
+        log.debug("Received ReportSupplementReveival request");
 
-        return createDummyResponse();
-    }
+        checkArgument(nonNull(logicalAddress));
+        checkArgument(nonNull(request));
 
-    private ReportSupplementReceivalResponseType createDummyResponse() {
-
-        ResultType resultType = new ResultType();
-        resultType.setResultCode(ResultCodeType.OK);
-        resultType.setLogId("DUMMY_LOG_ID");
-        resultType.setResultText("DUMMY_RESULT_TEXT");
+        kompletteringService.reportKompletteringMottagen(ReportKompletteringMottagenRequest.from(request));
 
         ReportSupplementReceivalResponseType response = new ReportSupplementReceivalResponseType();
-        response.setResult(resultType);
-
+        response.setResult(ok());
         return response;
     }
 }

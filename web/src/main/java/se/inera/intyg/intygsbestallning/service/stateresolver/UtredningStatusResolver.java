@@ -89,7 +89,7 @@ public class UtredningStatusResolver {
                 return UtredningStatus.UTLATANDE_SKICKAT;
             }
 
-            // Skickat - ursprungsintyget är skickat.
+            // Skickat - ursprungsintyget är mottaget.
             if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getSkickatDatum() != null
                     && intyg.getMottagetDatum() != null
                     && !intyg.isKomplettering()

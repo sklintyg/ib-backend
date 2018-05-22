@@ -18,8 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.service.utlatande;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
@@ -31,19 +29,16 @@ import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
-import se.inera.intyg.intygsbestallning.web.responder.dto.RegistreraUtlatandeMottagetRequest;
+import se.inera.intyg.intygsbestallning.web.responder.dto.ReportUtlatandeMottagetRequest;
 
 import java.util.Optional;
 import java.util.function.Predicate;
 
 import static com.google.common.collect.MoreCollectors.onlyElement;
-import static java.lang.invoke.MethodHandles.lookup;
 
 @Service
 @Transactional
 public class UtlatandeServiceImpl extends BaseUtredningService implements UtlatandeService {
-
-    private final Logger log = LoggerFactory.getLogger(lookup().lookupClass());
 
     private static Predicate<Intyg> isNotKomplettering() {
         return i -> !i.isKomplettering();
@@ -54,7 +49,7 @@ public class UtlatandeServiceImpl extends BaseUtredningService implements Utlata
     }
 
     @Override
-    public void registreraUtlatandeMottaget(final RegistreraUtlatandeMottagetRequest request) {
+    public void reportUtlatandeMottaget(final ReportUtlatandeMottagetRequest request) {
 
         Optional<Utredning> optionalUtredning = utredningRepository.findById(request.getUtredningId());
 
@@ -73,6 +68,6 @@ public class UtlatandeServiceImpl extends BaseUtredningService implements Utlata
         intyg.setSistaDatumKompletteringsbegaran(request.getSistaKompletteringsDatum());
 
         optionalUtredning.get().getHandelseList().add(HandelseUtil.createUtlatandeMottaget(request.getMottagetDatum()));
+        utredningRepository.save(optionalUtredning.get());
     }
-
 }

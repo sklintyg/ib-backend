@@ -18,25 +18,48 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
+import com.google.common.collect.ImmutableList;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
+import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
+import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
+import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
+import se.inera.intyg.intygsbestallning.web.responder.dto.ReportKompletteringMottagenRequest;
 import se.riv.intygsbestallning.certificate.order.requestmedicalcertificatesupplement.v1.RequestMedicalCertificateSupplementType;
 
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 @Service
+@Transactional
 public class KompletteringServiceImpl extends BaseUtredningService implements KompletteringService {
 
+    private static final List<UtredningStatus> GODKANDA_STATUSAR_KOMPLETTERING_MOTTAGEN = ImmutableList.of(
+            UtredningStatus.KOMPLETTERINGSBEGARAN_MOTTAGEN_VANTAR_PA_FRAGESTALLNING,
+            UtredningStatus.KOMPLETTERANDE_FRAGESTALLNING_MOTTAGEN,
+            UtredningStatus.KOMPLETTERING_SKICKAD);
+
+    private static Predicate<Utredning> isKorrektStatusForKompletteringMottagen() {
+        return utr -> GODKANDA_STATUSAR_KOMPLETTERING_MOTTAGEN.contains(UtredningStatusResolver.resolveStaticStatus(utr));
+    }
+
+    private static Predicate<Intyg> isKomplettering() {
+        return Intyg::isKomplettering;
+    }
+
     @Override
-    @Transactional
     public long registerNewKomplettering(RequestMedicalCertificateSupplementType request) {
         try {
             Long assessmentId = Long.parseLong(request.getAssessmentId().getExtension());
@@ -83,5 +106,36 @@ public class KompletteringServiceImpl extends BaseUtredningService implements Ko
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
+    }
+
+    @Override
+    public void reportKompletteringMottagen(final ReportKompletteringMottagenRequest request) {
+
+        Optional<Utredning> optionalUtredning = utredningRepository.findById(request.getUtredningId());
+
+        optionalUtredning
+                .orElseThrow(() -> new IbNotFoundException(
+                        MessageFormat.format("Utredning with id {0} was not found.", request.getUtredningId())));
+
+        optionalUtredning.filter(isKorrektStatusForKompletteringMottagen())
+                .orElseThrow(() -> new IbServiceException(
+                        IbErrorCodeEnum.BAD_STATE,
+                        MessageFormat.format("Utredning with id {0} is in an incorrect state.", request.getUtredningId())));
+
+        Intyg intyg = optionalUtredning.get().getIntygList().stream()
+                .filter(i -> i.getId().equals(request.getKompletteringId()))
+                .filter(isKomplettering())
+                .max(Comparator.comparing(Intyg::getSkickatDatum))
+                .orElseThrow(() -> new IbNotFoundException(
+                        MessageFormat.format("Utredning with id {0} is missing a kompletterande intyg with id {1}",
+                                request.getKompletteringId(),
+                                request.getKompletteringId())));
+
+        intyg.setMottagetDatum(request.getMottagetDatum());
+        intyg.setSistaDatumKompletteringsbegaran(request.getSistaKompletteringDatum());
+
+        optionalUtredning.get().getHandelseList().add(HandelseUtil.createKompletteringMottagen(request.getMottagetDatum()));
+
+        utredningRepository.save(optionalUtredning.get());
     }
 }

@@ -25,7 +25,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.intygsbestallning.service.utlatande.UtlatandeServiceImpl;
-import se.inera.intyg.intygsbestallning.web.responder.dto.RegistreraUtlatandeMottagetRequest;
+import se.inera.intyg.intygsbestallning.web.responder.dto.ReportUtlatandeMottagetRequest;
 import se.riv.intygsbestallning.certificate.order.reportcertificatereceival.v1.ReportCertificateReceivalResponseType;
 import se.riv.intygsbestallning.certificate.order.reportcertificatereceival.v1.ReportCertificateReceivalType;
 import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
@@ -53,9 +53,9 @@ public class ReportCertificateReceivalResponderImplTest {
         type.setReceivedDate(MOTTAGET_DATUM);
         type.setLastDateForSupplementRequest(SISTA_DATUM);
 
-        RegistreraUtlatandeMottagetRequest request = RegistreraUtlatandeMottagetRequest.from(type);
+        ReportUtlatandeMottagetRequest request = ReportUtlatandeMottagetRequest.from(type);
 
-        doNothing().when(utlatandeService).registreraUtlatandeMottaget(eq(request));
+        doNothing().when(utlatandeService).reportUtlatandeMottaget(eq(request));
         final ReportCertificateReceivalResponseType response = responder.reportCertificateReceival("address", type);
 
         assertEquals(ResultCodeType.OK, response.getResult().getResultCode());

@@ -22,7 +22,7 @@ import org.apache.cxf.annotations.SchemaValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.intygsbestallning.service.utlatande.UtlatandeService;
-import se.inera.intyg.intygsbestallning.web.responder.dto.RegistreraUtlatandeMottagetRequest;
+import se.inera.intyg.intygsbestallning.web.responder.dto.ReportUtlatandeMottagetRequest;
 import se.riv.intygsbestallning.certificate.order.reportcertificatereceival.v1.ReportCertificateReceivalResponseType;
 import se.riv.intygsbestallning.certificate.order.reportcertificatereceival.v1.ReportCertificateReceivalType;
 import se.riv.intygsbestallning.certificate.order.reportcertificatereceival.v1.rivtabp21.ReportCertificateReceivalResponderInterface;
@@ -45,7 +45,7 @@ public class ReportCertificateReceivalResponderImpl implements ReportCertificate
         checkArgument(nonNull(logicalAddress));
         checkArgument(nonNull(request));
 
-        utlatandeService.registreraUtlatandeMottaget(RegistreraUtlatandeMottagetRequest.from(request));
+        utlatandeService.reportUtlatandeMottaget(ReportUtlatandeMottagetRequest.from(request));
 
         ReportCertificateReceivalResponseType response = new ReportCertificateReceivalResponseType();
         response.setResult(ok());

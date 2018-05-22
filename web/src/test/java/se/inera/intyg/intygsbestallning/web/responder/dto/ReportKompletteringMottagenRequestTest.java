@@ -16,14 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.service.utredning;
+package se.inera.intyg.intygsbestallning.web.responder.dto;
 
-import se.inera.intyg.intygsbestallning.web.responder.dto.ReportKompletteringMottagenRequest;
-import se.riv.intygsbestallning.certificate.order.requestmedicalcertificatesupplement.v1.RequestMedicalCertificateSupplementType;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import org.junit.Test;
 
-public interface KompletteringService {
-
-    long registerNewKomplettering(RequestMedicalCertificateSupplementType request);
-
-    void reportKompletteringMottagen(ReportKompletteringMottagenRequest request);
+public class ReportKompletteringMottagenRequestTest {
+    @Test
+    public void equalsTest() {
+        EqualsVerifier.forClass(ReportKompletteringMottagenRequest.class).verify();
+    }
 }

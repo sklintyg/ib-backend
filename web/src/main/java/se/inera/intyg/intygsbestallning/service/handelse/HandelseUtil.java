@@ -86,6 +86,16 @@ public final class HandelseUtil {
                 .build();
     }
 
+    public static Handelse createKompletteringMottagen(final LocalDateTime mottagetDatum) {
+        return aHandelse()
+                .withSkapad(LocalDateTime.now())
+                .withHandelseTyp(HandelseTyp.MOTTAGEN_KOMPLETTERING)
+                .withAnvandare(FK_LABEL)
+                .withHandelseText(MessageFormat.format("Kompletteringen mottagen {0}",
+                        mottagetDatum.format(formatter)))
+                .build();
+    }
+
     public static Handelse createUtlatandeMottaget(final LocalDateTime mottagetDatum) {
         return aHandelse()
                 .withSkapad(LocalDateTime.now())

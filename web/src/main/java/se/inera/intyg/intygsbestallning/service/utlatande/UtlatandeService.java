@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.intygsbestallning.service.utlatande;
 
-import se.inera.intyg.intygsbestallning.web.responder.dto.RegistreraUtlatandeMottagetRequest;
+import se.inera.intyg.intygsbestallning.web.responder.dto.ReportUtlatandeMottagetRequest;
 
 public interface UtlatandeService {
 
-    void registreraUtlatandeMottaget(RegistreraUtlatandeMottagetRequest request);
+    void reportUtlatandeMottaget(ReportUtlatandeMottagetRequest request);
 
 }
