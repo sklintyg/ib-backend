@@ -49,7 +49,7 @@ public class InternForfraganControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_VARDADMIN);
         given().expect().statusCode(OK).when().get(INTERN_FORFRAGAN_API_ENDPOINT + "/1")
                 .then()
-                .body("status", Matchers.notNullValue());
+                .body("utredning.status", Matchers.notNullValue());
     }
 
     @Test

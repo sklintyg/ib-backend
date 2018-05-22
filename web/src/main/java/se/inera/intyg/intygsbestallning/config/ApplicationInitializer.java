@@ -60,7 +60,6 @@ public class ApplicationInitializer implements WebApplicationInitializer {
                 JmsConfig.class,
                 NTjPPingConfig.class,
                 SecurityConfig.class,
-                EmployeeNameCacheConfig.class,
                 DynamicLinkConfig.class,
                 PersistenceConfigJndi.class,
                 PersistenceConfigDev.class,
