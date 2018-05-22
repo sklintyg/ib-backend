@@ -28,7 +28,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
-import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbExternalServiceException;
 import se.inera.intyg.intygsbestallning.common.exception.IbExternalSystemEnum;
@@ -54,7 +53,6 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtre
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
@@ -86,7 +84,7 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
     @Transactional
     public GetUtredningResponse createInternForfragan(Long utredningId, String landstingHsaId, CreateInternForfraganRequest request) {
 
-        Utredning utredning = getUtredning(utredningId, landstingHsaId, ImmutableList.of(UtredningStatus.FORFRAGAN_INKOMMEN,
+        Utredning utredning = getUtredningForLandsting(utredningId, landstingHsaId, ImmutableList.of(UtredningStatus.FORFRAGAN_INKOMMEN,
                 UtredningStatus.VANTAR_PA_SVAR, UtredningStatus.TILLDELA_UTREDNING));
 
         if (isNull(request.getVardenheter()) || request.getVardenheter().size() == 0) {
@@ -129,7 +127,7 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
     @Transactional
     public GetUtredningResponse tilldelaDirekt(Long utredningId, String landstingHsaId, TilldelaDirektRequest request) {
 
-        Utredning utredning = getUtredning(utredningId, landstingHsaId, ImmutableList.of(UtredningStatus.FORFRAGAN_INKOMMEN,
+        Utredning utredning = getUtredningForLandsting(utredningId, landstingHsaId, ImmutableList.of(UtredningStatus.FORFRAGAN_INKOMMEN,
                 UtredningStatus.VANTAR_PA_SVAR, UtredningStatus.TILLDELA_UTREDNING));
 
         if (isNull(request.getVardenhet())) {
@@ -172,7 +170,7 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
     @Transactional
     public GetUtredningResponse acceptInternForfragan(Long utredningId, String landstingHsaId, String vardenhetHsaId) {
 
-        Utredning utredning = getUtredning(utredningId, landstingHsaId, ImmutableList.of(UtredningStatus.VANTAR_PA_SVAR,
+        Utredning utredning = getUtredningForLandsting(utredningId, landstingHsaId, ImmutableList.of(UtredningStatus.VANTAR_PA_SVAR,
                 UtredningStatus.TILLDELA_UTREDNING));
 
         InternForfragan internForfragan = utredning.getExternForfragan().getInternForfraganList().stream()
@@ -228,28 +226,6 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
         utredningRepository.save(utredning);
 
         return utredningService.createGetUtredningResponse(utredning);
-    }
-
-    @NotNull
-    private Utredning getUtredning(Long utredningId, String landstingHsaId, List<UtredningStatus> allowedStatuses) {
-        Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
-                () -> new IbNotFoundException("Could not find the assessment with id " + utredningId));
-
-        if (!Objects.equals(utredning.getExternForfragan().getLandstingHsaId(), landstingHsaId)) {
-            throw new IbAuthorizationException(
-                    "Utredning with assessmentId '" + utredningId + "' does not have ExternForfragan for landsting with id '"
-                            + landstingHsaId + "'");
-        }
-
-        UtredningStatus utredningStatus = utredningStatusResolver.resolveStatus(utredning);
-        if  (allowedStatuses.stream().noneMatch(utredningStatus::equals)) {
-            throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, MessageFormat.format(
-                    "Assessment with id {0} is in an incorrect state", utredning.getUtredningId()));
-        }
-
-
-
-        return utredning;
     }
 
     @NotNull

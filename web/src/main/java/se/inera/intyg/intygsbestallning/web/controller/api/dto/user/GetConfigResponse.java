@@ -27,12 +27,6 @@ public class GetConfigResponse {
     private Integer utredningPaminnelseDagar;
     private Integer forfraganPaminnelseDagar;
 
-    public GetConfigResponse(String version, Integer utredningPaminnelseDagar, Integer forfraganPaminnelseDagar) {
-        this.version = version;
-        this.utredningPaminnelseDagar = utredningPaminnelseDagar;
-        this.forfraganPaminnelseDagar = forfraganPaminnelseDagar;
-    }
-
     public String getVersion() {
         return version;
     }
@@ -55,5 +49,38 @@ public class GetConfigResponse {
 
     public void setForfraganPaminnelseDagar(Integer forfraganPaminnelseDagar) {
         this.forfraganPaminnelseDagar = forfraganPaminnelseDagar;
+    }
+
+    public static final class GetConfigResponseBuilder {
+        private String version;
+        private Integer utredningPaminnelseDagar;
+        private Integer forfraganPaminnelseDagar;
+
+        public static GetConfigResponse.GetConfigResponseBuilder aGetConfigResponse() {
+            return new GetConfigResponse.GetConfigResponseBuilder();
+        }
+
+        public GetConfigResponseBuilder withVersion(String version) {
+            this.version = version;
+            return this;
+        }
+
+        public GetConfigResponseBuilder withUtredningPaminnelseDagar(Integer utredningPaminnelseDagar) {
+            this.utredningPaminnelseDagar = utredningPaminnelseDagar;
+            return this;
+        }
+
+        public GetConfigResponseBuilder withForfraganPaminnelseDagar(Integer forfraganPaminnelseDagar) {
+            this.forfraganPaminnelseDagar = forfraganPaminnelseDagar;
+            return this;
+        }
+
+        public GetConfigResponse build() {
+            GetConfigResponse getConfigResponse = new GetConfigResponse();
+            getConfigResponse.setVersion(version);
+            getConfigResponse.setUtredningPaminnelseDagar(utredningPaminnelseDagar);
+            getConfigResponse.setForfraganPaminnelseDagar(forfraganPaminnelseDagar);
+            return getConfigResponse;
+        }
     }
 }

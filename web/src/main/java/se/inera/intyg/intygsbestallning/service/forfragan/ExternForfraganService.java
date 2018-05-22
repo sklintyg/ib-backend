@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.service.forfragan;
 
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.ForfraganSvarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.ForfraganSvarResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.GetForfraganListResponse;
@@ -33,4 +34,6 @@ public interface ExternForfraganService {
     GetForfraganListResponse findForfragningarForVardenhetHsaIdWithFilter(String vardenhetHsaId, ListForfraganRequest request);
 
     ListForfraganFilter buildListForfraganFilter(String vardenhetHsaId);
+
+    GetUtredningResponse avvisaExternForfragan(Long utredningsId, String landstingHsaId, String kommentar);
 }

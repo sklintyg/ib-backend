@@ -158,4 +158,34 @@ public class InternForfraganStateResolverTest extends BaseResolverTest {
         InternForfraganStatus statusOther = testee.resolveStatus(utredning, internForfragan2);
         assertEquals(InternForfraganStatus.EJ_TILLDELAD, statusOther);
     }
+
+    @Test
+    public void testExternForfraganAvvisad() {
+        Utredning utredning = buildBaseUtredning();
+        ExternForfragan externForfragan = buildBaseExternForfragan();
+        utredning.setExternForfragan(externForfragan);
+        InternForfragan internForfragan = buildInternForfragan(null, null);
+        externForfragan.getInternForfraganList().add(internForfragan);
+
+        externForfragan.setAvvisatDatum(LocalDateTime.now());
+        externForfragan.setAvvisatKommentar("Kommentar");
+
+        InternForfraganStatus status = testee.resolveStatus(utredning, internForfragan);
+        assertEquals(InternForfraganStatus.EJ_TILLDELAD, status);
+    }
+
+    @Test
+    public void testInternForfraganAvbojExternForfraganAvvisad() {
+        Utredning utredning = buildBaseUtredning();
+        ExternForfragan externForfragan = buildBaseExternForfragan();
+        utredning.setExternForfragan(externForfragan);
+        InternForfragan internForfragan = buildInternForfragan(buildForfraganSvar(SvarTyp.AVBOJ), null);
+        externForfragan.getInternForfraganList().add(internForfragan);
+
+        externForfragan.setAvvisatDatum(LocalDateTime.now());
+        externForfragan.setAvvisatKommentar("Kommentar");
+
+        InternForfraganStatus status = testee.resolveStatus(utredning, internForfragan);
+        assertEquals(InternForfraganStatus.AVVISAD, status);
+    }
 }

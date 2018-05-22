@@ -24,7 +24,6 @@ describe('uvAlertValue Directive', function() {
     var element;
 
     beforeEach(angular.mock.module('htmlTemplates'));
-    beforeEach(angular.mock.module('common'));
 
     beforeEach(angular.mock.inject(['$compile', '$rootScope', function($compile, $rootScope) {
         $scope = $rootScope.$new();

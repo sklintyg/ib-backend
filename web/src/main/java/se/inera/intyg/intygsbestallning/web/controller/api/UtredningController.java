@@ -34,6 +34,7 @@ import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesV
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.service.besok.BesokService;
+import se.inera.intyg.intygsbestallning.service.forfragan.ExternForfraganService;
 import se.inera.intyg.intygsbestallning.service.forfragan.InternForfraganService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
@@ -54,6 +55,7 @@ public class UtredningController {
 
     private static final String VIEW_NOT_ALLOWED = "User is not allowed to view the requested resource";
     private static final String EDIT_NOT_ALLOWED = "User is not allowed to edit the requested resource";
+    private static final String AVVISA_EXTERN_FORFRAGAN_NOT_ALLOWED = "User is not allowed to avvisa ExternFörfrågan";
 
     @Autowired
     private UserService userService;
@@ -63,6 +65,9 @@ public class UtredningController {
 
     @Autowired
     private BesokService besokService;
+
+    @Autowired
+    private ExternForfraganService externForfraganService;
 
     @Autowired
     private InternForfraganService internForfraganService;
@@ -136,6 +141,18 @@ public class UtredningController {
                 .orThrow(new IbAuthorizationException(EDIT_NOT_ALLOWED));
         return ResponseEntity.ok(internForfraganService.acceptInternForfragan(utredningsId, user.getCurrentlyLoggedInAt().getId(),
                 vardenhetHsaId));
+    }
+
+    @PrometheusTimeMethod(name = "avvisa_externforfragan_duration_seconds", help = "Some helpful info here")
+    @PostMapping(path = "/{utredningsId}/avvisaexternforfragan",
+            produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GetUtredningResponse> avvisaExternForfragan(@PathVariable("utredningsId") Long utredningsId,
+                                                                      @RequestBody String kommentar) {
+        IbUser user = userService.getUser();
+        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_AVVISA_EXTERNFORFRAGAN)
+                .orThrow(new IbAuthorizationException(AVVISA_EXTERN_FORFRAGAN_NOT_ALLOWED));
+        return ResponseEntity.ok(externForfraganService.avvisaExternForfragan(utredningsId, user.getCurrentlyLoggedInAt().getId(),
+                kommentar));
     }
 
     @PutMapping("/besok")

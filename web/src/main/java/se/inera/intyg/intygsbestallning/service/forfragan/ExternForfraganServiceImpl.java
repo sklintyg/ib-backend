@@ -19,28 +19,36 @@
 package se.inera.intyg.intygsbestallning.service.forfragan;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.integration.myndighet.service.MyndighetIntegrationService;
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.repository.ExternForfraganRepository;
 import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
 import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
+import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.util.GenericComparator;
 import se.inera.intyg.intygsbestallning.service.util.PagingUtil;
 import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
+import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.ForfraganSvarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.ForfraganSvarResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.GetForfraganListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItemFactory;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.ListForfraganRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListForfraganFilter;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListForfraganFilterStatus;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.SelectItem;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -49,9 +57,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
+import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.RespondToPerformerRequestDto.RespondToPerformerRequestDtoBuilder.aRespondToPerformerRequestDto;
 
 @Service
 public class ExternForfraganServiceImpl extends BaseUtredningService implements ExternForfraganService {
+
+    private static final String KV_SVAR_BESTALLNING_AVVISAT = "AVVISAT";
 
     @Autowired
     private ExternForfraganRepository externForfraganRepository;
@@ -61,6 +72,13 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
 
     @Autowired
     private InternForfraganListItemFactory internForfraganListItemFactory;
+
+    @Autowired
+    private UtredningService utredningService;
+
+    @Autowired
+    private MyndighetIntegrationService myndighetIntegrationService;
+
 
     @Override
     public ForfraganSvarResponse besvaraForfragan(Long forfraganId, ForfraganSvarRequest svarRequest) {
@@ -127,6 +145,30 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
     @Override
     public ListForfraganFilter buildListForfraganFilter(String vardenhetHsaId) {
         return new ListForfraganFilter(findLandstingBeingRelatedToVardenhet(vardenhetHsaId), buildStatusesForListForfraganFilter());
+    }
+
+    @Override
+    @Transactional
+    public GetUtredningResponse avvisaExternForfragan(Long utredningId, String landstingHsaId, String kommentar) {
+
+        if (Strings.isNullOrEmpty(kommentar)) {
+            throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, "Required argument \"kommentar\" is empty.");
+        }
+
+        Utredning utredning = getUtredningForLandsting(utredningId, landstingHsaId, ImmutableList.of(UtredningStatus.FORFRAGAN_INKOMMEN,
+                UtredningStatus.VANTAR_PA_SVAR, UtredningStatus.TILLDELA_UTREDNING));
+
+        myndighetIntegrationService.respondToPerformerRequest(aRespondToPerformerRequestDto()
+                .withAssessmentId(utredningId)
+                .withResponseCode(KV_SVAR_BESTALLNING_AVVISAT)
+                .withComment(kommentar)
+                .build());
+
+        utredning.getExternForfragan().setAvvisatDatum(LocalDateTime.now());
+        utredning.getExternForfragan().setAvvisatKommentar(kommentar);
+        utredningRepository.save(utredning);
+
+        return utredningService.createGetUtredningResponse(utredning);
     }
 
     /*

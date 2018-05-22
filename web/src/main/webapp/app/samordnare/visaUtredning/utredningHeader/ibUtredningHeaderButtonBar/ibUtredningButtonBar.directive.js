@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 angular.module('ibApp').directive('ibUtredningButtonBar',
-    function(UtredningarProxy) {
+    function($uibModal, UtredningarProxy) {
     'use strict';
 
     return {
@@ -39,6 +39,19 @@ angular.module('ibApp').directive('ibUtredningButtonBar',
             $scope.acceptera = function() {
                 UtredningarProxy.acceptInternForfragan($scope.utredning.utredningsId, $scope.utredningVm.selectedInternforfragan.vardenhetHsaId)
                     .then(function(data) { angular.copy(data, $scope.utredning); });
+            };
+            $scope.avvisa = function() {
+                var modalInstance = $uibModal.open({
+                    templateUrl: '/app/samordnare/visaUtredning/utredningHeader/ibUtredningHeaderButtonBar/avvisaForfraganModal/' +
+                                 'avvisaForfragan.modal.html',
+                    size: 'md',
+                    controller: 'AvvisaForfraganModalCtrl',
+                    resolve: {
+                        utredning: $scope.utredning
+                    }
+                });
+                //angular > 1.5 warns if promise rejection is not handled (e.g backdrop-click == rejection)
+                modalInstance.result.catch(function () {}); //jshint ignore:line
             };
         }
     };

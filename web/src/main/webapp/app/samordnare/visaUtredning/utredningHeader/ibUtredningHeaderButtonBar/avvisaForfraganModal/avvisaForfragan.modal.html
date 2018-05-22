@@ -1,0 +1,30 @@
+<div id="avvisa-forfragan-modal">
+  <div class="modal-header">
+    <button class="close" data-dismiss="modal" data-ng-click="$dismiss()">×</button>
+    <h4 class="modal-title">Avvisa förfrågan</h4>
+  </div>
+  <div class="modal-body">
+
+    <div ng-class="{ 'validation-error' : vm.kommentarValidationError }">
+
+        <ib-textarea id="avvisa-forfragan-modal-kommentar"
+                     class="form-group"
+                     label-key="avvisa.forfragan.kommentar.label"
+                     placeholder-text="{{'avvisa.forfragan.kommentar.placeholder' | message}}"
+                     model="vm.kommentar"></ib-textarea>
+    </div>
+
+    <div class="validation-error-message" id="avvisa-forfragan-validation" ng-if="vm.kommentarValidationError">
+      <message key="avvisa.forfragan.kommentar.validation"></message>
+    </div>
+
+  </div>
+  <div class="modal-footer">
+    <button type="button" id="skicka-forfragan-modal-skicka" class="btn btn-primary" ng-click="avvisa()">
+      Skicka
+    </button>
+    <button type="button" id="skicka-forfragan-modal-cancel" class="btn btn-default" ng-click="$dismiss()">
+      <span message key="common.cancel"></span>
+    </button>
+  </div>
+</div>

@@ -1,0 +1,11 @@
+#avvisa-forfragan-modal {
+
+  .validation-error textarea {
+    border: 1px solid $ib-color-11;
+  }
+
+  .validation-error-message {
+    margin-top: 10px;
+    color: $ib-color-11;
+  }
+}

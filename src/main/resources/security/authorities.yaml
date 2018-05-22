@@ -58,6 +58,7 @@ knownPrivileges:
   - &kp070 HANTERA_VARDENHETER_FOR_VARDGIVARE
   - &kp080 VISA_BESTALLNING
   - &kp090 HANTERA_INTERNFORFRAGAN #Visa och besvara
+  - &kp100 AVVISA_EXTERNFORFRAGAN
 
 # De roller som systemet har
 knownRoles:
@@ -118,6 +119,11 @@ privileges:
       desc: Hantera Internförfrågningar
       intygstyper: # Implicit alla
       requestOrigins: # Implicit alla
+  - &p100
+      name: *kp100
+      desc: Avvisa Externförfrågningar
+      intygstyper: # Implicit alla
+      requestOrigins: # Implicit alla
 
 # Roller
 roles:
@@ -138,6 +144,7 @@ roles:
       - *p010 # LISTA_UTREDNINGAR
       - *p030 # VISA_UTREDNING
       - *p070 # HANTERA_VARDENHETER_FOR_VARDGIVARE
+      - *p100 # AVVISA_EXTERNFORFRAGAN
 
 # Legitimerade yrkesroller
 titles:

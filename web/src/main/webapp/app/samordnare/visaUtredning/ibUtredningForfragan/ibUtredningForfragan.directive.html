@@ -8,6 +8,12 @@
       Förfrågan accepterades.
     </ib-alert-message>
 
+    <ib-alert-message alert-id="status-forfragan-accepterades"
+                      alert-severity="success"
+                      ng-if="utredning.status.id === 'AVVISAD'">
+      Förfrågan avvisades
+    </ib-alert-message>
+
     <ib-alert-message alert-id="skicka-forfragan-vardenheter-error"
                       alert-severity="danger"
                       alert-message-id="{{veModel.error}}"
@@ -48,7 +54,7 @@
               </card-value>
             </ib-expand>
           </td>
-          <td><i ng-if="row.status.id == 'TILLDELAD_VANTAR_PA_BESTALLNING'" class="material-icons accept">check_circle</i> {{::row.status.label}}</td>
+          <td><i ng-if="row.status.id == 'TILLDELAD_VANTAR_PA_BESTALLNING'" class="material-icons accept">check_circle</i> {{row.status.label}}</td>
           <td>{{::row.borjaDatum}}</td>
           <td>
             <button uib-btn-radio="row"

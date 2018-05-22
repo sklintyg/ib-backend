@@ -75,7 +75,11 @@ public class ConfigController {
             forfraganPaminnelseDagar = FORFRAGAN_PAMINNELSE_DAGAR_DEFAULT_VALUE;
         }
 
-        return new GetConfigResponse(env.getProperty(PROJECT_VERSION_PROPERTY), utredningPaminnelseDagar, forfraganPaminnelseDagar);
+        return GetConfigResponse.GetConfigResponseBuilder.aGetConfigResponse()
+                .withVersion(env.getProperty(PROJECT_VERSION_PROPERTY))
+                .withUtredningPaminnelseDagar(utredningPaminnelseDagar)
+                .withForfraganPaminnelseDagar(forfraganPaminnelseDagar)
+                .build();
     }
 
     @GetMapping(path = "/links", produces = MediaType.APPLICATION_JSON_VALUE)

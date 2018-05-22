@@ -123,6 +123,14 @@ angular.module('ibApp').factory('UserModel',
                     }
                 }
                 return false;
+            },
+            hasPrivilege: function _hasPrivilege(privilege) {
+                return data.currentRole.privileges.filter(function(rolePrivilege) {
+                    return rolePrivilege.name === privilege;
+                }).length > 0;
+            },
+            hasRole: function _hasRole(role) {
+                return data.currentRole.name === role;
             }
         };
     }

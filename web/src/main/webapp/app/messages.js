@@ -82,6 +82,11 @@ var ibMessages = {
         // Tilldela direkt modal
         'tilldela.direkt.vardenheter.heading': 'Nedan visas de vårdenheter som finns avtalade för landstinget. Den enhet som väljs blir direkttilldelad förfrågan.',
 
+        // Avvisa externförfrågan modal
+        'avvisa.forfragan.kommentar.label': 'Lämna en kommentar till beslutet.',
+        'avvisa.forfragan.kommentar.placeholder': 'Kommentar',
+        'avvisa.forfragan.kommentar.validation': 'Kommentar måste anges',
+
         //Registrerade vårdenheter
         'hantera-enheter.label.table.vardenheter.column.namn': 'Namn',
         'hantera-enheter.label.table.vardenheter.column.postadress': 'Postadress',

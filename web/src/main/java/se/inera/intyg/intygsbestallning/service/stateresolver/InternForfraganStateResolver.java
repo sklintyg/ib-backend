@@ -30,6 +30,13 @@ public class InternForfraganStateResolver {
 
     public InternForfraganStatus resolveStatus(Utredning utredning, InternForfragan internForfragan) {
 
+        // När externförfrågan avvisas - Systemet uppdaterar internförfrågningar i fas Förfrågan till status Ej tilldelad
+        if (utredning.getExternForfragan() != null && utredning.getExternForfragan().getAvvisatDatum() != null) {
+            if (internForfragan.getForfraganSvar() == null || internForfragan.getForfraganSvar().getSvarTyp() != SvarTyp.AVBOJ) {
+                return InternForfraganStatus.EJ_TILLDELAD;
+            }
+        }
+
         // Inkommen
         if (internForfragan.getForfraganSvar() == null) {
             return InternForfraganStatus.INKOMMEN;
