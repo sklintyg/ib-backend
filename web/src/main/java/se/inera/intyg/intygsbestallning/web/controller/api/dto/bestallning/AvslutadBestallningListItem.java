@@ -18,19 +18,9 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning;
 
-import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
-import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.service.stateresolver.ErsattsResolver;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
-import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FreeTextSearchable;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardgivareEnrichable;
-
-import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-
-import static java.util.Objects.nonNull;
 
 public class AvslutadBestallningListItem implements FreeTextSearchable, VardgivareEnrichable {
 
@@ -45,37 +35,6 @@ public class AvslutadBestallningListItem implements FreeTextSearchable, Vardgiva
     private boolean ersatts;
     private String fakturerad;
     private String utbetald;
-
-    public static AvslutadBestallningListItem from(Utredning utredning, UtredningStatusResolver utredningStatusResolver,
-                                                   BusinessDaysBean businessDays) {
-
-        return AvslutadBestallningListItemBuilder.anAvslutadBestallningListItem()
-                .withUtredningsId(utredning.getUtredningId())
-                .withUtredningsTyp(utredning.getUtredningsTyp().name())
-                .withStatus(utredningStatusResolver.resolveStatus(utredning))
-                .withVardgivareHsaId(utredning.getExternForfragan().getLandstingHsaId())
-                .withVardgivareNamn("Enriched later")
-                .withAvslutsDatum(resolveAvslutsDatum(utredning))
-                .withErsatts(ErsattsResolver.resolveUtredningErsatts(utredning, businessDays))
-                .withFakturerad(nonNull(utredning.getBetalning()) ? utredning.getBetalning().getFakturaId() : null)
-                .withUtbetald(nonNull(utredning.getBetalning()) ? utredning.getBetalning().getBetalningsId() : null)
-                .build();
-    }
-
-
-
-    private static String resolveAvslutsDatum(Utredning utredning) {
-        if (utredning.getAvbrutenDatum() != null) {
-            return utredning.getAvbrutenDatum().format(DateTimeFormatter.ISO_DATE);
-        }
-
-        // Find the highest mottaget datum.
-        return utredning.getIntygList().stream()
-                .filter(intyg -> intyg.getMottagetDatum() != null)
-                .max(Comparator.comparing(Intyg::getMottagetDatum))
-                .map(intyg -> intyg.getMottagetDatum().format(DateTimeFormatter.ISO_DATE))
-                .orElse("Fixme");
-    }
 
     public Long getUtredningsId() {
         return utredningsId;

@@ -30,6 +30,8 @@ import se.inera.intyg.intygsbestallning.persistence.repository.UtredningReposito
 import se.inera.intyg.intygsbestallning.service.patient.PatientNameEnricher;
 import se.inera.intyg.intygsbestallning.service.pdl.LogService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
+import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.AvslutadBestallningListItemFactory;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.BestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.BestallningListItemFactory;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.ListBestallningRequest;
@@ -64,6 +66,9 @@ public class BestallningServiceImplTest {
 
     @Spy
     private BestallningListItemFactory bestallningListItemFactory;
+
+    @Spy
+    private AvslutadBestallningListItemFactory avslutadBestallningListItemFactory = new AvslutadBestallningListItemFactory(new BusinessDaysStub());
 
     @InjectMocks
     private BestallningServiceImpl bestallningService;

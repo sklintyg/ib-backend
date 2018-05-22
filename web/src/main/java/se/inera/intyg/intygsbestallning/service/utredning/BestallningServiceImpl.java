@@ -41,18 +41,18 @@ import se.inera.intyg.intygsbestallning.service.pdl.LogService;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
 import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
-import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.util.GenericComparator;
 import se.inera.intyg.intygsbestallning.service.util.PagingUtil;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.AvslutadBestallningListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.BestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.SaveFakturaForUtredningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardgivareEnrichable;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.AvslutadBestallningListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.AvslutadBestallningListItemFactory;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.BestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.BestallningListItemFactory;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.GetBestallningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.ListAvslutadeBestallningarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.ListBestallningRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.SaveFakturaForUtredningRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardgivareEnrichable;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListAvslutadeBestallningarFilter;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListBestallningFilter;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
@@ -79,10 +79,10 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
     private LogService logService;
 
     @Autowired
-    private BusinessDaysBean businessDays;
+    private BestallningListItemFactory bestallningListItemFactory;
 
     @Autowired
-    private BestallningListItemFactory bestallningListItemFactory;
+    private AvslutadBestallningListItemFactory avslutadBestallningListItemFactory;
 
     @Override
     public GetBestallningResponse getBestallning(Long utredningId, String vardenhetHsaId) {
@@ -148,7 +148,7 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
             ListAvslutadeBestallningarRequest requestFilter) {
         List<AvslutadBestallningListItem> avslutadeBestallningar = utredningRepository
                 .findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradTrue(vardenhetHsaId)
-                .stream().map(utr -> AvslutadBestallningListItem.from(utr, utredningStatusResolver, businessDays))
+                .stream().map(utr -> avslutadBestallningListItemFactory.from(utr))
                 .collect(Collectors.toList());
 
         boolean enrichedWithVardgivareNames = false;
