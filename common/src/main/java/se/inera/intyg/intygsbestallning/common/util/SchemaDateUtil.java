@@ -25,8 +25,13 @@ import java.time.format.DateTimeFormatter;
 public final class SchemaDateUtil {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyMMdd");
+    private static final DateTimeFormatter ISO_DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
     private SchemaDateUtil() {
+    }
+
+    public static LocalDateTime toLocalDateTimeFromDateTimeStamp(final String dateTimeStamp) {
+        return LocalDateTime.parse(dateTimeStamp, ISO_DATETIME_FORMATTER);
     }
 
     public static LocalDateTime toLocalDateTimeFromDateType(final String dateType) {

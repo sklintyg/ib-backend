@@ -68,6 +68,8 @@ public interface UtredningRepository extends JpaRepository<Utredning, Long> {
 
     @Query("SELECT MAX(il.id) FROM Utredning u JOIN u.intygList il WHERE il.komplettering = true")
     Optional<Long> findNewestKompletteringOnUtredning(Long utredningId);
+
+    Optional<Utredning> findByBesokList_Id(Long id);
 }
 //CHECKSTYLE:ON MethodName
 //CHECKSTYLE:ON LineLength

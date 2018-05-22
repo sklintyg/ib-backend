@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.repository;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -78,8 +79,8 @@ import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.
  * Created by eriklupander on 2015-08-05.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = { PersistenceConfigTest.class, PersistenceConfigDev.class })
-@ActiveProfiles({ "dev" })
+@ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = {PersistenceConfigTest.class, PersistenceConfigDev.class})
+@ActiveProfiles({"dev"})
 @Transactional
 public class UtredningRepositoryTest {
 
@@ -328,4 +329,16 @@ public class UtredningRepositoryTest {
         assertNotNull(resultList.get(0).getBestallning());
     }
 
+    @Test
+    public void testFindUtredningByBesokId() {
+        Utredning utredning = buildUtredning();
+
+        utredning.setBesokList(ImmutableList.of(buildBesok()));
+
+        final Utredning saved = utredningRepository.save(utredning);
+        final Besok besok = saved.getBesokList().get(0);
+        final Utredning search = utredningRepository.findByBesokList_Id(besok.getId()).orElse(null);
+
+        assertEquals(saved, search);
+    }
 }

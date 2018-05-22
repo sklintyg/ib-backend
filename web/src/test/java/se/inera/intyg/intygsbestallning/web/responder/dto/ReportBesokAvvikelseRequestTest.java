@@ -16,15 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.service.besok;
+package se.inera.intyg.intygsbestallning.web.responder.dto;
 
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokResponse;
-import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import org.junit.Test;
 
-public interface BesokService {
-
-    RegisterBesokResponse registerNewBesok(final RegisterBesokRequest request);
-
-    void reportBesokAvvikelse(ReportBesokAvvikelseRequest request);
+public class ReportBesokAvvikelseRequestTest {
+    @Test
+    public void equalsTest() {
+        EqualsVerifier.forClass(ReportBesokAvvikelseRequest.class).verify();
+    }
 }

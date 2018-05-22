@@ -19,6 +19,7 @@
 package se.inera.intyg.intygsbestallning.service.handelse;
 
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
+import se.inera.intyg.intygsbestallning.persistence.model.type.AvvikelseOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
 
@@ -72,6 +73,27 @@ public final class HandelseUtil {
                 .withHandelseTyp(HandelseTyp.FORFRAGAN_BESVARAD)
                 .withAnvandare(samordnare)
                 .withHandelseText(handelseText)
+                .build();
+    }
+
+    public static Handelse createBesokAvvikelseMottagen(
+            final LocalDateTime tidpunkt,
+            final AvvikelseOrsak orsakatAv,
+            final Boolean invanareUteblev) {
+
+        StringBuilder textBuilder = new StringBuilder();
+        textBuilder.append(MessageFormat.format("Avvikelse mottagen {0}. ", tidpunkt.format(formatter)));
+        textBuilder.append(MessageFormat.format("Orsakad av {0}", orsakatAv.name()));
+
+        if (invanareUteblev) {
+            textBuilder.append(" Invanare uteblev");
+        }
+
+        return aHandelse()
+                .withSkapad(LocalDateTime.now())
+                .withHandelseTyp(HandelseTyp.AVVIKELSE_RAPPORTERAD)
+                .withAnvandare(FK_LABEL)
+                .withHandelseText(textBuilder.toString())
                 .build();
     }
 

@@ -27,30 +27,34 @@ import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto;
 import se.inera.intyg.intygsbestallning.integration.myndighet.service.MyndighetIntegrationService;
+import se.inera.intyg.intygsbestallning.persistence.model.Avvikelse;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
+import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokResponse;
+import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
 
 import java.lang.invoke.MethodHandles;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
 
+import static com.google.common.collect.MoreCollectors.onlyElement;
 import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto.ReportCareContactRequestDtoBuilder.aReportCareContactRequestDto;
+import static se.inera.intyg.intygsbestallning.persistence.model.Avvikelse.AvvikelseBuilder.anAvvikelse;
 import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
-import static se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus.BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR;
-import static se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus.HANDLINGAR_MOTTAGNA_BOKA_BESOK;
-import static se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus.UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR;
-import static se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus.UTREDNING_PAGAR;
+import static se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus.*;
 import static se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest.validate;
 
 @Service
@@ -61,8 +65,11 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
     private static final List<UtredningStatus> REGISTRERA_BESOK_GODKANDA_STATES = Arrays.asList(
             BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR,
             UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR,
-            HANDLINGAR_MOTTAGNA_BOKA_BESOK,
-            UTREDNING_PAGAR);
+            HANDLINGAR_MOTTAGNA_BOKA_BESOK);
+
+    private static Predicate<Utredning> isKorrektStatusForBesokAvvikelseMottagen() {
+        return utr -> UtredningStatusResolver.resolveStaticStatus(utr).equals(UTREDNING_PAGAR);
+    }
 
     @Autowired
     private MyndighetIntegrationService myndighetIntegrationService;
@@ -78,7 +85,7 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
 
         if (!REGISTRERA_BESOK_GODKANDA_STATES.contains(UtredningStatusResolver.resolveStaticStatus(utredning))) {
             throw new IbServiceException(IbErrorCodeEnum.BAD_STATE,
-                    MessageFormat.format("Assessment with id {0} is in an incorrect state", utredning.getUtredningId()));
+                    MessageFormat.format("Utredning with id {0} is in an incorrect state", utredning.getUtredningId()));
         }
 
         final Besok besok = createBesok(request);
@@ -96,6 +103,42 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
             reportBesok(utredning, besok);
             return RegisterBesokResponse.withNotUpdatedUtredgningsTyp();
         }
+    }
+
+    @Override
+    public void reportBesokAvvikelse(final ReportBesokAvvikelseRequest request) {
+
+        Optional<Utredning> optionalUtredning = utredningRepository.findByBesokList_Id(request.getBesokId());
+        optionalUtredning.orElseThrow(() -> new IbNotFoundException(
+                MessageFormat.format("Besok with id {0} was not found.", request.getBesokId())));
+
+        optionalUtredning.filter(isKorrektStatusForBesokAvvikelseMottagen())
+                .orElseThrow(() -> new IbServiceException(
+                        IbErrorCodeEnum.BAD_STATE,
+                        MessageFormat.format("Utredning with id {0} is in an incorrect state.", optionalUtredning.get().getUtredningId())));
+
+        Besok besokToUpdate = optionalUtredning.get().getBesokList().stream()
+                .filter(b -> b.getId().equals(request.getBesokId()))
+                .collect(onlyElement());
+
+        besokToUpdate.setAvvikelse(createAvvikelse(request));
+
+        optionalUtredning.get().getHandelseList().add(HandelseUtil.createBesokAvvikelseMottagen(
+                        request.getTidpunkt(),
+                        request.getOrsakatAv(),
+                        request.getInvanareUteblev()));
+
+        utredningRepository.save(optionalUtredning.get());
+    }
+
+    private Avvikelse createAvvikelse(final ReportBesokAvvikelseRequest request) {
+        return anAvvikelse()
+                .withAvvikelseId(request.getAvvikelseId())
+                .withOrsakatAv(request.getOrsakatAv())
+                .withBeskrivning(request.getBeskrivning())
+                .withTidpunkt(request.getTidpunkt())
+                .withInvanareUteblev(request.getInvanareUteblev())
+                .build();
     }
 
     private LocalDateTime updateUtredningWithUtredningsTypAfuUtvidgad(Utredning utredning) {

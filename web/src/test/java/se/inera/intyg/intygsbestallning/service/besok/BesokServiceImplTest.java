@@ -173,6 +173,6 @@ public class BesokServiceImplTest {
 
         assertThatThrownBy(() -> besokService.registerNewBesok(request))
                 .isExactlyInstanceOf(IbServiceException.class)
-                .hasMessage("Assessment with id "+ UTREDNING_ID +" is in an incorrect state");
+                .hasMessage("Utredning with id "+ UTREDNING_ID +" is in an incorrect state");
     }
 }

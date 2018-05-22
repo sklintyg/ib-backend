@@ -18,12 +18,13 @@
  */
 package se.inera.intyg.intygsbestallning.web.responder;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.intygsbestallning.service.besok.BesokService;
+import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
 import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.ReportDeviationResponseType;
 import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.ReportDeviationType;
 import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.rivtabp21.ReportDeviationResponderInterface;
@@ -31,25 +32,30 @@ import se.riv.intygsbestallning.certificate.order.v1.IIType;
 import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
 import se.riv.intygsbestallning.certificate.order.v1.ResultType;
 
-import java.lang.invoke.MethodHandles;
-import java.util.Objects;
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.lang.invoke.MethodHandles.lookup;
+import static java.util.Objects.nonNull;
 
 @Service
 @SchemaValidation
 public class ReportDeviationInteractionResponderImpl implements ReportDeviationResponderInterface {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private final Logger log = LoggerFactory.getLogger(lookup().lookupClass());
+
+    @Autowired
+    private BesokService besokService;
 
     @Override
     public ReportDeviationResponseType reportDeviation(
             final String logicalAddress, final ReportDeviationType request) {
 
-        LOG.info("ReportDeviationResponseType received request");
+        log.info("ReportDeviationResponseType received request");
 
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(logicalAddress), "logicalAddress may not be null or empty");
-        Preconditions.checkArgument(!Objects.isNull(request), "request may not be null");
+        checkArgument(nonNull(logicalAddress));
+        checkArgument(nonNull(request));
 
-        return createDummyResponse();
+        besokService.reportBesokAvvikelse(ReportBesokAvvikelseRequest.from(request));
+        return null;
     }
 
     private ReportDeviationResponseType createDummyResponse() {
