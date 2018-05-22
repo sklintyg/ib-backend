@@ -18,17 +18,11 @@
  */
 package se.inera.intyg.intygsbestallning.service.vardgivare;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
-
-import com.google.common.base.Strings;
-
 import se.inera.intyg.infra.integration.hsa.client.OrganizationUnitService;
 import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
@@ -41,9 +35,9 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.RegiFormTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
 import se.inera.intyg.intygsbestallning.service.util.GenericComparator;
 import se.inera.intyg.intygsbestallning.service.util.PagingUtil;
+import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
 import se.inera.intyg.intygsbestallning.service.vardgivare.dto.VardenhetItem;
 import se.inera.intyg.intygsbestallning.service.vardgivare.dto.VardgivarVardenhetListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.FreeTextSearchable;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.GetVardenheterForVardgivareResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.ListVardenheterForVardgivareRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.ListVardenheterForVardgivareResponse;
@@ -51,8 +45,11 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.SearchF
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.SearchFormVardenhetResultCodesEnum;
 import se.riv.infrastructure.directory.organization.gethealthcareunitresponder.v1.HealthCareUnitType;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
-public class VardgivareServiceImpl implements VardgivareService {
+public class VardgivareServiceImpl extends BaseUtredningService implements VardgivareService {
 
     private static final Logger LOG = LoggerFactory.getLogger(VardgivareService.class);
 
@@ -189,9 +186,5 @@ public class VardgivareServiceImpl implements VardgivareService {
                 .build();
         registreradVardenhetRepository.save(rv);
         return candidate.getVardenhet();
-    }
-
-    private boolean buildFreeTextPredicate(FreeTextSearchable veli, String freeText) {
-        return Strings.isNullOrEmpty(freeText) || veli.toSearchString().toLowerCase().contains(freeText.toLowerCase());
     }
 }
