@@ -18,18 +18,18 @@
  */
 
 angular.module('ibApp').directive('ibBesvaraInternForfraganPanel',
-    function() {
+    function(InternForfraganSvarViewState) {
         'use strict';
         var  basePath = '/app/vardadmin/visaInternForfragan';
 
         return {
             restrict: 'E',
             templateUrl: basePath + '/ibBesvaraInternForfraganPanel/ibBesvaraInternForfraganPanel.directive.html',
-            scope: {
-                internForfragan: '<'
-            },
-            link: function() {
 
+            link: function($scope) {
+                $scope.vm = {
+                    model: InternForfraganSvarViewState.getModel()
+                };
             }
         };
     });

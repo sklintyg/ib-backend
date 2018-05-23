@@ -19,8 +19,10 @@
 package se.inera.intyg.intygsbestallning.service.forfragan;
 
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.CreateInternForfraganRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.ForfraganSvarRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganSvarItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.TilldelaDirektRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
 
 public interface InternForfraganService {
 
@@ -44,4 +46,12 @@ public interface InternForfraganService {
      */
     GetUtredningResponse tilldelaDirekt(Long utredningsId, String landstingHsaId, TilldelaDirektRequest request);
 
+    /**
+     * Answer an InternForfragan by creating a ForfraganSvar.
+     *
+     * @param utredningId
+     *            - Id of the Utredning of the internforfragan the Forfragansvar is an answer to.
+     * @return
+     */
+    InternForfraganSvarItem besvaraInternForfragan(Long utredningId, ForfraganSvarRequest forfraganSvar);
 }

@@ -16,18 +16,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-angular.module('ibApp').directive('ibInternForfraganHeader', function($window, $state) {
+angular.module('ibApp').directive('ibInternForfraganHeader', function($window, $state, InternForfraganSvarViewState) {
     'use strict';
 
     return {
         restrict: 'E',
         scope: {
-            internForfragan: '='
+            onAccept: '&',
+            onReject: '&'
         },
         templateUrl: '/app/vardadmin/visaInternForfragan/ibInternForfraganHeader/ibInternForfraganHeader.directive.html',
         link: function($scope) {
             $scope.back = function() {
                 $state.go('^');
+            };
+
+            $scope.vm  = {
+                model: InternForfraganSvarViewState.getModel(),
+                widgetState: InternForfraganSvarViewState.getWidgetState()
+            };
+            $scope.canAccept = function() {
+                return InternForfraganSvarViewState.isValidToSubmit();
+            };
+
+            $scope.canReject = function() {
+                return InternForfraganSvarViewState.isValidToSubmit();
             };
         }
     };

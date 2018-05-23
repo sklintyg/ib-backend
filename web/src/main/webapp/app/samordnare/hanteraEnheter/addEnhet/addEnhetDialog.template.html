@@ -25,19 +25,19 @@
   <div ng-if="vm.result.vardenhet" class="result-section">
     <card-modal>
       <h3>Vårdenhet</h3>
-      <div>
+      <card-value>
         {{vm.result.vardenhet.namn}}
-      </div>
+      </card-value>
     </card-modal>
 
     <card-modal>
       <h3>Kontaktuppgifter</h3>
-      <div>
+      <card-value>
         {{vm.result.vardenhet.postadress}}<br>
         {{vm.result.vardenhet.postnummer}} {{vm.result.vardenhet.postort}}<br>
         {{vm.result.vardenhet.telefonnummer}}<br>
         {{vm.result.vardenhet.epost}}<br>
-      </div>
+      </card-value>
     </card-modal>
 
     <ib-dropdown

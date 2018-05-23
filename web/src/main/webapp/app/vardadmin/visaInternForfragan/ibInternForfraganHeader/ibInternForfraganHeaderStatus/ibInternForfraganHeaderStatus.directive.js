@@ -20,7 +20,7 @@ angular
         .module('ibApp')
         .directive(
                 'ibInternForfraganHeaderStatus',
-                function() {
+                function(InternForfraganSvarViewState) {
                     'use strict';
                     var basePath = '/app/vardadmin/visaInternForfragan/ibInternForfraganHeader';
 
@@ -31,7 +31,10 @@ angular
                             intygViewState: '='
                         },
                         templateUrl: basePath + '/ibInternForfraganHeaderStatus/ibInternForfraganHeaderStatus.directive.html',
-                        link: function() {
+                        link: function($scope) {
+                            $scope.vm = {
+                                model: InternForfraganSvarViewState.getModel()
+                            };
 
                         }
                     };

@@ -34,12 +34,13 @@ import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesV
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.service.forfragan.ExternForfraganService;
+import se.inera.intyg.intygsbestallning.service.forfragan.InternForfraganService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.ForfraganSvarRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.ForfraganSvarResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.GetForfraganListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.GetInternForfraganResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganSvarItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.ListForfraganRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListForfraganFilter;
 
@@ -55,6 +56,9 @@ public class InternForfraganController {
 
     @Autowired
     private ExternForfraganService externForfraganService;
+
+    @Autowired
+    private InternForfraganService internForfraganService;
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
@@ -90,21 +94,27 @@ public class InternForfraganController {
     @GetMapping(path = "/{utredningsId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetInternForfraganResponse> getForfragan(@PathVariable("utredningsId") Long utredningsId) {
         IbUser user = userService.getUser();
-        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_INTERNFORFRAGAN)
-                .orThrow(new IbAuthorizationException("User does not have required privilege PRIVILEGE_HANTERA_INTERNFORFRAGAN"));
+        ensureBesvaraAuthPreconditions(user);
 
         GetInternForfraganResponse forfragan = utredningService.getInternForfragan(utredningsId, user.getCurrentlyLoggedInAt().getId());
         return ResponseEntity.ok(forfragan);
     }
 
     @PrometheusTimeMethod(name = "besvara_forfragan_duration_seconds", help = "Some helpful info here")
-    @PostMapping(path = "/{forfragan}/besvara", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ForfraganSvarResponse> besvaraForfragan(@PathVariable("forfraganId") Long forfraganId,
-            ForfraganSvarRequest request) {
+    @PostMapping(path = "/{utredningsId}/besvara", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<InternForfraganSvarItem> besvaraForfragan(@PathVariable("utredningsId") Long utredningsId,
+            @RequestBody ForfraganSvarRequest request) {
+
         IbUser user = userService.getUser();
+        ensureBesvaraAuthPreconditions(user);
+
+        return ResponseEntity.ok(internForfraganService.besvaraInternForfragan(utredningsId, request));
+    }
+
+    private void ensureBesvaraAuthPreconditions(IbUser user) {
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_INTERNFORFRAGAN)
-                .orThrow(new IbAuthorizationException("User does not have required privilege PRIVILEGE_HANTERA_INTERNFORFRAGAN"));
-        ForfraganSvarResponse response = externForfraganService.besvaraForfragan(forfraganId, request);
-        return ResponseEntity.ok(response);
+                .orThrow(
+                        new IbAuthorizationException("User does not have required privilege PRIVILEGE_HANTERA_INTERNFORFRAGAN"));
+
     }
 }

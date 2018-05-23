@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
@@ -16,49 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+angular.module('ibApp').directive('ibFieldErrorList', [ function() {
+    'use strict';
 
-ib-intern-forfragan-header {
-  ib-spinner .ib-spinner {
-    height: 83px;
-    padding: 10px;
-  }
-}
-
-.page-header-divider {
-  border-bottom: 1px solid $ib-color-15;
-  padding-bottom: 5px;
-}
-
-.flex-row {
-  display: flex;
-  flex-direction: row;
-}
-
-.flex-col-max {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-}
-.flex-col-min {
-  display: flex;
-  align-items: flex-end;
-  &.buttonbar {
-    ib-button {
-      margin-left: 10px;
-    }
-  }
-}
-
-ib-utredning-header .ib-page-header {
-  padding: 10px 28px 10px 28px;
-}
-
-.ib-utredning-patient-namn-personnummer label {
-  margin: 0;
-  vertical-align: bottom;
-  margin-bottom: -5px;
-}
-
-#tillbakaButton {
-  margin-right: 50px;
-}
+    return {
+        restrict: 'E',
+        scope: {
+            errors: '=',
+            patternError: '@'
+        },
+        templateUrl: '/components/commonDirectives/form/ibFieldErrorList/ibFieldErrorList.directive.html'
+    };
+} ]);

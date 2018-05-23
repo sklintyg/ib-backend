@@ -19,8 +19,10 @@
 
 angular.module('ibApp')
     .controller('VisaInternForfraganCtrl',
-        function($log, $scope, $filter, $stateParams, InternForfraganProxy) {
+        function($log, $state, $scope, $filter, $stateParams, InternForfraganProxy, VardenhetProxy, InternForfraganSvarViewState) {
             'use strict';
+
+            InternForfraganSvarViewState.reset();
 
             $scope.vm = {
                 data: {},
@@ -57,10 +59,51 @@ angular.module('ibApp')
             InternForfraganProxy.getInternForfragning($stateParams.utredningsId).then(function(response) {
                 $scope.vm.data.internForfragan = response.internForfragan;
                 $scope.vm.data.utredning = convertUtredningToViewModel(response.utredning);
+                if (response.internForfraganSvar) {
+                    InternForfraganSvarViewState.resetFromExisting(response.internForfraganSvar);
+                    $scope.vm.loading = false;
+                } else {
+                    VardenhetProxy.getVardenhetPreference().then(function(vardenhetPreference) {
+                        InternForfraganSvarViewState.resetFromPreference($scope.vm.data.internForfragan.forfraganId,vardenhetPreference);
+                    }, function(error) {
+                        $log.error('failed to load vardenhet preference!' + error);
+                        InternForfraganSvarViewState.reset('common.error.SPI.FEL01');
+                    }).finally(function() { // jshint ignore:line
+                        $scope.vm.loading = false;
+                    });
+                }
             }, function(error) {
                 $log.error(error);
-            }).finally(function() { // jshint ignore:line
                 $scope.vm.loading = false;
             });
+
+            $scope.onAccept = function() {
+                $log.debug('onAccept()');
+                var model = angular.copy(InternForfraganSvarViewState.getModel());
+                model.svarTyp='ACCEPTERA';
+
+                InternForfraganSvarViewState.getWidgetState().busyAccepting = true;
+                InternForfraganProxy.accepteraInternForfragan($stateParams.utredningsId, model).then(function() {
+                    //Things in related utredningsstate could have changed - reload state to make sure we show correct state of everything
+                    $state.reload();
+                }, function(error) {}).finally(function() { // jshint ignore:line
+                    InternForfraganSvarViewState.getWidgetState().busyAccepting = false;
+                });
+            };
+
+
+            $scope.onReject = function() {
+                $log.debug('onReject()');
+                var model = angular.copy(InternForfraganSvarViewState.getModel());
+                model.svarTyp='AVBOJ';
+
+                InternForfraganSvarViewState.getWidgetState().busyRejecting = true;
+                InternForfraganProxy.avbojInternForfragan($stateParams.utredningsId, model).then(function() {
+                    //Things in related utredningsstate could have changed - reload state to make sure we show correct state of everything
+                    $state.reload();
+                }, function(error) {}).finally(function() { // jshint ignore:line
+                    InternForfraganSvarViewState.getWidgetState().busyRejecting = false;
+                });
+            };
         }
     );

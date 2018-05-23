@@ -35,6 +35,7 @@ public class InternForfraganListItem implements FreeTextSearchable {
     private boolean besvarasSenastDatumPaVagPasseras;
     private boolean besvarasSenastDatumPasserat;
     private String planeringsDatum;
+    private Long forfraganId;
     private InternForfraganStatus status;
     private List<ListForfraganFilterStatus> filterStatusar;
     private boolean kraverAtgard;
@@ -135,6 +136,14 @@ public class InternForfraganListItem implements FreeTextSearchable {
         this.kraverAtgard = kraverAtgard;
     }
 
+    public Long getForfraganId() {
+        return forfraganId;
+    }
+
+    public void setForfraganId(Long forfraganId) {
+        this.forfraganId = forfraganId;
+    }
+
     @Override
     public String toSearchString() {
         return utredningsId
@@ -157,6 +166,7 @@ public class InternForfraganListItem implements FreeTextSearchable {
         private boolean besvarasSenastDatumPaVagPasseras;
         private boolean besvarasSenastDatumPasserat;
         private String planeringsDatum;
+        private Long forfraganId;
         private InternForfraganStatus status;
         private List<ListForfraganFilterStatus> filterStatusar;
         private boolean kraverAtgard;
@@ -217,6 +227,10 @@ public class InternForfraganListItem implements FreeTextSearchable {
             this.status = status;
             return this;
         }
+        public ForfraganListItemBuilder withForfraganId(Long forfraganId) {
+            this.forfraganId = forfraganId;
+            return this;
+        }
 
         public ForfraganListItemBuilder withFilterStatusar(List<ListForfraganFilterStatus> filterStatusar) {
             this.filterStatusar = filterStatusar;
@@ -239,6 +253,7 @@ public class InternForfraganListItem implements FreeTextSearchable {
             internForfraganListItem.setBesvarasSenastDatumPaVagPasseras(besvarasSenastDatumPaVagPasseras);
             internForfraganListItem.setBesvarasSenastDatumPasserat(besvarasSenastDatumPasserat);
             internForfraganListItem.setPlaneringsDatum(planeringsDatum);
+            internForfraganListItem.setForfraganId(forfraganId);
             internForfraganListItem.setStatus(status);
             internForfraganListItem.setFilterStatusar(filterStatusar);
             internForfraganListItem.setKraverAtgard(kraverAtgard);

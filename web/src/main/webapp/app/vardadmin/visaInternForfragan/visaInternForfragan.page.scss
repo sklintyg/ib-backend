@@ -21,94 +21,23 @@
     flex-direction: column;
     height: 100%;
     padding: 4px 0 2px 8px;
+    overflow-y: auto;
 
-    // Tabs
-    ul.support-tabs {
-      margin-bottom: 0;
-      padding-left: 0;
-      list-style: none;
-      display: flex;
+    .single-tab-workarea {
 
-      > li {
-        flex: 1 1 auto;
-        &:first-child a {
-          border-radius: 4px 0 0 0;
-        }
-
-        &:last-child a {
-          border-radius: 0 4px 0 0;
-        }
-
-        &:only-child a {
-          border-radius: 4px 4px 0 0;
-        }
-
-        .material-icons {
-          margin: -3px 0;
-        }
-
-        > a {
-          @extend %ib-typo-07;
-          display: list-item;
-          border: 1px solid $tab-border-color;
-          border-radius: 0;
-          color: $tab-text-color;
-          background-color: $tab-background-color;
-          text-shadow: none;
-          padding: 8px 11px;
-          text-decoration: none;
-          text-align: center;
-
-          &:hover {
-            background-color: $tab-background-color-hover;
-            color: $tab-text-color-hover;
-          }
-        }
-
-        // Active state, and its :hover to override normal :hover
-        &.active > a {
-          &,
-          &:hover,
-          &:focus {
-            @extend %ib-typo-06;
-            color: $active-tab-text-color;
-            background-color: $active-tab-background-color;
-            border: 1px solid $active-tab-border-color;
-            cursor: default;
-          }
-        }
-      }
-
-    }
-
-    //used by tab instances fmb-panel-tab etc
-    .tab-content-container {
-      display: flex;
-      flex: 1;
-      flex-direction: column;
-      min-height: 1%;
-      border: 1px solid $tab-border-color;
-    }
-
-    .tab-content-title-row {
-      @extend %ib-typo-05;
-      color: $ib-color-07;
-      background-color: $active-tab-background-color;
-      padding: 19px 15px;
-    }
-
-    .tab-content > .tab-pane {
-      padding-top: 10px;
-    }
-
-    .table-actionbar {
-      padding-bottom: 10px;
-    }
-
-    .footer {
-      flex: 1;
+      background-color: $ib-color-00;
+      border: 1px solid $ib-color-15;
+      border-radius: 4px;
       padding: 10px;
-      max-height: 40px;
+
+      h3 {
+        @extend %ib-typo-02;
+        color: $ib-color-07;
+      }
+      h4 {
+        @extend %ib-typo-06;
+        color: $ib-color-07;
+      }
     }
   }
 }

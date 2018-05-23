@@ -21,6 +21,7 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan;
 public class ForfraganSvarRequest {
 
     private Long forfraganId;
+    private String borjaDatum;
     private String svarTyp;
     private String utforareTyp;
 
@@ -116,5 +117,13 @@ public class ForfraganSvarRequest {
 
     public void setKommentar(String kommentar) {
         this.kommentar = kommentar;
+    }
+
+    public String getBorjaDatum() {
+        return borjaDatum;
+    }
+
+    public void setBorjaDatum(String borjaDatum) {
+        this.borjaDatum = borjaDatum;
     }
 }

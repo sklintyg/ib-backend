@@ -1,0 +1,19 @@
+<label ng-attr-for="{{::inputId}}" class="control-label">
+ <span ng-if="required" class="required">*</span>
+ <span message key="{{::labelKey}}"></span>
+</label>
+<div>
+<input ng-attr-id="{{::inputId}}"
+       name="{{::inputId}}"
+       type="text"
+       class="form-control"
+       ng-model="model"
+       ng-model-options="{ debounce: 200 }"
+       ng-change="onChange()"
+       ng-disabled="isDisabled"
+       ng-required="required"
+       ng-pattern="{{pattern}}"
+       maxlength="{{:: maxLength || 255}}"
+       placeholder="{{placeholderKey | message}}">
+ <ib-field-error-list errors="componentErrors()" pattern-error="{{patternError}}"></ib-field-error-list>
+</div>

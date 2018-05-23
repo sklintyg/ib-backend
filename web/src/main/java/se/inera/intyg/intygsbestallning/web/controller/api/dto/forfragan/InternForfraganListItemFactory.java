@@ -81,6 +81,7 @@ public class InternForfraganListItemFactory {
                         ? internForfragan.getSkapadDatum().format(FORMATTER)
                         : null)
                 .withPlaneringsDatum(resolvePlaneringsDatum(utredning.getBestallning(), businessDays))
+                .withForfraganId(internForfragan.getId())
                 .withStatus(status)
                 .withUtredningsId(utredning.getUtredningId())
                 .withUtredningsTyp(utredning.getUtredningsTyp().name())

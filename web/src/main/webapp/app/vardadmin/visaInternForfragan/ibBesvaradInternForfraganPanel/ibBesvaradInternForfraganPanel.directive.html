@@ -1,1 +1,44 @@
-Besvarad
+<div class="single-tab-workarea">
+  <div class="single-tab-content">
+    <h3>Svar på förfrågan</h3>
+
+    <ib-alert-message alert-id="internforfragan-accepterad-alert" alert-severity="success"
+                      ng-if="vm.model.svarTyp === 'ACCEPTERA'">
+      Förfrågan accepterades
+    </ib-alert-message>
+
+    <ib-alert-message alert-id="internforfragan-accepterad-alert" alert-severity="info"
+                      ng-if="vm.model.svarTyp === 'AVBOJ'">
+      Förfrågan avböjdes
+    </ib-alert-message>
+
+
+    <card-modal>
+
+      <h4>Möjligt startdatum</h4>
+      <card-value>
+        {{vm.model.borjaDatum}}
+      </card-value>
+      <h4>Leverantör</h4>
+      <card-value>
+        {{vm.model.utforareTyp}}
+      </card-value>
+      <h4>Kontaktinformation</h4>
+      <card-value class="wide">
+        {{vm.model.utforareNamn}}<br>
+        {{vm.model.utforareAdress}}<br>
+        {{vm.model.utforarePostnr}} {{vm.model.utforarePostort}}<br>
+
+        {{vm.model.utforareTelefon}}<br>
+        {{vm.model.utforareEpost}}<br>
+      </card-value>
+
+      <h4>Meddelande</h4>
+      <card-value class="wide">
+        {{vm.model.kommentar}}<br>
+
+      </card-value>
+
+    </card-modal>
+  </div>
+</div>

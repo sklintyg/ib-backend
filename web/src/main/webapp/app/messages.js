@@ -203,6 +203,21 @@ var ibMessages = {
         'avslutade.bestallningar.filter.status.label': 'Status',
         'avslutade.bestallningar.filter.resetfilter.label': 'Återställ sökfilter',
 
+        //Internförfrågningar
+        'internforfragan.besvara.form.title': 'Svar på förfrågan',
+        'internforfragan.besvara.form.borjadatum.label': 'Möjligt startdatum',
+        'internforfragan.besvara.form.kontaktinformation.label': 'Kontaktinformation',
+        'internforfragan.besvara.form.utforaretyp.label': 'Val av leverantör',
+        'internforfragan.besvara.form.utforarenamn.label': 'Mottagare',
+        'internforfragan.besvara.form.utforareadress.label': 'Adress',
+        'internforfragan.besvara.form.utforarepostnr.label': 'Postkod',
+        'internforfragan.besvara.form.utforarepostort.label': 'Postort',
+        'internforfragan.besvara.form.utforaretelefon.label': 'Telefon',
+        'internforfragan.besvara.form.utforareepost.label': 'E-post',
+        'internforfragan.besvara.form.kommentar.label': 'Meddelande',
+        'internforfragan.besvara.acceptbtn.label': 'Acceptera förfrågan',
+        'internforfragan.besvara.rejectbtn.label': 'Avvisa förfrågan',
+
         //Errors for reporting IO / backend error responses for REST requests
         'server.error.changeunit.title': 'Kunde inte byta systemroll',
         'server.error.changeunit.text': 'Försök igen eller kontakta support',
@@ -226,7 +241,13 @@ var ibMessages = {
         'server.error.deletevardenhet.text': 'Försök igen eller kontakta support',
         'server.error.addvardenhet.title': 'Kunde inte spara vårdenhet',
         'server.error.addvardenhet.text': 'Försök igen eller kontakta support',
-        'server.error.listvardenhet.text': 'Ett tekniskt fel uppstod när information om vårdenheterna skulle hämtas. Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraNationellKundservice>'
+        'server.error.listvardenhet.text': 'Ett tekniskt fel uppstod när information om vårdenheterna skulle hämtas. Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraNationellKundservice>',
+        'server.error.accepterainternforfragan.title': 'Kunde inte acceptera förfrågan',
+        'server.error.accepterainternforfragan.text': 'Försök igen eller kontakta support',
+        'server.error.avbojinternforfragan.title': 'Kunde inte avböja förfrågan',
+        'server.error.avbojinternforfragan.text': 'Försök igen eller kontakta support',
+
+        'common.error.spi.fel01': 'Ett tekniskt fel uppstod när vårdenheten skulle hämtas. Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraNationellKundservice>'
     },
     'en': {
         'common.ok': 'OK',

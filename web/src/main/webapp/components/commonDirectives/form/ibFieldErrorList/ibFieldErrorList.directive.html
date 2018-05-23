@@ -1,0 +1,8 @@
+<div ng-if="errors" class="validation-text">
+  <div ng-if="errors.required">Obligatoriskt fält</div>
+  <div ng-if="errors.pattern">
+    <span ng-if="patternError">{{patternError}}</span>
+    <span ng-if="!patternError">Ogiltigt format</span>
+  </div>
+  <!-- add more ng-validator errors here as needed -->
+</div>

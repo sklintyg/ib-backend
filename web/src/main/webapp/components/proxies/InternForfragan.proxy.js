@@ -37,11 +37,29 @@ angular.module('ibApp').factory('InternForfraganProxy',
 
             return ProxyTemplate.getTemplate(restPath, {});
         }
+        function _accepteraInternForfragan(utredningsId, payload) {
+            var errorMessageConfig = {
+                errorTitleKey: 'server.error.accepterainternforfragan.title',
+                errorTextKey: 'server.error.accepterainternforfragan.text'
+            };
+            var restPath = '/api/internforfragningar/' + utredningsId + '/besvara';
+            return ProxyTemplate.postTemplate(restPath, payload, errorMessageConfig);
+        }
+        function _avbojInternForfragan(utredningsId, payload) {
+            var errorMessageConfig = {
+                errorTitleKey: 'server.error.avbojinternforfragan.title',
+                    errorTextKey: 'server.error.avbojinternforfragan.text'
+            };
+            var restPath = '/api/internforfragningar/' + utredningsId + '/besvara';
+            return ProxyTemplate.postTemplate(restPath, payload, errorMessageConfig);
+        }
 
         // Return public API for the service
         return {
             getForfragningar: _getForfragningar,
             getForfragningarFilterValues: _getForfragningarFilterValues,
-            getInternForfragning: _getInternForfragning
+            getInternForfragning: _getInternForfragning,
+            accepteraInternForfragan: _accepteraInternForfragan,
+            avbojInternForfragan: _avbojInternForfragan
         };
     });

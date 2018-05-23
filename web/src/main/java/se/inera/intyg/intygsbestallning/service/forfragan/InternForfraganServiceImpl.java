@@ -18,35 +18,45 @@
  */
 package se.inera.intyg.intygsbestallning.service.forfragan;
 
-import com.google.common.collect.ImmutableList;
+import static java.util.Objects.isNull;
+import static java.util.stream.Collectors.toList;
+import static se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar;
+import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
+
+import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
+
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
+import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
+import se.inera.intyg.intygsbestallning.persistence.repository.InternForfraganRepository;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
+import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.CreateInternForfraganRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.ForfraganSvarRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganSvarItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.TilldelaDirektRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
-
-import java.text.MessageFormat;
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static java.util.Objects.isNull;
-import static java.util.stream.Collectors.toList;
-import static se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar;
-import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
 
 @Service
 @Transactional
@@ -57,6 +67,9 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
 
     @Autowired
     private UtredningService utredningService;
+
+    @Autowired
+    private InternForfraganRepository internForfraganRepository;
 
     @Value("${ib.besvara.forfragan.arbetsdagar:2}")
     private int besvaraForfraganArbetsdagar;
@@ -151,6 +164,64 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
     private LocalDateTime getBesvarasSenastDatum(LocalDateTime now) {
         return LocalDateTime.of(
                 businessDays.addBusinessDays(now.toLocalDate(), besvaraForfraganArbetsdagar), now.toLocalTime());
+    }
+
+    @Override
+    @Transactional
+    public InternForfraganSvarItem besvaraInternForfragan(Long utredningId, ForfraganSvarRequest svar) {
+        // Utredning must exist...
+        Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
+                () -> new IbNotFoundException("Could not find the assessment with id " + utredningId));
+
+        // .. and have a matching internforfragan..
+        InternForfragan internForfragan = utredning.getExternForfragan().getInternForfraganList().stream()
+                .filter(i -> i.getId().equals(svar.getForfraganId()))
+                .findAny()
+                .orElseThrow(() -> new IbNotFoundException(MessageFormat.format(
+                        "Could not find internforfragan '{0}' in utredning '{1}'", svar.getForfraganId(), utredningId)));
+        // .. in correct state
+        InternForfraganStatus internForfraganStatus = internForfraganStateResolver.resolveStatus(utredning, internForfragan);
+        if (internForfraganStatus != InternForfraganStatus.INKOMMEN) {
+            throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, MessageFormat.format(
+                    "Internforfragan for {0} in utredning {1} is in an incorrect state to answer", internForfragan.getVardenhetHsaId(),
+                    utredning.getUtredningId()));
+        }
+
+        ForfraganSvar forfraganSvar = buildUpdatedEntity(internForfragan.getForfraganSvar(), svar);
+
+        internForfragan.setForfraganSvar(forfraganSvar);
+        final InternForfragan saved = internForfraganRepository.save(internForfragan);
+
+        // Still-left: if ALL enheter have responded, we should notify samordnare for this utredning!
+
+        return InternForfraganSvarItem.from(saved.getForfraganSvar());
+    }
+
+    private ForfraganSvar buildUpdatedEntity(ForfraganSvar existing, ForfraganSvarRequest svar) {
+        ForfraganSvar updated;
+        // New or updated ansver?
+        if (existing == null) {
+            updated = new ForfraganSvar();
+        } else {
+            updated = ForfraganSvar.copyFrom(existing);
+        }
+        // Could be autosaved before actual accept/reject SvarTyp is set
+        if (!Strings.isNullOrEmpty(svar.getSvarTyp())) {
+            updated.setSvarTyp(SvarTyp.valueOf(svar.getSvarTyp()));
+        }
+        updated.setUtforareTyp(UtforareTyp.valueOf(svar.getUtforareTyp()));
+        updated.setUtforareNamn(svar.getUtforareNamn());
+        updated.setUtforareAdress(svar.getUtforareAdress());
+        updated.setUtforarePostnr(svar.getUtforarePostnr());
+        updated.setUtforarePostort(svar.getUtforarePostort());
+        updated.setUtforareEpost(svar.getUtforareEpost());
+        updated.setUtforareTelefon(svar.getUtforareTelefon());
+        updated.setKommentar(svar.getKommentar());
+        if (!Strings.isNullOrEmpty(svar.getBorjaDatum())) {
+            updated.setBorjaDatum(LocalDate.parse(svar.getBorjaDatum()));
+        }
+        return updated;
+
     }
 
 }

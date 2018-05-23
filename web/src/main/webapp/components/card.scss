@@ -152,11 +152,17 @@ card-modal {
     padding: $card-header-padding;
   }
 
-  div {
+  card-value {
     display: inline-block;
     background: $card-body-bg;
-    padding: 8px;
+    padding: 10px;
     border-radius: 4px;
+    &.wide {
+      display: block;
+    }
+    &:empty {
+      display: none;
+    }
   }
 }
 

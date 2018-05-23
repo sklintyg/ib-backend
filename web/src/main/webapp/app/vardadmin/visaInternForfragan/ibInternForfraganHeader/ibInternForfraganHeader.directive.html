@@ -1,17 +1,18 @@
 <div class="ib-page-header">
-  <ib-spinner label="common.load.loading" show-spinner="!internForfragan">
+  <ib-spinner label="common.load.loading" show-spinner="!vm.widgetState.isReady">
     <div class="centered-constrained-content">
 
       <!-- page error message -->
-      <div ng-if="utredningHeaderViewState.activeErrorMessageKey">
+     <!-- <div ng-if="utredningHeaderViewState.activeErrorMessageKey">
         <ib-alert-message id="intyg-load-error" ng-show="utredningHeaderViewState.common.doneLoading"
                           alert-severity="danger">
             <span dynamic-label key="{{utredningHeaderViewState.common.activeErrorMessageKey}}"></span>
         </ib-alert-message>
       </div>
+      -->
 
       <!-- header content -->
-      <div ng-if="!utredningHeaderViewState.activeErrorMessageKey" id="utredning-header-status">
+      <div ng-if="!vm.model.errorKey" id="utredning-header-status">
 
         <!-- Status -->
         <div class="page-header-divider">
@@ -32,17 +33,36 @@
 
           <ib-intern-forfragan-header-status intyg-view-state="utredningHeaderViewState"></ib-intern-forfragan-header-status>
         </div>
+
         <div class="flex-row padding-top-small">
           <div class="flex-col-max">
             <!-- Header text -->
             <h2 class="page-heading1">
-              <span>{{utredning.utredningsId}}</span>
+              <span>{{internForfragan.utredningsId}}</span>
             </h2>
 
           </div>
-          <div class="flex-col-min">
+          <div class="flex-col-min buttonbar">
             <!-- Buttonbar -->
-            Acceptera/Avvisa knappar
+            <ib-button
+                btn-id="accept-internforfragan-btn"
+                btn-class="btn-primary"
+                btn-disabled="!canAccept()"
+                busy="vm.widgetState.busyAccepting"
+                btn-click="onAccept()">
+              <i class="material-icons">check</i>
+              <span message key="internforfragan.besvara.acceptbtn.label"></span>
+            </ib-button>
+
+            <ib-button
+                btn-id="reject-internforfragan-btn"
+                btn-class="btn-secondary"
+                btn-disabled="!canReject()"
+                busy="vm.widgetState.busyRejecting"
+                btn-click="onReject()">
+              <i class="material-icons">cancel</i>
+              <span message key="internforfragan.besvara.rejectbtn.label"></span>
+            </ib-button>
           </div>
         </div>
       </div>

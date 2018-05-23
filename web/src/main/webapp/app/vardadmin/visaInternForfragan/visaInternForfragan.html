@@ -1,16 +1,18 @@
 <div class="VisaInternForfragan-page ib-workarea">
 
-  <ib-intern-forfragan-header intern-forfragan="vm.internForfragan"></ib-intern-forfragan-header>
 
-  <div class="ib-workarea-hflex-container centered-constrained-content" id="view-{{utredning.utredningsId}}">
+  <ib-intern-forfragan-header on-accept="onAccept()" on-reject="onReject()"></ib-intern-forfragan-header>
+
+  <div class="ib-workarea-hflex-container centered-constrained-content" id="view-{{vm.data.utredning.utredningsId}}">
 
     <div class="bottom-fadeout-gradient ib-color-27">
       <div></div>
     </div>
 
     <div id="ib-content-container" class="ib-workarea-utredning container-fluid edit-form">
-      <div ng-hide="viewState.error.key">
-        <ib-spinner label="common.label.loading" show-spinner="vm.loading">
+      <ib-spinner label="common.label.loading" show-spinner="vm.loading">
+        <div ng-hide="viewState.error.key">
+
           <div id="utredning" class="row utredning">
             <div class="col-md-12 utredning-body">
               <card>
@@ -19,19 +21,19 @@
                   <h4>Datum</h4>
                   <card-table>
                     <table class="table table-striped ib-table-striped">
-                        <thead>
-                        <tr>
-                          <th>Inkom</th>
-                          <th>Besvaras senast</th>
-                          <th>Planeringsdatum</th>
-                        </tr>
+                      <thead>
+                      <tr>
+                        <th>Inkom</th>
+                        <th>Besvaras senast</th>
+                        <th>Planeringsdatum</th>
+                      </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <td>{{vm.data.internForfragan.inkomDatum}}</td>
-                          <td>{{vm.data.internForfragan.besvarasSenastDatum}}</td>
-                          <td>{{vm.data.internForfragan.planeringsDatum}}</td>
-                        </tr>
+                      <tr>
+                        <td>{{vm.data.internForfragan.inkomDatum}}</td>
+                        <td>{{vm.data.internForfragan.besvarasSenastDatum}}</td>
+                        <td>{{vm.data.internForfragan.planeringsDatum}}</td>
+                      </tr>
                       </tbody>
                     </table>
                   </card-table>
@@ -47,9 +49,7 @@
                   <h4>Tidigare utredd</h4>
                   <card-value>
                     {{vm.data.utredning.tidigareUtredd | ibBoolFilter}}<span ng-if="vm.data.utredning.tidigareEnheter">, vid {{vm.data.utredning.tidigareEnheter}}</span>
-                    <ib-alert-message alert-id=""
-                                      alert-severity="danger"
-                                      ng-if="vm.data.utredning.felaktigaEnheter">
+                    <ib-alert-message alert-id="" alert-severity="danger" ng-if="vm.data.utredning.felaktigaEnheter">
                       Felaktig enhet(er): {{vm.data.utredning.felaktigaEnheter}}
                     </ib-alert-message>
                   </card-value>
@@ -85,20 +85,27 @@
               </card>
             </div>
           </div>
-        </ib-spinner>
-      </div>
+
+        </div>
+      </ib-spinner>
     </div>
 
-    <div class="ib-workarea-supportpanel" ng-switch="vm.data.internForfragan.status.id">
+    <div class="ib-workarea-supportpanel">
+      <ib-spinner label="common.label.loading" show-spinner="vm.loading">
+        <div ng-switch="vm.data.internForfragan.status.id">
+          <div ng-switch-when="INKOMMEN">
+            <ib-besvara-intern-forfragan-panel
+                intern-forfragan-svar-view-state="internForfraganSvarViewState"></ib-besvara-intern-forfragan-panel>
+          </div>
 
-     <div ng-switch-when="INKOMMEN">
-       <ib-besvara-intern-forfragan-panel intern-forfragan="vm.data.internForfragan"></ib-besvara-intern-forfragan-panel>
-     </div>
-
-      <div ng-switch-default>
-        <ib-besvarad-intern-forfragan-panel intern-forfragan="vm.data.internForfragan"></ib-besvarad-intern-forfragan-panel>
-      </div>
+          <div ng-switch-default>
+            <ib-besvarad-intern-forfragan-panel
+                intern-forfragan-svar-view-state="internForfraganSvarViewState"></ib-besvarad-intern-forfragan-panel>
+          </div>
+        </div>
+      </ib-spinner>
     </div>
 
   </div>
+
 </div>
