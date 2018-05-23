@@ -28,3 +28,5 @@ tools/soapUI/logs/soapui-rehabstod-logfile.txt
 test/node-v6.6.0-darwin-x64
 
 *.h2.db
+
+devops/openshift/*/env/resources.zip
