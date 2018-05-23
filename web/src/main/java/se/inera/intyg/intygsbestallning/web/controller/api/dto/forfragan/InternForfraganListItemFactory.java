@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan;
 
-import com.google.common.base.Strings;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
@@ -29,7 +28,6 @@ import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganSta
 import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -43,22 +41,16 @@ public class InternForfraganListItemFactory {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_DATE;
 
-    private static final int DEFAULT_BESVARA_FORFRAGAN_ARBETSDAGAR = 2;
-    private static final int DEFAULT_AFU_UTREDNING_ARBETSDAGAR = 25;
-    private static final int DEFAULT_POSTGANG_ARBETSDAGAR = 3;
 
     @Value("${ib.besvara.forfragan.arbetsdagar}")
-    private String ibBesvaraForfraganArbetsdagar;
+    private int besvaraForfraganArbetsdagar;
 
     @Value("${ib.afu.utredning.arbetsdagar}")
-    private String ibAfuUtredningArbetsdagar;
+    private int afuUtredningArbetsdagar;
 
     @Value("${ib.postgang.arbetsdagar}")
-    private String ibPostgangArbetsdagar;
+    private int postgangArbetsdagar;
 
-    private int besvaraForfraganArbetsdagar = DEFAULT_BESVARA_FORFRAGAN_ARBETSDAGAR;
-    private int afuUtredningArbetsdagar = DEFAULT_AFU_UTREDNING_ARBETSDAGAR;
-    private int postgangArbetsdagar = DEFAULT_POSTGANG_ARBETSDAGAR;
 
     private InternForfraganStateResolver internForfraganStateResolver = new InternForfraganStateResolver();
 
@@ -66,19 +58,6 @@ public class InternForfraganListItemFactory {
 
     public InternForfraganListItemFactory(final BusinessDaysBean businessDays) {
         this.businessDays = businessDays;
-    }
-
-    @PostConstruct
-    public void init() {
-        if (!Strings.isNullOrEmpty(ibBesvaraForfraganArbetsdagar)) {
-            besvaraForfraganArbetsdagar = Integer.parseInt(ibBesvaraForfraganArbetsdagar);
-        }
-        if (!Strings.isNullOrEmpty(ibAfuUtredningArbetsdagar)) {
-            afuUtredningArbetsdagar = Integer.parseInt(ibAfuUtredningArbetsdagar);
-        }
-        if (!Strings.isNullOrEmpty(ibPostgangArbetsdagar)) {
-            postgangArbetsdagar = Integer.parseInt(ibPostgangArbetsdagar);
-        }
     }
 
     public InternForfraganListItem from(Utredning utredning, String vardenhetId) {

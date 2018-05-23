@@ -18,10 +18,12 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
@@ -47,8 +49,19 @@ public class InternForfraganListItemFactoryTest {
 
     private static final String VARDENHET_HSA_ID = "enhet";
 
+    private static final int DEFAULT_BESVARA_FORFRAGAN_ARBETSDAGAR = 2;
+    private static final int DEFAULT_AFU_UTREDNING_ARBETSDAGAR = 25;
+    private static final int DEFAULT_POSTGANG_ARBETSDAGAR = 3;
+
     @InjectMocks
     private InternForfraganListItemFactory testee = new InternForfraganListItemFactory(new BusinessDaysStub());
+
+    @Before
+    public void setUp() {
+        ReflectionTestUtils.setField(testee, "besvaraForfraganArbetsdagar", DEFAULT_BESVARA_FORFRAGAN_ARBETSDAGAR);
+        ReflectionTestUtils.setField(testee, "afuUtredningArbetsdagar", DEFAULT_AFU_UTREDNING_ARBETSDAGAR);
+        ReflectionTestUtils.setField(testee, "postgangArbetsdagar", DEFAULT_POSTGANG_ARBETSDAGAR);
+    }
 
     @Test
     public void testFrom() {
