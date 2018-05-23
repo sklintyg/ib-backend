@@ -1,0 +1,37 @@
+delimiters "$", "$"
+
+utredning(data) ::= <<
+Hej,<br>
+<br>
+$data.message$
+<br>
+Klicka på följande länk för att ta del av utredningen:<br>
+<br>
+$data.url$
+<br>
+Vid problem med att klicka på ovanstående länk kan du klippa ut den och klistra in den i din webläsare.<br>
+<br>
+<img src="https://www.inera.se/Static/build/images/Inera-Logo.png" width="120">
+<br>
+Intygsbeställning är en tjänst från Inera AB som myndigheter kan använda för att skicka beställningar av medicinska utlåtanden och intyg till vården.<br>
+<br>
+För att logga in i tjänsten krävs att du har SITHS- eller Efoskort, alternativt tillgång till annan Sambi-kompatibel inloggningsmetod, samt är behörig att ta del av försäkringsmedicinska utredningar (FMU).<br>
+>>
+
+forfragan(data) ::= <<
+Hej,<br>
+<br>
+$data.message$
+<br>
+Klicka på följande länk för att ta del av förfrågan:<br>
+<br>
+$data.url$
+<br>
+Vid problem med att klicka på ovanstående länk kan du klippa ut den och klistra in den i din webläsare.<br>
+<br>
+<img src="https://www.inera.se/Static/build/images/Inera-Logo.png" width="120">
+<br>
+Intygsbeställning är en tjänst från Inera AB som myndigheter kan använda för att skicka beställningar av medicinska utlåtanden och intyg till vården.<br>
+<br>
+För att logga in i tjänsten krävs att du har SITHS- eller Efoskort, alternativt tillgång till annan Sambi-kompatibel inloggningsmetod, samt är behörig att ta del av försäkringsmedicinska utredningar (FMU).<br>
+>>
