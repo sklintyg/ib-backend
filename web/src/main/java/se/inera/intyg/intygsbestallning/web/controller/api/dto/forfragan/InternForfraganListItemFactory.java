@@ -145,9 +145,4 @@ public class InternForfraganListItemFactory {
         }
         return businessDays.daysBetween(LocalDate.now(), besvarasSenastDatum.toLocalDate(), false) < besvaraForfraganArbetsdagar;
     }
-
-    // For testabilit
-    public void setBusinessDays(BusinessDaysBean businessDays) {
-        this.businessDays = businessDays;
-    }
 }

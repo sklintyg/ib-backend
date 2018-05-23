@@ -45,6 +45,8 @@ public class UtredningListItemFactory {
                 .withUtredningsId(utredning.getUtredningId())
                 .withUtredningsTyp(utredning.getUtredningsTyp().name())
                 .withVardenhetHsaId(resolveTilldeladVardenhetHsaId(utredning))
+
+                // Is set later after HSA lookup.
                 .withVardenhetNamn("")
                 .build();
     }

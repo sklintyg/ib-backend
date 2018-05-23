@@ -245,6 +245,8 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .withKomplettering(false)
                 .withSistaDatum(order.getLastDateIntyg().atStartOfDay())
                 .build());
+
+        // Do we need to verify that there is an Invanare?
         updateInvanareFromOrder(utredning.getInvanare(), order);
 
         if (order.isHandling()) {

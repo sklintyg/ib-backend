@@ -1,0 +1,78 @@
+delimiters "$", "$"
+
+request(data) ::= <<
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:itintegration:registry:1" xmlns:urn1="urn:riv-application:intygsbestallning:certificate:order:OrderMedicalAssessmentResponder:1" xmlns:urn2="urn:riv-application:intygsbestallning:certificate:order:1">
+   <soapenv:Header>
+      <urn:LogicalAddress>?</urn:LogicalAddress>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn1:OrderMedicalAssessment>
+         <!--Optional:-->
+         <urn1:assessmentId>
+            <urn2:root></urn2:root>
+            <urn2:extension>$data.assessmentId$</urn2:extension>
+            <!--You may enter ANY elements at this point-->
+         </urn1:assessmentId>
+         <urn1:careUnitId>
+            <urn2:root></urn2:root>
+            <urn2:extension>$data.vardenhetHsaId$</urn2:extension>
+            <!--You may enter ANY elements at this point-->
+         </urn1:careUnitId>
+         <urn1:certificateType>
+            <urn2:code>$data.utredningTyp$</urn2:code>
+            <urn2:codeSystem></urn2:codeSystem>
+            <!--You may enter ANY elements at this point-->
+         </urn1:certificateType>
+         <!--Optional:-->
+         <urn1:needForInterpreter>$data.behovTolk$</urn1:needForInterpreter>
+         <!--Optional:-->
+         <urn1:interpreterLanguage>
+            <urn2:code>$data.tolkSprak$</urn2:code>
+            <urn2:codeSystem></urn2:codeSystem>
+            <!--You may enter ANY elements at this point-->
+         </urn1:interpreterLanguage>
+         <!--Optional:-->
+         <urn1:comment>$data.kommentar$</urn1:comment>
+         <!--Optional:-->
+         <urn1:lastDateForCertificateReceival>$data.sistaDatum$</urn1:lastDateForCertificateReceival>
+         <!--Optional:-->
+         <urn1:documentsByPost>$data.dokumentViaPost$</urn1:documentsByPost>
+         <!--Optional:-->
+         <urn1:purpose>$data.syfte$</urn1:purpose>
+         <!--Optional:-->
+         <urn1:plannedActions>$data.planeradeAtgarder$</urn1:plannedActions>
+         <!--Optional:-->
+         <urn1:orderDate>$data.orderDatum$</urn1:orderDate>
+         <urn1:authorityAdministrativeOfficial>
+            <!--Optional:-->
+            <urn2:fullName>$data.handlaggareNamn$</urn2:fullName>
+            <urn2:phoneNumber>$data.handlaggareTelefon$</urn2:phoneNumber>
+            <!--Optional:-->
+            <urn2:email>$data.handlaggareEpost$</urn2:email>
+            <urn2:authority>
+               <urn2:code>FK</urn2:code>
+               <urn2:codeSystem></urn2:codeSystem>
+               <!--You may enter ANY elements at this point-->
+            </urn2:authority>
+
+            <!--You may enter ANY elements at this point-->
+         </urn1:authorityAdministrativeOfficial>
+         <urn1:citizen>
+            <urn2:personalIdentity>
+               <urn2:root></urn2:root>
+               <urn2:extension>$data.patientPersonId$</urn2:extension>
+               <!--You may enter ANY elements at this point-->
+            </urn2:personalIdentity>
+            <urn2:firstName>$data.patientFornamn$</urn2:firstName>
+            <urn2:lastName>$data.patientEfternamn$</urn2:lastName>
+            <!--Optional:-->
+            <urn2:specialNeeds>$data.patientBehov$</urn2:specialNeeds>
+            <!--Optional:-->
+            <urn2:situationBackground>$data.patientBakgrund$</urn2:situationBackground>
+            <!--You may enter ANY elements at this point-->
+         </urn1:citizen>
+         <!--You may enter ANY elements at this point-->
+      </urn1:OrderMedicalAssessment>
+   </soapenv:Body>
+</soapenv:Envelope>
+>>

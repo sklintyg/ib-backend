@@ -1,0 +1,40 @@
+{
+  "utredningsTyp": "AFU",
+  "arkiverad": false,
+  "externForfragan": {
+    "landstingHsaId": "IFV1239877878-1041",
+    "inkomDatum": "2018-04-12T10:07:12.125",
+    "besvarasSenastDatum": "2018-04-26T10:07:12.127",
+    "kommentar": "Detta är en kommentar",
+    "internForfraganList": [
+      {
+        "vardenhetHsaId": "IFV1239877878-1042",
+        "besvarasSenastDatum": "2018-04-26T10:07:12.396",
+        "kommentar": "Bered skyndsamt!",
+        "skapadDatum": "2018-04-11T10:07:12.125",
+        "tilldeladDatum": "2018-04-26T10:07:12.127",
+        "forfraganSvar": {
+          "svarTyp": "ACCEPTERA",
+          "utforareTyp": "ENHET",
+          "utforareNamn": "Utförarenheten",
+          "utforareAdress": "Utförarvägen 1",
+          "utforarePostnr": "12345",
+          "utforarePostort": "Utförhult",
+          "utforareTelefon": "123-123412",
+          "utforareEpost": "utforare@inera.se",
+          "kommentar": "Bered skyndsamt!",
+          "borjaDatum": "2018-12-12"
+        }
+      }
+    ]
+  },
+  "invanare": {
+    "postort": "11121",
+    "sarskildaBehov": "Gillar glass",
+    "tidigareUtforare": [
+      {
+        "tidigareEnhetId": "IFV1239877878-1042"
+      }
+    ]
+  }
+}
