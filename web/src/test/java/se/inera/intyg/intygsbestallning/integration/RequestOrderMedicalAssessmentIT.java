@@ -21,17 +21,14 @@ package se.inera.intyg.intygsbestallning.integration;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.builder.RequestSpecBuilder;
 import com.jayway.restassured.response.ResponseBodyExtractionOptions;
-import org.apache.commons.io.IOUtils;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 import se.inera.intyg.intygsbestallning.web.BaseRestIntegrationTest;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -83,21 +80,6 @@ public class RequestOrderMedicalAssessmentIT extends BaseRestIntegrationTest {
 
         // Delete it.
         deleteUtredning(utredningId);
-    }
-
-    private void deleteUtredning(Integer utredningId) {
-        given().when()
-                .delete("/api/test/utredningar/" + utredningId)
-                .then().statusCode(200);
-    }
-
-    private String loadJson(String filePath) {
-        ClassPathResource cpr = new ClassPathResource(filePath);
-        try {
-            return IOUtils.toString(cpr.getInputStream());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 

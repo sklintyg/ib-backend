@@ -33,8 +33,11 @@ import se.inera.intyg.infra.logmessages.PdlLogMessage;
 import se.inera.intyg.infra.logmessages.ResourceType;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbJMSException;
+import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.common.integration.json.CustomObjectMapper;
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
+import se.inera.intyg.intygsbestallning.service.pdl.dto.PatientPdlLoggable;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 
 import javax.annotation.PostConstruct;
@@ -80,6 +83,20 @@ public class LogServiceImpl implements LogService {
         PdlLogMessage pdlLogMessage = pdlLogMessageFactory.buildLogMessage(utredningListItems, activityType, resourceType,
                 userService.getUser());
 
+        send(pdlLogMessage);
+    }
+
+    @Override
+    public void logHandlingMottagen(Utredning utredning) {
+        if (utredning.getInvanare() == null) {
+            throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, "Cannot PDL-log an utredning having no Invanare");
+        }
+
+        if (utredning.getInvanare().getPersonId() == null) {
+            throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, "Cannot PDL-log an utredning having a Invanare without personId");
+        }
+        PdlLogMessage pdlLogMessage = pdlLogMessageFactory.buildLogMessage(new PatientPdlLoggable(utredning.getInvanare().getPersonId()),
+                ActivityType.UPDATE, ResourceType.RESOURCE_TYPE_FMU, userService.getUser());
         send(pdlLogMessage);
     }
 

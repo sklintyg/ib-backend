@@ -22,15 +22,18 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.response.Response;
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.fake.FakeCredentials;
 import se.inera.intyg.intygsbestallning.common.integration.json.CustomObjectMapper;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Arrays;
 
 import static com.jayway.restassured.RestAssured.given;
@@ -105,6 +108,22 @@ public abstract class BaseRestIntegrationTest {
             throw new RuntimeException(e);
         }
     }
+
+    protected String loadJson(String filePath) {
+        ClassPathResource cpr = new ClassPathResource(filePath);
+        try {
+            return IOUtils.toString(cpr.getInputStream());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected void deleteUtredning(Integer utredningId) {
+        given().when()
+                .delete("/api/test/utredningar/" + utredningId)
+                .then().statusCode(200);
+    }
+
 
     private String getAuthSession(String credentialsJson) {
         Response response = given().contentType(ContentType.URLENC).and().redirects().follow(false).and()

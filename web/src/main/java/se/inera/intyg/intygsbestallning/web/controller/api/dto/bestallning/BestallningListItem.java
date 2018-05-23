@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning;
 
+import se.inera.intyg.intygsbestallning.service.patient.PatientNamable;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
@@ -25,7 +26,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListIte
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FreeTextSearchable;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardgivareEnrichable;
 
-public class BestallningListItem implements PDLLoggable, FreeTextSearchable, FilterableListItem, VardgivareEnrichable {
+public class BestallningListItem implements PDLLoggable, PatientNamable, FreeTextSearchable, FilterableListItem, VardgivareEnrichable {
 
     private Long utredningsId;
     private String utredningsTyp;

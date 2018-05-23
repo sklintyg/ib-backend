@@ -18,10 +18,8 @@
  */
 package se.inera.intyg.intygsbestallning.service.patient;
 
-import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
-
 import java.util.List;
 
 public interface PatientNameEnricher {
-    void enrichWithPatientNames(List<? extends PDLLoggable> paged);
+    void enrichWithPatientNames(List<? extends PatientNamable> paged);
 }

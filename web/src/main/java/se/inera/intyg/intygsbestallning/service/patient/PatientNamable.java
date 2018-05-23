@@ -16,20 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.service.pdl;
+package se.inera.intyg.intygsbestallning.service.patient;
 
-import se.inera.intyg.infra.logmessages.ActivityType;
-import se.inera.intyg.infra.logmessages.ResourceType;
-import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
 
-import java.util.List;
-
-/**
- * @author eriklupander on 2016-02-18.
- */
-public interface LogService {
-    void logVisaBestallningarLista(List<? extends PDLLoggable> bestallningListItems, ActivityType activityType, ResourceType resourceType);
-
-    void logHandlingMottagen(Utredning utredning);
+public interface PatientNamable extends PDLLoggable  {
+    void setPatientNamn(String patientNamn);
 }

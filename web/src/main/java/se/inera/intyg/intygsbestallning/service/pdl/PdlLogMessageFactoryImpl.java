@@ -72,6 +72,22 @@ public class PdlLogMessageFactoryImpl implements PdlLogMessageFactory {
         return pdlLogMessage;
     }
 
+    @Override
+    public PdlLogMessage buildLogMessage(PDLLoggable loggable,
+                                         ActivityType activityType,
+                                         ResourceType resourceType,
+                                         IbUser ibUser) {
+
+        LogUser user = getLogUser(ibUser);
+
+        PdlLogMessage pdlLogMessage = getLogMessage(activityType);
+        populateWithCurrentUserAndCareUnit(pdlLogMessage, user);
+
+        // Add resources
+        pdlLogMessage.getPdlResourceList().add(buildPdlLogResource(loggable, resourceType, user));
+        return pdlLogMessage;
+    }
+
     private PdlLogMessage getLogMessage(ActivityType activityType) {
         PdlLogMessage pdlLogMessage = new PdlLogMessage(activityType, ActivityPurpose.CARE_TREATMENT);
         pdlLogMessage.setSystemId(systemId);

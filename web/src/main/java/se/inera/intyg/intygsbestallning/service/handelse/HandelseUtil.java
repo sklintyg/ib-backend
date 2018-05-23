@@ -105,4 +105,13 @@ public final class HandelseUtil {
                         mottagetDatum.format(formatter)))
                 .build();
     }
+
+    public static Handelse createHandlingMottagen(String vardadministrator, String handlingarMottogsDatum) {
+        return aHandelse()
+                .withSkapad(LocalDateTime.now())
+                .withAnvandare(vardadministrator)
+                .withHandelseTyp(HandelseTyp.HANDLING_MOTTAGEN)
+                .withHandelseText("Handlingar mottagna " + handlingarMottogsDatum)
+                .build();
+    }
 }

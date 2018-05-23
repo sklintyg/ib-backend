@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
-import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
 import se.inera.intyg.schemas.contract.Personnummer;
 
 import java.util.List;
@@ -42,14 +41,14 @@ public class PatientNameEnricherImpl implements PatientNameEnricher {
      * Makes a n-persons call to the PU-service and returns PersonSvar objects. Includes sekretessmarkering
      */
     @Override
-    public void enrichWithPatientNames(List<? extends PDLLoggable> paged) {
+    public void enrichWithPatientNames(List<? extends PatientNamable> paged) {
         Map<Personnummer, PersonSvar> personNames = puService
                 .getPersons(paged.stream()
                         .map(bli -> Personnummer.createPersonnummer(bli.getPatientId())
                                 .orElseThrow(() -> new IllegalArgumentException("Invalid personnummer " + bli.getPatientId())))
                         .collect(toList()));
 
-        for (PDLLoggable bli : paged) {
+        for (PatientNamable bli : paged) {
             Personnummer pnr = Personnummer.createPersonnummer(bli.getPatientId()).get();
             Person person = personNames.get(pnr).getPerson();
             if (personNames.containsKey(pnr) && person != null) {

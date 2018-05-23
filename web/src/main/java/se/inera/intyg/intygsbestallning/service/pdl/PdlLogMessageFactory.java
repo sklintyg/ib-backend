@@ -36,4 +36,8 @@ public interface PdlLogMessageFactory {
                                   ResourceType resourceType,
                                   IbUser ibUser);
 
+    PdlLogMessage buildLogMessage(PDLLoggable loggable,
+                                  ActivityType activityType,
+                                  ResourceType resourceType,
+                                  IbUser ibUser);
 }
