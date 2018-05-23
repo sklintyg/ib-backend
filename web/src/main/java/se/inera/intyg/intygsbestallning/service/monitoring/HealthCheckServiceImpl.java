@@ -27,8 +27,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.cache.metrics.CacheStatisticsService;
-import se.inera.intyg.infra.cache.metrics.model.CacheStatistics;
 import se.inera.intyg.intygsbestallning.service.monitoring.dto.HealthStatus;
 
 import javax.jms.Connection;
@@ -36,11 +34,9 @@ import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Service for getting the health status of the application.
- *
  */
 @Service("healthCheckService")
 public class HealthCheckServiceImpl implements HealthCheckService {
@@ -67,9 +63,6 @@ public class HealthCheckServiceImpl implements HealthCheckService {
     // User count
     @Autowired
     private SessionRegistry sessionRegistry;
-
-    @Autowired
-    private Optional<CacheStatisticsService> cacheStatisticsService;
 
     @Override
     public HealthStatus checkPdlLogQueue() {
@@ -133,15 +126,6 @@ public class HealthCheckServiceImpl implements HealthCheckService {
     public String checkUptimeAsString() {
         HealthStatus uptime = checkUptime();
         return DurationFormatUtils.formatDurationWords(uptime.getMeasurement(), true, true);
-    }
-
-    @Override
-    public CacheStatistics getCacheStatistics() {
-        if (!cacheStatisticsService.isPresent()) {
-            throw new java.lang.IllegalStateException("Cache statistics is not enabled!");
-        }
-
-        return cacheStatisticsService.get().getCacheStatistics();
     }
 
     private void logStatus(String operation, HealthStatus status) {

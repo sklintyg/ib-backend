@@ -18,14 +18,12 @@
  */
 package se.inera.intyg.intygsbestallning.service.monitoring;
 
-import se.inera.intyg.infra.cache.metrics.model.CacheStatistics;
 import se.inera.intyg.intygsbestallning.service.monitoring.dto.HealthStatus;
 
 /**
  * Service for checking the health of the application.
  *
  * @author Erik
- *
  */
 public interface HealthCheckService {
 
@@ -58,6 +56,4 @@ public interface HealthCheckService {
     HealthStatus checkNbrOfUsers();
 
     HealthStatus checkPdlLogQueue();
-
-    CacheStatistics getCacheStatistics();
 }

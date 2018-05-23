@@ -28,8 +28,6 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import se.inera.intyg.infra.cache.metrics.CacheStatisticsService;
-import se.inera.intyg.infra.cache.metrics.CacheStatisticsServiceImpl;
 import se.inera.intyg.intygsbestallning.monitoring.EnablePrometheusTiming;
 import se.inera.intyg.intygsbestallning.web.filters.UnitSelectedAssuranceFilter;
 
@@ -39,11 +37,11 @@ import java.util.Arrays;
 
 @Configuration
 @EnablePrometheusTiming
-@PropertySource({ "classpath:default.properties",
-                  "file:${config.file}",
-                  "file:${credentials.file}",
-                  "classpath:version.properties"})
-@ImportResource({ "classpath:META-INF/cxf/cxf.xml", "classpath:securityContext.xml"})
+@PropertySource({"classpath:default.properties",
+        "file:${config.file}",
+        "file:${credentials.file}",
+        "classpath:version.properties"})
+@ImportResource({"classpath:META-INF/cxf/cxf.xml", "classpath:securityContext.xml"})
 public class ApplicationConfig {
 
     @Autowired
@@ -58,11 +56,6 @@ public class ApplicationConfig {
     public Bus init() {
         bus.setFeatures(new ArrayList<>(Arrays.asList(loggingFeature())));
         return bus;
-    }
-
-    @Bean
-    public CacheStatisticsService cacheStatisticsService() {
-        return new CacheStatisticsServiceImpl();
     }
 
     @Bean
