@@ -34,7 +34,7 @@ För att starta applikationen i debugläge används:
     $ cd ib-backend
     $ ./gradlew appRunDebug
     
-Applikationen kommer då att starta upp med debugPort = **5010**. Det är denna port du ska använda när du sätter upp din 
+Applikationen kommer då att starta upp med debugPort = **5012**. Det är denna port du ska använda när du sätter upp din 
 debug-konfiguration i din utvecklingsmiljö.
 
 För att testa applikationen i ett mer prodlikt läge kan man även starta med en flagga för att köra i minifierat läge då css/js är packade och sammanslagna genom att starta:
