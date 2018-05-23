@@ -142,7 +142,7 @@ public final class TestDataGen {
 
         RequestHealthcarePerformerForAssessmentType request = new RequestHealthcarePerformerForAssessmentType();
         request.setCertificateType(aCv("AFU", null, null));
-        request.setLastResponseDate(DATE_TIME.toLocalDate().toString());
+        request.setLastResponseDate("20181010");
         request.setCoordinatingCountyCouncilId(anII("root", "coordinatingCountyCouncilId"));
         request.setComment("comment");
         request.setNeedForInterpreter(true);

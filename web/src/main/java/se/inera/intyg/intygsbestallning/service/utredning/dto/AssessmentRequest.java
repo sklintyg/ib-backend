@@ -23,25 +23,18 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentType;
-import se.riv.intygsbestallning.certificate.order.v1.AddressType;
-import se.riv.intygsbestallning.certificate.order.v1.AuthorityAdministrativeOfficialType;
-import se.riv.intygsbestallning.certificate.order.v1.CVType;
-import se.riv.intygsbestallning.certificate.order.v1.CitizenLimitedType;
-import se.riv.intygsbestallning.certificate.order.v1.IIType;
+import se.riv.intygsbestallning.certificate.order.v1.*;
 
 import java.text.MessageFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU;
-import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU_UTVIDGAD;
-import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.valueOf;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.*;
 import static se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest.AssessmentRequestBuilder.anAssessmentRequest;
 import static se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare.BestallareBuilder.aBestallare;
 
@@ -109,7 +102,7 @@ public class AssessmentRequest {
                         .map(cvType -> valueOf(cvType.getCode()))
                         .orElse(null))
                 .withBesvaraSenastDatum(Optional.ofNullable(request.getLastResponseDate())
-                        .map(d -> LocalDate.parse(d, DateTimeFormatter.ISO_DATE).atStartOfDay())
+                        .map(d -> SchemaDateUtil.toLocalDateTimeFromDateType(request.getLastResponseDate()))
                         .orElse(null))
                 .withKommentar(request.getComment())
                 .withLandstingHsaId(Optional.ofNullable(request.getCoordinatingCountyCouncilId())

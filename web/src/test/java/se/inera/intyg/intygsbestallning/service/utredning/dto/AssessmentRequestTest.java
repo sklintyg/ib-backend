@@ -33,6 +33,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentType;
 
 import java.text.MessageFormat;
+import java.time.LocalDateTime;
 
 public class AssessmentRequestTest {
 
@@ -45,7 +46,7 @@ public class AssessmentRequestTest {
         final AssessmentRequest converted = AssessmentRequest.from(request);
 
         assertEquals(UtredningsTyp.AFU, converted.getUtredningsTyp());
-        assertEquals(DATE_TIME, converted.getBesvaraSenastDatum());
+        assertEquals(LocalDateTime.of(2018, 10, 10, 0, 0, 0), converted.getBesvaraSenastDatum());
         assertEquals("coordinatingCountyCouncilId", converted.getLandstingHsaId());
         assertEquals("comment", converted.getKommentar());
         assertEquals("language", converted.getTolkSprak());
