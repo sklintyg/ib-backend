@@ -19,7 +19,7 @@
 
 angular.module('ibApp')
     .controller('AvvisaForfraganModalCtrl',
-        function($scope, $uibModalInstance, $log, utredning, UtredningarProxy) {
+        function($scope, $uibModalInstance, $log, utredning, ExternForfraganProxy) {
             'use strict';
 
             $scope.vm = {
@@ -34,7 +34,7 @@ angular.module('ibApp')
                     $scope.vm.kommentarValidationError = true;
                 }
                 else {
-                    UtredningarProxy.avvisaExternForfragan(utredning.utredningsId, $scope.vm.kommentar)
+                    ExternForfraganProxy.avvisaExternForfragan(utredning.utredningsId, $scope.vm.kommentar)
                         .then(function(data) {
                             angular.copy(data, utredning);
                             $uibModalInstance.close();

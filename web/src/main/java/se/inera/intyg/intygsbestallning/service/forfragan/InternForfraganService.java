@@ -44,13 +44,4 @@ public interface InternForfraganService {
      */
     GetUtredningResponse tilldelaDirekt(Long utredningsId, String landstingHsaId, TilldelaDirektRequest request);
 
-    /**
-     * Accept InternForfragan and tilldela Utredning to selected vardenhet.
-     *
-     * @param utredningsId
-     * @param landstingHsaId
-     * @param vardenhetHsaId
-     * @return
-     */
-    GetUtredningResponse acceptInternForfragan(Long utredningsId, String landstingHsaId, String vardenhetHsaId);
 }

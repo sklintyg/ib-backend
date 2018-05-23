@@ -20,28 +20,17 @@ package se.inera.intyg.intygsbestallning.service.forfragan;
 
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
-import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
-import se.inera.intyg.intygsbestallning.common.exception.IbExternalServiceException;
-import se.inera.intyg.intygsbestallning.common.exception.IbExternalSystemEnum;
-import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
-import se.inera.intyg.intygsbestallning.integration.myndighet.dto.RespondToPerformerRequestDto;
-import se.inera.intyg.intygsbestallning.integration.myndighet.service.MyndighetIntegrationService;
-import se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
-import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
@@ -56,7 +45,6 @@ import java.util.List;
 
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
-import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.RespondToPerformerRequestDto.RespondToPerformerRequestDtoBuilder.aRespondToPerformerRequestDto;
 import static se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar;
 import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
 
@@ -64,18 +52,11 @@ import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan
 @Transactional
 public class InternForfraganServiceImpl extends BaseUtredningService implements InternForfraganService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(InternForfraganServiceImpl.class);
-
-    private static final String KV_SVAR_BESTALLNING_ACCEPTERAT = "ACCEPTERAT";
-
     @Autowired
     private BusinessDaysBean businessDays;
 
     @Autowired
     private UtredningService utredningService;
-
-    @Autowired
-    private MyndighetIntegrationService myndighetIntegrationService;
 
     @Value("${ib.besvara.forfragan.arbetsdagar:2}")
     private int besvaraForfraganArbetsdagar;
@@ -160,68 +141,6 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
                                 .withUtforareTyp(UtforareTyp.ENHET)
                                 .build())
                         .build());
-
-        utredningRepository.save(utredning);
-
-        return utredningService.createGetUtredningResponse(utredning);
-    }
-
-    @Override
-    @Transactional
-    public GetUtredningResponse acceptInternForfragan(Long utredningId, String landstingHsaId, String vardenhetHsaId) {
-
-        Utredning utredning = getUtredningForLandsting(utredningId, landstingHsaId, ImmutableList.of(UtredningStatus.VANTAR_PA_SVAR,
-                UtredningStatus.TILLDELA_UTREDNING));
-
-        InternForfragan internForfragan = utredning.getExternForfragan().getInternForfraganList().stream()
-                .filter(i -> i.getVardenhetHsaId().equals(vardenhetHsaId))
-                .findAny()
-                .orElseThrow(() -> new IbNotFoundException(MessageFormat.format(
-                        "Could not find internforfragan for {0} in utredning {1}", vardenhetHsaId, utredningId)));
-
-        InternForfraganStatus internForfraganStatus = internForfraganStateResolver.resolveStatus(utredning, internForfragan);
-        if (internForfraganStatus != InternForfraganStatus.ACCEPTERAD_VANTAR_PA_TILLDELNINGSBESLUT
-                && internForfraganStatus != InternForfraganStatus.DIREKTTILLDELAD) {
-            throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, MessageFormat.format(
-                    "Internforfragan for {0} in utredning {1} is in an incorrect state", internForfragan.getVardenhetHsaId(),
-                    utredning.getUtredningId()));
-        }
-
-        Vardenhet vardenhet;
-        Vardgivare vardgivare;
-        try {
-            vardenhet = hsaOrganizationsService.getVardenhet(internForfragan.getVardenhetHsaId());
-            String vardgivareHsaId = hsaOrganizationsService.getVardgivareOfVardenhet(internForfragan.getVardenhetHsaId());
-            vardgivare = hsaOrganizationsService.getVardgivareInfo(vardgivareHsaId);
-        } catch (RuntimeException re) {
-            LOG.error("RuntimeException while while querying HSA for hsaId " + internForfragan.getVardenhetHsaId(), re);
-            throw new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.HSA, re.getMessage());
-        }
-
-        ForfraganSvar forfraganSvar = internForfragan.getForfraganSvar();
-        RespondToPerformerRequestDto request = aRespondToPerformerRequestDto()
-                .withAssessmentId(utredning.getUtredningId())
-                .withCareGiverId(vardgivare.getId())
-                .withCareGiverName(vardgivare.getNamn())
-                .withCareUnitId(internForfragan.getVardenhetHsaId())
-                .withCareUnitName(vardenhet.getNamn())
-                .withComment(forfraganSvar.getKommentar())
-                .withEmail(forfraganSvar.getUtforareEpost())
-                .withPhoneNumber(forfraganSvar.getUtforareTelefon())
-                .withPostalAddress(forfraganSvar.getUtforareAdress())
-                .withPostalCity(forfraganSvar.getUtforarePostort())
-                .withPostalCode(forfraganSvar.getUtforarePostnr())
-                .withResponseCode(KV_SVAR_BESTALLNING_ACCEPTERAT)
-                .withSubcontractorName(forfraganSvar.getUtforareTyp() == UtforareTyp.UNDERLEVERANTOR ? forfraganSvar.getUtforareNamn()
-                        : null)
-                .build();
-
-        myndighetIntegrationService.respondToPerformerRequest(request);
-
-        internForfragan.setTilldeladDatum(LocalDateTime.now());
-
-        utredning.getHandelseList().add(HandelseUtil.createForfraganBesvarad(forfraganSvar.getSvarTyp(), userService.getUser().getNamn(),
-                vardenhet.getNamn()));
 
         utredningRepository.save(utredning);
 

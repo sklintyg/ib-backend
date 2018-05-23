@@ -35,5 +35,23 @@ public interface ExternForfraganService {
 
     ListForfraganFilter buildListForfraganFilter(String vardenhetHsaId);
 
+    /**
+     * Accept ExternForfragan and tilldela InternForfragan to selected vardenhet.
+     *
+     * @param utredningsId
+     * @param landstingHsaId
+     * @param vardenhetHsaId
+     * @return
+     */
+    GetUtredningResponse acceptExternForfragan(Long utredningsId, String landstingHsaId, String vardenhetHsaId);
+
+    /**
+     * Avvisa ExternForfragan with comment.
+     *
+     * @param utredningsId
+     * @param landstingHsaId
+     * @param kommentar
+     * @return
+     */
     GetUtredningResponse avvisaExternForfragan(Long utredningsId, String landstingHsaId, String kommentar);
 }
