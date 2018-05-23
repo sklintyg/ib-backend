@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning;
 
-import com.google.common.base.Strings;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
@@ -28,27 +27,15 @@ import se.inera.intyg.intygsbestallning.service.stateresolver.SlutDatumFasResolv
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 
 @Component
 public class BestallningListItemFactory {
 
-    private static final long DEFAULT_DAYS = 5L;
-
     @Value("${ib.utredning.paminnelse.dagar}")
-    private String utredningPaminnelseDagar;
-
-    private Long paminnelseDagar = DEFAULT_DAYS;
+    private long paminnelseDagar;
 
     private UtredningStatusResolver utredningStatusResolver = new UtredningStatusResolver();
-
-    @PostConstruct
-    public void init() {
-        if (!Strings.isNullOrEmpty(utredningPaminnelseDagar)) {
-            paminnelseDagar = Long.parseLong(utredningPaminnelseDagar);
-        }
-    }
 
     public BestallningListItem from(Utredning utredning, Actor actorInThisContext) {
 
