@@ -64,7 +64,7 @@ gretty {
     integrationTestTask = null
     scanInterval = 0
     httpPort = 8990
-    debugPort = 5010
+    debugPort = 5012
     debugSuspend = false
     fastReload = true
     inplaceMode = 'hard'
@@ -126,7 +126,7 @@ dependencies {
     compile "io.prometheus:simpleclient_servlet:${prometheusClientVersion}"
 
     compile "org.aspectj:aspectjweaver:${aspectjWeaverVersion}"
-    
+
     compile "org.apache.activemq:activemq-spring:${activemqVersion}"
 
     compileOnly "javax.jms:jms-api:${javaxJmsVersion}"
