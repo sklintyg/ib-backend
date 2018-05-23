@@ -20,7 +20,6 @@ package se.inera.intyg.intygsbestallning.service.handelse;
 
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
 
 import java.text.MessageFormat;
@@ -60,10 +59,10 @@ public final class HandelseUtil {
                 .build();
     }
 
-    public static Handelse createForfraganBesvarad(SvarTyp svarTyp, String samordnare, String vardenhet) {
+    public static Handelse createForfraganBesvarad(boolean accepted, String samordnare, String vardenhet) {
 
         String handelseText;
-        if (svarTyp == SvarTyp.ACCEPTERA) {
+        if (accepted) {
             handelseText = String.format("Förfrågan accepterades av landstinget. Utredningen tilldelad till %s", vardenhet);
         } else {
             handelseText = "Förfrågan avvisades av landstinget.";

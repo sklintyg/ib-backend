@@ -141,7 +141,6 @@ public class ExternForfraganServiceImplTest {
     public void testAcceptExternForfraganSuccess() {
         final Long utredningId = 1L;
         final String landstingHsaId = "landstingHsaId";
-        final String kommentar = "Ingen kommentar";
         final String vardenhetId1 = "vardenhetId1";
         final String vardenhetNamn1 = "vardenhetNamn1";
         final String vardgivareId1 = "vardgivareId1";
@@ -159,6 +158,23 @@ public class ExternForfraganServiceImplTest {
 
         GetUtredningResponse response = testee.acceptExternForfragan(utredningId, landstingHsaId, vardenhetId1);
 
+        ArgumentCaptor<RespondToPerformerRequestDto> respondToPerformerRequestArgument = ArgumentCaptor.forClass(RespondToPerformerRequestDto.class);
+        verify(myndighetIntegrationService).respondToPerformerRequest(respondToPerformerRequestArgument.capture());
+
+        RespondToPerformerRequestDto respondToPerformerRequest = respondToPerformerRequestArgument.getValue();
+        assertEquals(utredningId, respondToPerformerRequest.getAssessmentId());
+        assertEquals("ACCEPTERAT", respondToPerformerRequest.getResponseCode());
+        assertEquals("Utforarekommentar", respondToPerformerRequest.getComment());
+        assertEquals(vardgivareId1, respondToPerformerRequest.getCareGiverId());
+        assertEquals(vardgivareNamn1, respondToPerformerRequest.getCareGiverName());
+        assertEquals(vardenhetId1, respondToPerformerRequest.getCareUnitId());
+        assertEquals(vardenhetNamn1, respondToPerformerRequest.getCareUnitName());
+        assertEquals("epost", respondToPerformerRequest.getEmail());
+        assertEquals("telefon", respondToPerformerRequest.getPhoneNumber());
+        assertEquals("adress", respondToPerformerRequest.getPostalAddress());
+        assertEquals("postort", respondToPerformerRequest.getPostalCity());
+        assertEquals("postnr", respondToPerformerRequest.getPostalCode());
+
         ArgumentCaptor<Utredning> utredningArgument = ArgumentCaptor.forClass(Utredning.class);
         verify(utredningRepository).save(utredningArgument.capture());
 
@@ -166,6 +182,7 @@ public class ExternForfraganServiceImplTest {
         assertNotNull(utredning.getExternForfragan().getInternForfraganList().get(0).getTilldeladDatum());
         assertEquals(1, utredning.getHandelseList().size());
         assertEquals(HandelseTyp.FORFRAGAN_BESVARAD, utredning.getHandelseList().get(0).getHandelseTyp());
+        assertEquals(userName, utredning.getHandelseList().get(0).getAnvandare());
     }
 
     @Test
@@ -310,6 +327,9 @@ public class ExternForfraganServiceImplTest {
         final Long utredningId = 1L;
         final String landstingHsaId = "landstingHsaId";
         final String kommentar = "Ingen kommentar";
+        final String userName = "TestUser";
+
+        when(userService.getUser()).thenReturn(new IbUser("", userName));
 
         when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
                 .withUtredningId(utredningId)
@@ -341,6 +361,9 @@ public class ExternForfraganServiceImplTest {
         Utredning utredning = utredningArgument.getValue();
         assertNotNull(utredning.getExternForfragan().getAvvisatDatum());
         assertEquals(kommentar, utredning.getExternForfragan().getAvvisatKommentar());
+        assertEquals(1, utredning.getHandelseList().size());
+        assertEquals(HandelseTyp.FORFRAGAN_BESVARAD, utredning.getHandelseList().get(0).getHandelseTyp());
+        assertEquals(userName, utredning.getHandelseList().get(0).getAnvandare());
     }
 
     @Test(expected = IbServiceException.class)
@@ -464,6 +487,7 @@ public class ExternForfraganServiceImplTest {
                                         .withUtforareNamn("namn")
                                         .withUtforareEpost("epost")
                                         .withUtforareAdress("adress")
+                                        .withKommentar("Utforarekommentar")
                                         .withSvarTyp(SvarTyp.ACCEPTERA)
                                         .build())
                                 .build()))
