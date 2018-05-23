@@ -19,11 +19,12 @@
 package se.inera.intyg.intygsbestallning.web.responder.dto;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 import org.junit.Test;
 
 public class ReportBesokAvvikelseRequestTest {
     @Test
     public void equalsTest() {
-        EqualsVerifier.forClass(ReportBesokAvvikelseRequest.class).verify();
+        EqualsVerifier.forClass(ReportBesokAvvikelseRequest.class).suppress(Warning.NONFINAL_FIELDS).verify();
     }
 }

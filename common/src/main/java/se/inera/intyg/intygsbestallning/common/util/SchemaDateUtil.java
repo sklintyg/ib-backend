@@ -37,4 +37,8 @@ public final class SchemaDateUtil {
     public static LocalDateTime toLocalDateTimeFromDateType(final String dateType) {
         return LocalDate.parse(dateType, DATE_TIME_FORMATTER).atStartOfDay();
     }
+
+    public static String toStringFromLocalDateTime(final LocalDateTime localDateTime) {
+        return DATE_TIME_FORMATTER.format(localDateTime);
+    }
 }

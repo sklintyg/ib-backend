@@ -18,27 +18,23 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
-import static java.util.Objects.isNull;
-import static se.inera.intyg.intygsbestallning.persistence.model.Avvikelse.AvvikelseBuilder.anAvvikelse;
-
 import com.google.common.base.MoreObjects;
 import org.hibernate.annotations.Type;
 import se.inera.intyg.intygsbestallning.persistence.model.type.AvvikelseOrsak;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
+
+import static java.util.Objects.isNull;
+import static se.inera.intyg.intygsbestallning.persistence.model.Avvikelse.AvvikelseBuilder.anAvvikelse;
 
 @Entity
 @Table(name = "AVVIKELSE")
 public final class Avvikelse {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "AVVIKELSE_ID", nullable = false)
     private Long avvikelseId;
 

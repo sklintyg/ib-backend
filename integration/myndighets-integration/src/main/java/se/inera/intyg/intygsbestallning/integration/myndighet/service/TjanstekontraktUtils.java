@@ -19,8 +19,10 @@
 package se.inera.intyg.intygsbestallning.integration.myndighet.service;
 
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto;
+import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportDeviationRequestDto;
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.RespondToPerformerRequestDto;
 import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.ReportCareContactType;
+import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.ReportDeviationType;
 import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.RespondToPerformerRequestType;
 import se.riv.intygsbestallning.certificate.order.v1.AddressType;
 import se.riv.intygsbestallning.certificate.order.v1.CareUnitType;
@@ -36,6 +38,7 @@ public final class TjanstekontraktUtils {
 
     private static final String HSA_ID_ROOT = "1.2.752.129.2.1.4.1";
     private static final String KV_SVAR_BESTALLNING_CODESYSTEM = "d9d51e92-e2c0-49d8-bbec-3fd7e1b60c85";
+    private static final String KV_ORSAKAT_AV_CODE_SYSTEM = "be9c99a7-25ff-432b-9ba4-3a74bc45e2be";
 
     private TjanstekontraktUtils() {
     }
@@ -71,6 +74,17 @@ public final class TjanstekontraktUtils {
         request.setInvitationChannel(aCv(dto.getInvitationChannel()));
         request.setTime(aTimePeriod(dto.getStartTime(), dto.getEndTime()));
         request.setVisitStatus(aCv(dto.getVisitStatus()));
+        return request;
+    }
+
+    public static ReportDeviationType aReportDeviation(final String sourceSystemHsaId, final ReportDeviationRequestDto dto) {
+        ReportDeviationType request = new ReportDeviationType();
+        request.setAssessmentCareContactId(anII(sourceSystemHsaId, dto.getBesokId()));
+        request.setDeviationId(anII(sourceSystemHsaId, dto.getAvvikelseId()));
+        request.setCausedBy(aCv(dto.getOrsakatAv(), KV_ORSAKAT_AV_CODE_SYSTEM, null));
+        request.setDescription(dto.getBeskrivning());
+        request.setDeviationTime(dto.getTidpunkt());
+        request.setCitizenFailedToArrive(dto.getInvanareUteblev());
         return request;
     }
 

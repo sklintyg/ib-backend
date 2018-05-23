@@ -24,40 +24,36 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
 import se.inera.intyg.intygsbestallning.persistence.model.type.AvvikelseOrsak;
+import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
+import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.ReportBesokAvvikelseVardenRequest;
 import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.ReportDeviationType;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.nonNull;
+import static se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest.ReportBesokAvvikelseRequestBuilder.aReportBesokAvvikelseRequest;
 
 public final class ReportBesokAvvikelseRequest {
 
-    private final Long besokId;
-    private final Long avvikelseId;
-    private final AvvikelseOrsak orsakatAv;
-    private final String beskrivning;
-    private final LocalDateTime tidpunkt;
-    private final Boolean invanareUteblev;
-
-
-    private ReportBesokAvvikelseRequest(
-            final Long besokId,
-            final Long avvikelseId,
-            final AvvikelseOrsak orsakatAv,
-            final String beskrivning,
-            final LocalDateTime tidpunkt,
-            final Boolean invanareUteblev) {
-        this.besokId = besokId;
-        this.avvikelseId = avvikelseId;
-        this.orsakatAv = orsakatAv;
-        this.beskrivning = beskrivning;
-        this.tidpunkt = tidpunkt;
-        this.invanareUteblev = invanareUteblev;
-    }
+    private Long besokId;
+    private Long avvikelseId;
+    private AvvikelseOrsak orsakatAv;
+    private String beskrivning;
+    private LocalDateTime tidpunkt;
+    private Boolean invanareUteblev;
+    private String samordnare;
+    private HandelseTyp handelseTyp;
 
     public Long getBesokId() {
         return besokId;
+    }
+
+    public void setAvvikelseId(Long avvikelseId) {
+        this.avvikelseId = avvikelseId;
     }
 
     public Long getAvvikelseId() {
@@ -68,8 +64,8 @@ public final class ReportBesokAvvikelseRequest {
         return orsakatAv;
     }
 
-    public String getBeskrivning() {
-        return beskrivning;
+    public Optional<String> getBeskrivning() {
+        return Optional.ofNullable(beskrivning);
     }
 
     public LocalDateTime getTidpunkt() {
@@ -80,27 +76,68 @@ public final class ReportBesokAvvikelseRequest {
         return invanareUteblev;
     }
 
+    public String getSamordnare() {
+        return samordnare;
+    }
+
+    public HandelseTyp getHandelseTyp() {
+        return handelseTyp;
+    }
+
+    public static ReportBesokAvvikelseRequest from(final ReportBesokAvvikelseVardenRequest dto, final String samordnare) {
+
+        checkArgument(nonNull(dto.getBesokId()));
+        checkArgument(nonNull(dto.getAvvikelseId()));
+        checkArgument(nonNull(dto.getOrsakatAv()));
+        checkArgument(nonNull(dto.getTidpunkt()));
+        checkArgument(nonNull(dto.getInvanareUteblev()));
+
+        final Long besokId = Long.valueOf(dto.getBesokId());
+        final Long avvikelseId = Long.valueOf(dto.getAvvikelseId());
+        final AvvikelseOrsak orsakatAv = dto.getOrsakatAv();
+        final String beskrivning = dto.getBeskrivning();
+        final LocalDateTime tidpunkt = LocalDateTime.parse(dto.getTidpunkt(), DateTimeFormatter.ISO_DATE);
+        final Boolean invanareUteblev = BooleanUtils.toBoolean(dto.getInvanareUteblev());
+        final HandelseTyp handelseTyp = HandelseTyp.AVVIKELSE_RAPPORTERAD;
+
+        return aReportBesokAvvikelseRequest()
+                .withBesokId(besokId)
+                .withAvvikelseId(avvikelseId)
+                .withOrsakatAv(orsakatAv)
+                .withBeskrivning(beskrivning)
+                .withTidpunkt(tidpunkt)
+                .withInvanareUteblev(invanareUteblev)
+                .withSamordnare(samordnare)
+                .withHandelseTyp(handelseTyp)
+                .build();
+    }
+
     public static ReportBesokAvvikelseRequest from(final ReportDeviationType type) {
 
         checkArgument(nonNull(type));
         checkArgument(nonNull(type.getAssessmentCareContactId()));
         checkArgument(nonNull(type.getAssessmentCareContactId().getExtension()));
-        checkArgument(nonNull(type.getDeviationId()));
-        checkArgument(nonNull(type.getDeviationId().getExtension()));
         checkArgument(nonNull(type.getCausedBy()));
         checkArgument(nonNull(type.getCausedBy().getCode()));
-        checkArgument(nonNull(type.getDescription()));
         checkArgument(nonNull(type.getDeviationTime()));
         checkArgument(nonNull(type.isCitizenFailedToArrive()));
 
         final Long besokId = Long.valueOf(type.getAssessmentCareContactId().getExtension());
-        final Long avvikelseId = Long.valueOf(type.getDeviationId().getExtension());
         final AvvikelseOrsak orsakatAv = AvvikelseOrsak.valueOf(type.getCausedBy().getCode());
         final String beskrivning = type.getDescription();
         final LocalDateTime tidpunkt = SchemaDateUtil.toLocalDateTimeFromDateTimeStamp(type.getDeviationTime());
         final Boolean invanareUteblev = BooleanUtils.toBoolean(type.isCitizenFailedToArrive());
+        final HandelseTyp handelseTyp = HandelseTyp.AVVIKELSE_MOTTAGEN;
 
-        return new ReportBesokAvvikelseRequest(besokId, avvikelseId, orsakatAv, beskrivning, tidpunkt, invanareUteblev);
+        return aReportBesokAvvikelseRequest()
+                .withBesokId(besokId)
+                .withOrsakatAv(orsakatAv)
+                .withBeskrivning(beskrivning)
+                .withTidpunkt(tidpunkt)
+                .withInvanareUteblev(invanareUteblev)
+                .withSamordnare(Actor.FK.getLabel())
+                .withHandelseTyp(handelseTyp)
+                .build();
     }
 
     // CHECKSTYLE:OFF MagicNumber
@@ -124,6 +161,8 @@ public final class ReportBesokAvvikelseRequest {
                 .append(beskrivning, that.beskrivning)
                 .append(tidpunkt, that.tidpunkt)
                 .append(invanareUteblev, that.invanareUteblev)
+                .append(samordnare, that.samordnare)
+                .append(handelseTyp, that.handelseTyp)
                 .isEquals();
     }
 
@@ -136,6 +175,8 @@ public final class ReportBesokAvvikelseRequest {
                 .append(beskrivning)
                 .append(tidpunkt)
                 .append(invanareUteblev)
+                .append(samordnare)
+                .append(handelseTyp)
                 .toHashCode();
     }
 
@@ -148,8 +189,82 @@ public final class ReportBesokAvvikelseRequest {
                 .add("beskrivning", beskrivning)
                 .add("tidpunkt", tidpunkt)
                 .add("invanareUteblev", invanareUteblev)
+                .add("samordnare", samordnare)
+                .add("handelseTyp", handelseTyp)
                 .toString();
     }
 
+    public static final class ReportBesokAvvikelseRequestBuilder {
+        private Long besokId;
+        private Long avvikelseId;
+        private AvvikelseOrsak orsakatAv;
+        private String beskrivning;
+        private LocalDateTime tidpunkt;
+        private Boolean invanareUteblev;
+        private String samordnare;
+        private HandelseTyp handelseTyp;
+
+        private ReportBesokAvvikelseRequestBuilder() {
+        }
+
+        public static ReportBesokAvvikelseRequestBuilder aReportBesokAvvikelseRequest() {
+            return new ReportBesokAvvikelseRequestBuilder();
+        }
+
+        public ReportBesokAvvikelseRequestBuilder withBesokId(Long besokId) {
+            this.besokId = besokId;
+            return this;
+        }
+
+        public ReportBesokAvvikelseRequestBuilder withAvvikelseId(Long avvikelseId) {
+            this.avvikelseId = avvikelseId;
+            return this;
+        }
+
+        public ReportBesokAvvikelseRequestBuilder withOrsakatAv(AvvikelseOrsak orsakatAv) {
+            this.orsakatAv = orsakatAv;
+            return this;
+        }
+
+        public ReportBesokAvvikelseRequestBuilder withBeskrivning(String beskrivning) {
+            this.beskrivning = beskrivning;
+            return this;
+        }
+
+        public ReportBesokAvvikelseRequestBuilder withTidpunkt(LocalDateTime tidpunkt) {
+            this.tidpunkt = tidpunkt;
+            return this;
+        }
+
+        public ReportBesokAvvikelseRequestBuilder withInvanareUteblev(Boolean invanareUteblev) {
+            this.invanareUteblev = invanareUteblev;
+            return this;
+        }
+
+        public ReportBesokAvvikelseRequestBuilder withSamordnare(String samordnare) {
+            this.samordnare = samordnare;
+            return this;
+        }
+
+        public ReportBesokAvvikelseRequestBuilder withHandelseTyp(HandelseTyp handelseTyp) {
+            this.handelseTyp = handelseTyp;
+            return this;
+        }
+
+        public ReportBesokAvvikelseRequest build() {
+            ReportBesokAvvikelseRequest reportBesokAvvikelseRequest = new ReportBesokAvvikelseRequest();
+            reportBesokAvvikelseRequest.besokId = this.besokId;
+            reportBesokAvvikelseRequest.orsakatAv = this.orsakatAv;
+            reportBesokAvvikelseRequest.avvikelseId = this.avvikelseId;
+            reportBesokAvvikelseRequest.invanareUteblev = this.invanareUteblev;
+            reportBesokAvvikelseRequest.handelseTyp = this.handelseTyp;
+            reportBesokAvvikelseRequest.beskrivning = this.beskrivning;
+            reportBesokAvvikelseRequest.samordnare = this.samordnare;
+            reportBesokAvvikelseRequest.tidpunkt = this.tidpunkt;
+            return reportBesokAvvikelseRequest;
+        }
+    }
+
     // CHECKSTYLE:ON MagicNumber
+
 }

@@ -21,13 +21,7 @@ package se.inera.intyg.intygsbestallning.web.controller.api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesValidator;
@@ -37,14 +31,16 @@ import se.inera.intyg.intygsbestallning.service.besok.BesokService;
 import se.inera.intyg.intygsbestallning.service.forfragan.InternForfraganService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.ReportBesokAvvikelseVardenRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.CreateInternForfraganRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.TilldelaDirektRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListUtredningRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.TilldelaDirektRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItem;
+import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
 
 import java.util.List;
 
@@ -136,5 +132,18 @@ public class UtredningController {
                 .orThrow(new IbAuthorizationException(EDIT_NOT_ALLOWED));
 
         return besokService.registerNewBesok(request);
+    }
+
+    @PutMapping("/besok/avvikelse")
+    public RegisterBesokResponse createBesokAvvikelse(final ReportBesokAvvikelseVardenRequest request) {
+
+        final IbUser user = userService.getUser();
+        authoritiesValidator.given(user)
+                .privilege(AuthoritiesConstants.ROLE_FMU_SAMORDNARE)
+                .privilege(AuthoritiesConstants.ROLE_FMU_VARDADMIN)
+                .orThrow(new IbAuthorizationException(EDIT_NOT_ALLOWED));
+
+        besokService.reportBesokAvvikelse(ReportBesokAvvikelseRequest.from(request, user.getNamn()));
+        return null;
     }
 }

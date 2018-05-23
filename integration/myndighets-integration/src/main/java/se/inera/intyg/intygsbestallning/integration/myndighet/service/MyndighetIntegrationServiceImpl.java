@@ -25,18 +25,20 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.intygsbestallning.common.exception.IbExternalServiceException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbExternalSystemEnum;
+import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
 import se.inera.intyg.intygsbestallning.integration.myndighet.client.MyndighetIntegrationClientService;
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto;
+import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportDeviationRequestDto;
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.RespondToPerformerRequestDto;
 import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.ReportCareContactResponseType;
+import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.ReportDeviationResponseType;
 import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.RespondToPerformerRequestResponseType;
 import se.riv.intygsbestallning.certificate.order.updateassessment.v1.UpdateAssessmentResponseType;
 import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
 import se.riv.intygsbestallning.certificate.order.v1.ResultType;
 
 import java.lang.invoke.MethodHandles;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 
 @Service
 public class MyndighetIntegrationServiceImpl implements MyndighetIntegrationService {
@@ -59,11 +61,16 @@ public class MyndighetIntegrationServiceImpl implements MyndighetIntegrationServ
     }
 
     @Override
-    public LocalDate updateAssessment(final Long id, final String certificateType) {
-        final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyMMdd");
+    public LocalDateTime updateAssessment(final Long id, final String certificateType) {
         final UpdateAssessmentResponseType response = clientService.updateAssessment(id, certificateType);
         handleResponse(response.getResult());
-        return LocalDate.parse(response.getLastDateForCertificateReceival(), dateTimeFormatter);
+        return SchemaDateUtil.toLocalDateTimeFromDateType(response.getLastDateForCertificateReceival());
+    }
+
+    @Override
+    public void reportDeviation(final ReportDeviationRequestDto request) {
+        final ReportDeviationResponseType response = clientService.reportDeviation(request);
+        handleResponse(response.getResult());
     }
 
     private void handleResponse(final ResultType resultType) {

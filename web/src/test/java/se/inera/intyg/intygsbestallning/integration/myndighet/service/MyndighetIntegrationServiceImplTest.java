@@ -18,31 +18,30 @@
  */
 package se.inera.intyg.intygsbestallning.integration.myndighet.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil.ok;
-import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto.ReportCareContactRequestDtoBuilder.aReportCareContactRequestDto;
-import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.DATE_TIME;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.intygsbestallning.common.exception.IbExternalServiceException;
+import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
 import se.inera.intyg.intygsbestallning.integration.myndighet.client.MyndighetIntegrationClientServiceImpl;
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto;
-import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.type.KallelseFormTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
+import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportDeviationRequestDto;
+import se.inera.intyg.intygsbestallning.persistence.model.type.*;
 import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.ReportCareContactResponseType;
+import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.ReportDeviationResponseType;
 import se.riv.intygsbestallning.certificate.order.updateassessment.v1.UpdateAssessmentResponseType;
 
-import java.time.format.DateTimeFormatter;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+import static se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil.error;
+import static se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil.ok;
+import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto.ReportCareContactRequestDtoBuilder.aReportCareContactRequestDto;
+import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportDeviationRequestDto.ReportDeviationRequestDtoBuilder.aReportDeviationRequestDto;
+import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.DATE_TIME;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MyndighetIntegrationServiceImplTest {
@@ -81,14 +80,30 @@ public class MyndighetIntegrationServiceImplTest {
     }
 
     @Test
+    public void testReportCareContactResultError() {
+
+        ReportCareContactResponseType response = new ReportCareContactResponseType();
+        response.setResult(error("error text"));
+
+        doReturn(response)
+                .when(clientService)
+                .reportCareContact(any(ReportCareContactRequestDto.class));
+
+        assertThatThrownBy(() -> integrationService.reportCareContactInteraction(aReportCareContactRequestDto().build()))
+                .isExactlyInstanceOf(IbExternalServiceException.class);
+
+        verify(clientService, times(1))
+                .reportCareContact(any(ReportCareContactRequestDto.class));
+    }
+
+    @Test
     public void testUpdateAssessment() {
 
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         final Long assessmentId = 1L;
         final String certificateType = UtredningsTyp.AFU_UTVIDGAD.name();
 
         UpdateAssessmentResponseType response = new UpdateAssessmentResponseType();
-        response.setLastDateForCertificateReceival(formatter.format(DATE_TIME));
+        response.setLastDateForCertificateReceival(SchemaDateUtil.toStringFromLocalDateTime(DATE_TIME));
         response.setResult(ok());
 
         doReturn(response)
@@ -97,6 +112,66 @@ public class MyndighetIntegrationServiceImplTest {
 
         integrationService.updateAssessment(assessmentId, certificateType);
 
-        assertEquals(formatter.format(DATE_TIME), response.getLastDateForCertificateReceival());
+        assertEquals(SchemaDateUtil.toStringFromLocalDateTime(DATE_TIME), response.getLastDateForCertificateReceival());
+    }
+
+    @Test
+    public void testUpdateAssessmentResultError() {
+
+        UpdateAssessmentResponseType response = new UpdateAssessmentResponseType();
+        response.setResult(error("error text"));
+
+        doReturn(response)
+                .when(clientService)
+                .updateAssessment(anyLong(), anyString());
+
+        assertThatThrownBy(() -> integrationService.updateAssessment(1L, "string"))
+                .isExactlyInstanceOf(IbExternalServiceException.class);
+
+        verify(clientService, times(1))
+                .updateAssessment(anyLong(), anyString());
+    }
+
+    @Test
+    public void testReportDevation() {
+
+        final ReportDeviationRequestDto requestDto = aReportDeviationRequestDto()
+                .withBesokId("1")
+                .withAvvikelseId("1")
+                .withOrsakatAv(AvvikelseOrsak.PATIENT.name())
+                .withBeskrivning("beskrivning")
+                .withTidpunkt(SchemaDateUtil.toStringFromLocalDateTime(DATE_TIME))
+                .withInvanareUteblev(true)
+                .withSamordnare("Sam Ordnare")
+                .build();
+
+        ReportDeviationResponseType response = new ReportDeviationResponseType();
+        response.setResult(ok());
+
+        doReturn(response)
+                .when(clientService)
+                .reportDeviation(eq(requestDto));
+
+        integrationService.reportDeviation(requestDto);
+
+        verify(clientService, times(1))
+                .reportDeviation(eq(requestDto));
+    }
+
+    @Test
+    public void testReportDeviationResultError() {
+
+        ReportDeviationResponseType response = new ReportDeviationResponseType();
+        response.setResult(error("error text"));
+
+        doReturn(response)
+                .when(clientService)
+                .reportDeviation(any(ReportDeviationRequestDto.class));
+
+        assertThatThrownBy(() -> integrationService.reportDeviation(aReportDeviationRequestDto().build()))
+                .isExactlyInstanceOf(IbExternalServiceException.class);
+
+        verify(clientService, times(1))
+                .reportDeviation(any(ReportDeviationRequestDto.class));
     }
 }

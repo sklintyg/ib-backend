@@ -18,16 +18,16 @@
  */
 package se.inera.intyg.intygsbestallning.integration.myndighet.client;
 
-import static se.inera.intyg.intygsbestallning.integration.myndighet.service.TjanstekontraktUtils.aReportCareContact;
-import static se.inera.intyg.intygsbestallning.integration.myndighet.service.TjanstekontraktUtils.aRespondToPerformerRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto;
+import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportDeviationRequestDto;
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.RespondToPerformerRequestDto;
 import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.ReportCareContactResponseType;
 import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.rivtabp21.ReportCareContactResponderInterface;
+import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.ReportDeviationResponseType;
+import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.rivtabp21.ReportDeviationResponderInterface;
 import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.RespondToPerformerRequestResponseType;
 import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.rivtabp21.RespondToPerformerRequestResponderInterface;
 import se.riv.intygsbestallning.certificate.order.updateassessment.v1.UpdateAssessmentResponseType;
@@ -35,6 +35,8 @@ import se.riv.intygsbestallning.certificate.order.updateassessment.v1.UpdateAsse
 import se.riv.intygsbestallning.certificate.order.updateassessment.v1.rivtabp21.UpdateAssessmentResponderInterface;
 import se.riv.intygsbestallning.certificate.order.v1.CVType;
 import se.riv.intygsbestallning.certificate.order.v1.IIType;
+
+import static se.inera.intyg.intygsbestallning.integration.myndighet.service.TjanstekontraktUtils.*;
 
 @Service
 public class MyndighetIntegrationClientServiceImpl implements MyndighetIntegrationClientService {
@@ -46,7 +48,10 @@ public class MyndighetIntegrationClientServiceImpl implements MyndighetIntegrati
     private ReportCareContactResponderInterface reportCareContactResponder;
 
     @Autowired
-    private UpdateAssessmentResponderInterface updateAssessmentResponderInterface;
+    private UpdateAssessmentResponderInterface updateAssessmentResponder;
+
+    @Autowired
+    private ReportDeviationResponderInterface reportDeviationResponder;
 
     @Value("${source.system.hsaid:}")
     private String sourceSystemHsaId;
@@ -63,6 +68,11 @@ public class MyndighetIntegrationClientServiceImpl implements MyndighetIntegrati
     }
 
     @Override
+    public ReportDeviationResponseType reportDeviation(final ReportDeviationRequestDto request) {
+        return reportDeviationResponder.reportDeviation(sourceSystemHsaId, aReportDeviation(sourceSystemHsaId, request));
+    }
+
+    @Override
     public UpdateAssessmentResponseType updateAssessment(Long assessmentId, String certificateType) {
         UpdateAssessmentType request = new UpdateAssessmentType();
         IIType assID = new IIType();
@@ -73,7 +83,6 @@ public class MyndighetIntegrationClientServiceImpl implements MyndighetIntegrati
         certType.setCode(certificateType);
         request.setCertificateType(certType);
 
-        return updateAssessmentResponderInterface.updateAssessment(sourceSystemHsaId, request);
+        return updateAssessmentResponder.updateAssessment(sourceSystemHsaId, request);
     }
-
 }

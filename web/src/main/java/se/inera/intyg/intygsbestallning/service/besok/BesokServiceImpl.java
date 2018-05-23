@@ -22,10 +22,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto;
+import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportDeviationRequestDto;
 import se.inera.intyg.intygsbestallning.integration.myndighet.service.MyndighetIntegrationService;
 import se.inera.intyg.intygsbestallning.persistence.model.Avvikelse;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
@@ -33,6 +36,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
@@ -52,6 +56,7 @@ import java.util.function.Predicate;
 
 import static com.google.common.collect.MoreCollectors.onlyElement;
 import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto.ReportCareContactRequestDtoBuilder.aReportCareContactRequestDto;
+import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportDeviationRequestDto.ReportDeviationRequestDtoBuilder.aReportDeviationRequestDto;
 import static se.inera.intyg.intygsbestallning.persistence.model.Avvikelse.AvvikelseBuilder.anAvvikelse;
 import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
 import static se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus.*;
@@ -106,6 +111,7 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
     }
 
     @Override
+    @Transactional
     public void reportBesokAvvikelse(final ReportBesokAvvikelseRequest request) {
 
         Optional<Utredning> optionalUtredning = utredningRepository.findByBesokList_Id(request.getBesokId());
@@ -122,20 +128,22 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
                 .collect(onlyElement());
 
         besokToUpdate.setAvvikelse(createAvvikelse(request));
+        optionalUtredning.get().getHandelseList().add(HandelseUtil.createBesokAvvikelse(request));
 
-        optionalUtredning.get().getHandelseList().add(HandelseUtil.createBesokAvvikelseMottagen(
-                        request.getTidpunkt(),
-                        request.getOrsakatAv(),
-                        request.getInvanareUteblev()));
+        final Utredning uppdateradUtredning = utredningRepository.save(optionalUtredning.get());
 
-        utredningRepository.save(optionalUtredning.get());
+        if (request.getHandelseTyp().equals(HandelseTyp.AVVIKELSE_RAPPORTERAD)) {
+            request.setAvvikelseId(uppdateradUtredning.getBesokList().stream()
+                    .filter(b -> b.getId().equals(request.getBesokId()))
+                    .collect(onlyElement()).getAvvikelse().getAvvikelseId());
+            myndighetIntegrationService.reportDeviation(createReportDeviationRequestDto(request));
+        }
     }
 
     private Avvikelse createAvvikelse(final ReportBesokAvvikelseRequest request) {
         return anAvvikelse()
-                .withAvvikelseId(request.getAvvikelseId())
                 .withOrsakatAv(request.getOrsakatAv())
-                .withBeskrivning(request.getBeskrivning())
+                .withBeskrivning(request.getBeskrivning().orElse(null))
                 .withTidpunkt(request.getTidpunkt())
                 .withInvanareUteblev(request.getInvanareUteblev())
                 .build();
@@ -144,7 +152,7 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
     private LocalDateTime updateUtredningWithUtredningsTypAfuUtvidgad(Utredning utredning) {
 
         final LocalDateTime nyttSistaDatum = myndighetIntegrationService
-                .updateAssessment(utredning.getUtredningId(), UtredningsTyp.AFU_UTVIDGAD.name()).atStartOfDay();
+                .updateAssessment(utredning.getUtredningId(), UtredningsTyp.AFU_UTVIDGAD.name());
 
         if (utredning.getIntygList().size() == 1 && !utredning.getIntygList().get(0).isKomplettering()) {
             utredning.getIntygList().get(0).setSistaDatum(nyttSistaDatum);
@@ -187,6 +195,18 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
                 .withStartTime(besok.getBesokStartTid())
                 .withEndTime(besok.getBesokSlutTid())
                 .withVisitStatus(besok.getBesokStatus().getCvValue())
+                .build();
+    }
+
+    private ReportDeviationRequestDto createReportDeviationRequestDto(final ReportBesokAvvikelseRequest avvikelseRequest) {
+        return aReportDeviationRequestDto()
+                .withBesokId(avvikelseRequest.getBesokId().toString())
+                .withAvvikelseId(avvikelseRequest.getAvvikelseId().toString())
+                .withOrsakatAv(avvikelseRequest.getOrsakatAv().name())
+                .withBeskrivning(avvikelseRequest.getBeskrivning().orElse(null))
+                .withTidpunkt(SchemaDateUtil.toStringFromLocalDateTime(avvikelseRequest.getTidpunkt()))
+                .withInvanareUteblev(avvikelseRequest.getInvanareUteblev())
+                .withSamordnare(avvikelseRequest.getSamordnare())
                 .build();
     }
 

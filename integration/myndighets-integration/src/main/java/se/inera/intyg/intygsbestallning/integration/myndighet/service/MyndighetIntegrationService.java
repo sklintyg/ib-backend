@@ -19,9 +19,10 @@
 package se.inera.intyg.intygsbestallning.integration.myndighet.service;
 
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto;
+import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportDeviationRequestDto;
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.RespondToPerformerRequestDto;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public interface MyndighetIntegrationService {
 
@@ -29,5 +30,7 @@ public interface MyndighetIntegrationService {
 
     void reportCareContactInteraction(ReportCareContactRequestDto request);
 
-    LocalDate updateAssessment(Long id, String certificateType);
+    LocalDateTime updateAssessment(Long id, String certificateType);
+
+    void reportDeviation(ReportDeviationRequestDto reportDeviationRequestDto);
 }

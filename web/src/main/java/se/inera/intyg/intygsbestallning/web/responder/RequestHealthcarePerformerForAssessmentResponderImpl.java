@@ -18,11 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.web.responder;
 
-import static java.util.Objects.isNull;
-import static se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil.ok;
-import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
-
-import com.google.common.base.Preconditions;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -32,6 +27,11 @@ import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
 import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentResponseType;
 import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentType;
 import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.rivtabp21.RequestHealthcarePerformerForAssessmentResponderInterface;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Objects.nonNull;
+import static se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil.ok;
+import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
 
 @Service
 @SchemaValidation
@@ -51,8 +51,8 @@ public class RequestHealthcarePerformerForAssessmentResponderImpl
     public RequestHealthcarePerformerForAssessmentResponseType requestHealthcarePerformerForAssessment(
             final String logicalAddress, final RequestHealthcarePerformerForAssessmentType request) {
 
-        Preconditions.checkArgument(!isNull(logicalAddress));
-        Preconditions.checkArgument(!isNull(request));
+        checkArgument(nonNull(logicalAddress));
+        checkArgument(nonNull(request));
 
         final Utredning sparadUtredning = utredningService.registerNewUtredning(AssessmentRequest.from(request));
 
