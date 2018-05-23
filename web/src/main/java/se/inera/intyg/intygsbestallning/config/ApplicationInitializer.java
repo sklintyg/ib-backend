@@ -57,6 +57,7 @@ public class ApplicationInitializer implements WebApplicationInitializer {
                 PuConfiguration.class,
                 PuCacheConfiguration.class,
                 ServiceConfig.class,
+                MailConfiguration.class,
                 JmsConfig.class,
                 NTjPPingConfig.class,
                 SecurityConfig.class,

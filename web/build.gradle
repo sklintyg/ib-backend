@@ -129,6 +129,8 @@ dependencies {
 
     compile "org.apache.activemq:activemq-spring:${activemqVersion}"
 
+    compile "org.antlr:ST4:${stAntlr4Version}"
+
     compileOnly "javax.jms:jms-api:${javaxJmsVersion}"
     compileOnly "javax.servlet:javax.servlet-api:${javaxServletVersion}"
     compileOnly "jstl:jstl:${jstlVersion}"
@@ -143,7 +145,7 @@ dependencies {
     testCompile "org.springframework:spring-test:${springContextVersion}"
     testCompile "org.unitils:unitils-core:${unitilsCoreVersion}"
     testCompile "javax.jms:jms-api:${javaxJmsVersion}"
-    testCompile "org.antlr:ST4:${stAntlr4Version}"
+
 
     gretty "org.apache.activemq:activemq-client:${activemqVersion}"
     gretty "org.apache.activemq:activemq-broker:${activemqVersion}"

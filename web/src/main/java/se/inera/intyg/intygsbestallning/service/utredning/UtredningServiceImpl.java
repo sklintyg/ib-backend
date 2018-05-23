@@ -35,16 +35,17 @@ import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
+import se.inera.intyg.intygsbestallning.persistence.model.Handling;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
 import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
+import se.inera.intyg.intygsbestallning.service.notification.MailNotificationService;
 import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
-import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.util.GenericComparator;
 import se.inera.intyg.intygsbestallning.service.util.PagingUtil;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
@@ -103,7 +104,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     private UtredningListItemFactory utredningListItemFactory;
 
     @Autowired
-    private BusinessDaysBean businessDays;
+    private MailNotificationService mailNotificationService;
 
     @Override
     public List<UtredningListItem> findExternForfraganByLandstingHsaId(String landstingHsaId) {
@@ -250,12 +251,19 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         updateInvanareFromOrder(utredning.getInvanare(), order);
 
         if (order.isHandling()) {
-            utredning.getHandlingList().add(aHandling()
+            Handling handling = aHandling()
                     .withSkickatDatum(LocalDate.now().atStartOfDay())
                     .withUrsprung(HandlingUrsprungTyp.BESTALLNING)
-                    .build());
+                    .build();
+            utredning.getHandlingList().add(handling);
+
+            // Send notification if applicable
+            mailNotificationService.notifyHandlingMottagen(utredning);
         }
         utredning.getHandelseList().add(HandelseUtil.createOrderReceived(order.getBestallare().getMyndighet(), order.getOrderDate()));
+
+
+
         return utredning;
     }
 
@@ -294,6 +302,9 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                     .withSkickatDatum(LocalDate.now().atStartOfDay())
                     .withUrsprung(HandlingUrsprungTyp.BESTALLNING)
                     .build());
+
+            // Send notification if applicable
+            mailNotificationService.notifyHandlingMottagen(utredning);
         }
         utredningRepository.save(utredning);
         return utredning;
