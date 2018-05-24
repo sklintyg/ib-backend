@@ -18,20 +18,11 @@
  */
 
 angular.module('ibApp')
-    .controller('VisaBestallningCtrl',
-        function($log, $scope, $stateParams, BestallningarProxy) {
+    .controller('LaggTillBesokModalCtrl',
+        function() {
             'use strict';
 
-            $scope.vm = {
-                loading: true
-            };
 
-            BestallningarProxy.getBestallning($stateParams.utredningsId).then(function(bestallning) {
-                $scope.bestallning = bestallning;
-            }, function(error) {
-                $log.error(error);
-            }).finally(function() { // jshint ignore:line
-                $scope.vm.loading = false;
-            });
+
         }
     );

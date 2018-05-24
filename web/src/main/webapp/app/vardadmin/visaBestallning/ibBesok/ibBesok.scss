@@ -1,0 +1,17 @@
+ib-besok {
+
+  .ib-besok-wrapper {
+    background-color: $ib-color-00;
+    height: 100vh;
+  }
+  .button-wrapper {
+    display: flex;
+    flex-direction: row;
+    padding-left: 22px;
+
+    .btn {
+      margin: 50px 10px;
+    }
+  }
+
+}
