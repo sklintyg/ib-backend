@@ -33,16 +33,34 @@ angular.module('ibApp').directive('ibUtredningButtonBar',
                 acceptInProgress: false
             };
 
+            function findDirektTilldeladInternForfragan() {
+                return $scope.utredning.internForfraganList.filter(function(internForfragan) {
+                    if (internForfragan.status.id === 'DIREKTTILLDELAD') {
+                        return true;
+                    }
+                });
+            }
+
             $scope.accepteraBtnDisabled = function() {
-                return $scope.utredning.status.id === 'TILLDELAD_VANTAR_PA_BESTALLNING' || !$scope.utredningVm.selectedInternforfragan;
+                var hasDirektTilldeladInternForfragan = findDirektTilldeladInternForfragan().length > 0;
+                return $scope.utredning.status.id === 'TILLDELAD_VANTAR_PA_BESTALLNING' ||
+                    (!hasDirektTilldeladInternForfragan && !$scope.utredningVm.selectedInternforfragan);
             };
+
             $scope.avvisaBtnDisabled = function() {
                 return $scope.utredning.status.id === 'TILLDELAD_VANTAR_PA_BESTALLNING';
             };
 
             $scope.acceptera = function() {
                 $scope.vm.acceptInProgress = true;
-                ExternForfraganProxy.acceptExternForfragan($scope.utredning.utredningsId, $scope.utredningVm.selectedInternforfragan.vardenhetHsaId)
+                var vardenhetHsaId;
+                if ($scope.utredningVm.selectedInternforfragan) {
+                    vardenhetHsaId = $scope.utredningVm.selectedInternforfragan.vardenhetHsaId;
+                }
+                else {
+                    vardenhetHsaId = findDirektTilldeladInternForfragan()[0].vardenhetHsaId;
+                }
+                ExternForfraganProxy.acceptExternForfragan($scope.utredning.utredningsId, vardenhetHsaId)
                     .then(function(data) {
                         angular.copy(data, $scope.utredning);
                     }).finally(function() { // jshint ignore:line
