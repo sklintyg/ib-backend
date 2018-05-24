@@ -24,9 +24,6 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto.user;
 public class GetConfigResponse {
     private String version;
 
-    private Integer utredningPaminnelseDagar;
-    private Integer forfraganPaminnelseDagar;
-
     public String getVersion() {
         return version;
     }
@@ -35,26 +32,8 @@ public class GetConfigResponse {
         this.version = version;
     }
 
-    public Integer getUtredningPaminnelseDagar() {
-        return utredningPaminnelseDagar;
-    }
-
-    public void setUtredningPaminnelseDagar(Integer utredningPaminnelseDagar) {
-        this.utredningPaminnelseDagar = utredningPaminnelseDagar;
-    }
-
-    public Integer getForfraganPaminnelseDagar() {
-        return forfraganPaminnelseDagar;
-    }
-
-    public void setForfraganPaminnelseDagar(Integer forfraganPaminnelseDagar) {
-        this.forfraganPaminnelseDagar = forfraganPaminnelseDagar;
-    }
-
     public static final class GetConfigResponseBuilder {
         private String version;
-        private Integer utredningPaminnelseDagar;
-        private Integer forfraganPaminnelseDagar;
 
         public static GetConfigResponse.GetConfigResponseBuilder aGetConfigResponse() {
             return new GetConfigResponse.GetConfigResponseBuilder();
@@ -65,21 +44,9 @@ public class GetConfigResponse {
             return this;
         }
 
-        public GetConfigResponseBuilder withUtredningPaminnelseDagar(Integer utredningPaminnelseDagar) {
-            this.utredningPaminnelseDagar = utredningPaminnelseDagar;
-            return this;
-        }
-
-        public GetConfigResponseBuilder withForfraganPaminnelseDagar(Integer forfraganPaminnelseDagar) {
-            this.forfraganPaminnelseDagar = forfraganPaminnelseDagar;
-            return this;
-        }
-
         public GetConfigResponse build() {
             GetConfigResponse getConfigResponse = new GetConfigResponse();
             getConfigResponse.setVersion(version);
-            getConfigResponse.setUtredningPaminnelseDagar(utredningPaminnelseDagar);
-            getConfigResponse.setForfraganPaminnelseDagar(forfraganPaminnelseDagar);
             return getConfigResponse;
         }
     }

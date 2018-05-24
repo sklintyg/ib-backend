@@ -25,12 +25,8 @@ angular.module('ibApp').directive('ibUtredningStatus',
             restrict: 'E',
             templateUrl: '/components/appDirectives/ibUtredningStatus/ibUtredningStatus.directive.html',
             scope: {
-                status: '<'
-            },
-            link: function($scope) {
-                if ($scope.status.id === 'FORFRAGAN_INKOMMEN' || $scope.status.id === 'TILLDELA_UTREDNING') {
-                    $scope.kraverAtgard = true;
-                }
+                status: '<',
+                kraverAtgard: '<'
             }
         };
     });

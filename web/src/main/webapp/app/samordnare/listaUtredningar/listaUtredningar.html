@@ -22,8 +22,8 @@
         <td>{{::row.utredningsTyp}}</td>
         <td>{{::row.vardenhetNamn}}</td>
         <td>{{::row.fas.label}}</td>
-        <td><ib-utredning-slutdatum-fas fas="::row.fas" slutdatum="::row.slutdatumFas"></ib-utredning-slutdatum-fas></td>
-        <td><ib-utredning-status status="::row.status"></ib-utredning-status></td>
+        <td><ib-utredning-slutdatum-fas fas="::row.fas" slutdatum="::row.slutdatumFas" slutdatum-passerat="::row.slutdatumFasPasserat" slutdatum-pa-vag-passeras="::row.slutdatumFasPaVagPasseras"></ib-utredning-slutdatum-fas></td>
+        <td><ib-utredning-status status="::row.status" kraver-atgard="::row.kraverAtgard"></ib-utredning-status></td>
         <td><button class="btn btn-primary" ng-click="visaUtredning(row.utredningsId)"><span message key="common.show"></span></button></td>
       </tr>
     </tbody>

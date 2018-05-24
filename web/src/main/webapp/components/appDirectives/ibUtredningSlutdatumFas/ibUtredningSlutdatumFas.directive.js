@@ -18,35 +18,16 @@
  */
 
 angular.module('ibApp').directive('ibUtredningSlutdatumFas',
-    function(APP_CONFIG) {
+    function() {
         'use strict';
 
         return {
             restrict: 'E',
             templateUrl: '/components/appDirectives/ibUtredningSlutdatumFas/ibUtredningSlutdatumFas.directive.html',
             scope: {
-                fas: '<',
-                slutdatum: '<'
-            },
-            link: function($scope) {
-
-                if ($scope.fas !== 'REDOVISA_TOLK') {
-                    var dateTime = moment();
-                    var todaydate = moment({
-                        year: dateTime.year(),
-                        month: dateTime.month(),
-                        day: dateTime.date()
-                    }).utc(true);
-
-                    var daysToSlutdatum = moment($scope.slutdatum, 'YYYY-MM-DD').utc(true).diff(todaydate, 'days');
-
-                    if (daysToSlutdatum < 0) {
-                        $scope.warningSlutDatumPassed = true;
-                    }
-                    else if (daysToSlutdatum < APP_CONFIG.utredningPaminnelseDagar) {
-                        $scope.warningSlutDatumPaminnelsePassed = true;
-                    }
-                }
+                slutdatum: '<',
+                slutdatumPasserat: '<',
+                slutdatumPaVagPasseras: '<'
             }
         };
     });

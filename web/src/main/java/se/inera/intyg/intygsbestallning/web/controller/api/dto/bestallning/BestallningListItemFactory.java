@@ -28,11 +28,12 @@ import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Component
 public class BestallningListItemFactory {
 
-    @Value("${ib.utredning.paminnelse.dagar}")
+    @Value("${ib.utredning.paminnelse.arbetsdagar}")
     private long paminnelseDagar;
 
     private UtredningStatusResolver utredningStatusResolver = new UtredningStatusResolver();
@@ -45,7 +46,7 @@ public class BestallningListItemFactory {
                 .withFas(utredningStatus.getUtredningFas())
                 .withPatientId(utredning.getInvanare().getPersonId())
                 .withPatientNamn(null)
-                .withSlutdatumFas(SlutDatumFasResolver.resolveSlutDatumFas(utredning, utredningStatus))
+                .withSlutdatumFas(SlutDatumFasResolver.resolveSlutDatumFas(utredning, utredningStatus).format(DateTimeFormatter.ISO_DATE))
                 .withSlutdatumPasserat(LocalDateTime.now().isAfter(utredning.getIntygList().stream()
                         .filter(i -> !i.isKomplettering())
                         .findFirst()

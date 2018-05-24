@@ -37,6 +37,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.notification.MailNotificationService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
+import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
@@ -106,7 +107,7 @@ public class UtredningServiceImplTest {
     private InternForfraganListItemFactory internForfraganListItemFactory = new InternForfraganListItemFactory(new BusinessDaysStub());
 
     @Spy
-    private UtredningListItemFactory utredningListItemFactory;
+    private UtredningListItemFactory utredningListItemFactory = new UtredningListItemFactory(new BusinessDaysStub());
 
     @InjectMocks
     private UtredningServiceImpl utredningService;

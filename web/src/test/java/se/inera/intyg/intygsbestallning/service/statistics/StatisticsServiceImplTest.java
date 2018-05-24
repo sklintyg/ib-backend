@@ -68,7 +68,7 @@ public class StatisticsServiceImplTest {
     private BestallningListItemFactory bestallningListItemFactory;
 
     @Spy
-    private UtredningListItemFactory utredningListItemFactory;
+    private UtredningListItemFactory utredningListItemFactory = new UtredningListItemFactory(new BusinessDaysStub());
 
     @Spy
     private InternForfraganListItemFactory internForfraganListItemFactory = new InternForfraganListItemFactory(new BusinessDaysStub());

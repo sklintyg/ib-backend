@@ -68,7 +68,7 @@ public class GetUtredningResponse {
         return GetUtredningResponseBuilder.aGetUtredningResponse()
                 .withUtredningsId(utredning.getUtredningId())
                 .withStatusAndFas(status)
-                .withSlutdatumFas(SlutDatumFasResolver.resolveSlutDatumFas(utredning, status))
+                .withSlutdatumFas(SlutDatumFasResolver.resolveSlutDatumFas(utredning, status).format(DateTimeFormatter.ISO_DATE))
                 .withInkomDatum(!isNull(utredning.getExternForfragan())
                         ? utredning.getExternForfragan().getInkomDatum().format(formatter) : null)
                 .withBesvarasSenastDatum(!isNull(utredning.getExternForfragan())

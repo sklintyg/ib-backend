@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItemFactory;
 
@@ -41,7 +42,7 @@ import static se.inera.intyg.intygsbestallning.persistence.model.type.Utrednings
 public class UtredningListItemFactoryTest {
 
     @InjectMocks
-    private UtredningListItemFactory testee = new UtredningListItemFactory();
+    private UtredningListItemFactory testee = new UtredningListItemFactory(new BusinessDaysStub());
 
     @Test
     public void testFrom() {

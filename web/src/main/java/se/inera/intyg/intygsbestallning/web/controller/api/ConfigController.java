@@ -42,10 +42,6 @@ public class ConfigController {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigController.class);
 
     private static final String PROJECT_VERSION_PROPERTY = "project.version";
-    private static final String UTREDNING_PAMINNELSE_DAGAR_PROPERTY = "ib.utredning.paminnelse.dagar";
-    private static final String FORFRAGAN_PAMINNELSE_DAGAR_PROPERTY = "ib.forfragan.paminnelse.dagar";
-    private static final int UTREDNING_PAMINNELSE_DAGAR_DEFAULT_VALUE = 5;
-    private static final int FORFRAGAN_PAMINNELSE_DAGAR_DEFAULT_VALUE = 2;
 
     @Autowired
     private DynamicLinkService dynamicLinkService;
@@ -59,26 +55,8 @@ public class ConfigController {
 
     @GetMapping
     public GetConfigResponse getConfig() {
-        Integer utredningPaminnelseDagar;
-        try {
-            utredningPaminnelseDagar = Integer.parseInt(env.getProperty(UTREDNING_PAMINNELSE_DAGAR_PROPERTY, ""));
-        } catch (NumberFormatException e) {
-            LOG.error("Configuration property '{}' has not been set to integer!", UTREDNING_PAMINNELSE_DAGAR_PROPERTY);
-            utredningPaminnelseDagar = UTREDNING_PAMINNELSE_DAGAR_DEFAULT_VALUE;
-        }
-
-        Integer forfraganPaminnelseDagar;
-        try {
-            forfraganPaminnelseDagar = Integer.parseInt(env.getProperty(FORFRAGAN_PAMINNELSE_DAGAR_PROPERTY, ""));
-        } catch (NumberFormatException e) {
-            LOG.error("Configuration property '{}' has not been set to integer!", FORFRAGAN_PAMINNELSE_DAGAR_PROPERTY);
-            forfraganPaminnelseDagar = FORFRAGAN_PAMINNELSE_DAGAR_DEFAULT_VALUE;
-        }
-
         return GetConfigResponse.GetConfigResponseBuilder.aGetConfigResponse()
                 .withVersion(env.getProperty(PROJECT_VERSION_PROPERTY))
-                .withUtredningPaminnelseDagar(utredningPaminnelseDagar)
-                .withForfraganPaminnelseDagar(forfraganPaminnelseDagar)
                 .build();
     }
 

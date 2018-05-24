@@ -32,7 +32,10 @@ public class UtredningListItem implements FreeTextSearchable, FilterableListItem
     private String vardenhetNamn;
     private UtredningFas fas;
     private String slutdatumFas;
+    private boolean slutdatumFasPaVagPasseras;
+    private boolean slutdatumFasPasserat;
     private UtredningStatus status;
+    private boolean kraverAtgard;
 
     public Long getUtredningsId() {
         return utredningsId;
@@ -89,6 +92,22 @@ public class UtredningListItem implements FreeTextSearchable, FilterableListItem
         this.slutdatumFas = slutdatumFas;
     }
 
+    public boolean isSlutdatumFasPaVagPasseras() {
+        return slutdatumFasPaVagPasseras;
+    }
+
+    public void setSlutdatumFasPaVagPasseras(boolean slutdatumFasPaVagPasseras) {
+        this.slutdatumFasPaVagPasseras = slutdatumFasPaVagPasseras;
+    }
+
+    public boolean isSlutdatumFasPasserat() {
+        return slutdatumFasPasserat;
+    }
+
+    public void setSlutdatumFasPasserat(boolean slutdatumFasPasserat) {
+        this.slutdatumFasPasserat = slutdatumFasPasserat;
+    }
+
     @Override
     public UtredningStatus getStatus() {
         return status;
@@ -96,6 +115,14 @@ public class UtredningListItem implements FreeTextSearchable, FilterableListItem
 
     public void setStatus(UtredningStatus status) {
         this.status = status;
+    }
+
+    public boolean isKraverAtgard() {
+        return kraverAtgard;
+    }
+
+    public void setKraverAtgard(boolean kraverAtgard) {
+        this.kraverAtgard = kraverAtgard;
     }
 
     @Override
@@ -115,7 +142,10 @@ public class UtredningListItem implements FreeTextSearchable, FilterableListItem
         private String vardenhetNamn;
         private UtredningFas fas;
         private String slutdatumFas;
+        private boolean slutdatumFasPaVagPasseras;
+        private boolean slutdatumFasPasserat;
         private UtredningStatus status;
+        private boolean kraverAtgard;
 
         private UtredningListItemBuilder() {
         }
@@ -154,8 +184,23 @@ public class UtredningListItem implements FreeTextSearchable, FilterableListItem
             return this;
         }
 
+        public UtredningListItemBuilder withSlutdatumFasPaVagPasseras(boolean slutdatumFasPaVagPasseras) {
+            this.slutdatumFasPaVagPasseras = slutdatumFasPaVagPasseras;
+            return this;
+        }
+
+        public UtredningListItemBuilder withSlutdatumFasPasserat(boolean slutdatumFasPasserat) {
+            this.slutdatumFasPasserat = slutdatumFasPasserat;
+            return this;
+        }
+
         public UtredningListItemBuilder withStatus(UtredningStatus status) {
             this.status = status;
+            return this;
+        }
+
+        public UtredningListItemBuilder withKraverAtgard(boolean kraverAtgard) {
+            this.kraverAtgard = kraverAtgard;
             return this;
         }
 
@@ -167,7 +212,10 @@ public class UtredningListItem implements FreeTextSearchable, FilterableListItem
             utredningListItem.setVardenhetNamn(vardenhetNamn);
             utredningListItem.setFas(fas);
             utredningListItem.setSlutdatumFas(slutdatumFas);
+            utredningListItem.setSlutdatumFasPasserat(slutdatumFasPasserat);
+            utredningListItem.setSlutdatumFasPaVagPasseras(slutdatumFasPaVagPasseras);
             utredningListItem.setStatus(status);
+            utredningListItem.setKraverAtgard(kraverAtgard);
             return utredningListItem;
         }
     }
