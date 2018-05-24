@@ -29,6 +29,10 @@ angular.module('ibApp').directive('ibUtredningButtonBar',
         templateUrl: '/app/samordnare/visaUtredning/utredningHeader/ibUtredningHeaderButtonBar/ibUtredningButtonBar.directive.html',
         link: function($scope) {
 
+            $scope.vm = {
+                acceptInProgress: false
+            };
+
             $scope.accepteraBtnDisabled = function() {
                 return $scope.utredning.status.id === 'TILLDELAD_VANTAR_PA_BESTALLNING' || !$scope.utredningVm.selectedInternforfragan;
             };
@@ -37,8 +41,13 @@ angular.module('ibApp').directive('ibUtredningButtonBar',
             };
 
             $scope.acceptera = function() {
+                $scope.vm.acceptInProgress = true;
                 ExternForfraganProxy.acceptExternForfragan($scope.utredning.utredningsId, $scope.utredningVm.selectedInternforfragan.vardenhetHsaId)
-                    .then(function(data) { angular.copy(data, $scope.utredning); });
+                    .then(function(data) {
+                        angular.copy(data, $scope.utredning);
+                    }).finally(function() { // jshint ignore:line
+                        $scope.vm.acceptInProgress = false;
+                    });
             };
             $scope.avvisa = function() {
                 var modalInstance = $uibModal.open({

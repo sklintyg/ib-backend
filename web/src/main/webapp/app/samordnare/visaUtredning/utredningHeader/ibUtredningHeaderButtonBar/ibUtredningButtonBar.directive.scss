@@ -24,4 +24,11 @@ ib-utredning-button-bar {
     pointer-events: none;
   }
 
+  ib-button {
+    display: inline-block;
+    margin-right: 10px;
+    button {
+      min-height: 40px;
+    }
+  }
 }

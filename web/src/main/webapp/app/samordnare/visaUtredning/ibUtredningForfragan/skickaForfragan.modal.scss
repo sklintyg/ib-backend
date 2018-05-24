@@ -18,4 +18,11 @@
     margin-top: 10px;
     color: $ib-color-11;
   }
+
+  .modal-footer {
+    ib-button {
+      display: inline-block;
+      margin-right: 10px;
+    }
+  }
 }

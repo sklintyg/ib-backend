@@ -1,12 +1,12 @@
 <div class="white-space-no-wrap" ng-cloak ng-if="utredning.fas.id === 'FORFRAGAN'">
-  <button type="button"
-          id="accepteraBtn"
-          class="btn btn-secondary"
-          ng-disabled="accepteraBtnDisabled()"
-          ng-click="acceptera()"
-          ib-authority="ACCEPTERA_EXTERNFORFRAGAN">
+  <ib-button btn-id="accepteraBtn"
+             btn-class="btn btn-secondary"
+             busy="vm.acceptInProgress"
+             btn-disabled="accepteraBtnDisabled()"
+             btn-click="acceptera()"
+             ib-authority="ACCEPTERA_EXTERNFORFRAGAN">
     <i class="material-icons">check</i> Acceptera förfrågan
-  </button>
+  </ib-button>
   <button type="button"
           id="avvisaBtn"
           class="btn btn-secondary"

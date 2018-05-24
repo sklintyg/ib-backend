@@ -20,9 +20,12 @@
 
   </div>
   <div class="modal-footer">
-    <button type="button" id="skicka-forfragan-modal-skicka" class="btn btn-primary" ng-click="avvisa()">
+    <ib-button btn-id="skicka-forfragan-modal-skicka"
+               btn-class="btn btn-primary"
+               btn-click="avvisa()"
+               busy="vm.inProgress">
       Skicka
-    </button>
+    </ib-button>
     <button type="button" id="skicka-forfragan-modal-cancel" class="btn btn-default" ng-click="$dismiss()">
       <span message key="common.cancel"></span>
     </button>

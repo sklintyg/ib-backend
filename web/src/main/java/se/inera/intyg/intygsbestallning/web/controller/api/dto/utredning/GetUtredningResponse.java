@@ -27,11 +27,12 @@ import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.VardenhetListItem;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 public class GetUtredningResponse {
     private static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
@@ -65,15 +66,17 @@ public class GetUtredningResponse {
 
     public static GetUtredningResponse from(Utredning utredning, UtredningStatus status) {
 
+        LocalDateTime slutdatumFas = SlutDatumFasResolver.resolveSlutDatumFas(utredning, status);
+
         return GetUtredningResponseBuilder.aGetUtredningResponse()
                 .withUtredningsId(utredning.getUtredningId())
                 .withStatusAndFas(status)
-                .withSlutdatumFas(SlutDatumFasResolver.resolveSlutDatumFas(utredning, status).format(DateTimeFormatter.ISO_DATE))
-                .withInkomDatum(!isNull(utredning.getExternForfragan())
+                .withSlutdatumFas(nonNull(slutdatumFas) ? slutdatumFas.format(DateTimeFormatter.ISO_DATE) : null)
+                .withInkomDatum(nonNull(utredning.getExternForfragan())
                         ? utredning.getExternForfragan().getInkomDatum().format(formatter) : null)
-                .withBesvarasSenastDatum(!isNull(utredning.getExternForfragan())
+                .withBesvarasSenastDatum(nonNull(utredning.getExternForfragan())
                         ? utredning.getExternForfragan().getBesvarasSenastDatum().format(formatter) : null)
-                .withBostadsort(!isNull(utredning.getInvanare())
+                .withBostadsort(nonNull(utredning.getInvanare())
                         ? utredning.getInvanare().getPostort() : null)
                 .withTidigareUtredd(!utredning.getInvanare().getTidigareUtforare().isEmpty())
                 .withTidigareEnheter(utredning.getInvanare().getTidigareUtforare())
