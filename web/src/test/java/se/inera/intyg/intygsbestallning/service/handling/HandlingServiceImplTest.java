@@ -28,6 +28,7 @@ import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
+import se.inera.intyg.intygsbestallning.service.notification.MailNotificationService;
 import se.inera.intyg.intygsbestallning.service.pdl.LogService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
@@ -42,6 +43,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -55,6 +57,9 @@ public class HandlingServiceImplTest {
 
     @Mock
     private LogService logService;
+
+    @Mock
+    private MailNotificationService mailNotificationService;
 
     @InjectMocks
     private HandlingServiceImpl testee;
@@ -70,6 +75,7 @@ public class HandlingServiceImplTest {
         testee.registerNewHandling(1L, buildRequest());
         verify(utredningRepository, times(1)).save(any());
         verify(logService, times(1)).logHandlingMottagen(any(Utredning.class));
+        verify(mailNotificationService, times(1)).notifyHandlingMottagen(any(Utredning.class));
     }
 
     @Test(expected = IbServiceException.class)
@@ -78,7 +84,13 @@ public class HandlingServiceImplTest {
         utredning.setAvbrutenDatum(LocalDateTime.now());
         utredning.setAvbrutenAnledning(EndReason.JAV);
         when(utredningRepository.findById(anyLong())).thenReturn(Optional.of(utredning));
-        testee.registerNewHandling(1L, buildRequest());
+        try {
+            testee.registerNewHandling(1L, buildRequest());
+        } catch (Exception e) {
+            verifyZeroInteractions(mailNotificationService);
+            throw e;
+        }
+
     }
 
     @Test(expected = IbServiceException.class)

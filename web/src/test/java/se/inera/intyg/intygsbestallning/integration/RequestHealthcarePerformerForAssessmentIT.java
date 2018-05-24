@@ -49,7 +49,7 @@ public class RequestHealthcarePerformerForAssessmentIT extends BaseRestIntegrati
 
     @Test
     public void requestHealthcarePerformerForAssessmentWorks() {
-        requestTemplate.add("data", new RequestHealthcarePerformerAssessment("2018-05-12",
+        requestTemplate.add("data", new RequestHealthcarePerformerAssessment("20180512",
                 "IFV1239877878-1043",
                 "Kommentar",
                 "true", "en", "Engelska", "Hasse Handläggarsson",
