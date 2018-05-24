@@ -19,6 +19,7 @@
 package se.inera.intyg.intygsbestallning.integration.myndighet.client;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto;
@@ -51,6 +52,7 @@ public class MyndighetIntegrationClientServiceImpl implements MyndighetIntegrati
     private UpdateAssessmentResponderInterface updateAssessmentResponder;
 
     @Autowired
+    @Qualifier("reportDeviationResponderMyndighet")
     private ReportDeviationResponderInterface reportDeviationResponder;
 
     @Value("${source.system.hsaid:}")
