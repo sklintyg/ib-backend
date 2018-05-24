@@ -36,9 +36,11 @@ import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
 
 public final class TjanstekontraktUtils {
 
-    private static final String HSA_ID_ROOT = "1.2.752.129.2.1.4.1";
+    private static final String HSA_ID_ROOT = "1.2.752.129.2.2.1.4";
+
     private static final String KV_SVAR_BESTALLNING_CODESYSTEM = "d9d51e92-e2c0-49d8-bbec-3fd7e1b60c85";
     private static final String KV_ORSAKAT_AV_CODE_SYSTEM = "be9c99a7-25ff-432b-9ba4-3a74bc45e2be";
+    private static final String KV_TOLK_STATUS = "c074d6f5-fc15-4c10-bdd5-115e29888ff5";
 
     private TjanstekontraktUtils() {
     }
@@ -69,7 +71,7 @@ public final class TjanstekontraktUtils {
         request.setAssessmentId(anII(sourceSystemHsaId, dto.getAssessmentId().toString()));
         request.setAssessmentCareContactId(anII(sourceSystemHsaId, dto.getAssessmentCareContactId()));
         request.setParticipatingProfession(aCv(dto.getParticipatingProfession()));
-        request.setInterpreterStatus(aCv(dto.getInterpreterStatus()));
+        request.setInterpreterStatus(aCv(dto.getInterpreterStatus(), KV_TOLK_STATUS, null));
         request.setInvitationDate(dto.getInvitationDate());
         request.setInvitationChannel(aCv(dto.getInvitationChannel()));
         request.setTime(aTimePeriod(dto.getStartTime(), dto.getEndTime()));

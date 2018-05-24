@@ -18,31 +18,15 @@
  */
 package se.inera.intyg.intygsbestallning.service.besok;
 
-import static com.google.common.collect.MoreCollectors.*;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto.ReportCareContactRequestDtoBuilder.aReportCareContactRequestDto;
-import static se.inera.intyg.intygsbestallning.persistence.model.Avvikelse.AvvikelseBuilder.anAvvikelse;
-import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
-import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
-import static se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest.ReportBesokAvvikelseRequestBuilder.aReportBesokAvvikelseRequest;
-
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.MoreCollectors;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto;
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportDeviationRequestDto;
 import se.inera.intyg.intygsbestallning.integration.myndighet.service.MyndighetIntegrationServiceImpl;
@@ -57,10 +41,20 @@ import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRe
 
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Optional;
+
+import static com.google.common.collect.MoreCollectors.onlyElement;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto.ReportCareContactRequestDtoBuilder.aReportCareContactRequestDto;
+import static se.inera.intyg.intygsbestallning.persistence.model.Avvikelse.AvvikelseBuilder.anAvvikelse;
+import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
+import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
+import static se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest.ReportBesokAvvikelseRequestBuilder.aReportBesokAvvikelseRequest;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BesokServiceImplTest {
@@ -118,7 +112,7 @@ public class BesokServiceImplTest {
                         .orElse(null))
                 .withParticipatingProfession(besok.getDeltagareProfession().name())
                 .withInterpreterStatus(besok.getTolkStatus().getLabel())
-                .withInvitationDate(besok.getKallelseDatum().toString())
+                .withInvitationDate(SchemaDateUtil.toStringFromLocalDateTime(besok.getKallelseDatum()))
                 .withInvitationChannel(besok.getKallelseForm().getCvValue())
                 .withStartTime(besok.getBesokStartTid())
                 .withEndTime(besok.getBesokSlutTid())
@@ -157,7 +151,7 @@ public class BesokServiceImplTest {
                         .orElse(null))
                 .withParticipatingProfession(besok.getDeltagareProfession().name())
                 .withInterpreterStatus(besok.getTolkStatus().getLabel())
-                .withInvitationDate(besok.getKallelseDatum().toString())
+                .withInvitationDate(SchemaDateUtil.toStringFromLocalDateTime(besok.getKallelseDatum()))
                 .withInvitationChannel(besok.getKallelseForm().getCvValue())
                 .withStartTime(besok.getBesokStartTid())
                 .withEndTime(besok.getBesokSlutTid())

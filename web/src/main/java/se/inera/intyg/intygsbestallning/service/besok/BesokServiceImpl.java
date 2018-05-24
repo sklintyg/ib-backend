@@ -190,7 +190,7 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
                         .orElse(null))
                 .withParticipatingProfession(besok.getDeltagareProfession().name())
                 .withInterpreterStatus(besok.getTolkStatus().getLabel())
-                .withInvitationDate(besok.getKallelseDatum().toString())
+                .withInvitationDate(SchemaDateUtil.toStringFromLocalDateTime(besok.getKallelseDatum()))
                 .withInvitationChannel(besok.getKallelseForm().getCvValue())
                 .withStartTime(besok.getBesokStartTid())
                 .withEndTime(besok.getBesokSlutTid())

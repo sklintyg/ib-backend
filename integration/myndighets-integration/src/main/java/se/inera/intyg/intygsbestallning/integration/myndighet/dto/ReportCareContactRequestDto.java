@@ -18,7 +18,9 @@
  */
 package se.inera.intyg.intygsbestallning.integration.myndighet.dto;
 
-import com.google.common.base.Objects;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.time.LocalDateTime;
 
@@ -68,39 +70,6 @@ public final class ReportCareContactRequestDto {
 
     public String getVisitStatus() {
         return visitStatus;
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof ReportCareContactRequestDto)) {
-            return false;
-        }
-        final ReportCareContactRequestDto dto = (ReportCareContactRequestDto) o;
-        return Objects.equal(assessmentId, dto.assessmentId)
-                && Objects.equal(assessmentCareContactId, dto.assessmentCareContactId)
-                && Objects.equal(participatingProfession, dto.participatingProfession)
-                && Objects.equal(interpreterStatus, dto.interpreterStatus)
-                && Objects.equal(invitationDate, dto.invitationDate)
-                && Objects.equal(invitationChannel, dto.invitationChannel)
-                && Objects.equal(startTime, dto.startTime)
-                && Objects.equal(endTime, dto.endTime)
-                && Objects.equal(visitStatus, dto.visitStatus);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(assessmentId,
-                assessmentCareContactId,
-                participatingProfession,
-                interpreterStatus,
-                invitationDate,
-                invitationChannel,
-                startTime,
-                endTime,
-                visitStatus);
     }
 
     public static final class ReportCareContactRequestDtoBuilder {
@@ -180,4 +149,63 @@ public final class ReportCareContactRequestDto {
             return reportCareContactRequestDto;
         }
     }
+
+    // CHECKSTYLE:OFF MagicNumber
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        ReportCareContactRequestDto that = (ReportCareContactRequestDto) o;
+
+        return new EqualsBuilder()
+                .append(assessmentId, that.assessmentId)
+                .append(assessmentCareContactId, that.assessmentCareContactId)
+                .append(participatingProfession, that.participatingProfession)
+                .append(interpreterStatus, that.interpreterStatus)
+                .append(invitationDate, that.invitationDate)
+                .append(invitationChannel, that.invitationChannel)
+                .append(startTime, that.startTime)
+                .append(endTime, that.endTime)
+                .append(visitStatus, that.visitStatus)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(assessmentId)
+                .append(assessmentCareContactId)
+                .append(participatingProfession)
+                .append(interpreterStatus)
+                .append(invitationDate)
+                .append(invitationChannel)
+                .append(startTime)
+                .append(endTime)
+                .append(visitStatus)
+                .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("assessmentId", assessmentId)
+                .append("assessmentCareContactId", assessmentCareContactId)
+                .append("participatingProfession", participatingProfession)
+                .append("interpreterStatus", interpreterStatus)
+                .append("invitationDate", invitationDate)
+                .append("invitationChannel", invitationChannel)
+                .append("startTime", startTime)
+                .append("endTime", endTime)
+                .append("visitStatus", visitStatus)
+                .toString();
+    }
+
+    // CHECKSTYLE:ON MagicNumber
 }
