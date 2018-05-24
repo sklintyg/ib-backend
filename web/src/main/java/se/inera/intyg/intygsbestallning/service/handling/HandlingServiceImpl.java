@@ -35,7 +35,6 @@ import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
 import se.inera.intyg.intygsbestallning.service.pdl.LogService;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.handling.RegisterHandlingRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.handling.RegisterHandlingResponse;
@@ -53,8 +52,6 @@ public class HandlingServiceImpl extends BaseUtredningService implements Handlin
 
     @Autowired
     private LogService logService;
-
-    private UtredningStatusResolver utredningStatusResolver = new UtredningStatusResolver();
 
     @Override
     @Transactional
