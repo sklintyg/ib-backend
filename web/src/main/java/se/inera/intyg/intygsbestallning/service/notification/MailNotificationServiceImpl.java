@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.inera.intyg.intygsbestallning.service.notification;
 
 import com.google.common.base.Strings;
@@ -45,7 +63,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     private JavaMailSender mailSender;
 
     @Autowired
-    private MessageFactory messageFactory;
+    private MailNotificationBodyFactory mailNotificationBodyFactory;
 
     @Override
     public void notifyHandlingMottagen(Utredning utredning) {
@@ -63,7 +81,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         String email = findEmailAddressForVardenhet(vardenhetHsaId);
         String subject = "Beställning av Försäkringsmedicinsk utredning";
 
-        String body = messageFactory.buildBodyForUtredning(
+        String body = mailNotificationBodyFactory.buildBodyForUtredning(
                 "Försäkringskassan har skickat en beställning av en Försäkringsmedicinsk utredning (FMU) för utredning "
                         + utredning.getUtredningId(),
                 "<URL to utredning>");
@@ -79,8 +97,14 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
         if (!preferenceOptional.isPresent()) {
             // Must try to fetch from HSA?
-            Vardenhet vardenhet = hsaOrganizationsService.getVardenhet(vardenhetHsaId);
-            return vardenhet.getEpost();
+            try {
+                Vardenhet vardenhet = hsaOrganizationsService.getVardenhet(vardenhetHsaId);
+                return vardenhet.getEpost();
+            } catch (Exception e) {
+                throw new IbServiceException(IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
+                        "Unable to send notification email, email address for " + vardenhetHsaId + " could not be found "
+                                + "in VardenhetPreference nor HSA.");
+            }
         } else {
             return preferenceOptional.get().getEpost();
         }
