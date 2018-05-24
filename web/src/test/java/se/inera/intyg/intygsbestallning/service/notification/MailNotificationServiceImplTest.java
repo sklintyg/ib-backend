@@ -25,23 +25,20 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.VardenhetPreference;
 import se.inera.intyg.intygsbestallning.persistence.repository.VardenhetPreferenceRepository;
+import se.inera.intyg.intygsbestallning.service.mail.stub.MailServiceStub;
 import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
 
-import javax.mail.internet.MimeMessage;
+import javax.mail.MessagingException;
 import javax.xml.ws.WebServiceException;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -60,7 +57,7 @@ public class MailNotificationServiceImplTest {
     private HsaOrganizationsService hsaOrganizationsService;
 
     @Mock
-    private JavaMailSender mailSender;
+    private MailServiceStub mailService;
 
     @InjectMocks
     private MailNotificationServiceImpl testee;
@@ -68,29 +65,27 @@ public class MailNotificationServiceImplTest {
     @Before
     public void init() {
         mailNotificationBodyFactory.initTemplates();
-        ReflectionTestUtils.setField(testee, "fromAddress", "test@ineratestarnotifications.se");
+        // ReflectionTestUtils.setField(testee, "fromAddress", "test@ineratestarnotifications.se");
     }
 
     @Test
-    public void testHandlingMottagenNotification() {
-        when(mailSender.createMimeMessage()).thenReturn(mock(MimeMessage.class));
+    public void testHandlingMottagenNotification() throws MessagingException {
         when(vardenhetPreferenceRepository.findByVardenhetHsaId(anyString())).thenReturn(buildVardenhetPreference());
         Utredning utredning = TestDataGen.createUtredning();
         utredning.getBestallning().get().setTilldeladVardenhetHsaId("ve-1");
         testee.notifyHandlingMottagen(utredning);
-        verify(mailSender, times(1)).send(any(MimeMessage.class));
+        verify(mailService, times(1)).sendNotificationToUnit(anyString(), anyString(), anyString());
         verifyZeroInteractions(hsaOrganizationsService);
     }
 
     @Test
-    public void testHandlingMottagenNotificationMailAddressFromHsa() {
-        when(mailSender.createMimeMessage()).thenReturn(mock(MimeMessage.class));
+    public void testHandlingMottagenNotificationMailAddressFromHsa() throws MessagingException {
         when(vardenhetPreferenceRepository.findByVardenhetHsaId(anyString())).thenReturn(Optional.empty());
         when(hsaOrganizationsService.getVardenhet(anyString())).thenReturn(buildVardenhet());
         Utredning utredning = TestDataGen.createUtredning();
         utredning.getBestallning().get().setTilldeladVardenhetHsaId("ve-1");
         testee.notifyHandlingMottagen(utredning);
-        verify(mailSender, times(1)).send(any(MimeMessage.class));
+        verify(mailService, times(1)).sendNotificationToUnit(anyString(), anyString(), anyString());
         verify(hsaOrganizationsService, times(1)).getVardenhet(anyString());
     }
 
@@ -99,7 +94,7 @@ public class MailNotificationServiceImplTest {
         Utredning utredning = TestDataGen.createUtredning();
         utredning.setBestallning(null);
         testee.notifyHandlingMottagen(utredning);
-        verifyZeroInteractions(mailSender);
+        verifyZeroInteractions(mailService);
         verifyZeroInteractions(hsaOrganizationsService);
     }
 
@@ -108,7 +103,7 @@ public class MailNotificationServiceImplTest {
         Utredning utredning = TestDataGen.createUtredning();
         utredning.getBestallning().get().setTilldeladVardenhetHsaId(null);
         testee.notifyHandlingMottagen(utredning);
-        verifyZeroInteractions(mailSender);
+        verifyZeroInteractions(mailService);
         verifyZeroInteractions(hsaOrganizationsService);
     }
 
@@ -122,7 +117,7 @@ public class MailNotificationServiceImplTest {
 
 
         testee.notifyHandlingMottagen(utredning);
-        verifyZeroInteractions(mailSender);
+        verifyZeroInteractions(mailService);
         verifyZeroInteractions(hsaOrganizationsService);
     }
 

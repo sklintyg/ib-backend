@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
@@ -32,23 +31,15 @@ import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.VardenhetPreference;
 import se.inera.intyg.intygsbestallning.persistence.repository.VardenhetPreferenceRepository;
+import se.inera.intyg.intygsbestallning.service.mail.MailService;
 
-import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import java.util.Optional;
 
 @Service
 public class MailNotificationServiceImpl implements MailNotificationService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MailNotificationServiceImpl.class);
-
-    @Value("${mail.admin}")
-    private String adminMailAddress;
-
-    @Value("${mail.from}")
-    private String fromAddress;
 
     @Value("${mail.ib.host.url}")
     private String ibHostUrl;
@@ -60,10 +51,11 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     private HsaOrganizationsService hsaOrganizationsService;
 
     @Autowired
-    private JavaMailSender mailSender;
-
-    @Autowired
     private MailNotificationBodyFactory mailNotificationBodyFactory;
+
+    // Should pick implementation automatically (stub or real) depending on profile settings.
+    @Autowired
+    private MailService mailService;
 
     @Override
     public void notifyHandlingMottagen(Utredning utredning) {
@@ -86,7 +78,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
                         + utredning.getUtredningId(),
                 "<URL to utredning>");
         try {
-            sendNotificationToUnit(email, subject, body);
+            mailService.sendNotificationToUnit(email, subject, body);
         } catch (MessagingException e) {
             LOG.error("Error sending notification by email: {}", e.getMessage());
         }
@@ -108,15 +100,5 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         } else {
             return preferenceOptional.get().getEpost();
         }
-    }
-
-    private void sendNotificationToUnit(String mailAddress, String subject, String body) throws MessagingException {
-        MimeMessage message = mailSender.createMimeMessage();
-        message.setFrom(new InternetAddress(fromAddress));
-        message.addRecipient(Message.RecipientType.TO, new InternetAddress(mailAddress));
-
-        message.setSubject(subject);
-        message.setContent(body, "text/html; charset=utf-8");
-        mailSender.send(message);
     }
 }
