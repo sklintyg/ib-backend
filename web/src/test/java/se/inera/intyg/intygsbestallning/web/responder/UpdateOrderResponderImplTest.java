@@ -18,12 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.web.responder;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
-import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createUpdateOrderType;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -34,6 +28,12 @@ import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderResponseType;
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
+import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createUpdateOrderType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UpdateOrderResponderImplTest {
@@ -70,7 +70,7 @@ public class UpdateOrderResponderImplTest {
                 .when(utredningService)
                 .updateOrder(any(UpdateOrderRequest.class));
 
-        final UpdateOrderType request = createUpdateOrderType(true, null);
+        final UpdateOrderType request = createUpdateOrderType(true, null, false);
         final UpdateOrderResponseType response = updateOrderResponder.updateOrder("logicalAddress", request);
 
         assertEquals(ResultTypeUtil.ok(), response.getResult());

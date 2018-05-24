@@ -262,12 +262,11 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         }
         utredning.getHandelseList().add(HandelseUtil.createOrderReceived(order.getBestallare().getMyndighet(), order.getOrderDate()));
 
-
-
         return utredning;
     }
 
     @Override
+    @Transactional
     public Utredning updateOrder(final UpdateOrderRequest update) {
 
         final Utredning utredning = utredningRepository.findById(update.getUtredningId())
@@ -278,7 +277,14 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
             throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, "Assessment does not have a Bestallning");
         }
 
-        return utredningRepository.save(qualifyForUpdatering(update, utredning));
+        Utredning save = qualifyForUpdatering(update, utredning);
+
+        save = utredningRepository.save(save);
+
+        // Notifiera vardenhet.
+        mailNotificationService.notifyBestallningUppdaterad(save);
+
+        return save;
     }
 
     @Override
@@ -396,14 +402,17 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                         .withUrsprung(HandlingUrsprungTyp.UPPDATERING)
                         .build()));
 
-        // Händelse ska skapas - se separat jira för detta
-
         if (!BooleanUtils.toBoolean(toUpdate.getTolkBehov()) && !isNullOrEmpty(toUpdate.getTolkSprak())) {
             throw new IbServiceException(
                     IbErrorCodeEnum.BAD_REQUEST, INTERPRETER_ERROR_TEXT);
         } else if (nonNull(toUpdate.getTolkSprak()) && !toUpdate.getTolkBehov() && !update.getTolkSprak().isPresent()) {
             toUpdate.setTolkSprak(null);
         }
+
+        // Lägg till händelse. Sista
+        LocalDate nyttSistaDatum = update.getLastDateIntyg().isPresent() ? update.getLastDateIntyg().get().toLocalDate() : null;
+        String nyHandlaggare = update.getBestallare().isPresent() ? update.getBestallare().get().getFullstandigtNamn() : null;
+        toUpdate.getHandelseList().add(HandelseUtil.createOrderUpdated(nyttSistaDatum, nyHandlaggare, update.getHandling().isPresent()));
 
         return toUpdate;
     }

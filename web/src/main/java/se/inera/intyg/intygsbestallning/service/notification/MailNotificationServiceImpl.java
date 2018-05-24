@@ -40,6 +40,8 @@ import java.util.Optional;
 public class MailNotificationServiceImpl implements MailNotificationService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MailNotificationServiceImpl.class);
+    private static final String SUBJECT_BESTALLNING_UPPDATERAD = "Försäkringskassan har uppdaterat en beställning";
+    private static final String SUBJECT_HANDLING_MOTTAGEN = "Beställning av Försäkringsmedicinsk utredning";
 
     @Value("${mail.ib.host.url}")
     private String ibHostUrl;
@@ -59,24 +61,51 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     @Override
     public void notifyHandlingMottagen(Utredning utredning) {
-        if (!utredning.getBestallning().isPresent()) {
-            throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, "Cannot send notification for mottagen handling when "
-                    + "there is no Bestallning.");
-        }
+        verifyHasBestallning(utredning, "Cannot send notification for mottagen handling when  there is no Bestallning.");
 
         String vardenhetHsaId = utredning.getBestallning().get().getTilldeladVardenhetHsaId();
-        if (Strings.isNullOrEmpty(vardenhetHsaId)) {
-            throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, "Cannot send notification for mottagen handling when "
-                    + "the Bestallning contains no vardenhetHsaId.");
-        }
+        verifyBestallningHasVardenhet(vardenhetHsaId, "Cannot send notification for mottagen handling when "
+                + "the Bestallning contains no vardenhetHsaId.");
 
         String email = findEmailAddressForVardenhet(vardenhetHsaId);
-        String subject = "Beställning av Försäkringsmedicinsk utredning";
-
         String body = mailNotificationBodyFactory.buildBodyForUtredning(
                 "Försäkringskassan har skickat en beställning av en Försäkringsmedicinsk utredning (FMU) för utredning "
                         + utredning.getUtredningId(),
                 "<URL to utredning>");
+
+        send(email, SUBJECT_HANDLING_MOTTAGEN, body);
+    }
+
+    @Override
+    public void notifyBestallningUppdaterad(Utredning utredning) {
+        verifyHasBestallning(utredning, "Cannot send notification for uppdaterad utredning when "
+                + "there is no Bestallning.");
+
+        String vardenhetHsaId = utredning.getBestallning().get().getTilldeladVardenhetHsaId();
+        verifyBestallningHasVardenhet(vardenhetHsaId, "Cannot send notification for uppdaterad utredning when "
+                + "the Bestallning contains no vardenhetHsaId.");
+
+        String email = findEmailAddressForVardenhet(vardenhetHsaId);
+        String body = mailNotificationBodyFactory.buildBodyForUtredning(
+                "Försäkringskassan har uppdaterad beställningen av utredningen <utredning-id> med ny information.",
+                "<URL to utredning>");
+
+        send(email, SUBJECT_BESTALLNING_UPPDATERAD, body);
+    }
+
+    private void verifyHasBestallning(Utredning utredning, String errorMessage) {
+        if (!utredning.getBestallning().isPresent()) {
+            throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, errorMessage);
+        }
+    }
+
+    private void verifyBestallningHasVardenhet(String vardenhetHsaId, String errorMessage) {
+        if (Strings.isNullOrEmpty(vardenhetHsaId)) {
+            throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, errorMessage);
+        }
+    }
+
+    private void send(String email, String subject, String body) {
         try {
             mailService.sendNotificationToUnit(email, subject, body);
         } catch (MessagingException e) {

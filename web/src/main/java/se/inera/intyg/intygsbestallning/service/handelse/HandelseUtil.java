@@ -134,12 +134,30 @@ public final class HandelseUtil {
                 .build();
     }
 
-    public static Handelse createHandlingMottagen(String vardadministrator, String handlingarMottogsDatum) {
+    public static Handelse createHandlingMottagen(final String vardadministrator, final String handlingarMottogsDatum) {
         return aHandelse()
                 .withSkapad(LocalDateTime.now())
                 .withAnvandare(vardadministrator)
                 .withHandelseTyp(HandelseTyp.HANDLING_MOTTAGEN)
                 .withHandelseText("Handlingar mottagna " + handlingarMottogsDatum)
+                .build();
+    }
+
+    public static Handelse createOrderUpdated(final LocalDate nyttSlutDatum, final String nyHandlaggare, final boolean documentsSent) {
+        StringBuilder text = new StringBuilder().append("Beställning uppdaterad av Försäkringskassan.");
+        if (nyttSlutDatum != null) {
+            text.append("Nytt slutdatum: ").append(nyttSlutDatum.format(DateTimeFormatter.ISO_DATE));
+        }
+        if (nyHandlaggare != null) {
+            text.append("Ny handläggare: ").append(nyHandlaggare);
+        }
+        String kommentar = documentsSent ? "Handlingar skickade" : null;
+        return aHandelse()
+                .withSkapad(LocalDateTime.now())
+                .withAnvandare(FK_LABEL)
+                .withHandelseTyp(HandelseTyp.BESTALLNING_UPPDATERAD)
+                .withHandelseText(text.toString())
+                .withKommentar(kommentar)
                 .build();
     }
 }

@@ -19,6 +19,7 @@
 package se.inera.intyg.intygsbestallning.service.utredning.dto;
 
 import com.google.common.primitives.Longs;
+import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
 
 import java.time.LocalDateTime;
@@ -46,7 +47,7 @@ public class UpdateOrderRequest {
                 .withHandling(request.isDocumentsByPost());
 
         Optional.ofNullable(request.getLastDateForCertificateReceival())
-                .map(LocalDateTime::parse)
+                .map(SchemaDateUtil::toLocalDateTimeFromDateType)
                 .map(updateOrderRequestBuilder::withLastDateIntyg);
 
         Optional.ofNullable(request.getUpdatedAuthorityAdministrativeOfficial()).ifPresent(admin -> {

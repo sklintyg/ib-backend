@@ -18,16 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.testutil;
 
-import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.aCv;
-import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
-import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
-import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
-import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
-import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
-import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
-import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU_UTVIDGAD;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
@@ -52,11 +42,23 @@ import se.riv.intygsbestallning.certificate.order.v1.AddressType;
 import se.riv.intygsbestallning.certificate.order.v1.AuthorityAdministrativeOfficialType;
 import se.riv.intygsbestallning.certificate.order.v1.CitizenLimitedType;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.aCv;
+import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
+import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
+import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
+import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
+import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU_UTVIDGAD;
 
 /**
  * Helper base class, provides data setup for tests.
@@ -64,6 +66,8 @@ import java.util.Map;
 public final class TestDataGen {
 
     public final static LocalDateTime DATE_TIME = LocalDateTime.of(2018, 11, 11, 0, 0, 0);
+    public final static LocalDate DATE = LocalDate.of(2018, 11, 11);
+
 
     private static final String USER_HSA_ID = "user-1";
     private static final String USER_NAME = "Läkar Läkarsson";
@@ -153,21 +157,21 @@ public final class TestDataGen {
         return request;
     }
 
-    public static UpdateOrderType createUpdateOrderType(final Boolean tolkBehov, final String tolkSprak) {
+    public static UpdateOrderType createUpdateOrderType(final Boolean tolkBehov, final String tolkSprak, final Boolean documentsByPost) {
         UpdateOrderType type = new UpdateOrderType();
         type.setAssessmentId(anII("root", "1"));
         type.setComment("kommentar");
-        type.setLastDateForCertificateReceival(DATE_TIME.toString());
+        type.setLastDateForCertificateReceival(DATE.format(DateTimeFormatter.BASIC_ISO_DATE));
         type.setNeedForInterpreter(tolkBehov);
         type.setInterpreterLanguage(aCv(tolkSprak, null, null));
-        type.setDocumentsByPost(false);
+        type.setDocumentsByPost(documentsByPost);
         type.setUpdatedAuthorityAdministrativeOfficial(createAuthorityAdministrativeOfficialType());
 
         return type;
     }
 
     public static UpdateOrderType createUpdateOrderType() {
-        return createUpdateOrderType(true, "sv");
+        return createUpdateOrderType(true, "sv", false);
     }
 
     public static AuthorityAdministrativeOfficialType createAuthorityAdministrativeOfficialType() {

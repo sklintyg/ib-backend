@@ -22,4 +22,6 @@ import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 
 public interface MailNotificationService {
     void notifyHandlingMottagen(Utredning utredning);
+
+    void notifyBestallningUppdaterad(Utredning utredning);
 }

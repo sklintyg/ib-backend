@@ -65,6 +65,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
@@ -372,7 +373,7 @@ public class UtredningServiceImplTest {
         modifieradUtrening.setTolkBehov(true);
         modifieradUtrening.setTolkSprak(tolkSprak);
 
-        final UpdateOrderRequest updateOrderRequest = UpdateOrderRequest.from(createUpdateOrderType(true, tolkSprak));
+        final UpdateOrderRequest updateOrderRequest = UpdateOrderRequest.from(createUpdateOrderType(true, tolkSprak, false));
 
         doReturn(Optional.of(createUtredning()))
                 .when(utredningRepository)
@@ -390,6 +391,8 @@ public class UtredningServiceImplTest {
         assertEquals(createExternForfragan(), uppdateradUtredning.getExternForfragan());
         assertTrue(uppdateradUtredning.getTolkBehov());
         assertEquals(tolkSprak, uppdateradUtredning.getTolkSprak());
+
+        verify(mailNotificationService, times(1)).notifyBestallningUppdaterad(any(Utredning.class));
     }
 
     @Test

@@ -18,15 +18,15 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning.dto;
 
+import org.junit.Test;
+
+import java.util.Optional;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.DATE_TIME;
 import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createUpdateOrderType;
-
-import org.junit.Test;
-
-import java.util.Optional;
 
 public class UpdateOrderRequestTest {
 
@@ -57,7 +57,7 @@ public class UpdateOrderRequestTest {
 
     @Test
     public void testConvertFranOrderUpdateTypeMedTolkBehovUtanTolkSprak() {
-        final UpdateOrderRequest request = UpdateOrderRequest.from(createUpdateOrderType(true, null));
+        final UpdateOrderRequest request = UpdateOrderRequest.from(createUpdateOrderType(true, null, false));
 
         assertEquals(Long.valueOf(1L), request.getUtredningId());
         assertEquals("kommentar", request.getKommentar().get());
@@ -82,7 +82,7 @@ public class UpdateOrderRequestTest {
 
     @Test
     public void testConvertFranOrderUpdateTypeUtanTolkBehovUtanTolkSprak() {
-        final UpdateOrderRequest request = UpdateOrderRequest.from(createUpdateOrderType(false, null));
+        final UpdateOrderRequest request = UpdateOrderRequest.from(createUpdateOrderType(false, null, false));
 
         assertEquals(Long.valueOf(1L), request.getUtredningId());
         assertEquals("kommentar", request.getKommentar().get());

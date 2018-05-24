@@ -1,0 +1,59 @@
+delimiters "$", "$"
+
+request(data) ::= <<
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:itintegration:registry:1" xmlns:urn1="urn:riv-application:intygsbestallning:certificate:order:UpdateOrderResponder:1" xmlns:urn2="urn:riv-application:intygsbestallning:certificate:order:1">
+   <soapenv:Header>
+      <urn:LogicalAddress>123</urn:LogicalAddress>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn1:UpdateOrder>
+         <urn1:assessmentId>
+            <urn2:root></urn2:root>
+            <urn2:extension>$data.assessmentId$</urn2:extension>
+            <!--You may enter ANY elements at this point-->
+         </urn1:assessmentId>
+         <!--Optional:-->
+         <urn1:comment>$data.kommentar$</urn1:comment>
+         <!--Optional:-->
+         <urn1:lastDateForCertificateReceival>$data.sistaDatum$</urn1:lastDateForCertificateReceival>
+         <!--Optional:-->
+         <urn1:needForInterpreter>$data.behovTolk$</urn1:needForInterpreter>
+         <!--Optional:-->
+         <urn1:interpreterLanguage>
+            <urn2:code>$data.tolkSprak$</urn2:code>
+            <urn2:codeSystem></urn2:codeSystem>
+         </urn1:interpreterLanguage>
+         <!--Optional:-->
+         <urn1:documentsByPost>$data.documentsByPost$</urn1:documentsByPost>
+         <!--Optional:-->
+         <urn1:updatedAuthorityAdministrativeOfficial>
+            <!--Optional:-->
+            <urn2:fullName>$data.handlaggareNamn$</urn2:fullName>
+            <urn2:phoneNumber>$data.handlaggareTelefon$</urn2:phoneNumber>
+            <!--Optional:-->
+            <urn2:email>$data.handlaggareEpost$</urn2:email>
+            <urn2:authority>
+               <urn2:code>FK</urn2:code>
+               <urn2:codeSystem></urn2:codeSystem>
+            </urn2:authority>
+            <!--Optional:-->
+            <urn2:officeName>$data.kontorNamn$</urn2:officeName>
+            <!--Optional:-->
+            <urn2:officeCostCenter>$data.kontorKostnadsstalle$</urn2:officeCostCenter>
+            <!--Optional:-->
+            <urn2:officeAddress>
+               <!--Optional:-->
+               <urn2:postalAddress>$data.kontorAdress$</urn2:postalAddress>
+               <!--Optional:-->
+               <urn2:postalCode>$data.kontorPostnummer$</urn2:postalCode>
+               <!--Optional:-->
+               <urn2:postalCity>$data.kontorStad$</urn2:postalCity>
+               <!--You may enter ANY elements at this point-->
+            </urn2:officeAddress>
+            <!--You may enter ANY elements at this point-->
+         </urn1:updatedAuthorityAdministrativeOfficial>
+         <!--You may enter ANY elements at this point-->
+      </urn1:UpdateOrder>
+   </soapenv:Body>
+</soapenv:Envelope>
+>>
