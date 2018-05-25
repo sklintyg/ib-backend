@@ -41,12 +41,12 @@ public class BestallningListItemFactory {
     public BestallningListItem from(Utredning utredning, Actor actorInThisContext) {
 
         UtredningStatus utredningStatus = utredningStatusResolver.resolveStatus(utredning);
-
         return BestallningListItem.BestallningListItemBuilder.anBestallningListItem()
                 .withFas(utredningStatus.getUtredningFas())
                 .withPatientId(utredning.getInvanare().getPersonId())
                 .withPatientNamn(null)
-                .withSlutdatumFas(SlutDatumFasResolver.resolveSlutDatumFas(utredning, utredningStatus).format(DateTimeFormatter.ISO_DATE))
+                .withSlutdatumFas(SlutDatumFasResolver.resolveSlutDatumFas(utredning, utredningStatus)
+                        .map(DateTimeFormatter.ISO_DATE::format).orElse(null))
                 .withSlutdatumPasserat(LocalDateTime.now().isAfter(utredning.getIntygList().stream()
                         .filter(i -> !i.isKomplettering())
                         .findFirst()

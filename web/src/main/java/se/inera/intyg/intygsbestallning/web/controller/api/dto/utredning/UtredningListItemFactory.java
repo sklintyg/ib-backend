@@ -57,10 +57,10 @@ public class UtredningListItemFactory {
 
         UtredningStatus utredningStatus = utredningStatusResolver.resolveStatus(utredning);
 
-        LocalDateTime slutdatumFas = SlutDatumFasResolver.resolveSlutDatumFas(utredning, utredningStatus);
+        Optional<LocalDateTime> slutdatumFas = SlutDatumFasResolver.resolveSlutDatumFas(utredning, utredningStatus);
         return UtredningListItem.UtredningListItemBuilder.anUtredningListItem()
                 .withFas(utredningStatus.getUtredningFas())
-                .withSlutdatumFas(nonNull(slutdatumFas) ? slutdatumFas.format(DateTimeFormatter.ISO_DATE) : null)
+                .withSlutdatumFas(slutdatumFas.map(DateTimeFormatter.ISO_DATE::format).orElse(null))
                 .withSlutdatumFasPaVagPasseras(
                         resolveSlutdatumFasPaVagPasseras(slutdatumFas, businessDays, utredningStatus))
                 .withSlutdatumFasPasserat(resolveSlutdatumFasPasserat(slutdatumFas, utredningStatus))
@@ -87,16 +87,16 @@ public class UtredningListItemFactory {
         return null;
     }
 
-    private boolean resolveSlutdatumFasPasserat(LocalDateTime slutdatumFas, UtredningStatus utredningStatus) {
-        if (slutdatumFas == null || utredningStatus.getUtredningFas() == UtredningFas.REDOVISA_TOLK) {
+    private boolean resolveSlutdatumFasPasserat(Optional<LocalDateTime> slutdatumFas, UtredningStatus utredningStatus) {
+        if (!slutdatumFas.isPresent() || utredningStatus.getUtredningFas() == UtredningFas.REDOVISA_TOLK) {
             return false;
         }
-        return LocalDate.now().compareTo(slutdatumFas.toLocalDate()) > 0;
+        return LocalDate.now().compareTo(slutdatumFas.get().toLocalDate()) > 0;
     }
 
-    private boolean resolveSlutdatumFasPaVagPasseras(LocalDateTime slutdatumFas, BusinessDaysBean businessDays, UtredningStatus
+    private boolean resolveSlutdatumFasPaVagPasseras(Optional<LocalDateTime> slutdatumFas, BusinessDaysBean businessDays, UtredningStatus
             utredningStatus) {
-        if (slutdatumFas == null) {
+        if (!slutdatumFas.isPresent()) {
             return false;
         }
 
@@ -106,9 +106,9 @@ public class UtredningListItemFactory {
         }
 
         // Om datumet redan passerats skall vi ej flagga.
-        if (slutdatumFas.toLocalDate().compareTo(LocalDate.now()) < 0) {
+        if (slutdatumFas.get().toLocalDate().compareTo(LocalDate.now()) < 0) {
             return false;
         }
-        return businessDays.daysBetween(LocalDate.now(), slutdatumFas.toLocalDate(), false) < paminnelseArbetsdagar;
+        return businessDays.daysBetween(LocalDate.now(), slutdatumFas.get().toLocalDate(), false) < paminnelseArbetsdagar;
     }
 }

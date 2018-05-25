@@ -27,7 +27,6 @@ import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.VardenhetListItem;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -66,12 +65,11 @@ public class GetUtredningResponse {
 
     public static GetUtredningResponse from(Utredning utredning, UtredningStatus status) {
 
-        LocalDateTime slutdatumFas = SlutDatumFasResolver.resolveSlutDatumFas(utredning, status);
-
         return GetUtredningResponseBuilder.aGetUtredningResponse()
                 .withUtredningsId(utredning.getUtredningId())
                 .withStatusAndFas(status)
-                .withSlutdatumFas(nonNull(slutdatumFas) ? slutdatumFas.format(DateTimeFormatter.ISO_DATE) : null)
+                .withSlutdatumFas(
+                        SlutDatumFasResolver.resolveSlutDatumFas(utredning, status).map(DateTimeFormatter.ISO_DATE::format).orElse(null))
                 .withInkomDatum(nonNull(utredning.getExternForfragan())
                         ? utredning.getExternForfragan().getInkomDatum().format(formatter) : null)
                 .withBesvarasSenastDatum(nonNull(utredning.getExternForfragan())
