@@ -1,6 +1,7 @@
 .visaUtredning-page {
 
-  .utredning-body {
+  .tab-content > .active {
+    display: flex;
   }
 
   .ib-workarea-supportpanel {
@@ -97,8 +98,15 @@
       padding: 19px 15px;
     }
 
+    .tab-content {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
     .tab-content > .tab-pane {
       padding-top: 10px;
+      height: 100%;
     }
 
     .table-actionbar {

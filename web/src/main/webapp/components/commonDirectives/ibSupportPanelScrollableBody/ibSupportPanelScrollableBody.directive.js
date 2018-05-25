@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
@@ -16,30 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+angular.module('ibApp').directive('ibSupportPanelScrollableBody', [ function() {
+    'use strict';
 
-ib-utredning-forfragan {
-
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-
-  .ib-table-striped > tbody > tr > td {
-    vertical-align: top;
-  }
-
-  h3 {
-    @extend %ib-typo-05;
-    color: $ib-color-09;
-  }
-
-  .accept {
-    font-size: inherit;
-    color: $ib-color-16;
-  }
-
-  .ib-table-striped {
-    .btn {
-      min-width: 60px;
-    }
-  }
-}
+    return {
+        restrict: 'E',
+        transclude: true,
+        scope: {
+            domId: '@',
+            color: '@'
+        },
+        templateUrl: '/components/commonDirectives/ibSupportPanelScrollableBody/ibSupportPanelScrollableBody.directive.html'
+    };
+} ]);

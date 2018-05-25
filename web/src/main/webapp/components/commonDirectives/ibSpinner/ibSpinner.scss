@@ -1,4 +1,17 @@
-.ib-spinner {
-  text-align: center;
-  margin: 50px 0;
+ib-spinner {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  .ib-spinner {
+    text-align: center;
+    margin: 50px 0;
+    height: 100%;
+  }
+
+  .ib-spinner__content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
 }

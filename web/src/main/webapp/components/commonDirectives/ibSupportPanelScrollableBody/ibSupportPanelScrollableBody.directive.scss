@@ -17,29 +17,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-ib-utredning-forfragan {
+ib-support-panel-scrollable-body {
 
+  position: relative;
   display: flex;
-  flex-direction: column;
   flex: 1;
+  min-height: 1%; //without a min-height IE11/edge wont shrink flex-items
 
-  .ib-table-striped > tbody > tr > td {
-    vertical-align: top;
-  }
-
-  h3 {
-    @extend %ib-typo-05;
-    color: $ib-color-09;
-  }
-
-  .accept {
-    font-size: inherit;
-    color: $ib-color-16;
-  }
-
-  .ib-table-striped {
-    .btn {
-      min-width: 60px;
+  .tab-content-scrollable-body {
+    flex: 1;
+    overflow: auto;
+    //Bottom padding hack since IE does not respect padding-bottom
+    &::after {
+      content: "";
+      display: block;
+      padding-bottom: 20px;
     }
+  }
+
+  //absolutely positioned element with a gradient background.
+  //The pointer-events:none is important, otherwise elements such as button below this can't be clicked.
+  .bottom-fadeout-gradient {
+    @extend %bottom-gradient;
+
+    padding: 0;
   }
 }

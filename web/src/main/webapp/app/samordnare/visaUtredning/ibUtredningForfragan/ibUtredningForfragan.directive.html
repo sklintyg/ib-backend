@@ -1,28 +1,28 @@
-<div>
+<ib-spinner show-spinner="veModel.loading" label="common.label.loading">
 
-  <ib-spinner show-spinner="veModel.loading" label="common.label.loading">
+  <ib-alert-message alert-id="status-forfragan-accepterades"
+                    alert-severity="success"
+                    ng-if="utredning.status.id === 'TILLDELAD_VANTAR_PA_BESTALLNING' || utredning.fas.id === 'UTREDNING'">
+    Förfrågan accepterades.
+  </ib-alert-message>
 
-    <ib-alert-message alert-id="status-forfragan-accepterades"
-                      alert-severity="success"
-                      ng-if="utredning.status.id === 'TILLDELAD_VANTAR_PA_BESTALLNING' || utredning.fas.id === 'UTREDNING'">
-      Förfrågan accepterades.
-    </ib-alert-message>
+  <ib-alert-message alert-id="status-forfragan-accepterades"
+                    alert-severity="success"
+                    ng-if="utredning.status.id === 'AVVISAD'">
+    Förfrågan avvisades
+  </ib-alert-message>
 
-    <ib-alert-message alert-id="status-forfragan-accepterades"
-                      alert-severity="success"
-                      ng-if="utredning.status.id === 'AVVISAD'">
-      Förfrågan avvisades
-    </ib-alert-message>
+  <ib-alert-message alert-id="skicka-forfragan-vardenheter-error"
+                    alert-severity="danger"
+                    alert-message-id="{{veModel.error}}"
+                    ng-if="veModel.error"></ib-alert-message>
 
-    <ib-alert-message alert-id="skicka-forfragan-vardenheter-error"
-                      alert-severity="danger"
-                      alert-message-id="{{veModel.error}}"
-                      ng-if="veModel.error"></ib-alert-message>
+  <div class="table-actionbar" ng-show="showForfraganButtons()">
+    <button class="btn btn-primary" id="skicka-forfragan-button" ng-click="skickaForfragan()" ng-disabled="disableForfraganButtons()">Skicka förfrågan</button>
+    <button class="btn btn-primary" id="tilldela-direkt-button" ng-click="tilldelaDirekt()" ng-show="showTilldelaDirekt()" ng-disabled="disableForfraganButtons()">Tilldela direkt</button>
+  </div>
 
-    <div class="table-actionbar" ng-show="showForfraganButtons()">
-      <button class="btn btn-primary" id="skicka-forfragan-button" ng-click="skickaForfragan()" ng-disabled="disableForfraganButtons()">Skicka förfrågan</button>
-      <button class="btn btn-primary" id="tilldela-direkt-button" ng-click="tilldelaDirekt()" ng-show="showTilldelaDirekt()" ng-disabled="disableForfraganButtons()">Tilldela direkt</button>
-    </div>
+  <ib-support-panel-scrollable-body dom-id="utredning-forfragan-panel-scrollable-body">
 
     <table id="samordnare-utredning-forfragan-table" class="table table-striped ib-table-striped">
       <thead>
@@ -75,6 +75,6 @@
       </tbody>
     </table>
 
-  </ib-spinner>
+  </ib-support-panel-scrollable-body>
 
-</div>
+</ib-spinner>

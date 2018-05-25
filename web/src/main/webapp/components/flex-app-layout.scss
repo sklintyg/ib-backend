@@ -31,6 +31,12 @@ body {
   min-height: 1%;
 }
 
+.flex-column {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
 .ib-workarea {
   display: flex;
   flex: 1;
