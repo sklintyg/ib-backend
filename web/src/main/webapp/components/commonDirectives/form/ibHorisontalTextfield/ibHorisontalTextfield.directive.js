@@ -30,6 +30,7 @@ angular.module('ibApp').directive('ibHorisontalTextfield', [ '$parse', function(
             pattern: '@',
             patternError: '@',
             required: '=',
+            requiredError: '@',
             isDisabled: '=',
             onChange: '&'
         },

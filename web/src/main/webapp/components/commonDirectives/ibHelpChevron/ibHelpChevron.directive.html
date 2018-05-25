@@ -1,5 +1,6 @@
 <div class="ib-help-chevron" ng-class="{ 'ib-help-chevron-open' : !isCollapsed }">
   <button type="button" class="ib-help-chevron__button" ng-click="toggleHelp()">
-    <i class="glyphicon" ng-class="{'glyphicon-menu-down': isCollapsed, 'glyphicon-menu-up': !isCollapsed}"></i>
+    <i ng-if="isCollapsed" class="material-icons">expand_more</i>
+    <i ng-if="!isCollapsed" class="material-icons">expand_less</i>
   </button>
 </div>

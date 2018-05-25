@@ -1,6 +1,5 @@
 <div class="single-tab-workarea">
   <div class="single-tab-content">
-
     <form name="forfraganSvarForm" novalidate autocomplete="off">
       <div class="flex-grid">
         <div class="col">
@@ -9,17 +8,26 @@
       </div>
       <div class="flex-grid">
         <div class="col">
-          <ib-textfield id="borjaDatum" model="vm.model.borjaDatum"
-                        label-key="internforfragan.besvara.form.borjadatum.label" max-length="255"></ib-textfield>
+          <ib-help-text-label label-key="internforfragan.besvara.form.borjadatum.label"></ib-help-text-label>
+          <ib-date-picker-field
+              dom-id="borjaDatum"
+              target-model="vm.model.borjaDatum"
+              min-date="{{::vm.minBorjaDatum}}"
+              min-date-error="Möjligt startdatum får tidigast vara dagens datum"
+              format="yyyy-MM-dd"
+              date-format-error="Ogiltigt datumformat, ange ett datum som ÅÅÅÅ-MM-DD"
+              ib-date-picker-field
+              add-date-parser="strict">
+          </ib-date-picker-field>
         </div>
       </div>
       <div class="flex-grid">
         <div class="col">
-          <h4><span message key="internforfragan.besvara.form.utforaretyp.label"></span></h4>
+          <ib-help-text-label label-key="internforfragan.besvara.form.utforaretyp.label"></ib-help-text-label>
           <ib-radio-wrapper>
             <input ng-attr-id="utforarTypEnhet" type="radio" value="ENHET" ng-model="vm.model.utforareTyp"
                    ng-change="onChangeUtforareTyp()">
-            <label ng-attr-for="utforarTypEnhet">Enhet</label>
+            <label ng-attr-for="utforarTypEnhet">Vårdenhet</label>
           </ib-radio-wrapper>
           <ib-radio-wrapper>
             <input ng-attr-id="utforarTypUnderleverantor" type="radio" value="UNDERLEVERANTOR"
@@ -31,8 +39,12 @@
 
       <div class="flex-grid">
         <div class="col">
-          <h4><span message key="internforfragan.besvara.form.kontaktinformation.label"></span></h4>
-          <ib-horisontal-textfield id="utforareNamn" model="vm.model.utforareNamn" required="true"
+          <ib-help-text-label label-key="internforfragan.besvara.form.kontaktinformation.label"
+                              help-key="internforfragan.besvara.form.kontaktinformation.label.help"></ib-help-text-label>
+          <ib-horisontal-textfield id="utforareNamn"
+                                   model="vm.model.utforareNamn"
+                                   required="true"
+                                   required-error="Fyll i mottagarnamn"
                                    label-key="internforfragan.besvara.form.utforarenamn.label"
                                    max-length="255"></ib-horisontal-textfield>
 
@@ -41,7 +53,10 @@
       </div>
       <div class="flex-grid">
         <div class="col">
-          <ib-horisontal-textfield id="adress" model="vm.model.utforareAdress" required="true"
+          <ib-horisontal-textfield id="adress"
+                                   model="vm.model.utforareAdress"
+                                   required="true"
+                                   required-error="Fyll i adress"
                                    label-key="internforfragan.besvara.form.utforareadress.label"
                                    max-length="255"></ib-horisontal-textfield>
         </div>
@@ -50,13 +65,20 @@
       <!-- combined postnr/ort -->
       <div class="flex-grid">
         <div class="col">
-          <ib-horisontal-textfield id="postnummer" model="vm.model.utforarePostnr" required="true"
-                                   label-key="internforfragan.besvara.form.utforarepostnr.label" pattern="'\\d{5}'"
-                                   pattern-error="Postnr måste anges med 5 siffror"
+          <ib-horisontal-textfield id="postnummer"
+                                   model="vm.model.utforarePostnr"
+                                   required="true"
+                                   required-error="Fyll i postnummer, 5 siffror"
+                                   label-key="internforfragan.besvara.form.utforarepostnr.label"
+                                   pattern="'\\d{5}'"
+                                   pattern-error="Fyll i postnummer, 5 siffror"
                                    max-length="5"></ib-horisontal-textfield>
         </div>
         <div class="col col-2">
-          <ib-horisontal-textfield id="postort" model="vm.model.utforarePostort" required="true"
+          <ib-horisontal-textfield id="postort"
+                                   model="vm.model.utforarePostort"
+                                   required="true"
+                                   required-error="Fyll i postort"
                                    label-key="internforfragan.besvara.form.utforarepostort.label"
                                    max-length="255"></ib-horisontal-textfield>
         </div>
@@ -71,9 +93,11 @@
       </div>
       <div class="flex-grid">
         <div class="col">
-          <ib-horisontal-textfield id="epost" model="vm.model.utforareEpost"
-                                   label-key="internforfragan.besvara.form.utforareepost.label" pattern="'.+@.+\\..+'"
-                                   pattern-error="Ange en giltig epostadress"
+          <ib-horisontal-textfield id="epost"
+                                   model="vm.model.utforareEpost"
+                                   label-key="internforfragan.besvara.form.utforareepost.label"
+                                   pattern="'.+@.+\\..+'"
+                                   pattern-error="Ange en giltig e-postadress"
                                    max-length="255"></ib-horisontal-textfield>
         </div>
       </div>
@@ -81,8 +105,9 @@
 
       <div class="flex-grid">
         <div class="col">
-          <h4><span message key="internforfragan.besvara.form.kommentar.label"></span></h4>
-          <ib-textarea id="kommentar" model="vm.model.kommentar" placeholder-text="Skriv standardsvar här"
+
+          <ib-help-text-label label-key="internforfragan.besvara.form.kommentar.label" help-key="internforfragan.besvara.form.kommentar.label.help"></ib-help-text-label>
+          <ib-textarea id="kommentar" model="vm.model.kommentar" placeholder-text="Skriv meddelande här"
                        max-length="255"></ib-textarea>
         </div>
       </div>

@@ -23,13 +23,16 @@
   vertical-align: top;
 
   .ib-help-chevron__button {
-    font-size: 14px;
+    font-size: inherit;
+    .material-icons {
+      font-size: inherit;
+    }
     font-weight: normal;
     border: none;
     margin: 0;
     padding: 0 5px;
     background-color: transparent;
-    color: $ib-color-16;
+    color: $ib-color-06;
     outline: none;
   }
 }

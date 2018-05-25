@@ -16,18 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-angular.module('ibApp').directive('ibFieldErrorList', [ function() {
+angular.module('ibApp').directive('ibHelpTextLabel', [ function() {
     'use strict';
 
     return {
         restrict: 'E',
         scope: {
-            errors: '=',
-            patternError: '@',
-            dateFormatError: '@',
-            minDateError: '@',
-            requiredError: '@'
+            labelKey: '@',
+            helpKey: '@'
         },
-        templateUrl: '/components/commonDirectives/form/ibFieldErrorList/ibFieldErrorList.directive.html'
+        templateUrl: '/components/commonDirectives/form/ibHelpTextLabel/ibHelpTextLabel.directive.html'
     };
 } ]);

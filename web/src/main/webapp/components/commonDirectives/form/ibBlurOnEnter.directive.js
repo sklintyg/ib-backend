@@ -16,18 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-angular.module('ibApp').directive('ibFieldErrorList', [ function() {
+angular.module('ibApp').directive('ibBlurOnEnter', function() {
     'use strict';
-
     return {
-        restrict: 'E',
-        scope: {
-            errors: '=',
-            patternError: '@',
-            dateFormatError: '@',
-            minDateError: '@',
-            requiredError: '@'
-        },
-        templateUrl: '/components/commonDirectives/form/ibFieldErrorList/ibFieldErrorList.directive.html'
+        link: function(scope, element) {
+            element.bind('keypress', function(event) {
+                if (event.which === 13) {
+                    element.blur();
+                    event.preventDefault();
+                }
+            });
+        }
     };
-} ]);
+});

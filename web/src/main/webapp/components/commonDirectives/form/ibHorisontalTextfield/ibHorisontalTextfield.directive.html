@@ -15,5 +15,5 @@
        ng-pattern="{{pattern}}"
        maxlength="{{:: maxLength || 255}}"
        placeholder="{{placeholderKey | message}}">
- <ib-field-error-list errors="componentErrors()" pattern-error="{{patternError}}"></ib-field-error-list>
+ <ib-field-error-list errors="componentErrors()" pattern-error="{{patternError}}" required-error="{{requiredError}}"></ib-field-error-list>
 </div>

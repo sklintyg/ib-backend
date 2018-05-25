@@ -28,7 +28,8 @@ angular.module('ibApp').directive('ibBesvaraInternForfraganPanel',
 
             link: function($scope) {
                 $scope.vm = {
-                    model: InternForfraganSvarViewState.getModel()
+                    model: InternForfraganSvarViewState.getModel(),
+                    minBorjaDatum: moment().format('YYYY-MM-DD')
                 };
 
                 InternForfraganSvarViewState.setForm($scope.forfraganSvarForm);

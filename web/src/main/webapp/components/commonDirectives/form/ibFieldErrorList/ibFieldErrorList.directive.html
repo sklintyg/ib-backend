@@ -1,8 +1,25 @@
 <div ng-if="errors" class="validation-text">
-  <div ng-if="errors.required">Obligatoriskt fält</div>
+
+  <div ng-if="errors.required">
+    <span ng-if="requiredError">{{requiredError}}</span>
+    <span ng-if="!requiredError">Obligatoriskt fält</span>
+  </div>
+
   <div ng-if="errors.pattern">
     <span ng-if="patternError">{{patternError}}</span>
     <span ng-if="!patternError">Ogiltigt format</span>
   </div>
-  <!-- add more ng-validator errors here as needed -->
+
+  <div ng-if="errors.date">
+    <span ng-if="dateFormatError">{{dateFormatError}}</span>
+    <span ng-if="!dateFormatError">Ogiltigt datumformat</span>
+  </div>
+
+  <div ng-if="errors.minDate">
+    <span ng-if="minDateError">{{minDateError}}</span>
+    <span ng-if="!minDateError">Datumet ligger för långt bak i tiden, ange ett senare datum.</span>
+
+  </div>
+
+  <!-- add more error types here as needed -->
 </div>
