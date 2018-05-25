@@ -36,7 +36,6 @@ import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.service.forfragan.ExternForfraganService;
 import se.inera.intyg.intygsbestallning.service.forfragan.InternForfraganService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
-import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.ForfraganSvarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.GetForfraganListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.GetInternForfraganResponse;
@@ -50,9 +49,6 @@ public class InternForfraganController {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private UtredningService utredningService;
 
     @Autowired
     private ExternForfraganService externForfraganService;
@@ -96,7 +92,8 @@ public class InternForfraganController {
         IbUser user = userService.getUser();
         ensureBesvaraAuthPreconditions(user);
 
-        GetInternForfraganResponse forfragan = utredningService.getInternForfragan(utredningsId, user.getCurrentlyLoggedInAt().getId());
+        GetInternForfraganResponse forfragan = internForfraganService.getInternForfragan(utredningsId,
+                user.getCurrentlyLoggedInAt().getId());
         return ResponseEntity.ok(forfragan);
     }
 

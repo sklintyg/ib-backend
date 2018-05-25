@@ -18,8 +18,31 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toList;
+import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
+import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
+import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
+import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
+import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
+
+import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.xml.ws.WebServiceException;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +50,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
@@ -36,7 +63,6 @@ import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
-import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
 import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
@@ -55,40 +81,14 @@ import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardenhetEnrichable;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.GetInternForfraganResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItemFactory;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganSvarItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItemFactory;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
-
-import javax.xml.ws.WebServiceException;
-import java.text.MessageFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static com.google.common.base.Strings.isNullOrEmpty;
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toList;
-import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
-import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
-import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
-import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
-import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
-import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 
 @Service
 @Transactional
@@ -181,33 +181,6 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .stream()
                 .map(utr -> internForfraganListItemFactory.from(utr, vardenhetHsaId))
                 .collect(toList());
-    }
-
-    @Override
-    public GetInternForfraganResponse getInternForfragan(Long utredningId, String vardenhetHsaId) {
-        Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
-                () -> new IbNotFoundException("Utredning with assessmentId '" + utredningId + "' does not exist."));
-
-        // Must have an internforfragan for this vardenhet
-        InternForfragan internForfragan = utredning.getExternForfragan().getInternForfraganList()
-                .stream()
-                .filter(iff -> Objects.equals(iff.getVardenhetHsaId(), vardenhetHsaId))
-                .findFirst().orElseThrow(() -> new IbNotFoundException("Utredning with id '" + utredningId
-                        + "' does not have an InternForfragan for enhet with id '" + vardenhetHsaId + "'"));
-
-        final GetUtredningResponse utredningsResponse = GetUtredningResponse.from(utredning,
-                utredningStatusResolver.resolveStatus(utredning));
-
-        // Vardadmins should not see händelser or InternforfraganList
-        utredningsResponse.getHandelseList().clear();
-        utredningsResponse.getInternForfraganList().clear();
-
-        final InternForfraganListItem internForfraganListItem = internForfraganListItemFactory.from(utredning,
-                internForfragan.getVardenhetHsaId());
-        final InternForfraganSvarItem internForfraganSvarItem = InternForfraganSvarItem.from(internForfragan.getForfraganSvar());
-
-        return new GetInternForfraganResponse(internForfraganListItem, internForfraganSvarItem, utredningsResponse);
-
     }
 
     @Override

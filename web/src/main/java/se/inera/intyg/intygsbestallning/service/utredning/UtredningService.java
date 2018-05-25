@@ -18,19 +18,18 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
+import java.util.List;
+
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.GetInternForfraganResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItem;
-
-import java.util.List;
 
 public interface UtredningService {
 
@@ -62,19 +61,6 @@ public interface UtredningService {
      * @return a list of the InternForfragan represented as a {@link InternForfraganListItem}
      */
     List<InternForfraganListItem> findForfragningarForVardenhetHsaId(String vardenhetHsaId);
-
-    /**
-     * Get the {@link se.inera.intyg.intygsbestallning.persistence.model.InternForfragan} associated with the utredningid
-     * and
-     * vardenhetHsaId as a {@link GetInternForfraganResponse}.
-     *
-     * @param utredningId
-     *            the id of the utredning
-     * @param vardenhetHsaId
-     *            the hsaId of the vardenhet of which have received an InternForfragan
-     * @return The information of the InternForfragan
-     */
-    GetInternForfraganResponse getInternForfragan(Long utredningId, String vardenhetHsaId);
 
     /**
      * Handles the new incomming order for FMU.

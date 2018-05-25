@@ -38,6 +38,7 @@ public class InternForfraganListItem implements FreeTextSearchable {
     private Long forfraganId;
     private InternForfraganStatus status;
     private List<ListForfraganFilterStatus> filterStatusar;
+    private String kommentar;
     private boolean kraverAtgard;
 
     public Long getUtredningsId() {
@@ -144,6 +145,14 @@ public class InternForfraganListItem implements FreeTextSearchable {
         this.forfraganId = forfraganId;
     }
 
+    public String getKommentar() {
+        return kommentar;
+    }
+
+    public void setKommentar(String kommentar) {
+        this.kommentar = kommentar;
+    }
+
     @Override
     public String toSearchString() {
         return utredningsId
@@ -170,6 +179,7 @@ public class InternForfraganListItem implements FreeTextSearchable {
         private InternForfraganStatus status;
         private List<ListForfraganFilterStatus> filterStatusar;
         private boolean kraverAtgard;
+        private String kommentar;
 
         private ForfraganListItemBuilder() {
         }
@@ -241,6 +251,10 @@ public class InternForfraganListItem implements FreeTextSearchable {
             this.kraverAtgard = kraverAtgard;
             return this;
         }
+        public ForfraganListItemBuilder withKommentar(String kommentar) {
+            this.kommentar = kommentar;
+            return this;
+        }
 
         public InternForfraganListItem build() {
             InternForfraganListItem internForfraganListItem = new InternForfraganListItem();
@@ -257,6 +271,7 @@ public class InternForfraganListItem implements FreeTextSearchable {
             internForfraganListItem.setStatus(status);
             internForfraganListItem.setFilterStatusar(filterStatusar);
             internForfraganListItem.setKraverAtgard(kraverAtgard);
+            internForfraganListItem.setKommentar(kommentar);
             return internForfraganListItem;
         }
     }

@@ -33,6 +33,8 @@ import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationExceptio
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.integration.myndighet.service.MyndighetIntegrationService;
+import se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar;
+import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
@@ -42,9 +44,12 @@ import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.CreateInternForfraganRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.GetInternForfraganResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItemFactory;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.TilldelaDirektRequest;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
@@ -80,6 +85,9 @@ public class InternForfraganServiceImplTest {
 
     @Spy
     private BusinessDaysBean businessDays = new BusinessDaysStub();
+
+    @Spy
+    private InternForfraganListItemFactory internForfraganListItemFactory = new InternForfraganListItemFactory(new BusinessDaysStub());
 
     @InjectMocks
     private InternForfraganServiceImpl internForfraganService;
@@ -390,4 +398,82 @@ public class InternForfraganServiceImplTest {
         internForfraganService.tilldelaDirekt(utredningId, landstingHsaId, new TilldelaDirektRequest());
     }
 
+    @Test(expected = IbNotFoundException.class)
+    public void testGetInternForfraganFailsForNonexistingUtredning() {
+        final Long utredningId = 1L;
+        final String vardenhetId = "vardenhetId";
+
+        when(utredningRepository.findById(utredningId)).thenReturn(Optional.empty());
+
+        internForfraganService.getInternForfragan(utredningId, vardenhetId);
+
+    }
+
+    @Test(expected = IbNotFoundException.class)
+    public void testGetInternForfraganFailsForNonexistingInternforfragan() {
+        final Long utredningId = 1L;
+        final String landstingHsaId = "landstingHsaId";
+        final String vardenhetId = "vardenhetIdHsaId";
+        final String otherVardenhet = "otherVardenehetHsaId";
+
+        when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
+                .withUtredningId(utredningId)
+                .withUtredningsTyp(AFU)
+                .withExternForfragan(anExternForfragan()
+                        .withLandstingHsaId(landstingHsaId)
+                        .withInternForfraganList(ImmutableList.of(anInternForfragan()
+                                .withVardenhetHsaId(otherVardenhet)
+                                .build()))
+                        .build())
+                .build()));
+
+        internForfraganService.getInternForfragan(utredningId, vardenhetId);
+
+    }
+    @Test
+    public void testGetInternForfraganSuccess() {
+        final Long utredningId = 1L;
+        final String landstingHsaId = "landstingHsaId";
+        final String vardenhetId = "vardenhetIdHsaId";
+        String landstingKommentar = "Just do it!";
+        String vardAdminKommentar =" Wer'e on it!";
+        String utforarAdress = "Vårdgatan 3";
+
+        when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
+                .withUtredningId(utredningId)
+                .withUtredningsTyp(AFU)
+                .withInvanare(anInvanare()
+                        .withPersonId("personnummer")
+                        .build())
+                .withHandlaggare(aHandlaggare()
+                        .build())
+                .withExternForfragan(anExternForfragan()
+                        .withLandstingHsaId(landstingHsaId)
+                        .withBesvarasSenastDatum(LocalDateTime.now())
+                        .withInkomDatum(LocalDateTime.now())
+
+                        .withInternForfraganList(ImmutableList.of(anInternForfragan()
+                                .withVardenhetHsaId(vardenhetId)
+                                .withKommentar(landstingKommentar)
+                                .withForfraganSvar(ForfraganSvar.ForfraganSvarBuilder
+                                        .aForfraganSvar()
+                                        .withKommentar(vardAdminKommentar)
+                                        .withSvarTyp(SvarTyp.ACCEPTERA)
+                                        .withUtforareAdress(utforarAdress)
+                                        .build())
+                                .build()))
+                        .build())
+                .build()));
+
+        final GetInternForfraganResponse response = internForfraganService.getInternForfragan(utredningId, vardenhetId);
+
+        assertEquals(utredningId, response.getUtredning().getUtredningsId());
+        assertEquals(0, response.getUtredning().getInternForfraganList().size());
+        assertEquals(landstingKommentar, response.getInternForfragan().getKommentar());
+        assertEquals(landstingHsaId, response.getInternForfragan().getVardgivareHsaId());
+        assertEquals(SvarTyp.ACCEPTERA, response.getInternForfraganSvar().getSvarTyp());
+        assertEquals(vardAdminKommentar, response.getInternForfraganSvar().getKommentar());
+        assertEquals(utforarAdress, response.getInternForfraganSvar().getUtforareAdress());
+
+    }
 }

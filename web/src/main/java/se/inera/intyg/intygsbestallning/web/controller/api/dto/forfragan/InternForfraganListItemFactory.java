@@ -88,6 +88,7 @@ public class InternForfraganListItemFactory {
                 .withVardgivareHsaId(utredning.getExternForfragan().getLandstingHsaId())
                 .withVardgivareNamn(utredning.getExternForfragan().getLandstingHsaId())
                 .withKraverAtgard(status.getNextActor() == Actor.VARDADMIN)
+                .withKommentar(internForfragan.getKommentar())
                 .build();
     }
 

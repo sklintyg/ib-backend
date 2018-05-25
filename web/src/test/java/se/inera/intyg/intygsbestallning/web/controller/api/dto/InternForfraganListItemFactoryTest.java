@@ -52,6 +52,7 @@ public class InternForfraganListItemFactoryTest {
     private static final int DEFAULT_BESVARA_FORFRAGAN_ARBETSDAGAR = 2;
     private static final int DEFAULT_AFU_UTREDNING_ARBETSDAGAR = 25;
     private static final int DEFAULT_POSTGANG_ARBETSDAGAR = 3;
+    private static final String LANDSTING_KOMMENTAR = "GÖr detta nu!";
 
     @InjectMocks
     private InternForfraganListItemFactory testee = new InternForfraganListItemFactory(new BusinessDaysStub());
@@ -75,6 +76,7 @@ public class InternForfraganListItemFactoryTest {
                                 .withBesvarasSenastDatum(LocalDate.of(2019, 1, 1).atStartOfDay())
                                 .withSkapadDatum(LocalDate.of(2018, 1, 1).atStartOfDay())
                                 .withVardenhetHsaId(VARDENHET_HSA_ID)
+                                .withKommentar(LANDSTING_KOMMENTAR)
                                 .withForfraganSvar(aForfraganSvar()
                                         .withBorjaDatum(LocalDate.of(2020, 1, 1))
                                         .build())
@@ -93,6 +95,7 @@ public class InternForfraganListItemFactoryTest {
         // assertEquals("2020-01-01", response.getPlaneringsDatum());
         assertEquals(InternForfraganStatus.INKOMMEN, response.getStatus());
         assertEquals("landstingHsaId", response.getVardgivareNamn());
+        assertEquals(LANDSTING_KOMMENTAR, response.getKommentar());
     }
 
     @Test

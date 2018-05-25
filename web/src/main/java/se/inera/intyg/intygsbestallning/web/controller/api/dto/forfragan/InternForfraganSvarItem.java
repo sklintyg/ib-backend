@@ -22,9 +22,10 @@ import static java.util.Objects.nonNull;
 
 import java.time.format.DateTimeFormatter;
 
-import se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar;
+import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.VardenhetPreferenceResponse;
 
 /**
  * Created by marced on 2018-05-21.
@@ -32,7 +33,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
 public class InternForfraganSvarItem {
 
     private static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
-
+    private Long forfraganId;
     private SvarTyp svarTyp;
     private UtforareTyp utforareTyp;
     private String utforareNamn;
@@ -44,24 +45,53 @@ public class InternForfraganSvarItem {
     private String kommentar;
     private String borjaDatum;
 
-    public static InternForfraganSvarItem from(ForfraganSvar forfraganSvar) {
-        if (forfraganSvar == null) {
+    public static InternForfraganSvarItem from(InternForfragan internForfragan) {
+        if (internForfragan == null || internForfragan.getForfraganSvar() == null) {
             return null;
         }
 
         return InternForfraganSvarItem.InternForfraganSvarItemBuilder.aInternForfraganSvarItem()
-                .withSvarTyp(forfraganSvar.getSvarTyp())
-                .withUtforareTyp(forfraganSvar.getUtforareTyp())
-                .withUtforareNamn(forfraganSvar.getUtforareNamn())
-                .withUtforareAdress(forfraganSvar.getUtforareAdress())
-                .withUtforarePostnr(forfraganSvar.getUtforarePostnr())
-                .withUtforarePostort(forfraganSvar.getUtforarePostort())
-                .withUtforareTelefon(forfraganSvar.getUtforareTelefon())
-                .withUtforareEpost(forfraganSvar.getUtforareEpost())
-                .withKommentar(forfraganSvar.getKommentar())
-                .withBorjaDatum(nonNull(forfraganSvar.getBorjaDatum())
-                        ? forfraganSvar.getBorjaDatum().format(formatter)
+                .withForfraganId(internForfragan.getId())
+                .withSvarTyp(internForfragan.getForfraganSvar().getSvarTyp())
+                .withUtforareTyp(internForfragan.getForfraganSvar().getUtforareTyp())
+                .withUtforareNamn(internForfragan.getForfraganSvar().getUtforareNamn())
+                .withUtforareAdress(internForfragan.getForfraganSvar().getUtforareAdress())
+                .withUtforarePostnr(internForfragan.getForfraganSvar().getUtforarePostnr())
+                .withUtforarePostort(internForfragan.getForfraganSvar().getUtforarePostort())
+                .withUtforareTelefon(internForfragan.getForfraganSvar().getUtforareTelefon())
+                .withUtforareEpost(internForfragan.getForfraganSvar().getUtforareEpost())
+                .withKommentar(internForfragan.getForfraganSvar().getKommentar())
+                .withBorjaDatum(nonNull(internForfragan.getForfraganSvar().getBorjaDatum())
+                        ? internForfragan.getForfraganSvar().getBorjaDatum().format(formatter)
                         : null)
+                .build();
+    }
+
+    /**
+     * Creates a InternForfraganSvarItem based on a vardenhetPreference. This is used as a fallback to simplify editing of
+     * InternForfraganSvar.
+     *
+     * @param internForfragan
+     * @param vardenhetPreference
+     * @return InternForfraganSvarItem based on the vardpreference rather that a persitent entity.
+     */
+    public static InternForfraganSvarItem from(InternForfragan internForfragan, VardenhetPreferenceResponse vardenhetPreference) {
+        if (internForfragan == null) {
+            return null;
+        }
+
+        return InternForfraganSvarItem.InternForfraganSvarItemBuilder.aInternForfraganSvarItem()
+                .withForfraganId(internForfragan.getId())
+                .withSvarTyp(null)
+                .withUtforareTyp(UtforareTyp.ENHET) // default
+                .withUtforareNamn(vardenhetPreference.getMottagarNamn())
+                .withUtforareAdress(vardenhetPreference.getAdress())
+                .withUtforarePostnr(vardenhetPreference.getPostnummer())
+                .withUtforarePostort(vardenhetPreference.getPostort())
+                .withUtforareTelefon(vardenhetPreference.getTelefonnummer())
+                .withUtforareEpost(vardenhetPreference.getEpost())
+                .withKommentar(vardenhetPreference.getStandardsvar())
+                .withBorjaDatum(null)
                 .build();
     }
 
@@ -153,8 +183,17 @@ public class InternForfraganSvarItem {
         this.borjaDatum = borjaDatum;
     }
 
+    public Long getForfraganId() {
+        return forfraganId;
+    }
+
+    public void setForfraganId(Long forfraganId) {
+        this.forfraganId = forfraganId;
+    }
+
     public static final class InternForfraganSvarItemBuilder {
 
+        private Long forfraganId;
         private SvarTyp svarTyp;
         private UtforareTyp utforareTyp;
         private String utforareNamn;
@@ -171,6 +210,11 @@ public class InternForfraganSvarItem {
 
         public static InternForfraganSvarItemBuilder aInternForfraganSvarItem() {
             return new InternForfraganSvarItemBuilder();
+        }
+
+        public InternForfraganSvarItemBuilder withForfraganId(Long forfraganId) {
+            this.forfraganId = forfraganId;
+            return this;
         }
 
         public InternForfraganSvarItemBuilder withSvarTyp(SvarTyp svarTyp) {
@@ -225,6 +269,7 @@ public class InternForfraganSvarItem {
 
         public InternForfraganSvarItem build() {
             InternForfraganSvarItem internForfraganSvarItem = new InternForfraganSvarItem();
+            internForfraganSvarItem.setForfraganId(forfraganId);
             internForfraganSvarItem.setSvarTyp(svarTyp);
             internForfraganSvarItem.setUtforareTyp(utforareTyp);
             internForfraganSvarItem.setUtforareNamn(utforareNamn);

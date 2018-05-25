@@ -30,6 +30,17 @@ angular.module('ibApp').directive('ibBesvaraInternForfraganPanel',
                 $scope.vm = {
                     model: InternForfraganSvarViewState.getModel()
                 };
+
+                InternForfraganSvarViewState.setForm($scope.forfraganSvarForm);
+
+                $scope.onChangeUtforareTyp = function() {
+                    if($scope.vm.model.utforareTyp === 'ENHET') {
+                        // Revert to
+                        InternForfraganSvarViewState.revertModel();
+                    } else {
+                        InternForfraganSvarViewState.clearUtforare();
+                    }
+                };
             }
         };
     });

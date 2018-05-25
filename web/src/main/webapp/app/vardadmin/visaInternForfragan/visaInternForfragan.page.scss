@@ -20,15 +20,19 @@
     flex: auto;
     flex-direction: column;
     height: 100%;
-    padding: 4px 0 2px 8px;
+    padding: 8px 0 2px 8px;
     overflow-y: auto;
 
     .single-tab-workarea {
-
       background-color: $ib-color-00;
       border: 1px solid $ib-color-15;
       border-radius: 4px;
       padding: 10px;
+
+      .single-tab-content {
+        max-width:700px;
+        padding: 20px;
+      }
 
       h3 {
         @extend %ib-typo-02;

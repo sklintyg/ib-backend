@@ -26,7 +26,9 @@ import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,8 +54,12 @@ import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
+import se.inera.intyg.intygsbestallning.service.vardenhet.VardenhetService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.CreateInternForfraganRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.ForfraganSvarRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.GetInternForfraganResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItemFactory;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganSvarItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.TilldelaDirektRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
@@ -70,6 +76,12 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
 
     @Autowired
     private InternForfraganRepository internForfraganRepository;
+
+    @Autowired
+    private InternForfraganListItemFactory internForfraganListItemFactory;
+
+    @Autowired
+    private VardenhetService vardenhetService;
 
     @Value("${ib.besvara.forfragan.arbetsdagar:2}")
     private int besvaraForfraganArbetsdagar;
@@ -167,13 +179,54 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
     }
 
     @Override
+    public GetInternForfraganResponse getInternForfragan(Long utredningId, String vardenhetHsaId) {
+        Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
+                () -> new IbNotFoundException("Utredning with assessmentId '" + utredningId + "' does not exist."));
+
+        // Must have an internforfragan for this vardenhet
+        InternForfragan internForfragan = utredning.getExternForfragan().getInternForfraganList()
+                .stream()
+                .filter(iff -> Objects.equals(iff.getVardenhetHsaId(), vardenhetHsaId))
+                .findFirst().orElseThrow(() -> new IbNotFoundException("Utredning with id '" + utredningId
+                        + "' does not have an InternForfragan for enhet with id '" + vardenhetHsaId + "'"));
+
+        final GetUtredningResponse utredningsResponse = GetUtredningResponse.from(utredning,
+                utredningStatusResolver.resolveStatus(utredning));
+
+        // Vardadmins should not see händelser or InternforfraganList
+        utredningsResponse.getHandelseList().clear();
+        utredningsResponse.getInternForfraganList().clear();
+
+        final InternForfraganListItem internForfraganListItem = internForfraganListItemFactory.from(utredning,
+                internForfragan.getVardenhetHsaId());
+
+        // Either return existing svar or a partial svar based on vardenhet preferences
+        InternForfraganSvarItem internForfraganSvarItem = InternForfraganSvarItem.from(internForfragan);
+        if (internForfraganSvarItem == null) {
+            internForfraganSvarItem = InternForfraganSvarItem.from(internForfragan,
+                    vardenhetService.getVardEnhetPreference(vardenhetHsaId));
+        }
+
+        return new GetInternForfraganResponse(internForfraganListItem, internForfraganSvarItem, utredningsResponse);
+
+    }
+
+    @Override
     @Transactional
     public InternForfraganSvarItem besvaraInternForfragan(Long utredningId, ForfraganSvarRequest svar) {
+
+        // Sanity check of input
+        String requestValidationError = validateSvarRequest(svar);
+        if (requestValidationError != null) {
+            throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, MessageFormat.format(
+                    "ForfraganSvarRequest validation failed with message '{0}'",
+                    requestValidationError));
+        }
         // Utredning must exist...
         Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
                 () -> new IbNotFoundException("Could not find the assessment with id " + utredningId));
 
-        // .. and have a matching internforfragan..
+        // ..and have a matching internforfragan
         InternForfragan internForfragan = utredning.getExternForfragan().getInternForfraganList().stream()
                 .filter(i -> i.getId().equals(svar.getForfraganId()))
                 .findAny()
@@ -183,44 +236,71 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
         InternForfraganStatus internForfraganStatus = internForfraganStateResolver.resolveStatus(utredning, internForfragan);
         if (internForfraganStatus != InternForfraganStatus.INKOMMEN) {
             throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, MessageFormat.format(
-                    "Internforfragan for {0} in utredning {1} is in an incorrect state to answer", internForfragan.getVardenhetHsaId(),
+                    "Internforfragan for vardenhet '{0}' in utredning '{1}' is in an incorrect state to answer",
+                    internForfragan.getVardenhetHsaId(),
+                    utredning.getUtredningId()));
+        }
+        // and should not already have been answered. (We could reply only on the INKOMMEN status)
+        if (internForfragan.getForfraganSvar() != null) {
+            throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, MessageFormat.format(
+                    "Internforfragan for vardenhet '{0}' in utredning '{1}' already have an answer", internForfragan.getVardenhetHsaId(),
                     utredning.getUtredningId()));
         }
 
-        ForfraganSvar forfraganSvar = buildUpdatedEntity(internForfragan.getForfraganSvar(), svar);
+        ForfraganSvar forfraganSvar = buildEntity(svar);
 
         internForfragan.setForfraganSvar(forfraganSvar);
         final InternForfragan saved = internForfraganRepository.save(internForfragan);
 
-        // Still-left: if ALL enheter have responded, we should notify samordnare for this utredning!
+        // Still-left: if ALL enheter no have responded, we should notify samordnare for this utredning!
+        // Still-left: händelselog
 
-        return InternForfraganSvarItem.from(saved.getForfraganSvar());
+        return InternForfraganSvarItem.from(saved);
     }
 
-    private ForfraganSvar buildUpdatedEntity(ForfraganSvar existing, ForfraganSvarRequest svar) {
-        ForfraganSvar updated;
-        // New or updated ansver?
-        if (existing == null) {
-            updated = new ForfraganSvar();
-        } else {
-            updated = ForfraganSvar.copyFrom(existing);
+    private String validateSvarRequest(ForfraganSvarRequest svar) {
+        if (svar == null) {
+            return "Request was null";
         }
-        // Could be autosaved before actual accept/reject SvarTyp is set
-        if (!Strings.isNullOrEmpty(svar.getSvarTyp())) {
-            updated.setSvarTyp(SvarTyp.valueOf(svar.getSvarTyp()));
+        if (!Arrays.stream(SvarTyp.values()).anyMatch((t) -> t.name().equals(svar.getSvarTyp()))) {
+            return "Invalid svarTypValue " + svar.getSvarTyp();
         }
-        updated.setUtforareTyp(UtforareTyp.valueOf(svar.getUtforareTyp()));
-        updated.setUtforareNamn(svar.getUtforareNamn());
-        updated.setUtforareAdress(svar.getUtforareAdress());
-        updated.setUtforarePostnr(svar.getUtforarePostnr());
-        updated.setUtforarePostort(svar.getUtforarePostort());
-        updated.setUtforareEpost(svar.getUtforareEpost());
-        updated.setUtforareTelefon(svar.getUtforareTelefon());
-        updated.setKommentar(svar.getKommentar());
-        if (!Strings.isNullOrEmpty(svar.getBorjaDatum())) {
-            updated.setBorjaDatum(LocalDate.parse(svar.getBorjaDatum()));
+        if (!Arrays.stream(UtforareTyp.values()).anyMatch((t) -> t.name().equals(svar.getUtforareTyp()))) {
+            return "Invalid UtforareTyp " + svar.getUtforareTyp();
         }
-        return updated;
+
+        if (Strings.isNullOrEmpty(svar.getUtforareNamn())) {
+            return "Mandatory UtforareNamn missing";
+        }
+        if (Strings.isNullOrEmpty(svar.getUtforareAdress())) {
+            return "Mandatory UtforareAdress missing";
+        }
+        if (Strings.isNullOrEmpty(svar.getUtforarePostnr())) {
+            return "Mandatory tforarePostnr missing";
+        }
+        if (Strings.isNullOrEmpty(svar.getUtforarePostort())) {
+            return "Mandatory UtforarePostOrt missing";
+        }
+        //if epost present, check with regexp?
+        //if borjadatum present - check valid?
+
+
+        return null;
+    }
+
+    private ForfraganSvar buildEntity(ForfraganSvarRequest svarRequest) {
+        return ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar()
+                .withSvarTyp(SvarTyp.valueOf(svarRequest.getSvarTyp()))
+                .withUtforareTyp(UtforareTyp.valueOf(svarRequest.getUtforareTyp()))
+                .withUtforareNamn(svarRequest.getUtforareNamn())
+                .withUtforareAdress(svarRequest.getUtforareAdress())
+                .withUtforarePostnr(svarRequest.getUtforarePostnr())
+                .withUtforarePostort(svarRequest.getUtforarePostort())
+                .withUtforareTelefon(svarRequest.getUtforareTelefon())
+                .withUtforareEpost(svarRequest.getUtforareEpost())
+                .withKommentar(svarRequest.getKommentar())
+                .withBorjaDatum(!Strings.isNullOrEmpty(svarRequest.getBorjaDatum()) ? LocalDate.parse(svarRequest.getBorjaDatum()) : null)
+                .build();
 
     }
 

@@ -22,6 +22,7 @@ angular.module('ibApp').directive('ibInternForfraganHeader', function($window, $
     return {
         restrict: 'E',
         scope: {
+            internForfragan: '<',
             onAccept: '&',
             onReject: '&'
         },

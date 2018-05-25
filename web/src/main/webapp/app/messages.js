@@ -59,7 +59,7 @@ var ibMessages = {
         'unitsettings.change.adress.desc': 'Denna adress är den som handlingar ska skickas till som standard. Du kan alltid ändra adressen i en enskild förfrågan innan du svarar.',
         'unitsettings.form.mottagarnamn': 'Mottagare',
         'unitsettings.form.adress': 'Postadress',
-        'unitsettings.form.postnummer': 'Postkod',
+        'unitsettings.form.postnummer': 'Postnummer',
         'unitsettings.form.postort': 'Postort',
         'unitsettings.form.telefonnummer': 'Telefonnummer',
         'unitsettings.form.epost': 'Epost',

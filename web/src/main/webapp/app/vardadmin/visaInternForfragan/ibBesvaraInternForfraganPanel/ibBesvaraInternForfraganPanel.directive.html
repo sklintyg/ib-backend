@@ -1,100 +1,97 @@
 <div class="single-tab-workarea">
+  <div class="single-tab-content">
 
-
-  <form name="forfraganSvarForm" novalidate autocomplete="off">
-    <div class="flex-grid">
-      <div class="col">
-        <h3><span message key="internforfragan.besvara.form.title"></span></h3>
+    <form name="forfraganSvarForm" novalidate autocomplete="off">
+      <div class="flex-grid">
+        <div class="col">
+          <h3><span message key="internforfragan.besvara.form.title"></span></h3>
+        </div>
       </div>
-    </div>
-    <div class="flex-grid">
-      <div class="col">
-        <ib-textfield id="borjaDatum" model="vm.model.borjaDatum"
-                      label-key="internforfragan.besvara.form.borjadatum.label" max-length="255"></ib-textfield>
+      <div class="flex-grid">
+        <div class="col">
+          <ib-textfield id="borjaDatum" model="vm.model.borjaDatum"
+                        label-key="internforfragan.besvara.form.borjadatum.label" max-length="255"></ib-textfield>
+        </div>
       </div>
-    </div>
-    <div class="flex-grid">
-      <div class="col">
-        <h4><span message key="internforfragan.besvara.form.utforaretyp.label"></span></h4>
-        <ib-radio-wrapper>
-          <input ng-attr-id="utforarTypEnhet" type="radio" value="ENHET" ng-model="vm.model.utforareTyp">
-          <label ng-attr-for="utforarTypEnhet">Enhet</label>
-        </ib-radio-wrapper>
-        <ib-radio-wrapper>
-          <input ng-attr-id="utforarTypUnderleverantor" type="radio" value="UNDERLEVERANTOR"
-                 ng-model="vm.model.utforareTyp">
-          <label ng-attr-for="utforarTypUnderleverantor">Underleverantör</label>
-        </ib-radio-wrapper>
+      <div class="flex-grid">
+        <div class="col">
+          <h4><span message key="internforfragan.besvara.form.utforaretyp.label"></span></h4>
+          <ib-radio-wrapper>
+            <input ng-attr-id="utforarTypEnhet" type="radio" value="ENHET" ng-model="vm.model.utforareTyp"
+                   ng-change="onChangeUtforareTyp()">
+            <label ng-attr-for="utforarTypEnhet">Enhet</label>
+          </ib-radio-wrapper>
+          <ib-radio-wrapper>
+            <input ng-attr-id="utforarTypUnderleverantor" type="radio" value="UNDERLEVERANTOR"
+                   ng-model="vm.model.utforareTyp" ng-change="onChangeUtforareTyp()">
+            <label ng-attr-for="utforarTypUnderleverantor">Underleverantör</label>
+          </ib-radio-wrapper>
+        </div>
       </div>
-    </div>
 
-    <div class="flex-grid">
-      <div class="col">
-        <h4><span message key="internforfragan.besvara.form.kontaktinformation.label"></span></h4>
-        <ib-horisontal-textfield id="utforareNamn" model="vm.model.utforareNamn"
-                                 required="true"
-                                 label-key="internforfragan.besvara.form.utforarenamn.label"
-                                 max-length="255"></ib-horisontal-textfield>
+      <div class="flex-grid">
+        <div class="col">
+          <h4><span message key="internforfragan.besvara.form.kontaktinformation.label"></span></h4>
+          <ib-horisontal-textfield id="utforareNamn" model="vm.model.utforareNamn" required="true"
+                                   label-key="internforfragan.besvara.form.utforarenamn.label"
+                                   max-length="255"></ib-horisontal-textfield>
 
 
+        </div>
       </div>
-    </div>
-    <div class="flex-grid">
-      <div class="col">
-        <ib-horisontal-textfield id="adress" model="vm.model.utforareAdress"
-                                 required="true"
-                                 label-key="internforfragan.besvara.form.utforareadress.label"
-                                 max-length="255"></ib-horisontal-textfield>
+      <div class="flex-grid">
+        <div class="col">
+          <ib-horisontal-textfield id="adress" model="vm.model.utforareAdress" required="true"
+                                   label-key="internforfragan.besvara.form.utforareadress.label"
+                                   max-length="255"></ib-horisontal-textfield>
+        </div>
       </div>
-    </div>
 
-    <!-- combined postnr/ort -->
-    <div class="flex-grid">
-      <div class="col">
-        <ib-horisontal-textfield id="postnummer" model="vm.model.utforarePostnr"
-                                 required="true"
-                                 label-key="internforfragan.besvara.form.utforarepostnr.label"
-                                 pattern="'\\d{5}'"
-                                 pattern-error="Postnr måste anges med 5 siffror"
-                                 max-length="5"></ib-horisontal-textfield>
+      <!-- combined postnr/ort -->
+      <div class="flex-grid">
+        <div class="col">
+          <ib-horisontal-textfield id="postnummer" model="vm.model.utforarePostnr" required="true"
+                                   label-key="internforfragan.besvara.form.utforarepostnr.label" pattern="'\\d{5}'"
+                                   pattern-error="Postnr måste anges med 5 siffror"
+                                   max-length="5"></ib-horisontal-textfield>
+        </div>
+        <div class="col col-2">
+          <ib-horisontal-textfield id="postort" model="vm.model.utforarePostort" required="true"
+                                   label-key="internforfragan.besvara.form.utforarepostort.label"
+                                   max-length="255"></ib-horisontal-textfield>
+        </div>
       </div>
-      <div class="col col-2">
-        <ib-horisontal-textfield id="postort" model="vm.model.utforarePostort"
-                                 required="true"
-                                 label-key="internforfragan.besvara.form.utforarepostort.label"
-                                 max-length="255"></ib-horisontal-textfield>
+
+      <div class="flex-grid">
+        <div class="col">
+          <ib-horisontal-textfield id="telefonnummer" model="vm.model.utforareTelefon"
+                                   label-key="internforfragan.besvara.form.utforaretelefon.label"
+                                   max-length="255"></ib-horisontal-textfield>
+        </div>
       </div>
-    </div>
-
-    <div class="flex-grid">
-      <div class="col">
-        <ib-horisontal-textfield id="telefonnummer" model="vm.model.utforareTelefon"
-                                 label-key="internforfragan.besvara.form.utforaretelefon.label"
-                                 max-length="255"></ib-horisontal-textfield>
+      <div class="flex-grid">
+        <div class="col">
+          <ib-horisontal-textfield id="epost" model="vm.model.utforareEpost"
+                                   label-key="internforfragan.besvara.form.utforareepost.label" pattern="'.+@.+\\..+'"
+                                   pattern-error="Ange en giltig epostadress"
+                                   max-length="255"></ib-horisontal-textfield>
+        </div>
       </div>
-    </div>
-    <div class="flex-grid">
-      <div class="col">
-        <ib-horisontal-textfield id="epost" model="vm.model.utforareEpost"
-                                 label-key="internforfragan.besvara.form.utforareepost.label"
-                                 max-length="255"></ib-horisontal-textfield>
+
+
+      <div class="flex-grid">
+        <div class="col">
+          <h4><span message key="internforfragan.besvara.form.kommentar.label"></span></h4>
+          <ib-textarea id="kommentar" model="vm.model.kommentar" placeholder-text="Skriv standardsvar här"
+                       max-length="255"></ib-textarea>
+        </div>
       </div>
-    </div>
 
+      <ib-alert-message alert-id="vardenhet-load-error" alert-severity="danger" ng-if="vm.model.errorKey"
+                        alert-message-id="{{vm.model.errorKey}}">
 
-    <div class="flex-grid">
-      <div class="col">
-        <h4><span message key="internforfragan.besvara.form.kommentar.label"></span></h4>
-        <ib-textarea id="kommentar" model="vm.model.kommentar"
-                     placeholder-text="Skriv standardsvar här"
-                     max-length="255"></ib-textarea>
-      </div>
-    </div>
+      </ib-alert-message>
+    </form>
 
-    <ib-alert-message alert-id="vardenhet-load-error" alert-severity="danger" ng-if="vm.model.errorKey"
-                      alert-message-id="{{vm.model.errorKey}}">
-
-    </ib-alert-message>
-  </form>
-
+  </div>
 </div>

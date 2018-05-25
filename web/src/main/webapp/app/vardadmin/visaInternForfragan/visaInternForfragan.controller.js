@@ -59,21 +59,10 @@ angular.module('ibApp')
             InternForfraganProxy.getInternForfragning($stateParams.utredningsId).then(function(response) {
                 $scope.vm.data.internForfragan = response.internForfragan;
                 $scope.vm.data.utredning = convertUtredningToViewModel(response.utredning);
-                if (response.internForfraganSvar) {
-                    InternForfraganSvarViewState.resetFromExisting(response.internForfraganSvar);
-                    $scope.vm.loading = false;
-                } else {
-                    VardenhetProxy.getVardenhetPreference().then(function(vardenhetPreference) {
-                        InternForfraganSvarViewState.resetFromPreference($scope.vm.data.internForfragan.forfraganId,vardenhetPreference);
-                    }, function(error) {
-                        $log.error('failed to load vardenhet preference!' + error);
-                        InternForfraganSvarViewState.reset('common.error.SPI.FEL01');
-                    }).finally(function() { // jshint ignore:line
-                        $scope.vm.loading = false;
-                    });
-                }
+                InternForfraganSvarViewState.setModel(response.internForfraganSvar);
             }, function(error) {
                 $log.error(error);
+            }).finally(function() { // jshint ignore:line
                 $scope.vm.loading = false;
             });
 

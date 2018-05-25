@@ -1,7 +1,7 @@
 <div class="VisaInternForfragan-page ib-workarea">
 
 
-  <ib-intern-forfragan-header on-accept="onAccept()" on-reject="onReject()"></ib-intern-forfragan-header>
+  <ib-intern-forfragan-header on-accept="onAccept()" on-reject="onReject()" intern-forfragan="vm.data.internForfragan"></ib-intern-forfragan-header>
 
   <div class="ib-workarea-hflex-container centered-constrained-content" id="view-{{vm.data.utredning.utredningsId}}">
 
@@ -80,6 +80,15 @@
                     {{vm.data.utredning.handlaggareNamn}}<br>
                     {{vm.data.utredning.handlaggareTelefonnummer}}<br>
                     {{vm.data.utredning.handlaggareEpost}}
+                  </card-value>
+                </card-body>
+              </card>
+              <card>
+                <h3>Meddelande från Landsting</h3>
+                <card-body>
+                  <h4>Meddelande</h4>
+                  <card-value>
+                    {{vm.data.internForfragan.kommentar}}<br>
                   </card-value>
                 </card-body>
               </card>
