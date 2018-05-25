@@ -67,13 +67,15 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private static final List<UtredningStatus> REGISTRERA_BESOK_GODKANDA_STATES = Arrays.asList(
+    private static final List<UtredningStatus> BESOK_HANTERING_GODKANDA_STATUSAR = Arrays.asList(
             BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR,
             UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR,
-            HANDLINGAR_MOTTAGNA_BOKA_BESOK);
+            HANDLINGAR_MOTTAGNA_BOKA_BESOK,
+            UTREDNING_PAGAR,
+            AVVIKELSE_MOTTAGEN);
 
     private static Predicate<Utredning> isKorrektStatusForBesokAvvikelseMottagen() {
-        return utr -> UtredningStatusResolver.resolveStaticStatus(utr).equals(UTREDNING_PAGAR);
+        return utr -> BESOK_HANTERING_GODKANDA_STATUSAR.contains(UtredningStatusResolver.resolveStaticStatus(utr));
     }
 
     @Autowired
@@ -88,7 +90,7 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
         final Utredning utredning = utredningRepository.findById(request.getUtredningId())
                 .orElseThrow(() -> new IbNotFoundException("Utredning with id '" + request.getUtredningId() + "' does not exist."));
 
-        if (!REGISTRERA_BESOK_GODKANDA_STATES.contains(UtredningStatusResolver.resolveStaticStatus(utredning))) {
+        if (!BESOK_HANTERING_GODKANDA_STATUSAR.contains(UtredningStatusResolver.resolveStaticStatus(utredning))) {
             throw new IbServiceException(IbErrorCodeEnum.BAD_STATE,
                     MessageFormat.format("Utredning with id {0} is in an incorrect state", utredning.getUtredningId()));
         }

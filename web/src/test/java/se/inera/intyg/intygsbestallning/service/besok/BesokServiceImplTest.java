@@ -255,7 +255,7 @@ public class BesokServiceImplTest {
 
         Utredning utredning = createUtredningForBesokTest();
         //This puts utredning in an incorrect state to be able to report besok avvikelse
-        utredning.setHandlingList(Collections.emptyList());
+        utredning.getIntygList().get(0).setSkickatDatum(DATE_TIME.minusDays(1));
 
         Utredning utredningAfterSavedAvvikelse = createUtredningForBesokTest();
         final ReportBesokAvvikelseRequest request = aReportBesokAvvikelseRequest()
