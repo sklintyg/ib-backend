@@ -17,49 +17,52 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('ibApp').factory('InternForfraganProxy',
-    function(ProxyTemplate) {
-        'use strict';
+angular.module('ibApp').factory('InternForfraganProxy', function(ProxyTemplate) {
+    'use strict';
 
-        function _getForfragningar(query) {
-            var restPath = '/api/internforfragningar';
+    function _getForfragningar(query) {
+        var restPath = '/api/internforfragningar';
 
-            return ProxyTemplate.postTemplate(restPath, query, {});
-        }
-        function _getInternForfragning(utredningsId) {
-            var restPath = '/api/internforfragningar/' + utredningsId;
+        return ProxyTemplate.postTemplate(restPath, query, {});
+    }
+    function _getInternForfragning(utredningsId) {
+        var restPath = '/api/internforfragningar/' + utredningsId;
 
-            return ProxyTemplate.getTemplate(restPath, {});
-        }
+        return ProxyTemplate.getTemplate(restPath, {});
+    }
 
-        function _getForfragningarFilterValues() {
-            var restPath = '/api/internforfragningar/list/filter';
+    function _getForfragningarFilterValues() {
+        var restPath = '/api/internforfragningar/list/filter';
 
-            return ProxyTemplate.getTemplate(restPath, {});
-        }
-        function _accepteraInternForfragan(utredningsId, payload) {
-            var errorMessageConfig = {
+        return ProxyTemplate.getTemplate(restPath, {});
+    }
+    function _accepteraInternForfragan(utredningsId, payload) {
+        var config = {
+            errorMessageConfig: {
                 errorTitleKey: 'server.error.accepterainternforfragan.title',
                 errorTextKey: 'server.error.accepterainternforfragan.text'
-            };
-            var restPath = '/api/internforfragningar/' + utredningsId + '/besvara';
-            return ProxyTemplate.postTemplate(restPath, payload, errorMessageConfig);
-        }
-        function _avbojInternForfragan(utredningsId, payload) {
-            var errorMessageConfig = {
-                errorTitleKey: 'server.error.avbojinternforfragan.title',
-                    errorTextKey: 'server.error.avbojinternforfragan.text'
-            };
-            var restPath = '/api/internforfragningar/' + utredningsId + '/besvara';
-            return ProxyTemplate.postTemplate(restPath, payload, errorMessageConfig);
-        }
-
-        // Return public API for the service
-        return {
-            getForfragningar: _getForfragningar,
-            getForfragningarFilterValues: _getForfragningarFilterValues,
-            getInternForfragning: _getInternForfragning,
-            accepteraInternForfragan: _accepteraInternForfragan,
-            avbojInternForfragan: _avbojInternForfragan
+            }
         };
-    });
+        var restPath = '/api/internforfragningar/' + utredningsId + '/besvara';
+        return ProxyTemplate.postTemplate(restPath, payload, config);
+    }
+    function _avbojInternForfragan(utredningsId, payload) {
+        var config = {
+            errorMessageConfig: {
+                errorTitleKey: 'server.error.avbojinternforfragan.title',
+                errorTextKey: 'server.error.avbojinternforfragan.text'
+            }
+        };
+        var restPath = '/api/internforfragningar/' + utredningsId + '/besvara';
+        return ProxyTemplate.postTemplate(restPath, payload, config);
+    }
+
+    // Return public API for the service
+    return {
+        getForfragningar: _getForfragningar,
+        getForfragningarFilterValues: _getForfragningarFilterValues,
+        getInternForfragning: _getInternForfragning,
+        accepteraInternForfragan: _accepteraInternForfragan,
+        avbojInternForfragan: _avbojInternForfragan
+    };
+});

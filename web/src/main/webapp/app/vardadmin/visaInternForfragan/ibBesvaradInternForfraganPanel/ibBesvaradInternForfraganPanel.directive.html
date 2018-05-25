@@ -9,7 +9,7 @@
 
     <ib-alert-message alert-id="internforfragan-accepterad-alert" alert-severity="info"
                       ng-if="vm.model.svarTyp === 'AVBOJ'">
-      Förfrågan avböjdes
+      Förfrågan avvisades
     </ib-alert-message>
 
 
@@ -21,7 +21,10 @@
       </card-value>
       <ib-help-text-label label-key="internforfragan.besvara.form.utforaretyp.label"></ib-help-text-label>
       <card-value>
-        {{vm.model.utforareTyp}}
+        <span ng-switch="vm.model.utforareTyp">
+          <span ng-switch-when="UNDERLEVERANTOR">Underleverantör</span>
+          <span ng-switch-default>Vårdenhet</span>
+        </span>
       </card-value>
       <ib-help-text-label label-key="internforfragan.besvara.form.kontaktinformation.label"></ib-help-text-label>
       <card-value class="wide">

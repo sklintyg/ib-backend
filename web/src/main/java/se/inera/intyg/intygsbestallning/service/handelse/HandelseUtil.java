@@ -76,6 +76,27 @@ public final class HandelseUtil {
                 .build();
     }
 
+    public static Handelse createInternForfraganBesvarad(boolean accepted, String vardadmin, String vardenhetNamn,
+            String svarKommentar, LocalDate borjaDatum) {
+
+        StringBuilder handelseText = new StringBuilder();
+        if (accepted) {
+            handelseText.append(String.format("Förfrågan accepterad av %s", vardenhetNamn));
+            if (borjaDatum != null) {
+                handelseText.append(String.format(" Startdatum: %s", borjaDatum.format(formatter)));
+            }
+        } else {
+            handelseText.append(String.format("Förfrågan avvisades av %s", vardenhetNamn));
+        }
+        return aHandelse()
+                .withSkapad(LocalDateTime.now())
+                .withHandelseTyp(accepted ? HandelseTyp.FORFRAGAN_ACCEPTERAD : HandelseTyp.FORFRAGAN_AVVISAD)
+                .withAnvandare(vardadmin)
+                .withHandelseText(handelseText.toString())
+                .withKommentar(svarKommentar)
+                .build();
+    }
+
     public static Handelse createBesokAvvikelse(final ReportBesokAvvikelseRequest request) {
 
         StringBuilder textBuilder = new StringBuilder();

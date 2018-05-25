@@ -43,6 +43,7 @@ import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar;
+import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
@@ -218,8 +219,8 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
         // Sanity check of input
         String requestValidationError = validateSvarRequest(svar);
         if (requestValidationError != null) {
-            throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, MessageFormat.format(
-                    "ForfraganSvarRequest validation failed with message '{0}'",
+            throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, String.format(
+                    "ForfraganSvarRequest validation failed with message '%s'",
                     requestValidationError));
         }
         // Utredning must exist...
@@ -230,20 +231,20 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
         InternForfragan internForfragan = utredning.getExternForfragan().getInternForfraganList().stream()
                 .filter(i -> i.getId().equals(svar.getForfraganId()))
                 .findAny()
-                .orElseThrow(() -> new IbNotFoundException(MessageFormat.format(
-                        "Could not find internforfragan '{0}' in utredning '{1}'", svar.getForfraganId(), utredningId)));
+                .orElseThrow(() -> new IbNotFoundException(String.format(
+                        "Could not find internforfragan '%s' in utredning '%s'", svar.getForfraganId(), utredningId)));
         // .. in correct state
         InternForfraganStatus internForfraganStatus = internForfraganStateResolver.resolveStatus(utredning, internForfragan);
         if (internForfraganStatus != InternForfraganStatus.INKOMMEN) {
-            throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, MessageFormat.format(
-                    "Internforfragan for vardenhet '{0}' in utredning '{1}' is in an incorrect state to answer",
+            throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, String.format(
+                    "Internforfragan for vardenhet '%s' in utredning '%s' is in an incorrect state to answer",
                     internForfragan.getVardenhetHsaId(),
                     utredning.getUtredningId()));
         }
-        // and should not already have been answered. (We could reply only on the INKOMMEN status)
+        // and should not already have been answered. (We could rely only on the INKOMMEN status)
         if (internForfragan.getForfraganSvar() != null) {
-            throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, MessageFormat.format(
-                    "Internforfragan for vardenhet '{0}' in utredning '{1}' already have an answer", internForfragan.getVardenhetHsaId(),
+            throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, String.format(
+                    "Internforfragan for vardenhet '%s' in utredning '%s' already have an answer", internForfragan.getVardenhetHsaId(),
                     utredning.getUtredningId()));
         }
 
@@ -252,10 +253,24 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
         internForfragan.setForfraganSvar(forfraganSvar);
         final InternForfragan saved = internForfraganRepository.save(internForfragan);
 
-        // Still-left: if ALL enheter no have responded, we should notify samordnare for this utredning!
-        // Still-left: händelselog
+        // Still-left: Normalflöde 5 - Samtliga vårdenheter har besvarat internförfrågningarna
+
+        // Skapa händelselog
+        createHandelseLog(utredning, forfraganSvar, internForfragan.getVardenhetHsaId());
 
         return InternForfraganSvarItem.from(saved);
+    }
+
+    private void createHandelseLog(Utredning utredning, ForfraganSvar forfraganSvar, String vardenhetHsaId) {
+
+        String vardenhetNamn = hsaOrganizationsService.getVardenhet(vardenhetHsaId).getNamn();
+
+        final Handelse internForfraganBesvarad = HandelseUtil.createInternForfraganBesvarad(
+                SvarTyp.ACCEPTERA.equals(forfraganSvar.getSvarTyp()), userService.getUser().getNamn(), vardenhetNamn,
+                forfraganSvar.getKommentar(), forfraganSvar.getBorjaDatum());
+
+        utredning.getHandelseList().add(internForfraganBesvarad);
+        utredningRepository.save(utredning);
     }
 
     private String validateSvarRequest(ForfraganSvarRequest svar) {

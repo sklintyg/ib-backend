@@ -369,7 +369,7 @@
             </column>
 
             <column name="UTFORARE_EPOST" type="varchar(255)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
 
             <column name="KOMMENTAR" type="text">
