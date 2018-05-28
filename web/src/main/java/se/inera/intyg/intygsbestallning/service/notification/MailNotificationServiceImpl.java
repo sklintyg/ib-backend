@@ -39,14 +39,18 @@ import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.Optional;
 
+import static com.google.common.base.Preconditions.checkState;
+import static java.util.Objects.nonNull;
+
 @Service
 public class MailNotificationServiceImpl implements MailNotificationService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MailNotificationServiceImpl.class);
     private static final String SUBJECT_BESTALLNING_UPPDATERAD = "Försäkringskassan har uppdaterat en beställning";
     private static final String SUBJECT_HANDLING_MOTTAGEN = "Beställning av Försäkringsmedicinsk utredning";
-    private static final String SUBJECT_UTREDNING_SLUTDATUM_PA_VAG_PASSERAS = "Påminnelse: Slutdatum för en utredning "
-            + "är på väg att passeras";
+    private static final String SUBJECT_NY_FMU_FORFRAGAN = "Ny FMU förfragan";
+    private static final String SUBJECT_UTREDNING_SLUTDATUM_PA_VAG_PASSERAS =
+            "Påminnelse: Slutdatum för en utredning är på väg att passeras";
 
     @Value("${mail.ib.host.url}")
     private String ibHostUrl;
@@ -126,6 +130,22 @@ public class MailNotificationServiceImpl implements MailNotificationService {
                         + "kommer utredningen inte att ersättas.",
                 "<URL to utredning>");
         send(email, SUBJECT_UTREDNING_SLUTDATUM_PA_VAG_PASSERAS, body);
+    }
+
+    @Override
+    public void notifynotifyNyExternForfragan(final Utredning utredning) {
+
+        checkState(nonNull(utredning.getExternForfragan()));
+        checkState(nonNull(utredning.getExternForfragan().getLandstingHsaId()));
+
+        final String vardenhetHsaId = utredning.getExternForfragan().getLandstingHsaId();
+        final String email = findEmailAddressForVardenhet(vardenhetHsaId);
+        final String body = mailNotificationBodyFactory.buildBodyForUtredning(
+                "Det har inkommit en ny förfrågan om en försäkringsmedicinsk utredning (FMU) från Försäkringskassan.",
+                "<URL to utredning>"
+        );
+
+        send(email, SUBJECT_NY_FMU_FORFRAGAN, body);
     }
 
     private void verifyHasBestallning(Utredning utredning, String errorMessage) {
