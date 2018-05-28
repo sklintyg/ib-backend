@@ -58,7 +58,7 @@ angular.module('ibApp')
                 $scope.utredning = convertUtredningToViewModel(utredning);
 
                 // Activate handelser tab if fas is not FORFRAGAN
-                $scope.active = $scope.utredning.fas.id == 'FORFRAGAN' ? 0 : 1;
+                $scope.active = $scope.utredning.fas.id === 'FORFRAGAN' ? 0 : 1;
 
             }, function(error) {
                 $log.error(error);
