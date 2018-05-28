@@ -23,7 +23,7 @@ angular.module('ibApp').config(function($stateProvider) {
         url: '/visaInternForfragan/:utredningsId',
         views: {
             'navbar@': {
-                template: '<ib-main-menu/>'
+                template: ''
             },
             'content@app': {
                 templateUrl: '/app/vardadmin/visaInternForfragan/visaInternForfragan.html',

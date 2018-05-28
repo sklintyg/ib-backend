@@ -2,14 +2,6 @@
   <ib-spinner label="common.label.loading" show-spinner="!vm.widgetState.isReady">
     <div class="centered-constrained-content">
 
-      <!-- page error message -->
-     <!-- <div ng-if="utredningHeaderViewState.activeErrorMessageKey">
-        <ib-alert-message id="intyg-load-error" ng-show="utredningHeaderViewState.common.doneLoading"
-                          alert-severity="danger">
-            <span dynamic-label key="{{utredningHeaderViewState.common.activeErrorMessageKey}}"></span>
-        </ib-alert-message>
-      </div>
-      -->
 
       <!-- header content -->
       <div ng-if="!vm.model.errorKey" id="utredning-header-status">
@@ -29,9 +21,10 @@
                 id="tillbakaButton"
                 ng-click="back()">Tillbaka
             </a>
+            <ib-intern-forfragan-header-status intern-forfragan="internForfragan"></ib-intern-forfragan-header-status>
           </div>
 
-          <ib-intern-forfragan-header-status intyg-view-state="utredningHeaderViewState"></ib-intern-forfragan-header-status>
+
         </div>
 
         <div class="flex-row padding-top-small">

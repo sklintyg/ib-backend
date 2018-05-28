@@ -1,1 +1,11 @@
-Status 1 (status2)
+<span class="status-slot">
+  <i class="material-icons kraver-atgard" ng-if="internForfragan.kraverAtgard">error</i>
+  <i class="material-icons kraver-atgard-annan" ng-if="!internForfragan.kraverAtgard && internForfragan.status.nextActor!=='NONE'">alarm</i>
+  <i class="material-icons avslutad" ng-if="internForfragan.internForfraganFas.id === 'AVSLUTAD'">archive</i>
+  {{internForfragan.status.label}}
+</span>
+<span class="status-slot">
+  <i class="material-icons slut-datum">event_available</i>
+  {{internForfragan.besvarasSenastDatum}}
+</span>
+

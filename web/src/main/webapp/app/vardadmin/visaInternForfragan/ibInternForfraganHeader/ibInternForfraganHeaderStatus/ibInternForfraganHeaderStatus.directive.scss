@@ -1,0 +1,26 @@
+ib-intern-forfragan-header-status {
+
+  .status-slot {
+    padding-right: 30px;
+    .material-icons {
+      font-size: 20px;
+
+      &.kraver-atgard {
+       color: $ib-color-05;
+      }
+
+      &.kraver-atgard-annan {
+        color: $ib-color-06;
+      }
+
+      &.avslutad {
+        color: $ib-color-16;
+      }
+
+      &.slut-datum {
+        color: $ib-color-06;
+      }
+    }
+  }
+}
+

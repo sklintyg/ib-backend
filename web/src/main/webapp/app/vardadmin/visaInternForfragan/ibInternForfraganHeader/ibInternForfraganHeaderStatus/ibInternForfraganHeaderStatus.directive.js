@@ -16,26 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-angular
-        .module('ibApp')
-        .directive(
-                'ibInternForfraganHeaderStatus',
-                function(InternForfraganSvarViewState) {
-                    'use strict';
-                    var basePath = '/app/vardadmin/visaInternForfragan/ibInternForfraganHeader';
+angular.module('ibApp').directive('ibInternForfraganHeaderStatus', function() {
+    'use strict';
+    var basePath = '/app/vardadmin/visaInternForfragan/ibInternForfraganHeader';
 
-                    return {
-                        restrict: 'E',
-                        scope: {
-                            utredning: '=',
-                            intygViewState: '='
-                        },
-                        templateUrl: basePath + '/ibInternForfraganHeaderStatus/ibInternForfraganHeaderStatus.directive.html',
-                        link: function($scope) {
-                            $scope.vm = {
-                                model: InternForfraganSvarViewState.getModel()
-                            };
-
-                        }
-                    };
-                });
+    return {
+        restrict: 'E',
+        scope: {
+            internForfragan: '<'
+        },
+        templateUrl: basePath + '/ibInternForfraganHeaderStatus/ibInternForfraganHeaderStatus.directive.html'
+    };
+});
