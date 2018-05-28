@@ -19,10 +19,22 @@
 
 angular.module('ibApp')
     .controller('LaggTillBesokModalCtrl',
-        function() {
+        function($scope) {
             'use strict';
 
+            var chooseOption = {
+                id: undefined,
+                label: 'Välj i listan'
+            };
+
+            $scope.professionList = [chooseOption];
+
+            $scope.investigativePersonnel = 'Namn på utredande vårdpersonal';
+
+            $scope.interpreter = {
+                id: 'none',
+                state: false
+            };
 
 
-        }
-    );
+    });

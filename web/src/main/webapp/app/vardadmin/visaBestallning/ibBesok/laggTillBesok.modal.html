@@ -4,15 +4,54 @@
     <h4 class="modal-title">Lägg till besök</h4>
   </div>
   <div class="modal-body">
+    <div class="date-time-wrapper">
+      <span><p>Datum</p></span><span><p>Från</p></span><span><p>Till</p></span>
+    </div>
 
+    <div class="profession-wrapper">
+      <span><p>Profession</p></span>
+      <span><ib-dropdown
+              id="profession"
+              ng-model="profession"
+              ng-change="onChange()"
+              items="professionList">
+      </ib-dropdown>
+      </span>
+    </div>
 
+    <div class="name-wrapper">
+      <span><p>Namn</p></span>
+      <span><input class="form-control" type="text" ng-model="investigativePersonnel" maxlength="30"></span>
+    </div>
+
+    <div class="checkbox-wrapper">
+      <span><p>Tolk bokad</p></span>
+
+      <ib-checkbox-wrapper>
+          <label>
+              <p>Yolo!</p>
+          </label>
+          <input ng-attr-id="markusDuTestarjättebra"
+              type="checkbox"
+              ng-model="interpreter.state"
+               ng-change="onChange()">
+
+      </ib-checkbox-wrapper>
+
+    </div>
+    {{interpreter.state}}
+
+    <div class="sentRequest">
+      <span><p>Kallelse skickad</p></span>
+
+    </div>
 
   </div>
   <div class="modal-footer">
-    <button type="button" id="skicka-forfragan-modal-skicka" class="btn btn-primary">
+    <button type="button" id="lagg-till-besok-modal-skicka" class="btn btn-primary">
      Spara
     </button>
-    <button type="button" id="skicka-forfragan-modal-cancel" class="btn btn-default" ng-click="$dismiss()">
+    <button type="button" id="lagg-till-besok-modal-cancel" class="btn btn-default" ng-click="$dismiss()">
       <span message key="common.cancel"></span>
     </button>
   </div>

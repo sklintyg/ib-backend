@@ -1,4 +1,4 @@
-#skicka-forfragan-modal {
+#lagg-till-besok-modal{
 
   ib-checkgroup .control-label {
     @extend %ib-typo-05;
@@ -18,4 +18,52 @@
     margin-top: 10px;
     color: $ib-color-11;
   }
+
+  p {
+    font-weight: 500;
+  }
+
+  span{
+    padding-right: 10px;
+    align-self: baseline;
+    padding-bottom: 15px;
+  }
+
+  .date-time-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    span:first-child {
+      width: 84px;
+    }
+  }
+
+  .profession-wrapper {
+    display: flex;
+    flex-direction: row;
+
+    span:first-child {
+      width: 84px;
+    }
+  }
+
+  .name-wrapper {
+    display: flex;
+    flex-direction: row;
+
+    span:first-child {
+      width: 84px;
+    }
+  }
+  .checkbox-wrapper {
+    display: flex;
+    flex-direction: row;
+
+    span:first-child {
+      width: 82px;
+    }
+  }
+
 }
