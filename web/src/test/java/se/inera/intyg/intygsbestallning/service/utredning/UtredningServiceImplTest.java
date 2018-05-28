@@ -26,6 +26,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.infra.integration.hsa.client.OrganizationUnitService;
+import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
@@ -37,7 +39,6 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.notification.MailNotificationService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
-import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
@@ -48,6 +49,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternF
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItemFactory;
+import se.riv.infrastructure.directory.organization.getunitresponder.v1.UnitType;
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
 
 import javax.xml.ws.WebServiceException;
@@ -57,17 +59,10 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
 import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
@@ -76,18 +71,12 @@ import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.Invana
 import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp.BESTALLNING;
-import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU;
-import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU_UTVIDGAD;
-import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.LIAG;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.*;
 import static se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest.AssessmentRequestBuilder.anAssessmentRequest;
 import static se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare.BestallareBuilder.aBestallare;
 import static se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest.EndUtredningRequestBuilder.anEndUtredningRequest;
 import static se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest.OrderRequestBuilder.anOrderRequest;
-import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createBestallning;
-import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createExternForfragan;
-import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createHandlaggare;
-import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createUpdateOrderType;
-import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createUtredning;
+import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtredningServiceImplTest {
@@ -96,7 +85,10 @@ public class UtredningServiceImplTest {
     private UtredningRepository utredningRepository;
 
     @Mock
-    private HsaOrganizationsService organizationUnitService;
+    private HsaOrganizationsService hsaOrganizationService;
+
+    @Mock
+    private OrganizationUnitService organizationUnitService;
 
     @Mock
     private UserService userService;
@@ -306,7 +298,7 @@ public class UtredningServiceImplTest {
     }
 
     @Test
-    public void registerNewUtredningFromRequestHealthCarePerformerForAssesment() {
+    public void registerNewUtredningFromRequestHealthCarePerformerForAssesment() throws HsaServiceCallException {
 
         final LocalDateTime dateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 12);
 
@@ -358,6 +350,28 @@ public class UtredningServiceImplTest {
                         .withTelefonnummer("telefonnummer")
                         .build())
                 .build();
+
+        final UnitType unit1 = new UnitType();
+        unit1.setUnitName("enhetsNamn1");
+
+        final UnitType unit2 = new UnitType();
+        unit1.setUnitName("enhetsNamn2");
+
+        final UnitType unit3 = new UnitType();
+        unit1.setUnitName("enhetsNamn3");
+
+        doReturn(unit1)
+                .when(organizationUnitService)
+                .getUnit("1");
+
+        doReturn(unit2)
+                .when(organizationUnitService)
+                .getUnit("2");
+
+        doReturn(unit3)
+                .when(organizationUnitService)
+                .getUnit("3");
+
 
         final Utredning sparadUtredning = utredningService.registerNewUtredning(request);
 
@@ -440,7 +454,7 @@ public class UtredningServiceImplTest {
         final String vardenhetHsaId = "vardenhetHsaId";
         final String vardenhetNamn = "vardenhetens namn";
 
-        when(organizationUnitService.getVardenhet(vardenhetHsaId)).thenReturn(new Vardenhet(vardenhetHsaId, vardenhetNamn));
+        when(hsaOrganizationService.getVardenhet(vardenhetHsaId)).thenReturn(new Vardenhet(vardenhetHsaId, vardenhetNamn));
 
         when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
                 .withUtredningId(utredningId)
@@ -475,9 +489,9 @@ public class UtredningServiceImplTest {
         final String tidigareVardenhetHsaId2 = "vardenhetHsaId2";
         final String hsaError2 = "Fel från HSA";
 
-        when(organizationUnitService.getVardenhet(tidigareVardenhetHsaId1))
+        when(hsaOrganizationService.getVardenhet(tidigareVardenhetHsaId1))
                 .thenReturn(new Vardenhet(tidigareVardenhetHsaId1, tidigareVardenhetNamn1));
-        when(organizationUnitService.getVardenhet(tidigareVardenhetHsaId2)).thenThrow(new WebServiceException(hsaError2));
+        when(hsaOrganizationService.getVardenhet(tidigareVardenhetHsaId2)).thenThrow(new WebServiceException(hsaError2));
 
         when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
                 .withUtredningId(utredningId)

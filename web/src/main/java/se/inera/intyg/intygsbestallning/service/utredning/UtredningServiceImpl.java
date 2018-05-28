@@ -20,6 +20,7 @@ package se.inera.intyg.intygsbestallning.service.utredning;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,17 +47,18 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternF
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItemFactory;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.*;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
+import se.riv.infrastructure.directory.organization.getunitresponder.v1.UnitType;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
 import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
@@ -87,7 +89,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         return utredningRepository.findAllByExternForfragan_LandstingHsaId(landstingHsaId)
                 .stream()
                 .map(u -> utredningListItemFactory.from(u))
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     @Override
@@ -95,7 +97,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         List<UtredningListItem> list = utredningRepository.findByExternForfragan_LandstingHsaId_AndArkiveradFalse(landstingHsaId)
                 .stream()
                 .map(u -> utredningListItemFactory.from(u))
-                .collect(Collectors.toList());
+                .collect(toList());
 
         // Get status mapper
         Map<UtredningStatus, ListFilterStatus> statusToFilterStatus = buildStatusToListBestallningFilterStatusMap(Actor.SAMORDNARE);
@@ -275,12 +277,21 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .withLandstingHsaId(request.getLandstingHsaId())
                 .build();
 
-        final List<TidigareUtforare> tidigareUtforareList = request.getInvanareTidigareUtforare()
-                .stream()
-                .map(u -> aTidigareUtforare()
-                        .withTidigareEnhetId(u)
-                        .build())
-                .collect(toList());
+        List<TidigareUtforare> tidigareUtforareList = Lists.newArrayList();
+        if (isNotEmpty(request.getInvanareTidigareUtforare())) {
+            tidigareUtforareList = request.getInvanareTidigareUtforare().stream()
+                    .map(utforare -> {
+                        try {
+                            final UnitType unit = organizationUnitService.getUnit(utforare);
+                            return aTidigareUtforare()
+                                    .withTidigareEnhetId(unit.getUnitName())
+                                    .build();
+                        } catch (Exception e) {
+                            throw new IbServiceException(IbErrorCodeEnum.EXTERNAL_ERROR,
+                                    "Could not get data from OrganizationUnitService");
+                        }
+                    }).collect(toList());
+        }
 
         final Invanare invanare = anInvanare()
                 .withPostort(request.getInvanarePostort())
@@ -289,6 +300,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .build();
 
         final Handelse handelse = HandelseUtil.createForfraganMottagen(request.getLandstingHsaId());
+
 
         return utredningRepository.save(anUtredning()
                 .withUtredningsTyp(request.getUtredningsTyp())
@@ -409,14 +421,14 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         }
 
         switch (bli.getStatus().getUtredningFas()) {
-        case AVSLUTAD:
-            return false;
-        case REDOVISA_TOLK:
-            return Strings.isNullOrEmpty(fromDate);
-        case UTREDNING:
-        case KOMPLETTERING:
-        case FORFRAGAN:
-            return fromDate.compareTo(bli.getSlutdatumFas()) <= 0 && toDate.compareTo(bli.getSlutdatumFas()) >= 0;
+            case AVSLUTAD:
+                return false;
+            case REDOVISA_TOLK:
+                return Strings.isNullOrEmpty(fromDate);
+            case UTREDNING:
+            case KOMPLETTERING:
+            case FORFRAGAN:
+                return fromDate.compareTo(bli.getSlutdatumFas()) <= 0 && toDate.compareTo(bli.getSlutdatumFas()) >= 0;
         }
         return true;
     }
