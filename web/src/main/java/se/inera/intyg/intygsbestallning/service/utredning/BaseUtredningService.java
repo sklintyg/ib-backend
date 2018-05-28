@@ -18,10 +18,23 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
-import com.google.common.base.Strings;
+import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import javax.xml.ws.WebServiceException;
+
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.base.Strings;
+
 import se.inera.intyg.infra.integration.hsa.client.OrganizationUnitService;
+import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
@@ -36,15 +49,11 @@ import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusRes
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FreeTextSearchable;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardenhetEnrichable;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
 
-import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
 public abstract class BaseUtredningService {
+    private static final Logger LOG = LoggerFactory.getLogger(UtredningService.class);
 
     @Autowired
     protected UtredningRepository utredningRepository;
@@ -79,6 +88,21 @@ public abstract class BaseUtredningService {
         }
 
         return utredning;
+    }
+
+    protected void enrichWithVardenhetNames(List<? extends VardenhetEnrichable> items) {
+        items.stream().forEach(item -> {
+            if (!Strings.isNullOrEmpty(item.getVardenhetHsaId())) {
+                try {
+                    Vardenhet vardenhet = hsaOrganizationsService.getVardenhet(item.getVardenhetHsaId());
+                    item.setVardenhetNamn(vardenhet.getNamn());
+                } catch (WebServiceException e) {
+                    item.setVardenhetFelmeddelande(e.getMessage());
+                    LOG.warn("Could not fetch name for Vardenhet '{}' from HSA. ErrorMessage: '{}'", item.getVardenhetHsaId(),
+                            e.getMessage());
+                }
+            }
+        });
     }
 
 

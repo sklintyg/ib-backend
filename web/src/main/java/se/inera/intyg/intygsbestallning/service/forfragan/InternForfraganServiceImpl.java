@@ -197,6 +197,7 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
         // Vardadmins should not see händelser or InternforfraganList
         utredningsResponse.getHandelseList().clear();
         utredningsResponse.getInternForfraganList().clear();
+        enrichWithVardenhetNames(utredningsResponse.getTidigareEnheter());
 
         final InternForfraganListItem internForfraganListItem = internForfraganListItemFactory.from(utredning,
                 internForfragan.getVardenhetHsaId());

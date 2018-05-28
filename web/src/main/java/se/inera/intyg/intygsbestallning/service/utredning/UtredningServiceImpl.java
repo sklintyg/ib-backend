@@ -41,8 +41,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.xml.ws.WebServiceException;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +52,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
-import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
@@ -80,7 +77,6 @@ import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningReques
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardenhetEnrichable;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItemFactory;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningListResponse;
@@ -388,21 +384,6 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         toUpdate.getHandelseList().add(HandelseUtil.createOrderUpdated(nyttSistaDatum, nyHandlaggare, update.getHandling().isPresent()));
 
         return toUpdate;
-    }
-
-    private void enrichWithVardenhetNames(List<? extends VardenhetEnrichable> items) {
-        items.stream().forEach(item -> {
-            if (!Strings.isNullOrEmpty(item.getVardenhetHsaId())) {
-                try {
-                    Vardenhet vardenhet = hsaOrganizationsService.getVardenhet(item.getVardenhetHsaId());
-                    item.setVardenhetNamn(vardenhet.getNamn());
-                } catch (WebServiceException e) {
-                    item.setVardenhetFelmeddelande(e.getMessage());
-                    LOG.warn("Could not fetch name for Vardenhet '{}' from HSA. ErrorMessage: '{}'", item.getVardenhetHsaId(),
-                            e.getMessage());
-                }
-            }
-        });
     }
 
     private Invanare updateInvanareFromOrder(Invanare invanare, OrderRequest order) {
