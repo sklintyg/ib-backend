@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.intygsbestallning.config;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.cxf.Bus;
 import org.apache.cxf.jaxws.EndpointImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +28,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.context.support.ServletContextAttributeExporter;
+
 import se.inera.intyg.intygsbestallning.service.monitoring.HealthCheckService;
 import se.inera.intyg.intygsbestallning.service.monitoring.InternalPingForConfigurationResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.EndAssessmentResponderImpl;
@@ -38,16 +41,13 @@ import se.inera.intyg.intygsbestallning.web.responder.RequestHealthcarePerformer
 import se.inera.intyg.intygsbestallning.web.responder.RequestMedicalCertificateSupplementResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.UpdateOrderResponderImpl;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Configuration
 @ComponentScan({
         "se.inera.intyg.intygsbestallning.service",
         "se.inera.intyg.intygsbestallning.auth",
         "se.inera.intyg.intygsbestallning.common",
+        "se.inera.intyg.intygsbestallning.jobs",
         "se.inera.intyg.intygsbestallning.web" })
-@EnableScheduling
 public class ServiceConfig {
 
     @Autowired

@@ -28,12 +28,15 @@ import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.VardenhetPreference;
 import se.inera.intyg.intygsbestallning.persistence.repository.VardenhetPreferenceRepository;
 import se.inera.intyg.intygsbestallning.service.mail.MailService;
 
 import javax.mail.MessagingException;
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.Optional;
 
 @Service
@@ -42,6 +45,8 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     private static final Logger LOG = LoggerFactory.getLogger(MailNotificationServiceImpl.class);
     private static final String SUBJECT_BESTALLNING_UPPDATERAD = "Försäkringskassan har uppdaterat en beställning";
     private static final String SUBJECT_HANDLING_MOTTAGEN = "Beställning av Försäkringsmedicinsk utredning";
+    private static final String SUBJECT_UTREDNING_SLUTDATUM_PA_VAG_PASSERAS = "Påminnelse: Slutdatum för en utredning "
+            + "är på väg att passeras";
 
     @Value("${mail.ib.host.url}")
     private String ibHostUrl;
@@ -91,6 +96,36 @@ public class MailNotificationServiceImpl implements MailNotificationService {
                 "<URL to utredning>");
 
         send(email, SUBJECT_BESTALLNING_UPPDATERAD, body);
+    }
+
+    @Override
+    public void notifySlutdatumPaVagPasseras(Utredning utredning) {
+        verifyHasBestallning(utredning, "Cannot send notification for slutdatum pa vag passeras when "
+                + "there is no Bestallning.");
+
+        String vardenhetHsaId = utredning.getBestallning().get().getTilldeladVardenhetHsaId();
+        verifyBestallningHasVardenhet(vardenhetHsaId, "Cannot send notification for uppdaterad utredning when "
+                + "the Bestallning contains no vardenhetHsaId.");
+
+        String email = findEmailAddressForVardenhet(vardenhetHsaId);
+
+        // Find the last sistaDatum on an intyg on the Utredning.
+        Optional<Intyg> sistaDatumOpt = utredning.getIntygList().stream().filter(intyg -> intyg.getSistaDatum() != null)
+                .max(Comparator.comparing(Intyg::getSistaDatum));
+
+        // This should never happen...
+        if (!sistaDatumOpt.isPresent()) {
+            throw new IllegalStateException("Unable to send slutdatum på väg passeras notification, no intyg on Utredning "
+                    + "has a sista datum.");
+        }
+
+        String sistaDatumForMottagning = sistaDatumOpt.get().getSistaDatum().format(DateTimeFormatter.ISO_DATE);
+        String body = mailNotificationBodyFactory.buildBodyForUtredning(
+                "Slutdatum " + sistaDatumForMottagning + " för utredning " + utredning.getUtredningId() + " kommer "
+                        + "snart att passeras. Om utlåtandet inte är mottaget av Försäkringskassan innan angivet slutdatum så "
+                        + "kommer utredningen inte att ersättas.",
+                "<URL to utredning>");
+        send(email, SUBJECT_UTREDNING_SLUTDATUM_PA_VAG_PASSERAS, body);
     }
 
     private void verifyHasBestallning(Utredning utredning, String errorMessage) {

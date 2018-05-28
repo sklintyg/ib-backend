@@ -13,8 +13,7 @@
     }
   },
   "required": [
-    "version",
-    "utredningPaminnelseDagar"
+    "version"
   ],
   "title": "GetConfigResponse transport model",
   "type": "object",

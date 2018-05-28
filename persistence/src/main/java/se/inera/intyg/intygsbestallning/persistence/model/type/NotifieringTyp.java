@@ -16,14 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.service.notification;
+package se.inera.intyg.intygsbestallning.persistence.model.type;
 
-import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-
-public interface MailNotificationService {
-    void notifyHandlingMottagen(Utredning utredning);
-
-    void notifyBestallningUppdaterad(Utredning utredning);
-
-    void notifySlutdatumPaVagPasseras(Utredning utredning);
+public enum NotifieringTyp {
+    PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS,
+    SLUTDATUM_UTREDNING_PASSERAT
 }

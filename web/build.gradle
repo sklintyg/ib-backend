@@ -131,6 +131,9 @@ dependencies {
 
     compile "org.antlr:ST4:${stAntlr4Version}"
 
+    compile "net.javacrumbs.shedlock:shedlock-spring:${shedlockSpringVersion}"
+    compile "net.javacrumbs.shedlock:shedlock-provider-redis-spring:${shedlockSpringVersion}"
+
     compileOnly "javax.jms:jms-api:${javaxJmsVersion}"
     compileOnly "javax.servlet:javax.servlet-api:${javaxServletVersion}"
     compileOnly "jstl:jstl:${jstlVersion}"

@@ -23,6 +23,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -70,6 +71,9 @@ public interface UtredningRepository extends JpaRepository<Utredning, Long> {
     Optional<Long> findNewestKompletteringOnUtredning(Long utredningId);
 
     Optional<Utredning> findByBesokList_Id(Long id);
+
+    @Query("SELECT u FROM Utredning u JOIN u.intygList i JOIN u.bestallning b WHERE b.tilldeladVardenhetHsaId is not null AND u.arkiverad = false AND i.sistaDatum is not null AND i.sistaDatum >= :fromDate AND i.sistaDatum <= :toDate")
+    List<Utredning> findAllNonArchivedWithIntygSlutDatumBetween(@Param("fromDate") LocalDateTime fromDate, @Param("toDate") LocalDateTime toDate);
 }
 //CHECKSTYLE:ON MethodName
 //CHECKSTYLE:ON LineLength

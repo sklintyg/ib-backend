@@ -40,6 +40,7 @@ ext {
     poiVersion = "3.13"
     prometheusClientVersion = "0.3.0"
     restAssuredVersion = "2.9.0"
+    shedlockSpringVersion = "0.18.2"
     slf4jVersion = "1.7.10"
     springContextVersion = "4.3.16.RELEASE"
     springDataJpaVersion = "2.0.6.RELEASE"

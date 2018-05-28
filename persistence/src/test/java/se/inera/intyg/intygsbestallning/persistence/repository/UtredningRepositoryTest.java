@@ -55,6 +55,8 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -340,5 +342,31 @@ public class UtredningRepositoryTest {
         final Utredning search = utredningRepository.findByBesokList_Id(besok.getId()).orElse(null);
 
         assertEquals(saved, search);
+    }
+
+    @Test
+    public void findUtredningWithIntygSlutDatumBetween() {
+        Utredning utr = buildUtredning();
+        utr.setBestallning(buildBestallning());
+        Intyg intyg = buildIntyg();
+        intyg.setSistaDatum(LocalDateTime.now().plusDays(2));
+        utr.getIntygList().add(intyg);
+        final Utredning saved = utredningRepository.save(utr);
+
+        List<Utredning> utredningList = utredningRepository.findAllNonArchivedWithIntygSlutDatumBetween(LocalDate.now().atStartOfDay(), LocalDate.now().plusDays(3L).atStartOfDay());
+        assertEquals(1, utredningList.size());
+    }
+
+    @Test
+    public void findUtredningWithIntygSlutDatumNotBetween() {
+        Utredning utr = buildUtredning();
+        utr.setBestallning(buildBestallning());
+        Intyg intyg = buildIntyg();
+        intyg.setSistaDatum(LocalDateTime.now().plusDays(2));
+        utr.getIntygList().add(intyg);
+        final Utredning saved = utredningRepository.save(utr);
+
+        List<Utredning> utredningList = utredningRepository.findAllNonArchivedWithIntygSlutDatumBetween(LocalDate.now().plusDays(3L).atStartOfDay(), LocalDate.now().plusDays(5L).atStartOfDay());
+        assertEquals(0, utredningList.size());
     }
 }

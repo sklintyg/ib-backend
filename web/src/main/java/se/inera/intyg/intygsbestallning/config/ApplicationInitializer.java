@@ -66,7 +66,8 @@ public class ApplicationInitializer implements WebApplicationInitializer {
                 PersistenceConfigDev.class,
                 MyndighetIntegrationConfiguration.class,
                 MyndighetIntegrationClientConfiguration.class,
-                MyndighetIntegrationStubConfiguration.class
+                MyndighetIntegrationStubConfiguration.class,
+                JobConfiguration.class
         );
 
         servletContext.addListener(new ContextLoaderListener(appContext));
