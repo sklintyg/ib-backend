@@ -251,6 +251,7 @@
     <bean id="successRedirectHandler"
           class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
       <property name="defaultTargetUrl" value="/#/app"/>
+      <property name="alwaysUseDefaultTargetUrl" value="true" />
       <property name="requestCache" ref="httpSessionRequestCache" />
     </bean>
 
@@ -445,6 +446,7 @@
     <bean id="successLogoutHandler"
           class="org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler">
       <property name="defaultTargetUrl" value="/error.jsp?reason=logout"/>
+      <property name="alwaysUseDefaultTargetUrl" value="true" />
     </bean>
   </beans>
 </beans>
