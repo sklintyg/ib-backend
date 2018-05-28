@@ -225,6 +225,7 @@
     <bean id="fakeSuccessHandler"
         class="org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler">
       <property name="defaultTargetUrl" value="/#/app"/>
+      <property name="alwaysUseDefaultTargetUrl" value="true" />
     </bean>
     <bean id="ibAuthenticationProvider"
         class="se.inera.intyg.intygsbestallning.auth.fake.FakeAuthenticationProvider">
