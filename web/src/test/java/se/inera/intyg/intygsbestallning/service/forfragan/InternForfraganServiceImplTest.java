@@ -19,6 +19,7 @@
 package se.inera.intyg.intygsbestallning.service.forfragan;
 
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -32,7 +33,9 @@ import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.Invana
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 import org.junit.Test;
@@ -511,12 +514,64 @@ public class InternForfraganServiceImplTest {
         internForfraganService.besvaraInternForfragan(utredningId, buildValidInternForfraganSvarRequest(99L));
     }
 
-    @Test(expected = IbServiceException.class)
-    public void testBesvaraInternForfraganFailsForInvalidRequestParam() {
+    @Test
+    public void testBesvaraInternForfraganRequestValidation() {
 
-        final ForfraganSvarRequest forfraganSvarRequest = buildValidInternForfraganSvarRequest(1L);
+        ForfraganSvarRequest forfraganSvarRequest = buildValidInternForfraganSvarRequest(1L);
+        assertNull(internForfraganService.validateSvarRequest(forfraganSvarRequest));
+
+        // Svarstyp
+        forfraganSvarRequest = buildValidInternForfraganSvarRequest(1L);
+        forfraganSvarRequest.setSvarTyp("UNKNOWN");
+        assertTrue(internForfraganService.validateSvarRequest(forfraganSvarRequest).contains("svarTypValue"));
+
+        // UtforareTyp
+        forfraganSvarRequest = buildValidInternForfraganSvarRequest(1L);
+        forfraganSvarRequest.setUtforareTyp("UNKNOWN");
+        assertTrue(internForfraganService.validateSvarRequest(forfraganSvarRequest).contains("UtforareTyp"));
+
+        // Namn
+        forfraganSvarRequest = buildValidInternForfraganSvarRequest(1L);
         forfraganSvarRequest.setUtforareNamn(null);
-        internForfraganService.besvaraInternForfragan(1L, forfraganSvarRequest);
+        assertTrue(internForfraganService.validateSvarRequest(forfraganSvarRequest).contains("UtforareNamn"));
+
+        // Adress
+        forfraganSvarRequest = buildValidInternForfraganSvarRequest(1L);
+        forfraganSvarRequest.setUtforareAdress(null);
+        assertTrue(internForfraganService.validateSvarRequest(forfraganSvarRequest).contains("UtforareAdress"));
+
+        // Postnr
+        forfraganSvarRequest = buildValidInternForfraganSvarRequest(1L);
+        forfraganSvarRequest.setUtforarePostnr("apa");
+        assertTrue(internForfraganService.validateSvarRequest(forfraganSvarRequest).contains("UtforarePostnr"));
+        forfraganSvarRequest.setUtforarePostnr("1234");
+        assertTrue(internForfraganService.validateSvarRequest(forfraganSvarRequest).contains("UtforarePostnr"));
+        forfraganSvarRequest.setUtforarePostnr("12345");
+        assertNull(internForfraganService.validateSvarRequest(forfraganSvarRequest));
+
+        // PostOrt
+        forfraganSvarRequest = buildValidInternForfraganSvarRequest(1L);
+        forfraganSvarRequest.setUtforarePostort(null);
+        assertTrue(internForfraganService.validateSvarRequest(forfraganSvarRequest).contains("UtforarePostort"));
+
+        // Epost
+        forfraganSvarRequest = buildValidInternForfraganSvarRequest(1L);
+        forfraganSvarRequest.setUtforareEpost(null);
+        assertNull(internForfraganService.validateSvarRequest(forfraganSvarRequest));
+        forfraganSvarRequest.setUtforareEpost("a@b");
+        assertTrue(internForfraganService.validateSvarRequest(forfraganSvarRequest).contains("UtforareEpost"));
+
+        // BorjaDatum
+        forfraganSvarRequest = buildValidInternForfraganSvarRequest(1L);
+        forfraganSvarRequest.setBorjaDatum(null);
+        assertNull(internForfraganService.validateSvarRequest(forfraganSvarRequest));
+        forfraganSvarRequest.setBorjaDatum("1912-01-");
+        assertTrue(internForfraganService.validateSvarRequest(forfraganSvarRequest).contains("BorjaDatum"));
+        forfraganSvarRequest.setBorjaDatum("1912-01-12");
+        assertTrue(internForfraganService.validateSvarRequest(forfraganSvarRequest).contains("before"));
+        forfraganSvarRequest.setBorjaDatum(LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_DATE));
+        assertNull(internForfraganService.validateSvarRequest(forfraganSvarRequest));
+
     }
 
     @Test(expected = IbServiceException.class)
@@ -583,7 +638,7 @@ public class InternForfraganServiceImplTest {
         svar.setUtforarePostnr("12345");
         svar.setUtforarePostort("postort");
         svar.setUtforareEpost("example@example.com");
-        svar.setBorjaDatum("2018-01-01");
+        svar.setBorjaDatum(LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_DATE));
         return svar;
     }
 }

@@ -29,6 +29,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +69,10 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtre
 @Service
 @Transactional
 public class InternForfraganServiceImpl extends BaseUtredningService implements InternForfraganService {
+
+    private static final Pattern POSTNR_REGEXP = Pattern.compile("\\d{5}");
+    private static final Pattern EPOST_REGEXP = Pattern.compile(".+@.+\\..+");
+    private static final Pattern DATUM_REGEXP = Pattern.compile("\\d{4}-\\d{2}-\\d{2}");
 
     @Autowired
     private BusinessDaysBean businessDays;
@@ -274,7 +279,7 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
         utredningRepository.save(utredning);
     }
 
-    private String validateSvarRequest(ForfraganSvarRequest svar) {
+    protected String validateSvarRequest(ForfraganSvarRequest svar) {
         if (svar == null) {
             return "Request was null";
         }
@@ -291,17 +296,31 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
         if (Strings.isNullOrEmpty(svar.getUtforareAdress())) {
             return "Mandatory UtforareAdress missing";
         }
-        if (Strings.isNullOrEmpty(svar.getUtforarePostnr())) {
-            return "Mandatory tforarePostnr missing";
+        if (!patternMatches(svar.getUtforarePostnr(), POSTNR_REGEXP, true)) {
+            return "Invalid mandatory UtforarePostnr value";
         }
         if (Strings.isNullOrEmpty(svar.getUtforarePostort())) {
-            return "Mandatory UtforarePostOrt missing";
+            return "Mandatory UtforarePostort missing";
         }
-        //if epost present, check with regexp?
-        //if borjadatum present - check valid?
-
+        if (!patternMatches(svar.getUtforareEpost(), EPOST_REGEXP, false)) {
+            return "Invalid UtforareEpost format";
+        }
+        if (!patternMatches(svar.getBorjaDatum(), DATUM_REGEXP, false)) {
+            return "Invalid BorjaDatum value '" + svar.getBorjaDatum() + "'";
+        } else if (!Strings.isNullOrEmpty(svar.getBorjaDatum()) && LocalDate.parse(svar.getBorjaDatum()).isBefore(LocalDate.now())) {
+            return "Invalid BorjaDatum value - must not be before today";
+        }
 
         return null;
+    }
+
+    private boolean patternMatches(String value, Pattern pattern, boolean isMandatory) {
+        if (Strings.isNullOrEmpty(value)) {
+            return !isMandatory;
+        } else {
+            return pattern.matcher(value).matches();
+        }
+
     }
 
     private ForfraganSvar buildEntity(ForfraganSvarRequest svarRequest) {
