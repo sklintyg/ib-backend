@@ -210,4 +210,13 @@ public final class HandelseUtil {
                 .withKommentar(besok.getDeltagareFullstandigtNamn())
                 .build();
     }
+
+    public static Handelse createForfraganMottagen(final String landstingHsaId) {
+
+        return aHandelse()
+                .withSkapad(LocalDateTime.now())
+                .withHandelseTyp(HandelseTyp.FORFRAGAN_MOTTAGEN)
+                .withHandelseText(MessageFormat.format("Förfrågan mottagen av {0}", landstingHsaId))
+                .build();
+    }
 }

@@ -18,6 +18,41 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import org.apache.commons.lang3.BooleanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
+import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
+import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
+import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.persistence.model.*;
+import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
+import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
+import se.inera.intyg.intygsbestallning.service.notification.MailNotificationService;
+import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
+import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
+import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
+import se.inera.intyg.intygsbestallning.service.util.GenericComparator;
+import se.inera.intyg.intygsbestallning.service.util.PagingUtil;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.*;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItemFactory;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.*;
+import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
+
+import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -30,61 +65,6 @@ import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuil
 import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
 import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
-
-import java.text.MessageFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.BooleanUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Pair;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-
-import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
-import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
-import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
-import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
-import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
-import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
-import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
-import se.inera.intyg.intygsbestallning.persistence.model.Handling;
-import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
-import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
-import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
-import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
-import se.inera.intyg.intygsbestallning.service.notification.MailNotificationService;
-import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
-import se.inera.intyg.intygsbestallning.service.util.GenericComparator;
-import se.inera.intyg.intygsbestallning.service.util.PagingUtil;
-import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
-import se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare;
-import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
-import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
-import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItemFactory;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningListResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListUtredningRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItemFactory;
-import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
 
 @Service
 @Transactional
@@ -308,6 +288,8 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .withTidigareUtforare(tidigareUtforareList)
                 .build();
 
+        final Handelse handelse = HandelseUtil.createForfraganMottagen(request.getLandstingHsaId());
+
         return utredningRepository.save(anUtredning()
                 .withUtredningsTyp(request.getUtredningsTyp())
                 .withExternForfragan(externForfragan)
@@ -315,6 +297,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .withHandlaggare(createHandlaggare(request.getBestallare()))
                 .withTolkBehov(request.isTolkBehov())
                 .withTolkSprak(request.getTolkSprak())
+                .withHandelseList(Collections.singletonList(handelse))
                 .withArkiverad(false)
                 .build());
     }
