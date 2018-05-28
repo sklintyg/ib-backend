@@ -68,7 +68,7 @@ public class PaminnelseSlutdatumForUtredningPasserasJob {
     @Value("${ib.utredning.paminnelse.arbetsdagar}")
     private Integer paminnelseArbetsdagar;
 
-    @Scheduled(cron = "0 0/1 * * * ?")
+    @Scheduled(cron = "${job.paminnelse.slutdatum.utredning.passeras.cron}")
     @SchedulerLock(name = JOB_NAME, lockAtMostFor = LOCK_AT_MOST)
     public void executeJob() {
         LOG.info("START - executeJob");
@@ -92,18 +92,15 @@ public class PaminnelseSlutdatumForUtredningPasserasJob {
             Long notifiedTimes = notifieringRepository.isNotified(utredning.getUtredningId(), PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS);
             if (notifiedTimes == 0) {
                 mailNotificationService.notifySlutdatumPaVagPasseras(utredning);
-                storeNotification(utredning);
+                notifieringRepository.save(Notifiering.NotifieringBuilder.aNotifiering()
+                        .withNotifieringSkickad(LocalDateTime.now())
+                        .withNotifieringTyp(PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS)
+                        .withUtredningId(utredning.getUtredningId())
+                        .build());
+
                 LOG.info("Sent notification {} for utredning {}.", PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS, utredning.getUtredningId());
             }
         }
         LOG.info("END - executeJob");
-    }
-
-    private void storeNotification(Utredning utredning) {
-        Notifiering notifiering = new Notifiering();
-        notifiering.setNotifieringSkickad(LocalDateTime.now());
-        notifiering.setNotifieringTyp(PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS);
-        notifiering.setUtredningId(utredning.getUtredningId());
-        notifieringRepository.save(notifiering);
     }
 }

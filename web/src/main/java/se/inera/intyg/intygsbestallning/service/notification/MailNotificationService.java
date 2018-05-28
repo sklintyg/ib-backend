@@ -27,5 +27,7 @@ public interface MailNotificationService {
 
     void notifySlutdatumPaVagPasseras(Utredning utredning);
 
-    void notifynotifyNyExternForfragan(Utredning utredning);
+    void notifyNyExternForfragan(Utredning utredning);
+
+    void notifySlutDatumPasserat(Utredning utredning);
 }

@@ -44,7 +44,7 @@ public class GetUtredningResponse {
     private String besvarasSenastDatum;
     private String bostadsort;
     private boolean tidigareUtredd;
-    List<VardenhetListItem> tidigareEnheter;
+    private List<VardenhetListItem> tidigareEnheter;
     private boolean behovTolk;
 
     private String tolkSprak;

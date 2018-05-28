@@ -49,8 +49,9 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     private static final String SUBJECT_BESTALLNING_UPPDATERAD = "Försäkringskassan har uppdaterat en beställning";
     private static final String SUBJECT_HANDLING_MOTTAGEN = "Beställning av Försäkringsmedicinsk utredning";
     private static final String SUBJECT_NY_FMU_FORFRAGAN = "Ny FMU förfragan";
-    private static final String SUBJECT_UTREDNING_SLUTDATUM_PA_VAG_PASSERAS =
-            "Påminnelse: Slutdatum för en utredning är på väg att passeras";
+    private static final String SUBJECT_UTREDNING_SLUTDATUM_PA_VAG_PASSERAS = "Påminnelse: Slutdatum för en utredning "
+    + "är på väg att passeras";
+    private static final String SUBJECT_UTREDNING_SLUTDATUM_PASSERAT = "Slutdatum för en utredningen har passerats";
 
     @Value("${mail.ib.host.url}")
     private String ibHostUrl;
@@ -108,13 +109,14 @@ public class MailNotificationServiceImpl implements MailNotificationService {
                 + "there is no Bestallning.");
 
         String vardenhetHsaId = utredning.getBestallning().get().getTilldeladVardenhetHsaId();
-        verifyBestallningHasVardenhet(vardenhetHsaId, "Cannot send notification for uppdaterad utredning when "
-                + "the Bestallning contains no vardenhetHsaId.");
+        verifyBestallningHasVardenhet(vardenhetHsaId, "Cannot send notification for slutdatum pa vag passeras "
+                + "when the Bestallning contains no vardenhetHsaId.");
 
         String email = findEmailAddressForVardenhet(vardenhetHsaId);
 
         // Find the last sistaDatum on an intyg on the Utredning.
-        Optional<Intyg> sistaDatumOpt = utredning.getIntygList().stream().filter(intyg -> intyg.getSistaDatum() != null)
+        Optional<Intyg> sistaDatumOpt = utredning.getIntygList().stream().filter(intyg -> intyg.getSistaDatum() != null
+                && !intyg.isKomplettering())
                 .max(Comparator.comparing(Intyg::getSistaDatum));
 
         // This should never happen...
@@ -133,7 +135,37 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     }
 
     @Override
-    public void notifynotifyNyExternForfragan(final Utredning utredning) {
+    public void notifySlutDatumPasserat(Utredning utredning) {
+        verifyHasBestallning(utredning, "Cannot send notification for slutdatum passerat when "
+                + "there is no Bestallning.");
+
+        String vardenhetHsaId = utredning.getBestallning().get().getTilldeladVardenhetHsaId();
+        verifyBestallningHasVardenhet(vardenhetHsaId, "Cannot send notification for slutdatum passerat when "
+                + "the Bestallning contains no vardenhetHsaId.");
+
+        String email = findEmailAddressForVardenhet(vardenhetHsaId);
+
+        // Find the last sistaDatum on an intyg on the Utredning.
+        Optional<Intyg> sistaDatumOpt = utredning.getIntygList().stream().filter(intyg -> intyg.getSistaDatum() != null
+                && !intyg.isKomplettering())
+                .max(Comparator.comparing(Intyg::getSistaDatum));
+
+        // This should never happen...
+        if (!sistaDatumOpt.isPresent()) {
+            throw new IllegalStateException("Unable to send slutdatum på väg passeras notification, no intyg on Utredning "
+                    + "has a sista datum.");
+        }
+
+        String sistaDatumForMottagning = sistaDatumOpt.get().getSistaDatum().format(DateTimeFormatter.ISO_DATE);
+        String body = mailNotificationBodyFactory.buildBodyForUtredning(
+                "Slutdatum " + sistaDatumForMottagning + " för utredning " + utredning.getUtredningId() + " har "
+                        + "passerats. Utredningen kommer därför inte ersättas av Försäkringskassan.",
+                "<URL to utredning>");
+        send(email, SUBJECT_UTREDNING_SLUTDATUM_PASSERAT, body);
+    }
+
+    @Override
+    public void notifyNyExternForfragan(final Utredning utredning) {
 
         checkState(nonNull(utredning.getExternForfragan()));
         checkState(nonNull(utredning.getExternForfragan().getLandstingHsaId()));
@@ -142,8 +174,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         final String email = findEmailAddressForVardenhet(vardenhetHsaId);
         final String body = mailNotificationBodyFactory.buildBodyForUtredning(
                 "Det har inkommit en ny förfrågan om en försäkringsmedicinsk utredning (FMU) från Försäkringskassan.",
-                "<URL to utredning>"
-        );
+                "<URL to utredning>");
 
         send(email, SUBJECT_NY_FMU_FORFRAGAN, body);
     }

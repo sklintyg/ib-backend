@@ -72,8 +72,12 @@ public interface UtredningRepository extends JpaRepository<Utredning, Long> {
 
     Optional<Utredning> findByBesokList_Id(Long id);
 
-    @Query("SELECT u FROM Utredning u JOIN u.intygList i JOIN u.bestallning b WHERE b.tilldeladVardenhetHsaId is not null AND u.arkiverad = false AND i.sistaDatum is not null AND i.sistaDatum >= :fromDate AND i.sistaDatum <= :toDate")
+    @Query("SELECT u FROM Utredning u JOIN u.intygList i JOIN u.bestallning b WHERE b.tilldeladVardenhetHsaId is not null AND u.arkiverad = false AND i.komplettering = false AND i.sistaDatum is not null AND i.sistaDatum >= :fromDate AND i.sistaDatum <= :toDate")
     List<Utredning> findAllNonArchivedWithIntygSlutDatumBetween(@Param("fromDate") LocalDateTime fromDate, @Param("toDate") LocalDateTime toDate);
+
+    @Query("SELECT u FROM Utredning u JOIN u.intygList i JOIN u.bestallning b WHERE b.tilldeladVardenhetHsaId is not null AND u.arkiverad = false AND i.mottagetDatum is null AND i.komplettering = false AND i.sistaDatum is not null AND i.sistaDatum > :now")
+    List<Utredning> findAllNonArchivedWithIntygSlutDatumBefore(@Param("now") LocalDateTime now);
+
 }
 //CHECKSTYLE:ON MethodName
 //CHECKSTYLE:ON LineLength

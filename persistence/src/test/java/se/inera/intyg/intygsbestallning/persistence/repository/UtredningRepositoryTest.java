@@ -349,6 +349,7 @@ public class UtredningRepositoryTest {
         Utredning utr = buildUtredning();
         utr.setBestallning(buildBestallning());
         Intyg intyg = buildIntyg();
+        intyg.setKomplettering(false);
         intyg.setSistaDatum(LocalDateTime.now().plusDays(2));
         utr.getIntygList().add(intyg);
         final Utredning saved = utredningRepository.save(utr);
@@ -362,6 +363,7 @@ public class UtredningRepositoryTest {
         Utredning utr = buildUtredning();
         utr.setBestallning(buildBestallning());
         Intyg intyg = buildIntyg();
+        intyg.setKomplettering(false);
         intyg.setSistaDatum(LocalDateTime.now().plusDays(2));
         utr.getIntygList().add(intyg);
         final Utredning saved = utredningRepository.save(utr);
