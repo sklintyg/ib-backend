@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.intygsbestallning.service.handelse;
 
+import org.apache.commons.lang3.BooleanUtils;
+import org.bouncycastle.util.Strings;
+import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
@@ -77,7 +80,7 @@ public final class HandelseUtil {
     }
 
     public static Handelse createInternForfraganBesvarad(boolean accepted, String vardadmin, String vardenhetNamn,
-            String svarKommentar, LocalDate borjaDatum) {
+                                                         String svarKommentar, LocalDate borjaDatum) {
 
         StringBuilder handelseText = new StringBuilder();
         if (accepted) {
@@ -179,6 +182,32 @@ public final class HandelseUtil {
                 .withHandelseTyp(HandelseTyp.BESTALLNING_UPPDATERAD)
                 .withHandelseText(text.toString())
                 .withKommentar(kommentar)
+                .build();
+    }
+
+    public static Handelse createNyttBesok(final Boolean tolkBehov, final Besok besok, final String samordnare) {
+
+        StringBuilder text = new StringBuilder();
+        text.append(MessageFormat.format("Besök bokat {0} {1} - {2} hos <Besök.profession>. ",
+                besok.getBesokStartTid().toLocalDate(),
+                besok.getBesokStartTid(),
+                besok.getBesokSlutTid(),
+                besok.getDeltagareProfession().getLabel()));
+
+        text.append(MessageFormat.format("Invånaren kallades <Besök.kallelsedatum> per <Besök.kallelseform> ",
+                Strings.toLowerCase(besok.getKallelseForm().name())));
+
+        if (BooleanUtils.toBoolean(tolkBehov)) {
+            text.append(MessageFormat.format("Tolk bokad: {0} ",
+                    besok.getTolkStatus().getLabel()));
+        }
+
+        return aHandelse()
+                .withSkapad(LocalDateTime.now())
+                .withAnvandare(samordnare)
+                .withHandelseTyp(HandelseTyp.NYTT_BESOK)
+                .withHandelseText(text.toString())
+                .withKommentar(besok.getDeltagareFullstandigtNamn())
                 .build();
     }
 }

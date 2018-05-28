@@ -20,6 +20,7 @@ package se.inera.intyg.intygsbestallning.testutil;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
@@ -45,10 +46,7 @@ import se.riv.intygsbestallning.certificate.order.v1.CitizenLimitedType;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.aCv;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
@@ -203,6 +201,7 @@ public final class TestDataGen {
                 .withHandlaggare(createHandlaggare())
                 .withBestallning(createBestallning())
                 .withIntygList(createIntyg())
+                .withHandelseList(Lists.newArrayList())
                 .build();
 
         return utredning;

@@ -131,11 +131,11 @@ public class UtredningController {
                 .privilege(AuthoritiesConstants.ROLE_FMU_VARDADMIN)
                 .orThrow(new IbAuthorizationException(EDIT_NOT_ALLOWED));
 
-        return besokService.registerNewBesok(request);
+        return besokService.registerNewBesok(RegisterBesokRequest.from(request, user.getNamn()));
     }
 
     @PutMapping("/besok/avvikelse")
-    public RegisterBesokResponse createBesokAvvikelse(final ReportBesokAvvikelseVardenRequest request) {
+    public void createBesokAvvikelse(final ReportBesokAvvikelseVardenRequest request) {
 
         final IbUser user = userService.getUser();
         authoritiesValidator.given(user)
@@ -144,6 +144,5 @@ public class UtredningController {
                 .orThrow(new IbAuthorizationException(EDIT_NOT_ALLOWED));
 
         besokService.reportBesokAvvikelse(ReportBesokAvvikelseRequest.from(request, user.getNamn()));
-        return null;
     }
 }

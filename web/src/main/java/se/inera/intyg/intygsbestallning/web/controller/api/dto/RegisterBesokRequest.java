@@ -20,6 +20,7 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.nonNull;
+import static se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest.RegisterBesokRequestBuilder.aRegisterBesokRequest;
 
 import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.KallelseFormTyp;
@@ -44,6 +45,25 @@ public class RegisterBesokRequest {
     private LocalDate besokDatum;
     private LocalTime besokStartTid;
     private LocalTime besokSlutTid;
+
+    private String samordnare;
+
+    public static RegisterBesokRequest from(final RegisterBesokRequest request, final String namn) {
+        validate(request);
+
+        return aRegisterBesokRequest()
+                .withUtredningId(request.getUtredningId())
+                .withUtredandeVardPersonalNamn(request.getUtredandeVardPersonalNamn().orElse(null))
+                .withProffesion(request.getProffesion())
+                .withTolkStatus(request.getTolkStatus())
+                .withKallelseForm(request.getKallelseForm())
+                .withKallelseDatum(request.getKallelseDatum())
+                .withBesokDatum(request.getBesokDatum())
+                .withBesokStartTid(request.getBesokStartTid())
+                .withBesokSlutTid(request.getBesokSlutTid())
+                .withSamordnare(request.getSamordnare())
+                .build();
+    }
 
     public Long getUtredningId() {
         return utredningId;
@@ -117,6 +137,10 @@ public class RegisterBesokRequest {
         this.besokSlutTid = besokSlutTid;
     }
 
+    public String getSamordnare() {
+        return samordnare;
+    }
+
     public static void validate(RegisterBesokRequest request) {
         checkArgument(nonNull(request));
         checkArgument(nonNull(request.getTolkStatus()));
@@ -127,5 +151,91 @@ public class RegisterBesokRequest {
         checkArgument(nonNull(request.getKallelseDatum()));
         checkArgument(nonNull(request.getBesokDatum()));
         checkArgument(nonNull(request.getBesokStartTid()));
+    }
+
+
+    public static final class RegisterBesokRequestBuilder {
+        private Long utredningId;
+        private String utredandeVardPersonalNamn;
+        private DeltagarProfessionTyp proffesion;
+        private TolkStatusTyp tolkStatus;
+        private KallelseFormTyp kallelseForm;
+        private LocalDateTime kallelseDatum;
+        private LocalDate besokDatum;
+        private LocalTime besokStartTid;
+        private LocalTime besokSlutTid;
+        private String samordnare;
+
+        private RegisterBesokRequestBuilder() {
+        }
+
+        public static RegisterBesokRequestBuilder aRegisterBesokRequest() {
+            return new RegisterBesokRequestBuilder();
+        }
+
+        public RegisterBesokRequestBuilder withUtredningId(Long utredningId) {
+            this.utredningId = utredningId;
+            return this;
+        }
+
+        public RegisterBesokRequestBuilder withUtredandeVardPersonalNamn(String utredandeVardPersonalNamn) {
+            this.utredandeVardPersonalNamn = utredandeVardPersonalNamn;
+            return this;
+        }
+
+        public RegisterBesokRequestBuilder withProffesion(DeltagarProfessionTyp proffesion) {
+            this.proffesion = proffesion;
+            return this;
+        }
+
+        public RegisterBesokRequestBuilder withTolkStatus(TolkStatusTyp tolkStatus) {
+            this.tolkStatus = tolkStatus;
+            return this;
+        }
+
+        public RegisterBesokRequestBuilder withKallelseForm(KallelseFormTyp kallelseForm) {
+            this.kallelseForm = kallelseForm;
+            return this;
+        }
+
+        public RegisterBesokRequestBuilder withKallelseDatum(LocalDateTime kallelseDatum) {
+            this.kallelseDatum = kallelseDatum;
+            return this;
+        }
+
+        public RegisterBesokRequestBuilder withBesokDatum(LocalDate besokDatum) {
+            this.besokDatum = besokDatum;
+            return this;
+        }
+
+        public RegisterBesokRequestBuilder withBesokStartTid(LocalTime besokStartTid) {
+            this.besokStartTid = besokStartTid;
+            return this;
+        }
+
+        public RegisterBesokRequestBuilder withBesokSlutTid(LocalTime besokSlutTid) {
+            this.besokSlutTid = besokSlutTid;
+            return this;
+        }
+
+        public RegisterBesokRequestBuilder withSamordnare(String samordnare) {
+            this.samordnare = samordnare;
+            return this;
+        }
+
+        public RegisterBesokRequest build() {
+            RegisterBesokRequest registerBesokRequest = new RegisterBesokRequest();
+            registerBesokRequest.setUtredningId(utredningId);
+            registerBesokRequest.setUtredandeVardPersonalNamn(utredandeVardPersonalNamn);
+            registerBesokRequest.setProffesion(proffesion);
+            registerBesokRequest.setTolkStatus(tolkStatus);
+            registerBesokRequest.setKallelseForm(kallelseForm);
+            registerBesokRequest.setKallelseDatum(kallelseDatum);
+            registerBesokRequest.setBesokDatum(besokDatum);
+            registerBesokRequest.setBesokStartTid(besokStartTid);
+            registerBesokRequest.setBesokSlutTid(besokSlutTid);
+            registerBesokRequest.samordnare = this.samordnare;
+            return registerBesokRequest;
+        }
     }
 }

@@ -98,6 +98,7 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
         final Besok besok = createBesok(request);
 
         utredning.getBesokList().add(besok);
+        utredning.getHandelseList().add(HandelseUtil.createNyttBesok(utredning.getTolkBehov(), besok, request.getSamordnare()));
 
         if (isOtherProfessionThanLakare(utredning, besok)) {
             utredning.setUtredningsTyp(UtredningsTyp.AFU_UTVIDGAD);
