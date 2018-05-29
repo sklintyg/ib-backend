@@ -87,6 +87,18 @@ var ibMessages = {
         'avvisa.forfragan.kommentar.placeholder': 'Kommentar',
         'avvisa.forfragan.kommentar.validation': 'Kommentar måste anges',
 
+        // Lägg till besök modal
+        'lagg-till-besok.label.header': 'Lägg till besök',
+        'lagg-till-besok.label.date': 'Datum',
+        'lagg-till-besok.label.from': 'Från',
+        'lagg-till-besok.label.to': 'Till',
+        'lagg-till-besok.label.profession': 'Profession',
+        'lagg-till-besok.label.name': 'Namn',
+        'lagg-till-besok.label.interpreter': 'Tolk bokad',
+        'lagg-till-besok.label.kallelseskickad': 'Kallelse skickad',
+        'lagg-till-besok.label.viamail': 'Per post',
+        'lagg-till-besok.label.viaphone': 'Per telefon',
+
         //Registrerade vårdenheter
         'hantera-enheter.label.table.vardenheter.column.namn': 'Namn',
         'hantera-enheter.label.table.vardenheter.column.postadress': 'Postadress',

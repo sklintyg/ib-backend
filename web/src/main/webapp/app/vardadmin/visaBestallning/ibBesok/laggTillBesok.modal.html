@@ -1,58 +1,90 @@
 <div id="lagg-till-besok-modal">
-  <div class="modal-header">
-    <button class="close" data-dismiss="modal" data-ng-click="$dismiss()">×</button>
-    <h4 class="modal-title">Lägg till besök</h4>
-  </div>
-  <div class="modal-body">
-    <div class="date-time-wrapper">
-      <span><p>Datum</p></span><span><p>Från</p></span><span><p>Till</p></span>
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" data-ng-click="$dismiss()">×</button>
+        <h4 class="modal-title">Lägg till besök</h4>
+    </div>
+    <div class="modal-body">
+        <form name="laggTillBesokForm" novalidate autocomplete="off">
+            <div class="big-flex-wrapper">
+                <div class="flex-wrapper">
+                    <span><ib-help-text-label label-key="lagg-till-besok.label.date"></ib-help-text-label></span>
+                    <ib-date-picker-field
+                            dom-id="borjaDatum"
+                            target-model="datetimeModel"
+                            min-date="{{::vm.minBorjaDatum}}"
+                            min-date-error="Möjligt startdatum får tidigast vara dagens datum"
+                            format="yyyy-MM-dd"
+                            date-format-error="Ogiltigt datumformat, ange ett datum som ÅÅÅÅ-MM-DD"
+                            ib-date-picker-field
+                            add-date-parser="strict">
+                    </ib-date-picker-field>
+                    <span><ib-help-text-label label-key="lagg-till-besok.label.from"></ib-help-text-label></span>
+                    <span><ib-help-text-label label-key="lagg-till-besok.label.to"></ib-help-text-label></span>
+                </div>
+                <div class="flex-wrapper">
+                    <span><ib-help-text-label label-key="lagg-till-besok.label.profession"></ib-help-text-label></span>
+                    <span>
+                        <ib-dropdown
+                            id="profession"
+                            ng-model="profession"
+                            ng-change="onChange()"
+                            items="professionList">
+                        </ib-dropdown>
+                     </span>
+                </div>
+
+                <div class="flex-wrapper">
+                    <span><ib-help-text-label label-key="lagg-till-besok.label.name"></ib-help-text-label></span>
+                    <span id="interpreter-input-field"><input class="form-control" type="text" ng-model="investigativePersonnel"></span>
+                </div>
+
+                <div class="flex-wrapper">
+                    <span><ib-help-text-label label-key="lagg-till-besok.label.interpreter"></ib-help-text-label></span>
+                    <span>
+                         <ib-checkbox-wrapper>
+                            <label>
+                                <p>  {{interpreter.state}}</p>
+                            </label>
+                            <input ng-attr-id="markusDuTestarjättebra"
+                                type="checkbox"
+                                ng-model="interpreter.state"
+                                 ng-change="onChange()">
+                         </ib-checkbox-wrapper>
+                    </span>
+                </div>
+
+                <div id="radio-wrapper">
+                    <span><ib-help-text-label label-key="lagg-till-besok.label.kallelseskickad"></ib-help-text-label></span>
+                    <ib-date-picker-field
+                            dom-id="borjaDatum"
+                            target-model="datetimeModel"
+                            min-date="{{::vm.minBorjaDatum}}"
+                            min-date-error="Möjligt startdatum får tidigast vara dagens datum"
+                            format="yyyy-MM-dd"
+                            date-format-error="Ogiltigt datumformat, ange ett datum som ÅÅÅÅ-MM-DD"
+                            ib-date-picker-field
+                            add-date-parser="strict">
+                    </ib-date-picker-field>
+                    <ib-radio-wrapper>
+                        <input ng-attr-id="utforarTypEnhet" type="radio" value="ENHET" ng-model="vm.model.utforareTyp"
+                               ng-change="onChangeUtforareTyp()">
+                        <label ng-attr-for="utforarTypEnhet">Per post</label>
+                    </ib-radio-wrapper>
+                    <ib-radio-wrapper>
+                        <input ng-attr-id="utforarTypUnderleverantor" type="radio" value="UNDERLEVERANTOR"
+                               ng-model="vm.model.utforareTyp" ng-change="onChangeUtforareTyp()">
+                        <label ng-attr-for="utforarTypUnderleverantor">Per telefon</label>
+                    </ib-radio-wrapper>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" id="lagg-till-besok-modal-skicka" class="btn btn-primary">
+            Spara
+        </button>
+        <button type="button" id="lagg-till-besok-modal-cancel" class="btn btn-default" ng-click="$dismiss()">
+            <span message key="common.cancel"></span>
+        </button>
     </div>
 
-    <div class="profession-wrapper">
-      <span><p>Profession</p></span>
-      <span><ib-dropdown
-              id="profession"
-              ng-model="profession"
-              ng-change="onChange()"
-              items="professionList">
-      </ib-dropdown>
-      </span>
-    </div>
-
-    <div class="name-wrapper">
-      <span><p>Namn</p></span>
-      <span><input class="form-control" type="text" ng-model="investigativePersonnel" maxlength="30"></span>
-    </div>
-
-    <div class="checkbox-wrapper">
-      <span><p>Tolk bokad</p></span>
-
-      <ib-checkbox-wrapper>
-          <label>
-              <p>Yolo!</p>
-          </label>
-          <input ng-attr-id="markusDuTestarjättebra"
-              type="checkbox"
-              ng-model="interpreter.state"
-               ng-change="onChange()">
-
-      </ib-checkbox-wrapper>
-
-    </div>
-    {{interpreter.state}}
-
-    <div class="sentRequest">
-      <span><p>Kallelse skickad</p></span>
-
-    </div>
-
-  </div>
-  <div class="modal-footer">
-    <button type="button" id="lagg-till-besok-modal-skicka" class="btn btn-primary">
-     Spara
-    </button>
-    <button type="button" id="lagg-till-besok-modal-cancel" class="btn btn-default" ng-click="$dismiss()">
-      <span message key="common.cancel"></span>
-    </button>
-  </div>
-</div>

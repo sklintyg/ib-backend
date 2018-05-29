@@ -36,5 +36,7 @@ angular.module('ibApp')
                 state: false
             };
 
+            $scope.datetimeModel = new Date();
+
 
     });

@@ -23,47 +23,51 @@
     font-weight: 500;
   }
 
-  span{
-    padding-right: 10px;
-    align-self: baseline;
-    padding-bottom: 15px;
-  }
-
-  .date-time-wrapper {
+  .big-flex-wrapper {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-
-    span:first-child {
-      width: 84px;
-    }
+    flex-direction: column;
   }
-
-  .profession-wrapper {
+  
+  .flex-wrapper {
     display: flex;
     flex-direction: row;
 
     span:first-child {
-      width: 84px;
+      width: 89px;
+    }
+
+    span {
+      align-self: baseline;
+      padding-bottom: 15px;
+    }
+
+    #interpreter-input-field {
+       input.form-control {
+           width: 225px;
+       }
+    }
+
+    ib-date-picker-field {
+      display: flex;
+      height: 38px;
+      margin-bottom: 14px;
+
+      input.form-control {
+          width: 95px;
+        }
     }
   }
+  
+  message key span:first-child {
+    font-weight: 500;
+  }
 
-  .name-wrapper {
+  #radio-wrapper {
     display: flex;
     flex-direction: row;
 
     span:first-child {
-      width: 84px;
+      width: 115px;
     }
   }
-  .checkbox-wrapper {
-    display: flex;
-    flex-direction: row;
-
-    span:first-child {
-      width: 82px;
-    }
-  }
-
 }
