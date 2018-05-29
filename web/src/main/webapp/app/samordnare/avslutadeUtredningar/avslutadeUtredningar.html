@@ -1,0 +1,46 @@
+<div class="avslutadeArenden-page centered-constrained-content ib-workarea">
+
+  <avslutade-utredningar-filter filter="filter" filter-changed="getAvslutadeUtredningarFiltered()"></avslutade-utredningar-filter>
+
+  <span id="samordnare-lista-avslutade-utredningar-resulttext">Sökresultat: {{utredningar.length}} av {{utredningarTotal}} utredningar</span>
+
+  <table id="samordnare-lista-avslutade-utredningar-table" class="table table-striped ib-table-striped">
+    <thead>
+    <tr>
+      <th ib-table-head filter="filter" filter-changed="getAvslutadeUtredningarFiltered()" order-by-key="utredningsId" label-key="label.table.avslutade.utredningar.column.id"></th>
+      <th ib-table-head filter="filter" filter-changed="getAvslutadeUtredningarFiltered()" order-by-key="utredningsTyp" label-key="label.table.avslutade.utredningar.column.typ"></th>
+      <th ib-table-head filter="filter" filter-changed="getAvslutadeUtredningarFiltered()" order-by-key="vardgivareNamn" label-key="label.table.avslutade.utredningar.column.vardgivareNamn"></th>
+      <th ib-table-head filter="filter" filter-changed="getAvslutadeUtredningarFiltered()" order-by-key="status" label-key="label.table.avslutade.utredningar.column.status"></th>
+      <th ib-table-head filter="filter" filter-changed="getAvslutadeUtredningarFiltered()" order-by-key="avslutsDatum" label-key="label.table.avslutade.utredningar.column.avslutsdatum"></th>
+      <th ib-table-head filter="filter" filter-changed="getAvslutadeUtredningarFiltered()" order-by-key="ersatts" label-key="label.table.avslutade.utredningar.column.ersatts"></th>
+      <th ib-table-head filter="filter" filter-changed="getAvslutadeUtredningarFiltered()" order-by-key="fakturerad" label-key="label.table.avslutade.utredningar.column.fakturerad"></th>
+      <th ib-table-head filter="filter" filter-changed="getAvslutadeUtredningarFiltered()" order-by-key="utbetald" label-key="label.table.avslutade.utredningar.column.utbetald"></th>
+      <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="row in utredningar">
+      <td>{{::row.utredningsId}}</td>
+      <td>{{::row.utredningsTyp}}</td>
+      <td>{{::row.vardgivareNamn}}</td>
+      <td>{{::row.status.label}}</td>
+      <td>{{::row.avslutsDatum}}</td>
+      <td><ib-yes-no value="::row.ersatts"></ib-yes-no></td>
+      <td><ib-fakturerad fakturerad="::row.fakturerad"></ib-fakturerad></td>
+      <td><ib-utbetald utbetald="::row.utbetald"></ib-utbetald></td>
+      <td><button class="btn btn-primary"><span message key="common.show"></span></button></td>
+    </tr>
+    </tbody>
+  </table>
+
+  <button class="btn btn-primary"
+          ng-click="getMore()"
+          ng-if="utredningarTotal > utredningar.length">
+    <message key="common.more.results"></message>
+  </button>
+
+  <div id="samordnare-lista-avslutade-utredningar-no-results" ng-if="!utredningar.length">
+    <span message key="common.no.results"></span>
+  </div>
+
+</div>

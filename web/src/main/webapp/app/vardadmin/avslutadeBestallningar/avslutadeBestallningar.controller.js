@@ -18,7 +18,7 @@
  */
 
 angular.module('ibApp')
-    .controller('AvslutadeUtredningarCtrl',
+    .controller('AvslutadeBestallningarCtrl',
         function($log, $scope, $state, ibAvslutadeBestallningarFilterModel, BestallningarProxy) {
             'use strict';
 

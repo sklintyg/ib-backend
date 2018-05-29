@@ -57,9 +57,9 @@ angular.module('ibApp').directive('ibMainMenu', ['$state', 'UserModel', 'StatPol
                     });
 
                     menu.push({
-                        state: 'app.samordnare.avslutadeArenden',
+                        state: 'app.samordnare.avslutadeUtredningar',
                         label: 'Avslutade',
-                        id: 'menu-samordnare-avslutadeArenden'
+                        id: 'menu-samordnare-avslutadeUtredningar'
                     });
 
                     menu.push({
@@ -91,9 +91,9 @@ angular.module('ibApp').directive('ibMainMenu', ['$state', 'UserModel', 'StatPol
                     });
 
                     menu.push({
-                        state: 'app.vardadmin.avslutadeUtredningar',
+                        state: 'app.vardadmin.avslutadeBestallningar',
                         label: 'Avslutade',
-                        id: 'menu-vardadministrator-avslutadeUtredningar'
+                        id: 'menu-vardadministrator-avslutadeBestallningar'
                     });
                 }
 

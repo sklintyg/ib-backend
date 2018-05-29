@@ -36,7 +36,8 @@
 @import 'error/restErrorDialog.scss';
 @import 'footer/footer.scss';
 @import 'login/login.page.scss';
-@import 'samordnare/avslutadeArenden/avslutadeArenden.page.scss';
+@import 'samordnare/avslutadeUtredningar/avslutadeUtredningar.page.scss';
+@import 'samordnare/avslutadeUtredningar/avslutadeUtredningarFilter/avslutadeUtredningarFilter.directive.scss';
 @import 'samordnare/hanteraEnheter/addEnhet/addEnhetDialog.scss';
 @import 'samordnare/hanteraEnheter/deleteEnhet/deleteEnhetDialog.scss';
 @import 'samordnare/hanteraEnheter/editEnhet/editEnhetDialog.scss';
@@ -54,8 +55,8 @@
 @import 'samordnare/visaUtredning/utredningHeader/ibUtredningHeaderStatus/ibUtredningHeaderStatus.directive.scss';
 @import 'samordnare/visaUtredning/visaUtredning.page.scss';
 @import 'selectunit/selectunit.page.scss';
-@import 'vardadmin/avslutadeUtredningar/avslutadeBestallningarFilter/avslutadeBestallningarFilter.directive.scss';
-@import 'vardadmin/avslutadeUtredningar/avslutadeUtredningar.page.scss';
+@import 'vardadmin/avslutadeBestallningar/avslutadeBestallningar.page.scss';
+@import 'vardadmin/avslutadeBestallningar/avslutadeBestallningarFilter/avslutadeBestallningarFilter.directive.scss';
 @import 'vardadmin/listaForfragningar/forfraganFilter/forfraganFilter.directive.scss';
 @import 'vardadmin/listaForfragningar/listaForfragningar.page.scss';
 @import 'vardadmin/pagaendeUtredningar/bestallningFilter/bestallningFilter.directive.scss';

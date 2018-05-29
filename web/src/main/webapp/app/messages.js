@@ -192,16 +192,27 @@ var ibMessages = {
         'forfragningar.filter.status.label': 'Status',
         'forfragningar.filter.resetfilter.label': 'Återställ sökfilter',
 
-        // Lista avslutade utredningar (vårdadmin) tabell
-        'label.table.avslutade.bestallningar.column.id': 'Id',
-        'label.table.avslutade.bestallningar.column.typ': 'Utredningstyp',
-        'label.table.avslutade.bestallningar.column.vardgivareNamn': 'Landsting',
-        'label.table.avslutade.bestallningar.column.status': 'Status',
-        'label.table.avslutade.bestallningar.column.avslutsdatum': 'Avslutsdatum',
-        'label.table.avslutade.bestallningar.column.ersatts': 'Ersätts',
-        'label.table.avslutade.bestallningar.column.fakturerad': 'Fakturerad',
-        'label.table.avslutade.bestallningar.column.utbetald': 'Utbetald',
+        // Lista avslutade utredningar filter
+        'avslutade.utredningar.filter.fritext.label': 'Fritextsökning',
+        'avslutade.utredningar.filter.fritext.placeholder': 'Skriv sökord',
+        'avslutade.utredningar.filter.vardgivarenamn.label': 'Landsting',
+        'avslutade.utredningar.filter.avslutsdatum.label': 'Avslutsdatum',
+        'avslutade.utredningar.filter.avslutsdatum.placeholder': 'Alla valda',
+        'avslutade.utredningar.filter.ersatts.label': 'Ersätts',
+        'avslutade.utredningar.filter.fakturerad.label': 'Fakturerad',
+        'avslutade.utredningar.filter.utbetald.label': 'Utbetald',
+        'avslutade.utredningar.filter.status.label': 'Status',
+        'avslutade.utredningar.filter.resetfilter.label': 'Återställ sökfilter',
 
+        // Lista avslutade utredningar (samordnare) tabell
+        'label.table.avslutade.utredningar.column.id': 'Id',
+        'label.table.avslutade.utredningar.column.typ': 'Utredningstyp',
+        'label.table.avslutade.utredningar.column.vardgivareNamn': 'Landsting',
+        'label.table.avslutade.utredningar.column.status': 'Status',
+        'label.table.avslutade.utredningar.column.avslutsdatum': 'Avslutsdatum',
+        'label.table.avslutade.utredningar.column.ersatts': 'Ersätts',
+        'label.table.avslutade.utredningar.column.fakturerad': 'Fakturerad',
+        'label.table.avslutade.utredningar.column.utbetald': 'Utbetald',
 
         // Lista avslutade bestallningar filter
         'avslutade.bestallningar.filter.fritext.label': 'Fritextsökning',
@@ -214,6 +225,16 @@ var ibMessages = {
         'avslutade.bestallningar.filter.utbetald.label': 'Utbetald',
         'avslutade.bestallningar.filter.status.label': 'Status',
         'avslutade.bestallningar.filter.resetfilter.label': 'Återställ sökfilter',
+
+        // Lista avslutade beställningar (vårdadmin) tabell
+        'label.table.avslutade.bestallningar.column.id': 'Id',
+        'label.table.avslutade.bestallningar.column.typ': 'Utredningstyp',
+        'label.table.avslutade.bestallningar.column.vardgivareNamn': 'Landsting',
+        'label.table.avslutade.bestallningar.column.status': 'Status',
+        'label.table.avslutade.bestallningar.column.avslutsdatum': 'Avslutsdatum',
+        'label.table.avslutade.bestallningar.column.ersatts': 'Ersätts',
+        'label.table.avslutade.bestallningar.column.fakturerad': 'Fakturerad',
+        'label.table.avslutade.bestallningar.column.utbetald': 'Utbetald',
 
         //Internförfrågningar
         'internforfragan.besvara.form.title': 'Svar på förfrågan',
