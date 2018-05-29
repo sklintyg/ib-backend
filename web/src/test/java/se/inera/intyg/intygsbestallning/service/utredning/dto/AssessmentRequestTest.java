@@ -18,14 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning.dto;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.aCv;
-import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.DATE_TIME;
-import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createFullRequest;
-
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
@@ -35,12 +27,17 @@ import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerfora
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.aCv;
+import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createFullRequest;
+
 public class AssessmentRequestTest {
 
     @Test
     public void testToConvertFromRequest() {
-
-
 
         final RequestHealthcarePerformerForAssessmentType request = createFullRequest();
         final AssessmentRequest converted = AssessmentRequest.from(request);

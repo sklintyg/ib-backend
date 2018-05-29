@@ -41,6 +41,7 @@ public class BestallningListItemFactory {
     public BestallningListItem from(Utredning utredning, Actor actorInThisContext) {
 
         UtredningStatus utredningStatus = utredningStatusResolver.resolveStatus(utredning);
+
         return BestallningListItem.BestallningListItemBuilder.anBestallningListItem()
                 .withFas(utredningStatus.getUtredningFas())
                 .withPatientId(utredning.getInvanare().getPersonId())
@@ -74,7 +75,7 @@ public class BestallningListItemFactory {
      * Utredningsfas inte är Redovisa tolk (se FMU-G001 Statusflöde för utredning)
      * Idag > (slutdatum - UTREDNING_PAMINNELSE_DAGAR arbetsdagar)
      * Idag <= slutdatum
-     * där slutdatum avser slutdatum för utredningen (intyg.sista datum för mottagning) om ingen kompletteringsbegärans har
+     * där slutdatum avser slutdatum för utredningen (intyg.sista datum för mottagning) om ingen kompletteringsbegäran har
      * mottagits, annars slutdatum för kompletteringsbegäran (komplettering.sista datum för mottagning)
      */
     private boolean resolveSlutDatumPaVagPasseras(Utredning utredning, UtredningStatus utredningStatus) {

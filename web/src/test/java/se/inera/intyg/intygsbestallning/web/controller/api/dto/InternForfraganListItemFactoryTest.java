@@ -52,7 +52,8 @@ public class InternForfraganListItemFactoryTest {
     private static final int DEFAULT_BESVARA_FORFRAGAN_ARBETSDAGAR = 2;
     private static final int DEFAULT_AFU_UTREDNING_ARBETSDAGAR = 25;
     private static final int DEFAULT_POSTGANG_ARBETSDAGAR = 3;
-    private static final String LANDSTING_KOMMENTAR = "GÖr detta nu!";
+
+    private static final String LANDSTING_KOMMENTAR = "Gör detta nu!";
 
     @InjectMocks
     private InternForfraganListItemFactory testee = new InternForfraganListItemFactory(new BusinessDaysStub());
