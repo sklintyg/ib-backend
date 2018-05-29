@@ -63,7 +63,7 @@ public class SlutdatumForUtredningPasseradJob {
                     .withNotifieringSkickad(LocalDateTime.now())
                     .withNotifieringTyp(SLUTDATUM_UTREDNING_PASSERAT)
                     .build());
-
+            utredningRepository.save(utredning);
             LOG.info("Sent notification {} for utredning {}.", SLUTDATUM_UTREDNING_PASSERAT, utredning.getUtredningId());
         }
     }
