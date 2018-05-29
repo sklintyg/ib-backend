@@ -62,6 +62,8 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.InternForfraganRepository;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
+import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
+import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
@@ -72,6 +74,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.GetInte
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItemFactory;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganSvarItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.TilldelaDirektRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InternForfraganServiceImplTest {
@@ -138,7 +141,14 @@ public class InternForfraganServiceImplTest {
         request.setVardenheter(ImmutableList.of(vardenhetId1, vardenhetId2));
         request.setKommentar(kommentar);
 
-        internForfraganService.createInternForfragan(utredningId, landstingHsaId, request);
+        GetUtredningResponse response = internForfraganService.createInternForfragan(utredningId, landstingHsaId, request);
+        assertEquals(UtredningStatus.VANTAR_PA_SVAR, response.getStatus());
+        assertEquals(vardenhetId1, response.getInternForfraganList().get(0).getVardenhetHsaId());
+        assertEquals(vardenhetNamn1, response.getInternForfraganList().get(0).getVardenhetNamn());
+        assertEquals(InternForfraganStatus.INKOMMEN, response.getInternForfraganList().get(0).getStatus());
+        assertEquals(vardenhetId2, response.getInternForfraganList().get(1).getVardenhetHsaId());
+        assertEquals(vardenhetNamn2, response.getInternForfraganList().get(1).getVardenhetNamn());
+        assertEquals(InternForfraganStatus.INKOMMEN, response.getInternForfraganList().get(1).getStatus());
 
         ArgumentCaptor<Utredning> utredningArgument = ArgumentCaptor.forClass(Utredning.class);
         verify(utredningRepository).save(utredningArgument.capture());
@@ -273,11 +283,17 @@ public class InternForfraganServiceImplTest {
                         .build())
                 .build()));
 
+        when(organizationUnitService.getVardenhet(vardenhetId1)).thenReturn(new Vardenhet(vardenhetId1, vardenhetNamn1));
+
         TilldelaDirektRequest request = new TilldelaDirektRequest();
         request.setVardenhet(vardenhetId1);
         request.setKommentar(kommentar);
 
-        internForfraganService.tilldelaDirekt(utredningId, landstingHsaId, request);
+        GetUtredningResponse response = internForfraganService.tilldelaDirekt(utredningId, landstingHsaId, request);
+        assertEquals(UtredningStatus.TILLDELA_UTREDNING, response.getStatus());
+        assertEquals(InternForfraganStatus.DIREKTTILLDELAD, response.getInternForfraganList().get(0).getStatus());
+        assertEquals(vardenhetId1, response.getInternForfraganList().get(0).getVardenhetHsaId());
+        assertEquals(vardenhetNamn1, response.getInternForfraganList().get(0).getVardenhetNamn());
 
         ArgumentCaptor<Utredning> utredningArgument = ArgumentCaptor.forClass(Utredning.class);
         verify(utredningRepository).save(utredningArgument.capture());

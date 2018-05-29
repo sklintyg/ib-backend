@@ -132,7 +132,7 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
 
         utredningRepository.save(utredning);
 
-        return utredningService.createGetUtredningResponse(utredning);
+        return createGetUtredningResponse(utredning);
     }
 
     @Override
@@ -175,7 +175,7 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
 
         utredningRepository.save(utredning);
 
-        return utredningService.createGetUtredningResponse(utredning);
+        return createGetUtredningResponse(utredning);
     }
 
     @NotNull

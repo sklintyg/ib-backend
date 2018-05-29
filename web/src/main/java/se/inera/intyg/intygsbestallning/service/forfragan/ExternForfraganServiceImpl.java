@@ -221,7 +221,7 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
 
         utredningRepository.save(utredning);
 
-        return utredningService.createGetUtredningResponse(utredning);
+        return createGetUtredningResponse(utredning);
     }
 
 
@@ -249,7 +249,7 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
 
         utredningRepository.save(utredning);
 
-        return utredningService.createGetUtredningResponse(utredning);
+        return createGetUtredningResponse(utredning);
     }
 
     /*

@@ -50,6 +50,7 @@ import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FreeTextSearchable;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardenhetEnrichable;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
 
 public abstract class BaseUtredningService {
@@ -88,6 +89,15 @@ public abstract class BaseUtredningService {
         }
 
         return utredning;
+    }
+
+    protected GetUtredningResponse createGetUtredningResponse(Utredning utredning) {
+        GetUtredningResponse getUtredningResponse = GetUtredningResponse.from(utredning, utredningStatusResolver.resolveStatus(utredning));
+
+        enrichWithVardenhetNames(getUtredningResponse.getInternForfraganList());
+        enrichWithVardenhetNames(getUtredningResponse.getTidigareEnheter());
+
+        return getUtredningResponse;
     }
 
     protected void enrichWithVardenhetNames(List<? extends VardenhetEnrichable> items) {

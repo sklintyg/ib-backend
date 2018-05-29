@@ -49,6 +49,8 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.ExternForfraganRepository;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
+import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
+import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
@@ -160,6 +162,9 @@ public class ExternForfraganServiceImplTest {
 
         ArgumentCaptor<RespondToPerformerRequestDto> respondToPerformerRequestArgument = ArgumentCaptor.forClass(RespondToPerformerRequestDto.class);
         verify(myndighetIntegrationService).respondToPerformerRequest(respondToPerformerRequestArgument.capture());
+
+        assertEquals(UtredningStatus.TILLDELAD_VANTAR_PA_BESTALLNING, response.getStatus());
+        assertEquals(InternForfraganStatus.TILLDELAD_VANTAR_PA_BESTALLNING, response.getInternForfraganList().get(0).getStatus());
 
         RespondToPerformerRequestDto respondToPerformerRequest = respondToPerformerRequestArgument.getValue();
         assertEquals(utredningId, respondToPerformerRequest.getAssessmentId());
@@ -346,7 +351,8 @@ public class ExternForfraganServiceImplTest {
                         .build())
                 .build()));
 
-        testee.avvisaExternForfragan(utredningId, landstingHsaId, kommentar);
+        GetUtredningResponse response = testee.avvisaExternForfragan(utredningId, landstingHsaId, kommentar);
+        assertEquals(UtredningStatus.AVVISAD, response.getStatus());
 
         ArgumentCaptor<RespondToPerformerRequestDto> respondToPerformerRequestArgument = ArgumentCaptor.forClass(RespondToPerformerRequestDto.class);
         verify(myndighetIntegrationService).respondToPerformerRequest(respondToPerformerRequestArgument.capture());

@@ -463,14 +463,4 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         UtredningFas utredningFas = UtredningFas.valueOf(fas);
         return uli.getFas() == utredningFas;
     }
-
-    @Override
-    public GetUtredningResponse createGetUtredningResponse(Utredning utredning) {
-        GetUtredningResponse getUtredningResponse = GetUtredningResponse.from(utredning, utredningStatusResolver.resolveStatus(utredning));
-
-        enrichWithVardenhetNames(getUtredningResponse.getInternForfraganList());
-        enrichWithVardenhetNames(getUtredningResponse.getTidigareEnheter());
-
-        return getUtredningResponse;
-    }
 }
