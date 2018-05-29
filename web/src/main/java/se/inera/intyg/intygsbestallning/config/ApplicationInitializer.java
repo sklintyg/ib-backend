@@ -29,14 +29,12 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.DispatcherServlet;
-import se.inera.intyg.infra.integration.pu.cache.PuCacheConfiguration;
 import se.inera.intyg.intygsbestallning.integration.myndighet.config.MyndighetIntegrationClientConfiguration;
 import se.inera.intyg.intygsbestallning.integration.myndighet.config.MyndighetIntegrationConfiguration;
 import se.inera.intyg.intygsbestallning.integration.myndighet.stubs.MyndighetIntegrationStubConfiguration;
 import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigDev;
 import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigJndi;
 import se.inera.intyg.intygsbestallning.web.filters.SessionTimeoutFilter;
-
 
 import javax.servlet.FilterRegistration;
 import javax.servlet.ServletException;
