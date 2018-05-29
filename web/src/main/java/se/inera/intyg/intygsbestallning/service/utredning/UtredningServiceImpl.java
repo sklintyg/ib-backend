@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.BooleanUtils;
@@ -39,6 +38,7 @@ import se.inera.intyg.intygsbestallning.service.notification.MailNotificationSer
 import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
+import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.util.GenericComparator;
 import se.inera.intyg.intygsbestallning.service.util.PagingUtil;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.*;
@@ -54,6 +54,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -301,8 +303,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
         final Handelse handelse = HandelseUtil.createForfraganMottagen(request.getLandstingHsaId());
 
-
-        return utredningRepository.save(anUtredning()
+        final Utredning utredning = anUtredning()
                 .withUtredningsTyp(request.getUtredningsTyp())
                 .withExternForfragan(externForfragan)
                 .withInvanare(invanare)
@@ -311,7 +312,11 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .withTolkSprak(request.getTolkSprak())
                 .withHandelseList(Collections.singletonList(handelse))
                 .withArkiverad(false)
-                .build());
+                .build();
+
+        checkState(Objects.equals(UtredningStatus.FORFRAGAN_INKOMMEN, UtredningStatusResolver.resolveStaticStatus(utredning)));
+
+        return utredningRepository.save(utredning);
     }
 
     @Override
@@ -330,9 +335,9 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
     private Utredning qualifyForUpdatering(final UpdateOrderRequest update, final Utredning original) {
 
-        Preconditions.checkArgument(nonNull(update));
-        Preconditions.checkArgument(nonNull(original));
-        Preconditions.checkArgument(original.getBestallning().isPresent());
+        checkArgument(nonNull(update));
+        checkArgument(nonNull(original));
+        checkArgument(original.getBestallning().isPresent());
 
         Utredning toUpdate = Utredning.copyFrom(original);
 
