@@ -35,7 +35,8 @@ angular.module('ibApp').directive('ibDatePickerField',['$timeout', '$parse', 'Da
                 minDateError: '@',
                 addDateParser: '@',
                 dateOptions: '@',
-                onBlur: '&'
+                onBlur: '&',
+                appendToBody: '='
             },
             templateUrl: '/components/commonDirectives/form/ibDatePickerField/ibDatePickerField.directive.html',
             link: function($scope, element, attr, ctrls) {

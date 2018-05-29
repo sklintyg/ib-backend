@@ -16,9 +16,11 @@
                             format="yyyy-MM-dd"
                             date-format-error="Ogiltigt datumformat, ange ett datum som ÅÅÅÅ-MM-DD"
                             ib-date-picker-field
+                            append-to-body="true"
                             add-date-parser="strict">
                     </ib-date-picker-field>
                     <span><ib-help-text-label label-key="lagg-till-besok.label.from"></ib-help-text-label></span>
+                    <ib-time-picker model="datetimeModel"></ib-time-picker>
                     <span><ib-help-text-label label-key="lagg-till-besok.label.to"></ib-help-text-label></span>
                 </div>
                 <div class="flex-wrapper">
@@ -63,6 +65,7 @@
                             format="yyyy-MM-dd"
                             date-format-error="Ogiltigt datumformat, ange ett datum som ÅÅÅÅ-MM-DD"
                             ib-date-picker-field
+                            append-to-body="true"
                             add-date-parser="strict">
                     </ib-date-picker-field>
                     <ib-radio-wrapper>
@@ -87,4 +90,3 @@
             <span message key="common.cancel"></span>
         </button>
     </div>
-

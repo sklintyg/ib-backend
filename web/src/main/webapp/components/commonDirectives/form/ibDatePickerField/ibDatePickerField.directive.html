@@ -21,7 +21,8 @@
            on-open-focus="false"
            ib-blur-on-enter
            ib-date-picker-field-input
-           ng-focus="focused()"/>
+           ng-focus="focused()"
+           datepicker-append-to-body="{{::appendToBody}}"/>
     <span class="input-group-btn">
       <button type="button" id="{{::domId}}-toggle" class="btn btn-default"  ng-class="{border:isFocused}" ng-click="toggleOpen($event)" ng-disabled="pickerState.isOpen"><i class="material-icons">date_range</i></button>
     </span>

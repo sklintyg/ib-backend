@@ -1,0 +1,79 @@
+ib-time-picker {
+  position: relative;
+
+  .input-group {
+    width: 107px;
+  }
+
+  input.form-control.time {
+    height: 38px;
+    border: 1px solid $ib-color-15;
+    border-radius: 4px;
+    transition: border-color .36s ease-in-out, box-shadow .3s ease-in-out;
+
+    &:focus {
+      outline: none !important;
+      border: 1px solid $ib-color-21;
+      /*box-shadow: 0 4px 2px -2px $black_12;*/
+      box-shadow: 0 2px 4px 0 $black_12;
+    }
+
+    &:disabled, fieldset[disabled] & {
+      background-color: $ib-color-20;
+      color: $ib-color-09;
+      pointer-events: none; /* this is a workaround for fieldset[disabled] not working correctly in IE11 */
+    }
+  }/* this is a workaround for fieldset[disabled] not working correctly in IE11 */
+
+  fieldset[disabled] & {
+    cursor: not-allowed;
+  }
+
+  .btn-default {
+    border-color: $ib-color-15;
+
+    &:disabled, fieldset[disabled] & {
+      background-color: $ib-color-20;
+      color: $ib-color-09;
+    }
+  }
+
+  .btn {
+    padding: 6px 5px;
+  }
+
+  .border {
+    border-color: $ib-color-21 !important;
+    box-shadow: 2px 2px 4px 0 $black_12;
+  }
+
+  .text-invalid, INPUT.ng-invalid-dateperiod, INPUT.ng-invalid-min-date,
+  INPUT.ng-invalid-max-date, INPUT.ng-invalid-date {
+    border-color: $ib-color-11;
+
+    &+ SPAN.input-group-btn {
+      button {
+        border-right-color: $ib-color-11;
+        border-top-color: $ib-color-11;
+        border-bottom-color: $ib-color-11;
+      }
+    }
+  }
+
+  .plate {
+    position: absolute;
+    top: 0;
+    background: #fff;
+    border: 1px solid #c0c0c0;
+    border-radius: 4px;
+
+    .uib-time.hours, .uib-time.minutes {
+      padding: 0;
+    }
+
+    input {
+      border: none;
+      box-shadow: none;
+    }
+  }
+}

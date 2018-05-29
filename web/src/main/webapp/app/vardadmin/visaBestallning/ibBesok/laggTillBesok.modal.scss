@@ -1,5 +1,4 @@
-#lagg-till-besok-modal{
-
+#lagg-till-besok-modal {
   ib-checkgroup .control-label {
     @extend %ib-typo-05;
     color: $ib-color-09;
@@ -27,24 +26,24 @@
     display: flex;
     flex-direction: column;
   }
-  
+
   .flex-wrapper {
     display: flex;
     flex-direction: row;
 
-    span:first-child {
+    > span:first-child {
       width: 89px;
     }
 
-    span {
+    > span {
       align-self: baseline;
       padding-bottom: 15px;
     }
 
     #interpreter-input-field {
-       input.form-control {
-           width: 225px;
-       }
+      input.form-control {
+        width: 225px;
+      }
     }
 
     ib-date-picker-field {
@@ -52,12 +51,12 @@
       height: 38px;
       margin-bottom: 14px;
 
-      input.form-control {
-          width: 95px;
-        }
+      .input-group {
+        width: 130px;
+      }
     }
   }
-  
+
   message key span:first-child {
     font-weight: 500;
   }
