@@ -29,7 +29,10 @@ public interface MailNotificationService {
 
     void notifyNyExternForfragan(Utredning utredning);
 
+    void notifyNyInternForfragan(Utredning utredning);
+
     void notifySlutDatumPasserat(Utredning utredning);
 
     void notifyBestallningMottagen(Utredning utredning);
+
 }

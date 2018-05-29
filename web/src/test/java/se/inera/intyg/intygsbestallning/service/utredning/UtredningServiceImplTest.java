@@ -35,10 +35,6 @@ import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan
 import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
 import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
 import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
-<<<<<<< HEAD
-=======
-import static se.inera.intyg.intygsbestallning.persistence.model.RegistreradVardenhet.RegistreradVardenhetBuilder.aRegistreradVardenhet;
->>>>>>> INTYG-6133: lagt till alternativflöde 1 för FMU-F004
 import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp.BESTALLNING;
@@ -78,14 +74,10 @@ import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationExceptio
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
-import se.inera.intyg.intygsbestallning.persistence.model.RegistreradVardenhet;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
-<<<<<<< HEAD
 import se.inera.intyg.intygsbestallning.persistence.model.type.MyndighetTyp;
-=======
 import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
->>>>>>> INTYG-6133: lagt till alternativflöde 1 för FMU-F004
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.notification.MailNotificationService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
@@ -385,28 +377,6 @@ public class UtredningServiceImplTest {
         final UnitType unit3 = new UnitType();
         unit1.setUnitName("enhetsNamn3");
 
-<<<<<<< HEAD
-=======
-        final RegistreradVardenhet registreradVardenhet1 = aRegistreradVardenhet().withVardenhetHsaId("vardenhetId1").build();
-        final RegistreradVardenhet registreradVardenhet2 = aRegistreradVardenhet().withVardenhetHsaId("vardenhetId2").build();
-
-        doReturn(unit1)
-                .when(organizationUnitService)
-                .getUnit("1");
-
-        doReturn(unit2)
-                .when(organizationUnitService)
-                .getUnit("2");
-
-        doReturn(unit3)
-                .when(organizationUnitService)
-                .getUnit("3");
-
-        doReturn(ImmutableList.of(registreradVardenhet1, registreradVardenhet2))
-                .when(registreradVardenhetRepository)
-                .findByVardgivareHsaId(request.getLandstingHsaId());
-
->>>>>>> INTYG-6133: lagt till alternativflöde 1 för FMU-F004
         final Utredning sparadUtredning = utredningService.registerNewUtredning(request);
 
         assertEquals(utredning, sparadUtredning);

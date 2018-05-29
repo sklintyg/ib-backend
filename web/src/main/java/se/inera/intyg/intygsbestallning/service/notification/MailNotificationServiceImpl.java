@@ -32,6 +32,7 @@ import se.inera.intyg.intygsbestallning.service.mail.MailService;
 import se.inera.intyg.intygsbestallning.service.vardenhet.VardenhetService;
 
 import javax.mail.MessagingException;
+import java.text.MessageFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.Optional;
@@ -47,7 +48,8 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     private static final String SUBJECT_BESTALLNING_MOTTAGEN = "Beställning av Försäkringsmedicinsk utredning";
     private static final String SUBJECT_BESTALLNING_UPPDATERAD = "Försäkringskassan har uppdaterat en beställning";
     private static final String SUBJECT_HANDLING_MOTTAGEN = "Beställning av Försäkringsmedicinsk utredning";
-    private static final String SUBJECT_NY_FMU_FORFRAGAN = "Ny FMU förfragan";
+    private static final String SUBJECT_NY_FMU_EXTERN_FORFRAGAN = "Ny FMU förfragan";
+    private static final String SUBJECT_NY_FMU_INERN_FORFRAGAN = "Ny FMU förfragan";
     private static final String SUBJECT_UTREDNING_SLUTDATUM_PA_VAG_PASSERAS = "Påminnelse: Slutdatum för en utredning "
             + "är på väg att passeras";
     private static final String SUBJECT_UTREDNING_SLUTDATUM_PASSERAT = "Slutdatum för en utredningen har passerats";
@@ -188,9 +190,24 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         final String email = vardenhetService.getVardEnhetPreference(vardenhetHsaId).getEpost();
         final String body = mailNotificationBodyFactory.buildBodyForUtredning(
                 "Det har inkommit en ny förfrågan om en försäkringsmedicinsk utredning (FMU) från Försäkringskassan.",
-                "<URL to utredning>");
+                "<URL to EXTERNFORFRAGAN>");
 
-        send(email, SUBJECT_NY_FMU_FORFRAGAN, body);
+        send(email, SUBJECT_NY_FMU_EXTERN_FORFRAGAN, body);
+    }
+
+    @Override
+    public void notifyNyInternForfragan(Utredning utredning) {
+
+        checkState(nonNull(utredning.getExternForfragan()));
+        checkState(nonNull(utredning.getExternForfragan().getLandstingHsaId()));
+
+        final String vardenhetHsaId = utredning.getExternForfragan().getLandstingHsaId();
+        final String email = vardenhetService.getVardEnhetPreference(vardenhetHsaId).getEpost();
+        final String body = mailNotificationBodyFactory.buildBodyForUtredning(MessageFormat.format(
+                "Det har inkommit en ny förfrågan om en försäkringsmedicinsk utredning (FMU) från {0}", vardenhetHsaId),
+                "<URL to INTERNFORFRAGAN>");
+
+        send(email, SUBJECT_NY_FMU_EXTERN_FORFRAGAN, body);
     }
 
     private void verifyHasBestallning(Utredning utredning, String errorMessage) {

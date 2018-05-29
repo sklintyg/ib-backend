@@ -64,6 +64,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
 import se.inera.intyg.intygsbestallning.persistence.model.RegistreradVardenhet;
 import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.MyndighetTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
@@ -316,10 +317,20 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .withTidigareUtforare(tidigareUtforareList)
                 .build();
 
+        final UtredningBuilder utredningBuilder = anUtredning()
+                .withUtredningsTyp(request.getUtredningsTyp())
+                .withExternForfragan(externForfragan.build())
+                .withInvanare(invanare)
+                .withHandlaggare(createHandlaggare(request.getBestallare()))
+                .withTolkBehov(request.isTolkBehov())
+                .withTolkSprak(request.getTolkSprak())
+                .withArkiverad(false);
+
         final List<RegistreradVardenhet> byVardgivareHsaId =
                 registreradVardenhetRepository.findByVardgivareHsaId(request.getLandstingHsaId());
 
         final Handelse handelse;
+        final Utredning utredning;
         if (byVardgivareHsaId.size() == 1) {
             final String vardenhetHsaId = byVardgivareHsaId.iterator().next().getVardenhetHsaId();
             externForfragan.withInternForfraganList(Collections.singletonList(anInternForfragan()
@@ -330,22 +341,21 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                     .build()));
 
             handelse = HandelseUtil.createForfraganSkickad(request.getLandstingHsaId(), vardenhetHsaId);
+            utredningBuilder
+                    .withExternForfragan(externForfragan.build())
+                    .withHandelseList(Collections.singletonList(handelse));
+            utredning = utredningBuilder.build();
+            checkState(Objects.equals(UtredningStatus.VANTAR_PA_SVAR, UtredningStatusResolver.resolveStaticStatus(utredning)));
+            mailNotificationService.notifyNyInternForfragan(utredning);
         } else {
             handelse = HandelseUtil.createForfraganMottagen(request.getLandstingHsaId());
+            utredningBuilder
+                    .withExternForfragan(externForfragan.build())
+                    .withHandelseList(Collections.singletonList(handelse));
+            utredning = utredningBuilder.build();
+            checkState(Objects.equals(UtredningStatus.FORFRAGAN_INKOMMEN, UtredningStatusResolver.resolveStaticStatus(utredning)));
+            mailNotificationService.notifyNyExternForfragan(utredning);
         }
-
-        final Utredning utredning = anUtredning()
-                .withUtredningsTyp(request.getUtredningsTyp())
-                .withExternForfragan(externForfragan.build())
-                .withInvanare(invanare)
-                .withHandlaggare(createHandlaggare(request.getBestallare()))
-                .withTolkBehov(request.isTolkBehov())
-                .withTolkSprak(request.getTolkSprak())
-                .withHandelseList(Collections.singletonList(handelse))
-                .withArkiverad(false)
-                .build();
-
-        checkState(Objects.equals(UtredningStatus.FORFRAGAN_INKOMMEN, UtredningStatusResolver.resolveStaticStatus(utredning)));
 
         return utredningRepository.save(utredning);
     }
