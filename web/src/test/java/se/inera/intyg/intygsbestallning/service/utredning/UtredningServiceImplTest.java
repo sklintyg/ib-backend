@@ -419,7 +419,9 @@ public class UtredningServiceImplTest {
         UpdateOrderType update = new UpdateOrderType();
         update.setAssessmentId(anII("root", "1"));
 
-        assertThatThrownBy(() -> utredningService.updateOrder(UpdateOrderRequest.from(update)));
+        assertThatThrownBy(() -> utredningService.updateOrder(UpdateOrderRequest.from(update)))
+                .isExactlyInstanceOf(IbServiceException.class)
+                .hasMessage("No info to update");
     }
 
     @Test
