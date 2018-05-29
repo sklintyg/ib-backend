@@ -45,5 +45,6 @@ public enum HandelseTyp {
     JAV,
     UTREDNING_AVBRUTEN,
     NY_ANTECKNING,
-    TOLK_REDOVISAD
+    TOLK_REDOVISAD,
+    AVBOKAT_BESOK
 }

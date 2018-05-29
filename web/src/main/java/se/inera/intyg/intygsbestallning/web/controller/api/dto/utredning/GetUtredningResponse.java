@@ -25,6 +25,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.stateresolver.SlutDatumFasResolver;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.HandelseListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.VardenhetListItem;
 
 import java.time.format.DateTimeFormatter;
@@ -61,7 +62,7 @@ public class GetUtredningResponse {
 
     private List<UtredningInternForfraganListItem> internForfraganList;
 
-    private List<UtredningHandelseListItem> handelseList;
+    private List<HandelseListItem> handelseList;
 
     public static GetUtredningResponse from(Utredning utredning, UtredningStatus status) {
 
@@ -227,11 +228,11 @@ public class GetUtredningResponse {
         this.internForfraganList = internForfraganList;
     }
 
-    public List<UtredningHandelseListItem> getHandelseList() {
+    public List<HandelseListItem> getHandelseList() {
         return handelseList;
     }
 
-    public void setHandelseList(List<UtredningHandelseListItem> handelseList) {
+    public void setHandelseList(List<HandelseListItem> handelseList) {
         this.handelseList = handelseList;
     }
 
@@ -253,7 +254,7 @@ public class GetUtredningResponse {
         private String handlaggareTelefonnummer;
         private String handlaggareEpost;
         private List<UtredningInternForfraganListItem> internForfraganList;
-        private List<UtredningHandelseListItem> handelseList;
+        private List<HandelseListItem> handelseList;
 
         private GetUtredningResponseBuilder() {
         }
@@ -349,7 +350,7 @@ public class GetUtredningResponse {
 
         public GetUtredningResponseBuilder withHandelseList(List<Handelse> handelseList) {
             this.handelseList = handelseList.stream()
-                    .map(UtredningHandelseListItem::from)
+                    .map(HandelseListItem::from)
                     .collect(Collectors.toList());
             return this;
         }

@@ -1,4 +1,4 @@
-    /*
+/*
  * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
@@ -22,6 +22,7 @@ import static java.util.Objects.isNull;
 import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
 
 import com.google.common.base.MoreObjects;
+import org.apache.commons.collections4.ListUtils;
 import org.hibernate.annotations.Type;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
@@ -36,12 +37,16 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
-@Entity
+    @Entity
 @Table(name = "BESOK")
 public final class Besok {
 
@@ -87,6 +92,10 @@ public final class Besok {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "AVVIKELSE_ID")
     private Avvikelse avvikelse;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "BESOK_ID", referencedColumnName = "ID", nullable = true)
+    private List<Handelse> handelseList = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -176,6 +185,14 @@ public final class Besok {
         this.avvikelse = avvikelse;
     }
 
+    public List<Handelse> getHandelseList() {
+        return handelseList;
+    }
+
+    public void setHandelseList(List<Handelse> handelseList) {
+        this.handelseList = handelseList;
+    }
+
     public static Besok copyFrom(final Besok besok) {
 
         if (isNull(besok)) {
@@ -194,6 +211,9 @@ public final class Besok {
                 .withDeltagareProfession(besok.getDeltagareProfession())
                 .withDeltagareFullstandigtNamn(besok.getDeltagareFullstandigtNamn())
                 .withAvvikelse(Avvikelse.copyFrom(besok.getAvvikelse()))
+                .withHandelseList(besok.getHandelseList().stream()
+                        .map(Handelse::copyFrom)
+                        .collect(Collectors.toList()))
                 .build();
     }
 
@@ -210,6 +230,7 @@ public final class Besok {
         private DeltagarProfessionTyp deltagareProfession;
         private String deltagareFullstandigtNamn;
         private Avvikelse avvikelse;
+        private List<Handelse> handelseList = new ArrayList<>();;
 
         private BesokBuilder() {
         }
@@ -273,6 +294,11 @@ public final class Besok {
             return this;
         }
 
+        public BesokBuilder withHandelseList(List<Handelse> handelseList) {
+            this.handelseList = handelseList;
+            return this;
+        }
+
         public Besok build() {
             Besok besok = new Besok();
             besok.setId(id);
@@ -286,6 +312,7 @@ public final class Besok {
             besok.setDeltagareProfession(deltagareProfession);
             besok.setDeltagareFullstandigtNamn(deltagareFullstandigtNamn);
             besok.setAvvikelse(avvikelse);
+            besok.setHandelseList(handelseList);
             return besok;
         }
     }
@@ -309,7 +336,8 @@ public final class Besok {
                 && Objects.equals(ersatts, besok.ersatts)
                 && deltagareProfession == besok.deltagareProfession
                 && Objects.equals(deltagareFullstandigtNamn, besok.deltagareFullstandigtNamn)
-                && Objects.equals(avvikelse, besok.avvikelse);
+                && Objects.equals(avvikelse, besok.avvikelse)
+                && ListUtils.isEqualList(handelseList, besok.handelseList);
     }
 
     @Override
@@ -325,7 +353,8 @@ public final class Besok {
                 ersatts,
                 deltagareProfession,
                 deltagareFullstandigtNamn,
-                avvikelse);
+                avvikelse,
+                handelseList);
     }
 
     @Override
@@ -342,6 +371,7 @@ public final class Besok {
                 .add("deltagareProfession", deltagareProfession)
                 .add("deltagareFullstandigtNamn", deltagareFullstandigtNamn)
                 .add("avvikelse", avvikelse)
+                .add("handelseList", handelseList)
                 .toString();
     }
 }

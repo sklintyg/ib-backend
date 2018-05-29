@@ -16,14 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning;
+package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 
 import java.time.format.DateTimeFormatter;
 
-public class UtredningHandelseListItem {
+public class HandelseListItem {
 
     private static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
 
@@ -32,8 +32,8 @@ public class UtredningHandelseListItem {
     private String anvandare;
     private String handelseText;
 
-    public static UtredningHandelseListItem from(Handelse handelse) {
-        return UtredningHandelseListItemBuilder.aUtredningHandelseListItem()
+    public static HandelseListItem from(Handelse handelse) {
+        return HandelseListItemBuilder.aUtredningHandelseListItem()
                 .withSkapad(handelse.getSkapad().format(formatter))
                 .withTyp(handelse.getHandelseTyp())
                 .withAnvandare(handelse.getAnvandare())
@@ -73,46 +73,46 @@ public class UtredningHandelseListItem {
         this.handelseText = handelseText;
     }
 
-    public static final class UtredningHandelseListItemBuilder {
+    public static final class HandelseListItemBuilder {
         private String skapad;
         private HandelseTyp typ;
         private String anvandare;
         private String handelseText;
 
-        private UtredningHandelseListItemBuilder() {
+        private HandelseListItemBuilder() {
         }
 
-        public static UtredningHandelseListItem.UtredningHandelseListItemBuilder aUtredningHandelseListItem() {
-            return new UtredningHandelseListItem.UtredningHandelseListItemBuilder();
+        public static HandelseListItem.HandelseListItemBuilder aUtredningHandelseListItem() {
+            return new HandelseListItem.HandelseListItemBuilder();
         }
 
-        public UtredningHandelseListItem.UtredningHandelseListItemBuilder withSkapad(String skapad) {
+        public HandelseListItemBuilder withSkapad(String skapad) {
             this.skapad = skapad;
             return this;
         }
 
-        public UtredningHandelseListItem.UtredningHandelseListItemBuilder withTyp(HandelseTyp typ) {
+        public HandelseListItemBuilder withTyp(HandelseTyp typ) {
             this.typ = typ;
             return this;
         }
 
-        public UtredningHandelseListItem.UtredningHandelseListItemBuilder withAnvandare(String anvandare) {
+        public HandelseListItemBuilder withAnvandare(String anvandare) {
             this.anvandare = anvandare;
             return this;
         }
 
-        public UtredningHandelseListItem.UtredningHandelseListItemBuilder withHandelseText(String handelseText) {
+        public HandelseListItemBuilder withHandelseText(String handelseText) {
             this.handelseText = handelseText;
             return this;
         }
 
-        public UtredningHandelseListItem build() {
-            UtredningHandelseListItem utredningHandelseListItem = new UtredningHandelseListItem();
-            utredningHandelseListItem.setAnvandare(anvandare);
-            utredningHandelseListItem.setHandelseText(handelseText);
-            utredningHandelseListItem.setSkapad(skapad);
-            utredningHandelseListItem.setTyp(typ);
-            return utredningHandelseListItem;
+        public HandelseListItem build() {
+            HandelseListItem handelseListItem = new HandelseListItem();
+            handelseListItem.setAnvandare(anvandare);
+            handelseListItem.setHandelseText(handelseText);
+            handelseListItem.setSkapad(skapad);
+            handelseListItem.setTyp(typ);
+            return handelseListItem;
         }
     }
 }

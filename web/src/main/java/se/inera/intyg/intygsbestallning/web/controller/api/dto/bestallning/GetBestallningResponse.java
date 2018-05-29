@@ -24,11 +24,14 @@ import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
 import se.inera.intyg.intygsbestallning.service.patient.Gender;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.HandelseListItem;
 import se.inera.intyg.schemas.contract.Personnummer;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 
@@ -69,9 +72,15 @@ public class GetBestallningResponse {
 
     private String meddelandeFromHandlaggare;
 
+    private List<BesokListItem> besokList;
+
+    private List<HandelseListItem> handelseList;
+
+    private List<AnteckningListItem> anteckningList;
+
     public static GetBestallningResponse from(Utredning utredning, UtredningStatus utredningStatus) {
 
-        return GetUtredningResponseBuilder.aGetUtredningResponse()
+        return GetBestallningResponseBuilder.agetBestallningResponse()
                 .withUtredningsId(utredning.getUtredningId())
                 .withUtredningsTyp(utredning.getUtredningsTyp().name())
                 .withVardgivareHsaId(!isNull(utredning.getExternForfragan())
@@ -104,6 +113,9 @@ public class GetBestallningResponse {
                         ? utredning.getAvbrutenDatum().format(formatter) : null)
                 .withAvbrutenAnledning(utredning.getAvbrutenAnledning())
                 .withMeddelandeFromHandlaggare(utredning.getBestallning().map(bestallning -> bestallning.getKommentar()).orElse(null))
+                .withBesokList(utredning.getBesokList().stream().map(BesokListItem::from).collect(Collectors.toList()))
+                .withHandelseList(utredning.getHandelseList().stream().map(HandelseListItem::from).collect(Collectors.toList()))
+                .withAnteckningList(utredning.getAnteckningList().stream().map(AnteckningListItem::from).collect(Collectors.toList()))
                 .build();
 
     }
@@ -244,7 +256,31 @@ public class GetBestallningResponse {
         this.meddelandeFromHandlaggare = meddelandeFromHandlaggare;
     }
 
-    public static final class GetUtredningResponseBuilder {
+    public List<BesokListItem> getBesokList() {
+        return besokList;
+    }
+
+    public void setBesokList(List<BesokListItem> besokList) {
+        this.besokList = besokList;
+    }
+
+    public List<HandelseListItem> getHandelseList() {
+        return handelseList;
+    }
+
+    public void setHandelseList(List<HandelseListItem> handelseList) {
+        this.handelseList = handelseList;
+    }
+
+    public List<AnteckningListItem> getAnteckningList() {
+        return anteckningList;
+    }
+
+    public void setAnteckningList(List<AnteckningListItem> anteckningList) {
+        this.anteckningList = anteckningList;
+    }
+
+    public static final class GetBestallningResponseBuilder {
         private Long utredningsId;
         private String utredningsTyp;
         private String vardgivareHsaId;
@@ -262,119 +298,140 @@ public class GetBestallningResponse {
         private String avbrutenDatum;
         private EndReason avbrutenAnledning;
         private String meddelandeFromHandlaggare;
+        private List<BesokListItem> besokList;
+        private List<HandelseListItem> handelseList;
+        private List<AnteckningListItem> anteckningList;
 
-        private GetUtredningResponseBuilder() {
+        private GetBestallningResponseBuilder() {
         }
 
-        public static GetUtredningResponseBuilder aGetUtredningResponse() {
-            return new GetUtredningResponseBuilder();
+        public static GetBestallningResponseBuilder agetBestallningResponse() {
+            return new GetBestallningResponseBuilder();
         }
 
-        public GetUtredningResponseBuilder withUtredningsId(Long utredningsId) {
+        public GetBestallningResponseBuilder withUtredningsId(Long utredningsId) {
             this.utredningsId = utredningsId;
             return this;
         }
 
-        public GetUtredningResponseBuilder withUtredningsTyp(String utredningsTyp) {
+        public GetBestallningResponseBuilder withUtredningsTyp(String utredningsTyp) {
             this.utredningsTyp = utredningsTyp;
             return this;
         }
 
-        public GetUtredningResponseBuilder withVardgivareHsaId(String vardgivareHsaId) {
+        public GetBestallningResponseBuilder withVardgivareHsaId(String vardgivareHsaId) {
             this.vardgivareHsaId = vardgivareHsaId;
             return this;
         }
 
-        public GetUtredningResponseBuilder withInkomDatum(String inkomDatum) {
+        public GetBestallningResponseBuilder withInkomDatum(String inkomDatum) {
             this.inkomDatum = inkomDatum;
             return this;
         }
 
-        public GetUtredningResponseBuilder withBesvarasSenastDatum(String besvarasSenastDatum) {
+        public GetBestallningResponseBuilder withBesvarasSenastDatum(String besvarasSenastDatum) {
             this.besvarasSenastDatum = besvarasSenastDatum;
             return this;
         }
 
-        public GetUtredningResponseBuilder withInvanare(InvanareResponse invanare) {
+        public GetBestallningResponseBuilder withInvanare(InvanareResponse invanare) {
             this.invanare = invanare;
             return this;
         }
 
-        public GetUtredningResponseBuilder withHandlaggareNamn(String handlaggareNamn) {
+        public GetBestallningResponseBuilder withHandlaggareNamn(String handlaggareNamn) {
             this.handlaggareNamn = handlaggareNamn;
             return this;
         }
 
-        public GetUtredningResponseBuilder withHandlaggareTelefonnummer(String handlaggareTelefonnummer) {
+        public GetBestallningResponseBuilder withHandlaggareTelefonnummer(String handlaggareTelefonnummer) {
             this.handlaggareTelefonnummer = handlaggareTelefonnummer;
             return this;
         }
 
-        public GetUtredningResponseBuilder withHandlaggareEpost(String handlaggareEpost) {
+        public GetBestallningResponseBuilder withHandlaggareEpost(String handlaggareEpost) {
             this.handlaggareEpost = handlaggareEpost;
             return this;
         }
 
-        public GetUtredningResponseBuilder withBehovTolk(boolean behovTolk) {
+        public GetBestallningResponseBuilder withBehovTolk(boolean behovTolk) {
             this.behovTolk = behovTolk;
             return this;
         }
 
-        public GetUtredningResponseBuilder withTolkSprak(String tolkSprak) {
+        public GetBestallningResponseBuilder withTolkSprak(String tolkSprak) {
             this.tolkSprak = tolkSprak;
             return this;
         }
 
-        public GetUtredningResponseBuilder withStatus(UtredningStatus status) {
+        public GetBestallningResponseBuilder withStatus(UtredningStatus status) {
             this.status = status;
             return this;
         }
 
-        public GetUtredningResponseBuilder withIntygSistaDatum(String datum) {
+        public GetBestallningResponseBuilder withIntygSistaDatum(String datum) {
             this.intygSistaDatum = datum;
             return this;
         }
 
-        public GetUtredningResponseBuilder withIntygSistaDatumKomplettering(String datum) {
+        public GetBestallningResponseBuilder withIntygSistaDatumKomplettering(String datum) {
             this.intygSistaDatumKomplettering = datum;
             return this;
         }
 
-        public GetUtredningResponseBuilder withAvbrutenDatum(String avbrutenDatum) {
+        public GetBestallningResponseBuilder withAvbrutenDatum(String avbrutenDatum) {
             this.avbrutenDatum = avbrutenDatum;
             return this;
         }
 
-        public GetUtredningResponseBuilder withAvbrutenAnledning(EndReason avbrutenAnledning) {
+        public GetBestallningResponseBuilder withAvbrutenAnledning(EndReason avbrutenAnledning) {
             this.avbrutenAnledning = avbrutenAnledning;
             return this;
         }
 
-        public GetUtredningResponseBuilder withMeddelandeFromHandlaggare(String meddelandeFromHandlaggare) {
+        public GetBestallningResponseBuilder withMeddelandeFromHandlaggare(String meddelandeFromHandlaggare) {
             this.meddelandeFromHandlaggare = meddelandeFromHandlaggare;
             return this;
         }
 
+        public GetBestallningResponseBuilder withBesokList(List<BesokListItem> besokList) {
+            this.besokList = besokList;
+            return this;
+        }
+
+        public GetBestallningResponseBuilder withHandelseList(List<HandelseListItem> handelseList) {
+            this.handelseList = handelseList;
+            return this;
+        }
+
+        public GetBestallningResponseBuilder withAnteckningList(List<AnteckningListItem> anteckningList) {
+            this.anteckningList = anteckningList;
+            return this;
+        }
+
         public GetBestallningResponse build() {
-            GetBestallningResponse getUtredningResponse = new GetBestallningResponse();
-            getUtredningResponse.setUtredningsId(utredningsId);
-            getUtredningResponse.setUtredningsTyp(utredningsTyp);
-            getUtredningResponse.setVardgivareHsaId(vardgivareHsaId);
-            getUtredningResponse.setInkomDatum(inkomDatum);
-            getUtredningResponse.setBesvarasSenastDatum(besvarasSenastDatum);
-            getUtredningResponse.setInvanare(invanare);
-            getUtredningResponse.setHandlaggareNamn(handlaggareNamn);
-            getUtredningResponse.setHandlaggareTelefonnummer(handlaggareTelefonnummer);
-            getUtredningResponse.setHandlaggareEpost(handlaggareEpost);
-            getUtredningResponse.setBehovTolk(behovTolk);
-            getUtredningResponse.setTolkSprak(tolkSprak);
-            getUtredningResponse.setStatus(status);
-            getUtredningResponse.setIntygSistaDatum(intygSistaDatum);
-            getUtredningResponse.setIntygSistaDatumKomplettering(intygSistaDatumKomplettering);
-            getUtredningResponse.setAvbrutenDatum(avbrutenDatum);
-            getUtredningResponse.setAvbrutenAnledning(avbrutenAnledning);
-            getUtredningResponse.setMeddelandeFromHandlaggare(meddelandeFromHandlaggare);
-            return getUtredningResponse;
+            GetBestallningResponse getBestallningResponse = new GetBestallningResponse();
+            getBestallningResponse.setUtredningsId(utredningsId);
+            getBestallningResponse.setUtredningsTyp(utredningsTyp);
+            getBestallningResponse.setVardgivareHsaId(vardgivareHsaId);
+            getBestallningResponse.setInkomDatum(inkomDatum);
+            getBestallningResponse.setBesvarasSenastDatum(besvarasSenastDatum);
+            getBestallningResponse.setInvanare(invanare);
+            getBestallningResponse.setHandlaggareNamn(handlaggareNamn);
+            getBestallningResponse.setHandlaggareTelefonnummer(handlaggareTelefonnummer);
+            getBestallningResponse.setHandlaggareEpost(handlaggareEpost);
+            getBestallningResponse.setBehovTolk(behovTolk);
+            getBestallningResponse.setTolkSprak(tolkSprak);
+            getBestallningResponse.setStatus(status);
+            getBestallningResponse.setIntygSistaDatum(intygSistaDatum);
+            getBestallningResponse.setIntygSistaDatumKomplettering(intygSistaDatumKomplettering);
+            getBestallningResponse.setAvbrutenDatum(avbrutenDatum);
+            getBestallningResponse.setAvbrutenAnledning(avbrutenAnledning);
+            getBestallningResponse.setMeddelandeFromHandlaggare(meddelandeFromHandlaggare);
+            getBestallningResponse.setBesokList(besokList);
+            getBestallningResponse.setHandelseList(handelseList);
+            getBestallningResponse.setAnteckningList(anteckningList);
+            return getBestallningResponse;
         }
     }
 

@@ -458,6 +458,10 @@
                 <constraints nullable="true"/>
             </column>
 
+            <column name="BESOK_ID" type="bigint">
+                <constraints nullable="true"/>
+            </column>
+
             <column name="HANDELSE_TYP" type="varchar(64)">
                 <constraints nullable="false"/>
             </column>
