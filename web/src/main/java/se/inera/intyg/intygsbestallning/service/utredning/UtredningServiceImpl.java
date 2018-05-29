@@ -25,9 +25,11 @@ import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
+import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
 import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
 import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
+import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
 import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
 import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
 import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
@@ -55,15 +57,16 @@ import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
-import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
 import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
+import se.inera.intyg.intygsbestallning.persistence.model.RegistreradVardenhet;
 import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.MyndighetTyp;
+import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
 import se.inera.intyg.intygsbestallning.service.notification.MailNotificationService;
 import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
@@ -95,6 +98,9 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     private static final Logger LOG = LoggerFactory.getLogger(UtredningService.class);
 
     @Autowired
+    private RegistreradVardenhetRepository registreradVardenhetRepository;
+
+    @Autowired
     private InternForfraganListItemFactory internForfraganListItemFactory;
 
     @Autowired
@@ -107,7 +113,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     public List<UtredningListItem> findExternForfraganByLandstingHsaId(String landstingHsaId) {
         return utredningRepository.findAllByExternForfragan_LandstingHsaId(landstingHsaId)
                 .stream()
-                .map(u -> utredningListItemFactory.from(u))
+                .map(utredningListItemFactory::from)
                 .collect(toList());
     }
 
@@ -115,7 +121,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     public GetUtredningListResponse findExternForfraganByLandstingHsaIdWithFilter(String landstingHsaId, ListUtredningRequest request) {
         List<UtredningListItem> list = utredningRepository.findByExternForfragan_LandstingHsaId_AndArkiveradFalse(landstingHsaId)
                 .stream()
-                .map(u -> utredningListItemFactory.from(u))
+                .map(utredningListItemFactory::from)
                 .collect(toList());
 
         // Get status mapper
@@ -289,12 +295,11 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     @Override
     public Utredning registerNewUtredning(final AssessmentRequest request) {
 
-        final ExternForfragan externForfragan = anExternForfragan()
+        ExternForfraganBuilder externForfragan = anExternForfragan()
                 .withInkomDatum(LocalDateTime.now())
                 .withBesvarasSenastDatum(request.getBesvaraSenastDatum())
                 .withKommentar(request.getKommentar())
-                .withLandstingHsaId(request.getLandstingHsaId())
-                .build();
+                .withLandstingHsaId(request.getLandstingHsaId());
 
         List<TidigareUtforare> tidigareUtforareList = Lists.newArrayList();
         if (isNotEmpty(request.getInvanareTidigareUtforare())) {
@@ -311,11 +316,27 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .withTidigareUtforare(tidigareUtforareList)
                 .build();
 
-        final Handelse handelse = HandelseUtil.createForfraganMottagen(request.getLandstingHsaId());
+        final List<RegistreradVardenhet> byVardgivareHsaId =
+                registreradVardenhetRepository.findByVardgivareHsaId(request.getLandstingHsaId());
+
+        final Handelse handelse;
+        if (byVardgivareHsaId.size() == 1) {
+            final String vardenhetHsaId = byVardgivareHsaId.iterator().next().getVardenhetHsaId();
+            externForfragan.withInternForfraganList(Collections.singletonList(anInternForfragan()
+                    .withVardenhetHsaId(vardenhetHsaId)
+                    .withBesvarasSenastDatum(request.getBesvaraSenastDatum())
+                    .withSkapadDatum(LocalDateTime.now())
+                    .withKommentar(request.getKommentar())
+                    .build()));
+
+            handelse = HandelseUtil.createForfraganSkickad(request.getLandstingHsaId(), vardenhetHsaId);
+        } else {
+            handelse = HandelseUtil.createForfraganMottagen(request.getLandstingHsaId());
+        }
 
         final Utredning utredning = anUtredning()
                 .withUtredningsTyp(request.getUtredningsTyp())
-                .withExternForfragan(externForfragan)
+                .withExternForfragan(externForfragan.build())
                 .withInvanare(invanare)
                 .withHandlaggare(createHandlaggare(request.getBestallare()))
                 .withTolkBehov(request.isTolkBehov())
