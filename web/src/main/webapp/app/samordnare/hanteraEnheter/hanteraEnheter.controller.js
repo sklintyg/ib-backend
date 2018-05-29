@@ -61,6 +61,7 @@ angular.module('ibApp')
                 });
                 _editModalInstance.result.then(function (updatedRow) {
                     $log.debug('updatedRow:' + updatedRow);
+                    row.regiForm = updatedRow.regiForm;
                     $scope.getVardenheterWithFilter();
                 }).catch(function () {}); //jshint ignore:line
 
