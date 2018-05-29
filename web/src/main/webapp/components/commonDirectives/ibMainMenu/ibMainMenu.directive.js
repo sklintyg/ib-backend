@@ -81,9 +81,9 @@ angular.module('ibApp').directive('ibMainMenu', ['$state', 'UserModel', 'StatPol
                     });
 
                     menu.push({
-                        state: 'app.vardadmin.pagaendeUtredningar',
+                        state: 'app.vardadmin.pagaendeBestallningar',
                         label: 'Pågående',
-                        id: 'menu-vardadministrator-pagaendeUtredningar',
+                        id: 'menu-vardadministrator-pagaendeBestallningar',
                         helptext: 'Antalet utredningar som kräver åtgärd av vårdenheten',
                         getStat: function() {
                             return $scope.stat.bestallningarRequiringActionCount || '';

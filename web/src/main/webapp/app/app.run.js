@@ -78,7 +78,7 @@ angular
                     });
                 }
                 else if (UserModel.get().currentRole.name === 'FMU_VARDADMIN') {
-                    _redirect($state, toState.name, event, 'app.vardadmin.listaForfragningar', {}, {
+                    _redirect($state, toState.name, event, 'app.vardadmin.pagaendeBestallningar', {}, {
                         location: 'replace',  reload : true
                     });
                 }

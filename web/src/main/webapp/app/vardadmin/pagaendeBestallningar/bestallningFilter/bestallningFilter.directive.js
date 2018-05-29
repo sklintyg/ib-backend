@@ -26,7 +26,7 @@ angular.module('ibApp').directive('bestallningFilter',
                 'filter': '=',
                 'filterChanged':'&'
             },
-            templateUrl: '/app/vardadmin/pagaendeUtredningar/bestallningFilter/bestallningFilter.directive.html',
+            templateUrl: '/app/vardadmin/pagaendeBestallningar/bestallningFilter/bestallningFilter.directive.html',
             link: function($scope) {
 
                 $scope.onChange = function() {

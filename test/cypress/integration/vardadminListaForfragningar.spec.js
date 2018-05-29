@@ -44,7 +44,7 @@ describe('Vårdadmin lista förfrågningar', function() {
         cy.createUtredning(utredning4);
 
         cy.login('Harald Alltsson (Alla roller | Intygsbeställning)', 'linkoping');
-
+        cy.visit('/#/app/vardadmin/listaForfragningar');
         cy.get('#vardadmin-lista-forfragningar-resulttext').should('have.text', 'Sökresultat: 3 av 3 förfrågningar');
 
         getCell(1, 2).should('have.text', 'AFU');

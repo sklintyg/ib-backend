@@ -26,7 +26,7 @@ angular.module('ibApp').directive('avslutadeBestallningarFilter',
                 'filter': '=',
                 'filterChanged':'&'
             },
-            templateUrl: '/app/vardadmin/avslutadeUtredningar/avslutadeBestallningarFilter/avslutadeBestallningarFilter.directive.html',
+            templateUrl: '/app/vardadmin/avslutadeBestallningar/avslutadeBestallningarFilter/avslutadeBestallningarFilter.directive.html',
             link: function($scope) {
 
                 $scope.onChange = function() {
