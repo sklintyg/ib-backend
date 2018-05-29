@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
+import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.web.BaseRestIntegrationTest;
 
 import java.time.LocalDate;
@@ -34,6 +35,7 @@ import java.time.format.DateTimeFormatter;
 
 import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.core.Is.is;
+import static se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus.BESTALLD;
 
 public class RequestOrderMedicalAssessmentIT extends BaseRestIntegrationTest {
 
@@ -53,13 +55,12 @@ public class RequestOrderMedicalAssessmentIT extends BaseRestIntegrationTest {
 
     @Test
     public void requestOrderMedicalAssessmentWorks() {
-// First, utilize testability API to inject an Utredning ready to be supplemented.
+        // First, utilize testability API to inject an Utredning ready to be supplemented.
         String json = loadJson("integrationtests/RequestOrderMedicalAssessment/utredning-tilldelad.json");
 
         ResponseBodyExtractionOptions body = given().body(json).when().contentType("application/json")
                 .post("/api/test/utredningar").then()
                 .statusCode(200).extract().body();
-
 
         Integer utredningId = body.jsonPath().get("entity.utredningId");
 
@@ -73,15 +74,34 @@ public class RequestOrderMedicalAssessmentIT extends BaseRestIntegrationTest {
                         "19121212-1212", "Tolvan", "Tolvansson", "Rullator",
                         "Kommer från Tolvmåla"));
 
+
         given().body(requestTemplate.render()).when().post("/services/order-medical-assessment-responder").then()
                 .statusCode(200).rootPath(BASE)
                 .body("result.resultCode", is("OK"))
                 .body("assessmentId.extension", Matchers.notNullValue());
 
+        // Verify stuff by reading the Bestallning from the REST API.
+        RestAssured.sessionId = getAuthSession(DEFAULT_VARDADMIN);
+
+        // Utredningen har status Beställningen mottagen, väntar på handlingar
+        given().when().get("/api/vardadmin/bestallningar/" + utredningId).then()
+                .statusCode(200)
+                .body("utredningsId", is(utredningId))
+                .body("status.id", is(UtredningStatus.BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR.getId()))
+                .body("invanare.personId", is("19121212-1212"))
+                .body("tolkSprak", is("sv"))
+                .body("handlaggareNamn", is("Hanna Handläggare"))
+                .body("handlaggareTelefonnummer", is("123-123123"))
+                .body("handlaggareEpost", is("handlaggare@ineratestar.se"));
+
+        // Förfrågan till vårdenheten har status Beställd
+        given().when().get("/api/internforfragningar/" + utredningId).then()
+                .statusCode(200)
+                .body("internForfragan.status.id", is(BESTALLD.getId()));
+
         // Delete it.
         deleteUtredning(utredningId);
     }
-
 
     private static class RequestOrderMedicalAssessment {
         public final String assessmentId;
@@ -97,14 +117,17 @@ public class RequestOrderMedicalAssessmentIT extends BaseRestIntegrationTest {
         public final String orderDatum;
         public final String handlaggareNamn;
         public final String handlaggareTelefon;
-        public final String handlaggaerEpost;
+        public final String handlaggareEpost;
         public final String patientPersonId;
         public final String patientFornamn;
         public final String patientEfternamn;
         public final String patientBehov;
         public final String patientBakgrund;
 
-        public RequestOrderMedicalAssessment(String assessmentId, String vardenhetHsaId, String utredningTyp, boolean behovTolk, String tolkSprak, String kommentar, String sistaDatum, boolean dokumentViaPost, String syfte, String planeradeAtgarder, String orderDatum, String handlaggareNamn, String handlaggareTelefon, String handlaggaerEpost, String patientPersonId, String patientFornamn, String patientEfternamn, String patientBehov, String patientBakgrund) {
+        public RequestOrderMedicalAssessment(String assessmentId, String vardenhetHsaId, String utredningTyp, boolean behovTolk,
+                String tolkSprak, String kommentar, String sistaDatum, boolean dokumentViaPost, String syfte, String planeradeAtgarder,
+                String orderDatum, String handlaggareNamn, String handlaggareTelefon, String handlaggareEpost, String patientPersonId,
+                String patientFornamn, String patientEfternamn, String patientBehov, String patientBakgrund) {
             this.assessmentId = assessmentId;
             this.vardenhetHsaId = vardenhetHsaId;
             this.utredningTyp = utredningTyp;
@@ -118,7 +141,7 @@ public class RequestOrderMedicalAssessmentIT extends BaseRestIntegrationTest {
             this.orderDatum = orderDatum;
             this.handlaggareNamn = handlaggareNamn;
             this.handlaggareTelefon = handlaggareTelefon;
-            this.handlaggaerEpost = handlaggaerEpost;
+            this.handlaggareEpost = handlaggareEpost;
             this.patientPersonId = patientPersonId;
             this.patientFornamn = patientFornamn;
             this.patientEfternamn = patientEfternamn;

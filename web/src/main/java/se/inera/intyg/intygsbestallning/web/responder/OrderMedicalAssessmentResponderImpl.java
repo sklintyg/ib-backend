@@ -53,7 +53,7 @@ public class OrderMedicalAssessmentResponderImpl implements OrderMedicalAssessme
 
         OrderRequest orderRequest = OrderRequest.from(request);
 
-        // IF its AF we create new assessment
+        // IF its AF we create new Utredning entity.
         Utredning utredning;
         if (isNull(orderRequest.getUtredningId())) {
             utredning = utredningService.registerNewUtredning(orderRequest);

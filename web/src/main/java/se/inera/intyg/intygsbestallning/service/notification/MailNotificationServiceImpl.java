@@ -24,15 +24,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
-import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.persistence.model.VardenhetPreference;
-import se.inera.intyg.intygsbestallning.persistence.repository.VardenhetPreferenceRepository;
 import se.inera.intyg.intygsbestallning.service.mail.MailService;
+import se.inera.intyg.intygsbestallning.service.vardenhet.VardenhetService;
 
 import javax.mail.MessagingException;
 import java.time.format.DateTimeFormatter;
@@ -46,21 +43,20 @@ import static java.util.Objects.nonNull;
 public class MailNotificationServiceImpl implements MailNotificationService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MailNotificationServiceImpl.class);
+
+    private static final String SUBJECT_BESTALLNING_MOTTAGEN = "Beställning av Försäkringsmedicinsk utredning";
     private static final String SUBJECT_BESTALLNING_UPPDATERAD = "Försäkringskassan har uppdaterat en beställning";
     private static final String SUBJECT_HANDLING_MOTTAGEN = "Beställning av Försäkringsmedicinsk utredning";
     private static final String SUBJECT_NY_FMU_FORFRAGAN = "Ny FMU förfragan";
     private static final String SUBJECT_UTREDNING_SLUTDATUM_PA_VAG_PASSERAS = "Påminnelse: Slutdatum för en utredning "
-    + "är på väg att passeras";
+            + "är på väg att passeras";
     private static final String SUBJECT_UTREDNING_SLUTDATUM_PASSERAT = "Slutdatum för en utredningen har passerats";
 
     @Value("${mail.ib.host.url}")
     private String ibHostUrl;
 
     @Autowired
-    private VardenhetPreferenceRepository vardenhetPreferenceRepository;
-
-    @Autowired
-    private HsaOrganizationsService hsaOrganizationsService;
+    private VardenhetService vardenhetService;
 
     @Autowired
     private MailNotificationBodyFactory mailNotificationBodyFactory;
@@ -76,8 +72,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         String vardenhetHsaId = utredning.getBestallning().get().getTilldeladVardenhetHsaId();
         verifyBestallningHasVardenhet(vardenhetHsaId, "Cannot send notification for mottagen handling when "
                 + "the Bestallning contains no vardenhetHsaId.");
-
-        String email = findEmailAddressForVardenhet(vardenhetHsaId);
+        String email = vardenhetService.getVardEnhetPreference(vardenhetHsaId).getEpost();
         String body = mailNotificationBodyFactory.buildBodyForUtredning(
                 "Försäkringskassan har skickat en beställning av en Försäkringsmedicinsk utredning (FMU) för utredning "
                         + utredning.getUtredningId(),
@@ -95,7 +90,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         verifyBestallningHasVardenhet(vardenhetHsaId, "Cannot send notification for uppdaterad utredning when "
                 + "the Bestallning contains no vardenhetHsaId.");
 
-        String email = findEmailAddressForVardenhet(vardenhetHsaId);
+        String email = vardenhetService.getVardEnhetPreference(vardenhetHsaId).getEpost();
         String body = mailNotificationBodyFactory.buildBodyForUtredning(
                 "Försäkringskassan har uppdaterad beställningen av utredningen <utredning-id> med ny information.",
                 "<URL to utredning>");
@@ -112,7 +107,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         verifyBestallningHasVardenhet(vardenhetHsaId, "Cannot send notification for slutdatum pa vag passeras "
                 + "when the Bestallning contains no vardenhetHsaId.");
 
-        String email = findEmailAddressForVardenhet(vardenhetHsaId);
+        String email = vardenhetService.getVardEnhetPreference(vardenhetHsaId).getEpost();
 
         // Find the last sistaDatum on an intyg on the Utredning.
         Optional<Intyg> sistaDatumOpt = utredning.getIntygList().stream().filter(intyg -> intyg.getSistaDatum() != null
@@ -143,7 +138,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         verifyBestallningHasVardenhet(vardenhetHsaId, "Cannot send notification for slutdatum passerat when "
                 + "the Bestallning contains no vardenhetHsaId.");
 
-        String email = findEmailAddressForVardenhet(vardenhetHsaId);
+        String email = vardenhetService.getVardEnhetPreference(vardenhetHsaId).getEpost();
 
         // Find the last sistaDatum on an intyg on the Utredning.
         Optional<Intyg> sistaDatumOpt = utredning.getIntygList().stream().filter(intyg -> intyg.getSistaDatum() != null
@@ -165,13 +160,32 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     }
 
     @Override
+    public void notifyBestallningMottagen(Utredning utredning) {
+        verifyHasBestallning(utredning,
+                "Cannot send notification for mottagen bestallning, must be a Bestallning present on the "
+                + "Utredning when sending notification.");
+
+        String vardenhetHsaId = utredning.getBestallning().get().getTilldeladVardenhetHsaId();
+        verifyBestallningHasVardenhet(vardenhetHsaId, "Cannot send notification for mottagen bestallning when "
+                + "the Bestallning contains no vardenhetHsaId.");
+
+        String email = vardenhetService.getVardEnhetPreference(vardenhetHsaId).getEpost();
+        String body = mailNotificationBodyFactory.buildBodyForUtredning(
+                "Försäkringskassan har skickat en beställning av en Försäkringsmedicinsk utredning (FMU) för utredning "
+                        + utredning.getUtredningId(),
+                "<URL to utredning>");
+
+        send(email, SUBJECT_BESTALLNING_MOTTAGEN, body);
+    }
+
+    @Override
     public void notifyNyExternForfragan(final Utredning utredning) {
 
         checkState(nonNull(utredning.getExternForfragan()));
         checkState(nonNull(utredning.getExternForfragan().getLandstingHsaId()));
 
         final String vardenhetHsaId = utredning.getExternForfragan().getLandstingHsaId();
-        final String email = findEmailAddressForVardenhet(vardenhetHsaId);
+        final String email = vardenhetService.getVardEnhetPreference(vardenhetHsaId).getEpost();
         final String body = mailNotificationBodyFactory.buildBodyForUtredning(
                 "Det har inkommit en ny förfrågan om en försäkringsmedicinsk utredning (FMU) från Försäkringskassan.",
                 "<URL to utredning>");
@@ -196,24 +210,6 @@ public class MailNotificationServiceImpl implements MailNotificationService {
             mailService.sendNotificationToUnit(email, subject, body);
         } catch (MessagingException e) {
             LOG.error("Error sending notification by email: {}", e.getMessage());
-        }
-    }
-
-    private String findEmailAddressForVardenhet(String vardenhetHsaId) {
-        Optional<VardenhetPreference> preferenceOptional = vardenhetPreferenceRepository.findByVardenhetHsaId(vardenhetHsaId);
-
-        if (!preferenceOptional.isPresent()) {
-            // Must try to fetch from HSA?
-            try {
-                Vardenhet vardenhet = hsaOrganizationsService.getVardenhet(vardenhetHsaId);
-                return vardenhet.getEpost();
-            } catch (Exception e) {
-                throw new IbServiceException(IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
-                        "Unable to send notification email, email address for " + vardenhetHsaId + " could not be found "
-                                + "in VardenhetPreference nor HSA.");
-            }
-        } else {
-            return preferenceOptional.get().getEpost();
         }
     }
 }

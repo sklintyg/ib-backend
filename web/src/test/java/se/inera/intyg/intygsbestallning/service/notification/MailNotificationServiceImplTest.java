@@ -25,18 +25,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
-import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.VardenhetPreference;
-import se.inera.intyg.intygsbestallning.persistence.repository.VardenhetPreferenceRepository;
 import se.inera.intyg.intygsbestallning.service.mail.stub.MailServiceStub;
+import se.inera.intyg.intygsbestallning.service.vardenhet.VardenhetService;
 import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.VardenhetPreferenceResponse;
 
 import javax.mail.MessagingException;
-import javax.xml.ws.WebServiceException;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
@@ -51,10 +48,7 @@ public class MailNotificationServiceImplTest {
     private MailNotificationBodyFactory mailNotificationBodyFactory;
 
     @Mock
-    private VardenhetPreferenceRepository vardenhetPreferenceRepository;
-
-    @Mock
-    private HsaOrganizationsService hsaOrganizationsService;
+    private VardenhetService vardenhetService;
 
     @Mock
     private MailServiceStub mailService;
@@ -65,28 +59,31 @@ public class MailNotificationServiceImplTest {
     @Before
     public void init() {
         mailNotificationBodyFactory.initTemplates();
-        // ReflectionTestUtils.setField(testee, "fromAddress", "test@ineratestarnotifications.se");
     }
 
     @Test
     public void testHandlingMottagenNotification() throws MessagingException {
-        when(vardenhetPreferenceRepository.findByVardenhetHsaId(anyString())).thenReturn(buildVardenhetPreference());
+        when(vardenhetService.getVardEnhetPreference(anyString())).thenReturn(buildVardenhetPreferenceResponse("test@ineratest.se"));
         Utredning utredning = TestDataGen.createUtredning();
         utredning.getBestallning().get().setTilldeladVardenhetHsaId("ve-1");
         testee.notifyHandlingMottagen(utredning);
         verify(mailService, times(1)).sendNotificationToUnit(anyString(), anyString(), anyString());
-        verifyZeroInteractions(hsaOrganizationsService);
+    }
+
+    private VardenhetPreferenceResponse buildVardenhetPreferenceResponse(String epost) {
+        VardenhetPreference pref = new VardenhetPreference();
+        pref.setEpost(epost);
+        VardenhetPreferenceResponse response = new VardenhetPreferenceResponse(pref);
+        return response;
     }
 
     @Test
     public void testHandlingMottagenNotificationMailAddressFromHsa() throws MessagingException {
-        when(vardenhetPreferenceRepository.findByVardenhetHsaId(anyString())).thenReturn(Optional.empty());
-        when(hsaOrganizationsService.getVardenhet(anyString())).thenReturn(buildVardenhet());
+        when(vardenhetService.getVardEnhetPreference(anyString())).thenReturn(buildVardenhetPreferenceResponse("test@ineratest.se"));
         Utredning utredning = TestDataGen.createUtredning();
         utredning.getBestallning().get().setTilldeladVardenhetHsaId("ve-1");
         testee.notifyHandlingMottagen(utredning);
         verify(mailService, times(1)).sendNotificationToUnit(anyString(), anyString(), anyString());
-        verify(hsaOrganizationsService, times(1)).getVardenhet(anyString());
     }
 
     @Test(expected = IbServiceException.class)
@@ -95,7 +92,6 @@ public class MailNotificationServiceImplTest {
         utredning.setBestallning(null);
         testee.notifyHandlingMottagen(utredning);
         verifyZeroInteractions(mailService);
-        verifyZeroInteractions(hsaOrganizationsService);
     }
 
     @Test(expected = IbServiceException.class)
@@ -104,33 +100,5 @@ public class MailNotificationServiceImplTest {
         utredning.getBestallning().get().setTilldeladVardenhetHsaId(null);
         testee.notifyHandlingMottagen(utredning);
         verifyZeroInteractions(mailService);
-        verifyZeroInteractions(hsaOrganizationsService);
-    }
-
-    @Test(expected = IbServiceException.class)
-    public void testThrowsExceptionIfNoEmailAddressCouldBeFound() {
-        Utredning utredning = TestDataGen.createUtredning();
-        utredning.getBestallning().get().setTilldeladVardenhetHsaId("ve-1");
-
-        when(vardenhetPreferenceRepository.findByVardenhetHsaId(anyString())).thenReturn(Optional.empty());
-        when(hsaOrganizationsService.getVardenhet(anyString())).thenThrow(new WebServiceException(""));
-
-
-        testee.notifyHandlingMottagen(utredning);
-        verifyZeroInteractions(mailService);
-        verifyZeroInteractions(hsaOrganizationsService);
-    }
-
-    private Vardenhet buildVardenhet() {
-        Vardenhet ve = new Vardenhet("id", "namn");
-        ve.setEpost("test@ineratest.se");
-        return ve;
-    }
-
-    private Optional<VardenhetPreference> buildVardenhetPreference() {
-        VardenhetPreference vp = new VardenhetPreference();
-        vp.setVardenhetHsaId("ve-1");
-        vp.setEpost("test@ineratest.se");
-        return Optional.of(vp);
     }
 }

@@ -193,6 +193,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                     "Cannot create a order when one already exists for assessmentId " + order.getUtredningId());
         }
 
+        // Utredning must have an ExternForfragan.
         if (utredning.getExternForfragan() == null) {
             final String message = "Utredning with assessmentId '" + utredning.getUtredningId() + "' does not have an Förfrågan";
             LOG.error(message);
@@ -218,7 +219,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .withSistaDatum(order.getLastDateIntyg().atStartOfDay())
                 .build());
 
-        // Do we need to verify that there is an Invanare?
+
         updateInvanareFromOrder(utredning.getInvanare(), order);
 
         if (order.isHandling()) {
@@ -227,12 +228,11 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                     .withUrsprung(HandlingUrsprungTyp.BESTALLNING)
                     .build();
             utredning.getHandlingList().add(handling);
-
-            // Send notification if applicable
-            mailNotificationService.notifyHandlingMottagen(utredning);
         }
         utredning.getHandelseList().add(HandelseUtil.createOrderReceived(order.getBestallare().getMyndighet(), order.getOrderDate()));
 
+        utredningRepository.save(utredning);
+        mailNotificationService.notifyBestallningMottagen(utredning);
         return utredning;
     }
 
@@ -404,7 +404,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         return toUpdate;
     }
 
-    private Invanare updateInvanareFromOrder(Invanare invanare, OrderRequest order) {
+    private Invanare updateInvanareFromOrder(final Invanare invanare, OrderRequest order) {
         invanare.setPersonId(order.getInvanarePersonnummer());
         invanare.setFullstandigtNamn(order.getInvanareFullstandigtNamn());
         invanare.setSarskildaBehov(order.getInvanareBehov());
