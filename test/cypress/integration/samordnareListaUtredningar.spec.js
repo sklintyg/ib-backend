@@ -23,10 +23,10 @@ describe('Samordnare lista utredningar', function() {
         this.utredning1.externForfragan.besvarasSenastDatum = date0;
         cy.createUtredning(this.utredning1);
 
-        date1 = moment().add(3, 'days').format('YYYY-MM-DD');
+        date1 = moment().add(1, 'days').format('YYYY-MM-DD');
         cy.requestHealthPerformerAssesment({
             utredningsTyp: 'AFU',
-            besvaraSenastDatum: date1,
+            besvaraSenastDatum: date1.replace(/-/g,''),
             landstingHsaId: landstingHsaId,
             invanare: {
                 ort: 'hemma'
@@ -41,7 +41,7 @@ describe('Samordnare lista utredningar', function() {
         date2 = moment().add(20, 'days').format('YYYY-MM-DD');
         cy.requestHealthPerformerAssesment({
             utredningsTyp: 'AFU_UTVIDGAD',
-            besvaraSenastDatum: date2,
+            besvaraSenastDatum: date2.replace(/-/g,''),
             landstingHsaId: landstingHsaId,
             invanare: {
                 ort: 'hemma'
@@ -56,7 +56,7 @@ describe('Samordnare lista utredningar', function() {
         date3 = moment().add(35, 'days').format('YYYY-MM-DD');
         cy.requestHealthPerformerAssesment({
             utredningsTyp: 'AFU',
-            besvaraSenastDatum: date3,
+            besvaraSenastDatum: date3.replace(/-/g,''),
             landstingHsaId: landstingHsaId,
             invanare: {
                 ort: 'hemma'
@@ -126,7 +126,6 @@ describe('Samordnare lista utredningar', function() {
         cy.get('#filterFritext-input').type("finns ej");
         cy.get('#samordnare-lista-utredningar-resulttext').should('have.text', 'Sökresultat: 0 av 0 beställningar');
         cy.get('#samordnare-lista-utredningar-no-results').should('be.visible');
-
     });
 
     it('har inga utredningar', function() {
