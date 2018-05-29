@@ -33,6 +33,7 @@ import se.inera.intyg.intygsbestallning.auth.model.IbVardenhet;
 import se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.LogUser;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
+import se.inera.intyg.intygsbestallning.service.pdl.dto.PdlLogType;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,19 +55,19 @@ public class PdlLogMessageFactoryImpl implements PdlLogMessageFactory {
 
     @Override
     public PdlLogMessage buildLogMessage(List<? extends PDLLoggable> bestallningListItems,
-            ActivityType activityType,
-            ResourceType resourceType,
-            IbUser ibUser) {
+                                         PdlLogType pdlLogType,
+                                         IbUser ibUser) {
 
         LogUser user = getLogUser(ibUser);
 
-        PdlLogMessage pdlLogMessage = getLogMessage(activityType);
+        PdlLogMessage pdlLogMessage = getLogMessage(pdlLogType.getActivityType());
+        pdlLogMessage.setActivityArgs(pdlLogType.getActivityArgs());
         populateWithCurrentUserAndCareUnit(pdlLogMessage, user);
 
         // Add resources
         pdlLogMessage.getPdlResourceList().addAll(
                 bestallningListItems.stream()
-                        .map(uli -> buildPdlLogResource(uli, resourceType, user))
+                        .map(uli -> buildPdlLogResource(uli, pdlLogType.getResourceType(), user))
                         .collect(Collectors.toList()));
 
         return pdlLogMessage;
@@ -74,17 +75,17 @@ public class PdlLogMessageFactoryImpl implements PdlLogMessageFactory {
 
     @Override
     public PdlLogMessage buildLogMessage(PDLLoggable loggable,
-                                         ActivityType activityType,
-                                         ResourceType resourceType,
+                                         PdlLogType pdlLogType,
                                          IbUser ibUser) {
 
         LogUser user = getLogUser(ibUser);
 
-        PdlLogMessage pdlLogMessage = getLogMessage(activityType);
+        PdlLogMessage pdlLogMessage = getLogMessage(pdlLogType.getActivityType());
+        pdlLogMessage.setActivityArgs(pdlLogType.getActivityArgs());
         populateWithCurrentUserAndCareUnit(pdlLogMessage, user);
 
         // Add resources
-        pdlLogMessage.getPdlResourceList().add(buildPdlLogResource(loggable, resourceType, user));
+        pdlLogMessage.getPdlResourceList().add(buildPdlLogResource(loggable, pdlLogType.getResourceType(), user));
         return pdlLogMessage;
     }
 

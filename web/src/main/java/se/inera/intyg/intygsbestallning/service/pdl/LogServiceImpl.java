@@ -28,9 +28,7 @@ import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.infra.logmessages.PdlLogMessage;
-import se.inera.intyg.infra.logmessages.ResourceType;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbJMSException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
@@ -38,6 +36,7 @@ import se.inera.intyg.intygsbestallning.common.integration.json.CustomObjectMapp
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PatientPdlLoggable;
+import se.inera.intyg.intygsbestallning.service.pdl.dto.PdlLogType;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 
 import javax.annotation.PostConstruct;
@@ -74,14 +73,20 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public void logVisaBestallningarLista(List<? extends PDLLoggable> utredningListItems, ActivityType activityType,
-            ResourceType resourceType) {
+    public void log(PDLLoggable pdlLoggable, PdlLogType pdlLogType) {
+        PdlLogMessage pdlLogMessage = pdlLogMessageFactory.buildLogMessage(pdlLoggable, pdlLogType, userService.getUser());
+
+        send(pdlLogMessage);
+
+    }
+
+    @Override
+    public void logList(List<? extends PDLLoggable> utredningListItems, PdlLogType pdlLogType) {
         if (utredningListItems == null) {
             LOG.debug("No utredningar for PDL logging, not logging.");
             return;
         }
-        PdlLogMessage pdlLogMessage = pdlLogMessageFactory.buildLogMessage(utredningListItems, activityType, resourceType,
-                userService.getUser());
+        PdlLogMessage pdlLogMessage = pdlLogMessageFactory.buildLogMessage(utredningListItems, pdlLogType, userService.getUser());
 
         send(pdlLogMessage);
     }
@@ -96,7 +101,7 @@ public class LogServiceImpl implements LogService {
             throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, "Cannot PDL-log an utredning having a Invanare without personId");
         }
         PdlLogMessage pdlLogMessage = pdlLogMessageFactory.buildLogMessage(new PatientPdlLoggable(utredning.getInvanare().getPersonId()),
-                ActivityType.UPDATE, ResourceType.RESOURCE_TYPE_FMU, userService.getUser());
+               PdlLogType.UTREDNING_UPPDATERAD, userService.getUser());
         send(pdlLogMessage);
     }
 

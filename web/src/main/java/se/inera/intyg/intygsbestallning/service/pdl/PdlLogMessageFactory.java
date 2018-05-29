@@ -18,11 +18,10 @@
  */
 package se.inera.intyg.intygsbestallning.service.pdl;
 
-import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.infra.logmessages.PdlLogMessage;
-import se.inera.intyg.infra.logmessages.ResourceType;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
+import se.inera.intyg.intygsbestallning.service.pdl.dto.PdlLogType;
 
 import java.util.List;
 
@@ -32,12 +31,10 @@ import java.util.List;
 public interface PdlLogMessageFactory {
 
     PdlLogMessage buildLogMessage(List<? extends PDLLoggable> bestallningListItems,
-                                  ActivityType activityType,
-                                  ResourceType resourceType,
+                                  PdlLogType pdlLogType,
                                   IbUser ibUser);
 
     PdlLogMessage buildLogMessage(PDLLoggable loggable,
-                                  ActivityType activityType,
-                                  ResourceType resourceType,
+                                  PdlLogType pdlLogType,
                                   IbUser ibUser);
 }

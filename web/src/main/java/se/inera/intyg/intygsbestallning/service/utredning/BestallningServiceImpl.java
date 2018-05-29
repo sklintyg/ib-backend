@@ -39,6 +39,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.patient.PatientNameEnricher;
 import se.inera.intyg.intygsbestallning.service.pdl.LogService;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
+import se.inera.intyg.intygsbestallning.service.pdl.dto.PdlLogType;
 import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.util.GenericComparator;
@@ -97,7 +98,12 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
                             + vardenhetHsaId + "'");
         }
 
-        return GetBestallningResponse.from(utredning, utredningStatusResolver.resolveStatus(utredning));
+        GetBestallningResponse getBestallningResponse = GetBestallningResponse.from(utredning,
+                utredningStatusResolver.resolveStatus(utredning));
+
+        logService.log(getBestallningResponse, PdlLogType.UTREDNING_LAST);
+
+        return getBestallningResponse;
     }
 
     @Override
@@ -336,7 +342,7 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
                 loggableItems, activityType, resourceType,
                 user.getStoredActivities());
 
-        logService.logVisaBestallningarLista(bestallningarToLog, activityType, resourceType);
+        logService.logList(bestallningarToLog, PdlLogType.UTREDNING_VISAD_I_LISTA);
 
         PDLActivityStore.addActivitiesToStore(user.getCurrentlyLoggedInAt().getId(), bestallningarToLog, activityType,
                 resourceType, user.getStoredActivities());

@@ -23,6 +23,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
 import se.inera.intyg.intygsbestallning.service.patient.Gender;
+import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.HandelseListItem;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -35,7 +36,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 
-public class GetBestallningResponse {
+public class GetBestallningResponse implements PDLLoggable {
     private static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
 
     private Long utredningsId;
@@ -278,6 +279,11 @@ public class GetBestallningResponse {
 
     public void setAnteckningList(List<AnteckningListItem> anteckningList) {
         this.anteckningList = anteckningList;
+    }
+
+    @Override
+    public String getPatientId() {
+        return invanare.personId;
     }
 
     public static final class GetBestallningResponseBuilder {

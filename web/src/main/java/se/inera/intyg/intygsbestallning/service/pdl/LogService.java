@@ -18,10 +18,9 @@
  */
 package se.inera.intyg.intygsbestallning.service.pdl;
 
-import se.inera.intyg.infra.logmessages.ActivityType;
-import se.inera.intyg.infra.logmessages.ResourceType;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
+import se.inera.intyg.intygsbestallning.service.pdl.dto.PdlLogType;
 
 import java.util.List;
 
@@ -29,7 +28,9 @@ import java.util.List;
  * @author eriklupander on 2016-02-18.
  */
 public interface LogService {
-    void logVisaBestallningarLista(List<? extends PDLLoggable> bestallningListItems, ActivityType activityType, ResourceType resourceType);
+    void log(PDLLoggable pdlLoggable, PdlLogType pdlLogType);
+
+    void logList(List<? extends PDLLoggable> bestallningListItems, PdlLogType pdlLogType);
 
     void logHandlingMottagen(Utredning utredning);
 }

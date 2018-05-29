@@ -75,7 +75,7 @@ public class BestallningServiceImplTest {
 
     @Before
     public void setup() {
-        doNothing().when(logService).logVisaBestallningarLista(anyList(), any(), any());
+        doNothing().when(logService).logList(anyList(), any());
         doNothing().when(patientNameEnricher).enrichWithPatientNames(anyList());
     }
 
