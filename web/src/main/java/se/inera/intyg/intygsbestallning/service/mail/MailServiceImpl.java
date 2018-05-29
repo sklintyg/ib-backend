@@ -30,7 +30,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 @Service
-@Profile(value = {"test", "demo", "qa", "prod"})
+@Profile(value = {"demo", "qa", "prod"})
 public class MailServiceImpl implements MailService {
 
     @Value("${mail.admin}")

@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@Profile(value = {"dev", "mail-stub", "ib-all-stubs"})
+@Profile(value = {"dev", "test", "mail-stub", "ib-all-stubs"})
 public class MailServiceStub implements MailService {
 
     private List<StubbedEmail> mailStore = new ArrayList<>();
