@@ -39,9 +39,6 @@ public class Notifiering {
     @Column(name = "ID", nullable = false)
     private Long id;
 
-    @Column(name = "UTREDNING_ID", nullable = false)
-    private Long utredningId;
-
     @Enumerated(value = EnumType.STRING)
     @Column(name = "NOTIFIERING_TYP", nullable = false)
     private NotifieringTyp notifieringTyp;
@@ -56,14 +53,6 @@ public class Notifiering {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Long getUtredningId() {
-        return utredningId;
-    }
-
-    public void setUtredningId(Long utredningId) {
-        this.utredningId = utredningId;
     }
 
     public NotifieringTyp getNotifieringTyp() {
@@ -82,10 +71,8 @@ public class Notifiering {
         this.notifieringSkickad = notifieringSkickad;
     }
 
-
     public static final class NotifieringBuilder {
         private Long id;
-        private Long utredningId;
         private NotifieringTyp notifieringTyp;
         private LocalDateTime notifieringSkickad;
 
@@ -98,11 +85,6 @@ public class Notifiering {
 
         public NotifieringBuilder withId(Long id) {
             this.id = id;
-            return this;
-        }
-
-        public NotifieringBuilder withUtredningId(Long utredningId) {
-            this.utredningId = utredningId;
             return this;
         }
 
@@ -119,7 +101,6 @@ public class Notifiering {
         public Notifiering build() {
             Notifiering notifiering = new Notifiering();
             notifiering.setId(id);
-            notifiering.setUtredningId(utredningId);
             notifiering.setNotifieringTyp(notifieringTyp);
             notifiering.setNotifieringSkickad(notifieringSkickad);
             return notifiering;

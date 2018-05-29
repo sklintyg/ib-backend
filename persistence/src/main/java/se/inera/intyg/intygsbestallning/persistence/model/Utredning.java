@@ -104,6 +104,10 @@ public final class Utredning {
     @JoinColumn(name = "UTREDNING_ID", referencedColumnName = "UTREDNING_ID", nullable = false)
     private List<Anteckning> anteckningList = new ArrayList<>();
 
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "UTREDNING_ID", referencedColumnName = "UTREDNING_ID", nullable = false)
+    private List<Notifiering> notifieringList = new ArrayList<>();
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "HANDLAGGARE_ID")
     private Handlaggare handlaggare;
@@ -291,6 +295,14 @@ public final class Utredning {
         this.anteckningList = anteckningList;
     }
 
+    public List<Notifiering> getNotifieringList() {
+        return notifieringList;
+    }
+
+    public void setNotifieringList(List<Notifiering> notifieringList) {
+        this.notifieringList = notifieringList;
+    }
+
     public static final class UtredningBuilder {
         private Long utredningId;
         private UtredningsTyp utredningsTyp;
@@ -306,6 +318,7 @@ public final class Utredning {
         private List<Besok> besokList = new ArrayList<>();
         private List<Intyg> intygList = new ArrayList<>();
         private List<Anteckning> anteckningList = new ArrayList<>();
+        private List<Notifiering> notifieringList = new ArrayList<>();
         private Handlaggare handlaggare;
         private Invanare invanare;
         private Betalning betalning;
@@ -387,6 +400,11 @@ public final class Utredning {
             return this;
         }
 
+        public UtredningBuilder withNotifieringList(List<Notifiering> notifieringList) {
+            this.notifieringList = notifieringList;
+            return this;
+        }
+
         public UtredningBuilder withHandlaggare(Handlaggare handlaggare) {
             this.handlaggare = handlaggare;
             return this;
@@ -418,6 +436,7 @@ public final class Utredning {
             utredning.setBesokList(besokList);
             utredning.setIntygList(intygList);
             utredning.setAnteckningList(anteckningList);
+            utredning.setNotifieringList(notifieringList);
             utredning.setHandlaggare(handlaggare);
             utredning.setInvanare(invanare);
             utredning.setBetalning(betalning);
@@ -478,6 +497,9 @@ public final class Utredning {
         if (!ListUtils.isEqualList(anteckningList, utredning.anteckningList)) {
             return false;
         }
+        if (!ListUtils.isEqualList(notifieringList, utredning.notifieringList)) {
+            return false;
+        }
         if (handlaggare != null ? !handlaggare.equals(utredning.handlaggare) : utredning.handlaggare != null) {
             return false;
         }
@@ -504,6 +526,7 @@ public final class Utredning {
                 besokList,
                 intygList,
                 anteckningList,
+                notifieringList,
                 handlaggare,
                 invanare,
                 betalning);
@@ -526,6 +549,7 @@ public final class Utredning {
                 .add("besokList", besokList)
                 .add("intygList", intygList)
                 .add("anteckningsList", anteckningList)
+                .add("notifieringList", notifieringList)
                 .add("handlaggare", handlaggare)
                 .add("invanare", invanare)
                 .add("betalning", betalning)

@@ -795,9 +795,7 @@
                                  referencedTableName="UTREDNING"
                                  referencedColumnNames="UTREDNING_ID"/>
 
-    </changeSet>
 
-    <changeSet id="4" author="el">
         <createTable tableName="NOTIFIERING">
             <column name="ID" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
@@ -821,6 +819,16 @@
                           incrementBy="1"
                           startWith="1"
                           tableName="NOTIFIERING"/>
+
+        <addForeignKeyConstraint baseTableName="NOTIFIERING"
+                                 baseColumnNames="UTREDNING_ID"
+                                 constraintName="NOTIFIERING_UTREDNING_FK"
+                                 referencedTableName="UTREDNING"
+                                 referencedColumnNames="UTREDNING_ID"/>
+        <createIndex indexName="IDX_NOTIFIERING_TYP"
+                     tableName="NOTIFIERING" unique="false">
+            <column name="NOTIFIERING_TYP"/>
+        </createIndex>
     </changeSet>
-    
+
 </databaseChangeLog>

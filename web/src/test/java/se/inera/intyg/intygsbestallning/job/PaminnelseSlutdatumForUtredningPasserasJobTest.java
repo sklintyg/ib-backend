@@ -34,7 +34,6 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
-import se.inera.intyg.intygsbestallning.persistence.repository.NotifieringRepository;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.notification.MailNotificationService;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
@@ -44,6 +43,7 @@ import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -62,9 +62,6 @@ public class PaminnelseSlutdatumForUtredningPasserasJobTest {
     private UtredningRepository utredningRepository;
 
     @Mock
-    private NotifieringRepository notifieringRepository;
-
-    @Mock
     private MailNotificationService mailNotificationService;
 
     @InjectMocks
@@ -79,30 +76,22 @@ public class PaminnelseSlutdatumForUtredningPasserasJobTest {
     public void testJobNotifiesWhenNotNotified() {
         Utredning utredning = TestDataGen.createUtredning();
         utredning.getIntygList().get(0).setSistaDatum(LocalDateTime.now().plusDays(3L));
-        when(utredningRepository.findAllNonArchivedWithIntygSlutDatumBetween(any(LocalDateTime.class), any(LocalDateTime.class)))
+        when(utredningRepository.findNonNotifiedIntygSlutDatumBetween(any(LocalDateTime.class), any(LocalDateTime.class), any(NotifieringTyp.class)))
                 .thenReturn(Arrays.asList(utredning));
-        when(notifieringRepository.isNotified(utredning.getUtredningId(), NotifieringTyp.PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS))
-                .thenReturn(0L);
 
         testee.executeJob();
         verify(mailNotificationService, times(1)).notifySlutdatumPaVagPasseras(any(Utredning.class));
-        verify(notifieringRepository, times(1)).isNotified(utredning.getUtredningId(),
-                NotifieringTyp.PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS);
     }
 
     @Test
     public void testJobDoesNotNotifyWhenAlreadyNotified() {
         Utredning utredning = TestDataGen.createUtredning();
         utredning.getIntygList().get(0).setSistaDatum(LocalDateTime.now().plusDays(3L));
-        when(utredningRepository.findAllNonArchivedWithIntygSlutDatumBetween(any(LocalDateTime.class), any(LocalDateTime.class)))
-                .thenReturn(Arrays.asList(utredning));
-        when(notifieringRepository.isNotified(utredning.getUtredningId(), NotifieringTyp.PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS))
-                .thenReturn(1L);
+        when(utredningRepository.findNonNotifiedIntygSlutDatumBetween(any(LocalDateTime.class), any(LocalDateTime.class), any(NotifieringTyp.class)))
+                .thenReturn(Collections.emptyList());
 
         testee.executeJob();
         verifyZeroInteractions(mailNotificationService);
-        verify(notifieringRepository, times(1)).isNotified(utredning.getUtredningId(),
-                NotifieringTyp.PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS);
     }
 
     @Test
@@ -127,7 +116,7 @@ public class PaminnelseSlutdatumForUtredningPasserasJobTest {
         if (utredningStatus != UtredningStatus.REDOVISA_TOLK) {
             fail("Test setup must provide a Utredning in status REDOVISA_TOLK");
         }
-        when(utredningRepository.findAllNonArchivedWithIntygSlutDatumBetween(any(LocalDateTime.class), any(LocalDateTime.class)))
+        when(utredningRepository.findNonNotifiedIntygSlutDatumBetween(any(LocalDateTime.class), any(LocalDateTime.class), any(NotifieringTyp.class)))
                 .thenReturn(Arrays.asList(utredning));
 
         testee.executeJob();

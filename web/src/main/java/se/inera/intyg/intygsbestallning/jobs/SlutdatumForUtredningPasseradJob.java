@@ -27,7 +27,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.intygsbestallning.persistence.model.Notifiering;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.persistence.repository.NotifieringRepository;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.notification.MailNotificationService;
 
@@ -50,34 +49,22 @@ public class SlutdatumForUtredningPasseradJob {
     private UtredningRepository utredningRepository;
 
     @Autowired
-    private NotifieringRepository notifieringRepository;
-
-    @Autowired
     private MailNotificationService mailNotificationService;
 
     @Scheduled(cron = "${job.slutdatum.utredning.passerad.cron}")
     @SchedulerLock(name = JOB_NAME, lockAtMostFor = LOCK_AT_MOST)
     public void executeJob() {
-        LOG.info("START - executeJob");
-        List<Utredning> utredningList = utredningRepository.findAllNonArchivedWithIntygSlutDatumBefore(LocalDate.now().atStartOfDay());
+        List<Utredning> utredningList = utredningRepository.findNonNotifiedSlutDatumBefore(LocalDate.now().atStartOfDay(),
+                SLUTDATUM_UTREDNING_PASSERAT);
 
         for (Utredning utredning : utredningList) {
-
-            // Check so not already notified
-            if (notifieringRepository.isNotified(utredning.getUtredningId(), SLUTDATUM_UTREDNING_PASSERAT) > 0) {
-                continue;
-            }
-
             mailNotificationService.notifySlutDatumPasserat(utredning);
-            notifieringRepository.save(Notifiering.NotifieringBuilder.aNotifiering()
+            utredning.getNotifieringList().add(Notifiering.NotifieringBuilder.aNotifiering()
                     .withNotifieringSkickad(LocalDateTime.now())
                     .withNotifieringTyp(SLUTDATUM_UTREDNING_PASSERAT)
-                    .withUtredningId(utredning.getUtredningId())
                     .build());
 
             LOG.info("Sent notification {} for utredning {}.", SLUTDATUM_UTREDNING_PASSERAT, utredning.getUtredningId());
         }
-
-        LOG.info("END - executeJob");
     }
 }

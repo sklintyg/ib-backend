@@ -28,7 +28,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.intygsbestallning.persistence.model.Notifiering;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.persistence.repository.NotifieringRepository;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.notification.MailNotificationService;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
@@ -55,9 +54,6 @@ public class PaminnelseSlutdatumForUtredningPasserasJob {
     private UtredningRepository utredningRepository;
 
     @Autowired
-    private NotifieringRepository notifieringRepository;
-
-    @Autowired
     private MailNotificationService mailNotificationService;
 
     @Autowired
@@ -71,14 +67,13 @@ public class PaminnelseSlutdatumForUtredningPasserasJob {
     @Scheduled(cron = "${job.paminnelse.slutdatum.utredning.passeras.cron}")
     @SchedulerLock(name = JOB_NAME, lockAtMostFor = LOCK_AT_MOST)
     public void executeJob() {
-        LOG.info("START - executeJob");
 
         // Calculate last date
         LocalDate notifyIfBefore = businessDaysBean.addBusinessDays(LocalDate.now(), paminnelseArbetsdagar);
 
-        // Find all Utredningar having slutDatum pretty soon
-        List<Utredning> utredningList = utredningRepository.findAllNonArchivedWithIntygSlutDatumBetween(
-                LocalDate.now().atStartOfDay(), notifyIfBefore.atStartOfDay());
+        // Find all Utredningar having slutDatum pretty soon that has not gotten the specified notification.
+        List<Utredning> utredningList = utredningRepository.findNonNotifiedIntygSlutDatumBetween(
+                LocalDate.now().atStartOfDay(), notifyIfBefore.atStartOfDay(), PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS);
 
         for (Utredning utredning : utredningList) {
             UtredningStatus utredningStatus = utredningStatusResolver.resolveStatus(utredning);
@@ -88,19 +83,13 @@ public class PaminnelseSlutdatumForUtredningPasserasJob {
                 continue;
             }
 
-            // Next, check if already notified.
-            Long notifiedTimes = notifieringRepository.isNotified(utredning.getUtredningId(), PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS);
-            if (notifiedTimes == 0) {
-                mailNotificationService.notifySlutdatumPaVagPasseras(utredning);
-                notifieringRepository.save(Notifiering.NotifieringBuilder.aNotifiering()
-                        .withNotifieringSkickad(LocalDateTime.now())
-                        .withNotifieringTyp(PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS)
-                        .withUtredningId(utredning.getUtredningId())
-                        .build());
-
-                LOG.info("Sent notification {} for utredning {}.", PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS, utredning.getUtredningId());
-            }
+            mailNotificationService.notifySlutdatumPaVagPasseras(utredning);
+            utredning.getNotifieringList().add(Notifiering.NotifieringBuilder.aNotifiering()
+                    .withNotifieringSkickad(LocalDateTime.now())
+                    .withNotifieringTyp(PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS)
+                    .build());
+            utredningRepository.save(utredning);
+            LOG.info("Sent notification {} for utredning {}.", PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS, utredning.getUtredningId());
         }
-        LOG.info("END - executeJob");
     }
 }
