@@ -35,7 +35,7 @@ angular.module('ibApp').factory('ibForfraganFilterModel',
             pageSize: 50,
             freetext: '',
             vardgivareNamn: undefined,
-            status: 'ALL',
+            status: 'PAGAENDE',
             inkomDatum: {
                 from:null,
                 to:null
@@ -103,7 +103,6 @@ angular.module('ibApp').factory('ibForfraganFilterModel',
 
         ForfraganFilterModel.prototype.populateFilter = function(data) {
             this.statusOptions = data.statuses;
-            this.status = this.statusOptions[0].id;
             this.vardgivareNamnOptions = data.vardgivare;
             this.vardgivareNamnOptions.unshift({'id': undefined, 'label': 'Visa alla'});
         };
