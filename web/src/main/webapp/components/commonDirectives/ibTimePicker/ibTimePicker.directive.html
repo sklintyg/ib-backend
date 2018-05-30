@@ -1,11 +1,11 @@
 <div ng-class="{'col-xs-{{::inputColSize}}' : inputColSize}">
   <div class="input-group">
-    <input ng-disabled="disabled" type="text" data-ng-model="inputTime" placeholder="{{placeholderKey | message}}" class="form-control time">
+    <input ng-disabled="disabled" type="text" ng-model="time" placeholder="tt:mm" class="form-control time" ng-pattern="'([01]?[0-9]|2[0-3])[:][0-5][0-9]'" ng-change="updateTimeOnModel()">
     <span class="input-group-btn">
       <button type="button" id="{{::domId}}-toggle" class="btn btn-default"  ng-class="{border:isFocused}" ng-click="open($event)" ng-disabled="isOpen"><i class="material-icons">schedule</i></button>
     </span>
   </div>
   <div class="plate" ng-show="isOpen">
-      <div uib-timepicker ng-model="model" hour-step="1" minute-step="1" show-meridian="false"></div>
+      <div uib-timepicker ng-model="date" hour-step="1" minute-step="10" show-meridian="false" readonly-input="true"></div>
   </div>
 </div>

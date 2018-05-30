@@ -30,14 +30,47 @@
   .flex-wrapper {
     display: flex;
     flex-direction: row;
+    padding-bottom: 15px;
 
     > span:first-child {
       width: 89px;
     }
 
     > span {
-      align-self: baseline;
-      padding-bottom: 15px;
+      align-self: center;
+    }
+
+    ib-help-text-label {
+      display: inline-block;
+      align-self: center;
+    }
+
+    ib-time-picker {
+        display: inline-block;
+    }
+
+    .date {
+        ib-help-text-label {
+            width: 89px;
+        }
+        flex: 1 0;
+        display: inline-flex;
+    }
+
+    .from {
+        ib-help-text-label {
+            margin-right: 10px;
+        }
+        flex: 0 0 150px;
+        display: inline-flex;
+    }
+
+    .to {
+        ib-help-text-label {
+            margin-right: 10px;
+        }
+        flex: 0 0 150px;
+        display: inline-flex;
     }
 
     #interpreter-input-field {
@@ -47,13 +80,15 @@
     }
 
     ib-date-picker-field {
-      display: flex;
+      display: inline-flex;
       height: 38px;
-      margin-bottom: 14px;
 
       .input-group {
         width: 130px;
       }
+    }
+    ib-checkbox-wrapper > .ib-checkbox label {
+        position: static;
     }
   }
 

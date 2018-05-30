@@ -7,21 +7,29 @@
         <form name="laggTillBesokForm" novalidate autocomplete="off">
             <div class="big-flex-wrapper">
                 <div class="flex-wrapper">
-                    <span><ib-help-text-label label-key="lagg-till-besok.label.date"></ib-help-text-label></span>
-                    <ib-date-picker-field
-                            dom-id="borjaDatum"
-                            target-model="datetimeModel"
-                            min-date="{{::vm.minBorjaDatum}}"
-                            min-date-error="Möjligt startdatum får tidigast vara dagens datum"
-                            format="yyyy-MM-dd"
-                            date-format-error="Ogiltigt datumformat, ange ett datum som ÅÅÅÅ-MM-DD"
-                            ib-date-picker-field
-                            append-to-body="true"
-                            add-date-parser="strict">
-                    </ib-date-picker-field>
-                    <span><ib-help-text-label label-key="lagg-till-besok.label.from"></ib-help-text-label></span>
-                    <ib-time-picker model="datetimeModel"></ib-time-picker>
-                    <span><ib-help-text-label label-key="lagg-till-besok.label.to"></ib-help-text-label></span>
+                    <span class="date">
+                        <ib-help-text-label label-key="lagg-till-besok.label.date"></ib-help-text-label>
+                        <ib-date-picker-field
+                                dom-id="borjaDatum"
+                                target-model="datetimeModel"
+                                min-date="{{::vm.minBorjaDatum}}"
+                                min-date-error="Möjligt startdatum får tidigast vara dagens datum"
+                                format="yyyy-MM-dd"
+                                date-format-error="Ogiltigt datumformat, ange ett datum som ÅÅÅÅ-MM-DD"
+                                ib-date-picker-field
+                                append-to-body="true"
+                                add-date-parser="strict">
+                        </ib-date-picker-field>
+                    </span>
+                    <span class="from">
+                        <ib-help-text-label label-key="lagg-till-besok.label.from"></ib-help-text-label>
+                        <ib-time-picker model="datetimeModel"></ib-time-picker>
+                    </span>
+
+                    <span class="to">
+                        <ib-help-text-label label-key="lagg-till-besok.label.to"></ib-help-text-label>
+                        <ib-time-picker model="datetimeModel"></ib-time-picker>
+                    </span>
                 </div>
                 <div class="flex-wrapper">
                     <span><ib-help-text-label label-key="lagg-till-besok.label.profession"></ib-help-text-label></span>
@@ -44,13 +52,12 @@
                     <span><ib-help-text-label label-key="lagg-till-besok.label.interpreter"></ib-help-text-label></span>
                     <span>
                          <ib-checkbox-wrapper>
-                            <label>
-                                <p>  {{interpreter.state}}</p>
-                            </label>
-                            <input ng-attr-id="markusDuTestarjättebra"
-                                type="checkbox"
+                            <input type="checkbox"
                                 ng-model="interpreter.state"
-                                 ng-change="onChange()">
+                                ng-change="onChange()">
+                                <label ng-attr-for="{{::inputId}}-{{::item.id|ibDomIdFilter}}">
+                                  {{::item.label}}
+                                </label>
                          </ib-checkbox-wrapper>
                     </span>
                 </div>

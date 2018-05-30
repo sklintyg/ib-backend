@@ -2,7 +2,7 @@ ib-time-picker {
   position: relative;
 
   .input-group {
-    width: 107px;
+    width: 87px;
   }
 
   input.form-control.time {
@@ -24,6 +24,10 @@ ib-time-picker {
       pointer-events: none; /* this is a workaround for fieldset[disabled] not working correctly in IE11 */
     }
   }/* this is a workaround for fieldset[disabled] not working correctly in IE11 */
+
+  input.form-control[readonly] {
+      background-color: #fff;
+  }
 
   fieldset[disabled] & {
     cursor: not-allowed;

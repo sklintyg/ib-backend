@@ -18,7 +18,7 @@
  */
 
 angular.module('ibApp').directive('ibTimePicker',
-    function(moment, $document, $window, $timeout) {
+    function(moment, $document, $window, $timeout, DateUtilsService) {
         'use strict';
 
         return {
@@ -60,7 +60,7 @@ angular.module('ibApp').directive('ibTimePicker',
                             offsetDropdown.height > scrollTop + $document[0].documentElement.clientHeight) {
                             plate[0].style.top = (offsetDropdown.height * -1) + 'px';
                         } else {
-                            plate[0].style.top = rootElementOffset.height - 10 + 'px';
+                            plate[0].style.top = rootElementOffset.height + 'px';
                         }
                         plate[0].style.opacity = 1;
                     });
@@ -79,6 +79,44 @@ angular.module('ibApp').directive('ibTimePicker',
                         scope.$digest();
                     }
                 }
+
+                function setTimeStringFromDate(date) {
+                    var hour = parseInt(date.getHours(), 10);
+                    var min = parseInt(date.getMinutes(), 10);
+                    scope.time = (hour > 9 ? hour : '0' + hour) + ':' +
+                                (min > 9 ? min : '0' + min);
+                }
+
+                scope.$watch('model', function(newVal, oldVal) {
+                    if (newVal || newVal !== oldVal) {
+                        if (DateUtilsService.isDate(newVal)) {
+                            scope.date = newVal;
+                        } else {
+                            scope.date = new Date();
+                        }
+                        setTimeStringFromDate(scope.date);
+                    }
+                });
+
+                scope.$watch('date', function(newVal, oldVal) {
+                    if (newVal || newVal !== oldVal) {
+                        if (DateUtilsService.isDate(newVal)) {
+                            setTimeStringFromDate(newVal);
+                        }
+                    }
+                });
+
+                scope.updateTimeOnModel = function() {
+                    if(scope.time && scope.time.match(':').length > 0) {
+                        var hour = parseInt(scope.time.split(':')[0], 10);
+                        var min = parseInt(scope.time.split(':')[1], 10);
+                        var date = new Date(scope.date);
+
+                        date.setHours(hour);
+                        date.setMinutes(min);
+                        scope.date = date;
+                    }
+                };
             }
         };
     });
