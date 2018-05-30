@@ -31,7 +31,11 @@ import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.intygsbestallning.auth.model.IbSelectableHsaEntity;
+import se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
+import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
+import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.service.forfragan.ExternForfraganService;
 import se.inera.intyg.intygsbestallning.service.forfragan.InternForfraganService;
@@ -109,6 +113,11 @@ public class InternForfraganController {
     }
 
     private void ensureBesvaraAuthPreconditions(IbUser user) {
+        final IbSelectableHsaEntity currentUnit = user.getCurrentlyLoggedInAt();
+
+        if (currentUnit == null || !currentUnit.getType().equals(SelectableHsaEntityType.VE)) {
+            throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, "This operation is only valid on VE unit type");
+        }
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_INTERNFORFRAGAN)
                 .orThrow(
                         new IbAuthorizationException("User does not have required privilege PRIVILEGE_HANTERA_INTERNFORFRAGAN"));

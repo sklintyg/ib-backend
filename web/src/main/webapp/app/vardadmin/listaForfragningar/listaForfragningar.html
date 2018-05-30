@@ -26,7 +26,7 @@
         <td><ib-forfragan-svarsdatum svarsdatum-passerat="::row.besvarasSenastDatumPasserat" svarsdatum-pa-vag-passeras="::row.besvarasSenastDatumPaVagPasseras" svarsdatum="::row.besvarasSenastDatum"></ib-forfragan-svarsdatum></td>
         <td>{{::row.planeringsDatum}}</td>
         <td><ib-forfragan-status status="::row.status.label" kraver-atgard="::row.kraverAtgard"></ib-forfragan-status></td>
-        <td><button class="btn btn-primary" ng-click="visaInternForfragan(row.utredningsId)"><span message key="common.show"></span></button></td>
+        <td><button class="btn btn-primary" ng-click="visaInternForfragan(row.utredningsId)" ng-attr-id="visa-internforfragan-{{::row.utredningsId}}"><span message key="common.show"></span></button></td>
       </tr>
     </tbody>
   </table>
