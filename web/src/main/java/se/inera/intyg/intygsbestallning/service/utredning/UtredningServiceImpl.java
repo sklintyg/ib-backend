@@ -304,7 +304,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                         try {
                             final UnitType unit = organizationUnitService.getUnit(utforare);
                             return aTidigareUtforare()
-                                    .withTidigareEnhetId(unit.getUnitName())
+                                    .withTidigareEnhetId(unit.getUnitHsaId())
                                     .build();
                         } catch (Exception e) {
                             throw new IbServiceException(IbErrorCodeEnum.EXTERNAL_ERROR,
