@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model.type;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public enum HandelseTyp {
     FORFRAGAN_MOTTAGEN(Typ.FORFRAGAN),
     FORFRAGAN_SKICKAD(Typ.FORFRAGAN),
@@ -56,6 +58,7 @@ public enum HandelseTyp {
         return typ;
     }
 
+    @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     public enum Typ {
         FORFRAGAN("Förfrågan"),
         BESTALLNING("Beställning"),
@@ -65,10 +68,16 @@ public enum HandelseTyp {
         UTLATANDE("Utlåtande"),
         ANTECKNING("Anteckning");
 
+        private final String id;
         private final String label;
 
         Typ(String label) {
+            this.id = name();
             this.label = label;
+        }
+
+        public String getId() {
+            return id;
         }
 
         public String getLabel() {
