@@ -76,6 +76,7 @@ import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
+import se.inera.intyg.intygsbestallning.persistence.model.type.MyndighetTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.notification.MailNotificationService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
@@ -176,7 +177,7 @@ public class UtredningServiceImplTest {
                         .withFullstandigtNamn("fullstandigtNamn")
                         .withKontor("kontor")
                         .withKostnadsstalle("kostnadsstalle")
-                        .withMyndighet("myndighet")
+                        .withMyndighet(MyndighetTyp.FKASSA.name())
                         .withPostkod("postkod")
                         .withStad("stad")
                         .withTelefonnummer("telefonnummer")
@@ -212,7 +213,7 @@ public class UtredningServiceImplTest {
         assertEquals("fullstandigtNamn", response.getHandlaggare().getFullstandigtNamn());
         assertEquals("kontor", response.getHandlaggare().getKontor());
         assertEquals("kostnadsstalle", response.getHandlaggare().getKostnadsstalle());
-        assertEquals("myndighet", response.getHandlaggare().getMyndighet());
+        assertEquals(MyndighetTyp.FKASSA.name(), response.getHandlaggare().getMyndighet());
         assertEquals("postkod", response.getHandlaggare().getPostkod());
         assertEquals("stad", response.getHandlaggare().getStad());
         assertEquals("telefonnummer", response.getHandlaggare().getTelefonnummer());
@@ -268,7 +269,7 @@ public class UtredningServiceImplTest {
                         .withFullstandigtNamn("fullstandigtNamn")
                         .withKontor("kontor")
                         .withKostnadsstalle("kostnadsstalle")
-                        .withMyndighet("myndighet")
+                        .withMyndighet(MyndighetTyp.FKASSA.name())
                         .withPostkod("postkod")
                         .withStad("stad")
                         .withTelefonnummer("telefonnummer")
@@ -303,7 +304,7 @@ public class UtredningServiceImplTest {
         assertEquals("fullstandigtNamn", response.getHandlaggare().getFullstandigtNamn());
         assertEquals("kontor", response.getHandlaggare().getKontor());
         assertEquals("kostnadsstalle", response.getHandlaggare().getKostnadsstalle());
-        assertEquals("myndighet", response.getHandlaggare().getMyndighet());
+        assertEquals(MyndighetTyp.FKASSA.name(), response.getHandlaggare().getMyndighet());
         assertEquals("postkod", response.getHandlaggare().getPostkod());
         assertEquals("stad", response.getHandlaggare().getStad());
         assertEquals("telefonnummer", response.getHandlaggare().getTelefonnummer());
@@ -356,7 +357,7 @@ public class UtredningServiceImplTest {
                         .withFullstandigtNamn("fullstandigtNamn")
                         .withKontor("kontor")
                         .withKostnadsstalle("kostnadsstalle")
-                        .withMyndighet("myndighet")
+                        .withMyndighet(MyndighetTyp.FKASSA.name())
                         .withPostkod("postkod")
                         .withStad("stad")
                         .withTelefonnummer("telefonnummer")

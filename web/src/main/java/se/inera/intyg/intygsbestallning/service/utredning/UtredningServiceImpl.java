@@ -63,6 +63,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
 import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.MyndighetTyp;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
 import se.inera.intyg.intygsbestallning.service.notification.MailNotificationService;
 import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
@@ -405,7 +406,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
     private Handlaggare createHandlaggare(Bestallare source) {
         return aHandlaggare()
-                .withMyndighet(source.getMyndighet())
+                .withMyndighet(MyndighetTyp.of(source.getMyndighet()).name())
                 .withEmail(source.getEmail())
                 .withFullstandigtNamn(source.getFullstandigtNamn())
                 .withKontor(source.getKontor())

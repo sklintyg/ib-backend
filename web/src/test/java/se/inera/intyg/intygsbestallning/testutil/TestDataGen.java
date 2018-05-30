@@ -36,6 +36,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.MyndighetTyp;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest;
 import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentType;
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
@@ -137,7 +138,7 @@ public final class TestDataGen {
         authorityAdmin.setFullName("fullName");
         authorityAdmin.setPhoneNumber("phoneNumber");
         authorityAdmin.setEmail("email");
-        authorityAdmin.setAuthority(aCv("authority", null, null));
+        authorityAdmin.setAuthority(aCv(MyndighetTyp.FKASSA.name(), null, null));
         authorityAdmin.setOfficeName("officeName");
         authorityAdmin.setOfficeCostCenter("officeCostCenter");
         authorityAdmin.setOfficeAddress(address);

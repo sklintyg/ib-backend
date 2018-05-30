@@ -52,7 +52,7 @@ public class AssessmentRequestTest {
         assertEquals("fullName", converted.getBestallare().getFullstandigtNamn());
         assertEquals("phoneNumber", converted.getBestallare().getTelefonnummer());
         assertEquals("email", converted.getBestallare().getEmail());
-        assertEquals("authority", converted.getBestallare().getMyndighet());
+        assertEquals("FKASSA", converted.getBestallare().getMyndighet());
         assertEquals("officeName", converted.getBestallare().getKontor());
         assertEquals("officeCostCenter", converted.getBestallare().getKostnadsstalle());
         assertEquals("postalAddress", converted.getBestallare().getAdress());
