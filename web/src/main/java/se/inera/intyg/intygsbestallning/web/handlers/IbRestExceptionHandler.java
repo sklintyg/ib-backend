@@ -25,14 +25,13 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import se.inera.intyg.intygsbestallning.common.exception.IbExternalServiceException;
+import javax.servlet.http.HttpServletRequest;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
+import se.inera.intyg.intygsbestallning.common.exception.IbExternalServiceException;
 import se.inera.intyg.intygsbestallning.common.exception.IbJMSException;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
-
-import javax.servlet.http.HttpServletRequest;
 
 @ControllerAdvice
 public class IbRestExceptionHandler {
@@ -62,12 +61,20 @@ public class IbRestExceptionHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public IbRestExceptionResponse serviceExceptionHandler(HttpServletRequest request, IllegalArgumentException iae) {
+        LOG.warn("Illegal Argument Exception occured! Error message: {}", iae.getMessage());
+        return new IbRestExceptionResponse(IbErrorCodeEnum.BAD_REQUEST, iae.getMessage());
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public IbRestExceptionResponse serviceExceptionHandler(HttpServletRequest request, IbServiceException e) {
         LOG.warn("Internal exception occured! Internal error code: {} Error message: {}", e.getErrorCode(),
                 e.getMessage());
-       IbRestExceptionResponse response =
+        IbRestExceptionResponse response =
                 new IbRestExceptionResponse(e.getErrorCode(), e.getMessage());
         return response;
     }
@@ -101,4 +108,5 @@ public class IbRestExceptionHandler {
                 IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Unhandled runtime exception");
         return response;
     }
+
 }

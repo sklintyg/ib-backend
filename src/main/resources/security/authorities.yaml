@@ -60,6 +60,7 @@ knownPrivileges:
   - &kp090 HANTERA_INTERNFORFRAGAN #Visa och besvara
   - &kp100 AVVISA_EXTERNFORFRAGAN
   - &kp110 ACCEPTERA_EXTERNFORFRAGAN
+  - &kp120 HANTERA_BESOK
 
 # De roller som systemet har
 knownRoles:
@@ -130,7 +131,11 @@ privileges:
       desc: Acceptera Externförfrågningar
       intygstyper: # Implicit alla
       requestOrigins: # Implicit alla
-
+  - &p120
+      name: *kp120
+      desc: Hantera Besök
+      intygstyper: # Implicit alla
+      requestOrigins: # Implicit alla
 # Roller
 roles:
   - &r010
@@ -143,6 +148,7 @@ roles:
       - *p060 # LISTA_BESTALLNINGAR
       - *p080 # VISA_BESTALLNING
       - *p090 # HANTERA_INTERNFORFRAGAN
+      - *p120 # HANTERA_BESOK
   - &r020
     name: *kr020 # FMU_SAMORDNARE
     desc: FMU Samordnare
