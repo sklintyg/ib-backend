@@ -28,17 +28,21 @@ public class HandelseListItem {
     private static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
 
     private String skapad;
-    private HandelseTyp typ;
+    private HandelseTyp.Typ typ;
     private String anvandare;
     private String handelseText;
+    private String kommentar;
 
-    public static HandelseListItem from(Handelse handelse) {
-        return HandelseListItemBuilder.aUtredningHandelseListItem()
+    public static HandelseListItem from(Handelse handelse, boolean includeKommentar) {
+        HandelseListItemBuilder handelseListItemBuilder = HandelseListItemBuilder.aUtredningHandelseListItem()
                 .withSkapad(handelse.getSkapad().format(formatter))
-                .withTyp(handelse.getHandelseTyp())
+                .withTyp(handelse.getHandelseTyp().getTyp())
                 .withAnvandare(handelse.getAnvandare())
-                .withHandelseText(handelse.getHandelseText())
-                .build();
+                .withHandelseText(handelse.getHandelseText());
+        if (includeKommentar) {
+            handelseListItemBuilder.withKommentar(handelse.getKommentar());
+        }
+        return handelseListItemBuilder.build();
     }
 
     public String getSkapad() {
@@ -49,11 +53,11 @@ public class HandelseListItem {
         this.skapad = skapad;
     }
 
-    public HandelseTyp getTyp() {
+    public HandelseTyp.Typ getTyp() {
         return typ;
     }
 
-    public void setTyp(HandelseTyp typ) {
+    public void setTyp(HandelseTyp.Typ typ) {
         this.typ = typ;
     }
 
@@ -73,11 +77,20 @@ public class HandelseListItem {
         this.handelseText = handelseText;
     }
 
+    public String getKommentar() {
+        return kommentar;
+    }
+
+    public void setKommentar(String kommentar) {
+        this.kommentar = kommentar;
+    }
+
     public static final class HandelseListItemBuilder {
         private String skapad;
-        private HandelseTyp typ;
+        private HandelseTyp.Typ typ;
         private String anvandare;
         private String handelseText;
+        private String kommentar;
 
         private HandelseListItemBuilder() {
         }
@@ -91,7 +104,7 @@ public class HandelseListItem {
             return this;
         }
 
-        public HandelseListItemBuilder withTyp(HandelseTyp typ) {
+        public HandelseListItemBuilder withTyp(HandelseTyp.Typ typ) {
             this.typ = typ;
             return this;
         }
@@ -106,12 +119,18 @@ public class HandelseListItem {
             return this;
         }
 
+        public HandelseListItemBuilder withKommentar(String kommentar) {
+            this.kommentar = kommentar;
+            return this;
+        }
+
         public HandelseListItem build() {
             HandelseListItem handelseListItem = new HandelseListItem();
             handelseListItem.setAnvandare(anvandare);
             handelseListItem.setHandelseText(handelseText);
             handelseListItem.setSkapad(skapad);
             handelseListItem.setTyp(typ);
+            handelseListItem.setKommentar(kommentar);
             return handelseListItem;
         }
     }

@@ -56,7 +56,9 @@ public class BesokListItem {
                 .withTolkStatus(besok.getTolkStatus())
                 .withKallelseForm(besok.getKallelseForm())
                 .withKallelseDatum(besok.getKallelseDatum())
-                .withHandelseList(besok.getHandelseList().stream().map(HandelseListItem::from).collect(Collectors.toList()))
+                .withHandelseList(besok.getHandelseList().stream()
+                        .map(handelse ->  HandelseListItem.from(handelse, true))
+                        .collect(Collectors.toList()))
                 .build();
     }
 

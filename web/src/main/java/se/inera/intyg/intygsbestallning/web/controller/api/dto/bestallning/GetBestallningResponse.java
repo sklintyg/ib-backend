@@ -115,7 +115,8 @@ public class GetBestallningResponse implements PDLLoggable {
                 .withAvbrutenAnledning(utredning.getAvbrutenAnledning())
                 .withMeddelandeFromHandlaggare(utredning.getBestallning().map(bestallning -> bestallning.getKommentar()).orElse(null))
                 .withBesokList(utredning.getBesokList().stream().map(BesokListItem::from).collect(Collectors.toList()))
-                .withHandelseList(utredning.getHandelseList().stream().map(HandelseListItem::from).collect(Collectors.toList()))
+                .withHandelseList(utredning.getHandelseList().stream()
+                        .map(handelse ->  HandelseListItem.from(handelse, true)).collect(Collectors.toList()))
                 .withAnteckningList(utredning.getAnteckningList().stream().map(AnteckningListItem::from).collect(Collectors.toList()))
                 .build();
 

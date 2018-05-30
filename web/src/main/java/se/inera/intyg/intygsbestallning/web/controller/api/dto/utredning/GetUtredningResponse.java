@@ -350,7 +350,7 @@ public class GetUtredningResponse {
 
         public GetUtredningResponseBuilder withHandelseList(List<Handelse> handelseList) {
             this.handelseList = handelseList.stream()
-                    .map(HandelseListItem::from)
+                    .map(handelse ->  HandelseListItem.from(handelse, false))
                     .collect(Collectors.toList());
             return this;
         }
