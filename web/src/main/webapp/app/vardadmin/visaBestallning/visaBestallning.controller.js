@@ -26,8 +26,24 @@ angular.module('ibApp')
                 loading: true
             };
 
+            function getStartTab() {
+                switch($scope.bestallning.status.id) {
+                case 'TILLDELAD_VANTAR_PA_BESTALLNING':
+                case 'BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR':
+                    return 0;
+                case 'AVBRUTEN':
+                case 'AVSLUTAD':
+                    return 2;
+                default:
+                    return 1;
+                }
+            }
+
             BestallningarProxy.getBestallning($stateParams.utredningsId).then(function(bestallning) {
                 $scope.bestallning = bestallning;
+
+                $scope.active = getStartTab();
+
             }, function(error) {
                 $log.error(error);
             }).finally(function() { // jshint ignore:line
