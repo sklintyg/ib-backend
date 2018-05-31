@@ -26,36 +26,36 @@ import se.inera.intyg.intygsbestallning.service.stateresolver.BesokStatus;
 import se.inera.intyg.intygsbestallning.service.stateresolver.BesokStatusResolver;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.HandelseListItem;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class BesokListItem {
 
+    private static final DateTimeFormatter TIMEFORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+
     private BesokStatus besokStatus;
-    private LocalDate besokDatum;
-    private LocalTime besokStartTid;
-    private LocalTime besokSlutTid;
+    private String besokDatum;
+    private String besokStartTid;
+    private String besokSlutTid;
     private DeltagarProfessionTyp proffesion;
     private String namn;
     private TolkStatusTyp tolkStatus;
     private KallelseFormTyp kallelseForm;
-    private LocalDateTime kallelseDatum;
+    private String kallelseDatum;
     private List<HandelseListItem> handelseList;
 
     public static BesokListItem from(Besok besok) {
         return BesokListItemBuilder.aBesokListItem()
                 .withBesokStatus(BesokStatusResolver.resolveStaticStatus(besok))
-                .withBesokDatum(besok.getBesokStartTid().toLocalDate())
-                .withBesokStartTid(besok.getBesokStartTid().toLocalTime())
-                .withBesokSlutTid(besok.getBesokSlutTid().toLocalTime())
+                .withBesokDatum(besok.getBesokStartTid().format(DateTimeFormatter.ISO_DATE))
+                .withBesokStartTid(besok.getBesokStartTid().format(TIMEFORMATTER))
+                .withBesokSlutTid(besok.getBesokSlutTid().format(TIMEFORMATTER))
                 .withProffesion(besok.getDeltagareProfession())
                 .withNamn(besok.getDeltagareFullstandigtNamn())
                 .withTolkStatus(besok.getTolkStatus())
                 .withKallelseForm(besok.getKallelseForm())
-                .withKallelseDatum(besok.getKallelseDatum())
+                .withKallelseDatum(besok.getKallelseDatum().format(DateTimeFormatter.ISO_DATE))
                 .withHandelseList(besok.getHandelseList().stream()
                         .map(handelse ->  HandelseListItem.from(handelse, true))
                         .collect(Collectors.toList()))
@@ -70,27 +70,27 @@ public class BesokListItem {
         this.besokStatus = besokStatus;
     }
 
-    public LocalDate getBesokDatum() {
+    public String getBesokDatum() {
         return besokDatum;
     }
 
-    public void setBesokDatum(LocalDate besokDatum) {
+    public void setBesokDatum(String besokDatum) {
         this.besokDatum = besokDatum;
     }
 
-    public LocalTime getBesokStartTid() {
+    public String getBesokStartTid() {
         return besokStartTid;
     }
 
-    public void setBesokStartTid(LocalTime besokStartTid) {
+    public void setBesokStartTid(String besokStartTid) {
         this.besokStartTid = besokStartTid;
     }
 
-    public LocalTime getBesokSlutTid() {
+    public String getBesokSlutTid() {
         return besokSlutTid;
     }
 
-    public void setBesokSlutTid(LocalTime besokSlutTid) {
+    public void setBesokSlutTid(String besokSlutTid) {
         this.besokSlutTid = besokSlutTid;
     }
 
@@ -126,11 +126,11 @@ public class BesokListItem {
         this.kallelseForm = kallelseForm;
     }
 
-    public LocalDateTime getKallelseDatum() {
+    public String getKallelseDatum() {
         return kallelseDatum;
     }
 
-    public void setKallelseDatum(LocalDateTime kallelseDatum) {
+    public void setKallelseDatum(String kallelseDatum) {
         this.kallelseDatum = kallelseDatum;
     }
 
@@ -144,14 +144,14 @@ public class BesokListItem {
 
     public static final class  BesokListItemBuilder {
         private BesokStatus besokStatus;
-        private LocalDate besokDatum;
-        private LocalTime besokStartTid;
-        private LocalTime besokSlutTid;
+        private String besokDatum;
+        private String besokStartTid;
+        private String besokSlutTid;
         private DeltagarProfessionTyp proffesion;
         private String namn;
         private TolkStatusTyp tolkStatus;
         private KallelseFormTyp kallelseForm;
-        private LocalDateTime kallelseDatum;
+        private String kallelseDatum;
         private List<HandelseListItem> handelseList;
 
         private BesokListItemBuilder() {
@@ -166,17 +166,17 @@ public class BesokListItem {
             return this;
         }
 
-        public BesokListItemBuilder withBesokDatum(LocalDate besokDatum) {
+        public BesokListItemBuilder withBesokDatum(String besokDatum) {
             this.besokDatum = besokDatum;
             return this;
         }
 
-        public BesokListItemBuilder withBesokStartTid(LocalTime besokStartTid) {
+        public BesokListItemBuilder withBesokStartTid(String besokStartTid) {
             this.besokStartTid = besokStartTid;
             return this;
         }
 
-        public BesokListItemBuilder withBesokSlutTid(LocalTime besokSlutTid) {
+        public BesokListItemBuilder withBesokSlutTid(String besokSlutTid) {
             this.besokSlutTid = besokSlutTid;
             return this;
         }
@@ -201,7 +201,7 @@ public class BesokListItem {
             return this;
         }
 
-        public BesokListItemBuilder withKallelseDatum(LocalDateTime kallelseDatum) {
+        public BesokListItemBuilder withKallelseDatum(String kallelseDatum) {
             this.kallelseDatum = kallelseDatum;
             return this;
         }

@@ -18,14 +18,23 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model.type;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum TolkStatusTyp {
 
     BOKAT("Bokat"), DELTAGIT("Deltagit");
 
+    private final String id;
     private final String label;
 
     TolkStatusTyp(String label) {
+        this.id = name();
         this.label = label;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getLabel() {

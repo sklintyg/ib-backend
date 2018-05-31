@@ -25,12 +25,15 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public class CustomObjectMapper extends ObjectMapper {
 
@@ -50,6 +53,9 @@ public class CustomObjectMapper extends ObjectMapper {
 
             addSerializer(LocalDate.class, LocalDateSerializer.INSTANCE);
             addDeserializer(LocalDate.class, LocalDateDeserializer.INSTANCE);
+
+            addSerializer(LocalTime.class, LocalTimeSerializer.INSTANCE);
+            addDeserializer(LocalTime.class, LocalTimeDeserializer.INSTANCE);
         }
 
     }

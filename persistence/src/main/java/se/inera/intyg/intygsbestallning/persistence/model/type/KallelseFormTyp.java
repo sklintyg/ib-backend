@@ -18,17 +18,32 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model.type;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum KallelseFormTyp {
-    TELEFONKONTAKT("185317003"),
-    BREVKONTAKT("308720009");
+    TELEFONKONTAKT("185317003", "Telefonkontakt"),
+    BREVKONTAKT("308720009", "Brevkontakt");
 
+    private final String id;
     private final String cvValue;
+    private final String label;
 
-    KallelseFormTyp(String cvValue) {
+    KallelseFormTyp(String cvValue, String label) {
+        this.id = name();
         this.cvValue = cvValue;
+        this.label = label;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getCvValue() {
         return cvValue;
+    }
+
+    public String getLabel() {
+        return label;
     }
 }

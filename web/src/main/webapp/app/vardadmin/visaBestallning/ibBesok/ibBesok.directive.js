@@ -18,6 +18,7 @@ angular.module('ibApp').directive('ibBesok', function($log, $uibModal) {
     return {
         restrict: 'E',
         scope: {
+            'bestallning': '='
         },
         templateUrl: '/app/vardadmin/visaBestallning/ibBesok/ibBesok.directive.html',
         link: function($scope) {

@@ -18,10 +18,12 @@
  */
 package se.inera.intyg.intygsbestallning.service.stateresolver;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import static se.inera.intyg.intygsbestallning.service.stateresolver.Actor.VARDADMIN;
 
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum BesokStatus implements SortableLabel {
     BOKAT("Bokat", null),
     OMBOKAT("Ombokat", null),

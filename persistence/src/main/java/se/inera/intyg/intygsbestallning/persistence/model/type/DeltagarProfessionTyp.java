@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model.type;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 /**
  * Kod som anger deltagande profession.
  *
@@ -27,6 +29,7 @@ package se.inera.intyg.intygsbestallning.persistence.model.type;
  * PS = Psykolog
  * SG = Sjukgymnast
  */
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum DeltagarProfessionTyp {
     AT("Arbetsterapeut"),
     FT("Fysioterapeut"),
@@ -34,10 +37,16 @@ public enum DeltagarProfessionTyp {
     PS("Psykolog"),
     SG("Sjukgymnast");
 
+    private final String id;
     private final String label;
 
     DeltagarProfessionTyp(String label) {
+        this.id = this.name();
         this.label = label;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getLabel() {

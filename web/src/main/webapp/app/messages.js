@@ -160,6 +160,14 @@ var ibMessages = {
         'label.table.utredning.handelser.column.anvandare': 'Användare',
         'label.table.utredning.handelser.column.handelse': 'Händelse',
 
+        // Visa beställning - besök tabell
+        'label.table.bestallning.besok.column.besoktid': 'Besökstid',
+        'label.table.bestallning.besok.column.proffesion': 'Profession',
+        'label.table.bestallning.besok.column.namn': 'Namn',
+        'label.table.bestallning.besok.column.tolk': 'Tolk',
+        'label.table.bestallning.besok.column.kallelse': 'Kallelse skickad',
+        'label.table.bestallning.besok.column.status': 'Status',
+
         // Lista pågående utredningar (vårdadmin) tabell
         'label.table.bestallningar.column.id': 'Id',
         'label.table.bestallningar.column.typ': 'Utredningstyp',
