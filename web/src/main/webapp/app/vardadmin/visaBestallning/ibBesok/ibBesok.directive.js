@@ -42,7 +42,10 @@ angular.module('ibApp').directive('ibBesok', function($log, $uibModal) {
                 var modalInstance = $uibModal.open({
                     templateUrl: '/app/vardadmin/visaBestallning/ibBesok/' + templateUrl,
                     size: 'md',
-                    controller: controller
+                    controller: controller,
+                    resolve: {
+                        utredningsId: $scope.bestallning.utredningsId
+                    }
                 });
                 //angular > 1.5 warns if promise rejection is not handled (e.g backdrop-click == rejection)
                 modalInstance.result.catch(function () {}); //jshint ignore:line

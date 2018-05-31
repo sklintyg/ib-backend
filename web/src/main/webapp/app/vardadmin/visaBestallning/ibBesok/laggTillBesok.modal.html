@@ -10,79 +10,72 @@
                     <span class="date">
                         <ib-help-text-label label-key="lagg-till-besok.label.date"></ib-help-text-label>
                         <ib-date-picker-field
-                                dom-id="borjaDatum"
-                                target-model="datetimeModel"
-                                min-date="{{::vm.minBorjaDatum}}"
-                                min-date-error="Möjligt startdatum får tidigast vara dagens datum"
-                                format="yyyy-MM-dd"
-                                date-format-error="Ogiltigt datumformat, ange ett datum som ÅÅÅÅ-MM-DD"
-                                ib-date-picker-field
-                                append-to-body="true"
-                                add-date-parser="strict">
+                        dom-id="borjaDatum"
+                        target-model="besok.besokDatum"
+                        format="yyyy-MM-dd"
+                        date-format-error="Ogiltigt datumformat, ange ett datum som ÅÅÅÅ-MM-DD"
+                        ib-date-picker-field
+                        append-to-body="true"
+                        add-date-parser="strict">
                         </ib-date-picker-field>
                     </span>
                     <span class="from">
                         <ib-help-text-label label-key="lagg-till-besok.label.from"></ib-help-text-label>
-                        <ib-time-picker model="datetimeModel"></ib-time-picker>
+                        <ib-time-picker model="besok.besokStartTid"></ib-time-picker>
                     </span>
-
                     <span class="to">
                         <ib-help-text-label label-key="lagg-till-besok.label.to"></ib-help-text-label>
-                        <ib-time-picker model="datetimeModel"></ib-time-picker>
+                        <ib-time-picker model="besok.besokSlutTid"></ib-time-picker>
                     </span>
                 </div>
                 <div class="flex-wrapper">
                     <span><ib-help-text-label label-key="lagg-till-besok.label.profession"></ib-help-text-label></span>
                     <span>
                         <ib-dropdown
-                            id="profession"
-                            ng-model="profession"
-                            ng-change="onChange()"
-                            items="professionList">
+                        id="profession"
+                        ng-model="besok.profession"
+                        ng-change="onChange()"
+                        items="professionList">
                         </ib-dropdown>
-                     </span>
+                    </span>
                 </div>
-
                 <div class="flex-wrapper">
                     <span><ib-help-text-label label-key="lagg-till-besok.label.name"></ib-help-text-label></span>
-                    <span id="interpreter-input-field"><input class="form-control" type="text" ng-model="investigativePersonnel"></span>
+                    <span id="interpreter-input-field"><input class="form-control" type="text" ng-model="besok.utredandeVardPersonalNamn" placeholder="Namn på utredande vårdpersonal"></span>
                 </div>
-
                 <div class="flex-wrapper">
                     <span><ib-help-text-label label-key="lagg-till-besok.label.interpreter"></ib-help-text-label></span>
                     <span>
-                         <ib-checkbox-wrapper>
-                            <input type="checkbox"
-                                ng-model="interpreter.state"
-                                ng-change="onChange()">
-                                <label ng-attr-for="{{::inputId}}-{{::item.id|ibDomIdFilter}}">
-                                  {{::item.label}}
-                                </label>
-                         </ib-checkbox-wrapper>
+                        <ib-checkbox-wrapper>
+                        <input type="checkbox"
+                        ng-model="besok.tolkStatus"
+                        ng-true-value="'BOKAT'"
+                        ng-false-value="">
+                        <label>
+                            {{}}
+                        </label>
+                        </ib-checkbox-wrapper>
                     </span>
                 </div>
-
                 <div id="radio-wrapper">
                     <span><ib-help-text-label label-key="lagg-till-besok.label.kallelseskickad"></ib-help-text-label></span>
                     <ib-date-picker-field
-                            dom-id="borjaDatum"
-                            target-model="datetimeModel"
-                            min-date="{{::vm.minBorjaDatum}}"
-                            min-date-error="Möjligt startdatum får tidigast vara dagens datum"
-                            format="yyyy-MM-dd"
-                            date-format-error="Ogiltigt datumformat, ange ett datum som ÅÅÅÅ-MM-DD"
-                            ib-date-picker-field
-                            append-to-body="true"
-                            add-date-parser="strict">
+                        dom-id="borjaDatum"
+                        target-model="datetimeModel"
+                        min-date="{{::vm.minBorjaDatum}}"
+                        min-date-error="Möjligt startdatum får tidigast vara dagens datum"
+                        format="yyyy-MM-dd"
+                        date-format-error="Ogiltigt datumformat, ange ett datum som ÅÅÅÅ-MM-DD"
+                        ib-date-picker-field
+                        append-to-body="true"
+                        add-date-parser="strict">
                     </ib-date-picker-field>
                     <ib-radio-wrapper>
-                        <input ng-attr-id="utforarTypEnhet" type="radio" value="ENHET" ng-model="vm.model.utforareTyp"
-                               ng-change="onChangeUtforareTyp()">
+                        <input type="radio" value="BREVKONTAKT" ng-model="besok.kallelseForm">
                         <label ng-attr-for="utforarTypEnhet">Per post</label>
                     </ib-radio-wrapper>
                     <ib-radio-wrapper>
-                        <input ng-attr-id="utforarTypUnderleverantor" type="radio" value="UNDERLEVERANTOR"
-                               ng-model="vm.model.utforareTyp" ng-change="onChangeUtforareTyp()">
+                        <input type="radio" value="TELEFONKONTAKT" ng-model="besok.kallelseForm">
                         <label ng-attr-for="utforarTypUnderleverantor">Per telefon</label>
                     </ib-radio-wrapper>
                 </div>
@@ -90,10 +83,10 @@
         </form>
     </div>
     <div class="modal-footer">
-        <button type="button" id="lagg-till-besok-modal-skicka" class="btn btn-primary">
-            Spara
+        <button type="button" id="lagg-till-besok-modal-skicka" class="btn btn-primary" ng-click="send()">
+        Spara
         </button>
         <button type="button" id="lagg-till-besok-modal-cancel" class="btn btn-default" ng-click="$dismiss()">
-            <span message key="common.cancel"></span>
+        <span message key="common.cancel"></span>
         </button>
     </div>

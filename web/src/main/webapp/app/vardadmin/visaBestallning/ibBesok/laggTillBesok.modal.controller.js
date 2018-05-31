@@ -19,7 +19,7 @@
 
 angular.module('ibApp')
     .controller('LaggTillBesokModalCtrl',
-        function($scope) {
+        function($log, $scope, BesokProxy, utredningsId) {
             'use strict';
 
             var chooseOption = {
@@ -29,14 +29,35 @@ angular.module('ibApp')
 
             $scope.professionList = [chooseOption];
 
+            BesokProxy.getProffessionsTyper().then(function(result) {
+                $scope.professionList = $scope.professionList.concat(result);
+            }, function(error) {
+                $log.error(error);
+            });
+
             $scope.investigativePersonnel = 'Namn på utredande vårdpersonal';
 
             $scope.interpreter = {
                 id: 'none',
-                state: false
+                state: 'Bokat'
             };
 
-            $scope.datetimeModel = new Date();
+            $scope.besok = {
+                utredningId: utredningsId,
+                utredandeVardPersonalNamn: '',
+                profession: undefined,
+                tolkStatus: undefined,
+                kallelseForm: '',
+                kallelseDatum: '',
+                besokDatum: new Date(),
+                besokStartTid: '',
+                besokSlutTid: ''
+            };
+
+            $scope.send = function () {
+                //console.log($scope.besok);
+                BesokProxy.createBesok($scope.besok);
+            };
 
 
-    });
+        });
