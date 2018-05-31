@@ -195,7 +195,7 @@ public final class HandelseUtil {
                 .build();
     }
 
-    public static Handelse createNyttBesok(final Boolean tolkBehov, final Besok besok, final String samordnare) {
+    public static Handelse createNyttBesok(final Boolean tolkBehov, final Besok besok, final String vardadministrator) {
 
         StringBuilder text = new StringBuilder();
         text.append(MessageFormat.format("Besök bokat {0} {1} - {2} hos <Besök.profession>. ",
@@ -214,7 +214,7 @@ public final class HandelseUtil {
 
         return aHandelse()
                 .withSkapad(LocalDateTime.now())
-                .withAnvandare(samordnare)
+                .withAnvandare(vardadministrator)
                 .withHandelseTyp(HandelseTyp.NYTT_BESOK)
                 .withHandelseText(text.toString())
                 .withKommentar(besok.getDeltagareFullstandigtNamn())

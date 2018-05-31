@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto;
@@ -35,6 +36,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.*;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
+import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
@@ -70,6 +72,9 @@ public class BesokServiceImplTest {
     @Mock
     private MyndighetIntegrationServiceImpl myndighetIntegrationService;
 
+    @Mock
+    private UserService userService;
+
     @InjectMocks
     private BesokServiceImpl besokService;
 
@@ -88,6 +93,9 @@ public class BesokServiceImplTest {
 
     @Test
     public void testRegisterNewBesokMedLakareSomProfession() {
+
+        final String userName = "test user";
+        doReturn(new IbUser("", userName)).when(userService).getUser();
 
         RegisterBesokRequest request = new RegisterBesokRequest();
         request.setUtredningId(UTREDNING_ID);
@@ -127,6 +135,9 @@ public class BesokServiceImplTest {
 
     @Test
     public void testRegisterNewBesokMedAnnanProfession() {
+
+        final String userName = "test user";
+        doReturn(new IbUser("", userName)).when(userService).getUser();
 
         RegisterBesokRequest request = new RegisterBesokRequest();
         request.setUtredningId(UTREDNING_ID);

@@ -46,8 +46,6 @@ public class RegisterBesokRequest {
     private LocalTime besokStartTid;
     private LocalTime besokSlutTid;
 
-    private String samordnare;
-
     public static RegisterBesokRequest from(final RegisterBesokRequest request, final String namn) {
         validate(request);
 
@@ -61,7 +59,6 @@ public class RegisterBesokRequest {
                 .withBesokDatum(request.getBesokDatum())
                 .withBesokStartTid(request.getBesokStartTid())
                 .withBesokSlutTid(request.getBesokSlutTid())
-                .withSamordnare(request.getSamordnare())
                 .build();
     }
 
@@ -137,10 +134,6 @@ public class RegisterBesokRequest {
         this.besokSlutTid = besokSlutTid;
     }
 
-    public String getSamordnare() {
-        return samordnare;
-    }
-
     public static void validate(RegisterBesokRequest request) {
         checkArgument(nonNull(request));
         checkArgument(nonNull(request.getTolkStatus()));
@@ -164,7 +157,6 @@ public class RegisterBesokRequest {
         private LocalDate besokDatum;
         private LocalTime besokStartTid;
         private LocalTime besokSlutTid;
-        private String samordnare;
 
         private RegisterBesokRequestBuilder() {
         }
@@ -218,11 +210,6 @@ public class RegisterBesokRequest {
             return this;
         }
 
-        public RegisterBesokRequestBuilder withSamordnare(String samordnare) {
-            this.samordnare = samordnare;
-            return this;
-        }
-
         public RegisterBesokRequest build() {
             RegisterBesokRequest registerBesokRequest = new RegisterBesokRequest();
             registerBesokRequest.setUtredningId(utredningId);
@@ -234,7 +221,6 @@ public class RegisterBesokRequest {
             registerBesokRequest.setBesokDatum(besokDatum);
             registerBesokRequest.setBesokStartTid(besokStartTid);
             registerBesokRequest.setBesokSlutTid(besokSlutTid);
-            registerBesokRequest.samordnare = this.samordnare;
             return registerBesokRequest;
         }
     }
