@@ -135,15 +135,15 @@ public class RegisterBesokRequest {
     }
 
     public static void validate(RegisterBesokRequest request) {
-        checkArgument(nonNull(request));
-        checkArgument(nonNull(request.getTolkStatus()));
-        checkArgument(nonNull(request.getUtredningId()));
-        checkArgument(nonNull(request.getProffesion()));
-        checkArgument(nonNull(request.getBesokSlutTid()));
-        checkArgument(nonNull(request.getKallelseForm()));
-        checkArgument(nonNull(request.getKallelseDatum()));
-        checkArgument(nonNull(request.getBesokDatum()));
-        checkArgument(nonNull(request.getBesokStartTid()));
+        checkArgument(nonNull(request), "request may not be null");
+        checkArgument(nonNull(request.getTolkStatus()), "tolkStatus may not be null");
+        checkArgument(nonNull(request.getUtredningId()), "utredningId may not be null");
+        checkArgument(nonNull(request.getProffesion()), "proffesion may not be null");
+        checkArgument(nonNull(request.getBesokSlutTid()), "besokSlutTid may not be null");
+        checkArgument(nonNull(request.getKallelseForm()), "kallelseForm may not be null");
+        checkArgument(nonNull(request.getKallelseDatum()), "kallelseDatum may not be null");
+        checkArgument(nonNull(request.getBesokDatum()), "besokDatum may not be null");
+        checkArgument(nonNull(request.getBesokStartTid()), "besokStartTid may not be null");
     }
 
 
