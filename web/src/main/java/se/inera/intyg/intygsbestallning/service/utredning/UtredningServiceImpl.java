@@ -280,17 +280,19 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                         .build()))
                 .build();
 
+        final Utredning sparadUtredning;
         if (order.isHandling()) {
             utredning.getHandlingList().add(aHandling()
                     .withSkickatDatum(LocalDate.now().atStartOfDay())
                     .withUrsprung(HandlingUrsprungTyp.BESTALLNING)
                     .build());
-
-            // Send notification if applicable
+            sparadUtredning = utredningRepository.save(utredning);
             mailNotificationService.notifyHandlingMottagen(utredning);
+        } else {
+            sparadUtredning = utredningRepository.save(utredning);
+
         }
-        utredningRepository.save(utredning);
-        return utredning;
+        return sparadUtredning;
     }
 
     @Override
@@ -331,6 +333,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
         final Handelse handelse;
         final Utredning utredning;
+        final Utredning sparadUtredning;
         if (byVardgivareHsaId.size() == 1) {
             final String vardenhetHsaId = byVardgivareHsaId.iterator().next().getVardenhetHsaId();
             externForfragan.withInternForfraganList(Collections.singletonList(anInternForfragan()
@@ -346,6 +349,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                     .withHandelseList(Collections.singletonList(handelse));
             utredning = utredningBuilder.build();
             checkState(Objects.equals(UtredningStatus.VANTAR_PA_SVAR, UtredningStatusResolver.resolveStaticStatus(utredning)));
+            sparadUtredning = utredningRepository.save(utredning);
             mailNotificationService.notifyNyInternForfragan(utredning);
         } else {
             handelse = HandelseUtil.createForfraganMottagen(request.getLandstingHsaId());
@@ -354,10 +358,10 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                     .withHandelseList(Collections.singletonList(handelse));
             utredning = utredningBuilder.build();
             checkState(Objects.equals(UtredningStatus.FORFRAGAN_INKOMMEN, UtredningStatusResolver.resolveStaticStatus(utredning)));
+            sparadUtredning = utredningRepository.save(utredning);
             mailNotificationService.notifyNyExternForfragan(utredning);
         }
-
-        return utredningRepository.save(utredning);
+        return sparadUtredning;
     }
 
     @Override

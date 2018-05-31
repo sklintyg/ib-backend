@@ -55,8 +55,10 @@ import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.riv.infrastructure.directory.organization.getunitresponder.v1.UnitType;
@@ -121,6 +123,10 @@ public class UtredningServiceImplTest {
 
     @InjectMocks
     private UtredningServiceImpl utredningService;
+
+    @Captor
+    private ArgumentCaptor<Utredning> argumentCaptor;
+
 
     @Test
     public void findForfragningarForVardenhetHsaId() {
@@ -253,7 +259,7 @@ public class UtredningServiceImplTest {
 
     @Test
     public void registerNewUtredning() {
-        OrderRequest order = anOrderRequest()
+        final OrderRequest order = anOrderRequest()
                 .withUtredningsTyp(LIAG)
                 .withTolkBehov(true)
                 .withTolkSprak("sv")
@@ -280,38 +286,40 @@ public class UtredningServiceImplTest {
                         .build())
                 .build();
 
-        Utredning response = utredningService.registerNewUtredning(order);
+        utredningService.registerNewUtredning(order);
+        Mockito.verify(utredningRepository).save(argumentCaptor.capture());
 
-        assertNotNull(response);
-        assertTrue(response.getTolkBehov());
-        assertEquals("sv", response.getTolkSprak());
-        assertEquals(LIAG, response.getUtredningsTyp());
-        assertEquals("kommentar", response.getBestallning().get().getKommentar());
-        assertEquals("atgarder", response.getBestallning().get().getPlaneradeAktiviteter());
-        assertEquals("syfte", response.getBestallning().get().getSyfte());
-        assertEquals("enhet", response.getBestallning().get().getTilldeladVardenhetHsaId());
-        assertFalse(response.getIntygList().isEmpty());
-        assertEquals(LocalDate.of(2019, 1, 1).atStartOfDay(), response.getIntygList().get(0).getSistaDatum());
-        assertEquals(LocalDate.of(2018, 1, 1).atStartOfDay(), response.getBestallning().get().getOrderDatum());
-        assertNull(response.getBestallning().get().getUppdateradDatum());
-        assertEquals("behov", response.getInvanare().getSarskildaBehov());
-        assertEquals("personnummer", response.getInvanare().getPersonId());
-        assertEquals("bakgrund", response.getInvanare().getBakgrundNulage());
-        assertNull(response.getInvanare().getPostort());
-        assertNotNull("", response.getHandlingList());
-        assertEquals(1, response.getHandlingList().size());
-        assertNull(response.getHandlingList().get(0).getInkomDatum());
-        assertNotNull("", response.getHandlingList().get(0).getSkickatDatum());
-        assertEquals(BESTALLNING, response.getHandlingList().get(0).getUrsprung());
-        assertEquals("adress", response.getHandlaggare().getAdress());
-        assertEquals("email", response.getHandlaggare().getEmail());
-        assertEquals("fullstandigtNamn", response.getHandlaggare().getFullstandigtNamn());
-        assertEquals("kontor", response.getHandlaggare().getKontor());
-        assertEquals("kostnadsstalle", response.getHandlaggare().getKostnadsstalle());
-        assertEquals(MyndighetTyp.FKASSA.name(), response.getHandlaggare().getMyndighet());
-        assertEquals("postkod", response.getHandlaggare().getPostkod());
-        assertEquals("stad", response.getHandlaggare().getStad());
-        assertEquals("telefonnummer", response.getHandlaggare().getTelefonnummer());
+        final Utredning captured = argumentCaptor.getValue();
+        assertNotNull(captured);
+        assertTrue(captured.getTolkBehov());
+        assertEquals("sv", captured.getTolkSprak());
+        assertEquals(LIAG, captured.getUtredningsTyp());
+        assertEquals("kommentar", captured.getBestallning().get().getKommentar());
+        assertEquals("atgarder", captured.getBestallning().get().getPlaneradeAktiviteter());
+        assertEquals("syfte", captured.getBestallning().get().getSyfte());
+        assertEquals("enhet", captured.getBestallning().get().getTilldeladVardenhetHsaId());
+        assertFalse(captured.getIntygList().isEmpty());
+        assertEquals(LocalDate.of(2019, 1, 1).atStartOfDay(), captured.getIntygList().get(0).getSistaDatum());
+        assertEquals(LocalDate.of(2018, 1, 1).atStartOfDay(), captured.getBestallning().get().getOrderDatum());
+        assertNull(captured.getBestallning().get().getUppdateradDatum());
+        assertEquals("behov", captured.getInvanare().getSarskildaBehov());
+        assertEquals("personnummer", captured.getInvanare().getPersonId());
+        assertEquals("bakgrund", captured.getInvanare().getBakgrundNulage());
+        assertNull(captured.getInvanare().getPostort());
+        assertNotNull("", captured.getHandlingList());
+        assertEquals(1, captured.getHandlingList().size());
+        assertNull(captured.getHandlingList().get(0).getInkomDatum());
+        assertNotNull("", captured.getHandlingList().get(0).getSkickatDatum());
+        assertEquals(BESTALLNING, captured.getHandlingList().get(0).getUrsprung());
+        assertEquals("adress", captured.getHandlaggare().getAdress());
+        assertEquals("email", captured.getHandlaggare().getEmail());
+        assertEquals("fullstandigtNamn", captured.getHandlaggare().getFullstandigtNamn());
+        assertEquals("kontor", captured.getHandlaggare().getKontor());
+        assertEquals("kostnadsstalle", captured.getHandlaggare().getKostnadsstalle());
+        assertEquals(MyndighetTyp.FKASSA.name(), captured.getHandlaggare().getMyndighet());
+        assertEquals("postkod", captured.getHandlaggare().getPostkod());
+        assertEquals("stad", captured.getHandlaggare().getStad());
+        assertEquals("telefonnummer", captured.getHandlaggare().getTelefonnummer());
     }
 
     @Test
