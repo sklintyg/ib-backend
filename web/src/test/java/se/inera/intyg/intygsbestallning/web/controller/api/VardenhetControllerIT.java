@@ -60,15 +60,13 @@ public class VardenhetControllerIT extends BaseRestIntegrationTest {
         request.setPostort(POSTORT);
         request.setTelefonnummer(TELEFONNUMMER);
         request.setEpost(EPOST);
-        request.setStandardsvar(STANDARDSVAR);
 
         given().contentType(ContentType.JSON).body(request).expect().statusCode(OK).when().put(VARDENHET_API_ENDPOINT + "/preference")
                 .then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/ib-vardenhet-preference-response-schema.json"))
                 .body("mottagarNamn", Matchers.is(request.getMottagarNamn())).body("adress", Matchers.is(request.getAdress()))
                 .body("postnummer", Matchers.is(request.getPostnummer())).body("postort", Matchers.is(request.getPostort()))
-                .body("telefonnummer", Matchers.is(request.getTelefonnummer())).body("epost", Matchers.is(request.getEpost()))
-                .body("standardsvar", Matchers.is(request.getStandardsvar()));
+                .body("telefonnummer", Matchers.is(request.getTelefonnummer())).body("epost", Matchers.is(request.getEpost()));
 
         // reset all properties and save again
 

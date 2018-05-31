@@ -40,6 +40,7 @@ import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.vardenhet.VardenhetService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.VardenhetPreferenceRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.VardenhetPreferenceResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.VardenhetSvarPreferenceRequest;
 
 /**
  * Created by marced on 2018-04-23.
@@ -69,6 +70,34 @@ public class VardenhetController {
     public ResponseEntity<VardenhetPreferenceResponse> setPreferenceForVardenhet(
             @RequestBody final VardenhetPreferenceRequest vardenhetPreferenceRequest) {
         IbUser user = userService.getUser();
+        ensureUpdateAllowed(user);
+
+        return ResponseEntity
+                .ok(vardenhetService.setVardEnhetPreference(user.getCurrentlyLoggedInAt().getId(), vardenhetPreferenceRequest));
+    }
+
+    @PrometheusTimeMethod(name = "get_svarpreference_for_vardenhet_duration_seconds", help = "Some helpful info here")
+    @GetMapping(path = "/preference/svar", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<VardenhetPreferenceResponse> getSvarPreferenceForVardenhet() {
+        IbUser user = userService.getUser();
+
+        return ResponseEntity.ok(vardenhetService.getVardEnhetPreference(user.getCurrentlyLoggedInAt().getId()));
+    }
+
+    @PrometheusTimeMethod(name = "set_svarpreference_for_vardenhet_duration_seconds", help = "Some helpful info here")
+    @PutMapping(path = "/preference/svar", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<VardenhetPreferenceResponse> setSvarPreferenceForVardenhet(
+            @RequestBody final VardenhetSvarPreferenceRequest vardenhetSvarPreferenceRequest) {
+        IbUser user = userService.getUser();
+        ensureUpdateAllowed(user);
+
+        return ResponseEntity
+                .ok(vardenhetService.setVardEnhetSvarPreference(user.getCurrentlyLoggedInAt().getId(),
+                        vardenhetSvarPreferenceRequest.getStandardsvar()));
+    }
+
+    private void ensureUpdateAllowed(IbUser user) {
         final IbSelectableHsaEntity currentUnit = user.getCurrentlyLoggedInAt();
 
         if (currentUnit == null || !currentUnit.getType().equals(SelectableHsaEntityType.VE)) {
@@ -77,10 +106,5 @@ public class VardenhetController {
 
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_SPARA_VARDENHETPREFERENS)
                 .orThrow(new IbAuthorizationException("User is not allowed to update the requested resource"));
-
-        return ResponseEntity
-                .ok(vardenhetService.setVardEnhetPreference(user.getCurrentlyLoggedInAt().getId(), vardenhetPreferenceRequest));
     }
-
-
 }

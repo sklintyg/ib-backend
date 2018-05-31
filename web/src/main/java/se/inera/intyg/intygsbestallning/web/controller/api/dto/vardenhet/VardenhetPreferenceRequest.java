@@ -28,7 +28,6 @@ public class VardenhetPreferenceRequest {
     private String postort;
     private String telefonnummer;
     private String epost;
-    private String standardsvar;
 
     public String getMottagarNamn() {
         return mottagarNamn;
@@ -76,14 +75,6 @@ public class VardenhetPreferenceRequest {
 
     public void setEpost(String epost) {
         this.epost = epost;
-    }
-
-    public String getStandardsvar() {
-        return standardsvar;
-    }
-
-    public void setStandardsvar(String standardsvar) {
-        this.standardsvar = standardsvar;
     }
 
 }

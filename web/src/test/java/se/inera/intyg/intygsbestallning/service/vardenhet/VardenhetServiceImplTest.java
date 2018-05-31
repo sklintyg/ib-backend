@@ -37,6 +37,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.VardenhetPreference;
 import se.inera.intyg.intygsbestallning.persistence.repository.VardenhetPreferenceRepository;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.VardenhetPreferenceRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.VardenhetPreferenceResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.VardenhetSvarPreferenceRequest;
 
 /**
  * Created by marced on 2018-04-24.
@@ -117,7 +118,20 @@ public class VardenhetServiceImplTest {
         assertEquals(request.getPostort(), result.getPostort());
         assertEquals(request.getTelefonnummer(), result.getTelefonnummer());
         assertEquals(request.getEpost(), result.getEpost());
-        assertEquals(request.getStandardsvar(), result.getStandardsvar());
+
+    }
+
+    @Test
+    public void testSetVardEnhetSvarPreference() throws Exception {
+        when(vardenhetPreferenceRepository.findByVardenhetHsaId(eq(HSA_ID))).thenReturn(Optional.of(createVardenhetPreferenceSample()));
+        // just echo back the argument to save()
+        when(vardenhetPreferenceRepository.save(any(VardenhetPreference.class))).thenAnswer(
+                invocation -> invocation.getArgument(0));
+
+
+        final VardenhetPreferenceResponse result = testee.setVardEnhetSvarPreference(HSA_ID, "testsvar");
+
+        assertEquals("testsvar", result.getStandardsvar());
 
     }
 
@@ -129,7 +143,6 @@ public class VardenhetServiceImplTest {
         vpr.setPostort(POSTORT_2);
         vpr.setTelefonnummer(TELEFON_2);
         vpr.setEpost(EPOST_2);
-        vpr.setStandardsvar(STANDARDSVAR_2);
         return vpr;
     }
 

@@ -1,22 +1,22 @@
 <div class="ib-header-unit-settings-dialog-template">
   <div class="modal-header">
     <button type="button" class="close" data-ng-click="$dismiss()">×</button>
-    <h3><span message key="unitsettings.change.modal.label"></span></h3>
+    <h3><span message key="unitsettings.kontakt.change.modal.label"></span></h3>
   </div>
 
   <div class="modal-body">
     <div ib-spinner label="unitsettings.spinner.loading" show-spinner="vm.loading">
       <form name="preferenceForm" class="form-horizontal" novalidate autocomplete="off">
-        <h4><span message key="unitsettings.change.adress.title"></span></h4>
+        <h4><span message key="unitsettings.kontakt.change.adress.title"></span></h4>
         <p>
-          <span message key="unitsettings.change.adress.desc"></span>
+          <span message key="unitsettings.kontakt.change.adress.desc"></span>
         </p>
 
         <div class="form-group">
           <ib-textfield
               id="mottagarNamn"
               model="vm.model.mottagarNamn"
-              label-key="unitsettings.form.mottagarnamn"
+              label-key="unitsettings.kontakt.form.mottagarnamn"
               max-length="255"
               label-col-size="2"
               input-col-size="10">
@@ -27,7 +27,7 @@
           <ib-textfield
               id="adress"
               model="vm.model.adress"
-              label-key="unitsettings.form.adress"
+              label-key="unitsettings.kontakt.form.adress"
               max-length="255"
               label-col-size="2"
               input-col-size="10">
@@ -39,7 +39,7 @@
           <ib-textfield
               id="postnummer"
               model="vm.model.postnummer"
-              label-key="unitsettings.form.postnummer"
+              label-key="unitsettings.kontakt.form.postnummer"
               max-length="255"
               label-col-size="2"
               input-col-size="3">
@@ -47,7 +47,7 @@
           <ib-textfield
               id="postort"
               model="vm.model.postort"
-              label-key="unitsettings.form.postort"
+              label-key="unitsettings.kontakt.form.postort"
               max-length="255"
               label-col-size="1"
               input-col-size="6">
@@ -58,7 +58,7 @@
           <ib-textfield
               id="telefonnummer"
               model="vm.model.telefonnummer"
-              label-key="unitsettings.form.telefonnummer"
+              label-key="unitsettings.kontakt.form.telefonnummer"
               max-length="255"
               label-col-size="2"
               input-col-size="3">
@@ -67,28 +67,13 @@
           <ib-textfield
               id="epost"
               model="vm.model.epost"
-              label-key="unitsettings.form.epost"
+              label-key="unitsettings.kontakt.form.epost"
               max-length="255"
               label-col-size="1"
               input-col-size="6">
           </ib-textfield>
         </div>
 
-
-        <h4><span message key="unitsettings.change.standardsvar.title"></span></h4>
-        <p>
-          <span message key="unitsettings.change.standardsvar.desc"></span>
-        </p>
-        <div class="form-group">
-          <ib-textarea
-              id="standardsvar"
-              model="vm.model.standardsvar"
-              required="false"
-              placeholder-text="Skriv standardsvar här"
-              max-length="255"
-              col-size="12">
-          </ib-textarea>
-        </div>
 
       </form>
     </div>

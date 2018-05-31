@@ -38,4 +38,5 @@ public interface VardenhetService {
     VardenhetPreferenceResponse getVardEnhetPreference(String hsaId);
 
     VardenhetPreferenceResponse setVardEnhetPreference(String hsaId, VardenhetPreferenceRequest vardenhetPreferenceRequest);
+    VardenhetPreferenceResponse setVardEnhetSvarPreference(String hsaId, String svar);
 }

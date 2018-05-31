@@ -49,3 +49,15 @@ Cypress.Commands.add("bytEnhet", (unitId) => {
     cy.get('.ib-header-care-unit-dialog-template').should('be.visible');
     cy.get('#ib-vardenhet-selector-select-active-unit-' + unitId + '-link').click();
 });
+
+Cypress.Commands.add("visaVEKontaktInstallningModal", () => {
+    cy.get('#expand-unitmenu-btn').click();
+    cy.get('#unitmenu-ve-contact-settings-link').click();
+    cy.get('#save-unit-settings-btn').should('be.visible');
+});
+Cypress.Commands.add("visaVESvarInstallningModal", () => {
+    cy.get('#expand-unitmenu-btn').click();
+    cy.get('#unitmenu-ve-standardsvar-settings-link').click();
+    cy.get('#save-unit-settings-btn').should('be.visible');
+});
+

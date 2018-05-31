@@ -1,4 +1,4 @@
-<div class="ib-header-directive-container last">
+<div class="ib-header-directive-container last" ng-class="{'expanded' : menu.expanded}">
 
   <i class="header-icon icon-ib-ikon-14 icon-ib-32"></i>
   <div class="vertical-container">
@@ -8,4 +8,21 @@
       <div class="truncate-when-needed ve-name" ng-attr-id="ib-header-unit-name">{{getUser().currentlyLoggedInAt.name}}</div>
     </div>
   </div>
+
+  <button type="button" id="expand-unitmenu-btn" class="btn btn-link" ng-click="toggleMenu($event)">
+    <i class="material-icons md-24">{{menu.expanded ? 'expand_less': 'expand_more'}}</i>
+  </button>
+</div>
+
+<!-- must be outside flex container to be able to relatively position it -->
+
+<div uib-dropdown is-open="menu.expanded">
+  <ul uib-dropdown-menu ng-if="getUser().currentlyLoggedInAt.type ==='VE'">
+    <li><a href="" id="unitmenu-ve-notification-settings-link" ng-click="onVENotificationSettingsClick()">Notifieringsinställningar för vårdenheten</a></li>
+    <li><a href="" id="unitmenu-ve-contact-settings-link" ng-click="onVEContactSettingsClick()">Kontaktuppgifter till vårdenheten</a></li>
+    <li><a href="" id="unitmenu-ve-standardsvar-settings-link" ng-click="onVESvarSettingsClick()">Standardsvar för vårdenheten</a></li>
+  </ul>
+  <ul uib-dropdown-menu ng-if="getUser().currentlyLoggedInAt.type ==='VG'">
+    <li><a href="" id="unitmenu-vg-notification-settings-link" ng-click="onVGNotificationSettingsClick()">Notifieringsinställningar för landstinget</a></li>
+  </ul>
 </div>

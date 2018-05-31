@@ -34,6 +34,45 @@ angular.module('ibApp').directive('ibHeaderUnit', [ '$uibModal', 'StatPollServic
 
             StatPollService.startPolling();
 
+            $scope.menu = {
+                expanded: false
+            };
+
+            $scope.toggleMenu = function($event) {
+                $event.stopPropagation();
+                $scope.menu.expanded = !$scope.menu.expanded;
+
+            };
+
+            $scope.onVEContactSettingsClick = function() {
+
+                var dlgInstance = $uibModal.open({
+                    templateUrl: '/components/appDirectives/ibAppHeader/ibHeaderUnit/edit-ve-kontakt/ibEditVEKontaktDialog.html',
+                    controller: 'ibEditVEKontaktDialogCtrl',
+                    size: 'md',
+                    id: 'ibEditVEAddressDialog',
+                    keyboard: true,
+                    windowClass: 'ib-header-unit-settings-dialog-window-class'
+                });
+                //angular > 1.5 warns if promise rejection is not handled (e.g backdrop-click == rejection)
+                dlgInstance.result.catch(function () {}); //jshint ignore:line
+
+            };
+            $scope.onVESvarSettingsClick = function() {
+
+                var dlgInstance = $uibModal.open({
+                    templateUrl: '/components/appDirectives/ibAppHeader/ibHeaderUnit/edit-ve-svar/ibEditVESvarDialog.html',
+                    controller: 'ibEditVESvarDialogCtrl',
+                    size: 'md',
+                    id: 'ibEditVESvarDialog',
+                    keyboard: true,
+                    windowClass: 'ib-header-unit-settings-dialog-window-class'
+                });
+                //angular > 1.5 warns if promise rejection is not handled (e.g backdrop-click == rejection)
+                dlgInstance.result.catch(function () {}); //jshint ignore:line
+
+            };
+
 
             $scope.$on('$destroy', function() {
                 //If no unit to display, then no stats to show either..

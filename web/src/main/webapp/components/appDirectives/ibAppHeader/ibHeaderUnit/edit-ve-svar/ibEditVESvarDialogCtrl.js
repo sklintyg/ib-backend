@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-angular.module('ibApp').controller('ibUnitSettingsDialogCtrl', [ '$scope', '$log', 'VardenhetProxy', function($scope, $log, VardenhetProxy) {
+angular.module('ibApp').controller('ibEditVESvarDialogCtrl', [ '$scope', '$log', 'VardenhetProxy', function($scope, $log, VardenhetProxy) {
     'use strict';
     $scope.vm = {
         model: null,
@@ -24,7 +24,7 @@ angular.module('ibApp').controller('ibUnitSettingsDialogCtrl', [ '$scope', '$log
         saving: false
     };
 
-    VardenhetProxy.getVardenhetPreference().then(function(vardenhetPreference) {
+    VardenhetProxy.getVardenhetSvarPreference().then(function(vardenhetPreference) {
         $scope.vm.model = vardenhetPreference;
     }, function(error) {
         $log.error('failed to load preference!' + error);
@@ -34,7 +34,10 @@ angular.module('ibApp').controller('ibUnitSettingsDialogCtrl', [ '$scope', '$log
 
     $scope.saveChanges = function() {
         $scope.vm.saving = true;
-        VardenhetProxy.setVardenhetPreference($scope.vm.model).then(function() {
+        var payload = {
+            standardsvar: $scope.vm.model.standardsvar
+        };
+        VardenhetProxy.setVardenhetSvarPreference(payload).then(function() {
             $scope.$dismiss();
         }, function(error) {
             $log.error('failed to save preference!' + error);

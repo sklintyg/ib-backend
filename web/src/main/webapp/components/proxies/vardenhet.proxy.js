@@ -21,7 +21,7 @@ angular.module('ibApp').factory('VardenhetProxy',
     function(ProxyTemplate) {
         'use strict';
 
-        function _getVardenhetPreference() {
+        function _getVardenhetKontaktPreference() {
             var restPath = '/api/vardenhet/preference';
 
             var config =  {
@@ -34,7 +34,7 @@ angular.module('ibApp').factory('VardenhetProxy',
             return ProxyTemplate.getTemplate(restPath, config);
         }
 
-        function _setVardenhetPreference(vardenhetPreferenceRequest) {
+        function _setVardenhetKontaktPreference(vardenhetPreferenceRequest) {
             var restPath = '/api/vardenhet/preference';
 
             var config =  {
@@ -46,10 +46,36 @@ angular.module('ibApp').factory('VardenhetProxy',
 
             return ProxyTemplate.putTemplate(restPath, vardenhetPreferenceRequest, config);
         }
+        function _getVardenhetSvarPreference() {
+            var restPath = '/api/vardenhet/preference/svar';
 
+            var config =  {
+                errorMessageConfig: {
+                    errorTitleKey: 'server.error.getvardenhetpreference.title',
+                    errorTextKey: 'server.error.getvardenhetpreference.text'
+                }
+            };
+
+            return ProxyTemplate.getTemplate(restPath, config);
+        }
+
+        function _setVardenhetSvarPreference(vardenhetSvarPreferenceRequest) {
+            var restPath = '/api/vardenhet/preference/svar';
+
+            var config =  {
+                errorMessageConfig: {
+                    errorTitleKey: 'server.error.setvardenhetpreference.title',
+                    errorTextKey: 'server.error.setvardenhetpreference.text'
+                }
+            };
+
+            return ProxyTemplate.putTemplate(restPath, vardenhetSvarPreferenceRequest, config);
+        }
         // Return public API for the service
         return {
-            getVardenhetPreference: _getVardenhetPreference,
-            setVardenhetPreference: _setVardenhetPreference
+            getVardenhetKontaktPreference: _getVardenhetKontaktPreference,
+            setVardenhetKontaktPreference: _setVardenhetKontaktPreference,
+            getVardenhetSvarPreference: _getVardenhetSvarPreference,
+            setVardenhetSvarPreference: _setVardenhetSvarPreference
         };
     });

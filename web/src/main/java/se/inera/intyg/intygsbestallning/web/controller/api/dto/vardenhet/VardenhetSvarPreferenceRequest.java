@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
@@ -16,42 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet;
 
-ib-intern-forfragan-header {
-  .ib-page-header {
-    padding: 10px 28px 10px 28px;
-    min-height: 120px;
-  }
-  ib-spinner .ib-spinner {
-    height: 83px;
-    padding: 10px;
-  }
-}
+/**
+ * Created by marced on 2018-05-31.
+ */
+public class VardenhetSvarPreferenceRequest {
 
-.page-header-divider {
-  border-bottom: 1px solid $ib-color-15;
-  padding-bottom: 5px;
-}
+    private String standardsvar;
 
-.flex-row {
-  display: flex;
-  flex-direction: row;
-}
-
-.flex-col-max {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-}
-.flex-col-min {
-  display: flex;
-  align-items: flex-end;
-  &.buttonbar {
-    ib-button {
-      margin-left: 10px;
+    public String getStandardsvar() {
+        return standardsvar;
     }
-  }
+
+    public void setStandardsvar(String standardsvar) {
+        this.standardsvar = standardsvar;
+    }
+
 }
-
-
-

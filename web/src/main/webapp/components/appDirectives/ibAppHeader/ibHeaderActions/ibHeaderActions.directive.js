@@ -27,7 +27,7 @@ angular.module('ibApp').directive('ibHeaderActions',
                 templateUrl: '/components/appDirectives/ibAppHeader/ibHeaderActions/ibHeaderActions.directive.html',
                 link: function($scope) {
 
-                    var aboutModalInstance, changeUnitDialogInstance, changeSystemRoleDialogInstance;
+                    var aboutModalInstance, changeSystemRoleDialogInstance;
 
                     $scope.user = UserModel.get();
 
@@ -36,12 +36,6 @@ angular.module('ibApp').directive('ibHeaderActions',
                             user.authoritiesTree && user.authoritiesTree.length > 1;
                     }
 
-                    function _canChangeUnitSettings(user) {
-                        return angular.isObject(user) && user.currentlyLoggedInAt &&
-                            user.currentlyLoggedInAt.type === 'VE';
-                    }
-
-
                     $scope.vm = {
                         expanded:  false
                     };
@@ -49,7 +43,6 @@ angular.module('ibApp').directive('ibHeaderActions',
                     function updateVm() {
                         $scope.vm.showAbout = $scope.user.loggedIn;
                         $scope.vm.showLogout = $scope.user.loggedIn;
-                        $scope.vm.showSettings = _canChangeUnitSettings($scope.user);
                         $scope.vm.showChangeSystemRole = _canChangeSystemRole($scope.user);
                     }
 
@@ -96,21 +89,6 @@ angular.module('ibApp').directive('ibHeaderActions',
 
 
 
-                    $scope.onSettingsClick = function() {
-
-                        changeUnitDialogInstance = $uibModal.open({
-                            templateUrl: '/components/appDirectives/ibAppHeader/ibHeaderActions/unit-settings/ibUnitSettingsDialog.html',
-                            controller: 'ibUnitSettingsDialogCtrl',
-                            size: 'md',
-                            id: 'ibUnitSettingsDialog',
-                            keyboard: true,
-                            windowClass: 'ib-header-unit-settings-dialog-window-class'
-                        });
-                        //angular > 1.5 warns if promise rejection is not handled (e.g backdrop-click == rejection)
-                        changeUnitDialogInstance.result.catch(function () {}); //jshint ignore:line
-
-                    };
-
                     $scope.onChangeSystemRoleClick = function() {
 
                         changeSystemRoleDialogInstance = $uibModal.open({
@@ -133,10 +111,7 @@ angular.module('ibApp').directive('ibHeaderActions',
                             aboutModalInstance.close();
                             aboutModalInstance = undefined;
                         }
-                        if (changeUnitDialogInstance) {
-                            changeUnitDialogInstance.close();
-                            changeUnitDialogInstance = undefined;
-                        }
+
                         if (changeSystemRoleDialogInstance) {
                             changeSystemRoleDialogInstance.close();
                             changeSystemRoleDialogInstance = undefined;

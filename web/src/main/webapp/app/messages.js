@@ -54,17 +54,19 @@ var ibMessages = {
 
         //Unit settings dialog
         'unitsettings.spinner.loading': 'Hämtar standsinställningar...',
-        'unitsettings.change.modal.label': 'Inställningar',
-        'unitsettings.change.adress.title': 'Hantera kontaktuppgifter',
-        'unitsettings.change.adress.desc': 'Denna adress är den som handlingar ska skickas till som standard. Du kan alltid ändra adressen i en enskild förfrågan innan du svarar.',
-        'unitsettings.form.mottagarnamn': 'Mottagare',
-        'unitsettings.form.adress': 'Postadress',
-        'unitsettings.form.postnummer': 'Postnummer',
-        'unitsettings.form.postort': 'Postort',
-        'unitsettings.form.telefonnummer': 'Telefonnummer',
-        'unitsettings.form.epost': 'Epost',
-        'unitsettings.change.standardsvar.title': 'Hantera standardsvar',
-        'unitsettings.change.standardsvar.desc': 'Denna text visas som standardkommentar när du svarar på en förfrågan. Du kan alltid ändra kommentaren i en enskild förfrågan innan du svarar.',
+        'unitsettings.kontakt.change.modal.label': 'Kontaktuppgifter för vårdenheten',
+        'unitsettings.kontakt.change.adress.title': 'Hantera kontaktuppgifter',
+        'unitsettings.kontakt.change.adress.desc': 'Denna adress är den som handlingar ska skickas till som standard. Du kan alltid ändra adressen i en enskild förfrågan innan du svarar.',
+        'unitsettings.kontakt.form.mottagarnamn': 'Mottagare',
+        'unitsettings.kontakt.form.adress': 'Postadress',
+        'unitsettings.kontakt.form.postnummer': 'Postnummer',
+        'unitsettings.kontakt.form.postort': 'Postort',
+        'unitsettings.kontakt.form.telefonnummer': 'Telefonnummer',
+        'unitsettings.kontakt.form.epost': 'Epost',
+
+        'unitsettings.svar.change.modal.label': 'Standardsvar för vårdenheten',
+        'unitsettings.svar.change.standardsvar.title': 'Hantera standardsvar',
+        'unitsettings.svar.change.standardsvar.desc': 'Denna text visas som standardkommentar när du svarar på en förfrågan. Du kan alltid ändra kommentaren i en enskild förfrågan innan du svarar.',
 
         // Skicka forfragan modal
         'skicka.forfragan.vardenheter.no.results': 'Det finns inga vårdenheter tillagda i landstinget.',

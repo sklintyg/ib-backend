@@ -64,6 +64,7 @@ ib-app-header {
     &.last {
       border-right: none;
     }
+
     // when in expanded mode (the menu is expanded), replace border divider with a boxshadow that makes it "pop" out a bit.
     &.expanded {
       border-color: transparent;
@@ -100,7 +101,7 @@ ib-app-header {
   .dropdown-menu {
     min-width: 0;
     position: relative;
-    padding: 20px 40px;
+    padding: 20px 20px;
     left: 0;
     bottom: 0;
     width: 100%;

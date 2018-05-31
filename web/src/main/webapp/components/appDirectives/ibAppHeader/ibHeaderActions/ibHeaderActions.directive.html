@@ -1,9 +1,3 @@
-<!-- Settings -->
-<div class="ib-header-directive-container hidden-sm hidden-xs" ng-if="vm.showSettings">
-  <button type="button" class="action-button text-nowrap" id="settingsLinkBtn" ng-click="onSettingsClick()">
-    <i class="material-icons md-24">message</i><br>Inställningar
-  </button>
-</div>
 
 <!-- System Role -->
 <div class="ib-header-directive-container hidden-sm hidden-xs" ng-if="vm.showChangeSystemRole">
@@ -36,7 +30,6 @@
 <div uib-dropdown is-open="vm.expanded" class="hidden-md hidden-lg">
   <div class="dropshadowfixer" ng-if="vm.expanded"></div>
   <ul uib-dropdown-menu>
-    <li ng-if="vm.showSettings"><a href="" id="settingsLinkBtn_dropdown" ng-click="onSettingsClick()">Inställningar</a></li>
     <li ng-if="vm.showChangeSystemRole"><a href="" id="changeSystemRoleLinkBtn_dropdown" ng-click="onChangeSystemRoleClick()">Byt roll</a></li>
     <li ng-if="vm.showAbout"><a href="" id="aboutLinkBtn_dropdown" ng-click="onAboutClick()">Om tjänsten</a></li>
     <li ng-if="vm.showLogout"><a href="" id="logoutLinkBtn_dropdown" ng-click="onLogoutClick()">Logga ut</a></li>

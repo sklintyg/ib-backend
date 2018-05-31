@@ -57,7 +57,6 @@ public class VardenhetServiceImpl implements VardenhetService {
         entity.setPostort(vardenhetPreferenceRequest.getPostort());
         entity.setTelefonnummer(vardenhetPreferenceRequest.getTelefonnummer());
         entity.setEpost(vardenhetPreferenceRequest.getEpost());
-        entity.setStandardsvar(vardenhetPreferenceRequest.getStandardsvar());
 
         return new VardenhetPreferenceResponse(vardenhetPreferenceRepository.save(entity));
     }
@@ -69,6 +68,13 @@ public class VardenhetServiceImpl implements VardenhetService {
 
     }
 
+    @Override
+    public VardenhetPreferenceResponse setVardEnhetSvarPreference(String hsaId, String svar) {
+        VardenhetPreference entity = vardenhetPreferenceRepository.findByVardenhetHsaId(hsaId)
+                .orElse(buildVardenhetPreference(hsaId, null));
+        entity.setStandardsvar(svar);
+        return new VardenhetPreferenceResponse(vardenhetPreferenceRepository.save(entity));
+    }
     @NotNull
     private VardenhetPreference buildVardenhetPreference(String hsaId, Vardenhet vardenhet) {
         VardenhetPreference initialPreference = new VardenhetPreference();

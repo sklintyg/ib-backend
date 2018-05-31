@@ -5,7 +5,11 @@ describe('smoketest appheader funktioner', function() {
         //Logga in som en vårdadministratör med användare som har flera roller/enheter
         cy.login('Harald Alltsson (Alla roller | Intygsbeställning)', 'linkoping');
 
-        cy.get('ib-header-actions #settingsLinkBtn').should('be.visible');
+        cy.get('#expand-unitmenu-btn').should('be.visible');
+        cy.get('#expand-unitmenu-btn').click();
+        cy.get('#unitmenu-ve-notification-settings-link').should('be.visible');
+        cy.get('#unitmenu-ve-contact-settings-link').should('be.visible');
+        cy.get('#unitmenu-ve-standardsvar-settings-link').should('be.visible');
 
         //öppna och stäng hjälpen
         cy.get('ib-header-actions #aboutLinkBtn').click();
@@ -17,6 +21,7 @@ describe('smoketest appheader funktioner', function() {
 
         cy.get('ib-header-user #ib-header-user-name').should('have.text', 'Harald Alltsson');
         cy.get('ib-header-user #ib-header-user-role').contains('FMU Vårdadministratör');
+
 
         //Byt till samordnare på Webcert-Vårdgivare 1
         cy.bytEnhet('IFV1239877878-1041');
@@ -37,7 +42,7 @@ describe('smoketest appheader funktioner', function() {
         cy.get('ib-header-user #ib-header-user-name').should('have.text', 'Ingbritt Filt');
         cy.get('ib-header-user #ib-header-user-role').contains('FMU Vårdadministratör');
 
-        cy.get('ib-header-actions #settingsLinkBtn').should('be.visible');
+        cy.get('#expand-unitmenu-btn').should('be.visible');
         cy.get('ib-header-actions #aboutLinkBtn').should('be.visible');
         cy.get('ib-header-actions #logoutLinkBtn').should('be.visible');
     });
