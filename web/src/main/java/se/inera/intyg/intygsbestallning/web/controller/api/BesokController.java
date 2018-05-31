@@ -35,8 +35,6 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokResp
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.ReportBesokAvvikelseVardenRequest;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/vardadmin/besok")
 public class BesokController {
