@@ -16,16 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.service.utlatande;
+package se.inera.intyg.intygsbestallning.web.controller.api.dto.utlatande;
 
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utlatande.SendUtlatandeRequest;
-import se.inera.intyg.intygsbestallning.web.responder.dto.ReportUtlatandeMottagetRequest;
+public class SendUtlatandeRequest {
+    private String utlatandeSentDate;
 
-public interface UtlatandeService {
+    public String getUtlatandeSentDate() {
+        return utlatandeSentDate;
+    }
 
-    UtredningStatus sendUtlatande(Long utredningId, SendUtlatandeRequest request, String vardenhetHsaId);
-
-    void reportUtlatandeMottaget(ReportUtlatandeMottagetRequest request);
-
+    public void setUtlatandeSentDate(String utlatandeSentDate) {
+        this.utlatandeSentDate = utlatandeSentDate;
+    }
 }

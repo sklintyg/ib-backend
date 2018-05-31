@@ -33,7 +33,9 @@ import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesV
 import se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
+import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
+import se.inera.intyg.intygsbestallning.service.utlatande.UtlatandeService;
 import se.inera.intyg.intygsbestallning.service.utredning.BestallningService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.AvslutadBestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.BestallningListItem;
@@ -43,6 +45,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.GetBe
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.ListAvslutadeBestallningarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.ListBestallningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.SaveFakturaForUtredningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utlatande.SendUtlatandeRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListAvslutadeBestallningarFilter;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListBestallningFilter;
 
@@ -57,6 +60,9 @@ public class BestallningController {
 
     @Autowired
     private BestallningService bestallningService;
+
+    @Autowired
+    private UtlatandeService utlatandeService;
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
@@ -142,6 +148,18 @@ public class BestallningController {
                 .orThrow(new IbAuthorizationException("User does not have required privilege PRIVILEGE_LISTA_BESTALLNINGAR"));
 
         bestallningService.saveFakturaIdForUtredning(utredningsId, request, user.getCurrentlyLoggedInAt().getId());
+        return ResponseEntity.ok().build();
+    }
+
+    @PrometheusTimeMethod(name = "send_utlatande_duration_seconds", help = "Some helpful info here")
+    @PostMapping(path = "/{utredningsId}/sendutlatande", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UtredningStatus> sendUtlatande(@PathVariable("utredningsId") Long utredningId,
+                                                         @RequestBody SendUtlatandeRequest request) {
+        IbUser user = userService.getUser();
+        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_BESTALLNINGAR)
+                .orThrow(new IbAuthorizationException("User does not have required privilege PRIVILEGE_LISTA_BESTALLNINGAR"));
+
+        utlatandeService.sendUtlatande(utredningId, request, user.getCurrentlyLoggedInAt().getId());
         return ResponseEntity.ok().build();
     }
 }

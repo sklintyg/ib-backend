@@ -148,6 +148,16 @@ public final class HandelseUtil {
                 .build();
     }
 
+
+    public static Handelse createUtlatandeSkickat(final String vardadministrator, final LocalDateTime skickatDatum) {
+        return aHandelse()
+                .withSkapad(LocalDateTime.now())
+                .withHandelseTyp(HandelseTyp.UTLATANDE_SKICKAT)
+                .withAnvandare(vardadministrator)
+                .withHandelseText(MessageFormat.format("Utlåtandet skickat {0}", skickatDatum.format(formatter)))
+                .build();
+    }
+
     public static Handelse createUtlatandeMottaget(final LocalDateTime mottagetDatum) {
         return aHandelse()
                 .withSkapad(LocalDateTime.now())

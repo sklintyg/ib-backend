@@ -33,7 +33,9 @@ import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
+import se.inera.intyg.intygsbestallning.persistence.model.Handling;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
+import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.MyndighetTyp;
@@ -55,7 +57,9 @@ import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuil
 import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
 import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
 import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
+import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU_UTVIDGAD;
 
@@ -73,6 +77,7 @@ public final class TestDataGen {
     private static final String CAREUNIT_ID = "careunit-1";
     private static final String CAREUNIT_NAME = "Vårdenhet 1";
     private static final Long UTREDNING_ID = 1L;
+    private static final String PERSON_ID = "19121212-1212";
 
     private TestDataGen() {
 
@@ -217,6 +222,12 @@ public final class TestDataGen {
                 .build());
     }
 
+    public static List<Besok> createBesok() {
+        return ImmutableList.of(aBesok()
+                .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
+                .build());
+    }
+
     public static List<Besok> createBesok(final RegisterBesokRequest request) {
         return ImmutableList.of(aBesok()
                 .withKallelseDatum(request.getKallelseDatum())
@@ -247,6 +258,7 @@ public final class TestDataGen {
     public static Bestallning createBestallning() {
         return aBestallning()
                 .withKommentar("2")
+                .withTilldeladVardenhetHsaId(getCareunitId())
                 .build();
     }
 
@@ -258,6 +270,18 @@ public final class TestDataGen {
                 .withKommentar("kommentar")
                 .build();
 
+    }
+
+    public static Invanare createInvanare() {
+        return anInvanare()
+                .withPersonId(PERSON_ID)
+                .build();
+    }
+
+    public static List<Handling> createHandling() {
+        return ImmutableList.of(aHandling()
+
+                .build());
     }
 
     private static Map<String, String> buildMiUPerEnhetsIdMap() {
@@ -272,6 +296,18 @@ public final class TestDataGen {
 
     private static SelectableVardenhet buildValdVardenhet(String hsaId, String namn) {
         return new Vardenhet(hsaId, namn);
+    }
+
+    public static Long getUtredningId() {
+        return UTREDNING_ID;
+    }
+
+    public static String getCareunitId() {
+        return CAREUNIT_ID;
+    }
+
+    public static String getPersonId() {
+        return PERSON_ID;
     }
 
     // CHECKSTYLE:ON MagicNumber

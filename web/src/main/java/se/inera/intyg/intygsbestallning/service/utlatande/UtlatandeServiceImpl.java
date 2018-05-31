@@ -18,19 +18,33 @@
  */
 package se.inera.intyg.intygsbestallning.service.utlatande;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import se.inera.intyg.intygsbestallning.auth.IbUser;
+import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
+import se.inera.intyg.intygsbestallning.service.pdl.LogService;
+import se.inera.intyg.intygsbestallning.service.pdl.dto.PatientPdlLoggable;
+import se.inera.intyg.intygsbestallning.service.pdl.dto.PdlLogType;
+import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utlatande.SendUtlatandeRequest;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportUtlatandeMottagetRequest;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -40,12 +54,54 @@ import static com.google.common.collect.MoreCollectors.onlyElement;
 @Transactional
 public class UtlatandeServiceImpl extends BaseUtredningService implements UtlatandeService {
 
+    public static final Logger LOG = LoggerFactory.getLogger(UtlatandeServiceImpl.class);
+
+    @Autowired
+    private LogService logService;
+
     private static Predicate<Intyg> isNotKomplettering() {
         return i -> !i.isKomplettering();
     }
 
     private static Predicate<Utredning> isKorrektStatus() {
         return utr -> UtredningStatus.UTLATANDE_SKICKAT == UtredningStatusResolver.resolveStaticStatus(utr);
+    }
+
+    @Override
+    public UtredningStatus sendUtlatande(Long utredningId, SendUtlatandeRequest request, String vardenhetHsaId) {
+
+        LocalDateTime utlatandeSentDate = parseDate(request).atStartOfDay();
+
+        Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
+                () -> new IbNotFoundException("Utredning with id '" + utredningId + "' does not exist."));
+        /*
+         * Visas endast i fas Utredning
+         * Inaktiverad i utredningsstatus Utlåtande skickat och Utlåtande mottaget
+         */
+        UtredningStatus status = UtredningStatusResolver.resolveStaticStatus(utredning);
+        if (status.getUtredningFas() != UtredningFas.UTREDNING || status == UtredningStatus.UTLATANDE_SKICKAT
+                || status == UtredningStatus.UTLATANDE_MOTTAGET) {
+            throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, "Utredning with id '" + utredningId + "' is in an incorrect state.");
+        }
+
+        if (!utredning.getBestallning().get().getTilldeladVardenhetHsaId().equals(vardenhetHsaId)) {
+            throw new IbAuthorizationException("Utredning with id '" + utredningId + "' is for another vardenhet");
+        }
+
+        Intyg intyg = utredning.getIntygList().stream()
+                .filter(isNotKomplettering())
+                .collect(onlyElement());
+
+        intyg.setSkickatDatum(utlatandeSentDate);
+
+        logService.log(new PatientPdlLoggable(utredning.getInvanare().getPersonId()), PdlLogType.UTREDNING_UPPDATERAD);
+
+        IbUser user = userService.getUser();
+        utredning.getHandelseList().add(HandelseUtil.createUtlatandeSkickat(user.getNamn(), utlatandeSentDate));
+
+        utredningRepository.save(utredning);
+
+        return UtredningStatusResolver.resolveStaticStatus(utredning);
     }
 
     @Override
@@ -69,5 +125,19 @@ public class UtlatandeServiceImpl extends BaseUtredningService implements Utlata
 
         optionalUtredning.get().getHandelseList().add(HandelseUtil.createUtlatandeMottaget(request.getMottagetDatum()));
         utredningRepository.save(optionalUtredning.get());
+    }
+
+    private LocalDate parseDate(SendUtlatandeRequest request) {
+        if (request.getUtlatandeSentDate() == null) {
+            LOG.error("SendUtlatandeRequest utlatandeSentDate is null");
+            throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, "utlatandeSentDate is missing");
+        }
+        try {
+            return LocalDate.parse(request.getUtlatandeSentDate(), DateTimeFormatter.ISO_DATE);
+        } catch (DateTimeParseException e) {
+            LOG.error("Unable to parse utlatandeSentDate, message: {}", e.getMessage());
+            throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, "Unable to parse utlatandeSentDate. "
+                    + "Valid format is yyyy-MM-dd");
+        }
     }
 }
