@@ -23,6 +23,11 @@ angular.module('ibApp').directive('ibBesok', function($log, $uibModal) {
         templateUrl: '/app/vardadmin/visaBestallning/ibBesok/ibBesok.directive.html',
         link: function($scope) {
 
+            $scope.laggTillBesokDisabled = function() {
+                return $scope.bestallning.fas.id !== 'UTREDNING' || $scope.bestallning.status.id === 'UTLATANDE_SKICKAT' ||
+                    $scope.bestallning.status.id === 'UTLATANDE_MOTTAGET';
+            };
+
             $scope.oppnaLaggTillBesok = function() {
                 openModal('laggTillBesok.modal.html', 'LaggTillBesokModalCtrl');
             };

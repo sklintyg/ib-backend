@@ -24,6 +24,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
 import se.inera.intyg.intygsbestallning.service.patient.Gender;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
+import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.HandelseListItem;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -63,6 +64,8 @@ public class GetBestallningResponse implements PDLLoggable {
 
     private UtredningStatus status;
 
+    private UtredningFas fas;
+
     private String intygSistaDatum;
 
     private String intygSistaDatumKomplettering;
@@ -98,6 +101,7 @@ public class GetBestallningResponse implements PDLLoggable {
                 .withBehovTolk(utredning.getTolkBehov() != null)
                 .withTolkSprak(utredning.getTolkSprak())
                 .withStatus(utredningStatus)
+                .withFas(utredningStatus.getUtredningFas())
                 .withIntygSistaDatum(utredning.getIntygList()
                         .stream()
                         .filter(intyg -> intyg.getSistaDatum() != null)
@@ -218,6 +222,14 @@ public class GetBestallningResponse implements PDLLoggable {
         this.status = status;
     }
 
+    public UtredningFas getFas() {
+        return fas;
+    }
+
+    public void setFas(UtredningFas fas) {
+        this.fas = fas;
+    }
+
     public String getIntygSistaDatum() {
         return intygSistaDatum;
     }
@@ -300,6 +312,7 @@ public class GetBestallningResponse implements PDLLoggable {
         private boolean behovTolk;
         private String tolkSprak;
         private UtredningStatus status;
+        private UtredningFas fas;
         private String intygSistaDatum;
         private String intygSistaDatumKomplettering;
         private String avbrutenDatum;
@@ -376,6 +389,11 @@ public class GetBestallningResponse implements PDLLoggable {
             return this;
         }
 
+        public GetBestallningResponseBuilder withFas(UtredningFas fas) {
+            this.fas = fas;
+            return this;
+        }
+
         public GetBestallningResponseBuilder withIntygSistaDatum(String datum) {
             this.intygSistaDatum = datum;
             return this;
@@ -430,6 +448,7 @@ public class GetBestallningResponse implements PDLLoggable {
             getBestallningResponse.setBehovTolk(behovTolk);
             getBestallningResponse.setTolkSprak(tolkSprak);
             getBestallningResponse.setStatus(status);
+            getBestallningResponse.setFas(fas);
             getBestallningResponse.setIntygSistaDatum(intygSistaDatum);
             getBestallningResponse.setIntygSistaDatumKomplettering(intygSistaDatumKomplettering);
             getBestallningResponse.setAvbrutenDatum(avbrutenDatum);
