@@ -58,9 +58,9 @@ angular.module('ibApp').directive('ibTimePicker',
 
                         if (rootElementOffset.top + rootElementOffset.height +
                             offsetDropdown.height > scrollTop + $document[0].documentElement.clientHeight) {
-                            plate[0].style.top = (offsetDropdown.height * -1) + 'px';
+                            plate[0].style.top = (offsetDropdown.height * -1) - 2 + 'px';
                         } else {
-                            plate[0].style.top = rootElementOffset.height + 'px';
+                            plate[0].style.top = rootElementOffset.height + 2 + 'px';
                         }
                         plate[0].style.opacity = 1;
                     });
@@ -84,7 +84,7 @@ angular.module('ibApp').directive('ibTimePicker',
                     var hour = parseInt(date.getHours(), 10);
                     var min = parseInt(date.getMinutes(), 10);
                     scope.time = (hour > 9 ? hour : '0' + hour) + ':' +
-                                (min > 9 ? min : '0' + min);
+                        (min > 9 ? min : '0' + min);
                 }
 
                 scope.$watch('model', function(newVal, oldVal) {
@@ -107,7 +107,7 @@ angular.module('ibApp').directive('ibTimePicker',
                 });
 
                 scope.updateTimeOnModel = function() {
-                    if(scope.time && scope.time.match(':').length > 0) {
+                    if (scope.time && scope.time.match(':').length > 0) {
                         var hour = parseInt(scope.time.split(':')[0], 10);
                         var min = parseInt(scope.time.split(':')[1], 10);
                         var date = new Date(scope.date);

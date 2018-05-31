@@ -23,10 +23,10 @@ ib-time-picker {
       color: $ib-color-09;
       pointer-events: none; /* this is a workaround for fieldset[disabled] not working correctly in IE11 */
     }
-  }/* this is a workaround for fieldset[disabled] not working correctly in IE11 */
+  }
 
   input.form-control[readonly] {
-      background-color: #fff;
+    background-color: #fff;
   }
 
   fieldset[disabled] & {
@@ -68,16 +68,35 @@ ib-time-picker {
     position: absolute;
     top: 0;
     background: #fff;
-    border: 1px solid #c0c0c0;
+    border: 1px solid #496CEC;
     border-radius: 4px;
 
-    .uib-time.hours, .uib-time.minutes {
-      padding: 0;
-    }
-
-    input {
-      border: none;
-      box-shadow: none;
+    .timepicker-template {
+      width: 85px;
+      display: flex;
+      flex-direction: column;
+      .flexrow {
+        flex: 0 0 38px;
+        display: flex;
+        text-align: center;
+        &.middle {
+          flex: 0 0 20px;
+        }
+        .arrow {
+          flex: 1 0 24px;
+          align-self: center;
+          cursor: pointer;
+          user-select: none;
+        }
+        .seperator {
+          flex: 0 0 1px;
+          align-self: center;
+        }
+        .minutes, .hours {
+          flex: 1 0 38px;
+          align-self: center;
+        }
+      }
     }
   }
 }
