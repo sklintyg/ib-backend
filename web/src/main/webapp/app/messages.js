@@ -63,6 +63,7 @@ var ibMessages = {
         'unitsettings.kontakt.form.postort': 'Postort',
         'unitsettings.kontakt.form.telefonnummer': 'Telefonnummer',
         'unitsettings.kontakt.form.epost': 'Epost',
+        'unitsettings.kontakt.form.fetchfromhsa': 'Hämta kontaktuppgifter från HSA katalogen',
 
         'unitsettings.svar.change.modal.label': 'Standardsvar för vårdenheten',
         'unitsettings.svar.change.standardsvar.title': 'Hantera standardsvar',
@@ -291,6 +292,8 @@ var ibMessages = {
         'server.error.accepterainternforfragan.text': 'Försök igen eller kontakta support',
         'server.error.avbojinternforfragan.title': 'Kunde inte avböja förfrågan',
         'server.error.avbojinternforfragan.text': 'Försök igen eller kontakta support',
+        'server.error.gethsainfo.title': 'Kunde inte hämta adressuppgifter från hsa',
+        'server.error.gethsainfo.text': 'Försök igen eller kontakta support',
 
         'common.error.spi.fel01': 'Ett tekniskt fel uppstod när vårdenheten skulle hämtas. Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraNationellKundservice>'
     },

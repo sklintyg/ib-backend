@@ -16,7 +16,7 @@ describe('Vårdadmin ange standardinställningar', function() {
         cy.get('#postnummer-input').type('{selectall}' + this.updatedSettings.postnummer);
         cy.get('#postort-input').type('{selectall}' + this.updatedSettings.postort);
         cy.get('#telefonnummer-input').type('{selectall}' + this.updatedSettings.telefonnummer);
-        cy.get('#epost-input').type('{selectall}' + this.updatedSettings.epost);
+        cy.get('#epost-input').type('{selectall}{backspace}' + this.updatedSettings.epost).blur();
 
 
         cy.get('#save-unit-settings-btn').click();

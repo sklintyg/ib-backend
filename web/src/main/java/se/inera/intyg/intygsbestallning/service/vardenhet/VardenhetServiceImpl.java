@@ -48,9 +48,15 @@ public class VardenhetServiceImpl implements VardenhetService {
     }
 
     @Override
+    public VardenhetPreferenceResponse getHsaAdressInfo(String hsaId) {
+        return new VardenhetPreferenceResponse(
+                buildVardenhetPreferenceFromHsaVardenhet(hsaId, hsaOrganizationsService.getVardenhet(hsaId)));
+    }
+
+    @Override
     public VardenhetPreferenceResponse setVardEnhetPreference(String hsaId, VardenhetPreferenceRequest vardenhetPreferenceRequest) {
         VardenhetPreference entity = vardenhetPreferenceRepository.findByVardenhetHsaId(hsaId)
-                .orElse(buildVardenhetPreference(hsaId, null));
+                .orElse(buildVardenhetPreferenceFromHsaVardenhet(hsaId, null));
         entity.setMottagarNamn(vardenhetPreferenceRequest.getMottagarNamn());
         entity.setAdress(vardenhetPreferenceRequest.getAdress());
         entity.setPostnummer(vardenhetPreferenceRequest.getPostnummer());
@@ -62,7 +68,8 @@ public class VardenhetServiceImpl implements VardenhetService {
     }
 
     private VardenhetPreference createInitialPreference(String hsaId) {
-        VardenhetPreference initialPreference = buildVardenhetPreference(hsaId, hsaOrganizationsService.getVardenhet(hsaId));
+        VardenhetPreference initialPreference = buildVardenhetPreferenceFromHsaVardenhet(hsaId,
+                hsaOrganizationsService.getVardenhet(hsaId));
 
         return vardenhetPreferenceRepository.save(initialPreference);
 
@@ -71,22 +78,23 @@ public class VardenhetServiceImpl implements VardenhetService {
     @Override
     public VardenhetPreferenceResponse setVardEnhetSvarPreference(String hsaId, String svar) {
         VardenhetPreference entity = vardenhetPreferenceRepository.findByVardenhetHsaId(hsaId)
-                .orElse(buildVardenhetPreference(hsaId, null));
+                .orElse(buildVardenhetPreferenceFromHsaVardenhet(hsaId, null));
         entity.setStandardsvar(svar);
         return new VardenhetPreferenceResponse(vardenhetPreferenceRepository.save(entity));
     }
+
     @NotNull
-    private VardenhetPreference buildVardenhetPreference(String hsaId, Vardenhet vardenhet) {
-        VardenhetPreference initialPreference = new VardenhetPreference();
-        initialPreference.setVardenhetHsaId(hsaId);
+    private VardenhetPreference buildVardenhetPreferenceFromHsaVardenhet(String hsaId, Vardenhet vardenhet) {
+        VardenhetPreference preference = new VardenhetPreference();
+        preference.setVardenhetHsaId(hsaId);
         if (vardenhet != null) {
-            initialPreference.setMottagarNamn(vardenhet.getNamn());
-            initialPreference.setAdress(vardenhet.getPostadress());
-            initialPreference.setPostnummer(vardenhet.getPostnummer());
-            initialPreference.setPostort(vardenhet.getPostort());
-            initialPreference.setTelefonnummer(vardenhet.getTelefonnummer());
-            initialPreference.setEpost(vardenhet.getEpost());
+            preference.setMottagarNamn(vardenhet.getNamn());
+            preference.setAdress(vardenhet.getPostadress());
+            preference.setPostnummer(vardenhet.getPostnummer());
+            preference.setPostort(vardenhet.getPostort());
+            preference.setTelefonnummer(vardenhet.getTelefonnummer());
+            preference.setEpost(vardenhet.getEpost());
         }
-        return initialPreference;
+        return preference;
     }
 }

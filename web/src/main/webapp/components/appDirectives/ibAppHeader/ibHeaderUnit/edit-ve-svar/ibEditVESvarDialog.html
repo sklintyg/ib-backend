@@ -28,7 +28,21 @@
   </div>
 
   <div class="modal-footer">
-    <button type="button" class="btn btn-primary" id="save-unit-settings-btn" ng-click="saveChanges()" ng-disabled="vm.loading || vm.saving"><span message key="common.save"></span></button>
-    <button type="button" class="btn btn-default" id="cancel-unit-settings-btn" ng-click="$dismiss()"><span message key="common.cancel"></span></button>
+    <ib-button
+        btn-id="save-unit-settings-btn"
+        btn-class="btn-primary"
+        btn-disabled="false"
+        busy="vm.loading || vm.saving"
+        btn-click="saveChanges()">
+      <span message key="common.save"></span>
+    </ib-button>
+
+    <ib-button
+        btn-id="cancel-unit-settings-btn"
+        btn-class="btn-default"
+        btn-disabled="false"
+        btn-click="$dismiss()">
+      <span message key="common.cancel"></span>
+    </ib-button>
   </div>
 </div>

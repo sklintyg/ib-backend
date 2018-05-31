@@ -41,7 +41,6 @@ public class VardenhetControllerIT extends BaseRestIntegrationTest {
     private static final String POSTORT = "Vårdberga";
     private static final String TELEFONNUMMER = "000-12345";
     private static final String EPOST = "ve@vg.se";
-    private static final String STANDARDSVAR = "Hej och hå!";
 
     @Test
     public void testGetVardenhetPreference() {
@@ -76,8 +75,7 @@ public class VardenhetControllerIT extends BaseRestIntegrationTest {
                 .body(matchesJsonSchemaInClasspath("jsonschema/ib-vardenhet-preference-response-schema.json"))
                 .body("mottagarNamn", Matchers.isEmptyOrNullString()).body("adress", Matchers.isEmptyOrNullString())
                 .body("postnummer", Matchers.isEmptyOrNullString()).body("postort", Matchers.isEmptyOrNullString())
-                .body("telefonnummer", Matchers.isEmptyOrNullString()).body("epost", Matchers.isEmptyOrNullString())
-                .body("standardsvar", Matchers.isEmptyOrNullString());
+                .body("telefonnummer", Matchers.isEmptyOrNullString()).body("epost", Matchers.isEmptyOrNullString());
     }
 
 }

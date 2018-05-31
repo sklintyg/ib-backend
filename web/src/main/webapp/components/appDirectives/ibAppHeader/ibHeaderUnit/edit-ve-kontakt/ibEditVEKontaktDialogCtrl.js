@@ -21,7 +21,8 @@ angular.module('ibApp').controller('ibEditVEKontaktDialogCtrl', [ '$scope', '$lo
     $scope.vm = {
         model: null,
         loading: true,
-        saving: false
+        saving: false,
+        fetchinghsa: false
     };
 
     VardenhetProxy.getVardenhetKontaktPreference().then(function(vardenhetPreference) {
@@ -40,6 +41,21 @@ angular.module('ibApp').controller('ibEditVEKontaktDialogCtrl', [ '$scope', '$lo
             $log.error('failed to save preference!' + error);
         }).finally(function() { // jshint ignore:line
             $scope.vm.saving = false;
+        });
+    };
+    $scope.getFromHsa = function() {
+        $scope.vm.fetchinghsa = true;
+        VardenhetProxy.getHsaInfo().then(function(hsaResponse) {
+            $scope.vm.model.mottagarNamn = hsaResponse.mottagarNamn;
+            $scope.vm.model.adress = hsaResponse.adress;
+            $scope.vm.model.postnummer = hsaResponse.postnummer;
+            $scope.vm.model.postort = hsaResponse.postort;
+            $scope.vm.model.telefonnummer = hsaResponse.telefonnummer;
+            $scope.vm.model.epost = hsaResponse.epost;
+        }, function(error) {
+            $log.error('failed to get from hsa preference!' + error);
+        }).finally(function() { // jshint ignore:line
+            $scope.vm.fetchinghsa = false;
         });
     };
 

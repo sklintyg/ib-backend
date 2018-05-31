@@ -46,6 +46,7 @@ angular.module('ibApp').factory('VardenhetProxy',
 
             return ProxyTemplate.putTemplate(restPath, vardenhetPreferenceRequest, config);
         }
+
         function _getVardenhetSvarPreference() {
             var restPath = '/api/vardenhet/preference/svar';
 
@@ -71,11 +72,25 @@ angular.module('ibApp').factory('VardenhetProxy',
 
             return ProxyTemplate.putTemplate(restPath, vardenhetSvarPreferenceRequest, config);
         }
+
+        function _getHsaInfo() {
+            var restPath = '/api/vardenhet/fromhsa';
+
+            var config =  {
+                errorMessageConfig: {
+                    errorTitleKey: 'server.error.gethsainfo.title',
+                    errorTextKey: 'server.error.gethsainfo.text'
+                }
+            };
+
+            return ProxyTemplate.getTemplate(restPath, config);
+        }
         // Return public API for the service
         return {
             getVardenhetKontaktPreference: _getVardenhetKontaktPreference,
             setVardenhetKontaktPreference: _setVardenhetKontaktPreference,
             getVardenhetSvarPreference: _getVardenhetSvarPreference,
-            setVardenhetSvarPreference: _setVardenhetSvarPreference
+            setVardenhetSvarPreference: _setVardenhetSvarPreference,
+            getHsaInfo: _getHsaInfo
         };
     });
