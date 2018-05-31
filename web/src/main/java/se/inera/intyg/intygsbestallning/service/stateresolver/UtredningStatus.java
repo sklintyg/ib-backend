@@ -64,7 +64,7 @@ public enum UtredningStatus implements SortableLabel {
 
     // Tillfälligt tillstånd som skall tas bort efter utveckling är klara med datamodell och state resolver.
 
-    INVALID("Åtgiltigt tillstånd", UtredningFas.AVSLUTAD, NONE);
+    INVALID("Ogiltigt tillstånd", UtredningFas.AVSLUTAD, NONE);
     private final String id;
     private final String label;
     private final UtredningFas utredningFas;

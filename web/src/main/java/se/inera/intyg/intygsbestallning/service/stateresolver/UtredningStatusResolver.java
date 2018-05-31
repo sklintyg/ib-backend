@@ -97,6 +97,10 @@ public class UtredningStatusResolver {
                             && intyg.getSistaDatumKompletteringsbegaran().isAfter(LocalDateTime.now())))) {
                 return UtredningStatus.UTLATANDE_MOTTAGET;
             }
+
+            // Om vi har enbart 1 intyg så finns ej någon komplettering.
+            // Om intyget har skickats, men ej tagit emot av FK och ev. slutDatum passerats,
+            // vad gör vi då?
         }
 
         // Slutfas. Denna kontroll måste ske före vi tittar detaljerat på kompletteringar.

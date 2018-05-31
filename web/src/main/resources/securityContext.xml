@@ -420,9 +420,18 @@
       <constructor-arg ref="parserPool"/>
     </bean>
 
-    <!-- Provider of default SAML Context -->
+    <!-- Provider of default SAML Context
     <bean id="contextProvider" class="org.springframework.security.saml.context.SAMLContextProviderImpl">
         <property name="keyManager" ref="keyManager" />
+    </bean>
+    -->
+    <bean id="contextProvider" class="org.springframework.security.saml.context.SAMLContextProviderLB">
+      <property name="scheme" value="https"/>
+      <property name="serverName" value="${ib.server}"/>
+      <property name="serverPort" value="443"/>
+      <property name="includeServerPortInRequestURL" value="false"/>
+      <property name="contextPath" value="/"/>
+      <property name="keyManager" ref="keyManager" />
     </bean>
 
     <!-- Logout handler terminating local session -->
