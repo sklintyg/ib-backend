@@ -74,7 +74,8 @@ gretty {
                '-Dspring.profiles.active=dev,ib-stub,caching-enabled',
                '-Dconfig.file=' + projectDir + '/src/main/resources/dev.properties',
                '-Dcredentials.file=' + projectDir + '/src/main/resources/dev-credentials.properties',
-               '-Dresources.folder=/' +projectDir + '/../src/main/resources',
+               '-Dresources.folder=/' + projectDir + '/../src/main/resources',
+               '-Dcertificate.folder=/' + projectDir + '/../devops/openshift/test/env',
                '-XX:MaxPermSize=256M'
                ]
 

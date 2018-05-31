@@ -19,12 +19,16 @@
 package se.inera.intyg.intygsbestallning.integration.myndighet.config;
 
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.rivtabp21.ReportCareContactResponderInterface;
+import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.rivtabp21.ReportDeviationResponderInterface;
 import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.rivtabp21.RespondToPerformerRequestResponderInterface;
+import se.riv.intygsbestallning.certificate.order.updateassessment.v1.rivtabp21.UpdateAssessmentResponderInterface;
 
 @Configuration
 @Profile("!ib-stub")
@@ -33,11 +37,47 @@ public class MyndighetIntegrationClientConfiguration {
     @Value("${ib.myndighet.integration.url}")
     private String ntjpWsUrl;
 
+    @Value("${respondtoperformerrequest.url}")
+    private String respondtoperformerrequestUrl;
+
+    @Value("${updateassessment.url}")
+    private String updateassessmentUrl;
+
+    @Value("${reportcarecontact.url}")
+    private String reportcarecontactUrl;
+
+    @Value("${reportdeviation.url}")
+    private String reportdeviationUrl;
+
     @Bean
     public RespondToPerformerRequestResponderInterface respondToPerformerRequestResponderClient() {
         JaxWsProxyFactoryBean proxyFactoryBean = new JaxWsProxyFactoryBean();
-        proxyFactoryBean.setAddress(ntjpWsUrl);
+        proxyFactoryBean.setAddress(ntjpWsUrl + respondtoperformerrequestUrl);
         proxyFactoryBean.setServiceClass(RespondToPerformerRequestResponderInterface.class);
         return (RespondToPerformerRequestResponderInterface) proxyFactoryBean.create();
+    }
+
+    @Bean
+    public UpdateAssessmentResponderInterface respondToUpdateAssessmentResponderClient() {
+        JaxWsProxyFactoryBean proxyFactoryBean = new JaxWsProxyFactoryBean();
+        proxyFactoryBean.setAddress(ntjpWsUrl + updateassessmentUrl);
+        proxyFactoryBean.setServiceClass(UpdateAssessmentResponderInterface.class);
+        return (UpdateAssessmentResponderInterface) proxyFactoryBean.create();
+    }
+
+    @Bean
+    public ReportCareContactResponderInterface respondToReportCareContactResponderClient() {
+        JaxWsProxyFactoryBean proxyFactoryBean = new JaxWsProxyFactoryBean();
+        proxyFactoryBean.setAddress(ntjpWsUrl + reportcarecontactUrl);
+        proxyFactoryBean.setServiceClass(ReportCareContactResponderInterface.class);
+        return (ReportCareContactResponderInterface) proxyFactoryBean.create();
+    }
+    @Bean
+    @Qualifier("reportDeviationResponderMyndighet")
+    public ReportDeviationResponderInterface respondToReportDeviationResponderClient() {
+        JaxWsProxyFactoryBean proxyFactoryBean = new JaxWsProxyFactoryBean();
+        proxyFactoryBean.setAddress(ntjpWsUrl + reportdeviationUrl);
+        proxyFactoryBean.setServiceClass(ReportDeviationResponderInterface.class);
+        return (ReportDeviationResponderInterface) proxyFactoryBean.create();
     }
 }

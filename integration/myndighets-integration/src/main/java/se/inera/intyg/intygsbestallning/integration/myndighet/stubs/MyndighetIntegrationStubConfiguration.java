@@ -30,7 +30,7 @@ import se.riv.intygsbestallning.certificate.order.respondtoorder.v1.rivtabp21.Re
 
 @Configuration
 @ComponentScan("se.inera.intyg.intygsbestallning.integration.myndighet.stubs")
-@Profile({"dev", "ib-stub" })
+@Profile("ib-stub")
 public class MyndighetIntegrationStubConfiguration {
 
     @Autowired
