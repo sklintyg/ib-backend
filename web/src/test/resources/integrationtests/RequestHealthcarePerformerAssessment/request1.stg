@@ -33,7 +33,7 @@ request(data) ::= <<
             <urn2:phoneNumber>$data.handlaggareTelefonnummer$</urn2:phoneNumber>
             <urn2:email>$data.handlaggareEpost$</urn2:email>
             <urn2:authority>
-               <urn2:code>FK</urn2:code>
+               <urn2:code>FKASSA</urn2:code>
                <urn2:codeSystem></urn2:codeSystem>
                <urn2:codeSystemName></urn2:codeSystemName>
                <urn2:codeSystemVersion></urn2:codeSystemVersion>

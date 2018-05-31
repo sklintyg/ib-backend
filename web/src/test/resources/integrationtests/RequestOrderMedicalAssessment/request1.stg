@@ -50,7 +50,7 @@ request(data) ::= <<
             <!--Optional:-->
             <urn2:email>$data.handlaggareEpost$</urn2:email>
             <urn2:authority>
-               <urn2:code>FK</urn2:code>
+               <urn2:code>FKASSA</urn2:code>
                <urn2:codeSystem></urn2:codeSystem>
                <!--You may enter ANY elements at this point-->
             </urn2:authority>
