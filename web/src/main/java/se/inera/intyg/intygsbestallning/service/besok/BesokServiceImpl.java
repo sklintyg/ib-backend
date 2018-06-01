@@ -103,9 +103,9 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
 
         if (isOtherProfessionThanLakare(utredning, besok)) {
             utredning.setUtredningsTyp(UtredningsTyp.AFU_UTVIDGAD);
-            utredningRepository.save(utredning);
             reportBesok(utredning, besok);
             final LocalDateTime nyttSistaDatum = updateUtredningWithUtredningsTypAfuUtvidgad(utredning);
+            utredningRepository.save(utredning);
             return RegisterBesokResponse.withUpdatedUtredningsTyp(nyttSistaDatum.toString());
         } else {
             utredningRepository.save(utredning);
@@ -160,7 +160,6 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
 
         if (utredning.getIntygList().size() == 1 && !utredning.getIntygList().get(0).isKomplettering()) {
             utredning.getIntygList().get(0).setSistaDatum(nyttSistaDatum);
-            utredningRepository.save(utredning);
             return nyttSistaDatum;
         }
 
