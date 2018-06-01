@@ -47,6 +47,10 @@ angular.module('ibApp').directive('ibTimePicker',
                 }
 
                 function open() {
+                    if (!DateUtilsService.isDate(scope.date)) {
+                        scope.date = new Date();
+                        setTimeStringFromDate(scope.date);
+                    }
                     $window.document.addEventListener('click', onDocumentClick, true);
 
                     $timeout(function() {
@@ -90,7 +94,12 @@ angular.module('ibApp').directive('ibTimePicker',
                     if (scope.time && scope.time.match(':').length > 0) {
                         var hour = parseInt(scope.time.split(':')[0], 10);
                         var min = parseInt(scope.time.split(':')[1], 10);
-                        var date = new Date(scope.date);
+                        var date;
+                        if (!DateUtilsService.isDate(scope.date)) {
+                            date = new Date();
+                        } else {
+                            date = new Date(scope.date);
+                        }
 
                         date.setHours(hour);
                         date.setMinutes(min);
