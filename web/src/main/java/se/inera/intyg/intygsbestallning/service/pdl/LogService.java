@@ -18,11 +18,10 @@
  */
 package se.inera.intyg.intygsbestallning.service.pdl;
 
+import java.util.List;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PdlLogType;
-
-import java.util.List;
 
 /**
  * @author eriklupander on 2016-02-18.

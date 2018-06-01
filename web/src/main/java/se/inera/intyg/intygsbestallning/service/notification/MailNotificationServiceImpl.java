@@ -206,6 +206,30 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     }
 
     @Override
+    public void notifyAvvikelseRapporteradAvMyndighet(final Utredning utredning, final Long besokId) {
+
+        final Besok besok = utredning.getBesokList().stream()
+                .filter(b -> b.getId().equals(besokId))
+                .collect(toOptional())
+                .orElseThrow(() -> new IbServiceException(IbErrorCodeEnum.BAD_STATE,
+                        MessageFormat.format("Can not notify for a Besok with id {0} that does not exist", besokId)));
+
+        checkState(nonNull(utredning.getExternForfragan()));
+        checkState(nonNull(utredning.getExternForfragan().getLandstingHsaId()));
+        checkState(nonNull(utredning.getExternForfragan().getInternForfraganList());
+
+        final String vardenhetHsaId = utredning.getExternForfragan().getLandstingHsaId();
+        final String email = vardenhetService.getVardEnhetPreference(vardenhetHsaId).getEpost();
+        final String besokStartDatum = besok.getBesokStartTid().format(DateTimeFormatter.ISO_DATE);
+        final String body = mailNotificationBodyFactory.buildBodyForUtredning(
+                MessageFormat.format("En vårdenhet har rapporterat en avvikelse för ett besök som var inbokat {0} i utredning {1}.",
+                        besokStartDatum, utredning.getUtredningId()),
+                "<URL to EXTERNFORFRAGAN>");
+
+        send(email, SUBJECT_NY_FMU_EXTERN_FORFRAGAN, body);
+    }
+
+    @Override
     public void notifyNyExternForfragan(final Utredning utredning) {
 
         checkState(nonNull(utredning.getExternForfragan()));
