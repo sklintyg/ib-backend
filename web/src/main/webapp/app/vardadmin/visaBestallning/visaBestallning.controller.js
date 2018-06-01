@@ -19,7 +19,7 @@
 
 angular.module('ibApp')
     .controller('VisaBestallningCtrl',
-        function($log, $scope, $stateParams, BestallningarProxy) {
+        function($log, $scope, $stateParams, $state, BestallningarProxy) {
             'use strict';
 
             $scope.vm = {
@@ -27,6 +27,9 @@ angular.module('ibApp')
             };
 
             function getStartTab() {
+                if ($stateParams.activeTab) {
+                    return parseInt($stateParams.activeTab, 10);
+                }
                 switch($scope.bestallning.status.id) {
                 case 'TILLDELAD_VANTAR_PA_BESTALLNING':
                 case 'BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR':
@@ -49,5 +52,9 @@ angular.module('ibApp')
             }).finally(function() { // jshint ignore:line
                 $scope.vm.loading = false;
             });
+
+            $scope.setActive = function(index) {
+                $state.go($state.current.name, {utredningsId: $stateParams.utredningsId, activeTab: index});
+            };
         }
     );

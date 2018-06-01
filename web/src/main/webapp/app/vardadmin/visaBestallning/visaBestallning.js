@@ -20,7 +20,7 @@
 angular.module('ibApp').config(function($stateProvider) {
     'use strict';
     $stateProvider.state('app.vardadmin.pagaendeBestallningar.visaBestallning', {
-        url: '/visaBestallning/:utredningsId',
+        url: '/visaBestallning/:utredningsId/:activeTab',
         views: {
             'navbar@': {
                 template: '<ib-main-menu/>'
@@ -31,7 +31,7 @@ angular.module('ibApp').config(function($stateProvider) {
             }
         }
     }).state('app.vardadmin.avslutadeBestallningar.visaBestallning', {
-        url: '/visaBestallning/:utredningsId',
+        url: '/visaBestallning/:utredningsId/:activeTab',
         views: {
             'navbar@': {
                 template: '<ib-main-menu/>'

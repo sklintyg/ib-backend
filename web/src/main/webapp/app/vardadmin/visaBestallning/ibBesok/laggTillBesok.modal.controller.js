@@ -37,10 +37,8 @@ angular.module('ibApp')
 
             $scope.investigativePersonnel = 'Namn på utredande vårdpersonal';
 
-            $scope.interpreter = {
-                id: 'none',
-                state: 'Bokat'
-            };
+            $scope.besokStartTid = '';
+            $scope.besokSlutTid = '';
 
             $scope.besok = {
                 utredningId: utredningsId,
@@ -64,11 +62,14 @@ angular.module('ibApp')
             $scope.send = function () {
                 $scope.besok.kallelseDatum = new Date($scope.besok.kallelseDatum);
                 $scope.besok.besokDatum = new Date($scope.besok.besokDatum);
-                $scope.besok.besokStartTid = formatTime($scope.besok.besokStartTid);
-                $scope.besok.besokSlutTid = formatTime($scope.besok.besokSlutTid);
-                //console.log($scope.besok);
-                BesokProxy.createBesok($scope.besok);
-                $uibModalInstance.close();
+                $scope.besok.besokStartTid = formatTime($scope.besokStartTid);
+                $scope.besok.besokSlutTid = formatTime($scope.besokSlutTid);
+                BesokProxy.createBesok($scope.besok).then(function() {
+                    $uibModalInstance.close();
+                }, function() {
+                    //show felmeddelande
+                });
+                
             };
 
 
