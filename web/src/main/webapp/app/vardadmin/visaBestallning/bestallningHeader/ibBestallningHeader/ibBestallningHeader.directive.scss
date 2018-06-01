@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
@@ -16,20 +16,57 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-angular.module('ibApp').directive('ibUtredningHeader', function($window, $state) {
-    'use strict';
 
-    return {
-        restrict: 'E',
-        scope: {
-            utredning: '=',
-            utredningVm: '='
-        },
-        templateUrl: '/app/samordnare/visaUtredning/utredningHeader/ibUtredningHeader/ibBestallningHeader.directive.html',
-        link: function($scope) {
-            $scope.back = function(){
-                $state.go('^');
-            };
-        }
-    };
-});
+ib-bestallning-header {
+  width: 100%;
+
+  h3 {
+    margin-top: 7px;
+    margin-bottom: 3px;
+    font-weight: 300;
+  }
+
+  a {
+    color: $ib-color-07;
+    text-decoration: underline;
+  }
+  a:hover {
+    color: #496CEC; }
+
+  ib-spinner .ib-spinner {
+    height: 83px;
+    padding: 10px;
+  }
+  i.material-icons {
+    font-size: 16px;
+  }
+}
+
+.page-header-divider {
+  border-bottom: 1px solid $ib-color-15;
+  padding-bottom: 7px;
+  margin-bottom: 7px;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.flex-col-max {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+.flex-col-min {
+  display: flex;
+  align-items: flex-end;
+}
+
+ib-bestallning-header .ib-page-header {
+  padding: 10px 28px 10px 28px;
+}
+
+#tillbakaButton {
+  margin-right: 50px;
+}

@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
@@ -16,20 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-angular.module('ibApp').directive('ibUtredningHeader', function($window, $state) {
-    'use strict';
 
-    return {
-        restrict: 'E',
-        scope: {
-            utredning: '=',
-            utredningVm: '='
-        },
-        templateUrl: '/app/samordnare/visaUtredning/utredningHeader/ibUtredningHeader/ibBestallningHeader.directive.html',
-        link: function($scope) {
-            $scope.back = function(){
-                $state.go('^');
-            };
-        }
-    };
-});
+ib-bestallning-button-bar {
+  padding-left: 60px;
+
+  button {
+    display: inline-block;
+    margin-right: 10px;
+      min-height: 38px;
+
+  }
+}

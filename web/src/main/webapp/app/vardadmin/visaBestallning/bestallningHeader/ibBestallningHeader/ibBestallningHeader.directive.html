@@ -1,0 +1,62 @@
+<div class="ib-page-header">
+  <ib-spinner label="common.load.loading" show-spinner="false">
+    <div class="centered-constrained-content">
+
+      <!-- page error message -->
+      <div ng-if="bestallningViewState.activeErrorMessageKey">
+        <ib-alert-message id="intyg-load-error" ng-show="bestallningViewState.common.doneLoading"
+                          alert-severity="danger">
+            <span dynamic-label key="{{bestallningViewState.common.activeErrorMessageKey}}"></span>
+        </ib-alert-message>
+      </div>
+
+      <!-- header content -->
+      <div ng-if="!bestallningViewState.activeErrorMessageKey" id="bestallning-header-status">
+
+        <!-- Status -->
+        <div class="page-header-divider">
+          <span>
+            <a ng-click="back()"
+               uib-popover="Tillbaka."
+               popover-trigger="mouseenter"
+               popover-popup-delay="300"
+               popover-append-to-body="true"
+               popover-placement="auto top"
+               popover-class="z-low">
+              <i class="material-icons">arrow_back</i>
+            </a><a
+                id="tillbakaButton"
+                ng-click="back()">Tillbaka
+            </a>
+          </span>
+
+          <ib-bestallning-header-status bestallning="bestallning"></ib-bestallning-header-status>
+
+          <span ng-switch="bestallning.fas.id">
+            <span ng-switch-when="FORFRAGAN">Svarsdatum:</span>
+            <span ng-switch-when="UTREDNING">Slutdatum:</span>
+            <span ng-switch-when="KOMPLETTERING">Slutdatum:</span>
+          </span>
+          {{bestallning.slutdatumFas}}
+
+        </div>
+
+        <div class="flex-row padding-top-small">
+          <div class="flex-col-max">
+            <!-- Header text -->
+            <h2 class="page-heading1">
+              <span>{{bestallning.utredningsId}}</span>
+            </h2>
+            <h3>
+              <span>{{bestallning.invanare.name}} - {{bestallning.invanare.personId}}</span>
+            </h3>
+          </div>
+          <div class="flex-col-min">
+            <!-- Buttonbar -->
+            <ib-bestallning-button-bar bestallning="bestallning" bestallning-vm="bestallningVm"></ib-bestallning-button-bar>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ib-spinner>
+</div>

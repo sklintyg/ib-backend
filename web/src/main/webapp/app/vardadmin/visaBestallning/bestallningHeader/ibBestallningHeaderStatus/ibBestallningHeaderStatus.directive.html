@@ -1,0 +1,11 @@
+<span class="status-slot">
+  <i class="material-icons kraver-atgard" ng-if="bestallning.kraverAtgard">error</i>
+  <i class="material-icons kraver-atgard-annan" ng-if="!bestallning.kraverAtgard && bestallning.status.id!=='NONE'">alarm</i>
+  <i class="material-icons avslutad" ng-if="bestallning.status.id === 'AVSLUTAD'">archive</i>
+  {{bestallning.status.label}}
+</span>
+<span class="status-slot">
+  <i class="material-icons slut-datum">event_available</i>
+  {{bestallning.besvarasSenastDatum}}
+</span>
+

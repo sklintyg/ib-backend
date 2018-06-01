@@ -16,16 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-angular.module('ibApp').directive('ibUtredningHeader', function($window, $state) {
+angular.module('ibApp').directive('ibBestallningHeader', function($window, $state) {
     'use strict';
 
     return {
         restrict: 'E',
         scope: {
-            utredning: '=',
-            utredningVm: '='
+            bestallning: '=',
+            bestallningVm: '='
         },
-        templateUrl: '/app/samordnare/visaUtredning/utredningHeader/ibUtredningHeader/ibBestallningHeader.directive.html',
+        templateUrl: '/app/vardadmin/visaBestallning/bestallningHeader/ibBestallningHeader/ibBestallningHeader.directive.html',
         link: function($scope) {
             $scope.back = function(){
                 $state.go('^');
