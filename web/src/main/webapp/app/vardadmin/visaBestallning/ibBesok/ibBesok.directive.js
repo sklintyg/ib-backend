@@ -32,8 +32,8 @@ angular.module('ibApp').directive('ibBesok', function($log, $uibModal, $state) {
                 openModal('laggTillBesok.modal.html', 'LaggTillBesokModalCtrl');
             };
 
-            /* TODO Redovisa tolk modal
-            $scope.redovisaTolk = function() {
+            /* TODO Redovisa besök modal
+            $scope.oppnaRedovisaBesok = function() {
                 openModal('redovisaTolk.modal.html', 'RedovisaTolkModalCtrl');
             };
             */

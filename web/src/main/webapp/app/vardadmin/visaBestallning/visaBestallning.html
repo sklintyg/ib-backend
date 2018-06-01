@@ -17,9 +17,9 @@
                       <card>
                         <h3>Beställning</h3>
                         <card-body>
-                          <h4>bestallning.typ</h4>
+                          <h4>Utredningstyp</h4>
                           <card-value>
-                            {{bestallning.bestallning.Typ}}
+                            {{bestallning.utredningsTyp}}
                           </card-value>
                           <h4>Datum</h4>
                           <card-table>
@@ -65,8 +65,9 @@
                             {{bestallning.invanare.name}}
                           </card-value>
                           <h4>Kön</h4>
-                          <card-value>
-                            {{bestallning.invanare.kon}}
+                          <card-value ng-switch="bestallning.invanare.gender">
+                            <span ng-switch-when="F">Kvinna</span>
+                            <span ng-switch-when="M">Man</span>
                           </card-value>
                           <h4>Behov av tolk</h4>
                           <card-value>

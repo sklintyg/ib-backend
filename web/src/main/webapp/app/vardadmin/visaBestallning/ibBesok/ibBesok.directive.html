@@ -1,7 +1,7 @@
 <div class="ib-besok-wrapper">
     <div class="button-wrapper">
         <button class="btn 	btn-success" ng-click="oppnaLaggTillBesok()" ng-disabled="laggTillBesokDisabled()"><span>Lägg till besök</span></button>
-        <button class="btn btn-primary" ng-click="redovisaTolk()"><span>Redovisa tolk</span></button>
+        <button class="btn btn-primary" ng-click="oppnaRedovisaBesok()"><span>Redovisa besök</span></button>
     </div>
 
     <table id="samordnare-utredning-handelser-table" class="table table-striped ib-table-striped">
@@ -13,6 +13,8 @@
             <th ib-table-head label-key="label.table.bestallning.besok.column.tolk"></th>
             <th ib-table-head label-key="label.table.bestallning.besok.column.kallelse"></th>
             <th ib-table-head label-key="label.table.bestallning.besok.column.status"></th>
+            <th></th>
+            <th></th>
         </tr>
         </thead>
         <tbody>
@@ -23,6 +25,24 @@
             <td>{{::row.tolkStatus.label}}</td>
             <td>{{::row.kallelseDatum}} per {{::row.kallelseForm.label}}</td>
             <td>{{::row.besokStatus.label}}</td>
+            <td>
+                <ib-expand label="detaljer">
+                    <ib-handelser handelser="row.handelseList"></ib-handelser>
+                </ib-expand>
+            </td>
+            <td>
+                <div class="btn-group" uib-dropdown is-open="status.isopen">
+                    <button id="hantera-button" type="button" class="btn btn-default" uib-dropdown-toggle ng-disabled="disabled">
+                        Hantera
+                        <i class="material-icons md-18">{{status.isopen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}</i>
+                    </button>
+                    <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="hantera-button">
+                        <li role="menuitem"><a ng-click="openAndraModal()">Ändra</a></li>
+                        <li role="menuitem"><a ng-click="openAvbokaModal()">Avboka</a></li>
+                        <li role="menuitem"><a ng-click="openAvvikelseModal()">Avvikelse</a></li>
+                    </ul>
+                </div>
+            </td>
         </tr>
         </tbody>
     </table>
