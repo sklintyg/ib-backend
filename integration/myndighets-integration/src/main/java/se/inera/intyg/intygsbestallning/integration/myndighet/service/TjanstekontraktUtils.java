@@ -41,6 +41,8 @@ public final class TjanstekontraktUtils {
     private static final String KV_SVAR_BESTALLNING_CODESYSTEM = "d9d51e92-e2c0-49d8-bbec-3fd7e1b60c85";
     private static final String KV_ORSAKAT_AV_CODE_SYSTEM = "be9c99a7-25ff-432b-9ba4-3a74bc45e2be";
     private static final String KV_TOLK_STATUS = "c074d6f5-fc15-4c10-bdd5-115e29888ff5";
+    private static final String KV_DELTAGANDE_PROFESSION = "1.2.752.129.2.2.1.4";
+    private static final String KV_SNOMED_CT = "1.2.752.116.2.1.1";
 
     private TjanstekontraktUtils() {
     }
@@ -70,12 +72,14 @@ public final class TjanstekontraktUtils {
         ReportCareContactType request = new ReportCareContactType();
         request.setAssessmentId(anII(sourceSystemHsaId, dto.getAssessmentId().toString()));
         request.setAssessmentCareContactId(anII(sourceSystemHsaId, dto.getAssessmentCareContactId()));
-        request.setParticipatingProfession(aCv(dto.getParticipatingProfession()));
-        request.setInterpreterStatus(aCv(dto.getInterpreterStatus(), KV_TOLK_STATUS, null));
+        request.setParticipatingProfession(aCv(dto.getParticipatingProfession(), KV_DELTAGANDE_PROFESSION, null));
+        if (dto.getInterpreterStatus() != null) {
+            request.setInterpreterStatus(aCv(dto.getInterpreterStatus(), KV_TOLK_STATUS, null));
+        }
         request.setInvitationDate(dto.getInvitationDate());
-        request.setInvitationChannel(aCv(dto.getInvitationChannel()));
+        request.setInvitationChannel(aCv(dto.getInvitationChannel(), KV_SNOMED_CT, null));
         request.setTime(aTimePeriod(dto.getStartTime(), dto.getEndTime()));
-        request.setVisitStatus(aCv(dto.getVisitStatus()));
+        request.setVisitStatus(aCv(dto.getVisitStatus(), KV_SNOMED_CT, null));
         return request;
     }
 

@@ -55,6 +55,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 import static com.google.common.collect.MoreCollectors.onlyElement;
+import static java.util.Objects.nonNull;
 import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto.ReportCareContactRequestDtoBuilder.aReportCareContactRequestDto;
 import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportDeviationRequestDto.ReportDeviationRequestDtoBuilder.aReportDeviationRequestDto;
 import static se.inera.intyg.intygsbestallning.persistence.model.Avvikelse.AvvikelseBuilder.anAvvikelse;
@@ -192,7 +193,7 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
                         .map(Object::toString)
                         .orElse(null))
                 .withParticipatingProfession(besok.getDeltagareProfession().name())
-                .withInterpreterStatus(besok.getTolkStatus().getLabel())
+                .withInterpreterStatus(nonNull(besok.getTolkStatus()) ? besok.getTolkStatus().getLabel() : null)
                 .withInvitationDate(SchemaDateUtil.toStringFromLocalDateTime(besok.getKallelseDatum()))
                 .withInvitationChannel(besok.getKallelseForm().getCvValue())
                 .withStartTime(besok.getBesokStartTid())

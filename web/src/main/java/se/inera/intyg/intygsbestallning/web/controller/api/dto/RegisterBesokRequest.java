@@ -136,7 +136,6 @@ public class RegisterBesokRequest {
 
     public static void validate(RegisterBesokRequest request) {
         checkArgument(nonNull(request), "request may not be null");
-        checkArgument(nonNull(request.getTolkStatus()), "tolkStatus may not be null");
         checkArgument(nonNull(request.getUtredningId()), "utredningId may not be null");
         checkArgument(nonNull(request.getProfession()), "profession may not be null");
         checkArgument(nonNull(request.getBesokSlutTid()), "besokSlutTid may not be null");
