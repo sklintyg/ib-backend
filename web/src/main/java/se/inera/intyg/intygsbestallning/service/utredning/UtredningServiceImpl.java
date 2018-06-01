@@ -18,23 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkState;
-import static com.google.common.base.Strings.isNullOrEmpty;
-import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toList;
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
-import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
-import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder;
-import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
-import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
-import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
-import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
-import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.BooleanUtils;
@@ -44,14 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.text.MessageFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
@@ -91,6 +66,32 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.Utredni
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItemFactory;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
 
+import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toList;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
+import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder;
+import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
+import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
+import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
+import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
+
 @Service
 @Transactional
 public class UtredningServiceImpl extends BaseUtredningService implements UtredningService {
@@ -120,11 +121,15 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
     @Override
     public GetUtredningListResponse findExternForfraganByLandstingHsaIdWithFilter(String landstingHsaId, ListUtredningRequest request) {
-        List<UtredningListItem> list = utredningRepository.findByExternForfragan_LandstingHsaId_AndArkiveradFalse(landstingHsaId)
+        long start = System.currentTimeMillis();
+        List<Utredning> jpaList = utredningRepository.findByExternForfragan_LandstingHsaId_AndArkiveradFalse(landstingHsaId);
+        LOG.info("Loading findByExternForfragan_LandstingHsaId_AndArkiveradFalse took {} ms", (System.currentTimeMillis() - start));
+        start = System.currentTimeMillis();
+        List<UtredningListItem> list = jpaList
                 .stream()
                 .map(utredningListItemFactory::from)
                 .collect(toList());
-
+        LOG.info("UtredningListItemFactory from:: took {} ms", (System.currentTimeMillis() - start));
         // Get status mapper
         Map<UtredningStatus, ListFilterStatus> statusToFilterStatus = buildStatusToListBestallningFilterStatusMap(Actor.SAMORDNARE);
 
@@ -132,12 +137,16 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         boolean enrichedWithVardenhetNames = false;
         if (request.getFreeText() != null || request.getOrderBy().equals("vardenhetNamn")) {
             // Enrich with vardenhet namn from HSA
+            start = System.currentTimeMillis();
             enrichWithVardenhetNames(list);
+            LOG.info("enrichWithVardenhetNames (first) took {} ms", (System.currentTimeMillis() - start));
+
             enrichedWithVardenhetNames = true;
         }
 
         // Start actual filtering. Order is important here. We must always filter out unwanted items _before_ sorting and
         // then finally paging.
+        start = System.currentTimeMillis();
         List<UtredningListItem> filtered = list.stream()
                 .filter(uli -> buildFasPredicate(uli, request.getFas()))
                 .filter(uli -> buildStatusPredicate(uli, request.getStatus(), statusToFilterStatus))
@@ -147,7 +156,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .sorted((o1, o2) -> GenericComparator.compare(UtredningListItem.class, o1, o2, request.getOrderBy(),
                         request.isOrderByAsc()))
                 .collect(toList());
-
+        LOG.info("filtering of UtredningListItem took {} ms", (System.currentTimeMillis() - start));
         // Paging. We need to perform some bounds-checking...
         int total = filtered.size();
         if (total == 0) {
@@ -159,7 +168,9 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
         if (!enrichedWithVardenhetNames) {
             // Enrich with vardenhet namn from HSA
+            start = System.currentTimeMillis();
             enrichWithVardenhetNames(paged);
+            LOG.info("enrichWithVardenhetNames (second) took {} ms", (System.currentTimeMillis() - start));
         }
 
         return new GetUtredningListResponse(paged, total);
@@ -224,7 +235,6 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .withKomplettering(false)
                 .withSistaDatum(order.getLastDateIntyg().atStartOfDay())
                 .build());
-
 
         updateInvanareFromOrder(utredning.getInvanare(), order);
 
@@ -328,8 +338,8 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .withTolkSprak(request.getTolkSprak())
                 .withArkiverad(false);
 
-        final List<RegistreradVardenhet> byVardgivareHsaId =
-                registreradVardenhetRepository.findByVardgivareHsaId(request.getLandstingHsaId());
+        final List<RegistreradVardenhet> byVardgivareHsaId = registreradVardenhetRepository
+                .findByVardgivareHsaId(request.getLandstingHsaId());
 
         final Handelse handelse;
         final Utredning utredning;
@@ -471,14 +481,14 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         }
 
         switch (bli.getStatus().getUtredningFas()) {
-            case AVSLUTAD:
-                return false;
-            case REDOVISA_TOLK:
-                return Strings.isNullOrEmpty(fromDate);
-            case UTREDNING:
-            case KOMPLETTERING:
-            case FORFRAGAN:
-                return fromDate.compareTo(bli.getSlutdatumFas()) <= 0 && toDate.compareTo(bli.getSlutdatumFas()) >= 0;
+        case AVSLUTAD:
+            return false;
+        case REDOVISA_TOLK:
+            return Strings.isNullOrEmpty(fromDate);
+        case UTREDNING:
+        case KOMPLETTERING:
+        case FORFRAGAN:
+            return fromDate.compareTo(bli.getSlutdatumFas()) <= 0 && toDate.compareTo(bli.getSlutdatumFas()) >= 0;
         }
         return true;
     }

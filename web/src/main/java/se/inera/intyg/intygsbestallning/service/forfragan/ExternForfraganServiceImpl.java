@@ -94,7 +94,6 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
     @Autowired
     private MyndighetIntegrationService myndighetIntegrationService;
 
-
     @Override
     public ForfraganSvarResponse besvaraForfragan(Long forfraganId, ForfraganSvarRequest svarRequest) {
         return null;
@@ -102,11 +101,17 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
 
     @Override
     public GetForfraganListResponse findForfragningarForVardenhetHsaIdWithFilter(String vardenhetHsaId, ListForfraganRequest request) {
-        List<InternForfraganListItem> forfraganList = externForfraganRepository
-                .findByExternForfraganAndVardenhetHsaIdAndArkiveradFalse(vardenhetHsaId)
+        long start = System.currentTimeMillis();
+        List<Utredning> jpaList = externForfraganRepository
+                .findByExternForfraganAndVardenhetHsaIdAndArkiveradFalse(vardenhetHsaId);
+        LOG.info("Loading findByExternForfraganAndVardenhetHsaIdAndArkiveradFalse took {} ms", (System.currentTimeMillis() - start));
+        start = System.currentTimeMillis();
+
+        List<InternForfraganListItem> forfraganList = jpaList
                 .stream()
                 .map(utr -> internForfraganListItemFactory.from(utr, vardenhetHsaId))
                 .collect(toList());
+        LOG.info("internForfraganListItemFactory from:: took {} ms", (System.currentTimeMillis() - start));
 
         Map<InternForfraganStatus, List<ListForfraganFilterStatus>> statusMap = buildFilterStatusesForForfragan();
 
@@ -126,6 +131,7 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
         }
 
         // Apply the filter from the request.
+        start = System.currentTimeMillis();
         List<InternForfraganListItem> filtered = forfraganList.stream()
                 .filter(fli -> buildForfroganStatusPredicate(fli, request.getStatus()))
                 .filter(fli -> buildToFromPredicate(fli.getInkomDatum(), request.getInkommetFromDate(), request.getInkommetToDate()))
@@ -137,7 +143,7 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
                 .sorted((o1, o2) -> GenericComparator.compare(InternForfraganListItem.class, o1, o2, request.getOrderBy(),
                         request.isOrderByAsc()))
                 .collect(toList());
-
+        LOG.info("filtering of InternForfraganListItem took {} ms", (System.currentTimeMillis() - start));
         int total = filtered.size();
         if (total == 0) {
             return new GetForfraganListResponse(filtered, total);
@@ -149,9 +155,11 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
 
         if (!enrichedWithVardgivareNames) {
             // Enrich with vardenhet namn from HSA
+            start = System.currentTimeMillis();
             for (InternForfraganListItem fli : paged) {
                 fli.setVardgivareNamn(getVardgivareNamn(fli.getVardgivareHsaId()));
             }
+            LOG.info("enrich with vårdgivare name (second) took {} ms", (System.currentTimeMillis() - start));
         }
 
         return new GetForfraganListResponse(paged, total);
@@ -223,7 +231,6 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
 
         return createGetUtredningResponse(utredning);
     }
-
 
     @Override
     @Transactional

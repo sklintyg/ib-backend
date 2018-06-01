@@ -272,11 +272,17 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
 
     @Override
     public List<BestallningListItem> findOngoingBestallningarForVardenhet(String vardenhetHsaId, ListBestallningRequest requestFilter) {
-        List<BestallningListItem> bestallningListItems = utredningRepository
-                .findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(vardenhetHsaId)
+        long start = System.currentTimeMillis();
+        List<Utredning> jpaList = utredningRepository
+                .findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(vardenhetHsaId);
+        LOG.info("Loading findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse took {} ms", (System.currentTimeMillis() - start));
+
+        start = System.currentTimeMillis();
+        List<BestallningListItem> bestallningListItems = jpaList
                 .stream()
                 .map(u -> bestallningListItemFactory.from(u, Actor.VARDADMIN))
                 .collect(Collectors.toList());
+        LOG.info("bestallningListItemFactory ::from took {} ms", (System.currentTimeMillis() - start));
 
         // We may need to fetch names for patients and vardgivare prior to filtering if free text search is
         // used or if either of those two columns are sorted.
@@ -295,6 +301,7 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
 
         // Start actual filtering. Order is important here. We must always filter out unwanted items _before_ sorting and
         // then finally paging.
+        start = System.currentTimeMillis();
         List<BestallningListItem> filtered = bestallningListItems.stream()
                 .filter(bli -> buildVardgivareHsaIdPredicate(bli.getVardgivareHsaId(), requestFilter.getVardgivareHsaId()))
                 .filter(bli -> buildStatusPredicate(bli, requestFilter.getStatus(), statusToFilterStatus))
@@ -304,6 +311,7 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
                 .sorted((o1, o2) -> GenericComparator.compare(BestallningListItem.class, o1, o2, requestFilter.getOrderBy(),
                         requestFilter.isOrderByAsc()))
                 .collect(toList());
+        LOG.info("filtering of BestallningListItem took {} ms", (System.currentTimeMillis() - start));
 
         // Paging. We need to perform some bounds-checking...
         int total = filtered.size();
@@ -317,16 +325,22 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
         // Fetch patient names and hsa names only for the selected subset, we want to minimize number of calls per invocation
         // of this API
         if (!enrichedWithPatientNames) {
+            start = System.currentTimeMillis();
             patientNameEnricher.enrichWithPatientNames(paged);
+            LOG.info("enrichWithPatientNames took {} ms", (System.currentTimeMillis() - start));
         }
 
         // Call HSA to get actual name(s) of Vardgivare.
         if (!enrichedWithVardgivareNames) {
+            start = System.currentTimeMillis();
             enrichWithVardgivareNames(paged);
+            LOG.info("enrichWithVardgivareNames took {} ms", (System.currentTimeMillis() - start));
         }
 
         // Only PDL-log what we actually are sending to the GUI
+        start = System.currentTimeMillis();
         pdlLogList(paged, ActivityType.READ, ResourceType.RESOURCE_TYPE_FMU);
+        LOG.info("pdlLogList took {} ms", (System.currentTimeMillis() - start));
         return paged;
     }
 

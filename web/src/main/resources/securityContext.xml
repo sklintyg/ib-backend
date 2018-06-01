@@ -157,6 +157,9 @@
           <bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
             <constructor-arg index="0" value="/saml/**" />
           </bean>
+          <bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+            <constructor-arg index="0" value="/maillink/**" />
+          </bean>
         </list>
       </constructor-arg>
     </bean>
@@ -244,7 +247,16 @@
       </security:filter-chain-map>
     </bean>
 
+    <!--
     <bean id="httpSessionRequestCache" class="org.springframework.security.web.savedrequest.NullRequestCache">
+    </bean>
+    -->
+    <bean id="saveRequestMatcher" class="org.springframework.security.web.util.matcher.RegexRequestMatcher">
+      <constructor-arg index="0" value="\/maillink\/.*"/>
+      <constructor-arg index="1"><null/></constructor-arg>
+    </bean>
+    <bean id="httpSessionRequestCache" class="org.springframework.security.web.savedrequest.HttpSessionRequestCache">
+      <property name="requestMatcher" ref="saveRequestMatcher"/>
     </bean>
 
     <!-- Handler deciding where to redirect user after successful login -->

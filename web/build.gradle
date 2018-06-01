@@ -79,15 +79,16 @@ gretty {
                '-XX:MaxPermSize=256M'
                ]
 
-    /***************** Konfiguration för att köra med SITHS och HSA aktiverat lokalt. *******************/
-    //    jvmArgs = [
-    //            '-Dspring.profiles.active=dev,ib-security-test,ib-srs-stub',
-    //            '-Dconfig.folder=' + projectDir + '/../../ib-konfiguration/demo',
-    //            '-Dcofile:${ib.config.file}nfig.file=' + projectDir + '/../../ib-konfiguration/demo/ib.properties',
-    //            '-Dfeatures.file=' + projectDir + '/../../ib-konfiguration/demo/features.properties',
-    //            '-Dcredentials.file=' + projectDir + '/../../ib-konfiguration/demo/credentials.properties',
-    //            '-Dresources.folder=/' +projectDir + '/../src/main/resources'
-    //    ]
+    /***************** Konfiguration för att köra med SITHS aktiverat lokalt. *******************/
+//    jvmArgs = [
+//            '-Dspring.profiles.active=dev,ib-stub,caching-enabled,ib-security-test',
+//            '-Dconfig.file=' + projectDir + '/src/main/resources/dev.properties',
+//            '-Dcredentials.file=' + projectDir + '/src/main/resources/dev-credentials.properties',
+//            '-Dresources.folder=/' + projectDir + '/../src/main/resources',
+//            '-Dcertificate.folder=/' + projectDir + '/../devops/openshift/test/env',
+//            '-Dconfig.dir=/' + projectDir + '/../devops/openshift/test/config',
+//            '-XX:MaxPermSize=256M'
+//    ]
 }
 
 dependencies {
