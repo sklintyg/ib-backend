@@ -12,7 +12,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-angular.module('ibApp').directive('ibBesok', function($log, $uibModal) {
+angular.module('ibApp').directive('ibBesok', function($log, $uibModal, $state) {
     'use strict';
 
     return {
@@ -47,8 +47,15 @@ angular.module('ibApp').directive('ibBesok', function($log, $uibModal) {
                         utredningsId: $scope.bestallning.utredningsId
                     }
                 });
+
                 //angular > 1.5 warns if promise rejection is not handled (e.g backdrop-click == rejection)
                 modalInstance.result.catch(function () {}); //jshint ignore:line
+
+                modalInstance.result.then(function() {
+                    $state.reload();
+                }, function() {
+
+                });
             }
         }
     };

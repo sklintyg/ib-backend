@@ -43,7 +43,6 @@ import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRe
 
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.Optional;
 
 import static com.google.common.collect.MoreCollectors.onlyElement;
@@ -100,7 +99,7 @@ public class BesokServiceImplTest {
         RegisterBesokRequest request = new RegisterBesokRequest();
         request.setUtredningId(UTREDNING_ID);
         request.setUtredandeVardPersonalNamn("utredandeVardPersonalNamn");
-        request.setProffesion(DeltagarProfessionTyp.LK);
+        request.setProfession(DeltagarProfessionTyp.LK);
         request.setTolkStatus(TolkStatusTyp.BOKAT);
         request.setKallelseForm(KallelseFormTyp.TELEFONKONTAKT);
         request.setKallelseDatum(DATE_TIME);
@@ -142,7 +141,7 @@ public class BesokServiceImplTest {
         RegisterBesokRequest request = new RegisterBesokRequest();
         request.setUtredningId(UTREDNING_ID);
         request.setUtredandeVardPersonalNamn("utredandeVardPersonalNamn");
-        request.setProffesion(DeltagarProfessionTyp.PS);
+        request.setProfession(DeltagarProfessionTyp.PS);
         request.setTolkStatus(TolkStatusTyp.BOKAT);
         request.setKallelseForm(KallelseFormTyp.TELEFONKONTAKT);
         request.setKallelseDatum(DATE_TIME);
@@ -180,7 +179,7 @@ public class BesokServiceImplTest {
         RegisterBesokRequest request = new RegisterBesokRequest();
         request.setUtredningId(UTREDNING_ID);
         request.setUtredandeVardPersonalNamn("utredandeVardPersonalNamn");
-        request.setProffesion(DeltagarProfessionTyp.PS);
+        request.setProfession(DeltagarProfessionTyp.PS);
         request.setTolkStatus(TolkStatusTyp.BOKAT);
         request.setKallelseForm(KallelseFormTyp.TELEFONKONTAKT);
         request.setKallelseDatum(DATE_TIME);

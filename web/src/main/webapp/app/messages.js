@@ -165,7 +165,7 @@ var ibMessages = {
 
         // Visa beställning - besök tabell
         'label.table.bestallning.besok.column.besoktid': 'Besökstid',
-        'label.table.bestallning.besok.column.proffesion': 'Profession',
+        'label.table.bestallning.besok.column.profession': 'Profession',
         'label.table.bestallning.besok.column.namn': 'Namn',
         'label.table.bestallning.besok.column.tolk': 'Tolk',
         'label.table.bestallning.besok.column.kallelse': 'Kallelse skickad',

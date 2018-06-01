@@ -8,7 +8,7 @@
         <thead>
         <tr>
             <th ib-table-head label-key="label.table.bestallning.besok.column.besoktid"></th>
-            <th ib-table-head label-key="label.table.bestallning.besok.column.proffesion"></th>
+            <th ib-table-head label-key="label.table.bestallning.besok.column.profession"></th>
             <th ib-table-head label-key="label.table.bestallning.besok.column.namn"></th>
             <th ib-table-head label-key="label.table.bestallning.besok.column.tolk"></th>
             <th ib-table-head label-key="label.table.bestallning.besok.column.kallelse"></th>
@@ -18,9 +18,9 @@
         <tbody>
         <tr ng-repeat="row in bestallning.besokList">
             <td>{{::row.besokDatum}} {{::row.besokStartTid}} - {{::row.besokSlutTid}}</td>
-            <td>{{::row.proffesion.label}}</td>
+            <td>{{::row.profession.label}}</td>
             <td>{{::row.namn}}</td>
-            <td>{{::row.tolkStatus}}</td>
+            <td>{{::row.tolkStatus.label}}</td>
             <td>{{::row.kallelseDatum}} per {{::row.kallelseForm.label}}</td>
             <td>{{::row.besokStatus.label}}</td>
         </tr>

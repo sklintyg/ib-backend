@@ -38,7 +38,7 @@ public class BesokListItem {
     private String besokDatum;
     private String besokStartTid;
     private String besokSlutTid;
-    private DeltagarProfessionTyp proffesion;
+    private DeltagarProfessionTyp profession;
     private String namn;
     private TolkStatusTyp tolkStatus;
     private KallelseFormTyp kallelseForm;
@@ -51,7 +51,7 @@ public class BesokListItem {
                 .withBesokDatum(besok.getBesokStartTid().format(DateTimeFormatter.ISO_DATE))
                 .withBesokStartTid(besok.getBesokStartTid().format(TIMEFORMATTER))
                 .withBesokSlutTid(besok.getBesokSlutTid().format(TIMEFORMATTER))
-                .withProffesion(besok.getDeltagareProfession())
+                .withProfession(besok.getDeltagareProfession())
                 .withNamn(besok.getDeltagareFullstandigtNamn())
                 .withTolkStatus(besok.getTolkStatus())
                 .withKallelseForm(besok.getKallelseForm())
@@ -94,12 +94,12 @@ public class BesokListItem {
         this.besokSlutTid = besokSlutTid;
     }
 
-    public DeltagarProfessionTyp getProffesion() {
-        return proffesion;
+    public DeltagarProfessionTyp getProfession() {
+        return profession;
     }
 
-    public void setProffesion(DeltagarProfessionTyp proffesion) {
-        this.proffesion = proffesion;
+    public void setProfession(DeltagarProfessionTyp profession) {
+        this.profession = profession;
     }
 
     public String getNamn() {
@@ -147,7 +147,7 @@ public class BesokListItem {
         private String besokDatum;
         private String besokStartTid;
         private String besokSlutTid;
-        private DeltagarProfessionTyp proffesion;
+        private DeltagarProfessionTyp profession;
         private String namn;
         private TolkStatusTyp tolkStatus;
         private KallelseFormTyp kallelseForm;
@@ -181,8 +181,8 @@ public class BesokListItem {
             return this;
         }
 
-        public BesokListItemBuilder withProffesion(DeltagarProfessionTyp proffesion) {
-            this.proffesion = proffesion;
+        public BesokListItemBuilder withProfession(DeltagarProfessionTyp profession) {
+            this.profession = profession;
             return this;
         }
 
@@ -220,7 +220,7 @@ public class BesokListItem {
             besokListItem.setKallelseDatum(kallelseDatum);
             besokListItem.setKallelseForm(kallelseForm);
             besokListItem.setNamn(namn);
-            besokListItem.setProffesion(proffesion);
+            besokListItem.setProfession(profession);
             besokListItem.setTolkStatus(tolkStatus);
             besokListItem.setHandelseList(handelseList);
             return besokListItem;

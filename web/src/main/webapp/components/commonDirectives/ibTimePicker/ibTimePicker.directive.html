@@ -1,6 +1,6 @@
 <div ng-class="{'col-xs-{{::inputColSize}}' : inputColSize}">
   <div class="input-group">
-    <input ng-disabled="disabled" type="text" ng-model="time" placeholder="tt:mm" class="form-control time" ng-pattern="'([01]?[0-9]|2[0-3])[:][0-5][0-9]'" ng-change="updateTimeOnModel()">
+    <input ng-disabled="disabled" type="text" ng-model="time" placeholder="tt:mm" class="form-control time" ng-pattern="'([01]?[0-9]|2[0-3])[:][0-5][0-9]'" ng-change="updateDate()">
     <span class="input-group-btn">
       <button type="button" id="{{::domId}}-toggle"
         class="btn btn-default"
@@ -13,6 +13,7 @@
       <div uib-timepicker ng-model="date"
            hour-step="1" minute-step="10"
            show-meridian="false" readonly-input="true"
+           ng-change="updateTime()"
            template-url="/components/commonDirectives/ibTimepicker/timepicker.template.html"></div>
   </div>
 </div>

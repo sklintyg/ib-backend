@@ -19,7 +19,7 @@
 
 angular.module('ibApp')
     .controller('LaggTillBesokModalCtrl',
-        function($log, $scope, BesokProxy, utredningsId) {
+        function($log, $scope, $uibModalInstance, BesokProxy, utredningsId) {
             'use strict';
 
             var chooseOption = {
@@ -54,9 +54,21 @@ angular.module('ibApp')
                 besokSlutTid: ''
             };
 
+            function formatTime(date) {
+                var hours = date.getHours();
+                var minutes = date.getMinutes();
+                return (hours > 9 ? hours : '0' + hours) + ':' + 
+                    (minutes > 9 ? minutes : '0' + minutes);
+            }
+
             $scope.send = function () {
+                $scope.besok.kallelseDatum = new Date($scope.besok.kallelseDatum);
+                $scope.besok.besokDatum = new Date($scope.besok.besokDatum);
+                $scope.besok.besokStartTid = formatTime($scope.besok.besokStartTid);
+                $scope.besok.besokSlutTid = formatTime($scope.besok.besokSlutTid);
                 //console.log($scope.besok);
                 BesokProxy.createBesok($scope.besok);
+                $uibModalInstance.close();
             };
 
 

@@ -39,7 +39,7 @@ public class UpdateAssessmentStub implements UpdateAssessmentResponderInterface 
 
         LOG.info("UpdateAssessmentStub received request");
         UpdateAssessmentResponseType response = new UpdateAssessmentResponseType();
-        response.setLastDateForCertificateReceival(LocalDateTime.now().plusDays(DAYS).format(DateTimeFormatter.ISO_DATE));
+        response.setLastDateForCertificateReceival(LocalDateTime.now().plusDays(DAYS).format(DateTimeFormatter.ofPattern("yyyyMMdd")));
         ResultType rt = new ResultType();
         rt.setResultCode(ResultCodeType.OK);
         response.setResult(rt);

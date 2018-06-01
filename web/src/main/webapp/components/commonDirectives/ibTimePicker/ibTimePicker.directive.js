@@ -26,8 +26,7 @@ angular.module('ibApp').directive('ibTimePicker',
             scope: {
                 labelKey: '@',
                 placeholderKey: '@',
-                model: '=',
-                onChange: '&'
+                date: '='
             },
             templateUrl: '/components/commonDirectives/ibTimePicker/ibTimePicker.directive.html',
             link: function(scope, element) {
@@ -87,26 +86,7 @@ angular.module('ibApp').directive('ibTimePicker',
                         (min > 9 ? min : '0' + min);
                 }
 
-                scope.$watch('model', function(newVal, oldVal) {
-                    if (newVal || newVal !== oldVal) {
-                        if (DateUtilsService.isDate(newVal)) {
-                            scope.date = newVal;
-                        } else {
-                            scope.date = new Date();
-                        }
-                        setTimeStringFromDate(scope.date);
-                    }
-                });
-
-                scope.$watch('date', function(newVal, oldVal) {
-                    if (newVal || newVal !== oldVal) {
-                        if (DateUtilsService.isDate(newVal)) {
-                            setTimeStringFromDate(newVal);
-                        }
-                    }
-                });
-
-                scope.updateTimeOnModel = function() {
+                scope.updateDate = function() {
                     if (scope.time && scope.time.match(':').length > 0) {
                         var hour = parseInt(scope.time.split(':')[0], 10);
                         var min = parseInt(scope.time.split(':')[1], 10);
@@ -115,6 +95,12 @@ angular.module('ibApp').directive('ibTimePicker',
                         date.setHours(hour);
                         date.setMinutes(min);
                         scope.date = date;
+                    }
+                };
+
+                scope.updateTime = function() {
+                    if(scope.date && DateUtilsService.isDate(scope.date)) {
+                        setTimeStringFromDate(scope.date);
                     }
                 };
             }

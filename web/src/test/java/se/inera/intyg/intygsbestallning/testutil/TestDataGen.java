@@ -234,7 +234,7 @@ public final class TestDataGen {
                 .withKallelseForm(request.getKallelseForm())
                 .withBesokStartTid(LocalDateTime.of(request.getBesokDatum(), request.getBesokStartTid()))
                 .withBesokSlutTid(LocalDateTime.of(request.getBesokDatum(), request.getBesokSlutTid()))
-                .withDeltagareProfession(request.getProffesion())
+                .withDeltagareProfession(request.getProfession())
                 .withTolkStatus(request.getTolkStatus())
                 .withDeltagareFullstandigtNamn(request.getUtredandeVardPersonalNamn().orElse(null))
                 .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)

@@ -10,7 +10,6 @@
                     <span class="date">
                         <ib-help-text-label label-key="lagg-till-besok.label.date"></ib-help-text-label>
                         <ib-date-picker-field
-                        dom-id="borjaDatum"
                         target-model="besok.besokDatum"
                         format="yyyy-MM-dd"
                         date-format-error="Ogiltigt datumformat, ange ett datum som ÅÅÅÅ-MM-DD"
@@ -21,11 +20,11 @@
                     </span>
                     <span class="from">
                         <ib-help-text-label label-key="lagg-till-besok.label.from"></ib-help-text-label>
-                        <ib-time-picker model="besok.besokStartTid"></ib-time-picker>
+                        <ib-time-picker data-date="besok.besokStartTid"></ib-time-picker>
                     </span>
                     <span class="to">
                         <ib-help-text-label label-key="lagg-till-besok.label.to"></ib-help-text-label>
-                        <ib-time-picker model="besok.besokSlutTid"></ib-time-picker>
+                        <ib-time-picker data-date="besok.besokSlutTid"></ib-time-picker>
                     </span>
                 </div>
                 <div class="flex-wrapper">
@@ -60,9 +59,7 @@
                 <div id="radio-wrapper">
                     <span><ib-help-text-label label-key="lagg-till-besok.label.kallelseskickad"></ib-help-text-label></span>
                     <ib-date-picker-field
-                        dom-id="borjaDatum"
-                        target-model="datetimeModel"
-                        min-date="{{::vm.minBorjaDatum}}"
+                        target-model="besok.kallelseDatum"
                         min-date-error="Möjligt startdatum får tidigast vara dagens datum"
                         format="yyyy-MM-dd"
                         date-format-error="Ogiltigt datumformat, ange ett datum som ÅÅÅÅ-MM-DD"

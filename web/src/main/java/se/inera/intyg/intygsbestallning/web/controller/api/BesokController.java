@@ -19,10 +19,7 @@
 package se.inera.intyg.intygsbestallning.web.controller.api;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesValidator;
@@ -57,7 +54,7 @@ public class BesokController {
     }
 
     @PutMapping
-    public RegisterBesokResponse createBesok(final RegisterBesokRequest request) {
+    public RegisterBesokResponse createBesok(@RequestBody  final RegisterBesokRequest request) {
 
         final IbUser user = userService.getUser();
         authoritiesValidator.given(user)
@@ -68,7 +65,7 @@ public class BesokController {
     }
 
     @PutMapping("/avvikelse")
-    public void createBesokAvvikelse(final ReportBesokAvvikelseVardenRequest request) {
+    public void createBesokAvvikelse(@RequestBody final ReportBesokAvvikelseVardenRequest request) {
 
         final IbUser user = userService.getUser();
         authoritiesValidator.given(user)

@@ -36,7 +36,7 @@ public class RegisterBesokRequest {
     private Long utredningId;
 
     private String utredandeVardPersonalNamn;
-    private DeltagarProfessionTyp proffesion;
+    private DeltagarProfessionTyp profession;
     private TolkStatusTyp tolkStatus;
 
     private KallelseFormTyp kallelseForm;
@@ -52,7 +52,7 @@ public class RegisterBesokRequest {
         return aRegisterBesokRequest()
                 .withUtredningId(request.getUtredningId())
                 .withUtredandeVardPersonalNamn(request.getUtredandeVardPersonalNamn().orElse(null))
-                .withProffesion(request.getProffesion())
+                .withProfession(request.getProfession())
                 .withTolkStatus(request.getTolkStatus())
                 .withKallelseForm(request.getKallelseForm())
                 .withKallelseDatum(request.getKallelseDatum())
@@ -78,12 +78,12 @@ public class RegisterBesokRequest {
         this.utredandeVardPersonalNamn = utredandeVardPersonalNamn;
     }
 
-    public DeltagarProfessionTyp getProffesion() {
-        return proffesion;
+    public DeltagarProfessionTyp getProfession() {
+        return profession;
     }
 
-    public void setProffesion(final DeltagarProfessionTyp proffesion) {
-        this.proffesion = proffesion;
+    public void setProfession(final DeltagarProfessionTyp profession) {
+        this.profession = profession;
     }
 
     public TolkStatusTyp getTolkStatus() {
@@ -138,7 +138,7 @@ public class RegisterBesokRequest {
         checkArgument(nonNull(request), "request may not be null");
         checkArgument(nonNull(request.getTolkStatus()), "tolkStatus may not be null");
         checkArgument(nonNull(request.getUtredningId()), "utredningId may not be null");
-        checkArgument(nonNull(request.getProffesion()), "proffesion may not be null");
+        checkArgument(nonNull(request.getProfession()), "profession may not be null");
         checkArgument(nonNull(request.getBesokSlutTid()), "besokSlutTid may not be null");
         checkArgument(nonNull(request.getKallelseForm()), "kallelseForm may not be null");
         checkArgument(nonNull(request.getKallelseDatum()), "kallelseDatum may not be null");
@@ -150,7 +150,7 @@ public class RegisterBesokRequest {
     public static final class RegisterBesokRequestBuilder {
         private Long utredningId;
         private String utredandeVardPersonalNamn;
-        private DeltagarProfessionTyp proffesion;
+        private DeltagarProfessionTyp profession;
         private TolkStatusTyp tolkStatus;
         private KallelseFormTyp kallelseForm;
         private LocalDateTime kallelseDatum;
@@ -175,8 +175,8 @@ public class RegisterBesokRequest {
             return this;
         }
 
-        public RegisterBesokRequestBuilder withProffesion(DeltagarProfessionTyp proffesion) {
-            this.proffesion = proffesion;
+        public RegisterBesokRequestBuilder withProfession(DeltagarProfessionTyp profession) {
+            this.profession = profession;
             return this;
         }
 
@@ -214,7 +214,7 @@ public class RegisterBesokRequest {
             RegisterBesokRequest registerBesokRequest = new RegisterBesokRequest();
             registerBesokRequest.setUtredningId(utredningId);
             registerBesokRequest.setUtredandeVardPersonalNamn(utredandeVardPersonalNamn);
-            registerBesokRequest.setProffesion(proffesion);
+            registerBesokRequest.setProfession(profession);
             registerBesokRequest.setTolkStatus(tolkStatus);
             registerBesokRequest.setKallelseForm(kallelseForm);
             registerBesokRequest.setKallelseDatum(kallelseDatum);
