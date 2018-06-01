@@ -208,6 +208,7 @@ public final class TestDataGen {
                 .withBestallning(createBestallning())
                 .withIntygList(createIntyg())
                 .withHandelseList(Lists.newArrayList())
+                .withInvanare(createInvanare())
                 .build();
 
         return utredning;

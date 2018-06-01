@@ -36,6 +36,8 @@ import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.*;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
+import se.inera.intyg.intygsbestallning.service.pdl.LogService;
+import se.inera.intyg.intygsbestallning.service.pdl.dto.PdlLogType;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest;
@@ -73,6 +75,9 @@ public class BesokServiceImplTest {
 
     @Mock
     private UserService userService;
+
+    @Mock
+    private LogService logService;
 
     @InjectMocks
     private BesokServiceImpl besokService;
@@ -130,6 +135,9 @@ public class BesokServiceImplTest {
 
         verify(myndighetIntegrationService, times(0)).updateAssessment(eq(UTREDNING_ID), eq(UTREDNING_TYP.name()));
         verify(myndighetIntegrationService, times(1)).reportCareContactInteraction(eq(dto));
+
+        verify(logService, times(1)).log(argThat(arg -> arg.getPatientId().equals(TestDataGen.getPersonId())),
+                argThat(arg -> arg == PdlLogType.BESOK_SKAPAT));
     }
 
     @Test
@@ -172,6 +180,9 @@ public class BesokServiceImplTest {
 
         verify(myndighetIntegrationService, times(1)).updateAssessment(eq(UTREDNING_ID), eq(UTREDNING_TYP.name()));
         verify(myndighetIntegrationService, times(1)).reportCareContactInteraction(eq(dto));
+
+        verify(logService, times(1)).log(argThat(arg -> arg.getPatientId().equals(TestDataGen.getPersonId())),
+                argThat(arg -> arg == PdlLogType.BESOK_SKAPAT));
     }
 
     @Test

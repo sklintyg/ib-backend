@@ -33,12 +33,16 @@ import se.inera.intyg.intygsbestallning.integration.myndighet.service.MyndighetI
 import se.inera.intyg.intygsbestallning.persistence.model.Avvikelse;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
+import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
+import se.inera.intyg.intygsbestallning.service.pdl.LogService;
+import se.inera.intyg.intygsbestallning.service.pdl.dto.PatientPdlLoggable;
+import se.inera.intyg.intygsbestallning.service.pdl.dto.PdlLogType;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
@@ -68,6 +72,9 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+    @Autowired
+    private LogService logService;
+
     private static final List<UtredningStatus> BESOK_HANTERING_GODKANDA_STATUSAR = Arrays.asList(
             BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR,
             UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR,
@@ -83,6 +90,7 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
     private MyndighetIntegrationService myndighetIntegrationService;
 
     @Override
+    @Transactional
     public RegisterBesokResponse registerNewBesok(final RegisterBesokRequest request) {
         validate(request);
 
@@ -99,7 +107,11 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
         final Besok besok = createBesok(request);
 
         utredning.getBesokList().add(besok);
-        utredning.getHandelseList().add(HandelseUtil.createNyttBesok(utredning.getTolkBehov(), besok, userService.getUser().getNamn()));
+        Handelse besokHandelse = HandelseUtil.createNyttBesok(utredning.getTolkBehov(), besok, userService.getUser().getNamn());
+        utredning.getHandelseList().add(besokHandelse);
+        besok.getHandelseList().add(besokHandelse);
+
+        logService.log(new PatientPdlLoggable(utredning.getInvanare().getPersonId()), PdlLogType.BESOK_SKAPAT);
 
         if (isOtherProfessionThanLakare(utredning, besok)) {
             utredning.setUtredningsTyp(UtredningsTyp.AFU_UTVIDGAD);
@@ -132,7 +144,9 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
                 .collect(onlyElement());
 
         besokToUpdate.setAvvikelse(createAvvikelse(request));
-        optionalUtredning.get().getHandelseList().add(HandelseUtil.createBesokAvvikelse(request));
+        Handelse besokHandelse = HandelseUtil.createBesokAvvikelse(request);
+        optionalUtredning.get().getHandelseList().add(besokHandelse);
+        besokToUpdate.getHandelseList().add(besokHandelse);
 
         final Utredning uppdateradUtredning = utredningRepository.save(optionalUtredning.get());
 
