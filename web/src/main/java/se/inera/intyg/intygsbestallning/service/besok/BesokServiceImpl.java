@@ -18,11 +18,33 @@
  */
 package se.inera.intyg.intygsbestallning.service.besok;
 
+import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.collect.MoreCollectors.onlyElement;
+import static java.util.Objects.nonNull;
+import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto.ReportCareContactRequestDtoBuilder.aReportCareContactRequestDto;
+import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportDeviationRequestDto.ReportDeviationRequestDtoBuilder.aReportDeviationRequestDto;
+import static se.inera.intyg.intygsbestallning.persistence.model.Avvikelse.AvvikelseBuilder.anAvvikelse;
+import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
+import static se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus.AVVIKELSE_MOTTAGEN;
+import static se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus.BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR;
+import static se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus.HANDLINGAR_MOTTAGNA_BOKA_BESOK;
+import static se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus.UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR;
+import static se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus.UTREDNING_PAGAR;
+import static se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest.validate;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.lang.invoke.MethodHandles;
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Predicate;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
@@ -40,32 +62,18 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessio
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
+import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
 import se.inera.intyg.intygsbestallning.service.pdl.LogService;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PatientPdlLoggable;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PdlLogType;
+import se.inera.intyg.intygsbestallning.service.stateresolver.BesokStatus;
+import se.inera.intyg.intygsbestallning.service.stateresolver.BesokStatusResolver;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokResponse;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
-
-import java.lang.invoke.MethodHandles;
-import java.text.MessageFormat;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Predicate;
-
-import static com.google.common.collect.MoreCollectors.onlyElement;
-import static java.util.Objects.nonNull;
-import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto.ReportCareContactRequestDtoBuilder.aReportCareContactRequestDto;
-import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportDeviationRequestDto.ReportDeviationRequestDtoBuilder.aReportDeviationRequestDto;
-import static se.inera.intyg.intygsbestallning.persistence.model.Avvikelse.AvvikelseBuilder.anAvvikelse;
-import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
-import static se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus.*;
-import static se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest.validate;
 
 @Service
 public class BesokServiceImpl extends BaseUtredningService implements BesokService {
@@ -88,6 +96,9 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
 
     @Autowired
     private MyndighetIntegrationService myndighetIntegrationService;
+
+    @Autowired
+    private NotifieringSendService notifieringSendService;
 
     @Override
     @Transactional
@@ -142,19 +153,25 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
         Besok besokToUpdate = optionalUtredning.get().getBesokList().stream()
                 .filter(b -> b.getId().equals(request.getBesokId()))
                 .collect(onlyElement());
-
         besokToUpdate.setAvvikelse(createAvvikelse(request));
         Handelse besokHandelse = HandelseUtil.createBesokAvvikelse(request);
         optionalUtredning.get().getHandelseList().add(besokHandelse);
         besokToUpdate.getHandelseList().add(besokHandelse);
 
         final Utredning uppdateradUtredning = utredningRepository.save(optionalUtredning.get());
+        final Besok uppdateratBesok = uppdateradUtredning.getBesokList().stream()
+                .filter(b -> b.getId().equals(request.getBesokId()))
+                .collect(onlyElement());
 
         if (request.getHandelseTyp().equals(HandelseTyp.AVVIKELSE_RAPPORTERAD)) {
-            request.setAvvikelseId(uppdateradUtredning.getBesokList().stream()
-                    .filter(b -> b.getId().equals(request.getBesokId()))
-                    .collect(onlyElement()).getAvvikelse().getAvvikelseId());
+            request.setAvvikelseId(uppdateratBesok.getAvvikelse().getAvvikelseId());
             myndighetIntegrationService.reportDeviation(createReportDeviationRequestDto(request));
+            notifieringSendService.notifieraLandstingAvvikelseRapporteradAvVarden(uppdateradUtredning, besokToUpdate);
+            checkState(Objects.equals(BesokStatus.AVVIKELSE_RAPPORTERAD, BesokStatusResolver.resolveStaticStatus(uppdateratBesok)));
+        } else {
+            checkState(Objects.equals(BesokStatus.AVVIKELSE_MOTTAGEN, BesokStatusResolver.resolveStaticStatus(uppdateratBesok)));
+            notifieringSendService.notifieraLandstingAvvikelseMottagenFranFK(uppdateradUtredning, besokToUpdate);
+            notifieringSendService.notifieraVardenhetAvvikelseMottagenFranFK(uppdateradUtredning, besokToUpdate);
         }
     }
 

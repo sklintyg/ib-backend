@@ -30,11 +30,11 @@ import static se.inera.intyg.intygsbestallning.service.notifiering.util.Notifier
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.uppdateradBestallningMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.utredningUrl;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.vardenhetNyInternforfraganMessage;
-import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_BESTALLNING_UPPDATERAD;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_BESTALLNING_AV_FRORSAKRINGSMEDICINSK_UTREDNING;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_BESTALLNING_UPPDATERAD;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_NY_FMU_EXTERN_FORFRAGAN;
-import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_UTREDNING_SLUTDATUM_PASSERAT;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_UTREDNING_SLUTDATUM_PAMINNELSE;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_UTREDNING_SLUTDATUM_PASSERAT;
 
 import com.google.common.base.Strings;
 import org.apache.commons.lang.NotImplementedException;
@@ -46,6 +46,7 @@ import javax.mail.MessagingException;
 import java.lang.invoke.MethodHandles;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.mail.MailService;
@@ -163,17 +164,17 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
     }
 
     @Override
-    public void notifieraLandstingAvvikelseRapporteradAvVarden(Utredning utredning) {
+    public void notifieraLandstingAvvikelseRapporteradAvVarden(Utredning utredning, Besok besok) {
         throw new NotImplementedException();
     }
 
     @Override
-    public void notifieraVardenhetAvvikelseMottagenFranFK(Utredning utredning) {
+    public void notifieraVardenhetAvvikelseMottagenFranFK(Utredning utredning, Besok besok) {
         throw new NotImplementedException();
     }
 
     @Override
-    public void notifieraLandstingAvvikelseMottagenFranFK(Utredning utredning) {
+    public void notifieraLandstingAvvikelseMottagenFranFK(Utredning utredning, Besok besok) {
         throw new NotImplementedException();
     }
 

@@ -69,6 +69,14 @@ public class IbRestExceptionHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public IbRestExceptionResponse serviceExceptionHandler(HttpServletRequest request, IllegalStateException ise) {
+        LOG.warn("Illegal State Exception occured! Error message: {}", ise.getMessage());
+        return new IbRestExceptionResponse(IbErrorCodeEnum.BAD_REQUEST, ise.getMessage());
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public IbRestExceptionResponse serviceExceptionHandler(HttpServletRequest request, IbServiceException e) {

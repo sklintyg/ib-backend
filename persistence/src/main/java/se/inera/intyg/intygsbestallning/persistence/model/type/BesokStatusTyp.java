@@ -22,7 +22,9 @@ package se.inera.intyg.intygsbestallning.persistence.model.type;
  * avslutad vårdkontakt = 53671000052101  inställd vårdkontakt = 53641000052109 tidbokad vårdkontakt = 53631000052103.
  */
 public enum BesokStatusTyp {
-    AVSLUTAD_VARDKONTAKT("53671000052101"), INSTALLD_VARDKONTAKT("53641000052109"), TIDBOKAD_VARDKONTAKT("53631000052103");
+    AVSLUTAD_VARDKONTAKT("53671000052101"),
+    INSTALLD_VARDKONTAKT("53641000052109"),
+    TIDBOKAD_VARDKONTAKT("53631000052103");
 
     private final String cvValue;
 
