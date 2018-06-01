@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.intygsbestallning.jobs;
 
+import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS;
+
 import net.javacrumbs.shedlock.core.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,20 +28,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import se.inera.intyg.intygsbestallning.persistence.model.Notifiering;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
-import se.inera.intyg.intygsbestallning.service.notification.MailNotificationService;
+import se.inera.intyg.intygsbestallning.service.notifiering.NotifieringService;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS;
 
 @Component
 @Transactional
@@ -54,7 +53,7 @@ public class PaminnelseSlutdatumForUtredningPasserasJob {
     private UtredningRepository utredningRepository;
 
     @Autowired
-    private MailNotificationService mailNotificationService;
+    private NotifieringService notifieringService;
 
     @Autowired
     private BusinessDaysBean businessDaysBean;
@@ -82,8 +81,7 @@ public class PaminnelseSlutdatumForUtredningPasserasJob {
                     || utredningStatus.getUtredningFas() == UtredningFas.AVSLUTAD) {
                 continue;
             }
-
-            mailNotificationService.notifySlutdatumPaVagPasseras(utredning);
+            notifieringService.notifieraVardenehtPaminnelseSlutdatumUtredning(utredning);
             utredning.getNotifieringList().add(Notifiering.NotifieringBuilder.aNotifiering()
                     .withNotifieringSkickad(LocalDateTime.now())
                     .withNotifieringTyp(PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS)

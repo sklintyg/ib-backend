@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.service.notification;
+package se.inera.intyg.intygsbestallning.service.notifiering;
 
 import org.springframework.stereotype.Component;
 import org.stringtemplate.v4.ST;
@@ -26,7 +26,7 @@ import org.stringtemplate.v4.STGroupFile;
 import javax.annotation.PostConstruct;
 
 @Component
-public class MailNotificationBodyFactory {
+public class NotifieringMailBodyFactory {
 
     private ST utredningTemplate;
     private ST forfraganTemplate;

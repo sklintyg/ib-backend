@@ -44,7 +44,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungT
 import se.inera.intyg.intygsbestallning.persistence.model.type.MyndighetTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
-import se.inera.intyg.intygsbestallning.service.notification.MailNotificationService;
+import se.inera.intyg.intygsbestallning.service.notifiering.NotifieringService;
 import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
@@ -109,7 +109,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     private UtredningListItemFactory utredningListItemFactory;
 
     @Autowired
-    private MailNotificationService mailNotificationService;
+    private NotifieringService notifieringService;
 
     @Override
     public List<UtredningListItem> findExternForfraganByLandstingHsaId(String landstingHsaId) {
@@ -248,7 +248,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         utredning.getHandelseList().add(HandelseUtil.createOrderReceived(order.getBestallare().getMyndighet(), order.getOrderDate()));
 
         utredningRepository.save(utredning);
-        mailNotificationService.notifyBestallningMottagen(utredning);
+        notifieringService.notifieraVardenhetNyBestallning(utredning);
         return utredning;
     }
 
@@ -267,10 +267,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         Utredning save = qualifyForUpdatering(update, utredning);
 
         save = utredningRepository.save(save);
-
-        // Notifiera vardenhet.
-        mailNotificationService.notifyBestallningUppdaterad(save);
-
+        notifieringService.notifieraVardenhetUppdateradBestallning(save);
         return save;
     }
 
@@ -297,7 +294,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                     .withUrsprung(HandlingUrsprungTyp.BESTALLNING)
                     .build());
             sparadUtredning = utredningRepository.save(utredning);
-            mailNotificationService.notifyHandlingMottagen(utredning);
+            notifieringService.notifieraVardenhetNyBestallning(utredning);
         } else {
             sparadUtredning = utredningRepository.save(utredning);
 
@@ -360,7 +357,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
             utredning = utredningBuilder.build();
             checkState(Objects.equals(UtredningStatus.VANTAR_PA_SVAR, UtredningStatusResolver.resolveStaticStatus(utredning)));
             sparadUtredning = utredningRepository.save(utredning);
-            mailNotificationService.notifyNyInternForfragan(utredning);
+            notifieringService.notifieraVardenhetNyInternforfragan(utredning);
         } else {
             handelse = HandelseUtil.createForfraganMottagen(request.getLandstingHsaId());
             utredningBuilder
@@ -369,7 +366,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
             utredning = utredningBuilder.build();
             checkState(Objects.equals(UtredningStatus.FORFRAGAN_INKOMMEN, UtredningStatusResolver.resolveStaticStatus(utredning)));
             sparadUtredning = utredningRepository.save(utredning);
-            mailNotificationService.notifyNyExternForfragan(utredning);
+            notifieringService.notifieraVardenhetNyInternforfragan(utredning);
         }
         return sparadUtredning;
     }

@@ -23,6 +23,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Optional;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
@@ -32,19 +37,13 @@ import se.inera.intyg.intygsbestallning.persistence.model.Handling;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
-import se.inera.intyg.intygsbestallning.service.notification.MailNotificationService;
+import se.inera.intyg.intygsbestallning.service.notifiering.NotifieringService;
 import se.inera.intyg.intygsbestallning.service.pdl.LogService;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.handling.RegisterHandlingRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.handling.RegisterHandlingResponse;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.Optional;
 
 @Service
 public class HandlingServiceImpl extends BaseUtredningService implements HandlingService {
@@ -55,7 +54,7 @@ public class HandlingServiceImpl extends BaseUtredningService implements Handlin
     private LogService logService;
 
     @Autowired
-    private MailNotificationService mailNotificationService;
+    private NotifieringService notifieringService;
 
     @Override
     @Transactional
@@ -94,7 +93,7 @@ public class HandlingServiceImpl extends BaseUtredningService implements Handlin
         logService.logHandlingMottagen(utredning);
 
         // Notify by email.
-        mailNotificationService.notifyHandlingMottagen(utredning);
+        notifieringService.notifieraVardenhetNyBestallning(utredning);
 
         return new RegisterHandlingResponse();
     }

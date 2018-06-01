@@ -81,7 +81,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
 import se.inera.intyg.intygsbestallning.persistence.model.type.MyndighetTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
-import se.inera.intyg.intygsbestallning.service.notification.MailNotificationService;
+import se.inera.intyg.intygsbestallning.service.notifiering.NotifieringService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
@@ -110,7 +110,7 @@ public class UtredningServiceImplTest {
     private UserService userService;
 
     @Mock
-    private MailNotificationService mailNotificationService;
+    private NotifieringService notifieringService;
 
     @Mock
     private RegistreradVardenhetRepository registreradVardenhetRepository;
@@ -418,7 +418,7 @@ public class UtredningServiceImplTest {
         assertTrue(uppdateradUtredning.getTolkBehov());
         assertEquals(tolkSprak, uppdateradUtredning.getTolkSprak());
 
-        verify(mailNotificationService, times(1)).notifyBestallningUppdaterad(any(Utredning.class));
+        verify(notifieringService, times(1)).notifieraVardenhetUppdateradBestallning(any(Utredning.class));
     }
 
     @Test

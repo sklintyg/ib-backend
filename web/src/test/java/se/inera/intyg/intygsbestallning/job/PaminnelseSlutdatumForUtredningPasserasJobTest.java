@@ -18,6 +18,13 @@
  */
 package se.inera.intyg.intygsbestallning.job;
 
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.powermock.api.mockito.PowerMockito.when;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +33,9 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
 import se.inera.intyg.intygsbestallning.jobs.PaminnelseSlutdatumForUtredningPasserasJob;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
@@ -35,22 +45,11 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungT
 import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
-import se.inera.intyg.intygsbestallning.service.notification.MailNotificationService;
+import se.inera.intyg.intygsbestallning.service.notifiering.NotifieringService;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
 import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
-
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PaminnelseSlutdatumForUtredningPasserasJobTest {
@@ -62,7 +61,7 @@ public class PaminnelseSlutdatumForUtredningPasserasJobTest {
     private UtredningRepository utredningRepository;
 
     @Mock
-    private MailNotificationService mailNotificationService;
+    private NotifieringService notifieringService;
 
     @InjectMocks
     private PaminnelseSlutdatumForUtredningPasserasJob testee;
@@ -80,7 +79,7 @@ public class PaminnelseSlutdatumForUtredningPasserasJobTest {
                 .thenReturn(Arrays.asList(utredning));
 
         testee.executeJob();
-        verify(mailNotificationService, times(1)).notifySlutdatumPaVagPasseras(any(Utredning.class));
+        verify(notifieringService, times(1)).notifieraVardenehtPaminnelseSlutdatumUtredning(any(Utredning.class));
     }
 
     @Test
@@ -91,7 +90,7 @@ public class PaminnelseSlutdatumForUtredningPasserasJobTest {
                 .thenReturn(Collections.emptyList());
 
         testee.executeJob();
-        verifyZeroInteractions(mailNotificationService);
+        verifyZeroInteractions(notifieringService);
     }
 
     @Test
@@ -120,6 +119,6 @@ public class PaminnelseSlutdatumForUtredningPasserasJobTest {
                 .thenReturn(Arrays.asList(utredning));
 
         testee.executeJob();
-        verifyZeroInteractions(mailNotificationService);
+        verifyZeroInteractions(notifieringService);
     }
 }
