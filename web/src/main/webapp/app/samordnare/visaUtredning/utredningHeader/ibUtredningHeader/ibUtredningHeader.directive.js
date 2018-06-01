@@ -25,7 +25,7 @@ angular.module('ibApp').directive('ibUtredningHeader', function($window, $state)
             utredning: '=',
             utredningVm: '='
         },
-        templateUrl: '/app/samordnare/visaUtredning/utredningHeader/ibUtredningHeader/ibBestallningHeader.directive.html',
+        templateUrl: '/app/samordnare/visaUtredning/utredningHeader/ibUtredningHeader/ibUtredningHeader.directive.html',
         link: function($scope) {
             $scope.back = function(){
                 $state.go('^');
