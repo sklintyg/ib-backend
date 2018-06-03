@@ -46,6 +46,7 @@ public class PatientNameEnricherImpl implements PatientNameEnricher {
                 .getPersons(paged.stream()
                         .map(bli -> Personnummer.createPersonnummer(bli.getPatientId())
                                 .orElseThrow(() -> new IllegalArgumentException("Invalid personnummer " + bli.getPatientId())))
+                        .distinct()
                         .collect(toList()));
 
         for (PatientNamable bli : paged) {
