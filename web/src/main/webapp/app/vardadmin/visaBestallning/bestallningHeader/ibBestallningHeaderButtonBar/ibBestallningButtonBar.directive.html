@@ -1,8 +1,10 @@
 <div class="white-space-no-wrap">
-  <button type="button"
+  <button ng-if="correctFasId()"
+          type="button"
           id="registreraMottagenBtn"
           class="btn btn-primary"
-          ng-click="registerReceived()">
+          ng-click="registerReceivedAction()"
+          ng-disabled="status()">
     <i class="material-icons">move_to_inbox</i> Registrera mottagen handling
   </button>
   <button type="button"

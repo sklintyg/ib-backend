@@ -1,0 +1,35 @@
+<div id="registrera-mottagen-handling-modal">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" data-ng-click="$dismiss()"><i class="material-icons">close</i>
+        </button>
+        <h4 class="modal-title">Datum för mottagna handlingar</h4>
+    </div>
+    <div class="modal-body">
+        <p message key="registrera-mottagen-handling.label.info"></p>
+        <span class="label-margin">
+      <ib-help-text-label label-key="registrera-mottagen-handling.mottagetdatum"></ib-help-text-label>
+    </span>
+        <form>
+            <ib-date-picker-field
+                    target-model="registerValue"
+                    format="yyyy-MM-dd"
+                    date-format-error="Korrekt datum måste anges."
+                    ib-date-picker-field
+                    append-to-body="true"
+                    add-date-parser="strict">
+            </ib-date-picker-field>
+        </form>
+    </div>
+    <div class="modal-footer button-flex-wrapper">
+        <ib-button btn-id="register-received-action"
+                   btn-class="btn btn-primary button-margin"
+                   btn-click="save()"
+                   btn-disabled="correctDate()"
+        >
+            <span message key="common.save"></span>
+        </ib-button>
+        <button type="button" id="register-received-modal-cancel" class="btn btn-default" ng-click="$dismiss()">
+            <span message key="common.cancel"></span>
+        </button>
+    </div>
+</div>

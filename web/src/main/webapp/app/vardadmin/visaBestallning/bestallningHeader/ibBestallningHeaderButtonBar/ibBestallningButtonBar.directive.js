@@ -17,70 +17,57 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 angular.module('ibApp').directive('ibBestallningButtonBar',
-    function() {
-    'use strict';
+    function ($uibModal, $state) {
+        'use strict';
 
-    return {
-        restrict: 'E',
-        scope: {
-            bestallning: '=',
-            bestallningVm: '='
-        },
-        templateUrl: '/app/vardadmin/visaBestallning/bestallningHeader/ibBestallningHeaderButtonBar/ibBestallningButtonBar.directive.html',
-        link: function($scope) {
+        return {
+            restrict: 'E',
+            scope: {
+                bestallning: '=',
+                bestallningVm: '='
+            },
+            templateUrl: '/app/vardadmin/visaBestallning/bestallningHeader/ibBestallningHeaderButtonBar/ibBestallningButtonBar.directive.html',
+            link: function ($scope) {
 
-            $scope.vm = {
-                acceptInProgress: false
-            };
+                $scope.vm = {
+                    acceptInProgress: false
+                };
 
-/*
-            function findDirektTilldeladInternForfragan() {
-                return $scope.utredning.internForfraganList.filter(function(internForfragan) {
-                    if (internForfragan.status.id === 'DIREKTTILLDELAD') {
+                $scope.status = function () {
+                    if ($scope.bestallning.status.id === 'BESTALLNING_MOTTAGEN' ||
+                        $scope.bestallning.status.id === 'VANTAR_PA_HANDLINGAR' ||
+                        $scope.bestallning.status.id === 'UPPDATERA_BESTALLNING') {
+                        return false;
+                    }
+                    return true;
+                };
+
+                $scope.correctFasId = function () {
+                    if ($scope.bestallning !== undefined && $scope.bestallning.fas.id === 'UTREDNING') {
                         return true;
                     }
-                });
-            }
+                    return false;
+                };
 
-            $scope.accepteraBtnDisabled = function() {
-                var hasDirektTilldeladInternForfragan = findDirektTilldeladInternForfragan().length > 0;
-                return $scope.utredning.status.id === 'TILLDELAD_VANTAR_PA_BESTALLNING' ||
-                    (!hasDirektTilldeladInternForfragan && !$scope.utredningVm.selectedInternforfragan);
-            };
-
-            $scope.avvisaBtnDisabled = function() {
-                return $scope.utredning.status.id === 'TILLDELAD_VANTAR_PA_BESTALLNING';
-            };
-
-            $scope.acceptera = function() {
-                $scope.vm.acceptInProgress = true;
-                var vardenhetHsaId;
-                if ($scope.utredningVm.selectedInternforfragan) {
-                    vardenhetHsaId = $scope.utredningVm.selectedInternforfragan.vardenhetHsaId;
-                }
-                else {
-                    vardenhetHsaId = findDirektTilldeladInternForfragan()[0].vardenhetHsaId;
-                }
-                ExternForfraganProxy.acceptExternForfragan($scope.utredning.utredningsId, vardenhetHsaId)
-                    .then(function(data) {
-                        angular.copy(data, $scope.utredning);
-                    }).finally(function() { // jshint ignore:line
-                        $scope.vm.acceptInProgress = false;
+                $scope.registerReceivedAction = function () {
+                    var modalInstance = $uibModal.open({
+                        templateUrl: '/app/vardadmin/visaBestallning/bestallningHeader/ibBestallningHeaderButtonBar/registreraMottagenHandling/' +
+                        'registreraMottagenHandling.modal.html',
+                        size: 'md',
+                        controller: 'RegistreraMottagenHandlingModalCtrl',
+                        resolve: {
+                            bestallning: $scope.bestallning
+                        }
                     });
-            };
-            $scope.avvisa = function() {
-                var modalInstance = $uibModal.open({
-                    templateUrl: '/app/vardadmin/visaBestallning/bestallningHeader/ibBestallningHeaderButtonBar/avvisaForfraganModal/' +
-                                 'avvisaForfragan.modal.html',
-                    size: 'md',
-                    controller: 'AvvisaForfraganModalCtrl',
-                    resolve: {
-                        utredning: $scope.utredning
-                    }
-                });
-                //angular > 1.5 warns if promise rejection is not handled (e.g backdrop-click == rejection)
-                modalInstance.result.catch(function () {}); //jshint ignore:line
-            }; */
-        }
-    };
-});
+                    //angular > 1.5 warns if promise rejection is not handled (e.g backdrop-click == rejection)
+                    modalInstance.result.catch(function () {}); //jshint ignore:line
+
+                    modalInstance.result.then(function() {
+                        $state.reload();
+                    }, function() {
+
+                    });
+                };
+            }
+        };
+    });

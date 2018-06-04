@@ -112,6 +112,11 @@ var ibMessages = {
         'lagg-till-besok.label.viamail': 'Per post',
         'lagg-till-besok.label.viaphone': 'Per telefon',
 
+        // Registrera mottagen handling modal
+        'registrera-mottagen-handling.label.info': 'Här anges datumet för när handlingarna mottogs. Detta datum visas inte för Försäkringskassan utan är till för vården att kunna följa händelser kring utredningen.\n' +
+        '\n' + 'Avser handlingar som tillhör beställningen.',
+        'registrera-mottagen-handling.mottagetdatum': 'Datum för mottagande',
+
         //Registrerade vårdenheter
         'hantera-enheter.label.table.vardenheter.column.namn': 'Namn',
         'hantera-enheter.label.table.vardenheter.column.postadress': 'Postadress',
