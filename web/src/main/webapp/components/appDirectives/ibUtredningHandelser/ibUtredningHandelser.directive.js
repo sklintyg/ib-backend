@@ -24,37 +24,10 @@ angular.module('ibApp').directive('ibUtredningHandelser', function($log, $timeou
         scope: {
             utredning: '='
         },
-        templateUrl: '/app/samordnare/visaUtredning/ibUtredningHandelser/ibUtredningHandelser.directive.html',
+        templateUrl: '/components/appDirectives/ibUtredningHandelser/ibUtredningHandelser.directive.html',
         link: function($scope) {
 
-            $scope.onChange = function() {
-                $timeout(function() {
-                    $scope.getHandelserFiltered();
-                });
-            };
-
             $scope.filter = ibHandelseFilterModel.build();
-
-            $scope.getHandelserFiltered = function(appendResults) {
-
-                if (!appendResults) {
-                    $scope.filter.currentPage = 0;
-                }
-
-/*                HandelserProxy.getForfragningar($scope.filter.convertToPayload()).then(function(data) {
-                    if (appendResults) {
-                        $scope.handelser = $scope.handelser.concat(data.handelser);
-                    }
-                    else {
-                        $scope.handelser = data.handelser;
-                    }
-                    $scope.handelserTotal = data.totalCount;
-                }, function(error) {
-                    $log.error(error);
-                });
-                */
-            };
-            $scope.getHandelserFiltered();
         }
     };
 });

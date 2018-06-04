@@ -1,0 +1,35 @@
+<div>
+  <div class="row table-actionbar">
+    <div class="col-md-3">
+      <ib-dropdown
+          id="filterHandelse"
+          ng-model="filter.handelse"
+          items="filter.handelseOptions">
+      </ib-dropdown>
+    </div>
+  </div>
+
+  <table id="samordnare-utredning-handelser-table" class="table table-striped ib-table-striped">
+    <thead>
+      <tr>
+        <th ib-table-head filter="filter" order-by-key="handelseDatum" label-key="label.table.utredning.handelser.column.handelseDatum"></th>
+        <th ib-table-head filter="filter" order-by-key="typ" label-key="label.table.utredning.handelser.column.typ"></th>
+        <th ib-table-head filter="filter" order-by-key="anvandare" label-key="label.table.utredning.handelser.column.anvandare"></th>
+        <th ib-table-head filter="filter" order-by-key="skapad" label-key="label.table.utredning.handelser.column.handelse"></th>
+      </tr>
+    </thead>
+    <tbody ng-if="handelser.length < 1">
+      <tr>
+        <td colspan="4"><message class="td-padding" key="common.no.results"></message></td>
+      </tr>
+    </tbody>
+    <tbody>
+      <tr ng-repeat="row in utredning.handelseList | filter: filter.handelse | orderBy: filter.orderBy:filter.orderByAsc as handelser">
+        <td>{{::row.skapad}}</td>
+        <td>{{::row.typ.label}}</td>
+        <td>{{::row.anvandare}}</td>
+        <td>{{::row.handelseText}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
