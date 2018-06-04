@@ -22,7 +22,7 @@
     <tbody>
     <tr ng-repeat="row in utredning.handelseList">
       <td>{{::row.skapad}}</td>
-      <td><span message key="label.table.handelser.typ.{{::row.typ}}"></span></td>
+      <td>{{::row.typ.label}}</td>
       <td>{{::row.anvandare}}</td>
       <td>{{::row.handelseText}}</td>
     </tr>
