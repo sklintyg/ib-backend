@@ -21,6 +21,9 @@ package se.inera.intyg.intygsbestallning.service.notifiering.send;
 import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType.VE;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.AVVIKELSE_RAPPORTERAD_AV_VARDEN;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.avvikelseRapporteradAvVardenMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.externForfraganUrl;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.internForfraganUrl;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.landstingNyExternforfraganMessage;
@@ -30,6 +33,7 @@ import static se.inera.intyg.intygsbestallning.service.notifiering.util.Notifier
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.uppdateradBestallningMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.utredningUrl;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.vardenhetNyInternforfraganMessage;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_AVVIKELSE_RAPPORTERAD_AV_VARDEN;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_BESTALLNING_AV_FRORSAKRINGSMEDICINSK_UTREDNING;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_BESTALLNING_UPPDATERAD;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_NY_FMU_EXTERN_FORFRAGAN;
@@ -44,14 +48,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import java.lang.invoke.MethodHandles;
+import java.text.MessageFormat;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
+import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp;
 import se.inera.intyg.intygsbestallning.service.mail.MailService;
+import se.inera.intyg.intygsbestallning.service.notifiering.preferens.NotifieringPreferenceService;
 import se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailBodyFactory;
 import se.inera.intyg.intygsbestallning.service.vardenhet.VardenhetService;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.notification.GetNotificationPreferenceResponse;
 
 @Service
 public class NotifieringSendServiceImpl implements NotifieringSendService {
@@ -63,6 +72,9 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
     @Autowired
     private VardenhetService vardenhetService;
+
+    @Autowired
+    private NotifieringPreferenceService notifieringPreferenceService;
 
     @Autowired
     private NotifieringMailBodyFactory notifieringMailBodyFactory;
@@ -165,7 +177,18 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
     @Override
     public void notifieraLandstingAvvikelseRapporteradAvVarden(Utredning utredning, Besok besok) {
-        throw new NotImplementedException();
+        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, AVVIKELSE_RAPPORTERAD_AV_VARDEN);
+        final String id = bestallning.getTilldeladVardenhetHsaId();
+        final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VE);
+
+        if (preferens.isEnabled(AVVIKELSE_RAPPORTERAD_AV_VARDEN)) {
+            String email = preferens.getLandstingEpost();
+            String body = notifieringMailBodyFactory.buildBodyForUtredning(
+                    avvikelseRapporteradAvVardenMessage(utredning, besok),
+                    utredningUrl(utredning));
+
+            send(email, SUBJECT_AVVIKELSE_RAPPORTERAD_AV_VARDEN, body);
+        }
     }
 
     @Override
@@ -270,5 +293,11 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
         if (!utredning.getBestallning().isPresent()) {
             throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, errorMessage);
         }
+    }
+
+    private Bestallning verifyHasBestallningAndGet(final Utredning utredning, final NotifieringTyp notifieringTyp) {
+        return utredning.getBestallning().orElseThrow(() -> new IbServiceException(
+                IbErrorCodeEnum.BAD_STATE,
+                MessageFormat.format("Cannot send notification for {0} when there is no Bestallning.", notifieringTyp.getId())));
     }
 }

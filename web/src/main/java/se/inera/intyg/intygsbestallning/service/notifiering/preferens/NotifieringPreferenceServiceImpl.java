@@ -20,12 +20,10 @@ package se.inera.intyg.intygsbestallning.service.notifiering.preferens;
 
 import static se.inera.intyg.intygsbestallning.web.controller.api.dto.notification.GetNotificationPreferenceResponse.recipientFilter;
 
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType;
 import se.inera.intyg.intygsbestallning.persistence.model.NotifieringPreference;
 import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp;
@@ -83,7 +81,8 @@ public class NotifieringPreferenceServiceImpl implements NotifieringPreferenceSe
         // Create a comma-separated string of all applicable notification types to this hsaEntityType
         String enabledNotifications = Stream.of(NotifieringTyp.values())
                 .filter(nft -> recipientFilter(nft, hsaEntityType))
-                .map(notifieringTyp -> notifieringTyp.getId()).collect(Collectors.joining(","));
+                .map(NotifieringTyp::getId)
+                .collect(Collectors.joining(","));
 
         NotifieringPreference preference = new NotifieringPreference();
         preference.setHsaId(hsaId);

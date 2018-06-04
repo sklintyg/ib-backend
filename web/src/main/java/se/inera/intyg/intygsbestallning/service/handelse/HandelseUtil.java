@@ -116,7 +116,7 @@ public final class HandelseUtil {
         textBuilder.append(". ");
         textBuilder.append(MessageFormat.format("Orsakad av {0}", request.getOrsakatAv().name()));
 
-        if (request.getInvanareUteblev()) {
+        if (BooleanUtils.toBoolean(request.getInvanareUteblev())) {
             textBuilder.append(" Invanare uteblev");
         }
 

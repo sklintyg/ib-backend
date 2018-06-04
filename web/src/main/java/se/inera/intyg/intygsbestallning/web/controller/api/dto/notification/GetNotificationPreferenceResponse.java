@@ -18,12 +18,12 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto.notification;
 
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+
+import com.google.common.base.Strings;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import com.google.common.base.Strings;
-
 import se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType;
 import se.inera.intyg.intygsbestallning.persistence.model.NotifieringPreference;
 import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp;
@@ -46,14 +46,19 @@ public class GetNotificationPreferenceResponse {
         this.items = items;
     }
 
-    public static GetNotificationPreferenceResponse from(NotifieringPreference notifieringPreference,
+    public boolean isEnabled(final NotifieringTyp typ) {
+        return isNotEmpty(landstingEpost) && items.stream().anyMatch(item -> item.getId().equals(typ.getLabel()));
+    }
+
+    public static GetNotificationPreferenceResponse from(
+            NotifieringPreference notifieringPreference,
             SelectableHsaEntityType hsaEntityType) {
         final Stream<String> stringStream = Strings.isNullOrEmpty(notifieringPreference.getEnabledNotifications()) ? Stream.empty()
                 : Stream.of(notifieringPreference.getEnabledNotifications().split(","));
 
         // All notifications stored in entity are by definition enabled
         final List<NotificationPreferenceItem> enabledItems = stringStream
-                .map(typeString -> NotifieringTyp.valueOf(typeString))
+                .map(NotifieringTyp::valueOf)
                 .map(nt -> new NotificationPreferenceItem(nt, true))
                 .collect(Collectors.toList());
 
@@ -73,12 +78,12 @@ public class GetNotificationPreferenceResponse {
 
     public static boolean recipientFilter(NotifieringTyp notifieringTyp, SelectableHsaEntityType hsaEntityType) {
         switch (hsaEntityType) {
-        case VE:
-            return notifieringTyp.getNotifieringMottagarTyp().equals(NotifieringMottagarTyp.ALL)
-                    || notifieringTyp.getNotifieringMottagarTyp().equals(NotifieringMottagarTyp.VARDENHET);
-        case VG:
-            return notifieringTyp.getNotifieringMottagarTyp().equals(NotifieringMottagarTyp.ALL)
-                    || notifieringTyp.getNotifieringMottagarTyp().equals(NotifieringMottagarTyp.LANDSTING);
+            case VE:
+                return notifieringTyp.getNotifieringMottagarTyp().equals(NotifieringMottagarTyp.ALL)
+                        || notifieringTyp.getNotifieringMottagarTyp().equals(NotifieringMottagarTyp.VARDENHET);
+            case VG:
+                return notifieringTyp.getNotifieringMottagarTyp().equals(NotifieringMottagarTyp.ALL)
+                        || notifieringTyp.getNotifieringMottagarTyp().equals(NotifieringMottagarTyp.LANDSTING);
         }
         throw new IllegalArgumentException("Unhandled SelectableHsaEntityType " + hsaEntityType);
     }

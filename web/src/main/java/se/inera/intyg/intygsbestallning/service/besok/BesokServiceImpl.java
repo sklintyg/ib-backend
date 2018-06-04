@@ -165,9 +165,9 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
 
         if (request.getHandelseTyp().equals(HandelseTyp.AVVIKELSE_RAPPORTERAD)) {
             request.setAvvikelseId(uppdateratBesok.getAvvikelse().getAvvikelseId());
+            checkState(Objects.equals(BesokStatus.AVVIKELSE_RAPPORTERAD, BesokStatusResolver.resolveStaticStatus(uppdateratBesok)));
             myndighetIntegrationService.reportDeviation(createReportDeviationRequestDto(request));
             notifieringSendService.notifieraLandstingAvvikelseRapporteradAvVarden(uppdateradUtredning, besokToUpdate);
-            checkState(Objects.equals(BesokStatus.AVVIKELSE_RAPPORTERAD, BesokStatusResolver.resolveStaticStatus(uppdateratBesok)));
         } else {
             checkState(Objects.equals(BesokStatus.AVVIKELSE_MOTTAGEN, BesokStatusResolver.resolveStaticStatus(uppdateratBesok)));
             notifieringSendService.notifieraLandstingAvvikelseMottagenFranFK(uppdateradUtredning, besokToUpdate);

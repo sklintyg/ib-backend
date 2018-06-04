@@ -22,6 +22,7 @@ import java.text.MessageFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.Optional;
+import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
@@ -99,6 +100,13 @@ public final class NotifieringMailMeddelandeUtil {
         return MessageFormat.format("Slutdatum {0} för utredning {1} har "
                         + "passerats. Utredningen kommer därför inte ersättas av Försäkringskassan.",
                 sistaDatumOpt,
+                utredning.getUtredningId());
+    }
+
+    public static String avvikelseRapporteradAvVardenMessage(final Utredning utredning, final Besok besok) {
+        return MessageFormat.format(
+                "En vårdenhet har rapporterat en avvikelse för ett besök som var inbokat <besök.startdatum> i utredning <utredning-id>",
+                besok.getBesokStartTid().format(DateTimeFormatter.ISO_DATE),
                 utredning.getUtredningId());
     }
 }

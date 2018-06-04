@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.service.stateresolver;
 
+import org.apache.commons.lang3.BooleanUtils;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
@@ -29,7 +30,7 @@ public class BesokStatusResolver {
     }
 
     public static BesokStatus resolveStaticStatus(Besok besok) {
-        if (besok.getAvvikelse() != null && besok.getAvvikelse().getInvanareUteblev()) {
+        if (besok.getAvvikelse() != null && BooleanUtils.toBoolean(besok.getAvvikelse().getInvanareUteblev())) {
             return BesokStatus.PATIENT_UTEBLEV;
         }
         if (besok.getHandelseList().stream().map(Handelse::getHandelseTyp).anyMatch(HandelseTyp.AVBOKAT_BESOK::equals)) {

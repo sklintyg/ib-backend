@@ -18,6 +18,23 @@
  */
 package se.inera.intyg.intygsbestallning.service.besok;
 
+import static com.google.common.collect.MoreCollectors.onlyElement;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.argThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto.ReportCareContactRequestDtoBuilder.aReportCareContactRequestDto;
+import static se.inera.intyg.intygsbestallning.persistence.model.Avvikelse.AvvikelseBuilder.anAvvikelse;
+import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handelse.HandelseBuilder.aHandelse;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
+import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
+import static se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest.ReportBesokAvvikelseRequestBuilder.aReportBesokAvvikelseRequest;
+
 import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,6 +42,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.util.Optional;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
@@ -34,30 +54,21 @@ import se.inera.intyg.intygsbestallning.integration.myndighet.service.MyndighetI
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.persistence.model.type.*;
+import se.inera.intyg.intygsbestallning.persistence.model.type.AvvikelseOrsak;
+import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.KallelseFormTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
+import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
 import se.inera.intyg.intygsbestallning.service.pdl.LogService;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PdlLogType;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
-
-import java.text.MessageFormat;
-import java.time.LocalDateTime;
-import java.util.Optional;
-
-import static com.google.common.collect.MoreCollectors.onlyElement;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto.ReportCareContactRequestDtoBuilder.aReportCareContactRequestDto;
-import static se.inera.intyg.intygsbestallning.persistence.model.Avvikelse.AvvikelseBuilder.anAvvikelse;
-import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
-import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
-import static se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest.ReportBesokAvvikelseRequestBuilder.aReportBesokAvvikelseRequest;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BesokServiceImplTest {
@@ -72,6 +83,9 @@ public class BesokServiceImplTest {
 
     @Mock
     private MyndighetIntegrationServiceImpl myndighetIntegrationService;
+
+    @Mock
+    private NotifieringSendService notifieringSendService;
 
     @Mock
     private UserService userService;
@@ -214,7 +228,23 @@ public class BesokServiceImplTest {
     public void testReportBesokAvvikelseMottagen() {
 
         Utredning utredning = createUtredningForBesokTest();
+        Utredning utredningAfterSavedAvvikelse = createUtredningForBesokTest();
 
+        utredningAfterSavedAvvikelse.getBesokList().get(0).setAvvikelse(anAvvikelse()
+                .withAvvikelseId(1L)
+                .withOrsakatAv(AvvikelseOrsak.PATIENT)
+                .withBeskrivning("beskrivning")
+                .withTidpunkt(DATE_TIME)
+                .build());
+
+        utredningAfterSavedAvvikelse.getBesokList().get(0).getHandelseList().add(aHandelse()
+                .withId(1L)
+                .withHandelseTyp(HandelseTyp.AVVIKELSE_MOTTAGEN)
+                .withSkapad(DATE_TIME.plusDays(1))
+                .withAnvandare("Ann Vändare")
+                .withHandelseText("Avvikelse Rapporterad")
+                .withKommentar("Kom en Tar")
+                .build());
 
         final ReportBesokAvvikelseRequest request = aReportBesokAvvikelseRequest()
                 .withBesokId(1L)
@@ -229,6 +259,10 @@ public class BesokServiceImplTest {
         doReturn(Optional.of(utredning))
                 .when(utredningRepository)
                 .findByBesokList_Id(eq(BESOK_ID));
+
+        doReturn(utredningAfterSavedAvvikelse)
+                .when(utredningRepository)
+                .save(any());
 
         besokService.reportBesokAvvikelse(request);
 
@@ -245,14 +279,22 @@ public class BesokServiceImplTest {
                 .withOrsakatAv(AvvikelseOrsak.PATIENT)
                 .withBeskrivning("beskrivning")
                 .withTidpunkt(DATE_TIME)
-                .withInvanareUteblev(true)
                 .build());
+
+        utredningAfterSavedAvvikelse.getBesokList().get(0).getHandelseList().add(aHandelse()
+                .withId(1L)
+                .withHandelseTyp(HandelseTyp.AVVIKELSE_RAPPORTERAD)
+                .withSkapad(DATE_TIME.plusDays(1))
+                .withAnvandare("Ann Vändare")
+                .withHandelseText("Avvikelse Rapporterad")
+                .withKommentar("Kom en Tar")
+                .build());
+
         final ReportBesokAvvikelseRequest request = aReportBesokAvvikelseRequest()
                 .withBesokId(1L)
                 .withOrsakatAv(AvvikelseOrsak.PATIENT)
                 .withBeskrivning("beskrivning")
                 .withTidpunkt(DATE_TIME)
-                .withInvanareUteblev(true)
                 .withSamordnare("Sam Ordnare")
                 .withHandelseTyp(HandelseTyp.AVVIKELSE_RAPPORTERAD)
                 .build();
