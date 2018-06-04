@@ -1,8 +1,10 @@
 <div class="visaBestallning-page ib-workarea background">
 
-  <ib-bestallning-header bestallning="bestallning" bestallning-view-state="bestallningViewState"></ib-bestallning-header>
+  <ib-bestallning-header bestallning="bestallning"
+                         bestallning-view-state="bestallningViewState"></ib-bestallning-header>
 
-  <div class="ib-workarea-hflex-container centered-constrained-content upper-margin" id="edit-{{bestallning.bestallning.Id}}">
+  <div class="ib-workarea-hflex-container centered-constrained-content upper-margin"
+       id="edit-{{bestallning.bestallning.Id}}">
     <uib-tabset active="active">
       <uib-tab index="0" heading="Beställning" ng-click="setActive(0)">
         <div class="bottom-fadeout-gradient ib-color-27">
@@ -12,7 +14,7 @@
 
               <div ng-hide="viewState.error.key">
                 <ib-spinner label="info.loadingintyg" show-spinner="vm.loading">
-                  <div id="bestallning. class="row bestallning.>
+                  <div id="bestallning. class=" row bestallning.>
                     <div class="bestallning-body">
                       <card>
                         <h3>Beställning</h3>
@@ -117,21 +119,20 @@
 
           </div>
 
-          </div>
-
-
+        </div>
       </uib-tab>
+
       <uib-tab index="1" heading="Besök och avvikelser" ng-click="setActive(1)">
-        <ib-besok bestallning="bestallning"></ib-besok>
+        <ib-besok class="tab-content-container" bestallning="bestallning"></ib-besok>
       </uib-tab>
 
-  <uib-tab index="2" heading="Händelser" ng-click="setActive(2)">
+      <uib-tab index="2" heading="Händelser" ng-click="setActive(2)">
+        <ib-utredning-handelser class="tab-content-container" utredning="bestallning" column-set="VARDADMIN"></ib-utredning-handelser>
+      </uib-tab>
 
-  </uib-tab>
+      <uib-tab index="3" heading="Anteckningar" ng-click="setActive(3)">
 
-  <uib-tab index="3" heading="Anteckningar" ng-click="setActive(3)">
-
-  </uib-tab>
+      </uib-tab>
 
     </uib-tabset>
 

@@ -1,3 +1,14 @@
+
+.table-actionbar {
+  display: flex;
+  flex-direction: row;
+  padding-bottom: 10px;
+
+  > .btn {
+    margin-right: 10px;
+  }
+}
+
 .ib-table-striped {
   border-collapse: separate;
   border-spacing: 0 0;

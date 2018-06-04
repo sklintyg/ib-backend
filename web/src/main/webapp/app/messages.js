@@ -177,6 +177,7 @@ var ibMessages = {
         'label.table.utredning.handelser.column.typ': 'Typ',
         'label.table.utredning.handelser.column.anvandare': 'Användare',
         'label.table.utredning.handelser.column.handelse': 'Händelse',
+        'label.table.utredning.handelser.column.kommentar': 'Kommentar',
 
         // Visa beställning - besök tabell
         'label.table.bestallning.besok.column.besoktid': 'Besökstid',

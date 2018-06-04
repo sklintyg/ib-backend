@@ -16,11 +16,12 @@
         <th ib-table-head filter="filter" order-by-key="typ" label-key="label.table.utredning.handelser.column.typ"></th>
         <th ib-table-head filter="filter" order-by-key="anvandare" label-key="label.table.utredning.handelser.column.anvandare"></th>
         <th ib-table-head filter="filter" order-by-key="skapad" label-key="label.table.utredning.handelser.column.handelse"></th>
+        <th ng-if="columnSet === 'VARDADMIN'" ib-table-head filter="filter" order-by-key="kommentar" label-key="label.table.utredning.handelser.column.kommentar"></th>
       </tr>
     </thead>
     <tbody ng-if="handelser.length < 1">
       <tr>
-        <td colspan="4"><message class="td-padding" key="common.no.results"></message></td>
+        <td colspan="{{columnSet === 'VARDADMIN' ? 5 : 4}}"><message class="td-padding" key="common.no.results"></message></td>
       </tr>
     </tbody>
     <tbody>
@@ -29,6 +30,7 @@
         <td>{{::row.typ.label}}</td>
         <td>{{::row.anvandare}}</td>
         <td>{{::row.handelseText}}</td>
+        <td ng-if="columnSet === 'VARDADMIN'">{{::row.kommentar}}</td>
       </tr>
     </tbody>
   </table>
