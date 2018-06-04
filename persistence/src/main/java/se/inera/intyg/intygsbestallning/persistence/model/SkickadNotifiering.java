@@ -102,7 +102,6 @@ public final class SkickadNotifiering {
                 .withSkickad(skickadNotifiering.getSkickad())
                 .build();
     }
-    
     // CHECKSTYLE:OFF MagicNumber
 
     @Override
