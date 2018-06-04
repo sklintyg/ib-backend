@@ -73,7 +73,6 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.KallelseFormTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
@@ -385,7 +384,7 @@ public class UtredningRepositoryTest {
         Utredning utr = buildUtredning();
         utr.getSkickadNotifieringList().add(aSkickadNotifiering()
                 .withTyp(NotifieringTyp.PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS)
-                .withMottagare(NotifieringMottagarTyp.ALL)
+                .withMottagare(NotifieringTyp.PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS.getNotifieringMottagarTyp())
                 .withSkickad(LocalDateTime.now())
                 .build());
         utr.setBestallning(buildBestallning());
@@ -425,7 +424,7 @@ public class UtredningRepositoryTest {
         utr.setBestallning(buildBestallning());
         utr.getSkickadNotifieringList().add(aSkickadNotifiering()
                 .withTyp(NotifieringTyp.SLUTDATUM_UTREDNING_PASSERAT)
-                .withMottagare(NotifieringMottagarTyp.ALL)
+                .withMottagare(NotifieringTyp.SLUTDATUM_UTREDNING_PASSERAT.getNotifieringMottagarTyp())
                 .withSkickad(LocalDateTime.now())
                 .build());
         Intyg intyg = buildIntyg();
