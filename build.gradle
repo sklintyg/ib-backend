@@ -26,7 +26,7 @@ ext {
     hibernateJpaVersion = "1.0.0.Final"
     hikariCPVersion = "2.3.5"
     itextVersion = "5.5.8"
-    jacksonVersion = "2.8.1"
+    jacksonVersion = "2.9.4"
     jacksonYamlVersion = "2.4.5"
     javaxJmsVersion = "1.1-rev-1"
     javaxMailVersion = "1.5.2"
