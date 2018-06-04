@@ -26,6 +26,7 @@ import com.google.common.base.Strings;
 
 import se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType;
 import se.inera.intyg.intygsbestallning.persistence.model.NotifieringPreference;
+import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp;
 
 /**
@@ -73,11 +74,11 @@ public class GetNotificationPreferenceResponse {
     public static boolean recipientFilter(NotifieringTyp notifieringTyp, SelectableHsaEntityType hsaEntityType) {
         switch (hsaEntityType) {
         case VE:
-            return notifieringTyp.getRecipient().equals(NotifieringTyp.NotificationRecipientType.ALL)
-                    || notifieringTyp.getRecipient().equals(NotifieringTyp.NotificationRecipientType.VARDENHET);
+            return notifieringTyp.getNotifieringMottagarTyp().equals(NotifieringMottagarTyp.ALL)
+                    || notifieringTyp.getNotifieringMottagarTyp().equals(NotifieringMottagarTyp.VARDENHET);
         case VG:
-            return notifieringTyp.getRecipient().equals(NotifieringTyp.NotificationRecipientType.ALL)
-                    || notifieringTyp.getRecipient().equals(NotifieringTyp.NotificationRecipientType.LANDSTING);
+            return notifieringTyp.getNotifieringMottagarTyp().equals(NotifieringMottagarTyp.ALL)
+                    || notifieringTyp.getNotifieringMottagarTyp().equals(NotifieringMottagarTyp.LANDSTING);
         }
         throw new IllegalArgumentException("Unhandled SelectableHsaEntityType " + hsaEntityType);
     }

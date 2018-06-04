@@ -24,39 +24,39 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum NotifieringTyp {
     // Notifieringar som endast berör Landsting (VG)
-    NY_EXTERNFORFRAGAN("Ny förfrågan", NotificationRecipientType.LANDSTING),
-    SAMTLIGA_INTERNFORFRAGAN_BESVARATS("Förfrågan besvarad av vårdenheter", NotificationRecipientType.LANDSTING),
-    PAMINNELSE_SLUTDATUM_EXTERNFORFRAGAN_PASSERAS("Påminnelse svara på förfrågan", NotificationRecipientType.LANDSTING),
-    SVARSDATUM_EXTERNFORFRAGAN_PASSERAT("Svarsdatum passerat för förfrågan", NotificationRecipientType.LANDSTING),
-    AVVIKELSE_RAPPORTERAD_AV_VARDEN("Avvikelse rapporterad av vårdenhet", NotificationRecipientType.LANDSTING),
+    NY_EXTERNFORFRAGAN("Ny förfrågan", NotifieringMottagarTyp.LANDSTING),
+    SAMTLIGA_INTERNFORFRAGAN_BESVARATS("Förfrågan besvarad av vårdenheter", NotifieringMottagarTyp.LANDSTING),
+    PAMINNELSE_SLUTDATUM_EXTERNFORFRAGAN_PASSERAS("Påminnelse svara på förfrågan", NotifieringMottagarTyp.LANDSTING),
+    SVARSDATUM_EXTERNFORFRAGAN_PASSERAT("Svarsdatum passerat för förfrågan", NotifieringMottagarTyp.LANDSTING),
+    AVVIKELSE_RAPPORTERAD_AV_VARDEN("Avvikelse rapporterad av vårdenhet", NotifieringMottagarTyp.LANDSTING),
 
     // Notifieringar som endast berör vårdenheter (VE)
-    NY_INTERNFORFRAGAN("Ny förfrågan", NotificationRecipientType.VARDENHET),
-    UTREDNING_TILLDELAD("Tilldelad utredning", NotificationRecipientType.VARDENHET),
-    PAMINNELSE_SLUTDATUM_INTERNFORFRAGAN_PASSERAS("Påminnelse svara på förfrågan", NotificationRecipientType.VARDENHET),
-    SVARSDATUM_INTERNFORFRAGAN_PASSERAT("Svarsdatum passerat för förfrågan", NotificationRecipientType.VARDENHET),
-    NY_BESTALLNING("Ny beställning", NotificationRecipientType.VARDENHET),
-    UPPDATERAD_BESTALLNING("Uppdaterad beställning", NotificationRecipientType.VARDENHET),
-    PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS("Påminnelse skicka utlåtande", NotificationRecipientType.VARDENHET),
-    KOMPLETTERING_BEGARD("Komplettering begärd", NotificationRecipientType.VARDENHET),
-    PAMINNELSEDATUM_KOMPLETTERING_PASSERAS("Påminnelse svara på komplettering", NotificationRecipientType.VARDENHET),
-    PAMINNELSE_REDOVISA_BESOK("Påminnelse redovisa besök", NotificationRecipientType.VARDENHET),
+    NY_INTERNFORFRAGAN("Ny förfrågan", NotifieringMottagarTyp.VARDENHET),
+    UTREDNING_TILLDELAD("Tilldelad utredning", NotifieringMottagarTyp.VARDENHET),
+    PAMINNELSE_SLUTDATUM_INTERNFORFRAGAN_PASSERAS("Påminnelse svara på förfrågan", NotifieringMottagarTyp.VARDENHET),
+    SVARSDATUM_INTERNFORFRAGAN_PASSERAT("Svarsdatum passerat för förfrågan", NotifieringMottagarTyp.VARDENHET),
+    NY_BESTALLNING("Ny beställning", NotifieringMottagarTyp.VARDENHET),
+    UPPDATERAD_BESTALLNING("Uppdaterad beställning", NotifieringMottagarTyp.VARDENHET),
+    PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS("Påminnelse skicka utlåtande", NotifieringMottagarTyp.VARDENHET),
+    KOMPLETTERING_BEGARD("Komplettering begärd", NotifieringMottagarTyp.VARDENHET),
+    PAMINNELSEDATUM_KOMPLETTERING_PASSERAS("Påminnelse svara på komplettering", NotifieringMottagarTyp.VARDENHET),
+    PAMINNELSE_REDOVISA_BESOK("Påminnelse redovisa besök", NotifieringMottagarTyp.VARDENHET),
 
     // Notifieringar som är gemensamma för båda
-    INGEN_BESTALLNING("Försäkringskassan kommer inte skicka någon beställning", NotificationRecipientType.ALL),
-    UTREDNING_AVSLUTAD_PGA_JAV("Utredning avslutad på grund av jäv", NotificationRecipientType.ALL),
-    AVVIKELSE_MOTTAGEN_AV_FK("Avvikelse rapporterad av Försäkringskassan", NotificationRecipientType.ALL),
-    UTREDNING_AVSLUTAD_PGA_AVBRUTEN("Utredning avbruten", NotificationRecipientType.ALL),
-    SLUTDATUM_UTREDNING_PASSERAT("Slutdatum för utredning passerat", NotificationRecipientType.ALL),
-    SLUTDATUM_KOMPLETTERING_PASSERAT("Slutdatum för komplettering passerat", NotificationRecipientType.ALL);
+    INGEN_BESTALLNING("Försäkringskassan kommer inte skicka någon beställning", NotifieringMottagarTyp.ALL),
+    UTREDNING_AVSLUTAD_PGA_JAV("Utredning avslutad på grund av jäv", NotifieringMottagarTyp.ALL),
+    AVVIKELSE_MOTTAGEN_AV_FK("Avvikelse rapporterad av Försäkringskassan", NotifieringMottagarTyp.ALL),
+    UTREDNING_AVSLUTAD_PGA_AVBRUTEN("Utredning avbruten", NotifieringMottagarTyp.ALL),
+    SLUTDATUM_UTREDNING_PASSERAT("Slutdatum för utredning passerat", NotifieringMottagarTyp.ALL),
+    SLUTDATUM_KOMPLETTERING_PASSERAT("Slutdatum för komplettering passerat", NotifieringMottagarTyp.ALL);
 
     private final String id;
     private final String label;
-    private final NotificationRecipientType recipient;
+    private final NotifieringMottagarTyp notifieringMottagarTyp;
 
-    NotifieringTyp(String label, NotificationRecipientType recipient) {
+    NotifieringTyp(String label, NotifieringMottagarTyp notifieringMottagarTyp) {
         this.id = this.name();
-        this.recipient = recipient;
+        this.notifieringMottagarTyp = notifieringMottagarTyp;
         this.label = label;
     }
 
@@ -69,13 +69,8 @@ public enum NotifieringTyp {
     }
 
     @JsonIgnore
-    public NotificationRecipientType getRecipient() {
-        return recipient;
+    public NotifieringMottagarTyp getNotifieringMottagarTyp() {
+        return notifieringMottagarTyp;
     }
 
-    public enum NotificationRecipientType {
-        LANDSTING,
-        VARDENHET,
-        ALL
-    }
 }
