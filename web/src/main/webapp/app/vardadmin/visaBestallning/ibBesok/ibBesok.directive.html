@@ -18,7 +18,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="row in bestallning.besokList">
+        <tr ng-repeat-start="row in bestallning.besokList">
             <td>{{::row.besokDatum}} {{::row.besokStartTid}} - {{::row.besokSlutTid}}</td>
             <td>{{::row.profession.label}}</td>
             <td>{{::row.namn}}</td>
@@ -26,9 +26,10 @@
             <td>{{::row.kallelseDatum}} per {{::row.kallelseForm.label}}</td>
             <td>{{::row.besokStatus.label}}</td>
             <td>
-                <ib-expand label="detaljer">
-                    <ib-handelser handelser="row.handelseList"></ib-handelser>
-                </ib-expand>
+                <button type="button" class="btn btn-link btn-link__purelink" ng-click="row.showDetails=!row.showDetails" ng-switch="row.showDetails">
+                    <span ng-switch-default>Visa detaljer <i class="material-icons">expand_more</i></span>
+                    <span ng-switch-when="true">Dölj detaljer <i class="material-icons">expand_less</i></span>
+                </button>
             </td>
             <td>
                 <div class="btn-group" uib-dropdown is-open="status.isopen">
@@ -42,6 +43,11 @@
                         <li role="menuitem"><a ng-click="openAvvikelseModal()">Avvikelse</a></li>
                     </ul>
                 </div>
+            </td>
+        </tr>
+        <tr ng-repeat-end ng-if="row.showDetails">
+            <td colspan="8">
+                <ib-besok-handelser handelser="row.handelseList"></ib-besok-handelser>
             </td>
         </tr>
         </tbody>

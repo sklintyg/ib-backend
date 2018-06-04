@@ -1,6 +1,10 @@
 .visaBestallning-page {
   background-color: $ib-color-27 !important;
 
+  .ib-workarea-hflex-container > div {
+    flex: 1;
+  }
+
   .ib-workarea-hflex-container .ib-workarea-utredning {
     padding: 10px 0px 0 0px !important;
   }

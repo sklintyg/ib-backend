@@ -22,6 +22,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
+import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.service.patient.Gender;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
@@ -42,7 +43,7 @@ public class GetBestallningResponse implements PDLLoggable {
 
     private Long utredningsId;
 
-    private String utredningsTyp;
+    private UtredningsTyp utredningsTyp;
 
     private String vardgivareHsaId;
 
@@ -86,7 +87,7 @@ public class GetBestallningResponse implements PDLLoggable {
 
         return GetBestallningResponseBuilder.agetBestallningResponse()
                 .withUtredningsId(utredning.getUtredningId())
-                .withUtredningsTyp(utredning.getUtredningsTyp().name())
+                .withUtredningsTyp(utredning.getUtredningsTyp())
                 .withVardgivareHsaId(!isNull(utredning.getExternForfragan())
                         ? utredning.getExternForfragan().getLandstingHsaId() : null)
                 .withInkomDatum(!isNull(utredning.getExternForfragan())
@@ -134,11 +135,11 @@ public class GetBestallningResponse implements PDLLoggable {
         this.utredningsId = utredningsId;
     }
 
-    public String getUtredningsTyp() {
+    public UtredningsTyp getUtredningsTyp() {
         return utredningsTyp;
     }
 
-    public void setUtredningsTyp(final String utredningsTyp) {
+    public void setUtredningsTyp(final UtredningsTyp utredningsTyp) {
         this.utredningsTyp = utredningsTyp;
     }
 
@@ -301,7 +302,7 @@ public class GetBestallningResponse implements PDLLoggable {
 
     public static final class GetBestallningResponseBuilder {
         private Long utredningsId;
-        private String utredningsTyp;
+        private UtredningsTyp utredningsTyp;
         private String vardgivareHsaId;
         private String inkomDatum;
         private String besvarasSenastDatum;
@@ -334,7 +335,7 @@ public class GetBestallningResponse implements PDLLoggable {
             return this;
         }
 
-        public GetBestallningResponseBuilder withUtredningsTyp(String utredningsTyp) {
+        public GetBestallningResponseBuilder withUtredningsTyp(UtredningsTyp utredningsTyp) {
             this.utredningsTyp = utredningsTyp;
             return this;
         }

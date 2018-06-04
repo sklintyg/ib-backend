@@ -54,7 +54,8 @@ angular.module('ibApp')
             });
 
             $scope.setActive = function(index) {
-                $state.go($state.current.name, {utredningsId: $stateParams.utredningsId, activeTab: index});
+                // state.go with notify false sets the stateparams but doesn't reload the view
+                $state.go($state.current.name, {utredningsId: $stateParams.utredningsId, activeTab: index}, {location: 'replace', notify: false});
             };
         }
     );

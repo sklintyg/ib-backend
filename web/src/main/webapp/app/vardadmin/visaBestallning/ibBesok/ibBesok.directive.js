@@ -24,8 +24,8 @@ angular.module('ibApp').directive('ibBesok', function($log, $uibModal, $state) {
         link: function($scope) {
 
             $scope.laggTillBesokDisabled = function() {
-                return $scope.bestallning.fas.id !== 'UTREDNING' || $scope.bestallning.status.id === 'UTLATANDE_SKICKAT' ||
-                    $scope.bestallning.status.id === 'UTLATANDE_MOTTAGET';
+                return !$scope.bestallning || $scope.bestallning.fas.id !== 'UTREDNING' ||
+                    $scope.bestallning.status.id === 'UTLATANDE_SKICKAT' || $scope.bestallning.status.id === 'UTLATANDE_MOTTAGET';
             };
 
             $scope.oppnaLaggTillBesok = function() {

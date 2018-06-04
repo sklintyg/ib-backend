@@ -16,29 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.persistence.model.type;
+angular.module('ibApp').directive('ibBesokHandelser', function() {
+    'use strict';
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-@JsonFormat(shape = JsonFormat.Shape.OBJECT)
-public enum UtredningsTyp {
-    AFU("AFU"),
-    AFU_UTVIDGAD("AFU utvidgad"),
-    LIAG("Läkarintyg till arbetsgivaren");
-
-    private final String id;
-    private final String label;
-
-    UtredningsTyp(String label) {
-        this.id = name();
-        this.label = label;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-}
+    return {
+        restrict: 'E',
+        scope: {
+            handelser: '='
+        },
+        templateUrl: '/app/vardadmin/visaBestallning/ibBesok/ibBesokHandelser/ibBesokHandelser.directive.html'
+    };
+});

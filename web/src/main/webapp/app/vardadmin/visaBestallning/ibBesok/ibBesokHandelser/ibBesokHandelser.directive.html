@@ -1,0 +1,18 @@
+<table id="besok-handelser-table" class="table table-striped ib-table-striped">
+  <thead>
+  <tr>
+    <th>Händelsetid</th>
+    <th>Användare</th>
+    <th>Händelse</th>
+    <th>Kommentar</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr ng-repeat="row in handelser">
+    <td>{{::row.skapad}}</td>
+    <td>{{::row.anvandare}}</td>
+    <td>{{::row.handelseText}}</td>
+    <td>{{::row.kommentar}}</td>
+  </tr>
+  </tbody>
+</table>

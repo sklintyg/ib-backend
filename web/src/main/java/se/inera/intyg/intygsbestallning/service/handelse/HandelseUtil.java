@@ -36,6 +36,7 @@ import static se.inera.intyg.intygsbestallning.persistence.model.Handelse.Handel
 
 public final class HandelseUtil {
     private static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
     private static final String FK_LABEL = Actor.FK.getLabel();
 
     private HandelseUtil() {
@@ -198,13 +199,14 @@ public final class HandelseUtil {
     public static Handelse createNyttBesok(final Boolean tolkBehov, final Besok besok, final String vardadministrator) {
 
         StringBuilder text = new StringBuilder();
-        text.append(MessageFormat.format("Besök bokat {0} {1} - {2} hos <Besök.profession>. ",
-                besok.getBesokStartTid().toLocalDate(),
-                besok.getBesokStartTid(),
-                besok.getBesokSlutTid(),
+        text.append(MessageFormat.format("Besök bokat {0} {1} - {2} hos {3}. ",
+                besok.getBesokStartTid().format(DateTimeFormatter.ISO_DATE),
+                besok.getBesokStartTid().format(TIME_FORMATTER),
+                besok.getBesokSlutTid().format(TIME_FORMATTER),
                 besok.getDeltagareProfession().getLabel()));
 
-        text.append(MessageFormat.format("Invånaren kallades <Besök.kallelsedatum> per <Besök.kallelseform> ",
+        text.append(MessageFormat.format("Invånaren kallades {0} per {1}",
+                besok.getKallelseDatum().format(DateTimeFormatter.ISO_DATE),
                 Strings.toLowerCase(besok.getKallelseForm().name())));
 
         if (BooleanUtils.toBoolean(tolkBehov)) {
