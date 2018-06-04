@@ -157,7 +157,7 @@ public class HealthCheckServiceImpl implements HealthCheckService {
         boolean status = false;
 
         try {
-            queueDepth = tpl.browse((session, browser) -> {
+            Long browsedQueueDepth = tpl.browse((session, browser) -> {
                 Enumeration<?> enumeration = browser.getEnumeration();
                 long qd = 0;
                 while (enumeration.hasMoreElements()) {
@@ -166,7 +166,7 @@ public class HealthCheckServiceImpl implements HealthCheckService {
                 }
                 return qd;
             });
-
+            queueDepth = browsedQueueDepth != null ? browsedQueueDepth : 0L;
             status = true;
 
         } catch (Exception e) {
