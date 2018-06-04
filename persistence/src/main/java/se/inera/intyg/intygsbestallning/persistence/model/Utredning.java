@@ -18,12 +18,13 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
+import static java.util.Objects.isNull;
+import static java.util.stream.Collectors.toList;
+import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
+
 import com.google.common.base.MoreObjects;
 import org.apache.commons.collections4.ListUtils;
 import org.hibernate.annotations.Type;
-import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
-import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -41,10 +42,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static java.util.Objects.isNull;
-import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
+import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
+import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 
 @Entity
 @Table(name = "UTREDNING")
@@ -138,24 +137,27 @@ public final class Utredning {
                 .withExternForfragan(ExternForfragan.copyFrom(utredning.getExternForfragan()))
                 .withHandelseList(utredning.getHandelseList().stream()
                         .map(Handelse::copyFrom)
-                        .collect(Collectors.toList()))
+                        .collect(toList()))
                 .withHandlingList(utredning.getHandlingList().stream()
                         .map(Handling::copyFrom)
-                        .collect(Collectors.toList()))
+                        .collect(toList()))
                 .withBesokList(utredning.getBesokList().stream()
                         .map(Besok::copyFrom)
-                        .collect(Collectors.toList()))
+                        .collect(toList()))
                 .withIntygList(utredning.getIntygList().stream()
                         .map(Intyg::copyFrom)
-                        .collect(Collectors.toList()))
+                        .collect(toList()))
                 .withAnteckningList(utredning.getAnteckningList().stream()
                         .map(Anteckning::copyFrom)
-                        .collect(Collectors.toList()))
+                        .collect(toList()))
                 .withHandlaggare(Handlaggare.copyFrom(utredning.getHandlaggare()))
                 .withInvanare(Invanare.copyFrom(utredning.getInvanare()))
                 .withAvbrutenDatum(utredning.getAvbrutenDatum())
                 .withAvbrutenAnledning(utredning.getAvbrutenAnledning())
                 .withBetalning(utredning.getBetalning())
+                .withNotifieringList(utredning.getSkickadNotifieringList().stream()
+                        .map(SkickadNotifiering::copyFrom)
+                        .collect(toList()))
                 .build();
     }
 

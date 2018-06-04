@@ -18,6 +18,10 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
+
+import static java.util.Objects.isNull;
+import static se.inera.intyg.intygsbestallning.persistence.model.SkickadNotifiering.SkickadNotifieringBuilder.aSkickadNotifiering;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -78,14 +82,27 @@ public final class SkickadNotifiering {
         this.mottagare = mottagare;
     }
 
-    public LocalDateTime getNotifieringSkickad() {
+    public LocalDateTime getSkickad() {
         return skickad;
     }
 
-    public void setNotifieringSkickad(LocalDateTime skickad) {
+    public void setSkickad(LocalDateTime skickad) {
         this.skickad = skickad;
     }
 
+    public static SkickadNotifiering copyFrom(final SkickadNotifiering skickadNotifiering) {
+        if (isNull(skickadNotifiering)) {
+            return null;
+        }
+
+        return aSkickadNotifiering()
+                .withId(skickadNotifiering.getId())
+                .withTyp(skickadNotifiering.getTyp())
+                .withMottagare(skickadNotifiering.getMottagare())
+                .withSkickad(skickadNotifiering.getSkickad())
+                .build();
+    }
+    
     // CHECKSTYLE:OFF MagicNumber
 
     @Override
