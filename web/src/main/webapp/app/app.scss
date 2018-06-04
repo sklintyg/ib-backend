@@ -30,6 +30,9 @@
 @import "mixins/ib-table";
 @import "mixins/validation";
 @import "mixins/utils";
+@import "mixins/card";
+@import "mixins/flex-app-layout";
+@import "mixins/ib-page-header";
 
 // Component styles are injected through grunt
 // injector
@@ -94,7 +97,6 @@
 @import 'appDirectives/ibUtredningSlutdatumFas/ibUtredningSlutdatumFas.directive.scss';
 @import 'appDirectives/ibUtredningStatus/ibUtredningStatus.directive.scss';
 @import 'appDirectives/ibYesNo/ibYesNo.directive.scss';
-@import 'card.scss';
 @import 'commonDirectives/form/ibCheckboxWrapper/ibCheckboxWrapper.directive.scss';
 @import 'commonDirectives/form/ibCheckgroup/ibCheckgroup.directive.scss';
 @import 'commonDirectives/form/ibDatePickerField/ibDatePickerField.directive.scss';
@@ -118,6 +120,4 @@
 @import 'commonDirectives/ibSupportPanelScrollableBody/ibSupportPanelScrollableBody.directive.scss';
 @import 'commonDirectives/ibTimePicker/ibTimePicker.directive.scss';
 @import 'commonDirectives/ibVardenhetSelector/ibVardenhetSelector.directive.scss';
-@import 'flex-app-layout.scss';
-@import 'ib-page-header.scss';
 // endinjector
