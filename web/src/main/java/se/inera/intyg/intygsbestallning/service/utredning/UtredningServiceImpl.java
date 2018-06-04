@@ -112,14 +112,6 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     private NotifieringService notifieringService;
 
     @Override
-    public List<UtredningListItem> findExternForfraganByLandstingHsaId(String landstingHsaId) {
-        return utredningRepository.findAllByExternForfragan_LandstingHsaId(landstingHsaId)
-                .stream()
-                .map(utredningListItemFactory::from)
-                .collect(toList());
-    }
-
-    @Override
     public GetUtredningListResponse findExternForfraganByLandstingHsaIdWithFilter(String landstingHsaId, ListUtredningRequest request) {
         long start = System.currentTimeMillis();
         List<Utredning> jpaList = utredningRepository.findByExternForfragan_LandstingHsaId_AndArkiveradFalse(landstingHsaId);

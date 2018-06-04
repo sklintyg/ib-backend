@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.List;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesValidator;
@@ -41,7 +40,6 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.Tilldel
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListUtredningRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItem;
 
 @RestController
 @RequestMapping("/api/utredningar")
@@ -60,18 +58,6 @@ public class UtredningController {
     private InternForfraganService internForfraganService;
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
-
-    @PrometheusTimeMethod(name = "list_utredningar_for_user_GET_duration_seconds", help = "Some helpful info here")
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetUtredningListResponse> getAllUtredningarForUser() {
-        IbUser user = userService.getUser();
-        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_UTREDNINGAR)
-                .orThrow(new IbAuthorizationException(VIEW_NOT_ALLOWED));
-
-        // Do a SAMORDNARE search...
-        List<UtredningListItem> utredningar = utredningService.findExternForfraganByLandstingHsaId(user.getCurrentlyLoggedInAt().getId());
-        return ResponseEntity.ok(new GetUtredningListResponse(utredningar, utredningar.size()));
-    }
 
     @PrometheusTimeMethod(name = "list_utredningar_for_user_duration_seconds", help = "Some helpful info here")
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)

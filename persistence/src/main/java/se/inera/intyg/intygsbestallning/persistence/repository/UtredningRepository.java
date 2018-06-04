@@ -46,13 +46,13 @@ public interface UtredningRepository extends JpaRepository<Utredning, Long> {
      * @param vardenhetHsaId
      * @return
      */
-    List<Utredning> findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradTrue(String vardenhetHsaId);
+    @Query("SELECT u FROM Utredning u JOIN FETCH u.bestallning b LEFT JOIN FETCH u.invanare inv LEFT JOIN FETCH u.handlaggare h LEFT JOIN FETCH u.betalning bet WHERE u.arkiverad = true AND b.tilldeladVardenhetHsaId = :vardenhetHsaId")
+    List<Utredning> findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradTrue(@Param("vardenhetHsaId") String vardenhetHsaId);
 
     List<Utredning> findAllByExternForfragan_LandstingHsaId(String landstingHsaId);
 
     List<Utredning> findByExternForfragan_LandstingHsaId_AndArkiveradFalse(String landstingHsaId);
 
-    List<Utredning> findAllByBestallning_TilldeladVardenhetHsaId(String vardenhetHsaId);
 
     /**
      * Variant query that filters out any Utredningar that are in a closed state.
@@ -60,7 +60,8 @@ public interface UtredningRepository extends JpaRepository<Utredning, Long> {
      * @param vardenhetHsaId
      * @return
      */
-    List<Utredning> findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(String vardenhetHsaId);
+    @Query("SELECT u FROM Utredning u JOIN FETCH u.bestallning b LEFT JOIN FETCH u.invanare inv LEFT JOIN FETCH u.handlaggare h LEFT JOIN FETCH u.betalning bet WHERE u.arkiverad = false AND b.tilldeladVardenhetHsaId = :vardenhetHsaId")
+    List<Utredning> findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(@Param("vardenhetHsaId") String vardenhetHsaId);
 
     @Query("SELECT ef.landstingHsaId FROM Utredning u JOIN u.bestallning b JOIN u.externForfragan ef WHERE b.tilldeladVardenhetHsaId = :vardenhetHsaId")
     List<String> findDistinctLandstingHsaIdByVardenhetHsaIdHavingBestallning(@Param("vardenhetHsaId") String vardenhetHsaId);

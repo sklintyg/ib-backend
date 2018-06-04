@@ -18,8 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
-import java.util.List;
-
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
@@ -29,18 +27,19 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternF
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListUtredningRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItem;
+
+import java.util.List;
 
 public interface UtredningService {
 
     /**
-     * Retrieves all {@link se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan} for a specific landsting.
+     * Retrieves all {@link se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan} for a specific landsting
+     * given the supplied filter criteria.
      *
      * @param landstingHsaId
+     * @param request
      * @return
      */
-    List<UtredningListItem> findExternForfraganByLandstingHsaId(String landstingHsaId);
-
     GetUtredningListResponse findExternForfraganByLandstingHsaIdWithFilter(String landstingHsaId, ListUtredningRequest request);
 
     /**

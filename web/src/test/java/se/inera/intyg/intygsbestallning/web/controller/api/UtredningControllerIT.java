@@ -24,15 +24,18 @@ import org.junit.Test;
 import se.inera.intyg.intygsbestallning.web.BaseRestIntegrationTest;
 
 import static com.jayway.restassured.RestAssured.given;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 public class UtredningControllerIT extends BaseRestIntegrationTest {
 
     private static final String UTREDNING_API_ENDPOINT = "/api/utredningar";
 
     @Test
-    public void testListUtredningar() {
+    public void testListUtredningarWithFilter() {
         RestAssured.sessionId = getAuthSession(DEFAULT_SAMORDNARE);
-        given().expect().statusCode(OK).when().get(UTREDNING_API_ENDPOINT)
+        given().contentType(APPLICATION_JSON)
+                .body("{}")
+                .expect().statusCode(OK).when().post(UTREDNING_API_ENDPOINT)
                 .then()
                 .body("utredningar", Matchers.notNullValue());
     }
