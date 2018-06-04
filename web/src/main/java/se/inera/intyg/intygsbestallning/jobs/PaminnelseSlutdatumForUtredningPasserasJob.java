@@ -34,7 +34,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
-import se.inera.intyg.intygsbestallning.service.notifiering.NotifieringService;
+import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
@@ -53,7 +53,7 @@ public class PaminnelseSlutdatumForUtredningPasserasJob {
     private UtredningRepository utredningRepository;
 
     @Autowired
-    private NotifieringService notifieringService;
+    private NotifieringSendService notifieringSendService;
 
     @Autowired
     private BusinessDaysBean businessDaysBean;
@@ -81,7 +81,7 @@ public class PaminnelseSlutdatumForUtredningPasserasJob {
                     || utredningStatus.getUtredningFas() == UtredningFas.AVSLUTAD) {
                 continue;
             }
-            notifieringService.notifieraVardenehtPaminnelseSlutdatumUtredning(utredning);
+            notifieringSendService.notifieraVardenehtPaminnelseSlutdatumUtredning(utredning);
             utredning.getSkickadNotifieringList().add(aSkickadNotifiering()
                     .withSkickad(LocalDateTime.now())
                     .withTyp(PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS)

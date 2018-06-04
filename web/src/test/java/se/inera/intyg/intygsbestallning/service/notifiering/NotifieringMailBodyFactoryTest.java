@@ -23,6 +23,8 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
 
+import se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailBodyFactory;
+
 public class NotifieringMailBodyFactoryTest {
 
     private static final String TEST_MSG = "all your base are belong to us";

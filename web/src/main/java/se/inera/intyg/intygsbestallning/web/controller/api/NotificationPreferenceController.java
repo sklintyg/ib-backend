@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
-import se.inera.intyg.intygsbestallning.service.notification.NotificationPreferenceService;
+import se.inera.intyg.intygsbestallning.service.notifiering.preferens.NotifieringPreferenceService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.notification.GetNotificationPreferenceResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.notification.SetNotificationPreferenceRequest;
@@ -45,14 +45,14 @@ public class NotificationPreferenceController {
     private UserService userService;
 
     @Autowired
-    private NotificationPreferenceService notificationPreferenceService;
+    private NotifieringPreferenceService notifieringPreferenceService;
 
     @PrometheusTimeMethod(name = "get_notifiering_preference_filter_duration_seconds", help = "Some helpful info here")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetNotificationPreferenceResponse> getNotificationPreferences() {
         IbUser user = userService.getUser();
 
-        final GetNotificationPreferenceResponse notificationPreference = notificationPreferenceService
+        final GetNotificationPreferenceResponse notificationPreference = notifieringPreferenceService
                 .getNotificationPreference(user.getCurrentlyLoggedInAt().getId(), user.getCurrentlyLoggedInAt().getType());
         return ResponseEntity.ok(notificationPreference);
     }
@@ -63,7 +63,7 @@ public class NotificationPreferenceController {
             @RequestBody final SetNotificationPreferenceRequest setNotificationPreferenceRequest) {
         IbUser user = userService.getUser();
 
-        final GetNotificationPreferenceResponse notificationPreference = notificationPreferenceService
+        final GetNotificationPreferenceResponse notificationPreference = notifieringPreferenceService
                 .setNotificationPreference(user.getCurrentlyLoggedInAt().getId(), user.getCurrentlyLoggedInAt().getType(),
                         setNotificationPreferenceRequest);
         return ResponseEntity.ok(notificationPreference);

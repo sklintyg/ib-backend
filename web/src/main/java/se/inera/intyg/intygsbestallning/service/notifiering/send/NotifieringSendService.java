@@ -16,11 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.service.notifiering;
+package se.inera.intyg.intygsbestallning.service.notifiering.send;
 
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 
-public interface NotifieringService {
+public interface NotifieringSendService {
 
     void notifieraLandstingNyExternforfragan(Utredning utredning);
 

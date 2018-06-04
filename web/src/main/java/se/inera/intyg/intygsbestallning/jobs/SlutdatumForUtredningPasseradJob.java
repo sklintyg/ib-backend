@@ -33,7 +33,7 @@ import java.util.List;
 import se.inera.intyg.intygsbestallning.persistence.model.SkickadNotifiering;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
-import se.inera.intyg.intygsbestallning.service.notifiering.NotifieringService;
+import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
 
 @Component
 @Transactional
@@ -48,7 +48,7 @@ public class SlutdatumForUtredningPasseradJob {
     private UtredningRepository utredningRepository;
 
     @Autowired
-    private NotifieringService notifieringService;
+    private NotifieringSendService notifieringSendService;
 
     @Scheduled(cron = "${job.slutdatum.utredning.passerad.cron}")
     @SchedulerLock(name = JOB_NAME, lockAtMostFor = LOCK_AT_MOST)
@@ -57,8 +57,8 @@ public class SlutdatumForUtredningPasseradJob {
                 SLUTDATUM_UTREDNING_PASSERAT);
 
         for (Utredning utredning : utredningList) {
-            notifieringService.notifieraVardenhetSlutdatumPasseratUtredning(utredning);
-            notifieringService.notifieraLandstingSlutdatumPasseratUtredning(utredning);
+            notifieringSendService.notifieraVardenhetSlutdatumPasseratUtredning(utredning);
+            notifieringSendService.notifieraLandstingSlutdatumPasseratUtredning(utredning);
             utredning.getSkickadNotifieringList().add(SkickadNotifiering.SkickadNotifieringBuilder.aSkickadNotifiering()
                     .withSkickad(LocalDateTime.now())
                     .withTyp(SLUTDATUM_UTREDNING_PASSERAT)

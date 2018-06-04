@@ -39,7 +39,7 @@ import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
-import se.inera.intyg.intygsbestallning.service.notifiering.NotifieringService;
+import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
 import se.inera.intyg.intygsbestallning.service.pdl.LogService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
@@ -58,7 +58,7 @@ public class HandlingServiceImplTest {
     private LogService logService;
 
     @Mock
-    private NotifieringService notifieringService;
+    private NotifieringSendService notifieringSendService;
 
     @InjectMocks
     private HandlingServiceImpl testee;
@@ -74,7 +74,7 @@ public class HandlingServiceImplTest {
         testee.registerNewHandling(1L, buildRequest());
         verify(utredningRepository, times(1)).save(any());
         verify(logService, times(1)).logHandlingMottagen(any(Utredning.class));
-        verify(notifieringService, times(1)).notifieraVardenhetNyBestallning(any(Utredning.class));
+        verify(notifieringSendService, times(1)).notifieraVardenhetNyBestallning(any(Utredning.class));
     }
 
     @Test(expected = IbServiceException.class)
@@ -86,7 +86,7 @@ public class HandlingServiceImplTest {
         try {
             testee.registerNewHandling(1L, buildRequest());
         } catch (Exception e) {
-            verifyZeroInteractions(notifieringService);
+            verifyZeroInteractions(notifieringSendService);
             throw e;
         }
 

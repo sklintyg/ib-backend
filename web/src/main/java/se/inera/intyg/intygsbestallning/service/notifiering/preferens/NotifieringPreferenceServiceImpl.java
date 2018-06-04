@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.service.notification;
+package se.inera.intyg.intygsbestallning.service.notifiering.preferens;
 
 import static se.inera.intyg.intygsbestallning.web.controller.api.dto.notification.GetNotificationPreferenceResponse.recipientFilter;
 
@@ -37,7 +37,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.notification.SetN
  * Created by marced on 2018-05-31.
  */
 @Service
-public class NotificationPreferenceServiceImpl implements NotificationPreferenceService {
+public class NotifieringPreferenceServiceImpl implements NotifieringPreferenceService {
 
     @Autowired
     private NotifieringPreferenceRepository notifieringPreferenceRepository;

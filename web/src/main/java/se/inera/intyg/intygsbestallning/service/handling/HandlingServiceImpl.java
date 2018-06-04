@@ -37,7 +37,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Handling;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
-import se.inera.intyg.intygsbestallning.service.notifiering.NotifieringService;
+import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
 import se.inera.intyg.intygsbestallning.service.pdl.LogService;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
@@ -54,7 +54,7 @@ public class HandlingServiceImpl extends BaseUtredningService implements Handlin
     private LogService logService;
 
     @Autowired
-    private NotifieringService notifieringService;
+    private NotifieringSendService notifieringSendService;
 
     @Override
     @Transactional
@@ -93,7 +93,7 @@ public class HandlingServiceImpl extends BaseUtredningService implements Handlin
         logService.logHandlingMottagen(utredning);
 
         // Notify by email.
-        notifieringService.notifieraVardenhetNyBestallning(utredning);
+        notifieringSendService.notifieraVardenhetNyBestallning(utredning);
 
         return new RegisterHandlingResponse();
     }

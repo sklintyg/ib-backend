@@ -16,25 +16,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.service.notifiering;
+package se.inera.intyg.intygsbestallning.service.notifiering.send;
 
 import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
-import static se.inera.intyg.intygsbestallning.service.notifiering.NotifieringMailMeddelandeUtil.externForfraganUrl;
-import static se.inera.intyg.intygsbestallning.service.notifiering.NotifieringMailMeddelandeUtil.internForfraganUrl;
-import static se.inera.intyg.intygsbestallning.service.notifiering.NotifieringMailMeddelandeUtil.landstingNyExternforfraganMessage;
-import static se.inera.intyg.intygsbestallning.service.notifiering.NotifieringMailMeddelandeUtil.nyBestallningMessage;
-import static se.inera.intyg.intygsbestallning.service.notifiering.NotifieringMailMeddelandeUtil.paminnelseSlutdatumUtredningMessage;
-import static se.inera.intyg.intygsbestallning.service.notifiering.NotifieringMailMeddelandeUtil.slutdatumPasseratUtredningMessage;
-import static se.inera.intyg.intygsbestallning.service.notifiering.NotifieringMailMeddelandeUtil.uppdateradBestallningMessage;
-import static se.inera.intyg.intygsbestallning.service.notifiering.NotifieringMailMeddelandeUtil.utredningUrl;
-import static se.inera.intyg.intygsbestallning.service.notifiering.NotifieringMailMeddelandeUtil.vardenhetNyInternforfraganMessage;
-import static se.inera.intyg.intygsbestallning.service.notifiering.NotifieringMailSubjectConstants.SUBJECT_BESTALLNING_UPPDATERAD;
-import static se.inera.intyg.intygsbestallning.service.notifiering.NotifieringMailSubjectConstants.SUBJECT_BESTALLNING_AV_FRORSAKRINGSMEDICINSK_UTREDNING;
-import static se.inera.intyg.intygsbestallning.service.notifiering.NotifieringMailSubjectConstants.SUBJECT_NY_FMU_EXTERN_FORFRAGAN;
-import static se.inera.intyg.intygsbestallning.service.notifiering.NotifieringMailSubjectConstants.SUBJECT_UTREDNING_SLUTDATUM_PASSERAT;
-import static se.inera.intyg.intygsbestallning.service.notifiering.NotifieringMailSubjectConstants.SUBJECT_UTREDNING_SLUTDATUM_PA_VAG_PASSERAS;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.externForfraganUrl;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.internForfraganUrl;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.landstingNyExternforfraganMessage;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.nyBestallningMessage;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.paminnelseSlutdatumUtredningMessage;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.slutdatumPasseratUtredningMessage;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.uppdateradBestallningMessage;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.utredningUrl;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.vardenhetNyInternforfraganMessage;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_BESTALLNING_UPPDATERAD;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_BESTALLNING_AV_FRORSAKRINGSMEDICINSK_UTREDNING;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_NY_FMU_EXTERN_FORFRAGAN;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_UTREDNING_SLUTDATUM_PASSERAT;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_UTREDNING_SLUTDATUM_PAMINNELSE;
 
 import com.google.common.base.Strings;
 import org.apache.commons.lang.NotImplementedException;
@@ -49,10 +49,11 @@ import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.mail.MailService;
+import se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailBodyFactory;
 import se.inera.intyg.intygsbestallning.service.vardenhet.VardenhetService;
 
 @Service
-public class NotifieringServiceImpl implements NotifieringService {
+public class NotifieringSendServiceImpl implements NotifieringSendService {
 
     private final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -200,7 +201,7 @@ public class NotifieringServiceImpl implements NotifieringService {
                 paminnelseSlutdatumUtredningMessage(utredning),
                 utredningUrl(utredning));
 
-        send(email, SUBJECT_UTREDNING_SLUTDATUM_PA_VAG_PASSERAS, body);
+        send(email, SUBJECT_UTREDNING_SLUTDATUM_PAMINNELSE, body);
     }
 
     @Override

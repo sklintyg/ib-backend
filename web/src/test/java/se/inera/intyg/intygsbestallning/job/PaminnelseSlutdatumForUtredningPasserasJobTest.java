@@ -45,7 +45,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungT
 import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
-import se.inera.intyg.intygsbestallning.service.notifiering.NotifieringService;
+import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
@@ -61,7 +61,7 @@ public class PaminnelseSlutdatumForUtredningPasserasJobTest {
     private UtredningRepository utredningRepository;
 
     @Mock
-    private NotifieringService notifieringService;
+    private NotifieringSendService notifieringSendService;
 
     @InjectMocks
     private PaminnelseSlutdatumForUtredningPasserasJob testee;
@@ -79,7 +79,7 @@ public class PaminnelseSlutdatumForUtredningPasserasJobTest {
                 .thenReturn(Arrays.asList(utredning));
 
         testee.executeJob();
-        verify(notifieringService, times(1)).notifieraVardenehtPaminnelseSlutdatumUtredning(any(Utredning.class));
+        verify(notifieringSendService, times(1)).notifieraVardenehtPaminnelseSlutdatumUtredning(any(Utredning.class));
     }
 
     @Test
@@ -90,7 +90,7 @@ public class PaminnelseSlutdatumForUtredningPasserasJobTest {
                 .thenReturn(Collections.emptyList());
 
         testee.executeJob();
-        verifyZeroInteractions(notifieringService);
+        verifyZeroInteractions(notifieringSendService);
     }
 
     @Test
@@ -119,6 +119,6 @@ public class PaminnelseSlutdatumForUtredningPasserasJobTest {
                 .thenReturn(Arrays.asList(utredning));
 
         testee.executeJob();
-        verifyZeroInteractions(notifieringService);
+        verifyZeroInteractions(notifieringSendService);
     }
 }

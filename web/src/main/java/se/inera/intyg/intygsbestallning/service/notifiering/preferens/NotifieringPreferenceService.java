@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.service.notification;
+package se.inera.intyg.intygsbestallning.service.notifiering.preferens;
 
 import se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.notification.GetNotificationPreferenceResponse;
@@ -25,7 +25,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.notification.SetN
 /**
  * Created by marced on 2018-05-31.
  */
-public interface NotificationPreferenceService {
+public interface NotifieringPreferenceService {
     GetNotificationPreferenceResponse getNotificationPreference(String hsaId, SelectableHsaEntityType hsaEntityType);
 
     GetNotificationPreferenceResponse setNotificationPreference(String hsaId, SelectableHsaEntityType hsaEntityType,
