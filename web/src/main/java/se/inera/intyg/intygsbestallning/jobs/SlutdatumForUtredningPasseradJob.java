@@ -30,7 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import se.inera.intyg.intygsbestallning.persistence.model.Notifiering;
+import se.inera.intyg.intygsbestallning.persistence.model.SkickadNotifiering;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.notifiering.NotifieringService;
@@ -59,9 +59,9 @@ public class SlutdatumForUtredningPasseradJob {
         for (Utredning utredning : utredningList) {
             notifieringService.notifieraVardenhetSlutdatumPasseratUtredning(utredning);
             notifieringService.notifieraLandstingSlutdatumPasseratUtredning(utredning);
-            utredning.getNotifieringList().add(Notifiering.NotifieringBuilder.aNotifiering()
-                    .withNotifieringSkickad(LocalDateTime.now())
-                    .withNotifieringTyp(SLUTDATUM_UTREDNING_PASSERAT)
+            utredning.getSkickadNotifieringList().add(SkickadNotifiering.SkickadNotifieringBuilder.aSkickadNotifiering()
+                    .withSkickad(LocalDateTime.now())
+                    .withTyp(SLUTDATUM_UTREDNING_PASSERAT)
                     .build());
             utredningRepository.save(utredning);
             LOG.info("Sent notification {} for utredning {}.", SLUTDATUM_UTREDNING_PASSERAT, utredning.getUtredningId());

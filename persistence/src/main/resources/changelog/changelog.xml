@@ -796,7 +796,7 @@
                                  referencedColumnNames="UTREDNING_ID"/>
 
 
-        <createTable tableName="NOTIFIERING">
+        <createTable tableName="SKICKAD_NOTIFIERING">
             <column name="ID" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -805,11 +805,15 @@
                 <constraints nullable="false"/>
             </column>
 
-            <column name="NOTIFIERING_TYP" type="varchar(64)">
+            <column name="TYP" type="varchar(64)">
                 <constraints nullable="false"/>
             </column>
 
-            <column name="NOTIFIERING_SKICKAD" type="datetime">
+            <column name="MOTTAGARE" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="SKICKAD" type="datetime">
                 <constraints nullable="false"/>
             </column>
         </createTable>
@@ -818,16 +822,16 @@
                           columnName="ID"
                           incrementBy="1"
                           startWith="1"
-                          tableName="NOTIFIERING"/>
+                          tableName="SKICKAD_NOTIFIERING"/>
 
-        <addForeignKeyConstraint baseTableName="NOTIFIERING"
+        <addForeignKeyConstraint baseTableName="SKICKAD_NOTIFIERING"
                                  baseColumnNames="UTREDNING_ID"
                                  constraintName="NOTIFIERING_UTREDNING_FK"
                                  referencedTableName="UTREDNING"
                                  referencedColumnNames="UTREDNING_ID"/>
         <createIndex indexName="IDX_NOTIFIERING_TYP"
-                     tableName="NOTIFIERING" unique="false">
-            <column name="NOTIFIERING_TYP"/>
+                     tableName="SKICKAD_NOTIFIERING" unique="false">
+            <column name="TYP"/>
         </createIndex>
     </changeSet>
     <changeSet id="4" author="mc">

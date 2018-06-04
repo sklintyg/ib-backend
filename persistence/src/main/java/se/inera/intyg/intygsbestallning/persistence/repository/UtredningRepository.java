@@ -77,14 +77,14 @@ public interface UtredningRepository extends JpaRepository<Utredning, Long> {
     /**
      * Alla utredningar med intyg med slutdatum inom intervall och som ej har notifiering av angiven typ.
      */
-    @Query("SELECT u FROM Utredning u JOIN u.intygList i JOIN u.bestallning b WHERE b.tilldeladVardenhetHsaId is not null AND u.arkiverad = false AND i.komplettering = false AND i.sistaDatum is not null AND i.sistaDatum >= :fromDate AND i.sistaDatum <= :toDate AND u.utredningId NOT IN (SELECT u.utredningId FROM Utredning u JOIN u.notifieringList n WHERE n.notifieringTyp = :notifieringTyp)")
-    List<Utredning> findNonNotifiedIntygSlutDatumBetween(@Param("fromDate") LocalDateTime fromDate, @Param("toDate") LocalDateTime toDate, @Param("notifieringTyp") NotifieringTyp notifieringTyp);
+    @Query("SELECT u FROM Utredning u JOIN u.intygList i JOIN u.bestallning b WHERE b.tilldeladVardenhetHsaId is not null AND u.arkiverad = false AND i.komplettering = false AND i.sistaDatum is not null AND i.sistaDatum >= :fromDate AND i.sistaDatum <= :toDate AND u.utredningId NOT IN (SELECT u.utredningId FROM Utredning u JOIN u.skickadNotifieringList n WHERE n.typ = :typ)")
+    List<Utredning> findNonNotifiedIntygSlutDatumBetween(@Param("fromDate") LocalDateTime fromDate, @Param("toDate") LocalDateTime toDate, @Param("typ") NotifieringTyp typ);
 
     /**
      * Alla utredningar med intyg med slutdatum som passerats och som ej har notifiering av angiven typ.
      */
-    @Query("SELECT u FROM Utredning u JOIN u.intygList i JOIN u.bestallning b WHERE b.tilldeladVardenhetHsaId is not null AND u.arkiverad = false AND i.mottagetDatum is null AND i.komplettering = false AND i.sistaDatum is not null AND i.sistaDatum < :now AND u.utredningId NOT IN (SELECT u.utredningId FROM Utredning u JOIN u.notifieringList n WHERE n.notifieringTyp = :notifieringTyp)")
-    List<Utredning> findNonNotifiedSlutDatumBefore(@Param("now") LocalDateTime now, @Param("notifieringTyp") NotifieringTyp notifieringTyp);
+    @Query("SELECT u FROM Utredning u JOIN u.intygList i JOIN u.bestallning b WHERE b.tilldeladVardenhetHsaId is not null AND u.arkiverad = false AND i.mottagetDatum is null AND i.komplettering = false AND i.sistaDatum is not null AND i.sistaDatum < :now AND u.utredningId NOT IN (SELECT u.utredningId FROM Utredning u JOIN u.skickadNotifieringList n WHERE n.typ = :typ)")
+    List<Utredning> findNonNotifiedSlutDatumBefore(@Param("now") LocalDateTime now, @Param("typ") NotifieringTyp typ);
 
 }
 //CHECKSTYLE:ON MethodName

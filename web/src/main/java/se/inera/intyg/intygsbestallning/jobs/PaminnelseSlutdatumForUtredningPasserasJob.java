@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.jobs;
 
+import static se.inera.intyg.intygsbestallning.persistence.model.SkickadNotifiering.SkickadNotifieringBuilder.aSkickadNotifiering;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS;
 
 import net.javacrumbs.shedlock.core.SchedulerLock;
@@ -31,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import se.inera.intyg.intygsbestallning.persistence.model.Notifiering;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.notifiering.NotifieringService;
@@ -82,9 +82,9 @@ public class PaminnelseSlutdatumForUtredningPasserasJob {
                 continue;
             }
             notifieringService.notifieraVardenehtPaminnelseSlutdatumUtredning(utredning);
-            utredning.getNotifieringList().add(Notifiering.NotifieringBuilder.aNotifiering()
-                    .withNotifieringSkickad(LocalDateTime.now())
-                    .withNotifieringTyp(PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS)
+            utredning.getSkickadNotifieringList().add(aSkickadNotifiering()
+                    .withSkickad(LocalDateTime.now())
+                    .withTyp(PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS)
                     .build());
             utredningRepository.save(utredning);
             LOG.info("Sent notification {} for utredning {}.", PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS, utredning.getUtredningId());
