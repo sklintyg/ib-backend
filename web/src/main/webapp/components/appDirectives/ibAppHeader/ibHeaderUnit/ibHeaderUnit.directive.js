@@ -72,6 +72,23 @@ angular.module('ibApp').directive('ibHeaderUnit', [ '$uibModal', 'StatPollServic
                 dlgInstance.result.catch(function () {}); //jshint ignore:line
 
             };
+            $scope.onEditNotifieringSettingsClick = function() {
+                var dlgInstance = $uibModal.open({
+                    templateUrl: '/components/appDirectives/ibAppHeader/ibHeaderUnit/edit-notifiering/ibEditNotifieringDialog.html',
+                    controller: 'ibEditNotifieringDialogCtrl',
+                    size: 'md',
+                    id: 'ibEditNotifieringDialog',
+                    keyboard: true,
+                    windowClass: 'ib-header-unit-settings-dialog-window-class',
+                    resolve: {
+                        unitContext: UserModel.get().currentlyLoggedInAt
+                    }
+                });
+                //angular > 1.5 warns if promise rejection is not handled (e.g backdrop-click == rejection)
+                dlgInstance.result.catch(function () {}); //jshint ignore:line
+
+            };
+
 
 
             $scope.$on('$destroy', function() {

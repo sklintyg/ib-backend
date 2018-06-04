@@ -18,11 +18,11 @@
 
 <div uib-dropdown is-open="menu.expanded">
   <ul uib-dropdown-menu ng-if="getUser().currentlyLoggedInAt.type ==='VE'">
-    <li><a href="" id="unitmenu-ve-notification-settings-link" ng-click="onVENotificationSettingsClick()">Notifieringsinställningar för vårdenheten</a></li>
+    <li><a href="" id="unitmenu-ve-notification-settings-link" ng-click="onEditNotifieringSettingsClick()">Notifieringsinställningar för vårdenheten</a></li>
     <li><a href="" id="unitmenu-ve-contact-settings-link" ng-click="onVEContactSettingsClick()">Kontaktuppgifter till vårdenheten</a></li>
     <li><a href="" id="unitmenu-ve-standardsvar-settings-link" ng-click="onVESvarSettingsClick()">Standardsvar för vårdenheten</a></li>
   </ul>
   <ul uib-dropdown-menu ng-if="getUser().currentlyLoggedInAt.type ==='VG'">
-    <li><a href="" id="unitmenu-vg-notification-settings-link" ng-click="onVGNotificationSettingsClick()">Notifieringsinställningar för landstinget</a></li>
+    <li><a href="" id="unitmenu-vg-notification-settings-link" ng-click="onEditNotifieringSettingsClick()">Notifieringsinställningar för landstinget</a></li>
   </ul>
 </div>

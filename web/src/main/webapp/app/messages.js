@@ -52,7 +52,7 @@ var ibMessages = {
         'systemrole.change.modal.label': 'Byt systemroll / Välj enhet',
         'systemrole.change.modal.description': 'Nedan ser du de enheter som du har behörighet till. Du ser även vilken roll som är knuten till enheten. Klicka på den enhet du vill byta till.',
 
-        //Unit settings dialog
+        //Unit settings dialogs
         'unitsettings.spinner.loading': 'Hämtar standsinställningar...',
         'unitsettings.kontakt.change.modal.label': 'Kontaktuppgifter för vårdenheten',
         'unitsettings.kontakt.change.adress.title': 'Hantera kontaktuppgifter',
@@ -68,6 +68,16 @@ var ibMessages = {
         'unitsettings.svar.change.modal.label': 'Standardsvar för vårdenheten',
         'unitsettings.svar.change.standardsvar.title': 'Hantera standardsvar',
         'unitsettings.svar.change.standardsvar.desc': 'Denna text visas som standardkommentar när du svarar på en förfrågan. Du kan alltid ändra kommentaren i en enskild förfrågan innan du svarar.',
+
+        'unitsettings.notifiering.modal.title.ve' : 'Notifieringsinställningar för vårdenheten',
+        'unitsettings.notifiering.title.ve' : 'Hantera notifieringar',
+        'unitsettings.notifiering.desc.ve' : 'Ange vilka notifieringar som vårdenheten eller eventuell underleverantör ska ta emot. Notifieringar kommer att skickas till den e-postadress som anges som kontaktuppgifter i svar på en förfrågan.',
+
+        'unitsettings.notifiering.modal.title.vg' : 'Notifieringsinställningar för landstinget',
+        'unitsettings.notifiering.title.vg' : 'Hantera notifieringar',
+        'unitsettings.notifiering.desc.vg' : 'Ange vilka notifieringar som landstinget ska ta emot samt till vilken e-postadress som notifieringarna ska skickas.',
+        'unitsettings.notifiering.vg.epost.label': 'E-post',
+        'unitsettings.notifiering.vg.epost.placeholder': 'E-postadress för att ta emot notifieringar',
 
         // Skicka forfragan modal
         'skicka.forfragan.vardenheter.no.results': 'Det finns inga vårdenheter tillagda i landstinget.',

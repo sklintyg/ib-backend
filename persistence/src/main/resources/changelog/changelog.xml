@@ -830,5 +830,21 @@
             <column name="NOTIFIERING_TYP"/>
         </createIndex>
     </changeSet>
+    <changeSet id="4" author="mc">
+        <createTable tableName="NOTIFIERING_PREFERENCE">
+
+            <column name="HSA_ID" type="varchar(64)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="LANDSTING_EPOST" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="ENABLED_NOTIFICATIONS" type="text">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
 
 </databaseChangeLog>

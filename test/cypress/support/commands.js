@@ -60,4 +60,9 @@ Cypress.Commands.add("visaVESvarInstallningModal", () => {
     cy.get('#unitmenu-ve-standardsvar-settings-link').click();
     cy.get('#save-unit-settings-btn').should('be.visible');
 });
+Cypress.Commands.add("visaNotifieringInstallningModal", (unitType) => {
+    cy.get('#expand-unitmenu-btn').click();
+cy.get('#unitmenu-' + unitType + '-notification-settings-link').click();
+cy.get('#save-unit-settings-btn').should('be.visible');
+});
 

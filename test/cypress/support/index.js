@@ -18,6 +18,7 @@ import './commands'
 import './requestHealthPerformerAssesment'
 import './utredningar'
 import './vardenheter'
+import './notificationsettings'
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')

@@ -1,0 +1,56 @@
+<div class="ib-header-unit-settings-dialog-template">
+  <form name="preferenceForm" novalidate autocomplete="off">
+  <div class="modal-header">
+    <button type="button" class="close" data-ng-click="$dismiss()">×</button>
+    <h3><span message key="unitsettings.notifiering.modal.title.{{vm.unitContext.type}}"></span></h3>
+  </div>
+
+  <div class="modal-body">
+    <div ib-spinner label="unitsettings.spinner.loading" show-spinner="vm.loading">
+
+        <h4><span message key="unitsettings.notifiering.title.{{vm.unitContext.type}}"></span></h4>
+        <p>
+          <span message key="unitsettings.notifiering.desc.{{vm.unitContext.type}}"></span>
+        </p>
+        <div class="flex-grid" ng-if="vm.unitContext.type === 'VG'">
+          <div class="col">
+            <ib-horisontal-textfield
+                id="epost"
+                model="vm.model.landstingEpost"
+                label-key="unitsettings.notifiering.vg.epost.label"
+                placeholder-key="unitsettings.notifiering.vg.epost.placeholder"
+                pattern="'.+@.+\\..+'"
+                pattern-error="Ange en giltig e-postadress"
+                max-length="255">
+
+            </ib-horisontal-textfield>
+          </div>
+        </div>
+
+        <div ng-repeat="item in vm.model.items" class="flex-grid">
+          <div class="col">
+            <ib-checkbox-wrapper>
+              <input ng-attr-id="notification-item-{{::item.id|ibDomIdFilter}}" type="checkbox" ng-model="item.enabled">
+              <label ng-attr-for="notification-item-{{::item.id|ibDomIdFilter}}">
+                {{::item.label}}
+              </label>
+            </ib-checkbox-wrapper>
+          </div>
+        </div>
+
+
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <ib-button btn-id="save-unit-settings-btn" btn-class="btn-primary" btn-disabled="!preferenceForm.$valid"
+               busy="vm.loading || vm.saving" btn-click="saveChanges()">
+      <span message key="common.save"></span>
+    </ib-button>
+
+    <ib-button btn-id="cancel-unit-settings-btn" btn-class="btn-default" btn-disabled="false" btn-click="$dismiss()">
+      <span message key="common.cancel"></span>
+    </ib-button>
+  </div>
+  </form>
+</div>
