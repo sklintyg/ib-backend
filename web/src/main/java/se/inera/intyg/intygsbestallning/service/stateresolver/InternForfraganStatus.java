@@ -19,6 +19,8 @@
 package se.inera.intyg.intygsbestallning.service.stateresolver;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
+import se.inera.intyg.intygsbestallning.persistence.model.status.SortableLabel;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum InternForfraganStatus implements SortableLabel {

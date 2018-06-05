@@ -24,7 +24,8 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
+import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -47,6 +48,8 @@ public class BestallningListItemFactoryTest {
     private static final int UTREDNING_PAMINNELSE_DAGAR = 5;
 
     private static final String VARDENHET_HSA_ID = "enhet";
+
+    private UtredningStatusResolver utredningStatusResolver = new UtredningStatusResolver();
 
     @InjectMocks
     BestallningListItemFactory testee = new BestallningListItemFactory();
@@ -73,7 +76,8 @@ public class BestallningListItemFactoryTest {
                         .withKomplettering(false)
                         .build()))
                 .build();
-
+// use the resolver to set status even in the test...
+        utredning.setStatus(utredningStatusResolver.resolveStatus(utredning));
         BestallningListItem bestallningListItem = testee.from(utredning, Actor.SAMORDNARE);
 
         assertNotNull(bestallningListItem);
@@ -100,7 +104,7 @@ public class BestallningListItemFactoryTest {
                         .build()))
                 .withBestallning(aBestallning().build())
                 .build();
-
+        utredning.setStatus(utredningStatusResolver.resolveStatus(utredning));
         BestallningListItem bestallningListItem = testee.from(utredning, Actor.UTREDARE);
 
         assertNotNull(bestallningListItem);

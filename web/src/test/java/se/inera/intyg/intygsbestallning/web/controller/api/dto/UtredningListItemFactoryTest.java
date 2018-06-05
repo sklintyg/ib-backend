@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItemFactory;
@@ -57,6 +58,7 @@ public class UtredningListItemFactoryTest {
                         .withLandstingHsaId("landstingHsaId")
                         .withBesvarasSenastDatum(LocalDateTime.now())
                         .build())
+                .withStatus(UtredningStatus.FORFRAGAN_INKOMMEN)
                 .build();
 
         UtredningListItem response = testee.from(utredning);

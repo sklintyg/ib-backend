@@ -19,7 +19,7 @@
 package se.inera.intyg.intygsbestallning.service.util;
 
 import org.junit.Test;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 
 import java.util.Arrays;
 import java.util.List;

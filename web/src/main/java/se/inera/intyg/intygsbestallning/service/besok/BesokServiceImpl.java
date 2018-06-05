@@ -25,11 +25,11 @@ import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportC
 import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportDeviationRequestDto.ReportDeviationRequestDtoBuilder.aReportDeviationRequestDto;
 import static se.inera.intyg.intygsbestallning.persistence.model.Avvikelse.AvvikelseBuilder.anAvvikelse;
 import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
-import static se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus.AVVIKELSE_MOTTAGEN;
-import static se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus.BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR;
-import static se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus.HANDLINGAR_MOTTAGNA_BOKA_BESOK;
-import static se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus.UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR;
-import static se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus.UTREDNING_PAGAR;
+import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.AVVIKELSE_MOTTAGEN;
+import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR;
+import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.HANDLINGAR_MOTTAGNA_BOKA_BESOK;
+import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR;
+import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.UTREDNING_PAGAR;
 import static se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest.validate;
 
 import org.slf4j.Logger;
@@ -68,8 +68,8 @@ import se.inera.intyg.intygsbestallning.service.pdl.dto.PatientPdlLoggable;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PdlLogType;
 import se.inera.intyg.intygsbestallning.service.stateresolver.BesokStatus;
 import se.inera.intyg.intygsbestallning.service.stateresolver.BesokStatusResolver;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokResponse;

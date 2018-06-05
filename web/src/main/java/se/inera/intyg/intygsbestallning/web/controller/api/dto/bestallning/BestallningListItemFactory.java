@@ -22,10 +22,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
+import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.stateresolver.SlutDatumFasResolver;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -36,11 +35,9 @@ public class BestallningListItemFactory {
     @Value("${ib.utredning.paminnelse.arbetsdagar}")
     private long paminnelseDagar;
 
-    private UtredningStatusResolver utredningStatusResolver = new UtredningStatusResolver();
-
     public BestallningListItem from(Utredning utredning, Actor actorInThisContext) {
 
-        UtredningStatus utredningStatus = utredningStatusResolver.resolveStatus(utredning);
+        UtredningStatus utredningStatus = utredning.getStatus();
 
         return BestallningListItem.BestallningListItemBuilder.anBestallningListItem()
                 .withFas(utredningStatus.getUtredningFas())

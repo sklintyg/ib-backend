@@ -20,8 +20,8 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning;
 
 import se.inera.intyg.intygsbestallning.service.patient.PatientNamable;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FreeTextSearchable;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardgivareEnrichable;

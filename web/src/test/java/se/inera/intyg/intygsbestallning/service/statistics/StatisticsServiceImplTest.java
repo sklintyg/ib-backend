@@ -27,6 +27,7 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
@@ -61,6 +62,8 @@ public class StatisticsServiceImplTest {
     private static final String VG_ID = "VG-HsaId1";
     private static final String VE_ID = "VE-HsaId1";
 
+    private static final UtredningStatusResolver utredningStatusResolver = new UtredningStatusResolver();
+
     @Mock
     private UtredningRepository utredningRepository;
 
@@ -91,8 +94,9 @@ public class StatisticsServiceImplTest {
                 utrBuilder.withExternForfragan(
                         anExternForfragan().withLandstingHsaId(VG_ID).withBesvarasSenastDatum(LocalDateTime.now()).build());
             }
-
-            utredningList.add(utrBuilder.build());
+            Utredning utr = utrBuilder.build();
+            utr.setStatus(utredningStatusResolver.resolveStatus(utr));
+            utredningList.add(utr);
         }
 
         return utredningList;
@@ -123,7 +127,10 @@ public class StatisticsServiceImplTest {
             if (handlingarMottagna) {
                 utr.setHandlingList(buildHandlingsLista());
             }
+            // use the resolver to set status even in the test...
+            utr.setStatus(utredningStatusResolver.resolveStatus(utr));
             utredningList.add(utr);
+
         }
         return utredningList;
     }

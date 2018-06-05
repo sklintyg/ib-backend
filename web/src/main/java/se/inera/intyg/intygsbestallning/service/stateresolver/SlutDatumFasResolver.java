@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.service.stateresolver;
 
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 

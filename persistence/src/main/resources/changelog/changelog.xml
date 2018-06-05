@@ -290,6 +290,10 @@
             <column name="ARKIVERAD" type="tinyint(1)">
                 <constraints nullable="false"/>
             </column>
+
+            <column name="STATUS" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
         <addAutoIncrement columnDataType="bigint"

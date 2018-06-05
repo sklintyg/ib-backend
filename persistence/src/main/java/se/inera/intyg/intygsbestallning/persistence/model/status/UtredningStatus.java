@@ -16,19 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.service.stateresolver;
+package se.inera.intyg.intygsbestallning.persistence.model.status;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import static se.inera.intyg.intygsbestallning.service.stateresolver.Actor.FK;
-import static se.inera.intyg.intygsbestallning.service.stateresolver.Actor.NONE;
-import static se.inera.intyg.intygsbestallning.service.stateresolver.Actor.SAMORDNARE;
-import static se.inera.intyg.intygsbestallning.service.stateresolver.Actor.UTREDARE;
-import static se.inera.intyg.intygsbestallning.service.stateresolver.Actor.VARDADMIN;
-import static se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas.FORFRAGAN;
-import static se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas.KOMPLETTERING;
-import static se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas.UTREDNING;
+import static se.inera.intyg.intygsbestallning.persistence.model.status.Actor.FK;
+import static se.inera.intyg.intygsbestallning.persistence.model.status.Actor.NONE;
+import static se.inera.intyg.intygsbestallning.persistence.model.status.Actor.SAMORDNARE;
+import static se.inera.intyg.intygsbestallning.persistence.model.status.Actor.UTREDARE;
+import static se.inera.intyg.intygsbestallning.persistence.model.status.Actor.VARDADMIN;
+import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas.FORFRAGAN;
+import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas.KOMPLETTERING;
+import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas.UTREDNING;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum UtredningStatus implements SortableLabel {

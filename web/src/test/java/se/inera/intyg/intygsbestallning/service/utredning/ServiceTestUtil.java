@@ -23,6 +23,7 @@ import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.model.IbVardenhet;
 import se.inera.intyg.intygsbestallning.auth.model.IbVardgivare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -40,6 +41,8 @@ import static se.inera.intyg.intygsbestallning.persistence.model.type.Utrednings
 public final class ServiceTestUtil {
     private ServiceTestUtil() {
     }
+
+    private static UtredningStatusResolver utredningStatusResolver = new UtredningStatusResolver();
 
     public static IbUser buildUser() {
         IbUser user = new IbUser("user-1", "username");
@@ -69,6 +72,8 @@ public final class ServiceTestUtil {
                             .withSistaDatum(LocalDateTime.now().plusDays(10L))
                             .build()))
                     .build();
+            // use the resolver to set status even in the test...
+            utr.setStatus(utredningStatusResolver.resolveStatus(utr));
             utredningList.add(utr);
         }
         return utredningList;

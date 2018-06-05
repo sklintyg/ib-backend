@@ -20,8 +20,10 @@ package se.inera.intyg.intygsbestallning.service.stateresolver;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
+import se.inera.intyg.intygsbestallning.persistence.model.status.SortableLabel;
 
-import static se.inera.intyg.intygsbestallning.service.stateresolver.Actor.VARDADMIN;
+import static se.inera.intyg.intygsbestallning.persistence.model.status.Actor.VARDADMIN;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum BesokStatus implements SortableLabel {
