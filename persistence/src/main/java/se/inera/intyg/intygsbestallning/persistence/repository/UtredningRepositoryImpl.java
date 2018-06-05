@@ -16,15 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.service.besok;
+package se.inera.intyg.intygsbestallning.persistence.repository;
 
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokResponse;
-import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 
-public interface BesokService {
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
-    RegisterBesokResponse registerBesok(final RegisterBesokRequest request);
+public class UtredningRepositoryImpl implements UtredningRepositoryCustom {
 
-    void reportBesokAvvikelse(ReportBesokAvvikelseRequest request);
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    @Override
+    public void persist(Utredning utredning) {
+        entityManager.persist(utredning);
+    }
+
 }

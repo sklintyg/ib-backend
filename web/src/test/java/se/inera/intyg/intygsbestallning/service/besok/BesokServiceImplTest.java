@@ -20,9 +20,11 @@ package se.inera.intyg.intygsbestallning.service.besok;
 
 import static com.google.common.collect.MoreCollectors.onlyElement;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.argThat;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -39,20 +41,22 @@ import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.Optional;
+
 import se.inera.intyg.intygsbestallning.auth.IbUser;
+import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto;
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportDeviationRequestDto;
 import se.inera.intyg.intygsbestallning.integration.myndighet.service.MyndighetIntegrationServiceImpl;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
-import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.AvvikelseOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
@@ -110,7 +114,7 @@ public class BesokServiceImplTest {
     }
 
     @Test
-    public void testRegisterNewBesokMedLakareSomProfession() {
+    public void testRegisterBesokMedLakareSomProfession() {
 
         final String userName = "test user";
         doReturn(new IbUser("", userName)).when(userService).getUser();
@@ -130,12 +134,15 @@ public class BesokServiceImplTest {
         utredning.setUtredningsTyp(UtredningsTyp.AFU);
         final Besok besok = TestDataGen.createBesok(request).stream().collect(onlyElement());
 
+        // the database assigns besok_id when saved
+        doAnswer(i -> {
+            ((Utredning)i.getArgument(0)).getBesokList().get(0).setId(BESOK_ID);
+            return null;
+        }).when(utredningRepository).persist(any(Utredning.class));
+
         final ReportCareContactRequestDto dto = aReportCareContactRequestDto()
                 .withAssessmentId(utredning.getUtredningId())
-                .withAssessmentCareContactId(utredning.getBestallning()
-                        .map(Bestallning::getId)
-                        .map(Object::toString)
-                        .orElse(null))
+                .withAssessmentCareContactId(BESOK_ID.toString())
                 .withParticipatingProfession(besok.getDeltagareProfession().name())
                 .withInterpreterStatus(besok.getTolkStatus().getLabel())
                 .withInvitationDate(SchemaDateUtil.toStringFromLocalDateTime(besok.getKallelseDatum()))
@@ -145,7 +152,7 @@ public class BesokServiceImplTest {
                 .withVisitStatus(besok.getBesokStatus().getCvValue())
                 .build();
 
-        besokService.registerNewBesok(request);
+        besokService.registerBesok(request);
 
         verify(myndighetIntegrationService, times(0)).updateAssessment(eq(UTREDNING_ID), eq(UTREDNING_TYP.name()));
         verify(myndighetIntegrationService, times(1)).reportCareContactInteraction(eq(dto));
@@ -155,7 +162,7 @@ public class BesokServiceImplTest {
     }
 
     @Test
-    public void testRegisterNewBesokMedAnnanProfession() {
+    public void testRegisterBesokMedAnnanProfession() {
 
         final String userName = "test user";
         doReturn(new IbUser("", userName)).when(userService).getUser();
@@ -175,12 +182,15 @@ public class BesokServiceImplTest {
         utredning.setUtredningsTyp(UtredningsTyp.AFU);
         final Besok besok = TestDataGen.createBesok(request).stream().collect(onlyElement());
 
+        // the database assigns besok_id when saved
+        doAnswer(i -> {
+            ((Utredning)i.getArgument(0)).getBesokList().get(0).setId(BESOK_ID);
+            return null;
+        }).when(utredningRepository).persist(any(Utredning.class));
+
         final ReportCareContactRequestDto dto = aReportCareContactRequestDto()
                 .withAssessmentId(utredning.getUtredningId())
-                .withAssessmentCareContactId(utredning.getBestallning()
-                        .map(Bestallning::getId)
-                        .map(Object::toString)
-                        .orElse(null))
+                .withAssessmentCareContactId(BESOK_ID.toString())
                 .withParticipatingProfession(besok.getDeltagareProfession().name())
                 .withInterpreterStatus(besok.getTolkStatus().getLabel())
                 .withInvitationDate(SchemaDateUtil.toStringFromLocalDateTime(besok.getKallelseDatum()))
@@ -190,7 +200,7 @@ public class BesokServiceImplTest {
                 .withVisitStatus(besok.getBesokStatus().getCvValue())
                 .build();
 
-        besokService.registerNewBesok(request);
+        besokService.registerBesok(request);
 
         verify(myndighetIntegrationService, times(1)).updateAssessment(eq(UTREDNING_ID), eq(UTREDNING_TYP.name()));
         verify(myndighetIntegrationService, times(1)).reportCareContactInteraction(eq(dto));
@@ -219,9 +229,154 @@ public class BesokServiceImplTest {
         doReturn(Optional.of(utredning))
                 .when(utredningRepository).findById(eq(UTREDNING_ID));
 
-        assertThatThrownBy(() -> besokService.registerNewBesok(request))
+        assertThatThrownBy(() -> besokService.registerBesok(request))
                 .isExactlyInstanceOf(IbServiceException.class)
                 .hasMessage("Utredning with id " + UTREDNING_ID + " is in an incorrect state");
+    }
+
+    @Test
+    public void testRegisterBesokOmbokat() {
+        final String userName = "test user";
+        doReturn(new IbUser("", userName)).when(userService).getUser();
+
+        Utredning utredning = TestDataGen.createUtredning();
+        utredning.setBesokList(ImmutableList.of(aBesok()
+                .withId(BESOK_ID)
+                .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
+                .withDeltagareProfession(DeltagarProfessionTyp.LK)
+                .withKallelseDatum(DATE_TIME)
+                .withKallelseForm(KallelseFormTyp.TELEFONKONTAKT)
+                .withBesokStartTid(DATE_TIME.plusMonths(1))
+                .withBesokSlutTid(DATE_TIME.plusMonths(1).plusHours(1))
+                .build()));
+
+        doReturn(Optional.of(utredning))
+                .when(utredningRepository).findById(eq(UTREDNING_ID));
+
+        RegisterBesokRequest request = new RegisterBesokRequest();
+        request.setUtredningId(UTREDNING_ID);
+        request.setBesokId(BESOK_ID);
+        request.setUtredandeVardPersonalNamn("changed");
+        request.setProfession(DeltagarProfessionTyp.LK);
+        request.setTolkStatus(TolkStatusTyp.BOKAT);
+        request.setKallelseForm(KallelseFormTyp.TELEFONKONTAKT);
+        request.setKallelseDatum(DATE_TIME);
+        request.setBesokDatum(DATE_TIME.plusMonths(1).toLocalDate());
+        request.setBesokStartTid(DATE_TIME.plusMonths(1).plusHours(4).toLocalTime());
+        request.setBesokSlutTid(DATE_TIME.plusMonths(1).plusHours(6).toLocalTime());
+
+        besokService.registerBesok(request);
+
+        final ReportCareContactRequestDto dto = aReportCareContactRequestDto()
+                .withAssessmentId(utredning.getUtredningId())
+                .withAssessmentCareContactId(BESOK_ID.toString())
+                .withParticipatingProfession(request.getProfession().name())
+                .withInterpreterStatus(request.getTolkStatus().getLabel())
+                .withInvitationDate(SchemaDateUtil.toStringFromLocalDateTime(request.getKallelseDatum()))
+                .withInvitationChannel(request.getKallelseForm().getCvValue())
+                .withStartTime(LocalDateTime.of(request.getBesokDatum(), request.getBesokStartTid()))
+                .withEndTime(LocalDateTime.of(request.getBesokDatum(), request.getBesokSlutTid()))
+                .withVisitStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT.getCvValue())
+                .build();
+
+        verify(myndighetIntegrationService, times(0)).updateAssessment(eq(UTREDNING_ID), eq(UTREDNING_TYP.name()));
+        verify(myndighetIntegrationService, times(1)).reportCareContactInteraction(eq(dto));
+
+        verify(logService, times(1)).log(argThat(arg -> arg.getPatientId().equals(TestDataGen.getPersonId())),
+                argThat(arg -> arg == PdlLogType.BESOK_ANDRAT));
+
+        ArgumentCaptor<Utredning> utredningCaptor = ArgumentCaptor.forClass(Utredning.class);
+        verify(utredningRepository).save(utredningCaptor.capture());
+        assertEquals(HandelseTyp.OMBOKAT_BESOK, utredningCaptor.getValue().getHandelseList().get(0).getHandelseTyp());
+    }
+
+    @Test
+    public void testRegisterBesokUppdaterat() {
+        final String userName = "test user";
+        doReturn(new IbUser("", userName)).when(userService).getUser();
+
+        Utredning utredning = TestDataGen.createUtredning();
+        utredning.setUtredningsTyp(UtredningsTyp.AFU);
+        utredning.setBesokList(ImmutableList.of(aBesok()
+                .withId(BESOK_ID)
+                .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
+                .withDeltagareProfession(DeltagarProfessionTyp.LK)
+                .withKallelseDatum(DATE_TIME)
+                .withKallelseForm(KallelseFormTyp.TELEFONKONTAKT)
+                .withBesokStartTid(DATE_TIME.plusMonths(1))
+                .withBesokSlutTid(DATE_TIME.plusMonths(1).plusHours(1))
+                .build()));
+
+        doReturn(Optional.of(utredning))
+                .when(utredningRepository).findById(eq(UTREDNING_ID));
+
+        RegisterBesokRequest request = new RegisterBesokRequest();
+        request.setUtredningId(UTREDNING_ID);
+        request.setBesokId(BESOK_ID);
+        request.setUtredandeVardPersonalNamn("changed");
+        request.setProfession(DeltagarProfessionTyp.AT);
+        request.setTolkStatus(TolkStatusTyp.BOKAT);
+        request.setKallelseForm(KallelseFormTyp.TELEFONKONTAKT);
+        request.setKallelseDatum(DATE_TIME);
+        request.setBesokDatum(DATE_TIME.plusMonths(1).toLocalDate());
+        request.setBesokStartTid(DATE_TIME.plusMonths(1).toLocalTime());
+        request.setBesokSlutTid(DATE_TIME.plusMonths(1).plusHours(1).toLocalTime());
+
+        besokService.registerBesok(request);
+
+        final ReportCareContactRequestDto dto = aReportCareContactRequestDto()
+                .withAssessmentId(utredning.getUtredningId())
+                .withAssessmentCareContactId(BESOK_ID.toString())
+                .withParticipatingProfession(request.getProfession().name())
+                .withInterpreterStatus(request.getTolkStatus().getLabel())
+                .withInvitationDate(SchemaDateUtil.toStringFromLocalDateTime(request.getKallelseDatum()))
+                .withInvitationChannel(request.getKallelseForm().getCvValue())
+                .withStartTime(LocalDateTime.of(request.getBesokDatum(), request.getBesokStartTid()))
+                .withEndTime(LocalDateTime.of(request.getBesokDatum(), request.getBesokSlutTid()))
+                .withVisitStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT.getCvValue())
+                .build();
+
+        verify(myndighetIntegrationService, times(1)).updateAssessment(eq(UTREDNING_ID), eq(UTREDNING_TYP.name()));
+        verify(myndighetIntegrationService, times(1)).reportCareContactInteraction(eq(dto));
+
+        verify(logService, times(1)).log(argThat(arg -> arg.getPatientId().equals(TestDataGen.getPersonId())),
+                argThat(arg -> arg == PdlLogType.BESOK_ANDRAT));
+
+        ArgumentCaptor<Utredning> utredningCaptor = ArgumentCaptor.forClass(Utredning.class);
+        verify(utredningRepository).save(utredningCaptor.capture());
+        assertEquals(HandelseTyp.UPPDATERA_BESOK, utredningCaptor.getValue().getHandelseList().get(0).getHandelseTyp());
+    }
+
+    @Test(expected = IbNotFoundException.class)
+    public void testRegisterBesokUpdateNotExisting() {
+        Utredning utredning = TestDataGen.createUtredning();
+        utredning.setUtredningsTyp(UtredningsTyp.AFU);
+        utredning.setBesokList(ImmutableList.of(aBesok()
+                .withId(BESOK_ID)
+                .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
+                .withDeltagareProfession(DeltagarProfessionTyp.LK)
+                .withKallelseDatum(DATE_TIME)
+                .withKallelseForm(KallelseFormTyp.TELEFONKONTAKT)
+                .withBesokStartTid(DATE_TIME.plusMonths(1))
+                .withBesokSlutTid(DATE_TIME.plusMonths(1).plusHours(1))
+                .build()));
+
+        doReturn(Optional.of(utredning))
+                .when(utredningRepository).findById(eq(UTREDNING_ID));
+
+        RegisterBesokRequest request = new RegisterBesokRequest();
+        request.setUtredningId(UTREDNING_ID);
+        request.setBesokId(11111L);
+        request.setUtredandeVardPersonalNamn("changed");
+        request.setProfession(DeltagarProfessionTyp.AT);
+        request.setTolkStatus(TolkStatusTyp.BOKAT);
+        request.setKallelseForm(KallelseFormTyp.TELEFONKONTAKT);
+        request.setKallelseDatum(DATE_TIME);
+        request.setBesokDatum(DATE_TIME.plusMonths(1).toLocalDate());
+        request.setBesokStartTid(DATE_TIME.plusMonths(1).toLocalTime());
+        request.setBesokSlutTid(DATE_TIME.plusMonths(1).plusHours(1).toLocalTime());
+
+        besokService.registerBesok(request);
     }
 
     @Test

@@ -54,14 +54,14 @@ public class BesokController {
     }
 
     @PutMapping
-    public RegisterBesokResponse createBesok(@RequestBody  final RegisterBesokRequest request) {
+    public RegisterBesokResponse registerBesok(@RequestBody  final RegisterBesokRequest request) {
 
         final IbUser user = userService.getUser();
         authoritiesValidator.given(user)
                 .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_BESOK)
                 .orThrow(new IbAuthorizationException(EDIT_NOT_ALLOWED));
 
-        return besokService.registerNewBesok(RegisterBesokRequest.from(request, user.getNamn()));
+        return besokService.registerBesok(RegisterBesokRequest.from(request, user.getNamn()));
     }
 
     @PutMapping("/avvikelse")

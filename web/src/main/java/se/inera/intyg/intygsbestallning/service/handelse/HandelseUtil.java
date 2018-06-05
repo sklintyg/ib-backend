@@ -22,6 +22,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.bouncycastle.util.Strings;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
+import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
@@ -196,7 +197,7 @@ public final class HandelseUtil {
                 .build();
     }
 
-    public static Handelse createNyttBesok(final Boolean tolkBehov, final Besok besok, final String vardadministrator) {
+    public static Handelse createNyttBesok(final Besok besok, final String vardadministrator) {
 
         StringBuilder text = new StringBuilder();
         text.append(MessageFormat.format("Besök bokat {0} {1} - {2} hos {3}. ",
@@ -209,7 +210,7 @@ public final class HandelseUtil {
                 besok.getKallelseDatum().format(DateTimeFormatter.ISO_DATE),
                 Strings.toLowerCase(besok.getKallelseForm().name())));
 
-        if (BooleanUtils.toBoolean(tolkBehov)) {
+        if (besok.getTolkStatus() != null) {
             text.append(MessageFormat.format("Tolk bokad: {0} ",
                     besok.getTolkStatus().getLabel()));
         }
@@ -223,6 +224,88 @@ public final class HandelseUtil {
                 .build();
     }
 
+    public static Handelse createOmbokatBesok(final Besok besok, final LocalDateTime newStartTid, final LocalDateTime newSlutTid,
+                                              final DeltagarProfessionTyp newProfession, final String newDeltagareFullstandigtNamn,
+                                              final String vardadministrator) {
+
+        StringBuilder text = new StringBuilder();
+        text.append(MessageFormat.format("Besök {0} {1} - {2}",
+                besok.getBesokStartTid().format(DateTimeFormatter.ISO_DATE),
+                besok.getBesokStartTid().format(TIME_FORMATTER),
+                besok.getBesokSlutTid().format(TIME_FORMATTER)));
+
+        if (besok.getDeltagareProfession() != newProfession) {
+            text.append(MessageFormat.format(" hos {0}", besok.getDeltagareProfession().getLabel()));
+        }
+
+        text.append(MessageFormat.format(" ombokat till {0} {1} - {2}",
+                newStartTid.format(DateTimeFormatter.ISO_DATE),
+                newStartTid.format(TIME_FORMATTER),
+                newSlutTid.format(TIME_FORMATTER)));
+
+        if (besok.getDeltagareProfession() != newProfession) {
+            text.append(MessageFormat.format(" {0}.", newProfession.getLabel()));
+        }
+
+        text.append(MessageFormat.format(" Invånaren kallades {0} per {1}.",
+                besok.getKallelseDatum().format(DateTimeFormatter.ISO_DATE),
+                Strings.toLowerCase(besok.getKallelseForm().name())));
+
+        if (besok.getTolkStatus() != null) {
+            text.append(MessageFormat.format("Tolk bokad: {0} ",
+                    besok.getTolkStatus().getLabel()));
+        }
+
+        String kommentar = "";
+        String oldDeltagareFullstandigtNamnResolved = Optional.ofNullable(besok.getDeltagareFullstandigtNamn()).orElse("");
+        String newDeltagareFullstandigtNamnResolved = Optional.ofNullable(newDeltagareFullstandigtNamn).orElse("");
+        if (!oldDeltagareFullstandigtNamnResolved.equals(newDeltagareFullstandigtNamnResolved)) {
+            kommentar = MessageFormat.format("{0} till {1}", oldDeltagareFullstandigtNamnResolved, newDeltagareFullstandigtNamnResolved);
+        }
+
+        return aHandelse()
+                .withSkapad(LocalDateTime.now())
+                .withAnvandare(vardadministrator)
+                .withHandelseTyp(HandelseTyp.OMBOKAT_BESOK)
+                .withHandelseText(text.toString())
+                .withKommentar(kommentar)
+                .build();
+    }
+
+    public static Handelse createUppdateraBesok(final Besok besok, final DeltagarProfessionTyp newProfession,
+                                                final String newDeltagareFullstandigtNamn, final String vardadministrator) {
+
+        StringBuilder text = new StringBuilder();
+        text.append(MessageFormat.format("Uppdaterat besök {0} {1} - {2}",
+                besok.getBesokStartTid().format(DateTimeFormatter.ISO_DATE),
+                besok.getBesokStartTid().format(TIME_FORMATTER),
+                besok.getBesokSlutTid().format(TIME_FORMATTER)));
+
+        if (besok.getDeltagareProfession() != newProfession) {
+            text.append(MessageFormat.format(" hos {0} till {1} ", besok.getDeltagareProfession().getLabel(), newProfession.getLabel()));
+        }
+
+        if (besok.getTolkStatus() != null) {
+            text.append(MessageFormat.format(". Tolk bokad: {0}",
+                    besok.getTolkStatus().getLabel()));
+        }
+
+        String kommentar = "";
+        String oldDeltagareFullstandigtNamnResolved = Optional.ofNullable(besok.getDeltagareFullstandigtNamn()).orElse("");
+        String newDeltagareFullstandigtNamnResolved = Optional.ofNullable(newDeltagareFullstandigtNamn).orElse("");
+        if (!oldDeltagareFullstandigtNamnResolved.equals(newDeltagareFullstandigtNamnResolved)) {
+            kommentar = MessageFormat.format("{0} till {1}", oldDeltagareFullstandigtNamnResolved, newDeltagareFullstandigtNamnResolved);
+        }
+
+        return aHandelse()
+                .withSkapad(LocalDateTime.now())
+                .withAnvandare(vardadministrator)
+                .withHandelseTyp(HandelseTyp.UPPDATERA_BESOK)
+                .withHandelseText(text.toString())
+                .withKommentar(kommentar)
+                .build();
+    }
+
     public static Handelse createForfraganMottagen(final String landstingHsaId) {
 
         return aHandelse()
@@ -231,4 +314,5 @@ public final class HandelseUtil {
                 .withHandelseText(MessageFormat.format("Förfrågan mottagen av {0}", landstingHsaId))
                 .build();
     }
+
 }

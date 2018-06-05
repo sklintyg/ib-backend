@@ -16,15 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.service.besok;
+package se.inera.intyg.intygsbestallning.persistence.repository;
 
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokResponse;
-import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
+import org.springframework.transaction.annotation.Transactional;
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 
-public interface BesokService {
-
-    RegisterBesokResponse registerBesok(final RegisterBesokRequest request);
-
-    void reportBesokAvvikelse(ReportBesokAvvikelseRequest request);
+@Transactional(value = "transactionManager", readOnly = false)
+public interface UtredningRepositoryCustom {
+    void persist(Utredning utredning);
 }

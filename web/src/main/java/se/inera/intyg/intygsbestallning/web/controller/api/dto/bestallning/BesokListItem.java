@@ -34,6 +34,7 @@ public class BesokListItem {
 
     private static final DateTimeFormatter TIMEFORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
+    private Long besokId;
     private BesokStatus besokStatus;
     private String besokDatum;
     private String besokStartTid;
@@ -47,6 +48,7 @@ public class BesokListItem {
 
     public static BesokListItem from(Besok besok) {
         return BesokListItemBuilder.aBesokListItem()
+                .withBesokId(besok.getId())
                 .withBesokStatus(BesokStatusResolver.resolveStaticStatus(besok))
                 .withBesokDatum(besok.getBesokStartTid().format(DateTimeFormatter.ISO_DATE))
                 .withBesokStartTid(besok.getBesokStartTid().format(TIMEFORMATTER))
@@ -60,6 +62,14 @@ public class BesokListItem {
                         .map(handelse ->  HandelseListItem.from(handelse, true))
                         .collect(Collectors.toList()))
                 .build();
+    }
+
+    public Long getBesokId() {
+        return besokId;
+    }
+
+    public void setBesokId(Long besokId) {
+        this.besokId = besokId;
     }
 
     public BesokStatus getBesokStatus() {
@@ -143,6 +153,7 @@ public class BesokListItem {
     }
 
     public static final class  BesokListItemBuilder {
+        private Long besokId;
         private BesokStatus besokStatus;
         private String besokDatum;
         private String besokStartTid;
@@ -159,6 +170,11 @@ public class BesokListItem {
 
         public static BesokListItem.BesokListItemBuilder aBesokListItem() {
             return new BesokListItem.BesokListItemBuilder();
+        }
+
+        public BesokListItemBuilder withBesokId(Long besokId) {
+            this.besokId = besokId;
+            return this;
         }
 
         public BesokListItemBuilder withBesokStatus(BesokStatus besokStatus) {
@@ -213,6 +229,7 @@ public class BesokListItem {
 
         public BesokListItem build() {
             BesokListItem besokListItem = new BesokListItem();
+            besokListItem.setBesokId(besokId);
             besokListItem.setBesokDatum(besokDatum);
             besokListItem.setBesokSlutTid(besokSlutTid);
             besokListItem.setBesokStartTid(besokStartTid);

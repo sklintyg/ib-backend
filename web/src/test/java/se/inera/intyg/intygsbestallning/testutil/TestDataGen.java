@@ -78,6 +78,7 @@ public final class TestDataGen {
     private static final String CAREUNIT_NAME = "Vårdenhet 1";
     private static final Long UTREDNING_ID = 1L;
     private static final String PERSON_ID = "19121212-1212";
+    private static final Long BESOK_ID = 1L;
 
     private TestDataGen() {
 
@@ -231,6 +232,7 @@ public final class TestDataGen {
 
     public static List<Besok> createBesok(final RegisterBesokRequest request) {
         return ImmutableList.of(aBesok()
+                .withId(BESOK_ID)
                 .withKallelseDatum(request.getKallelseDatum())
                 .withKallelseForm(request.getKallelseForm())
                 .withBesokStartTid(LocalDateTime.of(request.getBesokDatum(), request.getBesokStartTid()))

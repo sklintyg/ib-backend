@@ -54,7 +54,6 @@ import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportDeviatio
 import se.inera.intyg.intygsbestallning.integration.myndighet.service.MyndighetIntegrationService;
 import se.inera.intyg.intygsbestallning.persistence.model.Avvikelse;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
-import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
@@ -102,7 +101,7 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
 
     @Override
     @Transactional
-    public RegisterBesokResponse registerNewBesok(final RegisterBesokRequest request) {
+    public RegisterBesokResponse registerBesok(final RegisterBesokRequest request) {
         validate(request);
 
         LOG.debug(MessageFormat.format("Received a request to register new besok for utredning with id {0}", request.getUtredningId()));
@@ -115,14 +114,40 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
                     MessageFormat.format("Utredning with id {0} is in an incorrect state", utredning.getUtredningId()));
         }
 
-        final Besok besok = createBesok(request);
+        Besok besok;
+        Handelse besokHandelse;
+        if (request.getBesokId() != null) {
+            besok = utredning.getBesokList().stream()
+                    .filter(b -> b.getId().equals(request.getBesokId()))
+                    .findAny()
+                    .orElseThrow(() -> new IbNotFoundException(MessageFormat.format(
+                            "Could not find besok \'{0}\' in utredning \'{0}\'", request.getBesokId(), request.getUtredningId())));
 
-        utredning.getBesokList().add(besok);
-        Handelse besokHandelse = HandelseUtil.createNyttBesok(utredning.getTolkBehov(), besok, userService.getUser().getNamn());
+            if (isBesokOmbokat(besok, request)) {
+                besokHandelse = HandelseUtil.createOmbokatBesok(besok, LocalDateTime.of(request.getBesokDatum(),
+                        request.getBesokStartTid()), LocalDateTime.of(request.getBesokDatum(), request.getBesokSlutTid()),
+                        request.getProfession(), request.getUtredandeVardPersonalNamn().orElse(""), userService.getUser().getNamn());
+            } else {
+                besokHandelse = HandelseUtil.createUppdateraBesok(besok, request.getProfession(), request.getUtredandeVardPersonalNamn()
+                        .orElse(""), userService.getUser().getNamn());
+            }
+
+            updateBesok(besok, request);
+
+            logService.log(new PatientPdlLoggable(utredning.getInvanare().getPersonId()), PdlLogType.BESOK_ANDRAT);
+        }  else {
+            besok = createBesok(request);
+            utredning.getBesokList().add(besok);
+            besokHandelse = HandelseUtil.createNyttBesok(besok, userService.getUser().getNamn());
+
+            // Save besok here to get its id for reportBesok
+            utredningRepository.persist(utredning);
+
+            logService.log(new PatientPdlLoggable(utredning.getInvanare().getPersonId()), PdlLogType.BESOK_SKAPAT);
+        }
+
         utredning.getHandelseList().add(besokHandelse);
         besok.getHandelseList().add(besokHandelse);
-
-        logService.log(new PatientPdlLoggable(utredning.getInvanare().getPersonId()), PdlLogType.BESOK_SKAPAT);
 
         if (isOtherProfessionThanLakare(utredning, besok)) {
             utredning.setUtredningsTyp(UtredningsTyp.AFU_UTVIDGAD);
@@ -215,13 +240,26 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
                 .build();
     }
 
+    private void updateBesok(final Besok besok, final RegisterBesokRequest request) {
+        besok.setKallelseDatum(request.getKallelseDatum());
+        besok.setKallelseForm(request.getKallelseForm());
+        besok.setBesokStartTid(LocalDateTime.of(request.getBesokDatum(), request.getBesokStartTid()));
+        besok.setBesokSlutTid(LocalDateTime.of(request.getBesokDatum(), request.getBesokSlutTid()));
+        besok.setDeltagareProfession(request.getProfession());
+        besok.setTolkStatus(request.getTolkStatus());
+        besok.setDeltagareFullstandigtNamn(request.getUtredandeVardPersonalNamn().orElse(null));
+    }
+
+    private boolean isBesokOmbokat(Besok besok, RegisterBesokRequest request) {
+        return !besok.getBesokStartTid().toLocalDate().equals(request.getBesokDatum())
+                || !besok.getBesokStartTid().toLocalTime().equals(request.getBesokStartTid())
+                || !besok.getBesokSlutTid().toLocalTime().equals(request.getBesokSlutTid());
+    }
+
     private ReportCareContactRequestDto createReportCareContactRequestDto(final Utredning utredning, final Besok besok) {
         return aReportCareContactRequestDto()
                 .withAssessmentId(utredning.getUtredningId())
-                .withAssessmentCareContactId(utredning.getBestallning()
-                        .map(Bestallning::getId)
-                        .map(Object::toString)
-                        .orElse(null))
+                .withAssessmentCareContactId(besok.getId().toString())
                 .withParticipatingProfession(besok.getDeltagareProfession().name())
                 .withInterpreterStatus(nonNull(besok.getTolkStatus()) ? besok.getTolkStatus().getLabel() : null)
                 .withInvitationDate(SchemaDateUtil.toStringFromLocalDateTime(besok.getKallelseDatum()))

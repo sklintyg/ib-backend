@@ -33,6 +33,7 @@ import java.util.Optional;
 
 public class RegisterBesokRequest {
 
+    private Long besokId;
     private Long utredningId;
 
     private String utredandeVardPersonalNamn;
@@ -60,6 +61,14 @@ public class RegisterBesokRequest {
                 .withBesokStartTid(request.getBesokStartTid())
                 .withBesokSlutTid(request.getBesokSlutTid())
                 .build();
+    }
+
+    public Long getBesokId() {
+        return besokId;
+    }
+
+    public void setBesokId(Long besokId) {
+        this.besokId = besokId;
     }
 
     public Long getUtredningId() {

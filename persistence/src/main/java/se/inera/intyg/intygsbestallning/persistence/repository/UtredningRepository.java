@@ -31,7 +31,7 @@ import java.util.Optional;
 
 //CHECKSTYLE:OFF MethodName
 //CHECKSTYLE:OFF LineLength
-public interface UtredningRepository extends JpaRepository<Utredning, Long> {
+public interface UtredningRepository extends JpaRepository<Utredning, Long>, UtredningRepositoryCustom {
 
     /**
      * Variant query that filters out any Utredningar that are in a closed state.
