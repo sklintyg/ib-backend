@@ -72,6 +72,7 @@ public class JmsConfig {
         JmsTemplate jmsTemplate = new JmsTemplate();
         jmsTemplate.setDefaultDestinationName(loggingQueueName);
         jmsTemplate.setConnectionFactory(connectionFactory());
+        jmsTemplate.setSessionTransacted(true);
         return jmsTemplate;
     }
 
@@ -80,6 +81,7 @@ public class JmsConfig {
         JmsTemplate jmsTemplate = new JmsTemplate();
         jmsTemplate.setDefaultDestinationName(aggregatedLoggingQueueName);
         jmsTemplate.setConnectionFactory(connectionFactory());
+        jmsTemplate.setSessionTransacted(true);
         return jmsTemplate;
     }
 }

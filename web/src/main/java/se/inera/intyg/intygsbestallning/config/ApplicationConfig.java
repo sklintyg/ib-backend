@@ -24,10 +24,14 @@ import org.apache.cxf.feature.LoggingFeature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.TransactionManagementConfigurer;
 import se.inera.intyg.intygsbestallning.monitoring.EnablePrometheusTiming;
 import se.inera.intyg.intygsbestallning.web.filters.UnitSelectedAssuranceFilter;
 
@@ -37,15 +41,20 @@ import java.util.Arrays;
 
 @Configuration
 @EnablePrometheusTiming
+@EnableTransactionManagement
+@DependsOn("transactionManager")
 @PropertySource({"classpath:default.properties",
         "file:${config.file}",
         "file:${credentials.file}",
         "classpath:version.properties"})
 @ImportResource({"classpath:META-INF/cxf/cxf.xml", "classpath:securityContext.xml"})
-public class ApplicationConfig {
+public class ApplicationConfig implements TransactionManagementConfigurer {
 
     @Autowired
     private Bus bus;
+
+    @Autowired
+    private PlatformTransactionManager transactionManager;
 
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertyConfigInDev() {
@@ -81,5 +90,10 @@ public class ApplicationConfig {
         LoggingFeature loggingFeature = new LoggingFeature();
         loggingFeature.setPrettyLogging(true);
         return loggingFeature;
+    }
+
+    @Override
+    public PlatformTransactionManager annotationDrivenTransactionManager() {
+        return transactionManager;
     }
 }
