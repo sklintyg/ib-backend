@@ -37,6 +37,7 @@ public class FakeCredentials implements Serializable {
     private String enhetId;
     private String befattningsKod;
     private String forskrivarKod;
+    private String relayState;
 
     private List<String> legitimeradeYrkesgrupper;
     private List<String> systemRoles;
@@ -54,6 +55,7 @@ public class FakeCredentials implements Serializable {
         this.systemRoles = builder.systemRoles;
         this.befattningsKod = builder.befattningsKod;
         this.forskrivarKod = builder.forskrivarKod;
+        this.relayState = builder.relayState;
     }
 
     // ~ Getter and setters
@@ -83,6 +85,10 @@ public class FakeCredentials implements Serializable {
         return forskrivarKod;
     }
 
+    public String getRelayState() {
+        return relayState;
+    }
+
     public List<String> getLegitimeradeYrkesgrupper() {
         return legitimeradeYrkesgrupper;
     }
@@ -90,6 +96,8 @@ public class FakeCredentials implements Serializable {
     public List<String> getSystemRoles() {
         return systemRoles;
     }
+
+
 
     // ~ Public methods
     // ~====================================================================================
@@ -100,6 +108,7 @@ public class FakeCredentials implements Serializable {
                 + "hsaId='" + hsaId + '\''
                 + ", fornamn='" + forNamn + '\''
                 + ", efternamn='" + efterNamn + '\''
+                + ", relayState='" + relayState + '\''
                 + ", systemRoles=" + "[" + (systemRoles == null ? "" : String.join(",", systemRoles)) + "]"
                 + '}';
     }
@@ -114,6 +123,7 @@ public class FakeCredentials implements Serializable {
         private String enhetId;
         private String befattningsKod;
         private String forskrivarKod;
+        private String relayState;
         private List<String> legitimeradeYrkesgrupper;
         private List<String> systemRoles;
 
@@ -154,6 +164,11 @@ public class FakeCredentials implements Serializable {
 
         public FakeCredentialsBuilder befattningsKod(String befattningsKod) {
             this.befattningsKod = befattningsKod;
+            return this;
+        }
+
+        public FakeCredentialsBuilder relayState(String relayState) {
+            this.relayState = relayState;
             return this;
         }
 

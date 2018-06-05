@@ -35,7 +35,8 @@
       'legitimeradeYrkesgrupper',
       'systemRoles',
       'befattningsKod',
-      'forskrivarKod'];
+      'forskrivarKod',
+      'relayState'];
 
   angular.module('ibWelcomeApp.controllers', []).controller('welcomeController',
     ['$scope', '$http', '$log', function($scope, $http, $log) {
@@ -230,7 +231,19 @@
       $scope.loginOptions = [];
       $scope.medarbetaruppdrag = [];
 
+      $scope.environment = {
+          relayState: 'FMU'
+      };
+
+      $scope.$watch('environment.relayState', function() {
+          $scope.updateUserContext($scope.selectedIndex);
+      });
+
       $scope.$watch('selectedIndex', function(newSelected, oldVal) {
+          $scope.updateUserContext(newSelected, oldVal);
+      });
+
+      $scope.updateUserContext = function(newSelected, oldVal) {
         if (newSelected === undefined) {
             return;
         }
@@ -249,6 +262,7 @@
         // Add properties to HSA person
         _updateObject(hsaPerson, 'enhetId', login.forvaldEnhet);
         _updateObject(hsaPerson, 'systemRoles', systemRoles);
+        _updateObject(hsaPerson, 'relayState', $scope.environment.relayState);
 
         // Find any extra context properties add push them into the actual user context.
         if (angular.isDefined(hsaPerson.fakeProperties.extraContextProperties)) {
@@ -265,11 +279,12 @@
         var loginJson = _stringify(hsaPerson);
         jsonElView.text( loginJson );
         jsonEl.text( escape( loginJson ) );
-      });
+      };
 
       // Fetch fake medarbetaruppdrag and logins from the HSA stub
       _fetchMedarbetaruppdrag();
       _fetchHsaPersons();
+      $scope.updateUserContext()
     }]
   );
 </script>
@@ -309,6 +324,13 @@
             <textarea id="userJsonDisplay" name="userJsonDisplay" class="field form-control"
                       style="height: 200px;width: 100%;">
             </textarea>
+            <h5>Logga in med origin:</h5>
+            <span class="originButtons"><label for="FMU"><input id="FMU" name="relayState" type="radio"
+                                                                   ng-model="environment.relayState" value="FMU"
+                                                                   checked /> FMU</label></span>
+            <span class="originButtons"><label for="BP"><input id="BP" name="relayState"
+                                                                            type="radio" ng-model="environment.relayState"
+                                                                            value="BP" /> BP</label></span>
           </div>
 
         </div>
