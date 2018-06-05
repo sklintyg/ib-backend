@@ -27,14 +27,17 @@
           </div>
         </div>
 
-        <div ng-repeat="item in vm.model.items" class="flex-grid">
-          <div class="col">
-            <ib-checkbox-wrapper>
-              <input ng-attr-id="notification-item-{{::item.id|ibDomIdFilter}}" type="checkbox" ng-model="item.enabled">
-              <label ng-attr-for="notification-item-{{::item.id|ibDomIdFilter}}">
-                {{::item.label}}
-              </label>
-            </ib-checkbox-wrapper>
+      <ib-bottom-fadeout>
+        <div class="notification-item-list">
+          <div ng-repeat="item in vm.model.items" class="flex-grid">
+            <div class="col">
+              <ib-checkbox-wrapper>
+                <input ng-attr-id="notification-item-{{::item.id|ibDomIdFilter}}" type="checkbox" ng-model="item.enabled">
+                <label ng-attr-for="notification-item-{{::item.id|ibDomIdFilter}}">
+                  {{::item.label}}
+                </label>
+              </ib-checkbox-wrapper>
+            </div>
           </div>
         </div>
 
