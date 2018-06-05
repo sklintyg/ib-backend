@@ -260,8 +260,8 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                     paminnelseSlutdatumUtredningMessage(utredning),
                     utredningUrl(utredning));
 
-            sendNotification(email, SUBJECT_UTREDNING_SLUTDATUM_PAMINNELSE, body);
-            saveNotification(utredning, PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS, VARDENHET);
+            sendNotifiering(email, SUBJECT_UTREDNING_SLUTDATUM_PAMINNELSE, body);
+            saveNotifiering(utredning, PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS, VARDENHET);
 
             LOG.info("Sent notification {} for utredning {}.", PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS, utredning.getUtredningId());
         }
@@ -288,8 +288,8 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                     slutdatumPasseratUtredningMessage(utredning),
                     utredningUrl(utredning));
 
-            sendNotification(email, SUBJECT_UTREDNING_SLUTDATUM_PASSERAT, body);
-            saveNotification(utredning, SLUTDATUM_UTREDNING_PASSERAT, VARDENHET);
+            sendNotifiering(email, SUBJECT_UTREDNING_SLUTDATUM_PASSERAT, body);
+            saveNotifiering(utredning, SLUTDATUM_UTREDNING_PASSERAT, VARDENHET);
 
             LOG.info("Sent notification {} for utredning {}.", SLUTDATUM_UTREDNING_PASSERAT, utredning.getUtredningId());
         }
@@ -310,8 +310,8 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                     slutdatumPasseratUtredningMessage(utredning),
                     utredningUrl(utredning));
 
-            sendNotification(email, SUBJECT_UTREDNING_SLUTDATUM_PASSERAT, body);
-            saveNotification(utredning, SLUTDATUM_UTREDNING_PASSERAT, LANDSTING);
+            sendNotifiering(email, SUBJECT_UTREDNING_SLUTDATUM_PASSERAT, body);
+            saveNotifiering(utredning, SLUTDATUM_UTREDNING_PASSERAT, LANDSTING);
 
             LOG.info("Sent notification {} for utredning {}.", SLUTDATUM_UTREDNING_PASSERAT, utredning.getUtredningId());
         }
