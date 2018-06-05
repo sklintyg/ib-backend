@@ -23,6 +23,7 @@ import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
+import se.inera.intyg.intygsbestallning.auth.model.IbRelayStateType;
 import se.inera.intyg.intygsbestallning.auth.model.IbSelectableHsaEntity;
 import se.inera.intyg.intygsbestallning.auth.model.IbVardenhet;
 import se.inera.intyg.intygsbestallning.auth.model.IbVardgivare;
@@ -35,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 import static se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil.toMap;
+import static se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants.ROLE_BP_VARDADMIN;
 import static se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants.ROLE_FMU_SAMORDNARE;
 import static se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants.ROLE_FMU_VARDADMIN;
 
@@ -60,6 +62,8 @@ public class IbUser extends IntygUser implements Serializable {
     // Handles PDL logging state
     private Map<String, List<PDLActivityEntry>> storedActivities;
 
+    private final IbRelayStateType relayState;
+
     // All known roles. Do NOT expose!!!
     @JsonIgnore
     private List<Role> possibleRoles;
@@ -69,27 +73,23 @@ public class IbUser extends IntygUser implements Serializable {
      */
     public IbUser(String hsaId, String namn) {
         super(hsaId);
+        this.relayState = IbRelayStateType.FMU;
         this.storedActivities = new HashMap<>();
         this.hsaId = hsaId;
         this.namn = namn;
     }
 
     /**
-     * Copy-constructor that takes a populated {@link IntygUser} and booleans for whether the user has given PDL consent
-     * and whether the user has LAKARE privileges.
-     *
-     * The "isLakare" backs the overridden "isLakare()" method, i.e. the IbUser class doesn't derive LAKARE status
-     * from the underlying roles once the isLakare value has been set. This is due to the requirement that LAKARE having
-     * systemRoles for being Rehabkoordinator on one or more care units must be able to "switch" between roles when
-     * changing units without losing the original "isLakare" information. See INTYG-5068.
+     * Copy-constructor that takes a populated {@link IntygUser} and the relayState (eg FMU or BP).
      *
      * @param intygUser
      *            User principal, typically constructed in the
      *            {@link org.springframework.security.saml.userdetails.SAMLUserDetailsService}
      *            implementor.
      */
-    public IbUser(IntygUser intygUser) {
+    public IbUser(IntygUser intygUser, IbRelayStateType relayState) {
         super(intygUser.getHsaId());
+        this.relayState = relayState;
         this.personId = intygUser.getPersonId();
 
         this.namn = intygUser.getNamn();
@@ -133,7 +133,33 @@ public class IbUser extends IntygUser implements Serializable {
     public boolean changeValdVardenhet(String vgOrVeHsaId) {
         Map<String, Role> roleMap = new HashMap<>();
 
-        // FOR IB, we ignore the original HSA VG->VE tree, all authority is managed through the custom systemAuthorities tree.
+        // FOR FMU, we ignore the original HSA VG->VE tree, all authority is managed through the custom systemAuthorities tree.
+        if (this.getRelayState() == IbRelayStateType.FMU) {
+            return changeValdVardenhetForFMU(vgOrVeHsaId, roleMap);
+        } else if (this.getRelayState() == IbRelayStateType.BP) {
+            return changeValdVardenhetForBP(vgOrVeHsaId, roleMap);
+        } else {
+            throw new IllegalStateException("Cannot change vardEnhet, user be in relayState FMU or BP");
+        }
+    }
+
+    private boolean changeValdVardenhetForBP(String vgOrVeHsaId, Map<String, Role> roleMap) {
+        for (IbVardgivare ibVg : systemAuthorities) {
+            for (IbVardenhet ibVardenhet : ibVg.getVardenheter()) {
+                if (ibVardenhet.getId().equalsIgnoreCase(vgOrVeHsaId)) {
+                    this.currentlyLoggedInAt = ibVardenhet;
+                    this.currentRole = selectRole(possibleRoles, ROLE_BP_VARDADMIN);
+                    roleMap.put(currentRole.getName(), currentRole);
+                    this.roles = roleMap;
+                    this.authorities = toMap(currentRole.getPrivileges(), Privilege::getName);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean changeValdVardenhetForFMU(String vgOrVeHsaId, Map<String, Role> roleMap) {
         for (IbVardgivare ibVg : systemAuthorities) {
             if (ibVg.getId().equalsIgnoreCase(vgOrVeHsaId)) {
                 this.currentlyLoggedInAt = ibVg;
@@ -154,7 +180,6 @@ public class IbUser extends IntygUser implements Serializable {
                 }
             }
         }
-
         return false;
     }
 
@@ -244,6 +269,11 @@ public class IbUser extends IntygUser implements Serializable {
     // Do not expose.
     public void setPossibleRoles(List<Role> possibleRoles) {
         this.possibleRoles = possibleRoles;
+    }
+
+    @JsonIgnore
+    public IbRelayStateType getRelayState() {
+        return relayState;
     }
 
     // private scope

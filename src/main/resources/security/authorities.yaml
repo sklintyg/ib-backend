@@ -66,6 +66,7 @@ knownPrivileges:
 knownRoles:
   - &kr010 FMU_VARDADMIN
   - &kr020 FMU_SAMORDNARE
+  - &kr030 BP_VARDADMIN
 
 # ====================================================================================================
 #   Definitioner av ingångar, roller, privilegier, yrkesroller och befattnings-/gruppförskrivarkoder
@@ -158,6 +159,11 @@ roles:
       - *p070 # HANTERA_VARDENHETER_FOR_VARDGIVARE
       - *p100 # AVVISA_EXTERNFORFRAGAN
       - *p110 # ACCEPTERA_EXTERNFORFRAGAN
+  - &r030
+    name: *kr030 # BP_VARDADMIN
+    desc: BP Vårdadministratör
+    privileges:
+      - *p050 # SPARA_VARDENHETPREFERENS
 
 # Legitimerade yrkesroller
 titles:

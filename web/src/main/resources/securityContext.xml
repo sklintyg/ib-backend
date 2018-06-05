@@ -67,7 +67,9 @@
     <property name="logErrors" value="true"/>
   </bean>
 
+  <bean id="relayStateUserDetailsServiceRouter" class="se.inera.intyg.intygsbestallning.auth.RelayStateUserDetailsServiceRouter"/>
   <bean id="ibUserDetailsService" class="se.inera.intyg.intygsbestallning.auth.IbUserDetailsService"/>
+  <bean id="ibBpUserDetailsService" class="se.inera.intyg.intygsbestallning.auth.bp.IbBpUserDetailsService"/>
 
   <!-- Initialization of OpenSAML library-->
   <bean class="org.springframework.security.saml.SAMLBootstrap"/>
@@ -232,7 +234,7 @@
     </bean>
     <bean id="ibAuthenticationProvider"
         class="se.inera.intyg.intygsbestallning.auth.fake.FakeAuthenticationProvider">
-      <property name="userDetails" ref="ibUserDetailsService"/>
+      <property name="userDetails" ref="relayStateUserDetailsServiceRouter"/>
     </bean>
   </beans>
 
@@ -281,7 +283,7 @@
 
 
     <!-- Entry point to initialize authentication, default values taken from properties file -->
-    <bean id="samlEntryPoint" class="org.springframework.security.saml.SAMLEntryPoint">
+    <bean id="samlEntryPoint" class="se.inera.intyg.intygsbestallning.auth.IbSAMLEntryPoint">
       <property name="defaultProfileOptions">
         <bean class="org.springframework.security.saml.websso.WebSSOProfileOptions">
           <property name="includeScoping" value="false"/>
@@ -364,7 +366,7 @@
 
     <!-- SAML Authentication Provider responsible for validating of received SAML messages over SITHS or e-leg -->
     <bean id="samlAuthenticationProvider" class="org.springframework.security.saml.SAMLAuthenticationProvider">
-      <property name="userDetails" ref="ibUserDetailsService"/>
+      <property name="userDetails" ref="relayStateUserDetailsServiceRouter"/>
       <property name="forcePrincipalAsString" value="false"/>
     </bean>
 

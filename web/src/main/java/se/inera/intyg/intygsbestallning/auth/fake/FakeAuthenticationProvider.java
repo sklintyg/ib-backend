@@ -116,7 +116,11 @@ public class FakeAuthenticationProvider extends BaseFakeAuthenticationProvider {
 
         NameID nameId = new NameIDBuilder().buildObject();
         nameId.setValue(token.getCredentials().toString());
-        return new SAMLCredential(nameId, assertion, "fake-idp", "webcert");
+
+        // Builds a SAMLCredential with relayState from the fake auth.
+        SAMLCredential samlCredential = new SAMLCredential(nameId, assertion, "fake-idp",
+                ((FakeCredentials) token.getCredentials()).getRelayState(), new ArrayList<>(), "ib");
+        return samlCredential;
     }
 
 }

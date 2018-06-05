@@ -28,11 +28,13 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.integration.hsa.model.UserCredentials;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
+import se.inera.intyg.infra.security.common.exception.GenericAuthenticationException;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.security.siths.BaseSakerhetstjanstAssertion;
 import se.inera.intyg.infra.security.siths.BaseUserDetailsService;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.exceptions.MissingIBSystemRoleException;
+import se.inera.intyg.intygsbestallning.auth.model.IbRelayStateType;
 import se.inera.intyg.intygsbestallning.auth.model.IbVardenhet;
 import se.inera.intyg.intygsbestallning.auth.model.IbVardgivare;
 import se.inera.intyg.intygsbestallning.auth.util.SystemRolesParser;
@@ -55,6 +57,15 @@ public class IbUserDetailsService extends BaseUserDetailsService implements SAML
     @Autowired
     private AnvandarPreferenceRepository anvandarPreferenceRepository;
 
+    @Override
+    public Object loadUserBySAML(SAMLCredential credential) {
+        if (credential == null) {
+            throw new GenericAuthenticationException("SAMLCredential has not been set.");
+        }
+        LOG.info("ENTER - loadUserBySAML with relayState " + credential.getRelayState());
+        return super.loadUserBySAML(credential);
+    }
+
 
     // =====================================================================================
     // ~ Protected scope
@@ -62,9 +73,9 @@ public class IbUserDetailsService extends BaseUserDetailsService implements SAML
 
     @Override
     protected IbUser buildUserPrincipal(SAMLCredential credential) {
-        // All rehab customization is done in the overridden decorateXXX methods, so just return a new rehabuser
+        // All IB customization is done in the overridden decorateXXX methods, so just return a new IbUSer
         IntygUser intygUser = super.buildUserPrincipal(credential);
-        IbUser ibUser = new IbUser(intygUser);
+        IbUser ibUser = new IbUser(intygUser, IbRelayStateType.FMU);
 
         ibUser.setPossibleRoles(commonAuthoritiesResolver.getRoles());
         buildSystemAuthoritiesTree(ibUser);
@@ -74,6 +85,21 @@ public class IbUserDetailsService extends BaseUserDetailsService implements SAML
         }
 
         // If only a single possible entity to select as loggedInAt exists, do that...
+        tryToSelectHsaEntity(ibUser);
+
+        return ibUser;
+    }
+
+    /**
+     * Determines if there is exactly one possible "hsa unit" to log on to. If true, then automatically select the
+     * unit which also sets the Role for the user.
+     *
+     * If there is more than one possible unit/caregiver to select, nothing is selected which will force a manual
+     * selection through filter check and redirect.
+     *
+     * May be overridden by subclasses providing Bestallningportal specific functionality.
+     */
+    protected void tryToSelectHsaEntity(IbUser ibUser) {
         int count = 0;
         for (IbVardgivare vg : ibUser.getSystemAuthorities()) {
             if (vg.isSamordnare()) {
@@ -94,8 +120,6 @@ public class IbUserDetailsService extends BaseUserDetailsService implements SAML
             }
             ibUser.changeValdVardenhet(oneAndOnly);
         }
-
-        return ibUser;
     }
 
     /**
@@ -125,7 +149,7 @@ public class IbUserDetailsService extends BaseUserDetailsService implements SAML
      * and assigns it to the user principal. Is based on the vardgivare and systemRoles so those must
      * have been populated prior to calling this method.
      *
-     * @param user
+     * May be overridden by subclasses providing authorization mechanisms for Bestallningsportalen.
      */
     public void buildSystemAuthoritiesTree(IbUser user) {
 
