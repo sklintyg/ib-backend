@@ -32,4 +32,5 @@ public final class NotifieringMailSubjectConstants {
     public static final String SUBJECT_UTREDNING_SLUTDATUM_PAMINNELSE = "Påminnelse: Slutdatum för en utredning är på väg att passeras";
     public static final String SUBJECT_UTREDNING_SLUTDATUM_PASSERAT = "Slutdatum för en utredningen har passerats";
     public static final String SUBJECT_AVVIKELSE_RAPPORTERAD_AV_VARDEN = "En vårdenhet har rapporterat en avvikelse";
+    public static final String SUBJECT_AVVIKELSE_MOTTAGEN_FRAN_FK = "Försäkringskassan har rapporterat en avvikelse";
 }
