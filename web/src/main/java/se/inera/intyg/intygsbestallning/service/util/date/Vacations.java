@@ -18,32 +18,29 @@
  */
 package se.inera.intyg.intygsbestallning.service.util.date;
 
+import static java.time.DayOfWeek.MONDAY;
+import static java.time.DayOfWeek.SATURDAY;
+import static java.time.DayOfWeek.SUNDAY;
+import static se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil.toLocalDateFromDateType;
+
 import com.google.common.base.Splitter;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.inera.intyg.intygsbestallning.common.util.LocalDateUtil;
-
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static java.time.DayOfWeek.MONDAY;
-import static java.time.DayOfWeek.SATURDAY;
-import static java.time.DayOfWeek.SUNDAY;
+import se.inera.intyg.intygsbestallning.common.util.LocalDateUtil;
 
 /**
  * @author Magnus Ekstrand on 2018-04-26.
  */
 // CHECKSTYLE:OFF MagicNumber
 public final class Vacations {
-
-    public static final String VACATION_DATE_FORMAT = "yyyyMMdd";
 
     private static final Logger LOG = LoggerFactory.getLogger(Vacations.class);
 
@@ -124,8 +121,8 @@ public final class Vacations {
         // Check that ranges are of the same type and lowRange < highRange
 
         if (isDate(lowRange) && isDate(highRange)) {
-            LocalDate low = LocalDate.parse(lowRange, DateTimeFormatter.ofPattern(VACATION_DATE_FORMAT));
-            LocalDate high = LocalDate.parse(highRange, DateTimeFormatter.ofPattern(VACATION_DATE_FORMAT));
+            LocalDate low = toLocalDateFromDateType(lowRange);
+            LocalDate high = toLocalDateFromDateType(highRange);
             if (high.isBefore(low)) {
                 LocalDate tmp = low;
                 low = high;
@@ -162,7 +159,7 @@ public final class Vacations {
         if (isWeek(value)) {
             output.addAll(week(Integer.parseInt(value)));
         } else if (isDate(value)) {
-            output.add(LocalDate.parse(value, DateTimeFormatter.ofPattern(VACATION_DATE_FORMAT)));
+            output.add(toLocalDateFromDateType(value));
         } else {
             LOG.debug("Cannot parse vacation value. It's neither week nor date: " + value);
         }
@@ -201,7 +198,7 @@ public final class Vacations {
 
     private static boolean isDate(String str) {
         try {
-            LocalDate.parse(str, DateTimeFormatter.ofPattern(VACATION_DATE_FORMAT));
+            toLocalDateFromDateType(str);
             return true;
         } catch (DateTimeParseException e) {
             return false;

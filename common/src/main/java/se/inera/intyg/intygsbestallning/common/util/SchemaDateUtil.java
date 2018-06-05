@@ -38,7 +38,15 @@ public final class SchemaDateUtil {
         return LocalDate.parse(dateType, DATE_TIME_FORMATTER).atStartOfDay();
     }
 
+    public static LocalDate toLocalDateFromDateType(final String dateType) {
+        return toLocalDateTimeFromDateType(dateType).toLocalDate();
+    }
+
     public static String toStringFromLocalDateTime(final LocalDateTime localDateTime) {
         return DATE_TIME_FORMATTER.format(localDateTime);
+    }
+
+    public static String toStringFromLocalDate(final LocalDate localDate) {
+        return DATE_TIME_FORMATTER.format(localDate);
     }
 }

@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
+import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
 import se.inera.intyg.intygsbestallning.web.BaseRestIntegrationTest;
 
 import java.time.LocalDate;
@@ -63,7 +64,7 @@ public class RequestUpdateOrderIT extends BaseRestIntegrationTest {
         Integer utredningId = body.jsonPath().get("entity.utredningId");
         requestTemplate.add("data",
                 new RequestUpdateOrder("" + utredningId, "Detta är en kommentar",
-                        LocalDate.now().plusDays(25).format(DateTimeFormatter.ofPattern("yyyyMMdd")),
+                        SchemaDateUtil.toStringFromLocalDate(LocalDate.now().plusDays(25)),
                         true,
                         "sv",
                         true,

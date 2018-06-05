@@ -25,9 +25,8 @@ import se.riv.intygsbestallning.certificate.order.updateassessment.v1.UpdateAsse
 import se.riv.intygsbestallning.certificate.order.updateassessment.v1.rivtabp21.UpdateAssessmentResponderInterface;
 import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
 import se.riv.intygsbestallning.certificate.order.v1.ResultType;
-
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
 
 public class UpdateAssessmentStub implements UpdateAssessmentResponderInterface {
 
@@ -39,7 +38,7 @@ public class UpdateAssessmentStub implements UpdateAssessmentResponderInterface 
 
         LOG.info("UpdateAssessmentStub received request");
         UpdateAssessmentResponseType response = new UpdateAssessmentResponseType();
-        response.setLastDateForCertificateReceival(LocalDateTime.now().plusDays(DAYS).format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+        response.setLastDateForCertificateReceival(SchemaDateUtil.toStringFromLocalDateTime(LocalDateTime.now().plusDays(DAYS)));
         ResultType rt = new ResultType();
         rt.setResultCode(ResultCodeType.OK);
         response.setResult(rt);
