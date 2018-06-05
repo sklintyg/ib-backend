@@ -23,12 +23,9 @@ import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListUtredningRequest;
-
-import java.util.List;
 
 public interface UtredningService {
 
@@ -50,16 +47,6 @@ public interface UtredningService {
      * @return
      */
     GetUtredningResponse getExternForfragan(Long utredningId, String landstingHsaId);
-
-    /**
-     * Gets all the {@link se.inera.intyg.intygsbestallning.persistence.model.InternForfragan} for the unit with HSA-id
-     * vardenhetHsaId.
-     *
-     * @param vardenhetHsaId
-     *            the HSA-id of the unit
-     * @return a list of the InternForfragan represented as a {@link InternForfraganListItem}
-     */
-    List<InternForfraganListItem> findForfragningarForVardenhetHsaId(String vardenhetHsaId);
 
     /**
      * Handles the new incomming order for FMU.

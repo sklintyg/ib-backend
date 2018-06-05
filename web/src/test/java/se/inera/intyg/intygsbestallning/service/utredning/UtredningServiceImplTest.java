@@ -48,7 +48,6 @@ import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItemFactory;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItemFactory;
@@ -58,7 +57,6 @@ import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType
 import javax.xml.ws.WebServiceException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -128,30 +126,30 @@ public class UtredningServiceImplTest {
     private ArgumentCaptor<Utredning> argumentCaptor;
 
 
-    @Test
-    public void findForfragningarForVardenhetHsaId() {
-        final String enhetId = "enhet";
-        final Long utredningId = 1L;
-        // Almost bare minimum, converting is not in the scope of utredningService
-        Utredning utr = anUtredning()
-                .withUtredningsTyp(AFU)
-                .withUtredningId(utredningId)
-                .withExternForfragan(anExternForfragan()
-                        .withInternForfraganList(ImmutableList.of(
-                                anInternForfragan()
-                                        .withVardenhetHsaId(enhetId)
-                                        .build()))
-                        .build())
-                .build();
-        when(utredningRepository.findAllByExternForfragan_InternForfraganList_VardenhetHsaId(enhetId)).thenReturn(ImmutableList.of(utr));
-
-        List<InternForfraganListItem> response = utredningService.findForfragningarForVardenhetHsaId(enhetId);
-
-        assertNotNull(response);
-        assertEquals(1, response.size());
-        assertEquals(AFU.name(), response.get(0).getUtredningsTyp());
-        assertEquals(utredningId, response.get(0).getUtredningsId());
-    }
+//    @Test
+//    public void findForfragningarForVardenhetHsaId() {
+//        final String enhetId = "enhet";
+//        final Long utredningId = 1L;
+//        // Almost bare minimum, converting is not in the scope of utredningService
+//        Utredning utr = anUtredning()
+//                .withUtredningsTyp(AFU)
+//                .withUtredningId(utredningId)
+//                .withExternForfragan(anExternForfragan()
+//                        .withInternForfraganList(ImmutableList.of(
+//                                anInternForfragan()
+//                                        .withVardenhetHsaId(enhetId)
+//                                        .build()))
+//                        .build())
+//                .build();
+//        when(utredningRepository.findAllByExternForfragan_InternForfraganList_VardenhetHsaId(enhetId)).thenReturn(ImmutableList.of(utr));
+//
+//        List<InternForfraganListItem> response = utredningService.findForfragningarForVardenhetHsaId(enhetId);
+//
+//        assertNotNull(response);
+//        assertEquals(1, response.size());
+//        assertEquals(AFU.name(), response.get(0).getUtredningsTyp());
+//        assertEquals(utredningId, response.get(0).getUtredningsId());
+//    }
 
     @Test
     public void registerOrder() {

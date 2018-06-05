@@ -18,24 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.repository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static se.inera.intyg.intygsbestallning.persistence.model.SkickadNotifiering.SkickadNotifieringBuilder.aSkickadNotifiering;
-import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildAnteckning;
-import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildBesok;
-import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildBestallning;
-import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildBetalning;
-import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildExternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildHandelse;
-import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildHandlaggare;
-import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildHandling;
-import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildIntyg;
-import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildInvanare;
-import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildUtredning;
-
 import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,10 +28,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigDev;
 import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigTest;
 import se.inera.intyg.intygsbestallning.persistence.model.Anteckning;
@@ -77,6 +55,29 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static se.inera.intyg.intygsbestallning.persistence.model.SkickadNotifiering.SkickadNotifieringBuilder.aSkickadNotifiering;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildAnteckning;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildBesok;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildBestallning;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildBetalning;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildExternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildHandelse;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildHandlaggare;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildHandling;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildIntyg;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildInvanare;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildUtredning;
 
 /**
  * Created by eriklupander on 2015-08-05.
@@ -266,22 +267,6 @@ public class UtredningRepositoryTest {
 
         utr.setArkiverad(false);
         response = utredningRepository.findAllByExternForfragan_InternForfraganList_VardenhetHsaId_AndArkiveradFalse(VE_HSA_ID);
-        assertNotNull(response);
-        assertEquals(1, response.size());
-    }
-
-    @Test
-    public void testFindInternalForfraganByVardenhet() {
-
-        Utredning utr = buildUtredning();
-        utr.setBestallning(buildBestallning());
-        utr.setExternForfragan(buildExternForfragan());
-
-        List<Utredning> response = utredningRepository.findAllByExternForfragan_InternForfraganList_VardenhetHsaId(VE_HSA_ID);
-        assertNotNull(response);
-        assertTrue(response.isEmpty());
-        utredningRepository.save(utr);
-        response = utredningRepository.findAllByExternForfragan_InternForfraganList_VardenhetHsaId(VE_HSA_ID);
         assertNotNull(response);
         assertEquals(1, response.size());
     }

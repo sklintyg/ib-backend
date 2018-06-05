@@ -31,7 +31,6 @@ import java.util.Optional;
 //CHECKSTYLE:OFF MethodName
 //CHECKSTYLE:OFF LineLength
 public interface UtredningRepository extends JpaRepository<Utredning, Long> {
-    List<Utredning> findAllByExternForfragan_InternForfraganList_VardenhetHsaId(String vardenhetHsaId);
 
     /**
      * Variant query that filters out any Utredningar that are in a closed state.
@@ -51,7 +50,8 @@ public interface UtredningRepository extends JpaRepository<Utredning, Long> {
 
     List<Utredning> findAllByExternForfragan_LandstingHsaId(String landstingHsaId);
 
-    List<Utredning> findByExternForfragan_LandstingHsaId_AndArkiveradFalse(String landstingHsaId);
+    @Query("SELECT u FROM Utredning u JOIN FETCH u.externForfragan ef LEFT JOIN FETCH ef.internForfraganList ifl LEFT JOIN FETCH ifl.forfraganSvar fs LEFT JOIN FETCH u.bestallning b LEFT JOIN FETCH u.invanare inv LEFT JOIN FETCH u.handlaggare h LEFT JOIN FETCH u.betalning bet WHERE u.arkiverad = false AND ef.landstingHsaId = :landstingHsaId")
+    List<Utredning> findByExternForfragan_LandstingHsaId_AndArkiveradFalse(@Param("landstingHsaId") String landstingHsaId);
 
 
     /**
