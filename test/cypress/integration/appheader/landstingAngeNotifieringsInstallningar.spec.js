@@ -1,4 +1,4 @@
-describe('Vårdadmin ange standardinställningar', function() {
+describe('Landstindssamordanre ange notifieringsinställningar', function() {
     beforeEach(() => {
         cy.fixture('appheader/updated-enhets-settings-linkoping.json').as('updatedSettings');
 });
@@ -18,7 +18,7 @@ describe('Vårdadmin ange standardinställningar', function() {
 
             cy.get('#notification-item-NY_EXTERNFORFRAGAN').should('be.checked');
             cy.get('#notification-item-NY_EXTERNFORFRAGAN').click();
-            cy.get(saveButtonId).should('be.enabled');
+            cy.get(saveButtonId).should('not.be.enabled');
             cy.get('#epost_input').type('{selectall}invalidemail');
             cy.get(saveButtonId).should('not.be.enabled');
             cy.get('#epost_input').type('{selectall}example@example.com');
