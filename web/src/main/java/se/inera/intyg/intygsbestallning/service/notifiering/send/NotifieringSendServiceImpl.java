@@ -104,7 +104,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                 landstingNyExternforfraganMessage(),
                 externForfraganUrl(utredning));
 
-        sendNotification(email, SUBJECT_NY_FMU_EXTERN_FORFRAGAN, body);
+        sendNotifiering(email, SUBJECT_NY_FMU_EXTERN_FORFRAGAN, body);
     }
 
     @Override
@@ -119,7 +119,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                 vardenhetNyInternforfraganMessage(internForfragan),
                 internForfraganUrl(utredning));
 
-        sendNotification(internForfragan.getForfraganSvar().getUtforareEpost(), SUBJECT_NY_FMU_EXTERN_FORFRAGAN, body);
+        sendNotifiering(internForfragan.getForfraganSvar().getUtforareEpost(), SUBJECT_NY_FMU_EXTERN_FORFRAGAN, body);
     }
 
     @Override
@@ -164,7 +164,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                 nyBestallningMessage(utredning),
                 utredningUrl(utredning));
 
-        sendNotification(email, SUBJECT_BESTALLNING_AV_FRORSAKRINGSMEDICINSK_UTREDNING, body);
+        sendNotifiering(email, SUBJECT_BESTALLNING_AV_FRORSAKRINGSMEDICINSK_UTREDNING, body);
     }
 
     @Override
@@ -184,7 +184,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                 uppdateradBestallningMessage(utredning),
                 utredningUrl(utredning));
 
-        sendNotification(email, SUBJECT_BESTALLNING_UPPDATERAD, body);
+        sendNotifiering(email, SUBJECT_BESTALLNING_UPPDATERAD, body);
     }
 
     @Override
@@ -199,8 +199,8 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                     avvikelseRapporteradAvVardenMessage(utredning, besok),
                     utredningUrl(utredning));
 
-            sendNotification(email, SUBJECT_AVVIKELSE_RAPPORTERAD_AV_VARDEN, body);
-            saveNotification(utredning, AVVIKELSE_RAPPORTERAD_AV_VARDEN, LANDSTING);
+            sendNotifiering(email, SUBJECT_AVVIKELSE_RAPPORTERAD_AV_VARDEN, body);
+            saveNotifiering(utredning, AVVIKELSE_RAPPORTERAD_AV_VARDEN, LANDSTING);
         }
     }
 
@@ -216,8 +216,8 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                     avvikelseRapporteradAvVardenMessage(utredning, besok),
                     utredningUrl(utredning));
 
-            sendNotification(email, SUBJECT_AVVIKELSE_MOTTAGEN_FRAN_FK, body);
-            saveNotification(utredning, AVVIKELSE_MOTTAGEN_AV_FK, VARDENHET);
+            sendNotifiering(email, SUBJECT_AVVIKELSE_MOTTAGEN_FRAN_FK, body);
+            saveNotifiering(utredning, AVVIKELSE_MOTTAGEN_AV_FK, VARDENHET);
         }
     }
 
@@ -250,7 +250,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                 paminnelseSlutdatumUtredningMessage(utredning),
                 utredningUrl(utredning));
 
-        sendNotification(email, SUBJECT_UTREDNING_SLUTDATUM_PAMINNELSE, body);
+        sendNotifiering(email, SUBJECT_UTREDNING_SLUTDATUM_PAMINNELSE, body);
     }
 
     @Override
@@ -267,7 +267,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                 slutdatumPasseratUtredningMessage(utredning),
                 utredningUrl(utredning));
 
-        sendNotification(email, SUBJECT_UTREDNING_SLUTDATUM_PASSERAT, body);
+        sendNotifiering(email, SUBJECT_UTREDNING_SLUTDATUM_PASSERAT, body);
     }
 
     @Override
@@ -300,7 +300,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
         throw new NotImplementedException();
     }
 
-    private void saveNotification(
+    private void saveNotifiering(
             final Utredning utredning,
             final NotifieringTyp typ,
             final NotifieringMottagarTyp mottagare) {
@@ -314,7 +314,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
         utredningRepository.save(utredning);
     }
 
-    private void sendNotification(String emailAddress, String subject, String body) {
+    private void sendNotifiering(String emailAddress, String subject, String body) {
         try {
             mailService.sendNotificationToUnit(emailAddress, subject, body);
         } catch (MessagingException e) {
