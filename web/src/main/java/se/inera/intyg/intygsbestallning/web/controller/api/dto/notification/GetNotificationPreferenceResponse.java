@@ -50,11 +50,9 @@ public class GetNotificationPreferenceResponse {
     }
 
     public boolean isEnabled(final NotifieringTyp notifieringTyp, NotifieringMottagarTyp mottagarTyp) {
-
-
         return mottagarTyp.equals(VARDENHET)
-                ? isNotEmpty(landstingEpost) && items.stream().anyMatch(item -> item.getId().equals(notifieringTyp.getLabel()))
-                : items.stream().anyMatch(item -> item.getId().equals(notifieringTyp.getLabel()));
+                ? items.stream().anyMatch(item -> item.getId().equals(notifieringTyp.getId()))
+                : isNotEmpty(landstingEpost) && items.stream().anyMatch(item -> item.getId().equals(notifieringTyp.getLabel()));
     }
 
     public static GetNotificationPreferenceResponse from(
