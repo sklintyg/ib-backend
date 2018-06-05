@@ -19,6 +19,9 @@
 package se.inera.intyg.intygsbestallning.web.controller.api.dto.notification;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp.ALL;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp.LANDSTING;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp.VARDENHET;
 
 import com.google.common.base.Strings;
 import java.util.List;
@@ -46,8 +49,12 @@ public class GetNotificationPreferenceResponse {
         this.items = items;
     }
 
-    public boolean isEnabled(final NotifieringTyp typ) {
-        return isNotEmpty(landstingEpost) && items.stream().anyMatch(item -> item.getId().equals(typ.getLabel()));
+    public boolean isEnabled(final NotifieringTyp notifieringTyp, NotifieringMottagarTyp mottagarTyp) {
+
+
+        return mottagarTyp.equals(VARDENHET)
+                ? isNotEmpty(landstingEpost) && items.stream().anyMatch(item -> item.getId().equals(notifieringTyp.getLabel()))
+                : items.stream().anyMatch(item -> item.getId().equals(notifieringTyp.getLabel()));
     }
 
     public static GetNotificationPreferenceResponse from(
@@ -79,11 +86,11 @@ public class GetNotificationPreferenceResponse {
     public static boolean recipientFilter(NotifieringTyp notifieringTyp, SelectableHsaEntityType hsaEntityType) {
         switch (hsaEntityType) {
             case VE:
-                return notifieringTyp.getNotifieringMottagarTyp().equals(NotifieringMottagarTyp.ALL)
-                        || notifieringTyp.getNotifieringMottagarTyp().equals(NotifieringMottagarTyp.VARDENHET);
+                return notifieringTyp.getNotifieringMottagarTyp().equals(ALL)
+                        || notifieringTyp.getNotifieringMottagarTyp().equals(VARDENHET);
             case VG:
-                return notifieringTyp.getNotifieringMottagarTyp().equals(NotifieringMottagarTyp.ALL)
-                        || notifieringTyp.getNotifieringMottagarTyp().equals(NotifieringMottagarTyp.LANDSTING);
+                return notifieringTyp.getNotifieringMottagarTyp().equals(ALL)
+                        || notifieringTyp.getNotifieringMottagarTyp().equals(LANDSTING);
         }
         throw new IllegalArgumentException("Unhandled SelectableHsaEntityType " + hsaEntityType);
     }
