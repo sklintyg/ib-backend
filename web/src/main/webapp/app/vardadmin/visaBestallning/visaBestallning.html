@@ -5,121 +5,115 @@
 
   <div class="ib-workarea-hflex-container centered-constrained-content upper-margin"
        id="edit-{{bestallning.bestallning.Id}}">
-    <uib-tabset active="active">
+    <uib-tabset active="active" class="flex-column">
       <uib-tab index="0" heading="Beställning" ng-click="setActive(0)">
-        <div class="bottom-fadeout-gradient ib-color-27">
-          <div>
-            <div class="whitebox"></div>
-            <div id="ib-content-container" class="ib-workarea-utredning container-fluid edit-form top-corner">
-
-              <div ng-hide="viewState.error.key">
-                <ib-spinner label="info.loadingintyg" show-spinner="vm.loading">
-                  <div id="bestallning. class=" row bestallning.>
-                    <div class="bestallning-body">
-                      <card>
-                        <h3>Beställning</h3>
-                        <card-body>
-                          <h4>Utredningstyp</h4>
-                          <card-value>
-                            {{bestallning.utredningsTyp.label}}
-                          </card-value>
-                          <h4>Datum</h4>
-                          <card-table>
-                            <table class="table table-striped ib-table-striped">
-                              <tr>
-                                <th>Beställningsdatum</th>
-                                <th>Slutdatum utlåtande</th>
-                                <th>Slutdatum komplettering</th>
-                              </tr>
-                              <tr>
-                                <td>{{bestallning.inkomDatum}}</td>
-                                <td>{{bestallning.intygSistaDatum}}</td>
-                                <td>{{bestallning.intygSistaDatumKomplettering}}</td>
-                              </tr>
-                            </table>
-                          </card-table>
-                          <h4>Avslutsvillkor</h4>
-                          <card-table>
-                            <table class="table table-striped ib-table-striped">
-                              <tr>
-                                <th>Avslutsdatum</th>
-                                <th>Ersätts</th>
-                                <th>Orsak</th>
-                              </tr>
-                              <tr>
-                                <td>{{bestallning.avbrutenDatum}}</td>
-                                <td>{{bestallning.ersatts}}</td>
-                                <td>{{bestallning.avbrutenAnledning}}</td>
-                              </tr>
-                            </table>
-                          </card-table>
-                        </card-body>
-                      </card>
-                      <card>
-                        <h3>Invånare</h3>
-                        <card-body>
-                          <h4>Personnummer/Samordningsnummer</h4>
-                          <card-value>
-                            {{bestallning.invanare.personId}}
-                          </card-value>
-                          <h4>Namn</h4>
-                          <card-value>
-                            {{bestallning.invanare.name}}
-                          </card-value>
-                          <h4>Kön</h4>
-                          <card-value ng-switch="bestallning.invanare.gender">
-                            <span ng-switch-when="F">Kvinna</span>
-                            <span ng-switch-when="M">Man</span>
-                          </card-value>
-                          <h4>Behov av tolk</h4>
-                          <card-value>
-                            {{bestallning.behovTolk}}<br>
-                            {{bestallning.tolkSprak}}
-                          </card-value>
-                          <h4>Särskilda behov</h4>
-                          <card-value>
-                            {{bestallning.invanare.sarskildaBehov}}
-                          </card-value>
-                        </card-body>
-                      </card>
-                      <card>
-                        <h3>Meddelande</h3>
-                        <card-body>
-                          <h4>Meddelande från handläggare</h4>
-                          <card-table>
-                            <table class="table table-striped ib-table-striped">
-                              <tr>
-                                <th>Datum</th>
-                                <th>Meddelande</th>
-                              </tr>
-                              <tr>
-                                <td>{{bestallning.inkomDatum}}</td>
-                                <td>{{bestallning.meddelandeFromHandlaggare}}</td>
-                              </tr>
-                            </table>
-                          </card-table>
-                        </card-body>
-                      </card>
-                      <card>
-                        <h3>Handläggare</h3>
-                        <card-body>
-                          <h4>Kontaktuppgifter</h4>
-                          <card-value>
-                            {{bestallning.handlaggareNamn}}<br>
-                            {{bestallning.handlaggareTelefonnummer}}<br>
-                            {{bestallning.handlaggareEpost}}
-                          </card-value>
-                        </card-body>
-                      </card>
-                    </div>
-                  </div>
-                </ib-spinner>
+        <div class="whitebox"></div>
+        <div id="ib-content-container" class="ib-workarea-utredning container-fluid edit-form top-corner">
+          <div ng-hide="viewState.error.key">
+            <ib-spinner label="info.loadingintyg" show-spinner="vm.loading">
+              <div id="bestallning" class="bestallning">
+                <div class="bestallning-body">
+                  <card>
+                    <h3>Beställning</h3>
+                    <card-body>
+                      <h4>Utredningstyp</h4>
+                      <card-value>
+                        {{bestallning.utredningsTyp.label}}
+                      </card-value>
+                      <h4>Datum</h4>
+                      <card-table>
+                        <table class="table table-striped ib-table-striped">
+                          <tr>
+                            <th>Beställningsdatum</th>
+                            <th>Slutdatum utlåtande</th>
+                            <th>Slutdatum komplettering</th>
+                          </tr>
+                          <tr>
+                            <td>{{bestallning.inkomDatum}}</td>
+                            <td>{{bestallning.intygSistaDatum}}</td>
+                            <td>{{bestallning.intygSistaDatumKomplettering}}</td>
+                          </tr>
+                        </table>
+                      </card-table>
+                      <h4>Avslutsvillkor</h4>
+                      <card-table>
+                        <table class="table table-striped ib-table-striped">
+                          <tr>
+                            <th>Avslutsdatum</th>
+                            <th>Ersätts</th>
+                            <th>Orsak</th>
+                          </tr>
+                          <tr>
+                            <td>{{bestallning.avbrutenDatum}}</td>
+                            <td>{{bestallning.ersatts}}</td>
+                            <td>{{bestallning.avbrutenAnledning}}</td>
+                          </tr>
+                        </table>
+                      </card-table>
+                    </card-body>
+                  </card>
+                  <card>
+                    <h3>Invånare</h3>
+                    <card-body>
+                      <h4>Personnummer/Samordningsnummer</h4>
+                      <card-value>
+                        {{bestallning.invanare.personId}}
+                      </card-value>
+                      <h4>Namn</h4>
+                      <card-value>
+                        {{bestallning.invanare.name}}
+                      </card-value>
+                      <h4>Kön</h4>
+                      <card-value ng-switch="bestallning.invanare.gender">
+                        <span ng-switch-when="F">Kvinna</span>
+                        <span ng-switch-when="M">Man</span>
+                      </card-value>
+                      <h4>Behov av tolk</h4>
+                      <card-value>
+                        {{bestallning.behovTolk}}<br>
+                        {{bestallning.tolkSprak}}
+                      </card-value>
+                      <h4>Särskilda behov</h4>
+                      <card-value>
+                        {{bestallning.invanare.sarskildaBehov}}
+                      </card-value>
+                    </card-body>
+                  </card>
+                  <card>
+                    <h3>Meddelande</h3>
+                    <card-body>
+                      <h4>Meddelande från handläggare</h4>
+                      <card-table>
+                        <table class="table table-striped ib-table-striped">
+                          <tr>
+                            <th>Datum</th>
+                            <th>Meddelande</th>
+                          </tr>
+                          <tr>
+                            <td>{{bestallning.inkomDatum}}</td>
+                            <td>{{bestallning.meddelandeFromHandlaggare}}</td>
+                          </tr>
+                        </table>
+                      </card-table>
+                    </card-body>
+                  </card>
+                  <card>
+                    <h3>Handläggare</h3>
+                    <card-body>
+                      <h4>Kontaktuppgifter</h4>
+                      <card-value>
+                        {{bestallning.handlaggareNamn}}<br>
+                        {{bestallning.handlaggareTelefonnummer}}<br>
+                        {{bestallning.handlaggareEpost}}
+                      </card-value>
+                    </card-body>
+                  </card>
+                </div>
               </div>
-            </div>
-
+            </ib-spinner>
           </div>
-
         </div>
+
       </uib-tab>
 
       <uib-tab index="1" heading="Besök och avvikelser" ng-click="setActive(1)">
