@@ -55,7 +55,7 @@ public interface NotifieringSendService {
 
     void notifieraLandstingAvslutadUtredning(Utredning utredning);
 
-    void notifieraVardenehtPaminnelseSlutdatumUtredning(Utredning utredning);
+    void notifieraVardenhetPaminnelseSlutdatumUtredning(Utredning utredning);
 
     void notifieraVardenhetSlutdatumPasseratUtredning(Utredning utredning);
 

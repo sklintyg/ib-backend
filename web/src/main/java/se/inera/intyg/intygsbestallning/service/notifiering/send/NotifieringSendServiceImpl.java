@@ -18,15 +18,45 @@
  */
 package se.inera.intyg.intygsbestallning.service.notifiering.send;
 
+import com.google.common.base.Strings;
+import org.apache.commons.lang.NotImplementedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
+import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.persistence.model.Besok;
+import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
+import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp;
+import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
+import se.inera.intyg.intygsbestallning.service.mail.MailService;
+import se.inera.intyg.intygsbestallning.service.notifiering.preferens.NotifieringPreferenceService;
+import se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailBodyFactory;
+import se.inera.intyg.intygsbestallning.service.vardenhet.VardenhetService;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.notification.GetNotificationPreferenceResponse;
+
+import javax.mail.MessagingException;
+import java.lang.invoke.MethodHandles;
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+
 import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType.VE;
+import static se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType.VG;
 import static se.inera.intyg.intygsbestallning.persistence.model.SkickadNotifiering.SkickadNotifieringBuilder.aSkickadNotifiering;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp.LANDSTING;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp.VARDENHET;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.AVVIKELSE_MOTTAGEN_AV_FK;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.AVVIKELSE_RAPPORTERAD_AV_VARDEN;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.SLUTDATUM_UTREDNING_PASSERAT;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.UPPDATERAD_BESTALLNING;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.avvikelseRapporteradAvVardenMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.externForfraganUrl;
@@ -45,38 +75,11 @@ import static se.inera.intyg.intygsbestallning.service.notifiering.util.Notifier
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_NY_FMU_EXTERN_FORFRAGAN;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_UTREDNING_SLUTDATUM_PAMINNELSE;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_UTREDNING_SLUTDATUM_PASSERAT;
-
-import com.google.common.base.Strings;
-import org.apache.commons.lang.NotImplementedException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import javax.mail.MessagingException;
-import java.lang.invoke.MethodHandles;
-import java.text.MessageFormat;
-import java.time.LocalDateTime;
-import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
-import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
-import se.inera.intyg.intygsbestallning.persistence.model.Besok;
-import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
-import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
-import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp;
-import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
-import se.inera.intyg.intygsbestallning.service.mail.MailService;
-import se.inera.intyg.intygsbestallning.service.notifiering.preferens.NotifieringPreferenceService;
-import se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailBodyFactory;
-import se.inera.intyg.intygsbestallning.service.vardenhet.VardenhetService;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.notification.GetNotificationPreferenceResponse;
-
 @Service
 @Transactional
 public class NotifieringSendServiceImpl implements NotifieringSendService {
 
-    private final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     @Autowired
     private MailService mailService;
@@ -237,7 +240,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
     }
 
     @Override
-    public void notifieraVardenehtPaminnelseSlutdatumUtredning(Utredning utredning) {
+    public void notifieraVardenhetPaminnelseSlutdatumUtredning(Utredning utredning) {
         verifyHasBestallning(utredning, "Cannot send notification for slutdatum pa vag passeras when "
                 + "there is no Bestallning.");
 
@@ -245,12 +248,23 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
         verifyBestallningHasVardenhet(vardenhetHsaId, "Cannot send notification for slutdatum pa vag passeras "
                 + "when the Bestallning contains no vardenhetHsaId.");
 
-        String email = vardenhetService.getVardEnhetPreference(vardenhetHsaId).getEpost();
-        String body = notifieringMailBodyFactory.buildBodyForUtredning(
-                paminnelseSlutdatumUtredningMessage(utredning),
-                utredningUrl(utredning));
+        final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(vardenhetHsaId, VE);
 
-        sendNotifiering(email, SUBJECT_UTREDNING_SLUTDATUM_PAMINNELSE, body);
+        if (preferens.isEnabled(NotifieringTyp.SLUTDATUM_UTREDNING_PASSERAT, NotifieringMottagarTyp.VARDENHET)) {
+            String email = vardenhetService.getVardEnhetPreference(vardenhetHsaId).getEpost();
+            if (Strings.isNullOrEmpty(email)) {
+                return;
+            }
+
+            String body = notifieringMailBodyFactory.buildBodyForUtredning(
+                    paminnelseSlutdatumUtredningMessage(utredning),
+                    utredningUrl(utredning));
+
+            sendNotification(email, SUBJECT_UTREDNING_SLUTDATUM_PAMINNELSE, body);
+            saveNotification(utredning, PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS, VARDENHET);
+
+            LOG.info("Sent notification {} for utredning {}.", PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS, utredning.getUtredningId());
+        }
     }
 
     @Override
@@ -262,17 +276,45 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
         verifyBestallningHasVardenhet(vardenhetHsaId, "Cannot send notification for slutdatum passerat when "
                 + "the Bestallning contains no vardenhetHsaId.");
 
-        String email = vardenhetService.getVardEnhetPreference(vardenhetHsaId).getEpost();
-        String body = notifieringMailBodyFactory.buildBodyForUtredning(
-                slutdatumPasseratUtredningMessage(utredning),
-                utredningUrl(utredning));
+        final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(vardenhetHsaId, VE);
 
-        sendNotifiering(email, SUBJECT_UTREDNING_SLUTDATUM_PASSERAT, body);
+        if (preferens.isEnabled(NotifieringTyp.SLUTDATUM_UTREDNING_PASSERAT, NotifieringMottagarTyp.VARDENHET)) {
+            String email = vardenhetService.getVardEnhetPreference(vardenhetHsaId).getEpost();
+            if (Strings.isNullOrEmpty(email)) {
+                return;
+            }
+
+            String body = notifieringMailBodyFactory.buildBodyForUtredning(
+                    slutdatumPasseratUtredningMessage(utredning),
+                    utredningUrl(utredning));
+
+            sendNotification(email, SUBJECT_UTREDNING_SLUTDATUM_PASSERAT, body);
+            saveNotification(utredning, SLUTDATUM_UTREDNING_PASSERAT, VARDENHET);
+
+            LOG.info("Sent notification {} for utredning {}.", SLUTDATUM_UTREDNING_PASSERAT, utredning.getUtredningId());
+        }
     }
 
     @Override
     public void notifieraLandstingSlutdatumPasseratUtredning(Utredning utredning) {
-        throw new NotImplementedException();
+        String vardgivareHsaId = utredning.getExternForfragan().getLandstingHsaId();
+        final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(vardgivareHsaId, VG);
+
+        if (preferens.isEnabled(NotifieringTyp.SLUTDATUM_UTREDNING_PASSERAT, NotifieringMottagarTyp.LANDSTING)) {
+            String email = preferens.getLandstingEpost();
+            if (Strings.isNullOrEmpty(email)) {
+                return;
+            }
+
+            String body = notifieringMailBodyFactory.buildBodyForUtredning(
+                    slutdatumPasseratUtredningMessage(utredning),
+                    utredningUrl(utredning));
+
+            sendNotification(email, SUBJECT_UTREDNING_SLUTDATUM_PASSERAT, body);
+            saveNotification(utredning, SLUTDATUM_UTREDNING_PASSERAT, LANDSTING);
+
+            LOG.info("Sent notification {} for utredning {}.", SLUTDATUM_UTREDNING_PASSERAT, utredning.getUtredningId());
+        }
     }
 
     @Override
@@ -305,6 +347,10 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
             final NotifieringTyp typ,
             final NotifieringMottagarTyp mottagare) {
 
+        if (mottagare == NotifieringMottagarTyp.ALL) {
+            throw new IllegalArgumentException("Do not save a sent notification for mottagare ALL");
+        }
+
         utredning.getSkickadNotifieringList().add(aSkickadNotifiering()
                 .withSkickad(LocalDateTime.now())
                 .withTyp(typ)
@@ -318,7 +364,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
         try {
             mailService.sendNotificationToUnit(emailAddress, subject, body);
         } catch (MessagingException e) {
-            log.error("Error sending notification by email: {}", e.getMessage());
+            LOG.error("Error sending notification by email: {}", e.getMessage());
         }
     }
 

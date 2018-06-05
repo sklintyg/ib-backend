@@ -834,6 +834,7 @@
             <column name="TYP"/>
         </createIndex>
     </changeSet>
+
     <changeSet id="4" author="mc">
         <createTable tableName="NOTIFIERING_PREFERENCE">
 

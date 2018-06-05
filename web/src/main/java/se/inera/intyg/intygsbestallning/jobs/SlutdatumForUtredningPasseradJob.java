@@ -18,8 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.jobs;
 
-import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.SLUTDATUM_UTREDNING_PASSERAT;
-
 import net.javacrumbs.shedlock.core.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,13 +25,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import se.inera.intyg.intygsbestallning.persistence.model.SkickadNotifiering;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
+import se.inera.intyg.intygsbestallning.service.notifiering.preferens.NotifieringPreferenceService;
 import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.SLUTDATUM_UTREDNING_PASSERAT;
 
 @Component
 @Transactional
@@ -41,7 +42,7 @@ public class SlutdatumForUtredningPasseradJob {
 
     private static final Logger LOG = LoggerFactory.getLogger(SlutdatumForUtredningPasseradJob.class);
 
-    private static final long LOCK_AT_MOST = 20000L;
+    private static final long LOCK_AT_MOST = 60000L;
     private static final String JOB_NAME = "slutdatumForUtredningPasseradJob";
 
     @Autowired
@@ -50,21 +51,28 @@ public class SlutdatumForUtredningPasseradJob {
     @Autowired
     private NotifieringSendService notifieringSendService;
 
+    @Autowired
+    private NotifieringPreferenceService notifieringPreferenceService;
+
     @Scheduled(cron = "${job.slutdatum.utredning.passerad.cron}")
     @SchedulerLock(name = JOB_NAME, lockAtMostFor = LOCK_AT_MOST)
     public void executeJob() {
-        List<Utredning> utredningList = utredningRepository.findNonNotifiedSlutDatumBefore(LocalDate.now().atStartOfDay(),
-                SLUTDATUM_UTREDNING_PASSERAT);
 
-        for (Utredning utredning : utredningList) {
+        // To vardenhet
+        List<Utredning> nonNotifiedForVardenhet = utredningRepository.findNonNotifiedSlutDatumBefore(LocalDate.now().atStartOfDay(),
+                SLUTDATUM_UTREDNING_PASSERAT, NotifieringMottagarTyp.VARDENHET);
+
+        for (Utredning utredning : nonNotifiedForVardenhet) {
             notifieringSendService.notifieraVardenhetSlutdatumPasseratUtredning(utredning);
+        }
+
+        // To landsting
+        List<Utredning> nonNotifiedForLandsting = utredningRepository.findNonNotifiedSlutDatumBefore(LocalDate.now().atStartOfDay(),
+                SLUTDATUM_UTREDNING_PASSERAT, NotifieringMottagarTyp.LANDSTING);
+
+        for (Utredning utredning : nonNotifiedForLandsting) {
             notifieringSendService.notifieraLandstingSlutdatumPasseratUtredning(utredning);
-            utredning.getSkickadNotifieringList().add(SkickadNotifiering.SkickadNotifieringBuilder.aSkickadNotifiering()
-                    .withSkickad(LocalDateTime.now())
-                    .withTyp(SLUTDATUM_UTREDNING_PASSERAT)
-                    .build());
-            utredningRepository.save(utredning);
-            LOG.info("Sent notification {} for utredning {}.", SLUTDATUM_UTREDNING_PASSERAT, utredning.getUtredningId());
         }
     }
+
 }

@@ -51,6 +51,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.KallelseFormTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
@@ -343,7 +344,8 @@ public class UtredningRepositoryTest {
         List<Utredning> utredningList = utredningRepository.findNonNotifiedIntygSlutDatumBetween(
                 LocalDate.now().atStartOfDay(),
                 LocalDate.now().plusDays(3L).atStartOfDay(),
-                NotifieringTyp.PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS);
+                NotifieringTyp.PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS,
+                NotifieringMottagarTyp.VARDENHET);
         assertEquals(1, utredningList.size());
     }
 
@@ -360,7 +362,8 @@ public class UtredningRepositoryTest {
         List<Utredning> utredningList = utredningRepository.findNonNotifiedIntygSlutDatumBetween(
                 LocalDate.now().plusDays(3L).atStartOfDay(),
                 LocalDate.now().plusDays(5L).atStartOfDay(),
-                NotifieringTyp.PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS);
+                NotifieringTyp.PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS,
+                NotifieringMottagarTyp.VARDENHET);
         assertEquals(0, utredningList.size());
     }
 
@@ -382,7 +385,8 @@ public class UtredningRepositoryTest {
         List<Utredning> utredningList = utredningRepository.findNonNotifiedIntygSlutDatumBetween(
                 LocalDate.now().atStartOfDay(),
                 LocalDate.now().plusDays(3L).atStartOfDay(),
-                NotifieringTyp.PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS);
+                NotifieringTyp.PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS,
+                NotifieringMottagarTyp.VARDENHET);
         assertEquals(0, utredningList.size());
     }
 
@@ -399,7 +403,8 @@ public class UtredningRepositoryTest {
 
         List<Utredning> utredningList = utredningRepository.findNonNotifiedSlutDatumBefore(
                 LocalDate.now().atStartOfDay(),
-                NotifieringTyp.SLUTDATUM_UTREDNING_PASSERAT);
+                NotifieringTyp.SLUTDATUM_UTREDNING_PASSERAT,
+                NotifieringMottagarTyp.VARDENHET);
         assertEquals(1, utredningList.size());
     }
 
@@ -409,7 +414,7 @@ public class UtredningRepositoryTest {
         utr.setBestallning(buildBestallning());
         utr.getSkickadNotifieringList().add(aSkickadNotifiering()
                 .withTyp(NotifieringTyp.SLUTDATUM_UTREDNING_PASSERAT)
-                .withMottagare(NotifieringTyp.SLUTDATUM_UTREDNING_PASSERAT.getNotifieringMottagarTyp())
+                .withMottagare(NotifieringMottagarTyp.VARDENHET)
                 .withSkickad(LocalDateTime.now())
                 .build());
         Intyg intyg = buildIntyg();
@@ -421,7 +426,8 @@ public class UtredningRepositoryTest {
 
         List<Utredning> utredningList = utredningRepository.findNonNotifiedSlutDatumBefore(
                 LocalDate.now().atStartOfDay(),
-                NotifieringTyp.SLUTDATUM_UTREDNING_PASSERAT);
+                NotifieringTyp.SLUTDATUM_UTREDNING_PASSERAT,
+                NotifieringMottagarTyp.VARDENHET);
         assertEquals(0, utredningList.size());
     }
 }

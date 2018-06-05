@@ -18,9 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.jobs;
 
-import static se.inera.intyg.intygsbestallning.persistence.model.SkickadNotifiering.SkickadNotifieringBuilder.aSkickadNotifiering;
-import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS;
-
 import net.javacrumbs.shedlock.core.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,16 +26,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS;
 
 @Component
 @Transactional
@@ -72,7 +72,8 @@ public class PaminnelseSlutdatumForUtredningPasserasJob {
 
         // Find all Utredningar having slutDatum pretty soon that has not gotten the specified notification.
         List<Utredning> utredningList = utredningRepository.findNonNotifiedIntygSlutDatumBetween(
-                LocalDate.now().atStartOfDay(), notifyIfBefore.atStartOfDay(), PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS);
+                LocalDate.now().atStartOfDay(), notifyIfBefore.atStartOfDay(), PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS,
+                NotifieringMottagarTyp.VARDENHET);
 
         for (Utredning utredning : utredningList) {
             UtredningStatus utredningStatus = utredningStatusResolver.resolveStatus(utredning);
@@ -81,13 +82,7 @@ public class PaminnelseSlutdatumForUtredningPasserasJob {
                     || utredningStatus.getUtredningFas() == UtredningFas.AVSLUTAD) {
                 continue;
             }
-            notifieringSendService.notifieraVardenehtPaminnelseSlutdatumUtredning(utredning);
-            utredning.getSkickadNotifieringList().add(aSkickadNotifiering()
-                    .withSkickad(LocalDateTime.now())
-                    .withTyp(PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS)
-                    .build());
-            utredningRepository.save(utredning);
-            LOG.info("Sent notification {} for utredning {}.", PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS, utredning.getUtredningId());
+            notifieringSendService.notifieraVardenhetPaminnelseSlutdatumUtredning(utredning);
         }
     }
 }

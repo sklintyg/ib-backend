@@ -18,13 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.job;
 
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.powermock.api.mockito.PowerMockito.when;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,15 +26,13 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
 import se.inera.intyg.intygsbestallning.jobs.PaminnelseSlutdatumForUtredningPasserasJob;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
@@ -50,6 +41,17 @@ import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
 import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
+
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PaminnelseSlutdatumForUtredningPasserasJobTest {
@@ -75,19 +77,21 @@ public class PaminnelseSlutdatumForUtredningPasserasJobTest {
     public void testJobNotifiesWhenNotNotified() {
         Utredning utredning = TestDataGen.createUtredning();
         utredning.getIntygList().get(0).setSistaDatum(LocalDateTime.now().plusDays(3L));
-        when(utredningRepository.findNonNotifiedIntygSlutDatumBetween(any(LocalDateTime.class), any(LocalDateTime.class), any(NotifieringTyp.class)))
-                .thenReturn(Arrays.asList(utredning));
+        when(utredningRepository.findNonNotifiedIntygSlutDatumBetween(any(LocalDateTime.class), any(LocalDateTime.class),
+                any(NotifieringTyp.class), any(NotifieringMottagarTyp.class)))
+                        .thenReturn(Arrays.asList(utredning));
 
         testee.executeJob();
-        verify(notifieringSendService, times(1)).notifieraVardenehtPaminnelseSlutdatumUtredning(any(Utredning.class));
+        verify(notifieringSendService, times(1)).notifieraVardenhetPaminnelseSlutdatumUtredning(any(Utredning.class));
     }
 
     @Test
     public void testJobDoesNotNotifyWhenAlreadyNotified() {
         Utredning utredning = TestDataGen.createUtredning();
         utredning.getIntygList().get(0).setSistaDatum(LocalDateTime.now().plusDays(3L));
-        when(utredningRepository.findNonNotifiedIntygSlutDatumBetween(any(LocalDateTime.class), any(LocalDateTime.class), any(NotifieringTyp.class)))
-                .thenReturn(Collections.emptyList());
+        when(utredningRepository.findNonNotifiedIntygSlutDatumBetween(any(LocalDateTime.class), any(LocalDateTime.class),
+                any(NotifieringTyp.class), any(NotifieringMottagarTyp.class)))
+                        .thenReturn(Collections.emptyList());
 
         testee.executeJob();
         verifyZeroInteractions(notifieringSendService);
@@ -115,8 +119,9 @@ public class PaminnelseSlutdatumForUtredningPasserasJobTest {
         if (utredningStatus != UtredningStatus.REDOVISA_TOLK) {
             fail("Test setup must provide a Utredning in status REDOVISA_TOLK");
         }
-        when(utredningRepository.findNonNotifiedIntygSlutDatumBetween(any(LocalDateTime.class), any(LocalDateTime.class), any(NotifieringTyp.class)))
-                .thenReturn(Arrays.asList(utredning));
+        when(utredningRepository.findNonNotifiedIntygSlutDatumBetween(any(LocalDateTime.class), any(LocalDateTime.class),
+                any(NotifieringTyp.class), any(NotifieringMottagarTyp.class)))
+                        .thenReturn(Arrays.asList(utredning));
 
         testee.executeJob();
         verifyZeroInteractions(notifieringSendService);
