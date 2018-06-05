@@ -18,17 +18,15 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-
+import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import org.hamcrest.Matchers;
 import org.junit.Test;
-
-import com.jayway.restassured.RestAssured;
-
 import se.inera.intyg.intygsbestallning.web.BaseRestIntegrationTest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.VardenhetPreferenceRequest;
+
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 
 /**
  * Created by marced on 2018-04-24.
@@ -63,9 +61,12 @@ public class VardenhetControllerIT extends BaseRestIntegrationTest {
         given().contentType(ContentType.JSON).body(request).expect().statusCode(OK).when().put(VARDENHET_API_ENDPOINT + "/preference")
                 .then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/ib-vardenhet-preference-response-schema.json"))
-                .body("mottagarNamn", Matchers.is(request.getMottagarNamn())).body("adress", Matchers.is(request.getAdress()))
-                .body("postnummer", Matchers.is(request.getPostnummer())).body("postort", Matchers.is(request.getPostort()))
-                .body("telefonnummer", Matchers.is(request.getTelefonnummer())).body("epost", Matchers.is(request.getEpost()));
+                .body("mottagarNamn", Matchers.is(request.getMottagarNamn()))
+                .body("adress", Matchers.is(request.getAdress()))
+                .body("postnummer", Matchers.is(request.getPostnummer()))
+                .body("postort", Matchers.is(request.getPostort()))
+                .body("telefonnummer", Matchers.is(request.getTelefonnummer()))
+                .body("epost", Matchers.is(request.getEpost()));
 
         // reset all properties and save again
 
@@ -73,9 +74,12 @@ public class VardenhetControllerIT extends BaseRestIntegrationTest {
                 .put(VARDENHET_API_ENDPOINT + "/preference")
                 .then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/ib-vardenhet-preference-response-schema.json"))
-                .body("mottagarNamn", Matchers.isEmptyOrNullString()).body("adress", Matchers.isEmptyOrNullString())
-                .body("postnummer", Matchers.isEmptyOrNullString()).body("postort", Matchers.isEmptyOrNullString())
-                .body("telefonnummer", Matchers.isEmptyOrNullString()).body("epost", Matchers.isEmptyOrNullString());
+                .body("mottagarNamn", Matchers.isEmptyOrNullString())
+                .body("adress", Matchers.isEmptyOrNullString())
+                .body("postnummer", Matchers.isEmptyOrNullString())
+                .body("postort", Matchers.isEmptyOrNullString())
+                .body("telefonnummer", Matchers.isEmptyOrNullString())
+                .body("epost", Matchers.isEmptyOrNullString());
     }
 
 }

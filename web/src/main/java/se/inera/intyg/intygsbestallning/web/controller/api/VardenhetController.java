@@ -87,6 +87,7 @@ public class VardenhetController {
     @GetMapping(path = "/preference/svar", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<VardenhetPreferenceResponse> getSvarPreferenceForVardenhet() {
         IbUser user = userService.getUser();
+        ensureUpdateAllowed(user);
 
         return ResponseEntity.ok(vardenhetService.getVardEnhetPreference(user.getCurrentlyLoggedInAt().getId()));
     }
