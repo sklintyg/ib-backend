@@ -22,7 +22,6 @@ import org.springframework.stereotype.Component;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.stateresolver.ErsattsResolver;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 
 import java.time.format.DateTimeFormatter;
@@ -33,7 +32,6 @@ import static java.util.Objects.nonNull;
 @Component
 public class AvslutadBestallningListItemFactory {
 
-    private UtredningStatusResolver utredningStatusResolver = new UtredningStatusResolver();
     private BusinessDaysBean businessDays;
 
     public AvslutadBestallningListItemFactory(final BusinessDaysBean businessDays) {
@@ -45,7 +43,7 @@ public class AvslutadBestallningListItemFactory {
         return AvslutadBestallningListItem.AvslutadBestallningListItemBuilder.anAvslutadBestallningListItem()
                 .withUtredningsId(utredning.getUtredningId())
                 .withUtredningsTyp(utredning.getUtredningsTyp().name())
-                .withStatus(utredningStatusResolver.resolveStatus(utredning))
+                .withStatus(utredning.getStatus())
                 .withVardgivareHsaId(utredning.getExternForfragan().getLandstingHsaId())
                 .withVardgivareNamn("Enriched later")
                 .withAvslutsDatum(resolveAvslutsDatum(utredning))

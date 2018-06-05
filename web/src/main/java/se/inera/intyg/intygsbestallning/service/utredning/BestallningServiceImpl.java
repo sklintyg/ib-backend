@@ -36,12 +36,13 @@ import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Betalning;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.patient.PatientNameEnricher;
 import se.inera.intyg.intygsbestallning.service.pdl.LogService;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PdlLogType;
-import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
+import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.util.GenericComparator;
 import se.inera.intyg.intygsbestallning.service.util.PagingUtil;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
@@ -280,6 +281,7 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
         start = System.currentTimeMillis();
         List<BestallningListItem> bestallningListItems = jpaList
                 .stream()
+                .filter(u -> u.getStatus().getUtredningFas() != UtredningFas.AVSLUTAD)
                 .map(u -> bestallningListItemFactory.from(u, Actor.VARDADMIN))
                 .collect(Collectors.toList());
         LOG.info("bestallningListItemFactory ::from took {} ms", (System.currentTimeMillis() - start));

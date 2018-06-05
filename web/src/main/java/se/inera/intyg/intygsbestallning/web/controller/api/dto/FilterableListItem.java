@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 
 public interface FilterableListItem {
     String getSlutdatumFas();

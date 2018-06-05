@@ -22,7 +22,7 @@ import com.google.common.base.Strings;
 import org.springframework.data.util.Pair;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
-import se.inera.intyg.intygsbestallning.service.stateresolver.SortableLabel;
+import se.inera.intyg.intygsbestallning.persistence.model.status.SortableLabel;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

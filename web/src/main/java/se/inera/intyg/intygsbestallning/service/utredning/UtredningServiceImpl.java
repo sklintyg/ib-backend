@@ -45,10 +45,10 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.MyndighetTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
 import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
-import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
+import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.util.GenericComparator;
 import se.inera.intyg.intygsbestallning.service.util.PagingUtil;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
@@ -139,6 +139,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         // then finally paging.
         start = System.currentTimeMillis();
         List<UtredningListItem> filtered = list.stream()
+                .filter(uli -> uli.getStatus().getUtredningFas() != UtredningFas.AVSLUTAD)
                 .filter(uli -> buildFasPredicate(uli, request.getFas()))
                 .filter(uli -> buildStatusPredicate(uli, request.getStatus(), statusToFilterStatus))
                 .filter(uli -> buildToFromPredicateForUtredningar(uli, request.getFromDate(), request.getToDate()))

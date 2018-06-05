@@ -22,11 +22,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.service.stateresolver.Actor;
+import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.stateresolver.SlutDatumFasResolver;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningFas;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatus;
-import se.inera.intyg.intygsbestallning.service.stateresolver.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 
 import java.time.LocalDate;
@@ -47,15 +46,13 @@ public class UtredningListItemFactory {
 
     private BusinessDaysBean businessDays;
 
-    private UtredningStatusResolver utredningStatusResolver = new UtredningStatusResolver();
-
     public UtredningListItemFactory(final BusinessDaysBean businessDays) {
         this.businessDays = businessDays;
     }
 
     public UtredningListItem from(Utredning utredning) {
 
-        UtredningStatus utredningStatus = utredningStatusResolver.resolveStatus(utredning);
+        UtredningStatus utredningStatus = utredning.getStatus(); //utredningStatusResolver.resolveStatus(utredning);
 
         Optional<LocalDateTime> slutdatumFas = SlutDatumFasResolver.resolveSlutDatumFas(utredning, utredningStatus);
         return UtredningListItem.UtredningListItemBuilder.anUtredningListItem()
