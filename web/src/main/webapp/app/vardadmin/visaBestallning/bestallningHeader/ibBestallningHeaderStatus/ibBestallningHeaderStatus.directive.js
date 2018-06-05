@@ -24,7 +24,7 @@ angular.module('ibApp').directive('ibBestallningHeaderStatus',
             restrict: 'E',
             scope: {
                 bestallning: '=',
-                bestallningViewState: '='
+                intygViewState: '='
             },
             templateUrl: '/app/vardadmin/visaBestallning/bestallningHeader/ibBestallningHeaderStatus/ibBestallningHeaderStatus.directive.html',
             link: function() {

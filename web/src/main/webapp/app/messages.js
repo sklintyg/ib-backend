@@ -115,7 +115,10 @@ var ibMessages = {
         // Registrera mottagen handling modal
         'registrera-mottagen-handling.label.info': 'Här anges datumet för när handlingarna mottogs. Detta datum visas inte för Försäkringskassan utan är till för vården att kunna följa händelser kring utredningen.\n' +
         '\n' + 'Avser handlingar som tillhör beställningen.',
-        'registrera-mottagen-handling.mottagetdatum': 'Datum för mottagande',
+
+        // Registrera skickat utlåtande modal
+        'registrera-skickat-utlatande.label.info': 'Här anges datumet för när utlåtande skickades. Detta datum visas inte för Försäkringskassan utan är till för vården att kunna följa händelser kring utredningen.',
+
 
         //Registrerade vårdenheter
         'hantera-enheter.label.table.vardenheter.column.namn': 'Namn',

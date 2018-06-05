@@ -1,16 +1,18 @@
 <div class="white-space-no-wrap">
-  <button ng-if="correctFasId()"
-          type="button"
-          id="registreraMottagenBtn"
-          class="btn btn-primary"
-          ng-click="registerReceivedAction()"
-          ng-disabled="status()">
-    <i class="material-icons">move_to_inbox</i> Registrera mottagen handling
-  </button>
-  <button type="button"
-          id="registreraSkickat"
-          class="btn btn-primary"
-          ng-click="registerSent()">
-    <i class="material-icons">reply</i> Registrera skickat utlåtande
-  </button>
+    <button ng-if="correctFasId()"
+            type="button"
+            id="registreraMottagenBtn"
+            class="btn btn-primary"
+            ng-click="registerReceivedAction()"
+            ng-disabled="statusReceived()">
+        <i class="material-icons">move_to_inbox</i> Registrera mottagen handling
+    </button>
+    <button ng-if="correctFasId()"
+            type="button"
+            id="registreraSkickat"
+            class="btn btn-primary"
+            ng-click="registerSent()"
+            ng-disabled="statusSent()">
+        <i class="material-icons">reply</i> Registrera skickat utlåtande
+    </button>
 </div>

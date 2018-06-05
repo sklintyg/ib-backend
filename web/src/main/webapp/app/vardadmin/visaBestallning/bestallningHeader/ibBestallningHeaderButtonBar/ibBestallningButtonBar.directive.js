@@ -33,13 +33,21 @@ angular.module('ibApp').directive('ibBestallningButtonBar',
                     acceptInProgress: false
                 };
 
-                $scope.status = function () {
+                $scope.statusReceived = function () {
                     if ($scope.bestallning.status.id === 'BESTALLNING_MOTTAGEN' ||
                         $scope.bestallning.status.id === 'VANTAR_PA_HANDLINGAR' ||
                         $scope.bestallning.status.id === 'UPPDATERA_BESTALLNING') {
                         return false;
                     }
                     return true;
+                };
+
+                $scope.statusSent = function () {
+                    if ($scope.bestallning.status.id === 'UTLATANDE_SKICKAT' ||
+                        $scope.bestallning.status.id === 'UTLATANDE_MOTTAGET') {
+                        return true;
+                    }
+                    return false;
                 };
 
                 $scope.correctFasId = function () {
@@ -59,12 +67,27 @@ angular.module('ibApp').directive('ibBestallningButtonBar',
                             bestallning: $scope.bestallning
                         }
                     });
-                    //angular > 1.5 warns if promise rejection is not handled (e.g backdrop-click == rejection)
-                    modalInstance.result.catch(function () {}); //jshint ignore:line
 
-                    modalInstance.result.then(function() {
+                    modalInstance.result.then(function () {
                         $state.reload();
-                    }, function() {
+                    }, function () {
+
+                    });
+                };
+                $scope.registerSent = function () {
+                    var modalInstance = $uibModal.open({
+                        templateUrl: '/app/vardadmin/visaBestallning/bestallningHeader/ibBestallningHeaderButtonBar/registreraSkickatUtlatande/' +
+                        'registreraSkickatUtlatande.modal.html',
+                        size: 'md',
+                        controller: 'RegistreraSkickatUtlatandeModalCtrl',
+                        resolve: {
+                            bestallning: $scope.bestallning
+                        }
+                    });
+ 
+                    modalInstance.result.then(function () {
+                        $state.reload();
+                    }, function () {
 
                     });
                 };
