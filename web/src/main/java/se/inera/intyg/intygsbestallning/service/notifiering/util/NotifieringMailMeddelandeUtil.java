@@ -54,6 +54,13 @@ public final class NotifieringMailMeddelandeUtil {
                 internForfragan.getVardenhetHsaId());
     }
 
+    public static String landstingSamtligaInternForfraganBesvaradeforfraganMessage(final Utredning utredning) {
+        return MessageFormat.format(
+                "Samtliga vårdenheter som har tagit emot förfrågan om ett genomföra en försäkringsmedicinsk "
+                + "utredning (FMU) har svarat i utredning {0}",
+                utredning.getUtredningId());
+    }
+
     public static String nyBestallningMessage(final Utredning utredning) {
         return MessageFormat.format(
                 "Försäkringskassan har skickat en beställning av en Försäkringsmedicinsk utredning (FMU) för utredning {0}",

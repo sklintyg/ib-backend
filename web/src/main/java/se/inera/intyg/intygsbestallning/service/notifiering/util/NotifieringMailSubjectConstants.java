@@ -28,6 +28,7 @@ public final class NotifieringMailSubjectConstants {
     public static final String SUBJECT_BESTALLNING_UPPDATERAD = "Försäkringskassan har uppdaterat en beställning";
     public static final String SUBJECT_BESTALLNING_AV_FRORSAKRINGSMEDICINSK_UTREDNING = "Beställning av Försäkringsmedicinsk utredning";
     public static final String SUBJECT_NY_FMU_EXTERN_FORFRAGAN = "Ny FMU förfragan";
+    public static final String SUBJECT_SAMTLIGA_INTERNFORFRAGAN_BESVARATS = "Tilldela FMU utredning";
     public static final String SUBJECT_NY_FMU_INERN_FORFRAGAN = "Ny FMU förfragan";
     public static final String SUBJECT_UTREDNING_SLUTDATUM_PAMINNELSE = "Påminnelse: Slutdatum för en utredning är på väg att passeras";
     public static final String SUBJECT_UTREDNING_SLUTDATUM_PASSERAT = "Slutdatum för en utredningen har passerats";

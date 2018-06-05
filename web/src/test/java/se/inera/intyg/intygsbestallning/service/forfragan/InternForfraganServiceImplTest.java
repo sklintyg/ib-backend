@@ -23,6 +23,8 @@ import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
@@ -62,6 +64,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.InternForfraganRepository;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
+import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
 import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
@@ -93,6 +96,9 @@ public class InternForfraganServiceImplTest {
 
     @Mock
     private UtredningService utredningService;
+
+    @Mock
+    private NotifieringSendService notifieringSendService;
 
     @Mock
     private MyndighetIntegrationService myndighetIntegrationService;
@@ -618,7 +624,7 @@ public class InternForfraganServiceImplTest {
         String vardenhetId1 = "vardenhetHsaId1";
         String vardenhetId1Namn = "vardenhetHsaId1Namn";
         String userName = "Anvandare1";
-        when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
+        Utredning utredningMock = anUtredning()
                 .withUtredningId(utredningId)
                 .withUtredningsTyp(AFU)
                 .withExternForfragan(anExternForfragan()
@@ -628,8 +634,9 @@ public class InternForfraganServiceImplTest {
                                 .withVardenhetHsaId(vardenhetId1)
                                 .build()))
                         .build())
-                .build()));
-
+                .build();
+        when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(utredningMock));
+        doNothing().when(notifieringSendService).notifieraLandstingSamtligaVardenheterHarSvaratPaInternforfragan(utredningMock);
         when(internForfraganRepository.save(any(InternForfragan.class))).thenAnswer(
                 invocation -> invocation.getArgument(0));
         when(organizationUnitService.getVardenhet(vardenhetId1)).thenReturn(new Vardenhet(vardenhetId1, vardenhetId1Namn));
@@ -642,6 +649,7 @@ public class InternForfraganServiceImplTest {
 
         assertNotNull(result);
         assertEquals("Utforarnamn", result.getUtforareNamn());
+        verify(notifieringSendService, times(1)).notifieraLandstingSamtligaVardenheterHarSvaratPaInternforfragan(any(Utredning.class));
     }
 
     private ForfraganSvarRequest buildValidInternForfraganSvarRequest(Long internForfraganId) {
