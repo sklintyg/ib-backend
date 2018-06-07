@@ -24,6 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType;
 import se.inera.intyg.intygsbestallning.persistence.model.NotifieringPreference;
 import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp;
@@ -35,6 +37,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.notification.SetN
  * Created by marced on 2018-05-31.
  */
 @Service
+@Transactional
 public class NotifieringPreferenceServiceImpl implements NotifieringPreferenceService {
 
     @Autowired

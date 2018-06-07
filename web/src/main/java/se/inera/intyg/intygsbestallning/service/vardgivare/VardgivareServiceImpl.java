@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
@@ -47,6 +48,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class VardgivareServiceImpl extends BaseUtredningService implements VardgivareService {
 
     private static final Logger LOG = LoggerFactory.getLogger(VardgivareService.class);

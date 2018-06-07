@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.intygsbestallning.persistence.model.VardenhetPreference;
@@ -33,6 +34,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.Vardenh
  * Created by marced on 2018-04-23.
  */
 @Service
+@Transactional
 public class VardenhetServiceImpl implements VardenhetService {
 
     @Autowired
