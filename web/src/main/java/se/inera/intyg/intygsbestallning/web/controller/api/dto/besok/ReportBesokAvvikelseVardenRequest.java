@@ -21,13 +21,16 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto.besok;
 
 import se.inera.intyg.intygsbestallning.persistence.model.type.AvvikelseOrsak;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 public final class ReportBesokAvvikelseVardenRequest {
 
     private String besokId;
-    private String avvikelseId;
     private AvvikelseOrsak orsakatAv;
     private String beskrivning;
-    private String tidpunkt;
+    private LocalDate datum;
+    private LocalTime tid;
     private Boolean invanareUteblev;
 
     public String getBesokId() {
@@ -36,14 +39,6 @@ public final class ReportBesokAvvikelseVardenRequest {
 
     public void setBesokId(String besokId) {
         this.besokId = besokId;
-    }
-
-    public String getAvvikelseId() {
-        return avvikelseId;
-    }
-
-    public void setAvvikelseId(String avvikelseId) {
-        this.avvikelseId = avvikelseId;
     }
 
     public AvvikelseOrsak getOrsakatAv() {
@@ -62,12 +57,20 @@ public final class ReportBesokAvvikelseVardenRequest {
         this.beskrivning = beskrivning;
     }
 
-    public String getTidpunkt() {
-        return tidpunkt;
+    public LocalDate getDatum() {
+        return datum;
     }
 
-    public void setTidpunkt(String tidpunkt) {
-        this.tidpunkt = tidpunkt;
+    public void setDatum(LocalDate datum) {
+        this.datum = datum;
+    }
+
+    public LocalTime getTid() {
+        return tid;
+    }
+
+    public void setTid(LocalTime tid) {
+        this.tid = tid;
     }
 
     public Boolean getInvanareUteblev() {

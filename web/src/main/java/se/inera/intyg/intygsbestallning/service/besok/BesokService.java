@@ -19,8 +19,8 @@
 package se.inera.intyg.intygsbestallning.service.besok;
 
 import se.inera.intyg.intygsbestallning.persistence.model.Avvikelse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokResponse;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
 
 import java.time.LocalDate;

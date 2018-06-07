@@ -69,11 +69,12 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
 import se.inera.intyg.intygsbestallning.service.pdl.LogService;
+import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PdlLogType;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.ServiceTestUtil;
 import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokRequest;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -492,6 +493,8 @@ public class BesokServiceImplTest {
 
         verify(myndighetIntegrationService, times(1))
                 .reportDeviation(any(ReportDeviationRequestDto.class));
+
+        verify(logService, times(1)).log(any(PDLLoggable.class), eq(PdlLogType.AVVIKELSE_RAPPORTERAD));
     }
 
     @Test
@@ -519,6 +522,33 @@ public class BesokServiceImplTest {
         assertThatThrownBy(() -> besokService.reportBesokAvvikelse(request))
                 .isExactlyInstanceOf(IbServiceException.class)
                 .hasMessage(MessageFormat.format("Utredning with id {0} is in an incorrect state.", utredning.getUtredningId()));
+    }
+
+    @Test
+    public void testReportBesokAvvikelseRapporteradIncorrectVardenhet() {
+        when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
+
+        Utredning utredning = createUtredningForBesokTest();
+        utredning.getBestallning().get().setTilldeladVardenhetHsaId("AnnanVardenhet");
+        doReturn(Optional.of(utredning))
+                .when(utredningRepository)
+                .findByBesokList_Id(eq(BESOK_ID));
+
+        final ReportBesokAvvikelseRequest request = aReportBesokAvvikelseRequest()
+                .withBesokId(1L)
+                .withOrsakatAv(AvvikelseOrsak.PATIENT)
+                .withBeskrivning("beskrivning")
+                .withTidpunkt(DATE_TIME)
+                .withSamordnare("Sam Ordnare")
+                .withHandelseTyp(HandelseTyp.AVVIKELSE_RAPPORTERAD)
+                .build();
+
+        assertThatThrownBy(() -> besokService.reportBesokAvvikelse(request))
+                .isExactlyInstanceOf(IbAuthorizationException.class)
+                .hasMessage(MessageFormat.format("User is currently logged in at careunit-1 and is not tilldelad to bestallning for utredning with id {0}", utredning.getUtredningId()));
+
+        verify(myndighetIntegrationService, times(0))
+                .reportDeviation(any(ReportDeviationRequestDto.class));
     }
 
     private Utredning createUtredningForBesokTest() {

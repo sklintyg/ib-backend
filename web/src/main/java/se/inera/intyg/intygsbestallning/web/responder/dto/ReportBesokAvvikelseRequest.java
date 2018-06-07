@@ -30,7 +30,6 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.ReportBesok
 import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.ReportDeviationType;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -40,7 +39,6 @@ import static se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvi
 public final class ReportBesokAvvikelseRequest {
 
     private Long besokId;
-    private Long avvikelseId;
     private AvvikelseOrsak orsakatAv;
     private String beskrivning;
     private LocalDateTime tidpunkt;
@@ -50,14 +48,6 @@ public final class ReportBesokAvvikelseRequest {
 
     public Long getBesokId() {
         return besokId;
-    }
-
-    public void setAvvikelseId(Long avvikelseId) {
-        this.avvikelseId = avvikelseId;
-    }
-
-    public Long getAvvikelseId() {
-        return avvikelseId;
     }
 
     public AvvikelseOrsak getOrsakatAv() {
@@ -87,22 +77,20 @@ public final class ReportBesokAvvikelseRequest {
     public static ReportBesokAvvikelseRequest from(final ReportBesokAvvikelseVardenRequest dto, final String samordnare) {
 
         checkArgument(nonNull(dto.getBesokId()));
-        checkArgument(nonNull(dto.getAvvikelseId()));
         checkArgument(nonNull(dto.getOrsakatAv()));
-        checkArgument(nonNull(dto.getTidpunkt()));
+        checkArgument(nonNull(dto.getDatum()));
+        checkArgument(nonNull(dto.getTid()));
         checkArgument(nonNull(dto.getInvanareUteblev()));
 
         final Long besokId = Long.valueOf(dto.getBesokId());
-        final Long avvikelseId = Long.valueOf(dto.getAvvikelseId());
         final AvvikelseOrsak orsakatAv = dto.getOrsakatAv();
         final String beskrivning = dto.getBeskrivning();
-        final LocalDateTime tidpunkt = LocalDateTime.parse(dto.getTidpunkt(), DateTimeFormatter.ISO_DATE);
+        final LocalDateTime tidpunkt = LocalDateTime.of(dto.getDatum(), dto.getTid());
         final Boolean invanareUteblev = BooleanUtils.toBoolean(dto.getInvanareUteblev());
         final HandelseTyp handelseTyp = HandelseTyp.AVVIKELSE_RAPPORTERAD;
 
         return aReportBesokAvvikelseRequest()
                 .withBesokId(besokId)
-                .withAvvikelseId(avvikelseId)
                 .withOrsakatAv(orsakatAv)
                 .withBeskrivning(beskrivning)
                 .withTidpunkt(tidpunkt)
@@ -156,7 +144,6 @@ public final class ReportBesokAvvikelseRequest {
 
         return new EqualsBuilder()
                 .append(besokId, that.besokId)
-                .append(avvikelseId, that.avvikelseId)
                 .append(orsakatAv, that.orsakatAv)
                 .append(beskrivning, that.beskrivning)
                 .append(tidpunkt, that.tidpunkt)
@@ -170,7 +157,6 @@ public final class ReportBesokAvvikelseRequest {
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
                 .append(besokId)
-                .append(avvikelseId)
                 .append(orsakatAv)
                 .append(beskrivning)
                 .append(tidpunkt)
@@ -184,7 +170,6 @@ public final class ReportBesokAvvikelseRequest {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("besokId", besokId)
-                .add("avvikelseId", avvikelseId)
                 .add("orsakatAv", orsakatAv)
                 .add("beskrivning", beskrivning)
                 .add("tidpunkt", tidpunkt)
@@ -196,7 +181,6 @@ public final class ReportBesokAvvikelseRequest {
 
     public static final class ReportBesokAvvikelseRequestBuilder {
         private Long besokId;
-        private Long avvikelseId;
         private AvvikelseOrsak orsakatAv;
         private String beskrivning;
         private LocalDateTime tidpunkt;
@@ -213,11 +197,6 @@ public final class ReportBesokAvvikelseRequest {
 
         public ReportBesokAvvikelseRequestBuilder withBesokId(Long besokId) {
             this.besokId = besokId;
-            return this;
-        }
-
-        public ReportBesokAvvikelseRequestBuilder withAvvikelseId(Long avvikelseId) {
-            this.avvikelseId = avvikelseId;
             return this;
         }
 
@@ -255,7 +234,6 @@ public final class ReportBesokAvvikelseRequest {
             ReportBesokAvvikelseRequest reportBesokAvvikelseRequest = new ReportBesokAvvikelseRequest();
             reportBesokAvvikelseRequest.besokId = this.besokId;
             reportBesokAvvikelseRequest.orsakatAv = this.orsakatAv;
-            reportBesokAvvikelseRequest.avvikelseId = this.avvikelseId;
             reportBesokAvvikelseRequest.invanareUteblev = this.invanareUteblev;
             reportBesokAvvikelseRequest.handelseTyp = this.handelseTyp;
             reportBesokAvvikelseRequest.beskrivning = this.beskrivning;

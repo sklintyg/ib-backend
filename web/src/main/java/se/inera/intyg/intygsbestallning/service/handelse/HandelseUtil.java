@@ -123,7 +123,7 @@ public final class HandelseUtil {
 
         return aHandelse()
                 .withSkapad(LocalDateTime.now())
-                .withHandelseTyp(HandelseTyp.AVVIKELSE_MOTTAGEN)
+                .withHandelseTyp(request.getHandelseTyp())
                 .withAnvandare(request.getSamordnare())
                 .withHandelseText(textBuilder.toString())
                 .withKommentar(request.getBeskrivning().orElse(null))

@@ -30,7 +30,7 @@ import static se.inera.intyg.intygsbestallning.persistence.model.status.Utrednin
 import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.HANDLINGAR_MOTTAGNA_BOKA_BESOK;
 import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR;
 import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.UTREDNING_PAGAR;
-import static se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest.validate;
+import static se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokRequest.validate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,8 +71,8 @@ import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokResponse;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
 
 @Service
@@ -181,6 +181,12 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
                         IbErrorCodeEnum.BAD_STATE,
                         MessageFormat.format("Utredning with id {0} is in an incorrect state.", optionalUtredning.get().getUtredningId())));
 
+        // HandelseTyp.AVVIKELSE_MOTTAGEN when request is from myndighet
+        // HandelseTyp.AVVIKELSE_RAPPORTERAD when request is from IB frontend, need to verify user has permission
+        if (request.getHandelseTyp() == HandelseTyp.AVVIKELSE_RAPPORTERAD) {
+            checkUserVardenhetTilldeladToBestallning(optionalUtredning.get());
+        }
+
         Besok besokToUpdate = optionalUtredning.get().getBesokList().stream()
                 .filter(b -> b.getId().equals(request.getBesokId()))
                 .collect(onlyElement());
@@ -195,9 +201,10 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
                 .collect(onlyElement());
 
         if (request.getHandelseTyp().equals(HandelseTyp.AVVIKELSE_RAPPORTERAD)) {
-            request.setAvvikelseId(uppdateratBesok.getAvvikelse().getAvvikelseId());
             checkState(Objects.equals(BesokStatus.AVVIKELSE_RAPPORTERAD, BesokStatusResolver.resolveStaticStatus(uppdateratBesok)));
-            myndighetIntegrationService.reportDeviation(createReportDeviationRequestDto(request));
+            logService.log(new PatientPdlLoggable(uppdateradUtredning.getInvanare().getPersonId()), PdlLogType.AVVIKELSE_RAPPORTERAD);
+            myndighetIntegrationService.reportDeviation(createReportDeviationRequestDto(request,
+                    uppdateratBesok.getAvvikelse().getAvvikelseId()));
             notifieringSendService.notifieraLandstingAvvikelseRapporteradAvVarden(uppdateradUtredning, besokToUpdate);
         } else {
             checkState(Objects.equals(BesokStatus.AVVIKELSE_MOTTAGEN, BesokStatusResolver.resolveStaticStatus(uppdateratBesok)));
@@ -284,10 +291,11 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
                 .build();
     }
 
-    private ReportDeviationRequestDto createReportDeviationRequestDto(final ReportBesokAvvikelseRequest avvikelseRequest) {
+    private ReportDeviationRequestDto createReportDeviationRequestDto(final ReportBesokAvvikelseRequest avvikelseRequest,
+                                                                      Long avvikelseId) {
         return aReportDeviationRequestDto()
                 .withBesokId(avvikelseRequest.getBesokId().toString())
-                .withAvvikelseId(avvikelseRequest.getAvvikelseId().toString())
+                .withAvvikelseId(avvikelseId.toString())
                 .withOrsakatAv(avvikelseRequest.getOrsakatAv().name())
                 .withBeskrivning(avvikelseRequest.getBeskrivning().orElse(null))
                 .withTidpunkt(SchemaDateUtil.toStringFromLocalDateTime(avvikelseRequest.getTidpunkt()))

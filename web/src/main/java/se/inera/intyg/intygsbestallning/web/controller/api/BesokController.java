@@ -27,8 +27,8 @@ import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationExceptio
 import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
 import se.inera.intyg.intygsbestallning.service.besok.BesokService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.ReportBesokAvvikelseVardenRequest;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
 

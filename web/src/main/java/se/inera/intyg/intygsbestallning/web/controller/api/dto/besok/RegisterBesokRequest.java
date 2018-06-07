@@ -16,11 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.web.controller.api.dto;
+package se.inera.intyg.intygsbestallning.web.controller.api.dto.besok;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.nonNull;
-import static se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest.RegisterBesokRequestBuilder.aRegisterBesokRequest;
+import static se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokRequest.RegisterBesokRequestBuilder.aRegisterBesokRequest;
 
 import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.KallelseFormTyp;

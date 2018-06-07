@@ -39,7 +39,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.MyndighetTyp;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokRequest;
 import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentType;
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
 import se.riv.intygsbestallning.certificate.order.v1.AddressType;
