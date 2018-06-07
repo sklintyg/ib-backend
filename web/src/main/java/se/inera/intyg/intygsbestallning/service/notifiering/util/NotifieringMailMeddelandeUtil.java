@@ -139,4 +139,14 @@ public final class NotifieringMailMeddelandeUtil {
                 utredning.getUtredningId(), landstingNamn);
     }
 
+    public static String ingenBeställningMessage(final Utredning utredning) {
+        return MessageFormat.format("Försäkringskassan har meddelat att de inte kommer skicka någon "
+                + "beställning utifrån förfrågan {0}. Utredningen avslutas.", utredning.getUtredningId());
+    }
+
+    public static String avslutaPgaJavMessage(final Utredning utredning) {
+        return MessageFormat.format("Försäkringskassan har valt att avsluta utredning {0} utifrån "
+                        + "att det råder jävsförhållanden.",
+                utredning.getUtredningId());
+    }
 }

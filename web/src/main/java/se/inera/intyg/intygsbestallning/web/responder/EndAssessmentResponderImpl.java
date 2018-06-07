@@ -18,19 +18,19 @@
  */
 package se.inera.intyg.intygsbestallning.web.responder;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
-import static java.util.Objects.isNull;
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
+import static se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil.ok;
 
-import com.google.common.base.Preconditions;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil;
-import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
-import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
 import se.riv.intygsbestallning.certificate.order.endassessment.v1.EndAssessmentResponseType;
 import se.riv.intygsbestallning.certificate.order.endassessment.v1.EndAssessmentType;
 import se.riv.intygsbestallning.certificate.order.endassessment.v1.rivtabp21.EndAssessmentResponderInterface;
+import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
 
 @Service
 @SchemaValidation
@@ -42,13 +42,13 @@ public class EndAssessmentResponderImpl implements EndAssessmentResponderInterfa
     @Override
     public EndAssessmentResponseType endAssessment(String logicalAddress, EndAssessmentType endAssessmentType) {
 
-        Preconditions.checkArgument(!isNullOrEmpty(logicalAddress), "LogcialAddress needs to be defined");
-        Preconditions.checkArgument(!isNull(endAssessmentType), "Request need to be defined");
+        checkArgument(isNotEmpty(logicalAddress), "LogcialAddress needs to be defined");
+        checkArgument(nonNull(endAssessmentType), "Request need to be defined");
 
         utredningService.endUtredning(EndUtredningRequest.from(endAssessmentType));
 
         EndAssessmentResponseType response = new EndAssessmentResponseType();
-        response.setResult(ResultTypeUtil.ok());
+        response.setResult(ok());
         return response;
     }
 }

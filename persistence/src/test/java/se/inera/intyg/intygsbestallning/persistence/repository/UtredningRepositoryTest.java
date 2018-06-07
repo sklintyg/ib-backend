@@ -47,7 +47,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.AvvikelseOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
+import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.KallelseFormTyp;
@@ -136,7 +136,7 @@ public class UtredningRepositoryTest {
         assertEquals(UtredningsTyp.AFU, utredning.getUtredningsTyp());
         assertFalse(utredning.getTolkBehov());
         assertNotNull(utredning.getAvbrutenDatum());
-        assertEquals(EndReason.JAV, utredning.getAvbrutenAnledning());
+        assertEquals(AvslutOrsak.JAV, utredning.getAvbrutenAnledning());
 
         Bestallning bestallning = utredning.getBestallning().orElse(null);
         assertNotNull(bestallning);

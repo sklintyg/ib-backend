@@ -38,7 +38,7 @@ import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
+import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
 import se.inera.intyg.intygsbestallning.service.pdl.LogService;
@@ -82,7 +82,7 @@ public class HandlingServiceImplTest {
     public void testUtredningAvbruten() {
         Utredning utredning = TestDataGen.createUtredning();
         utredning.setAvbrutenDatum(LocalDateTime.now());
-        utredning.setAvbrutenAnledning(EndReason.JAV);
+        utredning.setAvbrutenAnledning(AvslutOrsak.JAV);
         when(utredningRepository.findById(anyLong())).thenReturn(Optional.of(utredning));
         try {
             testee.registerNewHandling(1L, buildRequest());

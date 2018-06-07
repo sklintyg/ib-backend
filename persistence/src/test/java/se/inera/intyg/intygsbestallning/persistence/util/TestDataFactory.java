@@ -52,10 +52,10 @@ import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
 import se.inera.intyg.intygsbestallning.persistence.model.RegistreradVardenhet;
 import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.AvvikelseOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.KallelseFormTyp;
@@ -160,7 +160,7 @@ public final class TestDataFactory {
         return anUtredning()
                 .withUtredningsTyp(UtredningsTyp.AFU)
                 .withTolkBehov(false)
-                .withAvbrutenAnledning(EndReason.JAV)
+                .withAvbrutenAnledning(AvslutOrsak.JAV)
                 .withAvbrutenDatum(LocalDateTime.now())
                 .withArkiverad(false)
                 .build();

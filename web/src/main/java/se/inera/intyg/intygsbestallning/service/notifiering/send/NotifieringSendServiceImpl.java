@@ -21,6 +21,7 @@ package se.inera.intyg.intygsbestallning.service.notifiering.send;
 import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType.VE;
 import static se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType.VG;
 import static se.inera.intyg.intygsbestallning.persistence.model.SkickadNotifiering.SkickadNotifieringBuilder.aSkickadNotifiering;
@@ -28,12 +29,18 @@ import static se.inera.intyg.intygsbestallning.persistence.model.type.Notifierin
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp.VARDENHET;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.AVVIKELSE_MOTTAGEN_AV_FK;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.AVVIKELSE_RAPPORTERAD_AV_VARDEN;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.INGEN_BESTALLNING;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.SAMTLIGA_INTERNFORFRAGAN_BESVARATS;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.SLUTDATUM_UTREDNING_PASSERAT;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.UPPDATERAD_BESTALLNING;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.UTREDNING_AVSLUTAD_PGA_AVBRUTEN;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.UTREDNING_AVSLUTAD_PGA_JAV;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.UTREDNING_TILLDELAD;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.avslutaPgaJavMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.avvikelseRapporteradAvVardenMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.externForfraganUrl;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.ingenBeställningMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.internForfraganUrl;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.landstingAvvikelseRapporteradAvFKMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.landstingNyExternforfraganMessage;
@@ -46,11 +53,13 @@ import static se.inera.intyg.intygsbestallning.service.notifiering.util.Notifier
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.vardenhetAvvikelseRapporteradAvFKMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.vardenhetNyInternforfraganMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.vardenhetTilldeladUtredning;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_AVSLUTAD_PGA_JÄV;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_AVVIKELSE_MOTTAGEN_FRAN_FK;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_AVVIKELSE_RAPPORTERAD_AV_VARDEN;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_BESTALLNING_AV_FRORSAKRINGSMEDICINSK_UTREDNING;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_BESTALLNING_UPPDATERAD;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_FMU_UTREDNING_TILLDELAD_VARDENHETEN;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_INGEN_BESTALLNING;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_NY_FMU_EXTERN_FORFRAGAN;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_SAMTLIGA_INTERNFORFRAGAN_BESVARATS;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_UTREDNING_SLUTDATUM_PAMINNELSE;
@@ -58,6 +67,7 @@ import static se.inera.intyg.intygsbestallning.service.notifiering.util.Notifier
 
 import com.google.common.base.Strings;
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -156,16 +166,15 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
         final String utforareEpost = tillDeladInternForfragan.getForfraganSvar().getUtforareEpost();
 
-        if (!Strings.isNullOrEmpty(utforareEpost)
+        if (isNotEmpty(utforareEpost)
                 && notifieringPreferenceService.getNotificationPreference(tillDeladInternForfragan.getVardenhetHsaId(), VE)
-                        .isEnabled(NotifieringTyp.UTREDNING_TILLDELAD, NotifieringMottagarTyp.VARDENHET)) {
+                .isEnabled(UTREDNING_TILLDELAD, NotifieringMottagarTyp.VARDENHET)) {
             final String body = notifieringMailBodyFactory.buildBodyForUtredning(
                     vardenhetTilldeladUtredning(utredning, landstingNamn),
                     utredningUrl(utredning));
 
             sendNotifiering(utforareEpost, SUBJECT_FMU_UTREDNING_TILLDELAD_VARDENHETEN, body);
         }
-
     }
 
     @Override
@@ -179,13 +188,44 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
     }
 
     @Override
-    public void notifieraLandstingIngenBestallning(Utredning utredning) {
-        throw new NotImplementedException();
+    public void notifieraLandstingIngenBestallning(final Utredning utredning) {
+        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, AVVIKELSE_RAPPORTERAD_AV_VARDEN);
+        final String id = bestallning.getTilldeladVardenhetHsaId();
+        final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VG);
+
+        if (preferens.isEnabled(SAMTLIGA_INTERNFORFRAGAN_BESVARATS, LANDSTING)) {
+
+            String vardenhetHsaId = utredning.getBestallning().get().getTilldeladVardenhetHsaId();
+            verifyBestallningHasVardenhet(vardenhetHsaId, "Cannot send notification for mottagen handling when "
+                    + "the Bestallning contains no vardenhetHsaId.");
+            String email = preferens.getLandstingEpost();
+            String body = notifieringMailBodyFactory.buildBodyForUtredning(
+                    ingenBeställningMessage(utredning),
+                    utredningUrl(utredning));
+            sendNotifiering(email, SUBJECT_INGEN_BESTALLNING, body);
+            saveNotifiering(utredning, INGEN_BESTALLNING, LANDSTING);
+        }
     }
 
     @Override
-    public void notifieraVardenhetIngenBestallning(Utredning utredning) {
-        throw new NotImplementedException();
+    public void notifieraVardenhetIngenBestallning(final Utredning utredning) {
+        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, AVVIKELSE_RAPPORTERAD_AV_VARDEN);
+        final String id = bestallning.getTilldeladVardenhetHsaId();
+        final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VE);
+
+        if (preferens.isEnabled(UTREDNING_AVSLUTAD_PGA_AVBRUTEN, VARDENHET)) {
+
+            String vardenhetHsaId = utredning.getBestallning().get().getTilldeladVardenhetHsaId();
+            verifyBestallningHasVardenhet(vardenhetHsaId, "Cannot send notification for mottagen handling when "
+                    + "the Bestallning contains no vardenhetHsaId.");
+            String email = vardenhetService.getVardEnhetPreference(vardenhetHsaId).getEpost();
+            String body = notifieringMailBodyFactory.buildBodyForUtredning(
+                    ingenBeställningMessage(utredning),
+                    internForfraganUrl(utredning));
+
+            sendNotifiering(email, SUBJECT_INGEN_BESTALLNING, body);
+            saveNotifiering(utredning, AVVIKELSE_MOTTAGEN_AV_FK, VARDENHET);
+        }
     }
 
     @Override
@@ -204,8 +244,43 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
     }
 
     @Override
-    public void notifieraLandstingAvslutadPgaJav(Utredning utredning) {
-        throw new NotImplementedException();
+    public void notifieraLandstingAvslutadPgaJav(final Utredning utredning) {
+        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, AVVIKELSE_RAPPORTERAD_AV_VARDEN);
+        final String id = bestallning.getTilldeladVardenhetHsaId();
+        final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VG);
+
+        if (preferens.isEnabled(UTREDNING_AVSLUTAD_PGA_JAV, LANDSTING)) {
+            String vardenhetHsaId = utredning.getBestallning().get().getTilldeladVardenhetHsaId();
+            verifyBestallningHasVardenhet(vardenhetHsaId, "Cannot send notification for mottagen handling when "
+                    + "the Bestallning contains no vardenhetHsaId.");
+            String email = preferens.getLandstingEpost();
+            String body = notifieringMailBodyFactory.buildBodyForUtredning(
+                    avslutaPgaJavMessage(utredning),
+                    utredningUrl(utredning));
+            sendNotifiering(email, SUBJECT_AVSLUTAD_PGA_JÄV, body);
+            saveNotifiering(utredning, UTREDNING_AVSLUTAD_PGA_JAV, LANDSTING);
+        }
+    }
+
+    @Override
+    public void notifieraVardenhetAvslutadPgaJav(Utredning utredning) {
+        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, AVVIKELSE_RAPPORTERAD_AV_VARDEN);
+        final String id = bestallning.getTilldeladVardenhetHsaId();
+        final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VE);
+
+        if (preferens.isEnabled(UTREDNING_AVSLUTAD_PGA_JAV, VARDENHET)) {
+            String vardenhetHsaId = utredning.getBestallning().get().getTilldeladVardenhetHsaId();
+            verifyBestallningHasVardenhet(vardenhetHsaId, "Cannot send notification for mottagen handling when "
+                    + "the Bestallning contains no vardenhetHsaId.");
+            String email = vardenhetService.getVardEnhetPreference(id).getEpost();
+            if (isNotEmpty(email)) {
+                String body = notifieringMailBodyFactory.buildBodyForUtredning(
+                        avslutaPgaJavMessage(utredning),
+                        utredningUrl(utredning));
+                sendNotifiering(email, SUBJECT_AVSLUTAD_PGA_JÄV, body);
+                saveNotifiering(utredning, UTREDNING_AVSLUTAD_PGA_JAV, VARDENHET);
+            }
+        }
     }
 
     @Override
@@ -248,12 +323,15 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
         if (preferens.isEnabled(AVVIKELSE_MOTTAGEN_AV_FK, VARDENHET)) {
             final String email = vardenhetService.getVardEnhetPreference(id).getEpost();
-            final String body = notifieringMailBodyFactory.buildBodyForUtredning(
-                    vardenhetAvvikelseRapporteradAvFKMessage(utredning, besok),
-                    utredningUrl(utredning));
+            if (isNotEmpty(email)) {
+                final String body = notifieringMailBodyFactory.buildBodyForUtredning(
+                        vardenhetAvvikelseRapporteradAvFKMessage(utredning, besok),
+                        utredningUrl(utredning));
 
-            sendNotifiering(email, SUBJECT_AVVIKELSE_MOTTAGEN_FRAN_FK, body);
-            saveNotifiering(utredning, AVVIKELSE_MOTTAGEN_AV_FK, VARDENHET);
+                sendNotifiering(email, SUBJECT_AVVIKELSE_MOTTAGEN_FRAN_FK, body);
+                saveNotifiering(utredning, AVVIKELSE_MOTTAGEN_AV_FK, VARDENHET);
+            }
+
         }
     }
 
@@ -295,7 +373,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
         final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(vardenhetHsaId, VE);
 
-        if (preferens.isEnabled(NotifieringTyp.SLUTDATUM_UTREDNING_PASSERAT, NotifieringMottagarTyp.VARDENHET)) {
+        if (preferens.isEnabled(SLUTDATUM_UTREDNING_PASSERAT, NotifieringMottagarTyp.VARDENHET)) {
             String email = vardenhetService.getVardEnhetPreference(vardenhetHsaId).getEpost();
             if (Strings.isNullOrEmpty(email)) {
                 return;
@@ -323,7 +401,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
         final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(vardenhetHsaId, VE);
 
-        if (preferens.isEnabled(NotifieringTyp.SLUTDATUM_UTREDNING_PASSERAT, NotifieringMottagarTyp.VARDENHET)) {
+        if (preferens.isEnabled(SLUTDATUM_UTREDNING_PASSERAT, NotifieringMottagarTyp.VARDENHET)) {
             String email = vardenhetService.getVardEnhetPreference(vardenhetHsaId).getEpost();
             if (Strings.isNullOrEmpty(email)) {
                 return;
@@ -345,7 +423,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
         String vardgivareHsaId = utredning.getExternForfragan().get().getLandstingHsaId();
         final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(vardgivareHsaId, VG);
 
-        if (preferens.isEnabled(NotifieringTyp.SLUTDATUM_UTREDNING_PASSERAT, NotifieringMottagarTyp.LANDSTING)) {
+        if (preferens.isEnabled(SLUTDATUM_UTREDNING_PASSERAT, NotifieringMottagarTyp.LANDSTING)) {
             String email = preferens.getLandstingEpost();
             if (Strings.isNullOrEmpty(email)) {
                 return;

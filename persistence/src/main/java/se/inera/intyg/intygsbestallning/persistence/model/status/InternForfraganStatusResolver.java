@@ -22,7 +22,7 @@ import com.google.common.collect.Lists;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
+import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 
 /**
@@ -80,7 +80,7 @@ public class InternForfraganStatusResolver {
         if (internForfragan.getForfraganSvar().getSvarTyp() == SvarTyp.ACCEPTERA && internForfragan.getTilldeladDatum() != null) {
 
             // Tilldelad enligt ovanstående kriterier, men Ingen beställning
-            if (utredning.getAvbrutenAnledning() != null && utredning.getAvbrutenAnledning() == EndReason.INGEN_BESTALLNING) {
+            if (utredning.getAvbrutenAnledning() != null && utredning.getAvbrutenAnledning() == AvslutOrsak.INGEN_BESTALLNING) {
                 return InternForfraganStatus.INGEN_BESTALLNING;
             }
 

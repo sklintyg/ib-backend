@@ -18,22 +18,23 @@
  */
 package se.inera.intyg.intygsbestallning.service.handelse;
 
+import static java.util.Objects.nonNull;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handelse.HandelseBuilder.aHandelse;
+
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.BooleanUtils;
 import org.bouncycastle.util.Strings;
-import se.inera.intyg.intygsbestallning.persistence.model.Besok;
-import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
-import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
-import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
-
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
-
-import static se.inera.intyg.intygsbestallning.persistence.model.Handelse.HandelseBuilder.aHandelse;
+import se.inera.intyg.intygsbestallning.persistence.model.Besok;
+import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
+import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
+import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
+import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
 
 public final class HandelseUtil {
     private static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
@@ -228,7 +229,7 @@ public final class HandelseUtil {
                 besok.getKallelseDatum().format(DateTimeFormatter.ISO_DATE),
                 Strings.toLowerCase(besok.getKallelseForm().name())));
 
-        if (besok.getTolkStatus() != null) {
+        if (nonNull(besok.getTolkStatus())) {
             text.append(MessageFormat.format("Tolk bokad: {0} ",
                     besok.getTolkStatus().getLabel()));
         }
@@ -355,5 +356,39 @@ public final class HandelseUtil {
                 .withHandelseText("Ny anteckning")
                 .withKommentar(anteckning)
                 .build();
+    }
+
+    public static Handelse createIngenBestallning() {
+        final String handelseText = "Utredningen avbruten. Försäkringskassan kommer inte skicka någon beställning";
+        return aHandelse()
+                .withSkapad(LocalDateTime.now())
+                .withAnvandare(FK_LABEL)
+                .withHandelseTyp(HandelseTyp.INGEN_BESTALLNING)
+                .withHandelseText(handelseText)
+                .build();
+    }
+
+    public static Handelse createJav() {
+        final String handelseText = "Utredningen avbruten. Vårdenhet jävig";
+        return aHandelse()
+                .withSkapad(LocalDateTime.now())
+                .withAnvandare(FK_LABEL)
+                .withHandelseTyp(HandelseTyp.JAV)
+                .withHandelseText(handelseText)
+                .build();
+    }
+
+    public static Handelse createUtredningAvbruten() {
+        final String handelseText = "Utredningen avbruten. Inga besök genomförda.";
+        return aHandelse()
+                .withSkapad(LocalDateTime.now())
+                .withAnvandare(FK_LABEL)
+                .withHandelseTyp(HandelseTyp.JAV)
+                .withHandelseText(handelseText)
+                .build();
+    }
+
+    public static Handelse createAvslutadUtredning(final String vardAdministrator) {
+        throw new NotImplementedException();
     }
 }

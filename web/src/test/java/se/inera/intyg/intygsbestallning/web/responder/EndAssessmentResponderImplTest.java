@@ -24,7 +24,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
-import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
+import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.riv.intygsbestallning.certificate.order.endassessment.v1.EndAssessmentResponseType;
 import se.riv.intygsbestallning.certificate.order.endassessment.v1.EndAssessmentType;
@@ -48,7 +48,7 @@ public class EndAssessmentResponderImplTest {
     public void testEndAssessmentSuccess() {
         EndAssessmentType request = new EndAssessmentType();
         request.setAssessmentId(anII(null, "utredningId"));
-        request.setEndingCondition(aCv(EndReason.JAV.name(), null, null));
+        request.setEndingCondition(aCv(AvslutOrsak.JAV.name(), null, null));
 
         EndAssessmentResponseType response = responder.endAssessment("logicalAdress", request);
 

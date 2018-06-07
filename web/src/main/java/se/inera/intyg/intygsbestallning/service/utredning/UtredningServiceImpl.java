@@ -21,6 +21,7 @@ package se.inera.intyg.intygsbestallning.service.utredning;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.base.Strings.isNullOrEmpty;
+import static com.google.common.collect.MoreCollectors.onlyElement;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
@@ -61,15 +62,19 @@ import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
+import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
 import se.inera.intyg.intygsbestallning.persistence.model.RegistreradVardenhet;
 import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder;
 import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
+import se.inera.intyg.intygsbestallning.persistence.model.status.InternForfraganStatus;
+import se.inera.intyg.intygsbestallning.persistence.model.status.InternForfraganStatusResolver;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
+import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.MyndighetTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
@@ -83,7 +88,6 @@ import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningReques
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItemFactory;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListUtredningRequest;
@@ -100,9 +104,6 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
     @Autowired
     private RegistreradVardenhetRepository registreradVardenhetRepository;
-
-    @Autowired
-    private InternForfraganListItemFactory internForfraganListItemFactory;
 
     @Autowired
     private UtredningListItemFactory utredningListItemFactory;
@@ -356,17 +357,82 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     }
 
     @Override
-    public void endUtredning(EndUtredningRequest endUtredningRequest) {
-        Utredning utredning = utredningRepository.findById(endUtredningRequest.getUtredningId()).orElseThrow(
-                () -> new IbNotFoundException("Could not find the assessment with id " + endUtredningRequest.getUtredningId()));
+    public void endUtredning(final EndUtredningRequest request) {
+        final Utredning utredning = utredningRepository.findById(request.getUtredningId())
+                .orElseThrow(() -> new IbNotFoundException(MessageFormat.format(
+                        "Could not find the assessment with id {0}", request.getUtredningId())));
 
         if (nonNull(utredning.getAvbrutenDatum())) {
             throw new IbServiceException(IbErrorCodeEnum.ALREADY_EXISTS, "EndAssessment has already been performed for this Utredning");
         }
 
+        final AvslutOrsak orsak = request.getAvslutOrsak();
+        final String vardAdministrator = request.getVardAdministrator().orElse(null);
+
         utredning.setAvbrutenDatum(LocalDateTime.now());
-        utredning.setAvbrutenAnledning(endUtredningRequest.getEndReason());
-        utredningRepository.saveUtredning(utredning);
+        utredning.setAvbrutenAnledning(orsak);
+        utredning.setArkiverad(true);
+
+        final Handelse handelse = createHandelseUtredningAvslutad(orsak, vardAdministrator);
+        utredning.getHandelseList().add(handelse);
+
+        final Utredning uppdateradUtredning = utredningRepository.save(utredning);
+
+        verifyAvslutaUtredningStatusar(orsak, uppdateradUtredning);
+
+        notifieraUtredningAvslutad(orsak, uppdateradUtredning);
+    }
+
+    private void verifyAvslutaUtredningStatusar(final AvslutOrsak orsak, final Utredning utredning) {
+
+        checkArgument(nonNull(orsak));
+        checkArgument(nonNull(utredning));
+
+        final InternForfragan internForfragan = utredning.getExternForfragan()
+                .map(ExternForfragan::getInternForfraganList).orElse(Lists.newArrayList()).stream()
+                .filter(InternForfragan::getDirekttilldelad)
+                .collect(onlyElement());
+
+        checkState(UtredningStatus.AVBRUTEN == UtredningStatusResolver.resolveStaticStatus(utredning));
+
+        final InternForfraganStatus internForfraganStatus =
+                InternForfraganStatusResolver.resolveStaticStatus(utredning, internForfragan);
+
+        if (orsak == AvslutOrsak.INGEN_BESTALLNING) {
+            checkState(InternForfraganStatus.INGEN_BESTALLNING == internForfraganStatus);
+        }
+    }
+
+    private Handelse createHandelseUtredningAvslutad(final AvslutOrsak orsak, final String vardAdministrator) {
+
+        checkArgument(nonNull(orsak));
+
+        if (orsak == AvslutOrsak.INGEN_BESTALLNING) {
+            return HandelseUtil.createIngenBestallning();
+        } else if (orsak == AvslutOrsak.JAV) {
+            return HandelseUtil.createJav();
+        } else if (orsak == AvslutOrsak.UTREDNING_AVBRUTEN) {
+            return HandelseUtil.createUtredningAvbruten();
+        } else {
+            checkArgument(nonNull(vardAdministrator));
+            return HandelseUtil.createAvslutadUtredning(vardAdministrator);
+        }
+    }
+
+    private void notifieraUtredningAvslutad(final AvslutOrsak orsak, final Utredning utredning) {
+
+        checkArgument(nonNull(orsak));
+
+        if (orsak == AvslutOrsak.INGEN_BESTALLNING) {
+            notifieringSendService.notifieraVardenhetIngenBestallning(utredning);
+            notifieringSendService.notifieraLandstingIngenBestallning(utredning);
+        } else if (orsak == AvslutOrsak.JAV) {
+            notifieringSendService.notifieraLandstingAvslutadPgaJav(utredning);
+            notifieringSendService.notifieraVardenhetAvslutadPgaJav(utredning);
+        } else {
+            notifieringSendService.notifieraLandstingAvslutadUtredning(utredning);
+            notifieringSendService.notifieraVardenhetAvslutadUtredning(utredning);
+        }
     }
 
     private Utredning qualifyForUpdatering(final UpdateOrderRequest update, final Utredning original) {

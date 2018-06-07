@@ -22,7 +22,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.AvvikelseOrsak;
-import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
+import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.KallelseFormTyp;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 
@@ -48,7 +48,7 @@ public final class ErsattsResolver {
 
         // Utredningen avslutad med orsak ”Jäv” eller ”Ingen beställning"
         if (utredning.getAvbrutenDatum() != null) {
-            if (utredning.getAvbrutenAnledning() == EndReason.INGEN_BESTALLNING || utredning.getAvbrutenAnledning() == EndReason.JAV) {
+            if (utredning.getAvbrutenAnledning() == AvslutOrsak.INGEN_BESTALLNING || utredning.getAvbrutenAnledning() == AvslutOrsak.JAV) {
                 return false;
             }
         }
@@ -92,7 +92,7 @@ public final class ErsattsResolver {
 
         // Anrop till EndAssessment har inkommit mer än MAX_AVBOKNING_TIMMAR timmar innan besökets starttidpunkt.
         if (utredning.getAvbrutenAnledning() != null
-                && utredning.getAvbrutenAnledning() == EndReason.UTREDNING_AVBRUTEN
+                && utredning.getAvbrutenAnledning() == AvslutOrsak.UTREDNING_AVBRUTEN
                 && besok.getErsatts()
                 && utredning.getAvbrutenDatum().isBefore(besok.getBesokStartTid().minusHours(MAX_AVBOKNING_TIMMAR))) {
             return false;

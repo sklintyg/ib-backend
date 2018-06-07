@@ -19,7 +19,7 @@
 package se.inera.intyg.intygsbestallning.service.utredning.dto;
 
 import org.junit.Test;
-import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
+import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
 import se.riv.intygsbestallning.certificate.order.endassessment.v1.EndAssessmentType;
 
 import static org.junit.Assert.assertEquals;
@@ -33,12 +33,12 @@ public class EndUtredningRequestTest {
     public void testFrom() {
         EndAssessmentType endAssessmentType = new EndAssessmentType();
         endAssessmentType.setAssessmentId(anII(null, "1"));
-        endAssessmentType.setEndingCondition(aCv(EndReason.JAV.name(), null, null));
+        endAssessmentType.setEndingCondition(aCv(AvslutOrsak.JAV.name(), null, null));
 
         EndUtredningRequest result = EndUtredningRequest.from(endAssessmentType);
 
         assertNotNull(result);
         assertEquals(Long.valueOf(1L), result.getUtredningId());
-        assertEquals(EndReason.JAV, result.getEndReason());
+        assertEquals(AvslutOrsak.JAV, result.getAvslutOrsak());
     }
 }

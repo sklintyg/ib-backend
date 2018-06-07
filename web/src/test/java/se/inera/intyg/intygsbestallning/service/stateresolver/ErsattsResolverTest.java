@@ -24,7 +24,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.AvvikelseOrsak;
-import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
+import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.KallelseFormTyp;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
@@ -52,7 +52,7 @@ public class ErsattsResolverTest {
     public void testErsattsEjVidJav() {
         Utredning utr = Utredning.UtredningBuilder.anUtredning()
                 .withAvbrutenDatum(LocalDateTime.now())
-                .withAvbrutenAnledning(EndReason.JAV)
+                .withAvbrutenAnledning(AvslutOrsak.JAV)
                 .build();
         assertFalse(ErsattsResolver.resolveUtredningErsatts(utr, businessDays));
     }
@@ -61,7 +61,7 @@ public class ErsattsResolverTest {
     public void testErsattsEjVidIngenBestallning() {
         Utredning utr = Utredning.UtredningBuilder.anUtredning()
                 .withAvbrutenDatum(LocalDateTime.now())
-                .withAvbrutenAnledning(EndReason.INGEN_BESTALLNING)
+                .withAvbrutenAnledning(AvslutOrsak.INGEN_BESTALLNING)
                 .build();
         assertFalse(ErsattsResolver.resolveUtredningErsatts(utr, businessDays));
     }
@@ -125,7 +125,7 @@ public class ErsattsResolverTest {
     public void testErsattsEjNarEndAssessmentInkomIGodTid() {
         Utredning utredning = ServiceTestUtil.buildBestallningar(1).get(0);
         utredning.setBesokList(buildBesokList(true, FEB_20));
-        utredning.setAvbrutenAnledning(EndReason.UTREDNING_AVBRUTEN);
+        utredning.setAvbrutenAnledning(AvslutOrsak.UTREDNING_AVBRUTEN);
         utredning.setAvbrutenDatum(FEB_13);
         assertFalse(ErsattsResolver.resolveBesokErsatts(utredning, utredning.getBesokList().get(0), businessDays));
     }

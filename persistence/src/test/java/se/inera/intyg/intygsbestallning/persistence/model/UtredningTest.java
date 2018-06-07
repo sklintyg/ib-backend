@@ -41,7 +41,7 @@ import org.junit.Test;
 import se.inera.intyg.intygsbestallning.persistence.model.type.AvvikelseOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
+import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.KallelseFormTyp;
@@ -78,7 +78,7 @@ public class UtredningTest {
                 .withTolkBehov(true)
                 .withTolkSprak("sv")
                 .withAvbrutenDatum(datum.plusDays(6))
-                .withAvbrutenAnledning(EndReason.UTREDNING_AVBRUTEN)
+                .withAvbrutenAnledning(AvslutOrsak.UTREDNING_AVBRUTEN)
                 .withExternForfragan(anExternForfragan()
                         .withId(1L)
                         .withLandstingHsaId("hsaId")

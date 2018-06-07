@@ -18,47 +18,53 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning.dto;
 
+import static com.google.common.primitives.Longs.tryParse;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+
 import com.google.common.base.Joiner;
-import com.google.common.primitives.Longs;
+import com.google.common.collect.Lists;
+import se.riv.intygsbestallning.certificate.order.endassessment.v1.EndAssessmentType;
+import java.util.List;
+import java.util.Optional;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
-import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
-import se.riv.intygsbestallning.certificate.order.endassessment.v1.EndAssessmentType;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.util.Objects.isNull;
+import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
 
 public final class EndUtredningRequest {
-    private Long utredningId;
-    private EndReason endReason;
+    private final Long utredningId;
+    private final AvslutOrsak avslutOrsak;
+    private final String vardAdministrator;
 
-    private EndUtredningRequest() {
-
+    private EndUtredningRequest(final EndUtredningRequestBuilder builder) {
+        this.utredningId = builder.utredningId;
+        this.avslutOrsak = builder.avslutOrsak;
+        this.vardAdministrator = builder.vardAdministrator;
     }
 
     public static EndUtredningRequest from(EndAssessmentType endAssessmentType) {
         validate(endAssessmentType);
 
         return EndUtredningRequestBuilder.anEndUtredningRequest()
-                .withEndReason(!isNull(endAssessmentType.getEndingCondition())
-                        ? EndReason.valueOf(endAssessmentType.getEndingCondition().getCode()) : null)
-                .withUtredningId(Longs.tryParse(endAssessmentType.getAssessmentId().getExtension()))
+                .withEndReason(
+                        nonNull(endAssessmentType.getEndingCondition())
+                                ? AvslutOrsak.valueOf(endAssessmentType.getEndingCondition().getCode())
+                                : null)
+                .withUtredningId(tryParse(endAssessmentType.getAssessmentId().getExtension()))
                 .build();
     }
 
     private static void validate(EndAssessmentType endAssessmentType) {
-        List<String> errors = new ArrayList<>();
-        if (!isNull(endAssessmentType.getEndingCondition())) {
+        List<String> errors = Lists.newArrayList();
+        if (nonNull(endAssessmentType.getEndingCondition())) {
             try {
-                EndReason.valueOf(endAssessmentType.getEndingCondition().getCode());
+                AvslutOrsak.valueOf(endAssessmentType.getEndingCondition().getCode());
             } catch (IllegalArgumentException iae) {
                 errors.add("EndingCondition is not of a known type");
             }
         }
 
-        if (!errors.isEmpty()) {
+        if (isNotEmpty(errors)) {
             throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, Joiner.on(", ").join(errors));
         }
     }
@@ -67,13 +73,18 @@ public final class EndUtredningRequest {
         return utredningId;
     }
 
-    public EndReason getEndReason() {
-        return endReason;
+    public AvslutOrsak getAvslutOrsak() {
+        return avslutOrsak;
+    }
+
+    public Optional<String> getVardAdministrator() {
+        return Optional.ofNullable(vardAdministrator);
     }
 
     public static final class EndUtredningRequestBuilder {
         private Long utredningId;
-        private EndReason endReason;
+        private AvslutOrsak avslutOrsak;
+        private String vardAdministrator;
 
         private EndUtredningRequestBuilder() {
         }
@@ -87,16 +98,18 @@ public final class EndUtredningRequest {
             return this;
         }
 
-        public EndUtredningRequestBuilder withEndReason(EndReason endReason) {
-            this.endReason = endReason;
+        public EndUtredningRequestBuilder withEndReason(AvslutOrsak avslutOrsak) {
+            this.avslutOrsak = avslutOrsak;
+            return this;
+        }
+
+        public EndUtredningRequestBuilder withVardAdministrator(String vardAdministrator) {
+            this.vardAdministrator = vardAdministrator;
             return this;
         }
 
         public EndUtredningRequest build() {
-            EndUtredningRequest endUtredningRequest = new EndUtredningRequest();
-            endUtredningRequest.endReason = this.endReason;
-            endUtredningRequest.utredningId = this.utredningId;
-            return endUtredningRequest;
+            return new EndUtredningRequest(this);
         }
     }
 }

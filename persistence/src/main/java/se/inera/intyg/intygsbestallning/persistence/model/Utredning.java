@@ -23,7 +23,7 @@ import org.apache.commons.collections4.ListUtils;
 import org.hibernate.annotations.Type;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
-import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
+import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 
 import javax.persistence.CascadeType;
@@ -79,7 +79,7 @@ public final class Utredning {
 
     @Column(name = "AVBRUTEN_ANLEDNING")
     @Enumerated(EnumType.STRING)
-    private EndReason avbrutenAnledning;
+    private AvslutOrsak avbrutenAnledning;
 
     @Column(name = "ARKIVERAD", nullable = false)
     private Boolean arkiverad = false;
@@ -235,11 +235,11 @@ public final class Utredning {
         this.besokList = besokList;
     }
 
-    public EndReason getAvbrutenAnledning() {
+    public AvslutOrsak getAvbrutenAnledning() {
         return avbrutenAnledning;
     }
 
-    public void setAvbrutenAnledning(final EndReason avbrutenAnledning) {
+    public void setAvbrutenAnledning(final AvslutOrsak avbrutenAnledning) {
         this.avbrutenAnledning = avbrutenAnledning;
     }
 
@@ -453,7 +453,7 @@ public final class Utredning {
         private Boolean tolkBehov;
         private String tolkSprak;
         private LocalDateTime avbrutenDatum;
-        private EndReason avbrutenAnledning;
+        private AvslutOrsak avbrutenAnledning;
         private Boolean arkiverad = false;
         private ExternForfragan externForfragan;
         private List<Handelse> handelseList = new ArrayList<>();
@@ -504,7 +504,7 @@ public final class Utredning {
             return this;
         }
 
-        public UtredningBuilder withAvbrutenAnledning(EndReason avbrutenAnledning) {
+        public UtredningBuilder withAvbrutenAnledning(AvslutOrsak avbrutenAnledning) {
             this.avbrutenAnledning = avbrutenAnledning;
             return this;
         }

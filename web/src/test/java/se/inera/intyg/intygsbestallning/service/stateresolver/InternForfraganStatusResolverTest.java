@@ -18,18 +18,17 @@
  */
 package se.inera.intyg.intygsbestallning.service.stateresolver;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
-import se.inera.intyg.intygsbestallning.persistence.model.status.InternForfraganStatusResolver;
-import se.inera.intyg.intygsbestallning.persistence.model.status.InternForfraganStatus;
-import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
+import java.time.LocalDateTime;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
-import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-
-import java.time.LocalDateTime;
-
-import static org.junit.Assert.assertEquals;
+import se.inera.intyg.intygsbestallning.persistence.model.status.InternForfraganStatus;
+import se.inera.intyg.intygsbestallning.persistence.model.status.InternForfraganStatusResolver;
+import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
+import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 
 public class InternForfraganStatusResolverTest extends BaseResolverTest {
 
@@ -51,7 +50,7 @@ public class InternForfraganStatusResolverTest extends BaseResolverTest {
     @Test
     public void testIngenBestallningSetButPreviouslyAvvisad() {
         Utredning utredning = buildBaseUtredning();
-        utredning.setAvbrutenAnledning(EndReason.INGEN_BESTALLNING);
+        utredning.setAvbrutenAnledning(AvslutOrsak.INGEN_BESTALLNING);
         ExternForfragan externForfragan = buildBaseExternForfragan();
         utredning.setExternForfragan(externForfragan);
         InternForfragan internForfragan = buildInternForfragan(buildForfraganSvar(SvarTyp.AVBOJ), null);
@@ -126,7 +125,7 @@ public class InternForfraganStatusResolverTest extends BaseResolverTest {
     @Test
     public void testTilldeladToSelfButIngenBestallning() {
         Utredning utredning = buildBaseUtredning();
-        utredning.setAvbrutenAnledning(EndReason.INGEN_BESTALLNING);
+        utredning.setAvbrutenAnledning(AvslutOrsak.INGEN_BESTALLNING);
         ExternForfragan externForfragan = buildBaseExternForfragan();
         utredning.setExternForfragan(externForfragan);
         InternForfragan internForfragan1 = buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now());

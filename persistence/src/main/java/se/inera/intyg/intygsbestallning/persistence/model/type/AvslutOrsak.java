@@ -18,8 +18,9 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model.type;
 
-public enum EndReason {
+public enum AvslutOrsak {
     INGEN_BESTALLNING,
     JAV,
-    UTREDNING_AVBRUTEN
+    UTREDNING_AVBRUTEN,
+    AVSLUTAD
 }

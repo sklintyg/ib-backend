@@ -44,6 +44,8 @@ public interface NotifieringSendService {
 
     void notifieraLandstingAvslutadPgaJav(Utredning utredning);
 
+    void notifieraVardenhetAvslutadPgaJav(Utredning utredning);
+
     void notifieraVardenhetUppdateradBestallning(Utredning utredning);
 
     void notifieraLandstingAvvikelseRapporteradAvVarden(Utredning utredning, Besok besok);

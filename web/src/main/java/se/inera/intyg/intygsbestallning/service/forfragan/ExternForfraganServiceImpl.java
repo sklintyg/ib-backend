@@ -89,9 +89,6 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
     private InternForfraganListItemFactory internForfraganListItemFactory;
 
     @Autowired
-    private UtredningService utredningService;
-
-    @Autowired
     private MyndighetIntegrationService myndighetIntegrationService;
 
     @Autowired

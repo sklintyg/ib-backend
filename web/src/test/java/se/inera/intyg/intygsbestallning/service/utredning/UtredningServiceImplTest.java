@@ -76,7 +76,7 @@ import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
+import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.MyndighetTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
@@ -564,7 +564,7 @@ public class UtredningServiceImplTest {
 
         EndUtredningRequest request = anEndUtredningRequest()
                 .withUtredningId(utredningId)
-                .withEndReason(EndReason.JAV)
+                .withEndReason(AvslutOrsak.JAV)
                 .build();
 
         utredningService.endUtredning(request);
@@ -576,7 +576,7 @@ public class UtredningServiceImplTest {
         assertNotNull(utredning);
         assertEquals(utredningId, utredning.getUtredningId());
         assertNotNull(utredning.getAvbrutenDatum());
-        assertEquals(EndReason.JAV, utredning.getAvbrutenAnledning());
+        assertEquals(AvslutOrsak.JAV, utredning.getAvbrutenAnledning());
     }
 
     @Test(expected = IbNotFoundException.class)
@@ -587,7 +587,7 @@ public class UtredningServiceImplTest {
 
         EndUtredningRequest request = anEndUtredningRequest()
                 .withUtredningId(utredningId)
-                .withEndReason(EndReason.JAV)
+                .withEndReason(AvslutOrsak.JAV)
                 .build();
 
         utredningService.endUtredning(request);
@@ -604,7 +604,7 @@ public class UtredningServiceImplTest {
 
         EndUtredningRequest request = anEndUtredningRequest()
                 .withUtredningId(utredningId)
-                .withEndReason(EndReason.JAV)
+                .withEndReason(AvslutOrsak.JAV)
                 .build();
 
         try {
