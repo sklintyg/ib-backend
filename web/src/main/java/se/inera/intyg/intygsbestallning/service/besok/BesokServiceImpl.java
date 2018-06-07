@@ -167,7 +167,7 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
 
     @Override
     @Transactional
-    public void reportBesokAvvikelse(final ReportBesokAvvikelseRequest request) {
+    public Avvikelse reportBesokAvvikelse(final ReportBesokAvvikelseRequest request) {
 
         Optional<Utredning> optionalUtredning = utredningRepository.findByBesokList_Id(request.getBesokId());
         optionalUtredning.orElseThrow(() -> new IbNotFoundException(
@@ -201,6 +201,8 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
             notifieringSendService.notifieraLandstingAvvikelseMottagenFranFK(uppdateradUtredning, besokToUpdate);
             notifieringSendService.notifieraVardenhetAvvikelseMottagenFranFK(uppdateradUtredning, besokToUpdate);
         }
+
+        return uppdateratBesok.getAvvikelse();
     }
 
     @Override

@@ -112,7 +112,22 @@ public final class NotifieringMailMeddelandeUtil {
 
     public static String avvikelseRapporteradAvVardenMessage(final Utredning utredning, final Besok besok) {
         return MessageFormat.format(
-                "En vårdenhet har rapporterat en avvikelse för ett besök som var inbokat <besök.startdatum> i utredning <utredning-id>",
+                "En vårdenhet har rapporterat en avvikelse för ett besök som var inbokat {0} i utredning {1}",
+                besok.getBesokStartTid().format(DateTimeFormatter.ISO_DATE),
+                utredning.getUtredningId());
+    }
+
+    public static String vardenhetAvvikelseRapporteradAvFKMessage(final Utredning utredning, final Besok besok) {
+        return MessageFormat.format(
+                "Försäkringskassan har rapporterat en avvikelse för besöket som är inbokat {0} i utredning {1}. "
+                        + "Tillse att besöket avbokas.",
+                besok.getBesokStartTid().format(DateTimeFormatter.ISO_DATE),
+                utredning.getUtredningId());
+    }
+
+    public static String landstingAvvikelseRapporteradAvFKMessage(final Utredning utredning, final Besok besok) {
+        return MessageFormat.format(
+                "Försäkringskassan har rapporterat en avvikelse för besöket som är inbokat {0} i utredning {1}.",
                 besok.getBesokStartTid().format(DateTimeFormatter.ISO_DATE),
                 utredning.getUtredningId());
     }

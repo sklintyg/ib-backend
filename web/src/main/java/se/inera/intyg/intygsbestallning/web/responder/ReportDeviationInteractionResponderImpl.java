@@ -18,23 +18,24 @@
  */
 package se.inera.intyg.intygsbestallning.web.responder;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.lang.invoke.MethodHandles.lookup;
+import static java.util.Objects.nonNull;
+import static se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil.ok;
+import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
+
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.intygsbestallning.service.besok.BesokService;
-import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
 import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.ReportDeviationResponseType;
 import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.ReportDeviationType;
 import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.rivtabp21.ReportDeviationResponderInterface;
-import se.riv.intygsbestallning.certificate.order.v1.IIType;
-import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
-import se.riv.intygsbestallning.certificate.order.v1.ResultType;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static java.lang.invoke.MethodHandles.lookup;
-import static java.util.Objects.nonNull;
+import se.inera.intyg.intygsbestallning.persistence.model.Avvikelse;
+import se.inera.intyg.intygsbestallning.service.besok.BesokService;
+import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
 
 @Service
 @SchemaValidation
@@ -45,6 +46,9 @@ public class ReportDeviationInteractionResponderImpl implements ReportDeviationR
     @Autowired
     private BesokService besokService;
 
+    @Value("${source.system.hsaid:}")
+    private String sourceSystemHsaId;
+
     @Override
     public ReportDeviationResponseType reportDeviation(
             final String logicalAddress, final ReportDeviationType request) {
@@ -54,25 +58,11 @@ public class ReportDeviationInteractionResponderImpl implements ReportDeviationR
         checkArgument(nonNull(logicalAddress));
         checkArgument(nonNull(request));
 
-        besokService.reportBesokAvvikelse(ReportBesokAvvikelseRequest.from(request));
-        return null;
-    }
-
-    private ReportDeviationResponseType createDummyResponse() {
-
-        ResultType resultType = new ResultType();
-        resultType.setLogId("DUMMY_LOG_ID");
-        resultType.setResultCode(ResultCodeType.OK);
-        resultType.setResultText("DUMMY_RESULT_TEXT");
-
-        IIType iiType = new IIType();
-        iiType.setExtension("DUMMY_EXTENSION");
-        iiType.setRoot("DUMY_ROOT");
+        final Avvikelse avvikelse = besokService.reportBesokAvvikelse(ReportBesokAvvikelseRequest.from(request));
 
         ReportDeviationResponseType response = new ReportDeviationResponseType();
-        response.setDeviationId(iiType);
-        response.setResult(resultType);
-
+        response.setDeviationId(anII(sourceSystemHsaId, avvikelse.getAvvikelseId().toString()));
+        response.setResult(ok());
         return response;
     }
 }
