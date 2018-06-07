@@ -41,15 +41,13 @@ angular.module('ibApp')
                 tid: undefined,
                 invanareUteblev: false
             };
-/*
-            function formatTime(date) {
-                var hours = date.getHours();
-                var minutes = date.getMinutes();
-                return (hours > 9 ? hours : '0' + hours) + ':' + 
-                    (minutes > 9 ? minutes : '0' + minutes);
-            }
-*/
+
             $scope.send = function () {
+
+                var avvikelseDto = angular.copy($scope.avvikelse);
+
+                avvikelseDto.tid = DateUtilsService.formatTime(avvikelseDto.tid);
+
                 BesokProxy.createBesokAvvikelse($scope.avvikelse).then(function() {
                     $uibModalInstance.close();
                 }, function() {
