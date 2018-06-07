@@ -33,21 +33,17 @@ angular.module('ibApp').directive('ibBestallningButtonBar',
                     acceptInProgress: false
                 };
 
-                $scope.statusReceived = function () {
-                    if ($scope.bestallning.status.id === 'BESTALLNING_MOTTAGEN' ||
-                        $scope.bestallning.status.id === 'VANTAR_PA_HANDLINGAR' ||
-                        $scope.bestallning.status.id === 'UPPDATERA_BESTALLNING') {
+                $scope.registerReceivedDisabled = function () {
+                    if ($scope.bestallning.status.id === 'BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR' ||
+                        $scope.bestallning.status.id === 'UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR') {
                         return false;
                     }
                     return true;
                 };
 
-                $scope.statusSent = function () {
-                    if ($scope.bestallning.status.id === 'UTLATANDE_SKICKAT' ||
-                        $scope.bestallning.status.id === 'UTLATANDE_MOTTAGET') {
-                        return true;
-                    }
-                    return false;
+                $scope.registerSentDisabled = function () {
+                    return $scope.bestallning.status.id === 'UTLATANDE_SKICKAT' ||
+                        $scope.bestallning.status.id === 'UTLATANDE_MOTTAGET';
                 };
 
                 $scope.correctFasId = function () {
