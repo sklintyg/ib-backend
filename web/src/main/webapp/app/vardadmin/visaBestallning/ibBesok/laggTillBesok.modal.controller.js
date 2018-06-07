@@ -27,6 +27,7 @@ angular.module('ibApp')
                 label: 'Välj i listan'
             };
 
+            $scope.showErrorMessage = false;
             $scope.professionList = [chooseOption];
 
             BesokProxy.getProffessionsTyper().then(function(result) {
@@ -66,14 +67,15 @@ angular.module('ibApp')
             }
 
             $scope.send = function () {
-                $scope.besok.kallelseDatum = new Date($scope.besok.kallelseDatum);
-                $scope.besok.besokDatum = new Date($scope.besok.besokDatum);
+                $scope.showErrorMessage = false;
+                $scope.besok.kallelseDatum = new Date($scope.besokKallelse);
+                $scope.besok.besokDatum = new Date($scope.besokDatum);
                 $scope.besok.besokStartTid = formatTime($scope.besokStartTid);
                 $scope.besok.besokSlutTid = formatTime($scope.besokSlutTid);
                 BesokProxy.createBesok($scope.besok).then(function() {
                     $uibModalInstance.close();
                 }, function() {
-                    //show felmeddelande
+                    $scope.showErrorMessage = true;
                 });
                 
             };
@@ -98,14 +100,24 @@ angular.module('ibApp')
                 }
             });
 
+            $scope.$watch('besok.kallelseForm', function(newVal, oldVal) {
+                if(newVal && newVal !== oldVal && $scope.besokKallelse) {
+                    BesokProxy.addArbetsdagar($scope.besokKallelse, hamtaDagar()).then(function(result) {
+                        kallelsedatumMedArbetsdagar = result;
+                    }, function(error) {
+                        $log.error(error);
+                    });
+                }
+            });
+
             $scope.getMessageForKallelsedatum = function() {
                 return messageService.getProperty('lagg-till-besok.info.kallelsedatum',
                     [hamtaDagar()]);
             };
 
             $scope.showMessageForKallelse = function () {
-                if (moment($scope.besokDatum) <= moment(kallelsedatumMedArbetsdagar) &&
-                    (moment($scope.besokKallelse) < moment($scope.besokDatum))) {
+                if ($scope.besokDatum && kallelsedatumMedArbetsdagar &&
+                    moment($scope.besokDatum) <= moment(kallelsedatumMedArbetsdagar)) {
                     return true;
                 }
             };

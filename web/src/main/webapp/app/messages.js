@@ -113,6 +113,7 @@ var ibMessages = {
         'lagg-till-besok.label.viaphone': 'Per telefon',
         'lagg-till-besok.info.profession': 'Om annan profession än läkare har valts så kommer utredningstypen att ändras till "AFU utvidgad".',
         'lagg-till-besok.info.kallelsedatum': 'Kallelsedatum är mindre än ${0} arbetsdagar innan besöksdatum. Om invånaren gör en sen avbokning eller uteblir kommer besöket inte att ersättas.',
+        'lagg-till-besok.error.teknisktfel': 'Besöket kunde inte sparas på grund av tekniskt fel. Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <Ineras kundservice>',
 
         // Avvikelse modal
         'avvikelse.info': '<p>När en avvikelse registreras skickas meddelande till Försäkringskassans handläggare som kommer fatta ett beslut om hur återstående besök ska hanteras.</p>Besöket ska inte avbokas utan beslut från Försäkringskassans handläggare.',

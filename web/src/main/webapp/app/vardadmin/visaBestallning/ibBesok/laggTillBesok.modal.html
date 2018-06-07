@@ -21,9 +21,9 @@
             <div class="big-flex-wrapper">
                 <div class="flex-wrapper">
                     <span class="date">
-                        <span class="asterisk" ng-if="!besok.besokDatum">*</span><ib-help-text-label label-key="lagg-till-besok.label.date"></ib-help-text-label>
+                        <span class="asterisk" ng-if="!besokDatum">*</span><ib-help-text-label label-key="lagg-till-besok.label.date"></ib-help-text-label>
                         <ib-date-picker-field
-                        target-model="besok.besokDatum"
+                        target-model="besokDatum"
                         format="yyyy-MM-dd"
                         date-format-error="Ogiltigt datumformat, ange ett datum som ÅÅÅÅ-MM-DD"
                         ib-date-picker-field
@@ -71,11 +71,13 @@
                 </div>
                 <div class="flex-wrapper">
                     <span class="kallelse">
-                        <span class="asterisk" ng-if="!besok.kallelseDatum">*</span><ib-help-text-label label-key="lagg-till-besok.label.kallelseskickad"></ib-help-text-label>
+                        <span class="asterisk" ng-if="!besokKallelse">*</span><ib-help-text-label label-key="lagg-till-besok.label.kallelseskickad"></ib-help-text-label>
                     </span>
                     <ib-date-picker-field
-                        target-model="besok.kallelseDatum"
+                        target-model="besokKallelse"
                         min-date-error="Möjligt startdatum får tidigast vara dagens datum"
+                        max-date-error="Möjligt kallelsedatum får inte vara efter besöksdatum"
+                        max-date="{{ besokDatum }}"
                         format="yyyy-MM-dd"
                         date-format-error="Ogiltigt datumformat, ange ett datum som ÅÅÅÅ-MM-DD"
                         ib-date-picker-field
@@ -93,12 +95,20 @@
                 </div>
             </div>
         </form>
+
+        <ib-alert-message
+            ng-if="showErrorMessage"
+            alert-message-id="lagg-till-besok.error.teknisktfel"
+            alert-id="lagg-till-besok.error.teknisktfel"
+            alert-severity="alert">
+        </ib-alert-message>
     </div>
     <div class="modal-footer">
-        <button type="button" id="lagg-till-besok-modal-skicka" class="btn btn-primary" ng-click="send()" ng-disabled="!besok.besokDatum || !besokStartTid || !besokSlutTid || !besok.profession || !besok.kallelseDatum">
+        <button type="button" id="lagg-till-besok-modal-skicka" class="btn btn-primary" ng-click="send()" ng-disabled="!besokDatum || !besokStartTid || !besokSlutTid || !besok.profession || !besokKallelse">
         Spara
         </button>
         <button type="button" id="lagg-till-besok-modal-cancel" class="btn btn-default" ng-click="$dismiss()">
         <span message key="common.cancel"></span>
         </button>
     </div>
+</div>

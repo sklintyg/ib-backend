@@ -74,6 +74,12 @@ angular.module('ibApp').directive('ibDatePickerField',['$timeout', '$parse', 'Da
 
                 if ($scope.maxDate !== undefined) {
                     $scope.dateOptions.maxDate = new Date($scope.maxDate);
+
+                    $scope.$watch('maxDate', function(newVal, oldVal) {
+                        if (newVal && newVal !== oldVal) {
+                            $scope.dateOptions.maxDate = new Date(newVal);
+                        }
+                    });
                 }
 
                 if($scope.format === undefined){
@@ -110,6 +116,7 @@ angular.module('ibApp').directive('ibDatePickerField',['$timeout', '$parse', 'Da
                 $scope.focused = function() {
                     $scope.toggleFocus();
                 };
+
                 $scope.$watch('targetModel', function(newVal, oldVal) {
                     if (newVal || newVal !== oldVal) {
                         if(dateUtils.isDate(newVal)) {
