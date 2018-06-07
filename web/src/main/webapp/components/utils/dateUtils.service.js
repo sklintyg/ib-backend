@@ -32,13 +32,6 @@ angular.module('ibApp').factory('DateUtilsService', ['ObjectHelper', function(Ob
     var weekCodeReg = /^(?=\d*v\d*$)v?(?!0+v?$)(\d{1,3})v?$/i;
     var monthCodeReg = /^(?=\d*m\d*$)m?(?!0+m?$)(\d{1,2})m?$/i;
 
-    function _formatTime(date) {
-        var hours = date.getHours();
-        var minutes = date.getMinutes();
-        return (hours > 9 ? hours : '0' + hours) + ':' +
-            (minutes > 9 ? minutes : '0' + minutes);
-    }
-
     function _parseDayCodes(input) {
         if (input && typeof input === 'string') {
             var result = dayCodeReg.exec(input);
@@ -358,7 +351,6 @@ angular.module('ibApp').factory('DateUtilsService', ['ObjectHelper', function(Ob
     }
 
     return {
-        formatTime: _formatTime,
         isDate: _isDate,
         toMoment: _toMoment,
         toMomentStrict: _toMomentStrict,
