@@ -55,9 +55,32 @@ public class RequestMedicalCertificateSupplementResponderImplTest {
     }
 
     @Test
+    public void testWhenLastDateForSupplementReceivalIsNull() {
+        when(kompletteringService.registerNewKomplettering(any(RequestMedicalCertificateSupplementType.class))).thenReturn(1L);
+
+        RequestMedicalCertificateSupplementType request = buildRequest();
+        buildRequest().setLastDateForSupplementReceival(null);
+
+        RequestMedicalCertificateSupplementResponseType response = testee.requestMedicalCertificateSupplement("", request);
+        assertEquals(ResultCodeType.OK, response.getResult().getResultCode());
+    }
+
+    @Test
     public void testExceptionsAreMappedOntoError() {
         when(kompletteringService.registerNewKomplettering(any(RequestMedicalCertificateSupplementType.class))).thenThrow(new IllegalStateException(ERROR_MESSAGE));
         RequestMedicalCertificateSupplementResponseType response = testee.requestMedicalCertificateSupplement("", buildRequest());
+        assertEquals(ERROR_MESSAGE, response.getResult().getResultText());
+        assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
+    }
+
+    @Test
+    public void testExceptionsWhenLastDateForSupplementReceivalIsNotParsable() {
+        when(kompletteringService.registerNewKomplettering(any(RequestMedicalCertificateSupplementType.class))).thenThrow(new IllegalStateException(ERROR_MESSAGE));
+
+        RequestMedicalCertificateSupplementType request = buildRequest();
+        buildRequest().setLastDateForSupplementReceival("2018-06-aa"); // bad date
+
+        RequestMedicalCertificateSupplementResponseType response = testee.requestMedicalCertificateSupplement("", request);
         assertEquals(ERROR_MESSAGE, response.getResult().getResultText());
         assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
     }

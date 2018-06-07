@@ -19,6 +19,7 @@
 package se.inera.intyg.intygsbestallning.service.utredning;
 
 import com.google.common.collect.ImmutableList;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
@@ -26,10 +27,10 @@ import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
+import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportKompletteringMottagenRequest;
 import se.riv.intygsbestallning.certificate.order.requestmedicalcertificatesupplement.v1.RequestMedicalCertificateSupplementType;
 
@@ -37,6 +38,7 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -75,11 +77,12 @@ public class KompletteringServiceImpl extends BaseUtredningService implements Ko
                 // Verify so there is at least one intyg entry that is eligible for komplettering
                 if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getSistaDatumKompletteringsbegaran() == null
                         || intyg.getSistaDatumKompletteringsbegaran().isAfter(LocalDateTime.now()))) {
+
                     Intyg komplt = Intyg.IntygBuilder.anIntyg()
                             .withKomplettering(true)
-                            .withSistaDatum(LocalDate.parse(request.getLastDateForSupplementReceival(), DateTimeFormatter.ISO_DATE)
-                                    .atStartOfDay())
+                            .withSistaDatum(getSistaDatum(request.getLastDateForSupplementReceival()))
                             .build();
+
                     utredning.getIntygList().add(komplt);
                     utredning.getHandelseList().add(HandelseUtil.createKompletteringBegard());
                     utredningRepository.save(utredning);
@@ -137,4 +140,20 @@ public class KompletteringServiceImpl extends BaseUtredningService implements Ko
 
         utredningRepository.save(optionalUtredning.get());
     }
+
+    /*
+         lastDateForSupplementReceival might be null or empty string and if so,
+         return null, otherwise try to parse the string as a valid date.
+     */
+    private LocalDateTime getSistaDatum(String lastDateForSupplementReceival) {
+        if (StringUtils.isBlank(lastDateForSupplementReceival)) {
+            return null;
+        }
+        try {
+            return LocalDate.parse(lastDateForSupplementReceival, DateTimeFormatter.ISO_DATE).atStartOfDay();
+        } catch (DateTimeParseException e) {
+            throw new IllegalStateException(e.getMessage());
+        }
+    }
+
 }
