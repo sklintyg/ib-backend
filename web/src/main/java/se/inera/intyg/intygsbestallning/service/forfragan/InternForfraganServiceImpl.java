@@ -71,7 +71,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtre
 public class InternForfraganServiceImpl extends BaseUtredningService implements InternForfraganService {
 
     private static final Pattern POSTNR_REGEXP = Pattern.compile("\\d{5}");
-    private static final Pattern EPOST_REGEXP = Pattern.compile(".+@.+\\..+");
+    private static final Pattern EPOST_REGEXP = Pattern.compile("^[^@]{1,}@[^@]{1,}\\.[^@\\.]{1,}$");
     private static final Pattern DATUM_REGEXP = Pattern.compile("\\d{4}-\\d{2}-\\d{2}");
 
     @Autowired

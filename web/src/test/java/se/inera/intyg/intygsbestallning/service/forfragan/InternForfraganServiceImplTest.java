@@ -582,6 +582,17 @@ public class InternForfraganServiceImplTest {
         assertNull(internForfraganService.validateSvarRequest(forfraganSvarRequest));
         forfraganSvarRequest.setUtforareEpost("a@b");
         assertTrue(internForfraganService.validateSvarRequest(forfraganSvarRequest).contains("UtforareEpost"));
+        forfraganSvarRequest.setUtforareEpost("a@@b.se");
+        assertTrue(internForfraganService.validateSvarRequest(forfraganSvarRequest).contains("UtforareEpost"));
+        forfraganSvarRequest.setUtforareEpost("a@@b.se.");
+        assertTrue(internForfraganService.validateSvarRequest(forfraganSvarRequest).contains("UtforareEpost"));
+        forfraganSvarRequest.setUtforareEpost("@b.se.");
+        assertTrue(internForfraganService.validateSvarRequest(forfraganSvarRequest).contains("UtforareEpost"));
+        forfraganSvarRequest.setUtforareEpost("a@b.se.");
+        assertTrue(internForfraganService.validateSvarRequest(forfraganSvarRequest).contains("UtforareEpost"));
+        forfraganSvarRequest.setUtforareEpost("en.lang.adress@some.domain.at.se");
+        assertNull(internForfraganService.validateSvarRequest(forfraganSvarRequest));
+
 
         // BorjaDatum
         forfraganSvarRequest = buildValidInternForfraganSvarRequest(1L);

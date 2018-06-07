@@ -39,7 +39,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.notification.SetN
  */
 @RestController
 @RequestMapping("/api/notifiering/preference")
-public class NotificationPreferenceController {
+public class NotifieringPreferenceController {
 
     @Autowired
     private UserService userService;

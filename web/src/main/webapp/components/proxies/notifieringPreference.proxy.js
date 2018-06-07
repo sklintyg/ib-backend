@@ -27,8 +27,8 @@ angular.module('ibApp').factory('NotifieringPreferenceProxy',
 
             var config =  {
                 errorMessageConfig: {
-                    errorTitleKey: 'server.error.getvardeCCCCCnhetpreference.title',
-                    errorTextKey: 'server.error.sssss.text'
+                    errorTitleKey: 'server.error.getnotifieringpreference.title',
+                    errorTextKey: 'server.error.getnotifieringpreference.text'
                 }
             };
 
@@ -39,8 +39,8 @@ angular.module('ibApp').factory('NotifieringPreferenceProxy',
 
             var config =  {
                 errorMessageConfig: {
-                    errorTitleKey: 'server.error.setvaCCCCCCCCrdenhetpreference.title',
-                    errorTextKey: 'server.error.setvardenhCCCCCCCetpreference.text'
+                    errorTitleKey: 'server.error.setnotifieringpreference.title',
+                    errorTextKey: 'server.error.setnotifieringpreference.text'
                 }
             };
 

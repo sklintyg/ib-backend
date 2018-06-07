@@ -313,6 +313,10 @@ var ibMessages = {
         'server.error.avbojinternforfragan.text': 'Försök igen eller kontakta support',
         'server.error.gethsainfo.title': 'Kunde inte hämta adressuppgifter från hsa',
         'server.error.gethsainfo.text': 'Försök igen eller kontakta support',
+        'server.error.getnotifieringpreference.title': 'Kunde inte hämta notifieringsintällningar',
+        'server.error.getnotifieringpreference.text': 'Försök igen eller kontakta support',
+        'server.error.setnotifieringpreference.title': 'Kunde inte spara notifieringsintällningar',
+        'server.error.setnotifieringpreference.text': 'Försök igen eller kontakta support',
 
         'common.error.spi.fel01': 'Ett tekniskt fel uppstod när vårdenheten skulle hämtas. Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraNationellKundservice>'
     },
