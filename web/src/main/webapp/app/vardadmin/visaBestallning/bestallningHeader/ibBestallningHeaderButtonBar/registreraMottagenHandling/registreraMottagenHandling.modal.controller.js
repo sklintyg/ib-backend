@@ -22,6 +22,10 @@ angular.module('ibApp')
         function ($scope, $uibModalInstance, HandlingProxy, $stateParams) {
             'use strict';
 
+            $scope.vm = {
+                busySaving: false
+            };
+
             $scope.registerValue = new Date();
 
             $scope.correctDate = function () {
@@ -32,8 +36,17 @@ angular.module('ibApp')
             };
 
             $scope.save = function () {
+                $scope.vm.busySaving = true;
+
                 var date = moment($scope.registerValue).format('YYYY-MM-DD');
-                HandlingProxy.registerReceivedAction(date, $stateParams.utredningsId);
+
+                HandlingProxy.registerReceivedAction(date, $stateParams.utredningsId)
+                    .then(function (data) {
+                        angular.copy(data, $scope.utredning);
+                    }).finally(function () { // jshint ignore:line
+                    $scope.vm.busySaving = false;
+                });
+
                 $uibModalInstance.close();
             };
         }
