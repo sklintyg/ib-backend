@@ -39,11 +39,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.lang.invoke.MethodHandles;
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.function.Predicate;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
@@ -69,6 +68,7 @@ import se.inera.intyg.intygsbestallning.service.stateresolver.BesokStatus;
 import se.inera.intyg.intygsbestallning.service.stateresolver.BesokStatusResolver;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
+import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokResponse;
@@ -98,6 +98,9 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
 
     @Autowired
     private NotifieringSendService notifieringSendService;
+
+    @Autowired
+    private BusinessDaysBean businessDaysBean;
 
     @Override
     @Transactional
@@ -198,6 +201,12 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
             notifieringSendService.notifieraLandstingAvvikelseMottagenFranFK(uppdateradUtredning, besokToUpdate);
             notifieringSendService.notifieraVardenhetAvvikelseMottagenFranFK(uppdateradUtredning, besokToUpdate);
         }
+    }
+
+    @Override
+    public LocalDate addArbetsdagar(Map<String, String> map) {
+        LocalDate date = LocalDate.parse(map.get("datum"), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        return businessDaysBean.addBusinessDays(date, Integer.parseInt(map.get("arbetsdagar")));
     }
 
     private Avvikelse createAvvikelse(final ReportBesokAvvikelseRequest request) {

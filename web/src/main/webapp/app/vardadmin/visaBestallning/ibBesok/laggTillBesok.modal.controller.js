@@ -19,7 +19,7 @@
 
 angular.module('ibApp')
     .controller('LaggTillBesokModalCtrl',
-        function($log, $scope, $uibModalInstance, BesokProxy, utredningsId) {
+        function($log, $scope, $uibModalInstance, BesokProxy, utredningsId, APP_CONFIG, messageService, moment) {
             'use strict';
 
             var chooseOption = {
@@ -40,17 +40,23 @@ angular.module('ibApp')
             $scope.besokStartTid = '';
             $scope.besokSlutTid = '';
 
+            $scope.besokKallelse = undefined;
+            $scope.besokDatum = undefined;
+
             $scope.besok = {
                 utredningId: utredningsId,
                 utredandeVardPersonalNamn: '',
                 profession: undefined,
                 tolkStatus: undefined,
-                kallelseForm: '',
-                kallelseDatum: '',
-                besokDatum: new Date(),
+                kallelseForm: 'BREVKONTAKT',
+                kallelseDatum: undefined,
+                besokDatum: undefined,
                 besokStartTid: '',
                 besokSlutTid: ''
             };
+
+            var kallelsedatumMedArbetsdagar;
+
 
             function formatTime(date) {
                 var hours = date.getHours();
@@ -72,5 +78,35 @@ angular.module('ibApp')
                 
             };
 
+            function hamtaDagar() {
+                var dagar;
+                if($scope.besok.kallelseForm === 'BREVKONTAKT') {
+                    dagar = parseInt(APP_CONFIG.kallelseArbetsdagar, 10) + parseInt(APP_CONFIG.postgangArbetsdagar, 10);
+                } else {
+                    dagar = parseInt(APP_CONFIG.kallelseArbetsdagar, 10);
+                }
+                return dagar;
+            }
 
+            $scope.$watch('besokKallelse', function(newVal, oldVal) {
+                if(newVal && newVal !== oldVal) {
+                    BesokProxy.addArbetsdagar(newVal, hamtaDagar()).then(function(result) {
+                        kallelsedatumMedArbetsdagar = result;
+                    }, function(error) {
+                        $log.error(error);
+                    });
+                }
+            });
+
+            $scope.getMessageForKallelsedatum = function() {
+                return messageService.getProperty('lagg-till-besok.info.kallelsedatum',
+                    [hamtaDagar()]);
+            };
+
+            $scope.showMessageForKallelse = function () {
+                if (moment($scope.besokDatum) <= moment(kallelsedatumMedArbetsdagar) &&
+                    (moment($scope.besokKallelse) < moment($scope.besokDatum))) {
+                    return true;
+                }
+            };
         });

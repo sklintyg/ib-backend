@@ -24,6 +24,9 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto.user;
 public class GetConfigResponse {
     private String version;
 
+    private int kallelseArbetsdagar;
+    private int postgangArbetsdagar;
+
     public String getVersion() {
         return version;
     }
@@ -32,8 +35,26 @@ public class GetConfigResponse {
         this.version = version;
     }
 
+    public int getPostgangArbetsdagar() {
+        return postgangArbetsdagar;
+    }
+
+    public void setPostgangArbetsdagar(int postgangArbetsdagar) {
+        this.postgangArbetsdagar = postgangArbetsdagar;
+    }
+
+    public int getKallelseArbetsdagar() {
+        return kallelseArbetsdagar;
+    }
+
+    public void setKallelseArbetsdagar(int kallelseArbetsdagar) {
+        this.kallelseArbetsdagar = kallelseArbetsdagar;
+    }
+
     public static final class GetConfigResponseBuilder {
         private String version;
+        private int kallelseArbetsdagar;
+        private int postgangArbetsdagar;
 
         public static GetConfigResponse.GetConfigResponseBuilder aGetConfigResponse() {
             return new GetConfigResponse.GetConfigResponseBuilder();
@@ -44,9 +65,21 @@ public class GetConfigResponse {
             return this;
         }
 
+        public GetConfigResponseBuilder withKallelseArbetsdagar(int kallelseArbetsdagar) {
+            this.kallelseArbetsdagar = kallelseArbetsdagar;
+            return this;
+        }
+
+        public GetConfigResponseBuilder withPostgangArbetsdagar(int postgangArbetsdagar) {
+            this.postgangArbetsdagar = postgangArbetsdagar;
+            return this;
+        }
+
         public GetConfigResponse build() {
             GetConfigResponse getConfigResponse = new GetConfigResponse();
             getConfigResponse.setVersion(version);
+            getConfigResponse.setPostgangArbetsdagar(postgangArbetsdagar);
+            getConfigResponse.setKallelseArbetsdagar(kallelseArbetsdagar);
             return getConfigResponse;
         }
     }

@@ -104,6 +104,8 @@ angular.module('ibApp').directive('ibTimePicker',
                         date.setHours(hour);
                         date.setMinutes(min);
                         scope.date = date;
+                    } else if(scope.time === '') {
+                        scope.date = undefined;
                     }
                 };
 

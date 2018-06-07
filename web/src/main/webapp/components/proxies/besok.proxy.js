@@ -29,21 +29,28 @@ angular.module('ibApp').factory('BesokProxy',
         }
 
         function _createBesokAvvikelse(besok) {
-            var restPath = besokRestPath + '/avvikelse';
+            var restPath = besokRestPath + 'avvikelse';
 
             return ProxyTemplate.putTemplate(restPath, besok, {});
         }
 
         function _getProffessionsTyper() {
-            var restPath = besokRestPath + '/professiontyper';
+            var restPath = besokRestPath + 'professiontyper';
 
             return ProxyTemplate.getTemplate(restPath, {});
+        }
+
+        function _addArbetsdagar(datum, arbetsdagar) {
+            var restPath = besokRestPath + 'addarbetsdagar';
+
+            return ProxyTemplate.postTemplate(restPath, {datum: datum, arbetsdagar: arbetsdagar}, {});
         }
 
         // Return public API for the service
         return {
             createBesok: _createBesok,
             createBesokAvvikelse: _createBesokAvvikelse,
-            getProffessionsTyper: _getProffessionsTyper
+            getProffessionsTyper: _getProffessionsTyper,
+            addArbetsdagar: _addArbetsdagar
         };
     });

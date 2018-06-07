@@ -1,4 +1,7 @@
 #lagg-till-besok-modal {
+  .modal-body {
+    min-height: 300px;
+  }
   ib-checkgroup .control-label {
     @extend %ib-typo-05;
     color: $ib-color-09;
@@ -18,13 +21,18 @@
     color: $ib-color-11;
   }
 
-  p {
-    font-weight: 500;
-  }
-
   .big-flex-wrapper {
     display: flex;
     flex-direction: column;
+  }
+
+  .asterisk {
+    display: inline-block;
+    align-self: center;
+    color: red;
+    position: absolute;
+    left: -9px;
+    font-size: 20px;
   }
 
   .flex-wrapper {
@@ -34,6 +42,10 @@
 
     > span:first-child {
       width: 89px;
+      position: relative;
+      &.kallelse {
+        width: 115px;
+      }
     }
 
     > span {
@@ -55,22 +67,16 @@
         }
         flex: 1 0;
         display: inline-flex;
+        position: relative;
     }
 
-    .from {
+    .time {
         ib-help-text-label {
             margin-right: 10px;
         }
         flex: 0 0 150px;
         display: inline-flex;
-    }
-
-    .to {
-        ib-help-text-label {
-            margin-right: 10px;
-        }
-        flex: 0 0 150px;
-        display: inline-flex;
+        position: relative;
     }
 
     #interpreter-input-field {
@@ -84,9 +90,16 @@
       height: 38px;
 
       .input-group {
-        width: 130px;
+        width: 140px;
       }
     }
+
+    ib-radio-wrapper {
+      align-self: center;
+      margin-left: 10px;
+      padding-right: 10px;
+    }
+
     ib-checkbox-wrapper > .ib-checkbox label {
         position: static;
     }
@@ -94,14 +107,5 @@
 
   message key span:first-child {
     font-weight: 500;
-  }
-
-  #radio-wrapper {
-    display: flex;
-    flex-direction: row;
-
-    span:first-child {
-      width: 115px;
-    }
   }
 }

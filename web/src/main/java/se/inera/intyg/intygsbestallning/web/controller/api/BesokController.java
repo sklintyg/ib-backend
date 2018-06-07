@@ -32,6 +32,9 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokResp
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.ReportBesokAvvikelseVardenRequest;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
 
+import java.time.LocalDate;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/vardadmin/besok")
 public class BesokController {
@@ -73,5 +76,10 @@ public class BesokController {
                 .orThrow(new IbAuthorizationException(EDIT_NOT_ALLOWED));
 
         besokService.reportBesokAvvikelse(ReportBesokAvvikelseRequest.from(request, user.getNamn()));
+    }
+
+    @PostMapping("/addarbetsdagar")
+    public LocalDate addArbetsdagar(@RequestBody Map<String, String> map) {
+        return besokService.addArbetsdagar(map);
     }
 }

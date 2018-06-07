@@ -22,9 +22,14 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequ
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokResponse;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
 
+import java.time.LocalDate;
+import java.util.Map;
+
 public interface BesokService {
 
     RegisterBesokResponse registerBesok(final RegisterBesokRequest request);
 
     void reportBesokAvvikelse(ReportBesokAvvikelseRequest request);
+
+    LocalDate addArbetsdagar(Map<String, String> map);
 }

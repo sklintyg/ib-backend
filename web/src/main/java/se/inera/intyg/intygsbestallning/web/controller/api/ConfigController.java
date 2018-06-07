@@ -42,6 +42,8 @@ public class ConfigController {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigController.class);
 
     private static final String PROJECT_VERSION_PROPERTY = "project.version";
+    private static final String IB_KALLELSE_ARBETSDAGAR = "ib.kallelse.arbetsdagar";
+    private static final String IB_POSTGANG_ARBETSDAGA = "ib.postgang.arbetsdagar";
 
     @Autowired
     private DynamicLinkService dynamicLinkService;
@@ -57,6 +59,8 @@ public class ConfigController {
     public GetConfigResponse getConfig() {
         return GetConfigResponse.GetConfigResponseBuilder.aGetConfigResponse()
                 .withVersion(env.getProperty(PROJECT_VERSION_PROPERTY))
+                .withKallelseArbetsdagar(Integer.parseInt(env.getProperty(IB_KALLELSE_ARBETSDAGAR, "0")))
+                .withPostgangArbetsdagar(Integer.parseInt(env.getProperty(IB_POSTGANG_ARBETSDAGA, "0")))
                 .build();
     }
 

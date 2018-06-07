@@ -4,13 +4,26 @@
         <h4 class="modal-title">Lägg till besök</h4>
     </div>
     <div class="modal-body">
+        <ib-alert-message
+            ng-if="besok.profession && besok.profession !== 'LK'"
+            alert-id="lagg-till-besok.info.profession"
+            alert-message-id="lagg-till-besok.info.profession"
+            alert-severity="info">
+        </ib-alert-message>
+        <ib-alert-message
+            ng-if="showMessageForKallelse()"
+            alert-id="lagg-till-besok.info.profession"
+            alert-severity="info">
+            {{ getMessageForKallelsedatum() }}
+        </ib-alert-message>
+
         <form name="laggTillBesokForm" novalidate autocomplete="off">
             <div class="big-flex-wrapper">
                 <div class="flex-wrapper">
                     <span class="date">
-                        <ib-help-text-label label-key="lagg-till-besok.label.date"></ib-help-text-label>
+                        <span class="asterisk" ng-if="!besok.besokDatum">*</span><ib-help-text-label label-key="lagg-till-besok.label.date"></ib-help-text-label>
                         <ib-date-picker-field
-                        target-model="besok.besokDatum"
+                        target-model="besokDatum"
                         format="yyyy-MM-dd"
                         date-format-error="Ogiltigt datumformat, ange ett datum som ÅÅÅÅ-MM-DD"
                         ib-date-picker-field
@@ -18,25 +31,25 @@
                         add-date-parser="strict">
                         </ib-date-picker-field>
                     </span>
-                    <span class="from">
-                        <ib-help-text-label label-key="lagg-till-besok.label.from"></ib-help-text-label>
+                    <span class="time">
+                        <span class="asterisk" ng-if="!besokStartTid">*</span><ib-help-text-label label-key="lagg-till-besok.label.from"></ib-help-text-label>
                         <ib-time-picker data-date="besokStartTid"></ib-time-picker>
                     </span>
-                    <span class="to">
-                        <ib-help-text-label label-key="lagg-till-besok.label.to"></ib-help-text-label>
+                    <span class="time">
+                        <span class="asterisk" ng-if="!besokSlutTid">*</span><ib-help-text-label label-key="lagg-till-besok.label.to"></ib-help-text-label>
                         <ib-time-picker data-date="besokSlutTid"></ib-time-picker>
                     </span>
                 </div>
                 <div class="flex-wrapper">
-                    <span><ib-help-text-label label-key="lagg-till-besok.label.profession"></ib-help-text-label></span>
                     <span>
-                        <ib-dropdown
-                        id="profession"
-                        ng-model="besok.profession"
-                        ng-change="onChange()"
-                        items="professionList">
-                        </ib-dropdown>
+                        <span class="asterisk" ng-if="!besok.profession">*</span><ib-help-text-label label-key="lagg-till-besok.label.profession"></ib-help-text-label>
                     </span>
+                    <ib-dropdown
+                    id="profession"
+                    ng-model="besok.profession"
+                    ng-change="onChange()"
+                    items="professionList">
+                    </ib-dropdown>
                 </div>
                 <div class="flex-wrapper">
                     <span><ib-help-text-label label-key="lagg-till-besok.label.name"></ib-help-text-label></span>
@@ -56,10 +69,12 @@
                         </ib-checkbox-wrapper>
                     </span>
                 </div>
-                <div id="radio-wrapper">
-                    <span><ib-help-text-label label-key="lagg-till-besok.label.kallelseskickad"></ib-help-text-label></span>
+                <div class="flex-wrapper">
+                    <span class="kallelse">
+                        <span class="asterisk" ng-if="!besok.kallelseDatum">*</span><ib-help-text-label label-key="lagg-till-besok.label.kallelseskickad"></ib-help-text-label>
+                    </span>
                     <ib-date-picker-field
-                        target-model="besok.kallelseDatum"
+                        target-model="besokKallelse"
                         min-date-error="Möjligt startdatum får tidigast vara dagens datum"
                         format="yyyy-MM-dd"
                         date-format-error="Ogiltigt datumformat, ange ett datum som ÅÅÅÅ-MM-DD"
@@ -69,18 +84,18 @@
                     </ib-date-picker-field>
                     <ib-radio-wrapper>
                         <input type="radio" value="BREVKONTAKT" ng-model="besok.kallelseForm">
-                        <label ng-attr-for="utforarTypEnhet">Per post</label>
+                        <label ng-click="besok.kallelseForm = 'BREVKONTAKT'" ng-attr-for="utforarTypEnhet">Per post</label>
                     </ib-radio-wrapper>
                     <ib-radio-wrapper>
                         <input type="radio" value="TELEFONKONTAKT" ng-model="besok.kallelseForm">
-                        <label ng-attr-for="utforarTypUnderleverantor">Per telefon</label>
+                        <label ng-click="besok.kallelseForm = 'TELEFONKONTAKT'" ng-attr-for="utforarTypUnderleverantor">Per telefon</label>
                     </ib-radio-wrapper>
                 </div>
             </div>
         </form>
     </div>
     <div class="modal-footer">
-        <button type="button" id="lagg-till-besok-modal-skicka" class="btn btn-primary" ng-click="send()">
+        <button type="button" id="lagg-till-besok-modal-skicka" class="btn btn-primary" ng-click="send()" ng-disabled="!besok.besokDatum || !besokStartTid || !besokSlutTid || !besok.profession || !besok.kallelseDatum">
         Spara
         </button>
         <button type="button" id="lagg-till-besok-modal-cancel" class="btn btn-default" ng-click="$dismiss()">

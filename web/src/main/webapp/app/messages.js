@@ -111,6 +111,8 @@ var ibMessages = {
         'lagg-till-besok.label.kallelseskickad': 'Kallelse skickad',
         'lagg-till-besok.label.viamail': 'Per post',
         'lagg-till-besok.label.viaphone': 'Per telefon',
+        'lagg-till-besok.info.profession': 'Om annan profession än läkare har valts så kommer utredningstypen att ändras till "AFU utvidgad".',
+        'lagg-till-besok.info.kallelsedatum': 'Kallelsedatum är mindre än ${0} arbetsdagar innan besöksdatum. Om invånaren gör en sen avbokning eller uteblir kommer besöket inte att ersättas.',
 
         // Registrera mottagen handling modal
         'registrera-mottagen-handling.label.info': 'Här anges datumet för när handlingarna mottogs. Detta datum visas inte för Försäkringskassan utan är till för vården att kunna följa händelser kring utredningen.\n' +
