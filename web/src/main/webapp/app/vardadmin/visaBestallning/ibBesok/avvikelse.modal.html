@@ -1,0 +1,70 @@
+<div id="avvikelse-modal">
+  <div class="modal-header">
+    <button class="close" data-dismiss="modal" data-ng-click="$dismiss()"><i class="material-icons">close</i></button>
+    <h4 class="modal-title">Rapportera avvikelse</h4>
+  </div>
+  <div class="modal-body">
+    <form name="avvikelseForm" novalidate autocomplete="off">
+      <div class="flex-column">
+
+        {{avvikelse}}
+
+        <div class="flex-row">
+          <ib-alert-message alert-id="avvikelse-info" alert-message-id="avvikelse.info" alert-severity="info"></ib-alert-message>
+        </div>
+
+        <div class="flex-row">
+          <span><ib-help-text-label label-key="avvikelse.label.orsakadav"></ib-help-text-label></span>
+          <span>
+            <ib-dropdown id="orsakatAv" ng-model="avvikelse.orsakatAv" ng-change="onChange()"
+                         items="orsakList">
+            </ib-dropdown>
+          </span>
+        </div>
+
+        <div class="flex-row">
+          <span><ib-help-text-label label-key="avvikelse.label.invanareuteblev"></ib-help-text-label></span>
+          <span>
+            <ib-checkbox-wrapper>
+              <input type="checkbox" ng-model="avvikelse.invanareUteblev" ng-true-value="true" ng-false-value="false">
+              <label></label>
+            </ib-checkbox-wrapper>
+          </span>
+        </div>
+
+        <div class="flex-row">
+          <ib-help-text-label label-key="avvikelse.label.avvikelseuppstod"></ib-help-text-label>
+          <ib-date-picker-field target-model="avvikelse.datum" format="yyyy-MM-dd"
+                                date-format-error="Ogiltigt datumformat, ange ett datum som ÅÅÅÅ-MM-DD"
+                                ib-date-picker-field append-to-body="true" add-date-parser="strict">
+          </ib-date-picker-field>
+        </div>
+
+        <div class="flex-row">
+          <ib-help-text-label label-key="avvikelse.label.from"></ib-help-text-label>
+          <ib-time-picker data-date="avvikelse.tid"></ib-time-picker>
+        </div>
+
+        <div class="flex-row">
+          <ib-textarea
+              id="beskrivning"
+              model="avvikelse.beskrivning"
+              required="false"
+              placeholder-text="Frivilligt"
+              max-length="255"
+              col-size="12">
+          </ib-textarea>
+        </div>
+
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" id="avvikelse-modal-skicka" class="btn btn-primary" ng-click="send()">
+      Spara
+    </button>
+    <button type="button" id="avvikelse-modal-cancel" class="btn btn-default" ng-click="$dismiss()">
+      <span message key="common.cancel"></span>
+    </button>
+  </div>
+</div>

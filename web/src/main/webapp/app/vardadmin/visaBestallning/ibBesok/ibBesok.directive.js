@@ -32,19 +32,24 @@ angular.module('ibApp').directive('ibBesok', function($log, $uibModal, $state) {
                 openModal('laggTillBesok.modal.html', 'LaggTillBesokModalCtrl');
             };
 
+            $scope.openAvvikelseModal = function(besokId) {
+                openModal('avvikelse.modal.html', 'AvvikelseModalCtrl', besokId);
+            };
+
             /* TODO Redovisa besök modal
             $scope.oppnaRedovisaBesok = function() {
                 openModal('redovisaTolk.modal.html', 'RedovisaTolkModalCtrl');
             };
             */
 
-            function openModal(templateUrl, controller) {
+            function openModal(templateUrl, controller, besokId) {
                 var modalInstance = $uibModal.open({
                     templateUrl: '/app/vardadmin/visaBestallning/ibBesok/' + templateUrl,
                     size: 'md',
                     controller: controller,
                     resolve: {
-                        utredningsId: $scope.bestallning.utredningsId
+                        utredningsId: $scope.bestallning.utredningsId,
+                        besokId: besokId
                     }
                 });
 

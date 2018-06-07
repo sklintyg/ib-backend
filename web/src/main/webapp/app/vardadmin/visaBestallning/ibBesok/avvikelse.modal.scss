@@ -17,39 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-ib-utredning-header {
-  ib-spinner .ib-spinner {
-    height: 83px;
-    padding: 10px;
+#avvikelse-modal {
+  ib-checkgroup .control-label {
+    @extend %ib-typo-05;
+    color: $ib-color-09;
   }
-}
 
-.page-header-divider {
-  border-bottom: 1px solid $ib-color-15;
-  padding-bottom: 5px;
-  margin-bottom: 10px;
-}
+  .control-label {
+    @extend %ib-typo-06;
+    color: $ib-color-09;
+  }
 
-.flex-col-max {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-}
-.flex-col-min {
-  display: flex;
-  align-items: flex-end;
-}
 
-ib-utredning-header .ib-page-header {
-  padding: 10px 28px 10px 28px;
-}
-
-.ib-utredning-patient-namn-personnummer label {
-  margin: 0;
-  vertical-align: bottom;
-  margin-bottom: -5px;
-}
-
-#tillbakaButton {
-  margin-right: 50px;
 }
