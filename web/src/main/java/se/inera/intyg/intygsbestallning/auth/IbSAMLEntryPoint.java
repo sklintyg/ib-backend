@@ -18,19 +18,39 @@
  */
 package se.inera.intyg.intygsbestallning.auth;
 
-import org.opensaml.saml2.metadata.provider.MetadataProviderException;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.saml.SAMLEntryPoint;
-import org.springframework.security.saml.context.SAMLMessageContext;
-import org.springframework.security.saml.websso.WebSSOProfileOptions;
-import se.inera.intyg.infra.security.common.model.AuthConstants;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.opensaml.saml2.metadata.provider.MetadataProviderException;
+import org.opensaml.ws.transport.http.HttpServletRequestAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.saml.SAMLEntryPoint;
+import org.springframework.security.saml.context.SAMLMessageContext;
+import org.springframework.security.saml.websso.WebSSOProfileOptions;
 
+import com.google.common.base.Strings;
+
+import se.inera.intyg.infra.security.common.model.AuthConstants;
+import se.inera.intyg.intygsbestallning.auth.model.IbRelayStateType;
+import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
+
+/**
+ * Customized SAMLEntryPoint for IB that provides two customizations:
+ *
+ * 1. Tries to parse the "targetApplication" query parameter of the SAML login request. Allowed values are FMU or BP.
+ * If null or empty string, defaults to FMU. If an unknown value, throws exception.
+ *
+ * 2. Specifies the {@link AuthConstants#URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT} authContext for SITHS.
+ *
+ * @author eriklupander
+ */
 public class IbSAMLEntryPoint extends SAMLEntryPoint {
+
+    private static final String TARGET_APP = "targetApplication";
+    private static final Logger LOG = LoggerFactory.getLogger(IbSAMLEntryPoint.class);
 
     /**
      * Override from superclass, see class comment for details.
@@ -49,7 +69,48 @@ public class IbSAMLEntryPoint extends SAMLEntryPoint {
 
         WebSSOProfileOptions ssoProfileOptions = new WebSSOProfileOptions();
         ssoProfileOptions.setAuthnContexts(buildTlsClientAuthContexts());
+        String relayState = resolveRelayStateFromRequestParam(context);
+        if (relayState != null) {
+            ssoProfileOptions.setRelayState(relayState);
+        }
         return ssoProfileOptions;
+    }
+
+    /**
+     * Tries to find the "targetApplication" query parameter from the /saml/login/alias/defaultAlias?targetApplication=NNN
+     * and return it.
+     *
+     * Uses an unconventional approach to get hold of the HttpRequest by casting the InboundMessageTransport. There
+     * really should be a better way to get hold of the request. One can override the "commence()" method to get direct
+     * access to the HttpServletRequest, but then there's no thread-local storage to utilize for stuffing it into
+     * the relayState field of the WebSSOProfileOptions.
+     */
+    private String resolveRelayStateFromRequestParam(SAMLMessageContext context) {
+        if (context.getInboundMessageTransport() != null && context.getInboundMessageTransport() instanceof HttpServletRequestAdapter) {
+            HttpServletRequestAdapter req = (HttpServletRequestAdapter) context.getInboundMessageTransport();
+            if (req != null && req.getWrappedRequest() != null) {
+
+                String paramValue = req.getWrappedRequest().getParameter(TARGET_APP);
+
+                // If not specified, default to FMU
+                if (Strings.isNullOrEmpty(paramValue)) {
+                    LOG.warn("Login request contained no " + TARGET_APP + " query parameter, defaulting to FMU.");
+                    return IbRelayStateType.FMU.name();
+                }
+
+                try {
+                    IbRelayStateType ibRelayStateType = IbRelayStateType.valueOf(paramValue);
+                    return ibRelayStateType.name();
+                } catch (IllegalArgumentException e) {
+                    throw new IbAuthorizationException("Unknown RelayState '" + paramValue + "' requested from " + TARGET_APP
+                            + " parameter. Cannot be mapped to valid relaySate.");
+                }
+            }
+        }
+        LOG.error(
+                "Unable to resolve relayState from HTTP request since the SAMLMessageContext contained to wrapped HttpServletRequest. "
+                        + "This should never happen...");
+        return null;
     }
 
     private Collection<String> buildTlsClientAuthContexts() {

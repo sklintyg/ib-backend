@@ -82,11 +82,10 @@ gretty {
 //    jvmArgs = [
 //            '-Dspring.profiles.active=dev,ib-stub,caching-enabled,ib-security-test',
 //            '-Dconfig.file=' + projectDir + '/src/main/resources/dev.properties',
-//            '-Dcredentials.file=' + projectDir + '/src/main/resources/dev-credentials.properties',
+//            '-Dcredentials.file=' + projectDir + '/../devops/openshift/test/env/secret-env.properties',
 //            '-Dresources.folder=/' + projectDir + '/../src/main/resources',
 //            '-Dcertificate.folder=/' + projectDir + '/../devops/openshift/test/env',
-//            '-Dconfig.dir=/' + projectDir + '/../devops/openshift/test/config',
-//            '-XX:MaxPermSize=256M'
+//            '-Dconfig.dir=/' + projectDir + '/../devops/openshift/test/config/'
 //    ]
 }
 
