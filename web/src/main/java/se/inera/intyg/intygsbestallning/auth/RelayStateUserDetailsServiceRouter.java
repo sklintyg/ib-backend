@@ -65,7 +65,6 @@ public class RelayStateUserDetailsServiceRouter implements SAMLUserDetailsServic
                     .map(IbRelayStateType::name)
                     .collect(Collectors.joining(",")));
         }
-
     }
 
     public void setIbUserDetailsService(IbUserDetailsService ibUserDetailsService) {
