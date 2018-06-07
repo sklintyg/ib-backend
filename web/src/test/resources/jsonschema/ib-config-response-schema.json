@@ -5,10 +5,10 @@
     "version": {
       "type": "string"
     },
-    "utredningPaminnelseDagar": {
+    "kallelseArbetsdagar": {
       "type": "integer"
     },
-    "forfraganPaminnelseDagar": {
+    "postgangArbetsdagar": {
       "type": "integer"
     }
   },
