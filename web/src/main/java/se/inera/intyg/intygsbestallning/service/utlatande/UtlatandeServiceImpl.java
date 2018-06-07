@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
-import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
@@ -68,7 +67,7 @@ public class UtlatandeServiceImpl extends BaseUtredningService implements Utlata
     }
 
     @Override
-    public UtredningStatus sendUtlatande(Long utredningId, SendUtlatandeRequest request, String vardenhetHsaId) {
+    public UtredningStatus sendUtlatande(Long utredningId, SendUtlatandeRequest request) {
 
         LocalDateTime utlatandeSentDate = parseDate(request).atStartOfDay();
 
@@ -84,9 +83,7 @@ public class UtlatandeServiceImpl extends BaseUtredningService implements Utlata
             throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, "Utredning with id '" + utredningId + "' is in an incorrect state.");
         }
 
-        if (!utredning.getBestallning().get().getTilldeladVardenhetHsaId().equals(vardenhetHsaId)) {
-            throw new IbAuthorizationException("Utredning with id '" + utredningId + "' is for another vardenhet");
-        }
+        checkUserVardenhetTilldeladToBestallning(utredning);
 
         Intyg intyg = utredning.getIntygList().stream()
                 .filter(isNotKomplettering())

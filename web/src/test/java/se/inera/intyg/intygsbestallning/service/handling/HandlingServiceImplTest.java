@@ -35,6 +35,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
+import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
@@ -42,6 +43,7 @@ import se.inera.intyg.intygsbestallning.persistence.repository.UtredningReposito
 import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
 import se.inera.intyg.intygsbestallning.service.pdl.LogService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
+import se.inera.intyg.intygsbestallning.service.utredning.ServiceTestUtil;
 import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.handling.RegisterHandlingRequest;
 
@@ -68,8 +70,7 @@ public class HandlingServiceImplTest {
         Utredning utredning = TestDataGen.createUtredning();
         when(utredningRepository.findById(anyLong())).thenReturn(Optional.of(utredning));
 
-        IbUser user = new IbUser("id-1", "Vardadmin Vardadminsson");
-        when(userService.getUser()).thenReturn(user);
+        when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
 
         testee.registerNewHandling(1L, buildRequest());
         verify(utredningRepository, times(1)).save(any());
@@ -102,6 +103,16 @@ public class HandlingServiceImplTest {
     public void testInvalidDate() {
         RegisterHandlingRequest req = buildRequest();
         req.setHandlingarMottogsDatum("2013-14-12");
+        testee.registerNewHandling(1L, req);
+    }
+
+    @Test(expected = IbAuthorizationException.class)
+    public void testInvalidVardenhet() {
+        when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
+        Utredning utredning = TestDataGen.createUtredning();
+        utredning.getBestallning().get().setTilldeladVardenhetHsaId("AnnanVardenhet");
+        when(utredningRepository.findById(anyLong())).thenReturn(Optional.of(utredning));
+        RegisterHandlingRequest req = buildRequest();
         testee.registerNewHandling(1L, req);
     }
 

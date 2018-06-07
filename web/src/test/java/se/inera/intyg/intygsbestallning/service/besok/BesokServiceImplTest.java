@@ -29,6 +29,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto.ReportCareContactRequestDtoBuilder.aReportCareContactRequestDto;
 import static se.inera.intyg.intygsbestallning.persistence.model.Avvikelse.AvvikelseBuilder.anAvvikelse;
 import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
@@ -49,7 +50,7 @@ import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import se.inera.intyg.intygsbestallning.auth.IbUser;
+import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
@@ -70,6 +71,7 @@ import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSend
 import se.inera.intyg.intygsbestallning.service.pdl.LogService;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PdlLogType;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
+import se.inera.intyg.intygsbestallning.service.utredning.ServiceTestUtil;
 import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.RegisterBesokRequest;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
@@ -116,8 +118,7 @@ public class BesokServiceImplTest {
     @Test
     public void testRegisterBesokMedLakareSomProfession() {
 
-        final String userName = "test user";
-        doReturn(new IbUser("", userName)).when(userService).getUser();
+        when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
 
         RegisterBesokRequest request = new RegisterBesokRequest();
         request.setUtredningId(UTREDNING_ID);
@@ -164,8 +165,7 @@ public class BesokServiceImplTest {
     @Test
     public void testRegisterBesokMedAnnanProfession() {
 
-        final String userName = "test user";
-        doReturn(new IbUser("", userName)).when(userService).getUser();
+        when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
 
         RegisterBesokRequest request = new RegisterBesokRequest();
         request.setUtredningId(UTREDNING_ID);
@@ -210,7 +210,7 @@ public class BesokServiceImplTest {
     }
 
     @Test
-    public void testRegisterIllegalState() {
+    public void testRegisterBesokIllegalState() {
         RegisterBesokRequest request = new RegisterBesokRequest();
         request.setUtredningId(UTREDNING_ID);
         request.setUtredandeVardPersonalNamn("utredandeVardPersonalNamn");
@@ -234,10 +234,33 @@ public class BesokServiceImplTest {
                 .hasMessage("Utredning with id " + UTREDNING_ID + " is in an incorrect state");
     }
 
+    @Test(expected = IbAuthorizationException.class)
+    public void testRegisterBesokFelaktigVardenhet() {
+
+        when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
+
+        RegisterBesokRequest request = new RegisterBesokRequest();
+        request.setUtredningId(UTREDNING_ID);
+        request.setUtredandeVardPersonalNamn("utredandeVardPersonalNamn");
+        request.setProfession(DeltagarProfessionTyp.LK);
+        request.setTolkStatus(TolkStatusTyp.BOKAT);
+        request.setKallelseForm(KallelseFormTyp.TELEFONKONTAKT);
+        request.setKallelseDatum(DATE_TIME);
+        request.setBesokDatum(DATE_TIME.plusMonths(1).toLocalDate());
+        request.setBesokStartTid(DATE_TIME.plusMonths(1).plusHours(4).toLocalTime());
+        request.setBesokSlutTid(DATE_TIME.plusMonths(1).plusHours(6).toLocalTime());
+
+        Utredning utredning = TestDataGen.createUtredning();
+        utredning.getBestallning().get().setTilldeladVardenhetHsaId("AnnanVardenhet");
+        doReturn(Optional.of(utredning))
+                .when(utredningRepository).findById(eq(UTREDNING_ID));
+
+        besokService.registerBesok(request);
+    }
+
     @Test
     public void testRegisterBesokOmbokat() {
-        final String userName = "test user";
-        doReturn(new IbUser("", userName)).when(userService).getUser();
+        when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
 
         Utredning utredning = TestDataGen.createUtredning();
         utredning.setBesokList(ImmutableList.of(aBesok()
@@ -292,8 +315,7 @@ public class BesokServiceImplTest {
 
     @Test
     public void testRegisterBesokUppdaterat() {
-        final String userName = "test user";
-        doReturn(new IbUser("", userName)).when(userService).getUser();
+        when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
 
         Utredning utredning = TestDataGen.createUtredning();
         utredning.setUtredningsTyp(UtredningsTyp.AFU);
@@ -349,6 +371,8 @@ public class BesokServiceImplTest {
 
     @Test(expected = IbNotFoundException.class)
     public void testRegisterBesokUpdateNotExisting() {
+        when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
+
         Utredning utredning = TestDataGen.createUtredning();
         utredning.setUtredningsTyp(UtredningsTyp.AFU);
         utredning.setBesokList(ImmutableList.of(aBesok()
@@ -426,6 +450,8 @@ public class BesokServiceImplTest {
 
     @Test
     public void testReportBesokAvvikelseRapporterad() {
+
+        when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
 
         Utredning utredning = createUtredningForBesokTest();
         Utredning utredningAfterSavedAvvikelse = createUtredningForBesokTest();

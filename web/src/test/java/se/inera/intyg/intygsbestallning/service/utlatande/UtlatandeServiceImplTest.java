@@ -37,6 +37,7 @@ import se.inera.intyg.intygsbestallning.service.pdl.LogService;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PdlLogType;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
+import se.inera.intyg.intygsbestallning.service.utredning.ServiceTestUtil;
 import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utlatande.SendUtlatandeRequest;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportUtlatandeMottagetRequest;
@@ -90,11 +91,11 @@ public class UtlatandeServiceImplTest {
                 .when(utredningRepository)
                 .findById(TestDataGen.getUtredningId());
 
-        doReturn(new IbUser("", userName)).when(userService).getUser();
+        when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
 
         SendUtlatandeRequest request = new SendUtlatandeRequest();
         request.setUtlatandeSentDate(testDate);
-        UtredningStatus status = utlatandeService.sendUtlatande(TestDataGen.getUtredningId(), request, TestDataGen.getCareunitId());
+        UtredningStatus status = utlatandeService.sendUtlatande(TestDataGen.getUtredningId(), request);
         assertEquals(UtredningStatus.UTLATANDE_SKICKAT, status);
 
         verify(logService).log(argThat(arg -> arg.getPatientId().equals(TestDataGen.getPersonId())),
@@ -114,13 +115,13 @@ public class UtlatandeServiceImplTest {
 
         SendUtlatandeRequest request = new SendUtlatandeRequest();
         request.setUtlatandeSentDate(testDate);
-        utlatandeService.sendUtlatande(TestDataGen.getUtredningId(), request, TestDataGen.getCareunitId());
+        utlatandeService.sendUtlatande(TestDataGen.getUtredningId(), request);
     }
 
     @Test(expected = IbServiceException.class)
     public void sendUtlatandeFailMissingRequiredArgument() {
         SendUtlatandeRequest request = new SendUtlatandeRequest();
-        utlatandeService.sendUtlatande(TestDataGen.getUtredningId(), request, TestDataGen.getCareunitId());
+        utlatandeService.sendUtlatande(TestDataGen.getUtredningId(), request);
     }
 
     @Test(expected = IbServiceException.class)
@@ -137,12 +138,14 @@ public class UtlatandeServiceImplTest {
 
         SendUtlatandeRequest request = new SendUtlatandeRequest();
         request.setUtlatandeSentDate(testDate);
-        utlatandeService.sendUtlatande(TestDataGen.getUtredningId(), request, TestDataGen.getCareunitId());
+        utlatandeService.sendUtlatande(TestDataGen.getUtredningId(), request);
     }
 
     @Test(expected = IbAuthorizationException.class)
     public void sendUtlatandeFailAnotherVardenhet() {
         String testDate = "2018-05-05";
+
+        when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
 
         Utredning utredning = TestDataGen.createUtredning();
         utredning.getIntygList().get(0).setSkickatDatum(null);
@@ -157,7 +160,7 @@ public class UtlatandeServiceImplTest {
 
         SendUtlatandeRequest request = new SendUtlatandeRequest();
         request.setUtlatandeSentDate(testDate);
-        utlatandeService.sendUtlatande(TestDataGen.getUtredningId(), request, TestDataGen.getCareunitId());
+        utlatandeService.sendUtlatande(TestDataGen.getUtredningId(), request);
     }
 
     @Test

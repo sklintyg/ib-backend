@@ -75,6 +75,8 @@ public class HandlingServiceImpl extends BaseUtredningService implements Handlin
                     "This utredning is in phase " + status.getUtredningFas().getLabel() + " and cannot accept new Handlingar.");
         }
 
+        checkUserVardenhetTilldeladToBestallning(utredning);
+
         Handling handling = Handling.HandlingBuilder.aHandling()
                 .withInkomDatum(mottagenDatum.atStartOfDay())
                 .withSkickatDatum(LocalDateTime.now())

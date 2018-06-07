@@ -44,6 +44,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Predicate;
+
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
@@ -116,6 +117,8 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
             throw new IbServiceException(IbErrorCodeEnum.BAD_STATE,
                     MessageFormat.format("Utredning with id {0} is in an incorrect state", utredning.getUtredningId()));
         }
+
+        checkUserVardenhetTilldeladToBestallning(utredning);
 
         Besok besok;
         Handelse besokHandelse;

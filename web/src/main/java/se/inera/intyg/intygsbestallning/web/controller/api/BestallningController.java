@@ -159,7 +159,7 @@ public class BestallningController {
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_BESTALLNINGAR)
                 .orThrow(new IbAuthorizationException("User does not have required privilege PRIVILEGE_LISTA_BESTALLNINGAR"));
 
-        utlatandeService.sendUtlatande(utredningId, request, user.getCurrentlyLoggedInAt().getId());
+        utlatandeService.sendUtlatande(utredningId, request);
         return ResponseEntity.ok().build();
     }
 }

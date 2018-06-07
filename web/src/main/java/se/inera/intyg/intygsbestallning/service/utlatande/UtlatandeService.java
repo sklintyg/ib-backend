@@ -24,7 +24,7 @@ import se.inera.intyg.intygsbestallning.web.responder.dto.ReportUtlatandeMottage
 
 public interface UtlatandeService {
 
-    UtredningStatus sendUtlatande(Long utredningId, SendUtlatandeRequest request, String vardenhetHsaId);
+    UtredningStatus sendUtlatande(Long utredningId, SendUtlatandeRequest request);
 
     void reportUtlatandeMottaget(ReportUtlatandeMottagetRequest request);
 

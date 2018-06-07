@@ -172,4 +172,13 @@ public abstract class BaseUtredningService {
             return ListFilterStatus.VANTAR_ANNAN_AKTOR;
         }
     }
+
+    protected void checkUserVardenhetTilldeladToBestallning(Utredning utredning) {
+        String userLoggedInAtHsaId = userService.getUser().getCurrentlyLoggedInAt().getId();
+        if (!utredning.getBestallning().get().getTilldeladVardenhetHsaId().equals(userLoggedInAtHsaId)) {
+            throw new IbAuthorizationException(MessageFormat.format(
+                    "User is currently logged in at {0} and is not tilldelad to bestallning for utredning with id {1}",
+                    userLoggedInAtHsaId, utredning.getUtredningId()));
+        }
+    }
 }

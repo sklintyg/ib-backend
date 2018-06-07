@@ -46,7 +46,7 @@ public final class ServiceTestUtil {
 
     public static IbUser buildUser() {
         IbUser user = new IbUser("user-1", "username");
-        user.setCurrentlyLoggedInAt(new IbVardenhet("enhet", "namnet", new IbVardgivare("vg", "namn", false)));
+        user.setCurrentlyLoggedInAt(new IbVardenhet("careunit-1", "namnet", new IbVardgivare("vg", "namn", false)));
         return user;
     }
 
