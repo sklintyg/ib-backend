@@ -1,48 +1,46 @@
-<div>
-  <ib-textfield
-      id="filterFritext"
-      model="filter.freetext"
-      label-key="avslutade.utredningar.filter.fritext.label"
-      max-length="255"
-      on-change="onChange()"
-      placeholder-key="avslutade.utredningar.filter.fritext.placeholder">
-  </ib-textfield>
-  <ib-dropdown
-      id="filterLandsting"
-      ng-model="filter.vardgivareNamn"
-      ng-change="onChange()"
-      label-key="avslutade.utredningar.filter.vardgivareNamn.label"
-      items="filter.vardgivareNamnOptions">
-  </ib-dropdown>
-  <ib-date-range-picker
-      id="filterAvslutsdatum"
-      model="filter.avslutsDatum"
-      on-change="onChange()"
-      label-key="avslutade.utredningar.filter.avslutsdatum.label"
-      placeholder-key="avslutade.utredningar.filter.avslutsdatum.placeholder">
-  </ib-date-range-picker>
-  <ib-dropdown
-      id="filterErsatts"
-      ng-model="filter.ersatts"
-      ng-change="onChange()"
-      label-key="avslutade.utredningar.filter.ersatts.label"
-      items="filter.yesNoOptions">
-  </ib-dropdown>
-  <ib-dropdown
-          id="filterFakturerad"
-          ng-model="filter.fakturerad"
-          ng-change="onChange()"
-          label-key="avslutade.utredningar.filter.fakturerad.label"
-          items="filter.yesNoOptions">
-  </ib-dropdown>
-  <ib-dropdown
-          id="filterUtbetald"
-          ng-model="filter.utbetald"
-          ng-change="onChange()"
-          label-key="avslutade.utredningar.filter.utbetald.label"
-          items="filter.yesNoOptions">
-  </ib-dropdown>
-  <button class="btn btn-primary" ng-click="resetFilter()" ng-disabled="filter.isDefault()">
-    <message key="avslutade.utredningar.filter.resetfilter.label"></message>
-  </button>
-</div>
+<ib-textfield
+    id="filterFritext"
+    model="filter.freetext"
+    label-key="avslutade.utredningar.filter.fritext.label"
+    max-length="255"
+    on-change="onChange()"
+    placeholder-key="avslutade.utredningar.filter.fritext.placeholder">
+</ib-textfield>
+<ib-dropdown
+    id="filterLandsting"
+    ng-model="filter.vardgivareNamn"
+    ng-change="onChange()"
+    label-key="avslutade.utredningar.filter.vardgivareNamn.label"
+    items="filter.vardgivareNamnOptions">
+</ib-dropdown>
+<ib-date-range-picker
+    id="filterAvslutsdatum"
+    model="filter.avslutsDatum"
+    on-change="onChange()"
+    label-key="avslutade.utredningar.filter.avslutsdatum.label"
+    placeholder-key="avslutade.utredningar.filter.avslutsdatum.placeholder">
+</ib-date-range-picker>
+<ib-dropdown
+    id="filterErsatts"
+    ng-model="filter.ersatts"
+    ng-change="onChange()"
+    label-key="avslutade.utredningar.filter.ersatts.label"
+    items="filter.yesNoOptions">
+</ib-dropdown>
+<ib-dropdown
+        id="filterFakturerad"
+        ng-model="filter.fakturerad"
+        ng-change="onChange()"
+        label-key="avslutade.utredningar.filter.fakturerad.label"
+        items="filter.yesNoOptions">
+</ib-dropdown>
+<ib-dropdown
+        id="filterUtbetald"
+        ng-model="filter.utbetald"
+        ng-change="onChange()"
+        label-key="avslutade.utredningar.filter.utbetald.label"
+        items="filter.yesNoOptions">
+</ib-dropdown>
+<button class="btn btn-primary" ng-click="resetFilter()" ng-disabled="filter.isDefault()">
+  <message key="avslutade.utredningar.filter.resetfilter.label"></message>
+</button>
