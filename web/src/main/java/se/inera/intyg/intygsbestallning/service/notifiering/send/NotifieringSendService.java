@@ -19,6 +19,7 @@
 package se.inera.intyg.intygsbestallning.service.notifiering.send;
 
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
+import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 
 public interface NotifieringSendService {
@@ -29,7 +30,7 @@ public interface NotifieringSendService {
 
     void notifieraLandstingSamtligaVardenheterHarSvaratPaInternforfragan(Utredning utredning);
 
-    void notifieraVardenhetTilldeladUtredning(Utredning utredning);
+    void notifieraVardenhetTilldeladUtredning(Utredning utredning, InternForfragan tillDeladInternForfragan, String landstingNamn);
 
     void notifieraVardenhetPaminnelseSvaraInternforfragan(Utredning utredning);
 

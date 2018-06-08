@@ -18,14 +18,28 @@
  */
 package se.inera.intyg.intygsbestallning.service.forfragan;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
+import static java.util.stream.Collectors.toList;
+import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.RespondToPerformerRequestDto.RespondToPerformerRequestDtoBuilder.aRespondToPerformerRequestDto;
+
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
+
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
@@ -38,12 +52,13 @@ import se.inera.intyg.intygsbestallning.integration.myndighet.service.MyndighetI
 import se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.ExternForfraganRepository;
 import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
+import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
 import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
-import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.util.GenericComparator;
 import se.inera.intyg.intygsbestallning.service.util.PagingUtil;
 import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
@@ -58,18 +73,6 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtre
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListForfraganFilter;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListForfraganFilterStatus;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.SelectItem;
-
-import java.text.MessageFormat;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toList;
-import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.RespondToPerformerRequestDto.RespondToPerformerRequestDtoBuilder.aRespondToPerformerRequestDto;
 
 @Service
 public class ExternForfraganServiceImpl extends BaseUtredningService implements ExternForfraganService {
@@ -93,6 +96,9 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
 
     @Autowired
     private MyndighetIntegrationService myndighetIntegrationService;
+
+    @Autowired
+    private NotifieringSendService notifieringSendService;
 
     @Override
     public ForfraganSvarResponse besvaraForfragan(Long forfraganId, ForfraganSvarRequest svarRequest) {
@@ -226,6 +232,8 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
 
         utredning.getHandelseList().add(HandelseUtil.createForfraganBesvarad(true, userService.getUser().getNamn(),
                 vardenhet.getNamn()));
+
+        notifieringSendService.notifieraVardenhetTilldeladUtredning(utredning, internForfragan, vardgivare.getNamn());
 
         utredningRepository.save(utredning);
 

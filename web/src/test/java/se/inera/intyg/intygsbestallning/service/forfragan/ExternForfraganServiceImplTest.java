@@ -49,6 +49,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.ExternForfraganRepository;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
+import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
 import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
@@ -69,7 +70,11 @@ import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
@@ -100,6 +105,9 @@ public class ExternForfraganServiceImplTest {
 
     @Mock
     private UserService userService;
+
+    @Mock
+    private NotifieringSendService notifieringSendService;
 
     @Spy
     private InternForfraganListItemFactory internForfraganListItemFactory = new InternForfraganListItemFactory(new BusinessDaysStub());
@@ -154,9 +162,9 @@ public class ExternForfraganServiceImplTest {
         when(organizationUnitService.getVardenhet(vardenhetId1)).thenReturn(new Vardenhet(vardenhetId1, vardenhetNamn1));
         when(organizationUnitService.getVardgivareOfVardenhet(vardenhetId1)).thenReturn(vardgivareId1);
         when(organizationUnitService.getVardgivareInfo(vardgivareId1)).thenReturn(new Vardgivare(vardgivareId1, vardgivareNamn1));
+        final Optional<Utredning> validUtredningForAcceptExternForfragan = createValidUtredningForAcceptExternForfragan(utredningId, landstingHsaId, vardenhetId1);
+        when(utredningRepository.findById(utredningId)).thenReturn(validUtredningForAcceptExternForfragan);
 
-        when(utredningRepository.findById(utredningId)).thenReturn(
-                createValidUtredningForAcceptExternForfragan(utredningId, landstingHsaId, vardenhetId1));
 
         GetUtredningResponse response = testee.acceptExternForfragan(utredningId, landstingHsaId, vardenhetId1);
 
@@ -182,6 +190,7 @@ public class ExternForfraganServiceImplTest {
 
         ArgumentCaptor<Utredning> utredningArgument = ArgumentCaptor.forClass(Utredning.class);
         verify(utredningRepository).save(utredningArgument.capture());
+        verify(notifieringSendService).notifieraVardenhetTilldeladUtredning(any(Utredning.class), any(InternForfragan.class), anyString());
 
         Utredning utredning = utredningArgument.getValue();
         assertNotNull(utredning.getExternForfragan().getInternForfraganList().get(0).getTilldeladDatum());

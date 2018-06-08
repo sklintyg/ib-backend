@@ -47,16 +47,17 @@ import se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar;
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.InternForfraganRepository;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
 import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
 import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
-import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
 import se.inera.intyg.intygsbestallning.service.vardenhet.VardenhetService;
+import se.inera.intyg.intygsbestallning.service.vardgivare.VardgivareService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.CreateInternForfraganRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.ForfraganSvarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.GetInternForfraganResponse;
@@ -65,6 +66,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternF
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganSvarItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.TilldelaDirektRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.GetVardenheterForVardgivareResponse;
 
 @Service
 @Transactional
@@ -75,17 +77,17 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
     private static final Pattern DATUM_REGEXP = Pattern.compile("\\d{4}-\\d{2}-\\d{2}");
 
     @Autowired
+    protected ExternForfraganService externForfraganService;
+    @Autowired
     private BusinessDaysBean businessDays;
-
     @Autowired
     private InternForfraganRepository internForfraganRepository;
-
     @Autowired
     private InternForfraganListItemFactory internForfraganListItemFactory;
-
     @Autowired
     private VardenhetService vardenhetService;
-
+    @Autowired
+    private VardgivareService vardgivareService;
     @Autowired
     private NotifieringSendService notifieringSendService;
 
@@ -222,7 +224,6 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
     }
 
     @Override
-    @Transactional
     public InternForfraganSvarItem besvaraInternForfragan(Long utredningId, ForfraganSvarRequest svar) {
 
         // Sanity check of input
@@ -236,13 +237,54 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
         Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
                 () -> new IbNotFoundException("Could not find the assessment with id " + utredningId));
 
-        // ..and have a matching internforfragan
+        // ..and have a internforfragan in answerable state
+        InternForfragan internForfragan = getAnswerableInternForfragan(utredning, svar);
+
+        ForfraganSvar forfraganSvar = buildSvarEntity(svar);
+        internForfragan.setForfraganSvar(forfraganSvar);
+        final InternForfragan answeredInternforfragan = internForfraganRepository.save(internForfragan);
+
+        createInternforfraganBesvaradHandelseLog(utredning, forfraganSvar, answeredInternforfragan.getVardenhetHsaId());
+
+        // F004: Normalflöde 5 - Notifiering skall ske när samtliga vårdenheter har besvarat internförfrågningarna
+        handleAllInternforfragningarMayBeAnswered(utredning, answeredInternforfragan);
+
+        // F004: Alternativflöde 2 - Utredningen skall tilldelas automatiskt till en vårdenhet i egen regi (när den accepterats
+        // och är enda tillfrågade enheten)
+        if (shouldTillDelasAutomatiskt(utredning, answeredInternforfragan)) {
+            externForfraganService.acceptExternForfragan(utredning.getUtredningId(), utredning.getExternForfragan().getLandstingHsaId(),
+                    answeredInternforfragan.getVardenhetHsaId());
+        }
+
+        return InternForfraganSvarItem.from(answeredInternforfragan);
+
+    }
+
+    private boolean shouldTillDelasAutomatiskt(Utredning utredning, InternForfragan saved) {
+        // Rule: Vårdenheten accepterar förfrågan
+        // Rule: Vårdenheten är den enda vårdenhet som fått en internförfrågan i utredningen
+        // Rule: Vårdenheten drivs i landstingets egen regi
+        return saved.getForfraganSvar().getSvarTyp().equals(SvarTyp.ACCEPTERA)
+                && utredning.getExternForfragan().getInternForfraganList().size() == 1
+                && isRegiFormEgen(utredning.getExternForfragan().getLandstingHsaId(), saved.getVardenhetHsaId());
+    }
+
+    private boolean isRegiFormEgen(String landstingHsaId, String vardenhetHsaId) {
+        final GetVardenheterForVardgivareResponse getVardenheterForVardgivareResponse = vardgivareService
+                .listVardenheterForVardgivare(landstingHsaId);
+        return getVardenheterForVardgivareResponse.getEgetLandsting().stream().anyMatch(vei -> vei.getId().equals(vardenhetHsaId));
+    }
+
+    private InternForfragan getAnswerableInternForfragan(Utredning utredning, ForfraganSvarRequest svar) {
+
+        // Utredning must have a internforfragan matching the ForfraganSvarRequest
         InternForfragan internForfragan = utredning.getExternForfragan().getInternForfraganList().stream()
                 .filter(i -> i.getId().equals(svar.getForfraganId()))
                 .findAny()
                 .orElseThrow(() -> new IbNotFoundException(String.format(
-                        "Could not find internforfragan '%s' in utredning '%s'", svar.getForfraganId(), utredningId)));
-        // .. in correct state
+                        "Could not find internforfragan '%s' in utredning '%s'", svar.getForfraganId(), utredning.getUtredningId())));
+
+        // .. that's in the correct state
         InternForfraganStatus internForfraganStatus = internForfraganStateResolver.resolveStatus(utredning, internForfragan);
         if (internForfraganStatus != InternForfraganStatus.INKOMMEN) {
             throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, String.format(
@@ -250,23 +292,13 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
                     internForfragan.getVardenhetHsaId(),
                     utredning.getUtredningId(), internForfraganStatus.getId()));
         }
-        // and should not already have been answered. (We could rely only on the INKOMMEN status)
+        // .. and should not already have been answered.
         if (internForfragan.getForfraganSvar() != null) {
             throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, String.format(
                     "Internforfragan for vardenhet '%s' in utredning '%s' already have an answer", internForfragan.getVardenhetHsaId(),
                     utredning.getUtredningId()));
         }
-
-        ForfraganSvar forfraganSvar = buildSvarEntity(svar);
-        internForfragan.setForfraganSvar(forfraganSvar);
-        final InternForfragan saved = internForfraganRepository.save(internForfragan);
-
-        createHandelseLog(utredning, forfraganSvar, saved.getVardenhetHsaId());
-
-        // F004: Normalflöde 5 - Notifiering skall ske när samtliga vårdenheter har besvarat internförfrågningarna
-        handleAllInternforfragningarMayBeAnswered(utredning, saved);
-
-        return InternForfraganSvarItem.from(saved);
+        return internForfragan;
     }
 
     private void handleAllInternforfragningarMayBeAnswered(Utredning utredning, InternForfragan internForfragan) {
@@ -277,7 +309,7 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
         }
     }
 
-    private void createHandelseLog(Utredning utredning, ForfraganSvar forfraganSvar, String vardenhetHsaId) {
+    private void createInternforfraganBesvaradHandelseLog(Utredning utredning, ForfraganSvar forfraganSvar, String vardenhetHsaId) {
 
         String vardenhetNamn = hsaOrganizationsService.getVardenhet(vardenhetHsaId).getNamn();
 

@@ -38,6 +38,7 @@ import static se.inera.intyg.intygsbestallning.persistence.model.type.Utrednings
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Optional;
 
 import org.junit.Test;
@@ -59,18 +60,21 @@ import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.integration.myndighet.service.MyndighetIntegrationService;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.RegiFormTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.InternForfraganRepository;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
 import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
-import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
+import se.inera.intyg.intygsbestallning.service.vardgivare.VardgivareService;
+import se.inera.intyg.intygsbestallning.service.vardgivare.dto.VardenhetItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.CreateInternForfraganRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.ForfraganSvarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.GetInternForfraganResponse;
@@ -78,6 +82,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternF
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganSvarItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.TilldelaDirektRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.GetVardenheterForVardgivareResponse;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InternForfraganServiceImplTest {
@@ -99,6 +104,12 @@ public class InternForfraganServiceImplTest {
 
     @Mock
     private NotifieringSendService notifieringSendService;
+
+    @Mock
+    private VardgivareService vardgivareService;
+
+    @Mock
+    private ExternForfraganService externForfraganService;
 
     @Mock
     private MyndighetIntegrationService myndighetIntegrationService;
@@ -515,7 +526,7 @@ public class InternForfraganServiceImplTest {
     public void testBesvaraInternForfraganFailsForNonexistingUtredning() {
         final Long utredningId = 1L;
         when(utredningRepository.findById(utredningId)).thenReturn(Optional.empty());
-        internForfraganService.besvaraInternForfragan(utredningId, buildValidInternForfraganSvarRequest(99L));
+        internForfraganService.besvaraInternForfragan(utredningId, buildValidInternForfraganSvarRequest(SvarTyp.ACCEPTERA, 99L));
     }
 
     @Test(expected = IbNotFoundException.class)
@@ -533,37 +544,37 @@ public class InternForfraganServiceImplTest {
                                 .build()))
                         .build())
                 .build()));
-        internForfraganService.besvaraInternForfragan(utredningId, buildValidInternForfraganSvarRequest(99L));
+        internForfraganService.besvaraInternForfragan(utredningId, buildValidInternForfraganSvarRequest(SvarTyp.ACCEPTERA, 99L));
     }
 
     @Test
     public void testBesvaraInternForfraganRequestValidation() {
 
-        ForfraganSvarRequest forfraganSvarRequest = buildValidInternForfraganSvarRequest(1L);
+        ForfraganSvarRequest forfraganSvarRequest = buildValidInternForfraganSvarRequest(SvarTyp.ACCEPTERA, 1L);
         assertNull(internForfraganService.validateSvarRequest(forfraganSvarRequest));
 
         // Svarstyp
-        forfraganSvarRequest = buildValidInternForfraganSvarRequest(1L);
+        forfraganSvarRequest = buildValidInternForfraganSvarRequest(SvarTyp.ACCEPTERA, 1L);
         forfraganSvarRequest.setSvarTyp("UNKNOWN");
         assertTrue(internForfraganService.validateSvarRequest(forfraganSvarRequest).contains("svarTypValue"));
 
         // UtforareTyp
-        forfraganSvarRequest = buildValidInternForfraganSvarRequest(1L);
+        forfraganSvarRequest = buildValidInternForfraganSvarRequest(SvarTyp.ACCEPTERA, 1L);
         forfraganSvarRequest.setUtforareTyp("UNKNOWN");
         assertTrue(internForfraganService.validateSvarRequest(forfraganSvarRequest).contains("UtforareTyp"));
 
         // Namn
-        forfraganSvarRequest = buildValidInternForfraganSvarRequest(1L);
+        forfraganSvarRequest = buildValidInternForfraganSvarRequest(SvarTyp.ACCEPTERA, 1L);
         forfraganSvarRequest.setUtforareNamn(null);
         assertTrue(internForfraganService.validateSvarRequest(forfraganSvarRequest).contains("UtforareNamn"));
 
         // Adress
-        forfraganSvarRequest = buildValidInternForfraganSvarRequest(1L);
+        forfraganSvarRequest = buildValidInternForfraganSvarRequest(SvarTyp.ACCEPTERA, 1L);
         forfraganSvarRequest.setUtforareAdress(null);
         assertTrue(internForfraganService.validateSvarRequest(forfraganSvarRequest).contains("UtforareAdress"));
 
         // Postnr
-        forfraganSvarRequest = buildValidInternForfraganSvarRequest(1L);
+        forfraganSvarRequest = buildValidInternForfraganSvarRequest(SvarTyp.ACCEPTERA, 1L);
         forfraganSvarRequest.setUtforarePostnr("apa");
         assertTrue(internForfraganService.validateSvarRequest(forfraganSvarRequest).contains("UtforarePostnr"));
         forfraganSvarRequest.setUtforarePostnr("1234");
@@ -572,12 +583,12 @@ public class InternForfraganServiceImplTest {
         assertNull(internForfraganService.validateSvarRequest(forfraganSvarRequest));
 
         // PostOrt
-        forfraganSvarRequest = buildValidInternForfraganSvarRequest(1L);
+        forfraganSvarRequest = buildValidInternForfraganSvarRequest(SvarTyp.ACCEPTERA, 1L);
         forfraganSvarRequest.setUtforarePostort(null);
         assertTrue(internForfraganService.validateSvarRequest(forfraganSvarRequest).contains("UtforarePostort"));
 
         // Epost
-        forfraganSvarRequest = buildValidInternForfraganSvarRequest(1L);
+        forfraganSvarRequest = buildValidInternForfraganSvarRequest(SvarTyp.ACCEPTERA, 1L);
         forfraganSvarRequest.setUtforareEpost(null);
         assertNull(internForfraganService.validateSvarRequest(forfraganSvarRequest));
         forfraganSvarRequest.setUtforareEpost("a@b");
@@ -593,9 +604,8 @@ public class InternForfraganServiceImplTest {
         forfraganSvarRequest.setUtforareEpost("en.lang.adress@some.domain.at.se");
         assertNull(internForfraganService.validateSvarRequest(forfraganSvarRequest));
 
-
         // BorjaDatum
-        forfraganSvarRequest = buildValidInternForfraganSvarRequest(1L);
+        forfraganSvarRequest = buildValidInternForfraganSvarRequest(SvarTyp.ACCEPTERA, 1L);
         forfraganSvarRequest.setBorjaDatum(null);
         assertNull(internForfraganService.validateSvarRequest(forfraganSvarRequest));
         forfraganSvarRequest.setBorjaDatum("1912-01-");
@@ -624,15 +634,19 @@ public class InternForfraganServiceImplTest {
                                 .build()))
                         .build())
                 .build()));
-        internForfraganService.besvaraInternForfragan(utredningId, buildValidInternForfraganSvarRequest(internForfragaId));
+        internForfraganService.besvaraInternForfragan(utredningId,
+                buildValidInternForfraganSvarRequest(SvarTyp.ACCEPTERA, internForfragaId));
     }
 
     @Test
-    public void testBesvaraInternForfraganSuccess() {
+    public void testBesvaraInternForfraganNormalFlode4() {
+        // Normalflöde 4 - Vårdadministratör accepterar internförfrågan från landstinget
         final Long utredningId = 1L;
         final String landstingHsaId = "landstingHsaId";
-        Long internForfragaId = 2L;
+        Long internForfragaId1 = 2L;
+        Long internForfragaId2 = 22L;
         String vardenhetId1 = "vardenhetHsaId1";
+        String vardenhetId2 = "vardenhetHsaId2";
         String vardenhetId1Namn = "vardenhetHsaId1Namn";
         String userName = "Anvandare1";
         Utredning utredningMock = anUtredning()
@@ -640,14 +654,18 @@ public class InternForfraganServiceImplTest {
                 .withUtredningsTyp(AFU)
                 .withExternForfragan(anExternForfragan()
                         .withLandstingHsaId(landstingHsaId)
-                        .withInternForfraganList(ImmutableList.of(anInternForfragan()
-                                .withId(internForfragaId)
-                                .withVardenhetHsaId(vardenhetId1)
-                                .build()))
+                        .withInternForfraganList(Arrays.asList(
+                                anInternForfragan()
+                                        .withId(internForfragaId1)
+                                        .withVardenhetHsaId(vardenhetId1)
+                                        .build(),
+                                anInternForfragan()
+                                        .withId(internForfragaId2)
+                                        .withVardenhetHsaId(vardenhetId2)
+                                        .build()))
                         .build())
                 .build();
         when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(utredningMock));
-        doNothing().when(notifieringSendService).notifieraLandstingSamtligaVardenheterHarSvaratPaInternforfragan(utredningMock);
         when(internForfraganRepository.save(any(InternForfragan.class))).thenAnswer(
                 invocation -> invocation.getArgument(0));
         when(organizationUnitService.getVardenhet(vardenhetId1)).thenReturn(new Vardenhet(vardenhetId1, vardenhetId1Namn));
@@ -656,17 +674,104 @@ public class InternForfraganServiceImplTest {
                 invocation -> invocation.getArgument(0));
 
         final InternForfraganSvarItem result = internForfraganService.besvaraInternForfragan(utredningId,
-                buildValidInternForfraganSvarRequest(internForfragaId));
+                buildValidInternForfraganSvarRequest(SvarTyp.ACCEPTERA, internForfragaId1));
+
+        assertNotNull(result);
+        assertEquals("Utforarnamn", result.getUtforareNamn());
+    }
+
+    @Test
+    public void testBesvaraInternForfraganNormalFlode5() {
+        // Normalflöde 5 - Samtliga vårdenheter har besvarat internförfrågningarna
+        final Long utredningId = 1L;
+        final String landstingHsaId = "landstingHsaId";
+        Long internForfragaId1 = 2L;
+        String vardenhetId1 = "vardenhetHsaId1";
+        String vardenhetId1Namn = "vardenhetHsaId1Namn";
+        String userName = "Anvandare1";
+        Utredning utredningMock = anUtredning()
+                .withUtredningId(utredningId)
+                .withUtredningsTyp(AFU)
+                .withExternForfragan(anExternForfragan()
+                        .withLandstingHsaId(landstingHsaId)
+                        .withInternForfraganList(Arrays.asList(
+                                anInternForfragan()
+                                        .withId(internForfragaId1)
+                                        .withVardenhetHsaId(vardenhetId1)
+                                        .build()))
+                        .build())
+                .build();
+        when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(utredningMock));
+        when(vardgivareService.listVardenheterForVardgivare(landstingHsaId)).thenReturn(new GetVardenheterForVardgivareResponse());
+        when(internForfraganRepository.save(any(InternForfragan.class))).thenAnswer(
+                invocation -> invocation.getArgument(0));
+        when(organizationUnitService.getVardenhet(vardenhetId1)).thenReturn(new Vardenhet(vardenhetId1, vardenhetId1Namn));
+        when(userService.getUser()).thenReturn(new IbUser("", userName));
+        when(utredningRepository.save(any(Utredning.class))).thenAnswer(
+                invocation -> invocation.getArgument(0));
+
+        final InternForfraganSvarItem result = internForfraganService.besvaraInternForfragan(utredningId,
+                buildValidInternForfraganSvarRequest(SvarTyp.ACCEPTERA, internForfragaId1));
+
+        assertNotNull(result);
+        assertEquals("Utforarnamn", result.getUtforareNamn());
+        // Should notify as internforfragan have been answered
+        verify(notifieringSendService, times(1)).notifieraLandstingSamtligaVardenheterHarSvaratPaInternforfragan(any(Utredning.class));
+    }
+
+    @Test
+    public void testBesvaraInternForfraganAlternativFlode2() {
+        // Alternativflöde 2 - Utredningen tilldelas automatiskt till en vårdenhet i egen regi
+        final Long utredningId = 1L;
+        final String landstingHsaId = "landstingHsaId";
+        Long internForfragaId1 = 2L;
+        String vardenhetId1 = "vardenhetHsaId1";
+        String vardenhetId1Namn = "vardenhetHsaId1Namn";
+        String userName = "Anvandare1";
+        Utredning utredningMock = anUtredning()
+                .withUtredningId(utredningId)
+                .withUtredningsTyp(AFU)
+                .withExternForfragan(anExternForfragan()
+                        .withLandstingHsaId(landstingHsaId)
+                        .withInternForfraganList(Arrays.asList(
+                                anInternForfragan()
+                                        .withId(internForfragaId1)
+                                        .withVardenhetHsaId(vardenhetId1)
+                                        .withForfraganSvar(null)
+                                        .build()))
+                        .build())
+                .build();
+        when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(utredningMock));
+        GetVardenheterForVardgivareResponse egetRegiResponse = new GetVardenheterForVardgivareResponse();
+        egetRegiResponse.setEgetLandsting(ImmutableList.of(
+                VardenhetItem.VardenhetItemBuilder
+                        .aVardenhetItem()
+                        .withId(vardenhetId1)
+                        .withRegiForm(RegiFormTyp.EGET_LANDSTING)
+                        .build()));
+        when(vardgivareService.listVardenheterForVardgivare(landstingHsaId)).thenReturn(egetRegiResponse);
+        doNothing().when(notifieringSendService).notifieraLandstingSamtligaVardenheterHarSvaratPaInternforfragan(utredningMock);
+        when(internForfraganRepository.save(any(InternForfragan.class))).thenAnswer(
+                invocation -> invocation.getArgument(0));
+        when(organizationUnitService.getVardenhet(vardenhetId1)).thenReturn(new Vardenhet(vardenhetId1, vardenhetId1Namn));
+        when(userService.getUser()).thenReturn(new IbUser("", userName));
+        when(utredningRepository.save(any(Utredning.class))).thenAnswer(
+                invocation -> invocation.getArgument(0));
+        when(externForfraganService.acceptExternForfragan(utredningId, landstingHsaId, vardenhetId1)).thenReturn(null);
+
+        final InternForfraganSvarItem result = internForfraganService.besvaraInternForfragan(utredningId,
+                buildValidInternForfraganSvarRequest(SvarTyp.ACCEPTERA, internForfragaId1));
 
         assertNotNull(result);
         assertEquals("Utforarnamn", result.getUtforareNamn());
         verify(notifieringSendService, times(1)).notifieraLandstingSamtligaVardenheterHarSvaratPaInternforfragan(any(Utredning.class));
+        verify(externForfraganService, times(1)).acceptExternForfragan(utredningId, landstingHsaId, vardenhetId1);
     }
 
-    private ForfraganSvarRequest buildValidInternForfraganSvarRequest(Long internForfraganId) {
+    private ForfraganSvarRequest buildValidInternForfraganSvarRequest(SvarTyp svarTyp, Long internForfraganId) {
         ForfraganSvarRequest svar = new ForfraganSvarRequest();
         svar.setForfraganId(internForfraganId);
-        svar.setSvarTyp(SvarTyp.ACCEPTERA.name());
+        svar.setSvarTyp(svarTyp.name());
         svar.setUtforareTyp(UtforareTyp.ENHET.name());
         svar.setUtforareNamn("Utforarnamn");
         svar.setUtforareAdress("gatan");
