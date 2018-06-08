@@ -334,7 +334,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                     .withKommentar(request.getKommentar())
                     .build()));
 
-            handelse = HandelseUtil.createForfraganSkickad(request.getLandstingHsaId(), vardenhetHsaId);
+            handelse = HandelseUtil.createInternForfraganSkickad(request.getLandstingHsaId(), vardenhetHsaId);
             utredningBuilder
                     .withExternForfragan(externForfragan.build())
                     .withHandelseList(Collections.singletonList(handelse));
@@ -343,7 +343,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
             sparadUtredning = utredningRepository.saveUtredning(utredning);
             notifieringSendService.notifieraVardenhetNyInternforfragan(utredning);
         } else {
-            handelse = HandelseUtil.createForfraganMottagen(request.getLandstingHsaId());
+            handelse = HandelseUtil.createExternForfraganMottagen(request.getLandstingHsaId());
             utredningBuilder
                     .withExternForfragan(externForfragan.build())
                     .withHandelseList(Collections.singletonList(handelse));
@@ -389,7 +389,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .withKontor(bestallare.getKontor())
                 .withKostnadsstalle(bestallare.getKostnadsstalle())
                 .withMyndighet(bestallare.getMyndighet())
-                .withPostkod(bestallare.getPostkod())
+                .withPostnummer(bestallare.getPostnummer())
                 .withStad(bestallare.getStad())
                 .withTelefonnummer(bestallare.getTelefonnummer())
                 .build()));
@@ -439,7 +439,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .withKostnadsstalle(source.getKostnadsstalle())
                 .withTelefonnummer(source.getTelefonnummer())
                 .withAdress(source.getAdress())
-                .withPostkod(source.getPostkod())
+                .withPostnummer(source.getPostnummer())
                 .withStad(source.getStad())
                 .build();
     }

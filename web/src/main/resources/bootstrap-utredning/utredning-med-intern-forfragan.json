@@ -25,13 +25,13 @@
   },
   "sprakTolk": "sv",
   "handelseList": [{
-    "handelseTyp":"FORFRAGAN_MOTTAGEN",
+    "handelseTyp":"EXTERNFORFRAGAN_MOTTAGEN",
     "skapad":"2018-04-11T15:12:51.016",
     "anvandare":"",
     "handelseText":"Förfrågan mottagen av WebCert-Vårdgivare1",
     "kommentar":""
   },{
-    "handelseTyp":"FORFRAGAN_SKICKAD",
+    "handelseTyp":"INTERNFORFRAGAN_SKICKAD",
     "skapad":"2018-04-13T10:07:12.125",
     "anvandare":"Simona Samordnare",
     "handelseText":"Förfrågan skickades till WebCert-Enhet1",

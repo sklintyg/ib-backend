@@ -201,7 +201,9 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
                 .collect(onlyElement());
 
         if (request.getHandelseTyp().equals(HandelseTyp.AVVIKELSE_RAPPORTERAD)) {
-            checkState(Objects.equals(BesokStatus.AVVIKELSE_RAPPORTERAD, BesokStatusResolver.resolveStaticStatus(uppdateratBesok)));
+            BesokStatus besokStatus = BesokStatusResolver.resolveStaticStatus(uppdateratBesok);
+            checkState(Objects.equals(BesokStatus.AVVIKELSE_RAPPORTERAD, besokStatus)
+                    || Objects.equals(BesokStatus.PATIENT_UTEBLEV, besokStatus));
             logService.log(new PatientPdlLoggable(uppdateradUtredning.getInvanare().getPersonId()), PdlLogType.AVVIKELSE_RAPPORTERAD);
             myndighetIntegrationService.reportDeviation(createReportDeviationRequestDto(request,
                     uppdateratBesok.getAvvikelse().getAvvikelseId()));
@@ -213,6 +215,36 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
         }
 
         return uppdateratBesok.getAvvikelse();
+    }
+
+    @Override
+    public void avbokaBesok(Long besokId) {
+        Utredning utredning = utredningRepository.findByBesokList_Id(besokId)
+                .orElseThrow(() -> new IbNotFoundException(MessageFormat.format("Besok with id {0} was not found.", besokId)));
+
+        checkUserVardenhetTilldeladToBestallning(utredning);
+
+        Besok besokToUpdate = utredning.getBesokList().stream()
+                .filter(b -> b.getId().equals(besokId))
+                .collect(onlyElement());
+
+        BesokStatus besokStatus = BesokStatusResolver.resolveStaticStatus(besokToUpdate);
+        if (besokStatus != BesokStatus.AVVIKELSE_MOTTAGEN) {
+            throw new IbServiceException(IbErrorCodeEnum.BAD_STATE,
+                    MessageFormat.format("Besok with id {0} is in an incorrect state {1}.", besokId, besokStatus));
+        }
+
+        besokToUpdate.setBesokStatus(BesokStatusTyp.INSTALLD_VARDKONTAKT);
+
+        Handelse besokHandelse = HandelseUtil.createBesokAvbokat(besokToUpdate, userService.getUser().getNamn());
+        besokToUpdate.getHandelseList().add(besokHandelse);
+        utredning.getHandelseList().add(besokHandelse);
+
+        logService.log(new PatientPdlLoggable(utredning.getInvanare().getPersonId()), PdlLogType.BESOK_AVBOKAT);
+
+        utredningRepository.save(utredning);
+
+        reportBesok(utredning, besokToUpdate);
     }
 
     @Override
@@ -231,15 +263,12 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
     }
 
     private LocalDateTime updateUtredningWithUtredningsTypAfuUtvidgad(Utredning utredning) {
-
         final LocalDateTime nyttSistaDatum = myndighetIntegrationService
                 .updateAssessment(utredning.getUtredningId(), UtredningsTyp.AFU_UTVIDGAD.name());
-
         if (utredning.getIntygList().size() == 1 && !utredning.getIntygList().get(0).isKomplettering()) {
             utredning.getIntygList().get(0).setSistaDatum(nyttSistaDatum);
             return nyttSistaDatum;
         }
-
         throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, MessageFormat.format(
                 "assessment with id {0} is in an incorrect state", utredning.getUtredningId()));
     }

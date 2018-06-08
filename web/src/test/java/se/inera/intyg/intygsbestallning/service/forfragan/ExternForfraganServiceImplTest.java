@@ -18,6 +18,23 @@
  */
 package se.inera.intyg.intygsbestallning.service.forfragan;
 
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
+import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU;
+
 import com.google.common.collect.ImmutableList;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,6 +46,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+import javax.xml.ws.WebServiceException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
@@ -44,13 +66,14 @@ import se.inera.intyg.intygsbestallning.integration.myndighet.service.MyndighetI
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.ExternForfraganRepository;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
+import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
 import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
-import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
@@ -58,27 +81,6 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.GetForf
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItemFactory;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.ListForfraganRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
-
-import javax.xml.ws.WebServiceException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
-import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
-import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
-import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ExternForfraganServiceImplTest {
@@ -100,6 +102,9 @@ public class ExternForfraganServiceImplTest {
 
     @Mock
     private UserService userService;
+
+    @Mock
+    private NotifieringSendService notifieringSendService;
 
     @Spy
     private InternForfraganListItemFactory internForfraganListItemFactory = new InternForfraganListItemFactory(new BusinessDaysStub());
@@ -154,9 +159,9 @@ public class ExternForfraganServiceImplTest {
         when(organizationUnitService.getVardenhet(vardenhetId1)).thenReturn(new Vardenhet(vardenhetId1, vardenhetNamn1));
         when(organizationUnitService.getVardgivareOfVardenhet(vardenhetId1)).thenReturn(vardgivareId1);
         when(organizationUnitService.getVardgivareInfo(vardgivareId1)).thenReturn(new Vardgivare(vardgivareId1, vardgivareNamn1));
+        final Optional<Utredning> validUtredningForAcceptExternForfragan = createValidUtredningForAcceptExternForfragan(utredningId, landstingHsaId, vardenhetId1);
+        when(utredningRepository.findById(utredningId)).thenReturn(validUtredningForAcceptExternForfragan);
 
-        when(utredningRepository.findById(utredningId)).thenReturn(
-                createValidUtredningForAcceptExternForfragan(utredningId, landstingHsaId, vardenhetId1));
 
         GetUtredningResponse response = testee.acceptExternForfragan(utredningId, landstingHsaId, vardenhetId1);
 
@@ -182,11 +187,12 @@ public class ExternForfraganServiceImplTest {
 
         ArgumentCaptor<Utredning> utredningArgument = ArgumentCaptor.forClass(Utredning.class);
         verify(utredningRepository).saveUtredning(utredningArgument.capture());
+        verify(notifieringSendService).notifieraVardenhetTilldeladUtredning(any(Utredning.class), any(InternForfragan.class), anyString());
 
         Utredning utredning = utredningArgument.getValue();
         assertNotNull(utredning.getExternForfragan().getInternForfraganList().get(0).getTilldeladDatum());
         assertEquals(1, utredning.getHandelseList().size());
-        assertEquals(HandelseTyp.FORFRAGAN_BESVARAD, utredning.getHandelseList().get(0).getHandelseTyp());
+        assertEquals(HandelseTyp.EXTERNFORFRAGAN_BESVARAD, utredning.getHandelseList().get(0).getHandelseTyp());
         assertEquals(userName, utredning.getHandelseList().get(0).getAnvandare());
     }
 
@@ -226,7 +232,7 @@ public class ExternForfraganServiceImplTest {
         when(utredningRepository.findById(utredningId)).thenReturn(
                 createValidUtredningForAcceptExternForfragan(utredningId, landstingHsaId, vardenhetId1));
 
-        doThrow(new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.MYNDIGHET, "")).when(
+        doThrow(new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.MYNDIGHET, "", null)).when(
                 myndighetIntegrationService).respondToPerformerRequest(ArgumentMatchers.any(RespondToPerformerRequestDto.class));
 
         testee.acceptExternForfragan(utredningId, landstingHsaId, vardenhetId1);
@@ -368,7 +374,7 @@ public class ExternForfraganServiceImplTest {
         assertNotNull(utredning.getExternForfragan().getAvvisatDatum());
         assertEquals(kommentar, utredning.getExternForfragan().getAvvisatKommentar());
         assertEquals(1, utredning.getHandelseList().size());
-        assertEquals(HandelseTyp.FORFRAGAN_BESVARAD, utredning.getHandelseList().get(0).getHandelseTyp());
+        assertEquals(HandelseTyp.EXTERNFORFRAGAN_BESVARAD, utredning.getHandelseList().get(0).getHandelseTyp());
         assertEquals(userName, utredning.getHandelseList().get(0).getAnvandare());
     }
 
@@ -402,7 +408,7 @@ public class ExternForfraganServiceImplTest {
                         .build())
                 .build()));
 
-        doThrow(new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.MYNDIGHET, "")).when(
+        doThrow(new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.MYNDIGHET, "", null)).when(
                 myndighetIntegrationService).respondToPerformerRequest(ArgumentMatchers.any(RespondToPerformerRequestDto.class));
 
         testee.avvisaExternForfragan(utredningId, landstingHsaId, kommentar);

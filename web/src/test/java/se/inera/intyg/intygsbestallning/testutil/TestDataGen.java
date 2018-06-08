@@ -252,7 +252,7 @@ public final class TestDataGen {
                 .withKontor("kontor")
                 .withKostnadsstalle("kostnadsstalle")
                 .withMyndighet("myndighet")
-                .withPostkod("postkod")
+                .withPostnummer("12345")
                 .withStad("stad")
                 .withTelefonnummer("telefonnummer")
                 .build();

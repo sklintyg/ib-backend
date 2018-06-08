@@ -18,18 +18,23 @@
  */
 
 angular.module('ibApp').directive('ibTimePicker',
-    function(moment, $document, $window, $timeout, DateUtilsService) {
+    function(moment, $document, $window, $timeout, DateUtilsService, $parse) {
         'use strict';
 
         return {
             restrict: 'E',
+            require: '^form',
             scope: {
                 labelKey: '@',
                 placeholderKey: '@',
-                date: '='
+                date: '=',
+                required: '=',
+                domId: '@'
             },
             templateUrl: '/components/commonDirectives/ibTimePicker/ibTimePicker.directive.html',
-            link: function(scope, element) {
+            link: function(scope, element, attr, formCtrl) {
+                scope.form = formCtrl;
+
                 var plate = $(element).find('.plate');
 
                 scope.open = function() {
@@ -113,6 +118,10 @@ angular.module('ibApp').directive('ibTimePicker',
                     if(scope.date && DateUtilsService.isDate(scope.date)) {
                         setTimeStringFromDate(scope.date);
                     }
+                };
+
+                scope.componentErrors = function() {
+                    return $parse('form.' + scope.domId + '.$error')(scope);
                 };
             }
         };

@@ -78,6 +78,17 @@ public class BesokController {
         besokService.reportBesokAvvikelse(ReportBesokAvvikelseRequest.from(request, user.getNamn()));
     }
 
+    @PutMapping("/avboka/{besokId}")
+    public void avbokaBesok(@PathVariable("besokId") Long besokId) {
+
+        final IbUser user = userService.getUser();
+        authoritiesValidator.given(user)
+                .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_BESOK)
+                .orThrow(new IbAuthorizationException(EDIT_NOT_ALLOWED));
+
+        besokService.avbokaBesok(besokId);
+    }
+
     @PostMapping("/addarbetsdagar")
     public LocalDate addArbetsdagar(@RequestBody Map<String, String> map) {
         return besokService.addArbetsdagar(map);

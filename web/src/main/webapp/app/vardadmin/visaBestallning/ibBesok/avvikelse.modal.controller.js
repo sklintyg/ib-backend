@@ -19,7 +19,7 @@
 
 angular.module('ibApp')
     .controller('AvvikelseModalCtrl',
-        function($log, $scope, $uibModalInstance, BesokProxy, besokId) {
+        function($log, $scope, $uibModalInstance, BesokProxy, DateUtilsService, besokId) {
             'use strict';
 
             $scope.orsakList = [
@@ -35,22 +35,20 @@ angular.module('ibApp')
 
             $scope.avvikelse = {
                 besokId: besokId,
-                orsakatAv: undefined,
+                orsakatAv: 'PATIENT',
                 beskrivning: undefined,
                 datum: undefined,
                 tid: undefined,
                 invanareUteblev: false
             };
-/*
-            function formatTime(date) {
-                var hours = date.getHours();
-                var minutes = date.getMinutes();
-                return (hours > 9 ? hours : '0' + hours) + ':' + 
-                    (minutes > 9 ? minutes : '0' + minutes);
-            }
-*/
+
             $scope.send = function () {
-                BesokProxy.createBesokAvvikelse($scope.avvikelse).then(function() {
+
+                var avvikelseDto = angular.copy($scope.avvikelse);
+
+                avvikelseDto.tid = DateUtilsService.formatTime(avvikelseDto.tid);
+
+                BesokProxy.createBesokAvvikelse(avvikelseDto).then(function() {
                     $uibModalInstance.close();
                 }, function() {
                     //show felmeddelande

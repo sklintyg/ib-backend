@@ -140,7 +140,7 @@ public class AssessmentRequest {
                         .withStad(Optional.ofNullable(bestallareSource.getOfficeAddress())
                                 .map(AddressType::getPostalCity)
                                 .orElse(null))
-                        .withPostkod(Optional.ofNullable(bestallareSource.getOfficeAddress())
+                        .withPostnummer(Optional.ofNullable(bestallareSource.getOfficeAddress())
                                 .map(AddressType::getPostalCode)
                                 .orElse(null))
                         .withKostnadsstalle(bestallareSource.getOfficeCostCenter())

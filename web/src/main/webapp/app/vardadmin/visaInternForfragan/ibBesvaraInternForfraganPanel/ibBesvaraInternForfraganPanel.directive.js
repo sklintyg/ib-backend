@@ -18,7 +18,7 @@
  */
 
 angular.module('ibApp').directive('ibBesvaraInternForfraganPanel',
-    function(InternForfraganSvarViewState) {
+    function($log, InternForfraganSvarViewState, VardenhetProxy) {
         'use strict';
         var  basePath = '/app/vardadmin/visaInternForfragan';
 
@@ -36,8 +36,22 @@ angular.module('ibApp').directive('ibBesvaraInternForfraganPanel',
 
                 $scope.onChangeUtforareTyp = function() {
                     if($scope.vm.model.utforareTyp === 'ENHET') {
-                        // Revert to
-                        InternForfraganSvarViewState.revertModel();
+
+                        InternForfraganSvarViewState.clearUtforare();
+                        $scope.vm.fetchingPreferences = true;
+                        VardenhetProxy.getVardenhetKontaktPreference().then(function(pref) {
+                            $scope.vm.model.utforareNamn = pref.mottagarNamn;
+                            $scope.vm.model.utforareAdress = pref.adress;
+                            $scope.vm.model.utforarePostnr = pref.postnummer;
+                            $scope.vm.model.utforarePostort = pref.postort;
+                            $scope.vm.model.utforareTelefon = pref.telefonnummer;
+                            $scope.vm.model.utforareEpost = pref.epost;
+                            $scope.vm.model.utforareEpost = pref.epost;
+                        }, function(error) {
+                            $log.error('failed to load preference!' + error);
+                        }).finally(function() { // jshint ignore:line
+                            $scope.vm.fetchingPreferences = false;
+                        });
                     } else {
                         InternForfraganSvarViewState.clearUtforare();
                     }

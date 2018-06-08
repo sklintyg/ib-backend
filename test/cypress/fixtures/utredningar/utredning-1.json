@@ -44,7 +44,7 @@
     "kontor": null,
     "kostnadsstalle": null,
     "adress": "En handläggare adress",
-    "postkod": "En handläggare postkod",
+    "postnummer": "En handläggare postnummer",
     "stad": "En handläggare stad"
   },
   "invanare": {

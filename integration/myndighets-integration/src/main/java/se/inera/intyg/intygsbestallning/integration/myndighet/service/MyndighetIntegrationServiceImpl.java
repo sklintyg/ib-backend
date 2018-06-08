@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.intygsbestallning.common.exception.IbExternalServiceException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbExternalSystemEnum;
+import se.inera.intyg.intygsbestallning.common.exception.IbFailingServiceMethodEnum;
 import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
 import se.inera.intyg.intygsbestallning.integration.myndighet.client.MyndighetIntegrationClientService;
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto;
@@ -50,36 +51,61 @@ public class MyndighetIntegrationServiceImpl implements MyndighetIntegrationServ
 
     @Override
     public void respondToPerformerRequest(final RespondToPerformerRequestDto request) {
-        RespondToPerformerRequestResponseType response = clientService.respondToPerformerRequest(request);
-        handleResponse(response.getResult());
+        try {
+            RespondToPerformerRequestResponseType response = clientService.respondToPerformerRequest(request);
+            handleResponse(response.getResult(), IbFailingServiceMethodEnum.RESPOND_TO_PERFORMER);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.MYNDIGHET,
+                    e.getMessage(), IbFailingServiceMethodEnum.RESPOND_TO_PERFORMER);
+        }
     }
 
     @Override
     public void reportCareContactInteraction(final ReportCareContactRequestDto request) {
-        final ReportCareContactResponseType response = clientService.reportCareContact(request);
-        handleResponse(response.getResult());
+        try {
+            final ReportCareContactResponseType response = clientService.reportCareContact(request);
+            handleResponse(response.getResult(), IbFailingServiceMethodEnum.REPORT_CARE_CONTACT);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.MYNDIGHET,
+                    e.getMessage(), IbFailingServiceMethodEnum.REPORT_CARE_CONTACT);
+        }
     }
 
     @Override
     public LocalDateTime updateAssessment(final Long id, final String certificateType) {
-        final UpdateAssessmentResponseType response = clientService.updateAssessment(id, certificateType);
-        handleResponse(response.getResult());
-        return SchemaDateUtil.toLocalDateTimeFromDateType(response.getLastDateForCertificateReceival());
+        try {
+            final UpdateAssessmentResponseType response = clientService.updateAssessment(id, certificateType);
+            handleResponse(response.getResult(), IbFailingServiceMethodEnum.UPDATE_ASSESSMENT);
+            return SchemaDateUtil.toLocalDateTimeFromDateType(response.getLastDateForCertificateReceival());
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.MYNDIGHET,
+                    e.getMessage(), IbFailingServiceMethodEnum.UPDATE_ASSESSMENT);
+        }
     }
 
     @Override
     public void reportDeviation(final ReportDeviationRequestDto request) {
-        final ReportDeviationResponseType response = clientService.reportDeviation(request);
-        handleResponse(response.getResult());
+        try {
+            final ReportDeviationResponseType response = clientService.reportDeviation(request);
+            handleResponse(response.getResult(), IbFailingServiceMethodEnum.REPORT_DEVIATION);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.MYNDIGHET,
+                    e.getMessage(), IbFailingServiceMethodEnum.REPORT_DEVIATION);
+        }
     }
 
-    private void handleResponse(final ResultType resultType) {
+    private void handleResponse(final ResultType resultType, final IbFailingServiceMethodEnum failingServiceMethod) {
         final ResultCodeType resultCode = resultType.getResultCode();
         final String resultText = resultType.getResultText();
 
         if (resultCode.equals(ResultCodeType.ERROR)) {
             log.error(resultText);
-            throw new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.MYNDIGHET, resultText);
+            throw new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.MYNDIGHET,
+                    resultText, failingServiceMethod);
         } else if (resultCode.equals(ResultCodeType.INFO)) {
             log.info(resultText);
         }

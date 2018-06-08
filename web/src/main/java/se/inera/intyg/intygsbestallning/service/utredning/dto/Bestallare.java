@@ -26,7 +26,7 @@ public final class Bestallare {
     private String kontor;
     private String kostnadsstalle;
     private String adress;
-    private String postkod;
+    private String postnummer;
     private String stad;
 
     private Bestallare() {
@@ -60,8 +60,8 @@ public final class Bestallare {
         return adress;
     }
 
-    public String getPostkod() {
-        return postkod;
+    public String getPostnummer() {
+        return postnummer;
     }
 
     public String getStad() {
@@ -76,7 +76,7 @@ public final class Bestallare {
         private String kontor;
         private String kostnadsstalle;
         private String adress;
-        private String postkod;
+        private String postnummer;
         private String stad;
 
         private BestallareBuilder() {
@@ -121,8 +121,8 @@ public final class Bestallare {
             return this;
         }
 
-        public BestallareBuilder withPostkod(String postkod) {
-            this.postkod = postkod;
+        public BestallareBuilder withPostnummer(String postnummer) {
+            this.postnummer = postnummer;
             return this;
         }
 
@@ -136,7 +136,7 @@ public final class Bestallare {
             bestallare.telefonnummer = this.telefonnummer;
             bestallare.kontor = this.kontor;
             bestallare.kostnadsstalle = this.kostnadsstalle;
-            bestallare.postkod = this.postkod;
+            bestallare.postnummer = this.postnummer;
             bestallare.stad = this.stad;
             bestallare.fullstandigtNamn = this.fullstandigtNamn;
             bestallare.email = this.email;
@@ -164,14 +164,14 @@ public final class Bestallare {
                 java.util.Objects.equals(kontor, that.kontor) &&
                 java.util.Objects.equals(kostnadsstalle, that.kostnadsstalle) &&
                 java.util.Objects.equals(adress, that.adress) &&
-                java.util.Objects.equals(postkod, that.postkod) &&
+                java.util.Objects.equals(postnummer, that.postnummer) &&
                 java.util.Objects.equals(stad, that.stad);
     }
 
     @Override
     public int hashCode() {
 
-        return java.util.Objects.hash(fullstandigtNamn, telefonnummer, email, myndighet, kontor, kostnadsstalle, adress, postkod, stad);
+        return java.util.Objects.hash(fullstandigtNamn, telefonnummer, email, myndighet, kontor, kostnadsstalle, adress, postnummer, stad);
     }
 
     //CHECKSTYLE:ON OperatorWrap

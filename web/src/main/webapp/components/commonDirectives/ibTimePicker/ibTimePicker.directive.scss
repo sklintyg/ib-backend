@@ -64,12 +64,18 @@ ib-time-picker {
     }
   }
 
+  .error-field {
+    position: absolute;
+    width: 110px;
+  }
+
   .plate {
     position: absolute;
     top: 0;
     background: #fff;
     border: 1px solid #496CEC;
     border-radius: 4px;
+    z-index: 1;
 
     .timepicker-template {
       width: 85px;

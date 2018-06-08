@@ -33,4 +33,6 @@ public interface BesokService {
     Avvikelse reportBesokAvvikelse(ReportBesokAvvikelseRequest request);
 
     LocalDate addArbetsdagar(Map<String, String> map);
+
+    void avbokaBesok(Long besokId);
 }

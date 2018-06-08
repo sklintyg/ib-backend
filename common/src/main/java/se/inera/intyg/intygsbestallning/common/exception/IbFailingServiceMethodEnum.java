@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
@@ -16,37 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package se.inera.intyg.intygsbestallning.common.exception;
 
-#avvikelse-modal {
-  ib-checkgroup .control-label {
-    @extend %ib-typo-05;
-    color: $ib-color-09;
-  }
-
-  .control-label {
-    @extend %ib-typo-06;
-    color: $ib-color-09;
-  }
-
-  .flex-row {
-    padding-bottom: 10px;
-  }
-
-  ib-checkbox-wrapper > .ib-checkbox label {
-    position: static;
-  }
-
-  table {
-    width: 100%;
-
-    td {
-      padding-bottom: 10px;
-      vertical-align: middle;
-    }
-
-    ib-date-picker-field, ib-time-picker {
-      display: inline-block;
-      vertical-align: middle;
-    }
-  }
+public enum IbFailingServiceMethodEnum {
+    REPORT_CARE_CONTACT,
+    RESPOND_TO_PERFORMER,
+    UPDATE_ASSESSMENT,
+    REPORT_DEVIATION
 }

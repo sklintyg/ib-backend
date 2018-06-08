@@ -12,7 +12,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-angular.module('ibApp').directive('ibBesok', function($log, $uibModal, $state) {
+angular.module('ibApp').directive('ibBesok', function($log, $uibModal, $state, $q) {
     'use strict';
 
     return {
@@ -29,38 +29,39 @@ angular.module('ibApp').directive('ibBesok', function($log, $uibModal, $state) {
             };
 
             $scope.oppnaLaggTillBesok = function() {
-                openModal('laggTillBesok.modal.html', 'LaggTillBesokModalCtrl');
+                openModal('laggTillBesok.modal.html', 'LaggTillBesokModalCtrl',
+                        {utredningsId: $scope.bestallning.utredningsId}).then(function(result) {
+                    $log.info(result);
+                    if (result.nyttSistaDatum) {
+                        openModal('utredningstypAndrad.modal.html', 'UtredningstypAndradCtrl', {nyttDatum: result.nyttSistaDatum});
+                    }
+                }, function(error) {
+                    $log.error(error);
+                });
             };
 
             $scope.openAvvikelseModal = function(besokId) {
-                openModal('avvikelse.modal.html', 'AvvikelseModalCtrl', besokId);
+                openModal('avvikelse.modal.html', 'AvvikelseModalCtrl', {besokId:besokId});
             };
 
-            /* TODO Redovisa besök modal
-            $scope.oppnaRedovisaBesok = function() {
-                openModal('redovisaTolk.modal.html', 'RedovisaTolkModalCtrl');
-            };
-            */
-
-            function openModal(templateUrl, controller, besokId) {
+            function openModal(templateUrl, controller, resolveObject) {
+                var promise = $q.defer();
                 var modalInstance = $uibModal.open({
                     templateUrl: '/app/vardadmin/visaBestallning/ibBesok/' + templateUrl,
                     size: 'md',
                     controller: controller,
-                    resolve: {
-                        utredningsId: $scope.bestallning.utredningsId,
-                        besokId: besokId
-                    }
+                    resolve: resolveObject
                 });
 
                 //angular > 1.5 warns if promise rejection is not handled (e.g backdrop-click == rejection)
                 modalInstance.result.catch(function () {}); //jshint ignore:line
 
-                modalInstance.result.then(function() {
+                modalInstance.result.then(function(result) {
                     $state.reload();
-                }, function() {
-
+                    promise.resolve(result);
                 });
+
+                return promise.promise;
             }
         }
     };

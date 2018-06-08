@@ -53,10 +53,6 @@ angular.module('ibApp').factory('InternForfraganSvarViewState', function() {
 
     }
 
-    function _revertModel() {
-        widgetState.isReady = true;
-        _setModel(initialModel);
-    }
 
     function _setModel(svar) {
         model.forfraganId = svar.forfraganId;
@@ -95,7 +91,6 @@ angular.module('ibApp').factory('InternForfraganSvarViewState', function() {
         reset: _reset,
         getModel: _getModel,
         setModel: _setModel,
-        revertModel: _revertModel,
         clearUtforare: _clearUtforare,
         getWidgetState: _getWidgetState,
         setForm: _setForm,

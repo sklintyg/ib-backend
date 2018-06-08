@@ -54,15 +54,15 @@ var ibMessages = {
 
         //Unit settings dialogs
         'unitsettings.spinner.loading': 'Hämtar standsinställningar...',
-        'unitsettings.kontakt.change.modal.label': 'Kontaktuppgifter för vårdenheten',
+        'unitsettings.kontakt.change.modal.label': 'Inställningar',
         'unitsettings.kontakt.change.adress.title': 'Hantera kontaktuppgifter',
         'unitsettings.kontakt.change.adress.desc': 'Denna adress är den som handlingar ska skickas till som standard. Du kan alltid ändra adressen i en enskild förfrågan innan du svarar.',
-        'unitsettings.kontakt.form.mottagarnamn': 'Mottagare',
-        'unitsettings.kontakt.form.adress': 'Postadress',
+        'unitsettings.kontakt.form.mottagarnamn': 'Mottagarnamn',
+        'unitsettings.kontakt.form.adress': 'Adress',
         'unitsettings.kontakt.form.postnummer': 'Postnummer',
         'unitsettings.kontakt.form.postort': 'Postort',
-        'unitsettings.kontakt.form.telefonnummer': 'Telefonnummer',
-        'unitsettings.kontakt.form.epost': 'Epost',
+        'unitsettings.kontakt.form.telefonnummer': 'Telefon',
+        'unitsettings.kontakt.form.epost': 'E-post',
         'unitsettings.kontakt.form.fetchfromhsa': 'Hämta kontaktuppgifter från HSA katalogen',
 
         'unitsettings.svar.change.modal.label': 'Standardsvar för vårdenheten',
@@ -82,7 +82,7 @@ var ibMessages = {
         // Skicka forfragan modal
         'skicka.forfragan.vardenheter.no.results': 'Det finns inga vårdenheter tillagda i landstinget.',
         'skicka.forfragan.vardenheter.error':'Ett tekniskt fel uppstod när information om vårdenheter skulle hämtas. Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraNationellKundservice>',
-        'skicka.forfragan.vardenheter.heading': 'Nedan visas de vårdenheter som finns avtalade för landstinget.',
+        'skicka.forfragan.vardenheter.heading': 'Nedan visas de vårdenheter som finns avtalade för landstinget. Förfrågan kan skickas till flera vårdenheter samtidigt.',
         'skicka.forfragan.vardenheter.validation': 'Minst en vårdenhet måste väljas',
         'skicka.forfragan.redanskickad.tooltip': 'En förfrågan har redan skickats till enheten.',
         'skicka.forfragan.egna.label': 'Vårdenheter i det egna landstingets regi',
@@ -113,10 +113,16 @@ var ibMessages = {
         'lagg-till-besok.label.viaphone': 'Per telefon',
         'lagg-till-besok.info.profession': 'Om annan profession än läkare har valts så kommer utredningstypen att ändras till "AFU utvidgad".',
         'lagg-till-besok.info.kallelsedatum': 'Kallelsedatum är mindre än ${0} arbetsdagar innan besöksdatum. Om invånaren gör en sen avbokning eller uteblir kommer besöket inte att ersättas.',
-        'lagg-till-besok.error.teknisktfel': 'Besöket kunde inte sparas på grund av tekniskt fel. Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <Ineras kundservice>',
+        'lagg-till-besok.error.teknisktfel': 'Besöket kunde inte sparas på grund av tekniskt fel. Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraNationellKundservice>',
+        'lagg-till-besok.error.teknisktfelafu': 'Utredningstypen kunde inte uppdateras på grund av tekniskt fel. Utredningen är fortsatt AFU.\n Rapportera en avvikelse orsakad av vården för besöket och lägg till det igen vid ett senare tillfälle.\n Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraNationellKundservice>',
 
         // Avvikelse modal
         'avvikelse.info': '<p>När en avvikelse registreras skickas meddelande till Försäkringskassans handläggare som kommer fatta ett beslut om hur återstående besök ska hanteras.</p>Besöket ska inte avbokas utan beslut från Försäkringskassans handläggare.',
+        'avvikelse.label.orsakadav': 'Orsakad av',
+        'avvikelse.label.invanareuteblev': 'Invånare uteblev',
+        'avvikelse.label.datum': 'Avvikelse uppstod',
+        'avvikelse.label.tid': 'kl.',
+        'avvikelse.label.kommentar': 'Kommentar',
 
         // Registrera mottagen handling modal
         'registrera-mottagen-handling.label.info': 'Här anges datumet för när handlingarna mottogs. Detta datum visas inte för Försäkringskassan utan är till för vården att kunna följa händelser kring utredningen.\n' +
@@ -152,14 +158,14 @@ var ibMessages = {
         'label.table.utredningar.column.typ': 'Utredningstyp',
         'label.table.utredningar.column.vardenhet': 'Vårdenhet',
         'label.table.utredningar.column.fas': 'Fas',
-        'label.table.utredningar.column.slutdatumfas': 'Slutdatum fas',
+        'label.table.utredningar.column.slutdatumfas': 'Slutdatum',
         'label.table.utredningar.column.status': 'Status',
 
         // Lista utredningar filter
         'utredningar.filter.fritext.label': 'Fritextsökning',
         'utredningar.filter.fritext.placeholder': 'Skriv sökord',
         'utredningar.filter.fas.label': 'Fas',
-        'utredningar.filter.slutdatumfas.label': 'Slutdatum fas',
+        'utredningar.filter.slutdatumfas.label': 'Slutdatum',
         'utredningar.filter.slutdatumfas.placeholder': 'Visa alla',
         'utredningar.filter.status.label': 'Status',
         'utredningar.filter.resetfilter.label': 'Återställ sökfilter',
@@ -202,14 +208,14 @@ var ibMessages = {
         'label.table.bestallningar.column.vardgivareNamn': 'Landsting',
         'label.table.bestallningar.column.patientId': 'Personnummer',
         'label.table.bestallningar.column.patientNamn': 'Namn',
-        'label.table.bestallningar.column.slutdatumfas': 'Slutdatum fas',
+        'label.table.bestallningar.column.slutdatumfas': 'Slutdatum',
         'label.table.bestallningar.column.status': 'Status',
 
         // Lista bestallningar filter
         'bestallningar.filter.fritext.label': 'Fritextsökning',
         'bestallningar.filter.fritext.placeholder': 'Skriv sökord',
         'bestallningar.filter.vardgivarenamn.label': 'Landsting',
-        'bestallningar.filter.slutdatumfas.label': 'Slutdatum fas',
+        'bestallningar.filter.slutdatumfas.label': 'Slutdatum',
         'bestallningar.filter.slutdatumfas.placeholder': 'Visa alla',
         'bestallningar.filter.status.label': 'Status',
         'bestallningar.filter.resetfilter.label': 'Återställ sökfilter',
@@ -323,6 +329,10 @@ var ibMessages = {
         'server.error.getnotifieringpreference.text': 'Försök igen eller kontakta support',
         'server.error.setnotifieringpreference.title': 'Kunde inte spara notifieringsintällningar',
         'server.error.setnotifieringpreference.text': 'Försök igen eller kontakta support',
+        'server.error.registerreceived.title': 'Kunde inte registrera mottagen handling',
+        'server.error.registerreceived.text': 'Försök igen eller kontakta support',
+        'server.error.registersentutlatande.title': 'Kunde inte registrera skickat utlåtande',
+        'server.error.registersentutlatande.text': 'Försök igen eller kontakta support',
 
         'common.error.spi.fel01': 'Ett tekniskt fel uppstod när vårdenheten skulle hämtas. Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraNationellKundservice>'
     },

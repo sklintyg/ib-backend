@@ -45,10 +45,12 @@ import static se.inera.intyg.intygsbestallning.service.notifiering.util.Notifier
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.utredningUrl;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.vardenhetAvvikelseRapporteradAvFKMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.vardenhetNyInternforfraganMessage;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.vardenhetTilldeladUtredning;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_AVVIKELSE_MOTTAGEN_FRAN_FK;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_AVVIKELSE_RAPPORTERAD_AV_VARDEN;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_BESTALLNING_AV_FRORSAKRINGSMEDICINSK_UTREDNING;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_BESTALLNING_UPPDATERAD;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_FMU_UTREDNING_TILLDELAD_VARDENHETEN;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_NY_FMU_EXTERN_FORFRAGAN;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_SAMTLIGA_INTERNFORFRAGAN_BESVARATS;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_UTREDNING_SLUTDATUM_PAMINNELSE;
@@ -149,8 +151,20 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
     }
 
     @Override
-    public void notifieraVardenhetTilldeladUtredning(Utredning utredning) {
-        throw new NotImplementedException();
+    public void notifieraVardenhetTilldeladUtredning(Utredning utredning, InternForfragan tillDeladInternForfragan, String landstingNamn) {
+
+        final String utforareEpost = tillDeladInternForfragan.getForfraganSvar().getUtforareEpost();
+
+        if (!Strings.isNullOrEmpty(utforareEpost)
+                && notifieringPreferenceService.getNotificationPreference(tillDeladInternForfragan.getVardenhetHsaId(), VE)
+                        .isEnabled(NotifieringTyp.UTREDNING_TILLDELAD, NotifieringMottagarTyp.VARDENHET)) {
+            final String body = notifieringMailBodyFactory.buildBodyForUtredning(
+                    vardenhetTilldeladUtredning(utredning, landstingNamn),
+                    utredningUrl(utredning));
+
+            sendNotifiering(utforareEpost, SUBJECT_FMU_UTREDNING_TILLDELAD_VARDENHETEN, body);
+        }
+
     }
 
     @Override

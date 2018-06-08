@@ -131,4 +131,12 @@ public final class NotifieringMailMeddelandeUtil {
                 besok.getBesokStartTid().format(DateTimeFormatter.ISO_DATE),
                 utredning.getUtredningId());
     }
+
+    public static String vardenhetTilldeladUtredning(final Utredning utredning, final String landstingNamn) {
+        return MessageFormat.format(
+                "Försäkringsmedicinsk utredning {0} har blivit tilldelad vårdenheten av {1}. Observera att "
+                        + "Försäkringskassan ännu inte har beställt utredningen.",
+                utredning.getUtredningId(), landstingNamn);
+    }
+
 }

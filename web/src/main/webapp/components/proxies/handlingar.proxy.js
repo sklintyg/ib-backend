@@ -28,7 +28,14 @@ angular.module('ibApp').factory('HandlingProxy',
                 handlingarMottogsDatum: date
             };
 
-            return ProxyTemplate.putTemplate(restPath, request, {});
+            var config =  {
+                errorMessageConfig: {
+                    errorTitleKey: 'server.error.registerreceived.title',
+                    errorTextKey: 'server.error.registerreceived.text'
+                }
+            };
+
+            return ProxyTemplate.putTemplate(restPath, request, config);
         }
 
 

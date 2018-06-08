@@ -63,7 +63,7 @@ public class OrderRequestTest {
         assertEquals("kontor", result.getBestallare().getKontor());
         assertEquals("kostnadsstalle", result.getBestallare().getKostnadsstalle());
         assertEquals("myndighet", result.getBestallare().getMyndighet());
-        assertEquals("postkod", result.getBestallare().getPostkod());
+        assertEquals("12345", result.getBestallare().getPostnummer());
         assertEquals("stad", result.getBestallare().getStad());
         assertEquals("telefonnummer", result.getBestallare().getTelefonnummer());
         assertEquals("firstname middlename lastname", result.getInvanareFullstandigtNamn());
@@ -96,7 +96,7 @@ public class OrderRequestTest {
         assertEquals("kontor", result.getBestallare().getKontor());
         assertEquals("kostnadsstalle", result.getBestallare().getKostnadsstalle());
         assertEquals("myndighet", result.getBestallare().getMyndighet());
-        assertEquals("postkod", result.getBestallare().getPostkod());
+        assertEquals("12345", result.getBestallare().getPostnummer());
         assertEquals("stad", result.getBestallare().getStad());
         assertEquals("telefonnummer", result.getBestallare().getTelefonnummer());
     }
@@ -164,7 +164,7 @@ public class OrderRequestTest {
         AddressType address = new AddressType();
         address.setPostalAddress("adress");
         address.setPostalCity("stad");
-        address.setPostalCode("postkod");
+        address.setPostalCode("12345");
         bestallare.setOfficeAddress(address);
         request.setAuthorityAdministrativeOfficial(bestallare);
         request.setPlannedActions("atgarder");

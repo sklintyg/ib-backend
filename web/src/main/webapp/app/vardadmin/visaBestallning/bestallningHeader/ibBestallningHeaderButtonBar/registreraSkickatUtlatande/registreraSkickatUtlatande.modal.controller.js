@@ -42,14 +42,13 @@ angular.module('ibApp')
                 var date = moment($scope.registerValue).format('YYYY-MM-DD');
 
                 SkickatUtlatandeProxy.registerSentVerdict(date, $stateParams.utredningsId)
-                    .then(function (data) {
-                        angular.copy(data, $scope.utredning);
+                    .then(function () {
+                        $uibModalInstance.close();
+                        $state.reload();
                     }).finally(function () { // jshint ignore:line
-                    $scope.vm.busySaving = false;
-                });
+                        $scope.vm.busySaving = false;
+                    });
 
-                $state.reload();
-                $uibModalInstance.close();
             };
         }
     );

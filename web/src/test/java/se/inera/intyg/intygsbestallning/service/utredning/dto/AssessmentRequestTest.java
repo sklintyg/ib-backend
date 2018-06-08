@@ -56,7 +56,7 @@ public class AssessmentRequestTest {
         assertEquals("officeName", converted.getBestallare().getKontor());
         assertEquals("officeCostCenter", converted.getBestallare().getKostnadsstalle());
         assertEquals("postalAddress", converted.getBestallare().getAdress());
-        assertEquals("postalCode", converted.getBestallare().getPostkod());
+        assertEquals("postalCode", converted.getBestallare().getPostnummer());
         assertEquals("postalCity", converted.getBestallare().getStad());
 
         assertEquals("postalCity", converted.getInvanarePostort());

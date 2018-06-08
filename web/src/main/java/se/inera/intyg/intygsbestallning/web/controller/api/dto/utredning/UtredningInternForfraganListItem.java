@@ -43,7 +43,7 @@ public class UtredningInternForfraganListItem implements VardenhetEnrichable {
     private String meddelande;
     private String mottagare;
     private String adress;
-    private String postkod;
+    private String postnummer;
     private String postort;
     private String telefon;
     private String epost;
@@ -58,7 +58,7 @@ public class UtredningInternForfraganListItem implements VardenhetEnrichable {
                 .withMeddelande(nonNull(forfraganSvar) ? forfraganSvar.getKommentar() : null)
                 .withMottagare(nonNull(forfraganSvar) ? forfraganSvar.getUtforareNamn() : null)
                 .withAdress(nonNull(forfraganSvar) ? forfraganSvar.getUtforareAdress() : null)
-                .withPostkod(nonNull(forfraganSvar) ? forfraganSvar.getUtforarePostnr() : null)
+                .withPostnummer(nonNull(forfraganSvar) ? forfraganSvar.getUtforarePostnr() : null)
                 .withPostort(nonNull(forfraganSvar) ? forfraganSvar.getUtforarePostort() : null)
                 .withTelefon(nonNull(forfraganSvar) ? forfraganSvar.getUtforareTelefon() : null)
                 .withEpost(nonNull(forfraganSvar) ? forfraganSvar.getUtforareEpost() : null)
@@ -143,12 +143,12 @@ public class UtredningInternForfraganListItem implements VardenhetEnrichable {
         this.adress = adress;
     }
 
-    public String getPostkod() {
-        return postkod;
+    public String getPostnummer() {
+        return postnummer;
     }
 
-    public void setPostkod(String postkod) {
-        this.postkod = postkod;
+    public void setPostnummer(String postnummer) {
+        this.postnummer = postnummer;
     }
 
     public String getPostort() {
@@ -183,7 +183,7 @@ public class UtredningInternForfraganListItem implements VardenhetEnrichable {
         private String meddelande;
         private String mottagare;
         private String adress;
-        private String postkod;
+        private String postnummer;
         private String postort;
         private String telefon;
         private String epost;
@@ -226,8 +226,8 @@ public class UtredningInternForfraganListItem implements VardenhetEnrichable {
             return this;
         }
 
-        public UtredningInternForfraganListItem.UtredningInternForfraganListItemBuilder withPostkod(String postkod) {
-            this.postkod = postkod;
+        public UtredningInternForfraganListItem.UtredningInternForfraganListItemBuilder withPostnummer(String postnummer) {
+            this.postnummer = postnummer;
             return this;
         }
 
@@ -254,7 +254,7 @@ public class UtredningInternForfraganListItem implements VardenhetEnrichable {
             utredningInternForfraganListItem.setEpost(epost);
             utredningInternForfraganListItem.setMeddelande(meddelande);
             utredningInternForfraganListItem.setMottagare(mottagare);
-            utredningInternForfraganListItem.setPostkod(postkod);
+            utredningInternForfraganListItem.setPostnummer(postnummer);
             utredningInternForfraganListItem.setPostort(postort);
             utredningInternForfraganListItem.setStatus(status);
             utredningInternForfraganListItem.setFas(fas);

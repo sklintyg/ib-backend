@@ -33,11 +33,11 @@
                     </span>
                     <span class="time">
                         <span class="asterisk" ng-if="!besokStartTid">*</span><ib-help-text-label label-key="lagg-till-besok.label.from"></ib-help-text-label>
-                        <ib-time-picker data-date="besokStartTid"></ib-time-picker>
+                        <ib-time-picker data-date="besokStartTid" dom-id="besokStart" required="true"></ib-time-picker>
                     </span>
                     <span class="time">
                         <span class="asterisk" ng-if="!besokSlutTid">*</span><ib-help-text-label label-key="lagg-till-besok.label.to"></ib-help-text-label>
-                        <ib-time-picker data-date="besokSlutTid"></ib-time-picker>
+                        <ib-time-picker data-date="besokSlutTid" dom-id="besokSlut" required="true"></ib-time-picker>
                     </span>
                 </div>
                 <div class="flex-wrapper">
@@ -95,15 +95,20 @@
                 </div>
             </div>
         </form>
-
-        <ib-alert-message
-            ng-if="showErrorMessage"
-            alert-message-id="lagg-till-besok.error.teknisktfel"
-            alert-id="lagg-till-besok.error.teknisktfel"
-            alert-severity="alert">
-        </ib-alert-message>
     </div>
     <div class="modal-footer">
+      <ib-alert-message
+          ng-if="showReportErrorMessage"
+          alert-message-id="lagg-till-besok.error.teknisktfel"
+          alert-id="lagg-till-besok.error.teknisktfel"
+          alert-severity="danger">
+      </ib-alert-message>
+      <ib-alert-message
+          ng-if="showUpdateAssessmentErrorMessage"
+          alert-message-id="lagg-till-besok.error.teknisktfelafu"
+          alert-id="lagg-till-besok.error.teknisktfelafu"
+          alert-severity="danger">
+      </ib-alert-message>
         <button type="button" id="lagg-till-besok-modal-skicka" class="btn btn-primary" ng-click="send()" ng-disabled="!besokDatum || !besokStartTid || !besokSlutTid || !besok.profession || !besokKallelse">
         Spara
         </button>

@@ -167,7 +167,7 @@ public abstract class BaseUtredningService {
 
     private ListFilterStatus resolveListFilterStatus(UtredningStatus us, Actor actor) {
         if (us.getNextActor() == actor) {
-            return ListFilterStatus.KRAVER_ATGARD;
+            return ListFilterStatus.BEHOVER_ATGARDAS;
         } else {
             return ListFilterStatus.VANTAR_ANNAN_AKTOR;
         }

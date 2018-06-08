@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
@@ -17,36 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#avvikelse-modal {
-  ib-checkgroup .control-label {
-    @extend %ib-typo-05;
-    color: $ib-color-09;
-  }
-
-  .control-label {
-    @extend %ib-typo-06;
-    color: $ib-color-09;
-  }
-
-  .flex-row {
-    padding-bottom: 10px;
-  }
-
-  ib-checkbox-wrapper > .ib-checkbox label {
-    position: static;
-  }
-
-  table {
-    width: 100%;
-
-    td {
-      padding-bottom: 10px;
-      vertical-align: middle;
-    }
-
-    ib-date-picker-field, ib-time-picker {
-      display: inline-block;
-      vertical-align: middle;
-    }
-  }
-}
+angular.module('ibApp')
+    .controller('UtredningstypAndradCtrl',
+        function($log, $scope, nyttDatum) {
+            'use strict';
+            $scope.datum = nyttDatum;
+        });

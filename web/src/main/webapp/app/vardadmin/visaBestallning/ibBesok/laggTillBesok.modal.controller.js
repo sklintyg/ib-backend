@@ -27,7 +27,8 @@ angular.module('ibApp')
                 label: 'Välj i listan'
             };
 
-            $scope.showErrorMessage = false;
+            $scope.showReportErrorMessage = false;
+            $scope.showUpdateAssessmentErrorMessage = false;
             $scope.professionList = [chooseOption];
 
             BesokProxy.getProffessionsTyper().then(function(result) {
@@ -67,15 +68,20 @@ angular.module('ibApp')
             }
 
             $scope.send = function () {
-                $scope.showErrorMessage = false;
+                $scope.showReportErrorMessage = false;
+                $scope.showUpdateAssessmentErrorMessage = false;
                 $scope.besok.kallelseDatum = new Date($scope.besokKallelse);
                 $scope.besok.besokDatum = new Date($scope.besokDatum);
                 $scope.besok.besokStartTid = formatTime($scope.besokStartTid);
                 $scope.besok.besokSlutTid = formatTime($scope.besokSlutTid);
-                BesokProxy.createBesok($scope.besok).then(function() {
-                    $uibModalInstance.close();
-                }, function() {
-                    $scope.showErrorMessage = true;
+                BesokProxy.createBesok($scope.besok).then(function(result) {
+                    $uibModalInstance.close(result);
+                }, function(error) {
+                    if (error.failingServiceMethod === 'REPORT_CARE_CONTACT') {
+                        $scope.showReportErrorMessage = true;
+                    } else {
+                        $scope.showUpdateAssessmentErrorMessage = true;
+                    }
                 });
                 
             };

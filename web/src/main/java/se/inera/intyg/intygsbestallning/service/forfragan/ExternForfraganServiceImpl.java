@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.intygsbestallning.service.forfragan;
 
+import static java.util.stream.Collectors.toList;
+import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.RespondToPerformerRequestDto.RespondToPerformerRequestDtoBuilder.aRespondToPerformerRequestDto;
+
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
@@ -26,6 +29,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
@@ -38,12 +49,13 @@ import se.inera.intyg.intygsbestallning.integration.myndighet.service.MyndighetI
 import se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.ExternForfraganRepository;
 import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
+import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
 import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
-import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.util.GenericComparator;
 import se.inera.intyg.intygsbestallning.service.util.PagingUtil;
 import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
@@ -58,18 +70,6 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtre
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListForfraganFilter;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListForfraganFilterStatus;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.SelectItem;
-
-import java.text.MessageFormat;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toList;
-import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.RespondToPerformerRequestDto.RespondToPerformerRequestDtoBuilder.aRespondToPerformerRequestDto;
 
 @Service
 public class ExternForfraganServiceImpl extends BaseUtredningService implements ExternForfraganService {
@@ -93,6 +93,9 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
 
     @Autowired
     private MyndighetIntegrationService myndighetIntegrationService;
+
+    @Autowired
+    private NotifieringSendService notifieringSendService;
 
     @Override
     public ForfraganSvarResponse besvaraForfragan(Long forfraganId, ForfraganSvarRequest svarRequest) {
@@ -199,7 +202,7 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
             vardgivare = hsaOrganizationsService.getVardgivareInfo(vardgivareHsaId);
         } catch (RuntimeException re) {
             LOG.error("RuntimeException while while querying HSA for hsaId " + internForfragan.getVardenhetHsaId(), re);
-            throw new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.HSA, re.getMessage());
+            throw new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.HSA, re.getMessage(), null);
         }
 
         ForfraganSvar forfraganSvar = internForfragan.getForfraganSvar();
@@ -224,8 +227,10 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
 
         internForfragan.setTilldeladDatum(LocalDateTime.now());
 
-        utredning.getHandelseList().add(HandelseUtil.createForfraganBesvarad(true, userService.getUser().getNamn(),
+        utredning.getHandelseList().add(HandelseUtil.createExternForfraganBesvarad(true, userService.getUser().getNamn(),
                 vardenhet.getNamn()));
+
+        notifieringSendService.notifieraVardenhetTilldeladUtredning(utredning, internForfragan, vardgivare.getNamn());
 
         utredningRepository.saveUtredning(utredning);
 
@@ -252,7 +257,7 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
         utredning.getExternForfragan().setAvvisatDatum(LocalDateTime.now());
         utredning.getExternForfragan().setAvvisatKommentar(kommentar);
 
-        utredning.getHandelseList().add(HandelseUtil.createForfraganBesvarad(false, userService.getUser().getNamn(), null));
+        utredning.getHandelseList().add(HandelseUtil.createExternForfraganBesvarad(false, userService.getUser().getNamn(), null));
 
         utredningRepository.saveUtredning(utredning);
 
@@ -307,21 +312,21 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
             List<ListForfraganFilterStatus> statuses = new ArrayList<>();
             statuses.add(ListForfraganFilterStatus.ALL);
             switch (ifs) {
-            case INKOMMEN:
-                statuses.addAll(Arrays.asList(ListForfraganFilterStatus.PAGAENDE, ListForfraganFilterStatus.KRAVER_ATGARD));
-                break;
-            case ACCEPTERAD_VANTAR_PA_TILLDELNINGSBESLUT:
-            case TILLDELAD_VANTAR_PA_BESTALLNING:
-                statuses.addAll(Arrays.asList(ListForfraganFilterStatus.PAGAENDE, ListForfraganFilterStatus.VANTAR_ANNAN_AKTOR));
-                break;
-            case AVVISAD:
-            case EJ_TILLDELAD:
-            case INGEN_BESTALLNING:
-            case BESTALLD:
-                statuses.add(ListForfraganFilterStatus.AVSLUTADE);
-                break;
-            default:
-                break;
+                case INKOMMEN:
+                    statuses.addAll(Arrays.asList(ListForfraganFilterStatus.PAGAENDE, ListForfraganFilterStatus.BEHOVER_ATGARDAS));
+                    break;
+                case ACCEPTERAD_VANTAR_PA_TILLDELNINGSBESLUT:
+                case TILLDELAD_VANTAR_PA_BESTALLNING:
+                    statuses.addAll(Arrays.asList(ListForfraganFilterStatus.PAGAENDE, ListForfraganFilterStatus.VANTAR_ANNAN_AKTOR));
+                    break;
+                case AVVISAD:
+                case EJ_TILLDELAD:
+                case INGEN_BESTALLNING:
+                case BESTALLD:
+                    statuses.add(ListForfraganFilterStatus.AVSLUTADE);
+                    break;
+                default:
+                    break;
             }
             statusMap.put(ifs, statuses);
         }

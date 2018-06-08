@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 angular.module('ibApp').directive('ibBestallningButtonBar',
-    function ($uibModal, $state) {
+    function ($uibModal) {
         'use strict';
 
         return {
@@ -63,12 +63,8 @@ angular.module('ibApp').directive('ibBestallningButtonBar',
                             bestallning: $scope.bestallning
                         }
                     });
-
-                    modalInstance.result.then(function () {
-                        $state.reload();
-                    }, function () {
-
-                    });
+                    //angular > 1.5 warns if promise rejection is not handled (e.g backdrop-click == rejection)
+                    modalInstance.result.catch(function () {}); //jshint ignore:line
                 };
                 $scope.registerSent = function () {
                     var modalInstance = $uibModal.open({
@@ -80,12 +76,8 @@ angular.module('ibApp').directive('ibBestallningButtonBar',
                             bestallning: $scope.bestallning
                         }
                     });
- 
-                    modalInstance.result.then(function () {
-                        $state.reload();
-                    }, function () {
-
-                    });
+                    //angular > 1.5 warns if promise rejection is not handled (e.g backdrop-click == rejection)
+                    modalInstance.result.catch(function () {}); //jshint ignore:line
                 };
             }
         };

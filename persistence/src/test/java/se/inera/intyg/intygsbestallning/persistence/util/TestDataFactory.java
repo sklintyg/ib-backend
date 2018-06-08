@@ -99,7 +99,7 @@ public final class TestDataFactory {
                 .withFullstandigtNamn("fullstandigtNamn")
                 .withKontor("kontor")
                 .withKostnadsstalle("kontorCostCenter")
-                .withPostkod("postkod")
+                .withPostnummer("12345")
                 .withStad("stad")
                 .withTelefonnummer("telefonnummer")
                 .build();
@@ -150,7 +150,7 @@ public final class TestDataFactory {
         return aHandelse()
                 .withAnvandare("Kotte Korv")
                 .withHandelseText("Utredning skapades")
-                .withHandelseTyp(HandelseTyp.FORFRAGAN_MOTTAGEN)
+                .withHandelseTyp(HandelseTyp.EXTERNFORFRAGAN_MOTTAGEN)
                 .withSkapad(LocalDateTime.now())
                 .withKommentar("Detta är en kommentar")
                 .build();

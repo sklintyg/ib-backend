@@ -39,6 +39,10 @@ angular.module('ibApp').directive('ibTextarea', [ function() {
 
             });
 
+            if (!$scope.colSize) {
+                $scope.colSize = 12;
+            }
+
         }
     };
 } ]);

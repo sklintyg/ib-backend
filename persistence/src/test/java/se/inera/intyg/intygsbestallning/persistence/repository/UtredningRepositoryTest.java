@@ -181,7 +181,7 @@ public class UtredningRepositoryTest {
         assertEquals("Kotte Korv", handelse.getAnvandare());
         assertEquals("Utredning skapades", handelse.getHandelseText());
         assertEquals("Detta är en kommentar", handelse.getKommentar());
-        assertEquals(HandelseTyp.FORFRAGAN_MOTTAGEN, handelse.getHandelseTyp());
+        assertEquals(HandelseTyp.EXTERNFORFRAGAN_MOTTAGEN, handelse.getHandelseTyp());
         assertNotNull(handelse.getSkapad());
 
         assertEquals(2, utredning.getHandlingList().size());
@@ -198,7 +198,7 @@ public class UtredningRepositoryTest {
         assertEquals("fullstandigtNamn", handlaggare.getFullstandigtNamn());
         assertEquals("kontor", handlaggare.getKontor());
         assertEquals("kontorCostCenter", handlaggare.getKostnadsstalle());
-        assertEquals("postkod", handlaggare.getPostkod());
+        assertEquals("12345", handlaggare.getPostnummer());
         assertEquals("stad", handlaggare.getStad());
         assertEquals("telefonnummer", handlaggare.getTelefonnummer());
 

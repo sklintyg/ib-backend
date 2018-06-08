@@ -50,7 +50,7 @@ public class UpdateOrderRequestTest {
         assertEquals("officeCostCenter", bestallare.getKostnadsstalle());
         assertEquals("authority", bestallare.getMyndighet());
         assertEquals("postalAddress", bestallare.getAdress());
-        assertEquals("postalCode", bestallare.getPostkod());
+        assertEquals("postalCode", bestallare.getPostnummer());
         assertEquals("postalCity", bestallare.getStad());
         assertEquals("phoneNumber", bestallare.getTelefonnummer());
     }
@@ -75,7 +75,7 @@ public class UpdateOrderRequestTest {
         assertEquals("officeCostCenter", bestallare.getKostnadsstalle());
         assertEquals("authority", bestallare.getMyndighet());
         assertEquals("postalAddress", bestallare.getAdress());
-        assertEquals("postalCode", bestallare.getPostkod());
+        assertEquals("postalCode", bestallare.getPostnummer());
         assertEquals("postalCity", bestallare.getStad());
         assertEquals("phoneNumber", bestallare.getTelefonnummer());
     }
@@ -100,7 +100,7 @@ public class UpdateOrderRequestTest {
         assertEquals("officeCostCenter", bestallare.getKostnadsstalle());
         assertEquals("authority", bestallare.getMyndighet());
         assertEquals("postalAddress", bestallare.getAdress());
-        assertEquals("postalCode", bestallare.getPostkod());
+        assertEquals("postalCode", bestallare.getPostnummer());
         assertEquals("postalCity", bestallare.getStad());
         assertEquals("phoneNumber", bestallare.getTelefonnummer());
     }

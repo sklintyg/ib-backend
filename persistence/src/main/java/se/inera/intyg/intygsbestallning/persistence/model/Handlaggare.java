@@ -59,8 +59,8 @@ public final class Handlaggare {
     @Column(name = "ADRESS")
     private String adress;
 
-    @Column(name = "POSTKOD")
-    private String postkod;
+    @Column(name = "POSTNUMMER")
+    private String postnummer;
 
     @Column(name = "STAD")
     private String stad;
@@ -82,7 +82,7 @@ public final class Handlaggare {
                 .withKontor(handlaggare.getKontor())
                 .withKostnadsstalle(handlaggare.getKostnadsstalle())
                 .withAdress(handlaggare.getAdress())
-                .withPostkod(handlaggare.getPostkod())
+                .withPostnummer(handlaggare.getPostnummer())
                 .withStad(handlaggare.getStad())
                 .build();
     }
@@ -151,12 +151,12 @@ public final class Handlaggare {
         this.adress = adress;
     }
 
-    public String getPostkod() {
-        return postkod;
+    public String getPostnummer() {
+        return postnummer;
     }
 
-    public void setPostkod(String postkod) {
-        this.postkod = postkod;
+    public void setPostnummer(String postnummer) {
+        this.postnummer = postnummer;
     }
 
     public String getStad() {
@@ -176,7 +176,7 @@ public final class Handlaggare {
         private String kontor;
         private String kostnadsstalle;
         private String adress;
-        private String postkod;
+        private String postnummer;
         private String stad;
 
         private HandlaggareBuilder() {
@@ -226,8 +226,8 @@ public final class Handlaggare {
             return this;
         }
 
-        public HandlaggareBuilder withPostkod(String postkod) {
-            this.postkod = postkod;
+        public HandlaggareBuilder withPostnummer(String postnummer) {
+            this.postnummer = postnummer;
             return this;
         }
 
@@ -246,7 +246,7 @@ public final class Handlaggare {
             handlaggare.setKontor(kontor);
             handlaggare.setKostnadsstalle(kostnadsstalle);
             handlaggare.setAdress(adress);
-            handlaggare.setPostkod(postkod);
+            handlaggare.setPostnummer(postnummer);
             handlaggare.setStad(stad);
             return handlaggare;
         }
@@ -269,14 +269,14 @@ public final class Handlaggare {
                 && Objects.equals(kontor, that.kontor)
                 && Objects.equals(kostnadsstalle, that.kostnadsstalle)
                 && Objects.equals(adress, that.adress)
-                && Objects.equals(postkod, that.postkod)
+                && Objects.equals(postnummer, that.postnummer)
                 && Objects.equals(stad, that.stad);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, fullstandigtNamn, telefonnummer, email, myndighet, kontor, kostnadsstalle, adress, postkod, stad);
+        return Objects.hash(id, fullstandigtNamn, telefonnummer, email, myndighet, kontor, kostnadsstalle, adress, postnummer, stad);
     }
 
     @Override
@@ -290,7 +290,7 @@ public final class Handlaggare {
                 .add("kontor", kontor)
                 .add("kostnadsstalle", kostnadsstalle)
                 .add("adress", adress)
-                .add("postkod", postkod)
+                .add("postnummer", postnummer)
                 .add("stad", stad)
                 .toString();
     }

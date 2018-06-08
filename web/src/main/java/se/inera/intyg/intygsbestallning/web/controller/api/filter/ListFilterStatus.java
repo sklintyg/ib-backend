@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum ListFilterStatus {
     ALL("Visa alla"),
-    KRAVER_ATGARD("Kräver åtgärd"),
+    BEHOVER_ATGARDAS("Behöver åtgärdas"),
     VANTAR_ANNAN_AKTOR("Väntar på annan aktör");
 
     private final String id;
