@@ -62,7 +62,7 @@ public class UpdateOrderRequest {
             Optional.ofNullable(admin.getAuthority()).ifPresent(typ -> updateBestallareBuilder.withMyndighet(typ.getCode()));
 
             Optional.ofNullable(admin.getOfficeAddress()).ifPresent(typ -> updateBestallareBuilder.withAdress(typ.getPostalAddress()));
-            Optional.ofNullable(admin.getOfficeAddress()).ifPresent(typ -> updateBestallareBuilder.withPostkod(typ.getPostalCode()));
+            Optional.ofNullable(admin.getOfficeAddress()).ifPresent(typ -> updateBestallareBuilder.withPostnummer(typ.getPostalCode()));
             Optional.ofNullable(admin.getOfficeAddress()).ifPresent(typ -> updateBestallareBuilder.withStad(typ.getPostalCity()));
 
             updateOrderRequestBuilder.withBestallare(updateBestallareBuilder.build());

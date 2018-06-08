@@ -198,7 +198,7 @@ public class UtredningRepositoryTest {
         assertEquals("fullstandigtNamn", handlaggare.getFullstandigtNamn());
         assertEquals("kontor", handlaggare.getKontor());
         assertEquals("kontorCostCenter", handlaggare.getKostnadsstalle());
-        assertEquals("postkod", handlaggare.getPostkod());
+        assertEquals("12345", handlaggare.getPostnummer());
         assertEquals("stad", handlaggare.getStad());
         assertEquals("telefonnummer", handlaggare.getTelefonnummer());
 

@@ -389,7 +389,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .withKontor(bestallare.getKontor())
                 .withKostnadsstalle(bestallare.getKostnadsstalle())
                 .withMyndighet(bestallare.getMyndighet())
-                .withPostkod(bestallare.getPostkod())
+                .withPostnummer(bestallare.getPostnummer())
                 .withStad(bestallare.getStad())
                 .withTelefonnummer(bestallare.getTelefonnummer())
                 .build()));
@@ -439,7 +439,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .withKostnadsstalle(source.getKostnadsstalle())
                 .withTelefonnummer(source.getTelefonnummer())
                 .withAdress(source.getAdress())
-                .withPostkod(source.getPostkod())
+                .withPostnummer(source.getPostnummer())
                 .withStad(source.getStad())
                 .build();
     }

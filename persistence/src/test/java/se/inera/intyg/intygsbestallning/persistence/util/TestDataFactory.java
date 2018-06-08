@@ -98,7 +98,7 @@ public final class TestDataFactory {
                 .withFullstandigtNamn("fullstandigtNamn")
                 .withKontor("kontor")
                 .withKostnadsstalle("kontorCostCenter")
-                .withPostkod("postkod")
+                .withPostnummer("12345")
                 .withStad("stad")
                 .withTelefonnummer("telefonnummer")
                 .build();

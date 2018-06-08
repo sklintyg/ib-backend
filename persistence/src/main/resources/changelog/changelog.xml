@@ -856,4 +856,10 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="5" author="mc">
+        <renameColumn tableName="HANDLAGGARE"
+            oldColumnName="POSTKOD"
+            newColumnName="POSTNUMMER"
+            columnDataType="varchar(255)"/>
+    </changeSet>
 </databaseChangeLog>

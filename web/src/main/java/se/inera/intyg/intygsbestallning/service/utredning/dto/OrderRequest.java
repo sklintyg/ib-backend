@@ -72,7 +72,7 @@ public final class OrderRequest {
                                 ? bestallareSource.getOfficeAddress().getPostalAddress() : null)
                         .withStad(!isNull(bestallareSource.getOfficeAddress())
                                 ? bestallareSource.getOfficeAddress().getPostalCity() : null)
-                        .withPostkod(!isNull(bestallareSource.getOfficeAddress())
+                        .withPostnummer(!isNull(bestallareSource.getOfficeAddress())
                                 ? bestallareSource.getOfficeAddress().getPostalCode() : null)
                         .withKostnadsstalle(bestallareSource.getOfficeCostCenter())
                         .withKontor(bestallareSource.getOfficeName())
