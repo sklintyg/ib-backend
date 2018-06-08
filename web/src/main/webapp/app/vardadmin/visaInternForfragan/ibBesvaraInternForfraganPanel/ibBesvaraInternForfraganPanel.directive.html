@@ -1,6 +1,7 @@
 <div class="single-tab-workarea">
   <div class="single-tab-content">
     <form name="forfraganSvarForm" novalidate autocomplete="off">
+      <fieldset ng-disabled="vm.fetchingPreferences">
       <div class="flex-grid">
         <div class="col">
           <h3><span message key="internforfragan.besvara.form.title"></span></h3>
@@ -116,6 +117,7 @@
                         alert-message-id="{{vm.model.errorKey}}">
 
       </ib-alert-message>
+      </fieldset>
     </form>
 
   </div>
