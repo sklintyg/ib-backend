@@ -46,7 +46,8 @@ public class PaminnelseSlutdatumForUtredningPasserasJob {
 
     private static final Logger LOG = LoggerFactory.getLogger(PaminnelseSlutdatumForUtredningPasserasJob.class);
 
-    private static final long LOCK_AT_LEAST = 1000 * 60 * 15L;
+    private static final long LOCK_AT_LEAST = 1000 * 15L;
+    private static final long LOCK_AT_MOST = 1000 * 30L;
     private static final String JOB_NAME = "paminnelseSlutdatumForUtredningPasserasJob";
 
     @Autowired
@@ -64,7 +65,7 @@ public class PaminnelseSlutdatumForUtredningPasserasJob {
     private Integer paminnelseArbetsdagar;
 
     @Scheduled(cron = "${job.paminnelse.slutdatum.utredning.passeras.cron}")
-    @SchedulerLock(name = JOB_NAME, lockAtLeastFor = LOCK_AT_LEAST)
+    @SchedulerLock(name = JOB_NAME, lockAtLeastFor = LOCK_AT_LEAST, lockAtMostFor = LOCK_AT_MOST)
     public void executeJob() {
 
         // Calculate last date
