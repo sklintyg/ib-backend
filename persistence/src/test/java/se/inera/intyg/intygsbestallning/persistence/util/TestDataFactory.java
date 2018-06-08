@@ -38,8 +38,6 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 
-import com.google.common.collect.ImmutableList;
-
 import se.inera.intyg.intygsbestallning.persistence.model.Anteckning;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
@@ -146,7 +144,7 @@ public final class TestDataFactory {
         return aHandelse()
                 .withAnvandare("Kotte Korv")
                 .withHandelseText("Utredning skapades")
-                .withHandelseTyp(HandelseTyp.FORFRAGAN_MOTTAGEN)
+                .withHandelseTyp(HandelseTyp.EXTERNFORFRAGAN_MOTTAGEN)
                 .withSkapad(LocalDateTime.now())
                 .withKommentar("Detta är en kommentar")
                 .build();

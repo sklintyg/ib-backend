@@ -112,7 +112,7 @@ public class UtredningTest {
                         .build())
                 .withHandelseList(ImmutableList.of(aHandelse()
                         .withId(1L)
-                        .withHandelseTyp(HandelseTyp.FORFRAGAN_ACCEPTERAD)
+                        .withHandelseTyp(HandelseTyp.INTERNFORFRAGAN_BESVARAD)
                         .withSkapad(datum)
                         .withAnvandare("anvandare")
                         .withHandelseText("text")

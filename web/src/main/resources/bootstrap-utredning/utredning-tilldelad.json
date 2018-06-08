@@ -43,25 +43,25 @@
   },
   "sprakTolk": "sv",
   "handelseList": [{
-    "handelseTyp":"FORFRAGAN_MOTTAGEN",
+    "handelseTyp":"EXTERNFORFRAGAN_MOTTAGEN",
     "skapad":"2018-04-11T15:12:51.016",
     "anvandare":"",
     "handelseText":"Förfrågan mottagen av WebCert-Vårdgivare1",
     "kommentar":""
   },{
-    "handelseTyp":"FORFRAGAN_SKICKAD",
+    "handelseTyp":"INTERNFORFRAGAN_SKICKAD",
     "skapad":"2018-04-13T10:07:12.125",
     "anvandare":"Simona Samordnare",
     "handelseText":"Förfrågan skickades till WebCert-Enhet1",
     "kommentar":""
   },{
-    "handelseTyp":"FORFRAGAN_ACCEPTERAD",
+    "handelseTyp":"INTERNFORFRAGAN_BESVARAD",
     "skapad":"2018-04-18T10:07:12.396",
     "anvandare":"Ingbritt Filt",
     "handelseText":"Förfrågan accepterad av WebCert-Enhet1. Startdatum: 2018-12-12",
     "kommentar":"Här står det en kommentar från vårdadmin"
   },{
-    "handelseTyp":"FORFRAGAN_ACCEPTERAD",
+    "handelseTyp":"EXTERNFORFRAGAN_BESVARAD",
     "skapad":"2018-04-26T10:07:12.127",
     "anvandare":"Simona Samordnare",
     "handelseText":"Förfrågan accepterades av landstinget. Utredningen tilldelad till WebCert-Enhet1",

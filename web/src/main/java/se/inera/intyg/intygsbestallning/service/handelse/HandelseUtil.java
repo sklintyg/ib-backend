@@ -56,16 +56,16 @@ public final class HandelseUtil {
                 .build();
     }
 
-    public static Handelse createForfraganSkickad(String samordnare, String vardenhet) {
+    public static Handelse createInternForfraganSkickad(String samordnare, String vardenhet) {
         return aHandelse()
                 .withSkapad(LocalDateTime.now())
-                .withHandelseTyp(HandelseTyp.FORFRAGAN_SKICKAD)
+                .withHandelseTyp(HandelseTyp.INTERNFORFRAGAN_SKICKAD)
                 .withAnvandare(samordnare)
                 .withHandelseText(MessageFormat.format("Förfrågan skickades till {0}", vardenhet))
                 .build();
     }
 
-    public static Handelse createForfraganBesvarad(boolean accepted, String samordnare, String vardenhet) {
+    public static Handelse createExternForfraganBesvarad(boolean accepted, String samordnare, String vardenhet) {
 
         String handelseText;
         if (accepted) {
@@ -75,7 +75,7 @@ public final class HandelseUtil {
         }
         return aHandelse()
                 .withSkapad(LocalDateTime.now())
-                .withHandelseTyp(HandelseTyp.FORFRAGAN_BESVARAD)
+                .withHandelseTyp(HandelseTyp.EXTERNFORFRAGAN_BESVARAD)
                 .withAnvandare(samordnare)
                 .withHandelseText(handelseText)
                 .build();
@@ -86,16 +86,16 @@ public final class HandelseUtil {
 
         StringBuilder handelseText = new StringBuilder();
         if (accepted) {
-            handelseText.append(String.format("Förfrågan accepterad av %s", vardenhetNamn));
+            handelseText.append(String.format("Förfrågan accepterades av %s.", vardenhetNamn));
             if (borjaDatum != null) {
                 handelseText.append(String.format(" Startdatum: %s", borjaDatum.format(formatter)));
             }
         } else {
-            handelseText.append(String.format("Förfrågan avvisades av %s", vardenhetNamn));
+            handelseText.append(String.format("Förfrågan avvisades av %s.", vardenhetNamn));
         }
         return aHandelse()
                 .withSkapad(LocalDateTime.now())
-                .withHandelseTyp(accepted ? HandelseTyp.FORFRAGAN_ACCEPTERAD : HandelseTyp.FORFRAGAN_AVVISAD)
+                .withHandelseTyp(HandelseTyp.INTERNFORFRAGAN_BESVARAD)
                 .withAnvandare(vardadmin)
                 .withHandelseText(handelseText.toString())
                 .withKommentar(svarKommentar)
@@ -324,11 +324,11 @@ public final class HandelseUtil {
                 .build();
     }
 
-    public static Handelse createForfraganMottagen(final String landstingHsaId) {
+    public static Handelse createExternForfraganMottagen(final String landstingHsaId) {
 
         return aHandelse()
                 .withSkapad(LocalDateTime.now())
-                .withHandelseTyp(HandelseTyp.FORFRAGAN_MOTTAGEN)
+                .withHandelseTyp(HandelseTyp.EXTERNFORFRAGAN_MOTTAGEN)
                 .withHandelseText(MessageFormat.format("Förfrågan mottagen av {0}", landstingHsaId))
                 .build();
     }

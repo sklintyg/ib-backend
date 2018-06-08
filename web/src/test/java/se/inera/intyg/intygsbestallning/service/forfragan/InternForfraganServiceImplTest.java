@@ -179,10 +179,10 @@ public class InternForfraganServiceImplTest {
         assertEquals(vardenhetId2, utredning.getExternForfragan().getInternForfraganList().get(1).getVardenhetHsaId());
 
         assertEquals(2, utredning.getHandelseList().size());
-        assertEquals(HandelseTyp.FORFRAGAN_SKICKAD, utredning.getHandelseList().get(0).getHandelseTyp());
+        assertEquals(HandelseTyp.INTERNFORFRAGAN_SKICKAD, utredning.getHandelseList().get(0).getHandelseTyp());
         assertEquals(userName, utredning.getHandelseList().get(0).getAnvandare());
         assertEquals("Förfrågan skickades till " + vardenhetNamn1, utredning.getHandelseList().get(0).getHandelseText());
-        assertEquals(HandelseTyp.FORFRAGAN_SKICKAD, utredning.getHandelseList().get(1).getHandelseTyp());
+        assertEquals(HandelseTyp.INTERNFORFRAGAN_SKICKAD, utredning.getHandelseList().get(1).getHandelseTyp());
         assertEquals(userName, utredning.getHandelseList().get(1).getAnvandare());
         assertEquals("Förfrågan skickades till " + vardenhetNamn2, utredning.getHandelseList().get(1).getHandelseText());
     }

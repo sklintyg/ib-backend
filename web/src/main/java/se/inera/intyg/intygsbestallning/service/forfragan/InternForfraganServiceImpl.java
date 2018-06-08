@@ -128,7 +128,7 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
 
         utredning.getHandelseList().addAll(
                 newVardenheter.stream()
-                        .map(vardenhetHsaId -> HandelseUtil.createForfraganSkickad(userService.getUser().getNamn(),
+                        .map(vardenhetHsaId -> HandelseUtil.createInternForfraganSkickad(userService.getUser().getNamn(),
                                 hsaOrganizationsService.getVardenhet(vardenhetHsaId).getNamn()))
                         .collect(toList()));
 

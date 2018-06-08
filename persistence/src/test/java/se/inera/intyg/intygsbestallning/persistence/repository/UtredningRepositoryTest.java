@@ -181,7 +181,7 @@ public class UtredningRepositoryTest {
         assertEquals("Kotte Korv", handelse.getAnvandare());
         assertEquals("Utredning skapades", handelse.getHandelseText());
         assertEquals("Detta är en kommentar", handelse.getKommentar());
-        assertEquals(HandelseTyp.FORFRAGAN_MOTTAGEN, handelse.getHandelseTyp());
+        assertEquals(HandelseTyp.EXTERNFORFRAGAN_MOTTAGEN, handelse.getHandelseTyp());
         assertNotNull(handelse.getSkapad());
 
         assertEquals(2, utredning.getHandlingList().size());

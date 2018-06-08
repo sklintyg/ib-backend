@@ -334,7 +334,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                     .withKommentar(request.getKommentar())
                     .build()));
 
-            handelse = HandelseUtil.createForfraganSkickad(request.getLandstingHsaId(), vardenhetHsaId);
+            handelse = HandelseUtil.createInternForfraganSkickad(request.getLandstingHsaId(), vardenhetHsaId);
             utredningBuilder
                     .withExternForfragan(externForfragan.build())
                     .withHandelseList(Collections.singletonList(handelse));
@@ -343,7 +343,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
             sparadUtredning = utredningRepository.save(utredning);
             notifieringSendService.notifieraVardenhetNyInternforfragan(utredning);
         } else {
-            handelse = HandelseUtil.createForfraganMottagen(request.getLandstingHsaId());
+            handelse = HandelseUtil.createExternForfraganMottagen(request.getLandstingHsaId());
             utredningBuilder
                     .withExternForfragan(externForfragan.build())
                     .withHandelseList(Collections.singletonList(handelse));

@@ -72,9 +72,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
@@ -195,7 +193,7 @@ public class ExternForfraganServiceImplTest {
         Utredning utredning = utredningArgument.getValue();
         assertNotNull(utredning.getExternForfragan().getInternForfraganList().get(0).getTilldeladDatum());
         assertEquals(1, utredning.getHandelseList().size());
-        assertEquals(HandelseTyp.FORFRAGAN_BESVARAD, utredning.getHandelseList().get(0).getHandelseTyp());
+        assertEquals(HandelseTyp.EXTERNFORFRAGAN_BESVARAD, utredning.getHandelseList().get(0).getHandelseTyp());
         assertEquals(userName, utredning.getHandelseList().get(0).getAnvandare());
     }
 
@@ -377,7 +375,7 @@ public class ExternForfraganServiceImplTest {
         assertNotNull(utredning.getExternForfragan().getAvvisatDatum());
         assertEquals(kommentar, utredning.getExternForfragan().getAvvisatKommentar());
         assertEquals(1, utredning.getHandelseList().size());
-        assertEquals(HandelseTyp.FORFRAGAN_BESVARAD, utredning.getHandelseList().get(0).getHandelseTyp());
+        assertEquals(HandelseTyp.EXTERNFORFRAGAN_BESVARAD, utredning.getHandelseList().get(0).getHandelseTyp());
         assertEquals(userName, utredning.getHandelseList().get(0).getAnvandare());
     }
 

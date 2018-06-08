@@ -230,7 +230,7 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
 
         internForfragan.setTilldeladDatum(LocalDateTime.now());
 
-        utredning.getHandelseList().add(HandelseUtil.createForfraganBesvarad(true, userService.getUser().getNamn(),
+        utredning.getHandelseList().add(HandelseUtil.createExternForfraganBesvarad(true, userService.getUser().getNamn(),
                 vardenhet.getNamn()));
 
         notifieringSendService.notifieraVardenhetTilldeladUtredning(utredning, internForfragan, vardgivare.getNamn());
@@ -260,7 +260,7 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
         utredning.getExternForfragan().setAvvisatDatum(LocalDateTime.now());
         utredning.getExternForfragan().setAvvisatKommentar(kommentar);
 
-        utredning.getHandelseList().add(HandelseUtil.createForfraganBesvarad(false, userService.getUser().getNamn(), null));
+        utredning.getHandelseList().add(HandelseUtil.createExternForfraganBesvarad(false, userService.getUser().getNamn(), null));
 
         utredningRepository.save(utredning);
 

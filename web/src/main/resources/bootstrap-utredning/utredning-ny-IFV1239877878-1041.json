@@ -17,7 +17,7 @@
   },
   "sprakTolk": "sv",
   "handelseList": [{
-    "handelseTyp":"FORFRAGAN_MOTTAGEN",
+    "handelseTyp":"EXTERNFORFRAGAN_MOTTAGEN",
     "skapad":"2018-04-11T11:03:50.903",
     "anvandare":"",
     "handelseText":"Förfrågan mottagen av WebCert-Vårdgivare1",
