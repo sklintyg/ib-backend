@@ -42,7 +42,7 @@ public class SlutdatumForUtredningPasseradJob {
 
     private static final Logger LOG = LoggerFactory.getLogger(SlutdatumForUtredningPasseradJob.class);
 
-    private static final long LOCK_AT_MOST = 60000L;
+    private static final long LOCK_AT_LEAST = 1000 * 60 * 15L;
     private static final String JOB_NAME = "slutdatumForUtredningPasseradJob";
 
     @Autowired
@@ -55,7 +55,7 @@ public class SlutdatumForUtredningPasseradJob {
     private NotifieringPreferenceService notifieringPreferenceService;
 
     @Scheduled(cron = "${job.slutdatum.utredning.passerad.cron}")
-    @SchedulerLock(name = JOB_NAME, lockAtMostFor = LOCK_AT_MOST)
+    @SchedulerLock(name = JOB_NAME, lockAtLeastFor = LOCK_AT_LEAST)
     public void executeJob() {
 
         // To vardenhet
