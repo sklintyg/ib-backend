@@ -1,34 +1,32 @@
-<div>
-  <ib-textfield
-      id="filterFritext"
-      model="filter.freetext"
-      label-key="bestallningar.filter.fritext.label"
-      max-length="255"
-      on-change="onChange()"
-      placeholder-key="bestallningar.filter.fritext.placeholder">
-  </ib-textfield>
-  <ib-dropdown
-      id="filterLandsting"
-      ng-model="filter.vardgivareNamn"
-      ng-change="onChange()"
-      label-key="bestallningar.filter.vardgivareNamn.label"
-      items="filter.vardgivareNamnOptions">
-  </ib-dropdown>
-  <ib-date-range-picker
-      id="filterSlutdatumFas"
-      model="filter.slutdatumFas"
-      on-change="onChange()"
-      label-key="bestallningar.filter.slutdatumfas.label"
-      placeholder-key="bestallningar.filter.slutdatumfas.placeholder">
-  </ib-date-range-picker>
-  <ib-dropdown
-      id="filterStatus"
-      ng-model="filter.status"
-      ng-change="onChange()"
-      label-key="bestallningar.filter.status.label"
-      items="filter.statusOptions">
-  </ib-dropdown>
-  <button class="btn btn-primary" ng-click="resetFilter()" ng-disabled="filter.isDefault()">
-    <message key="bestallningar.filter.resetfilter.label"></message>
-  </button>
-</div>
+<ib-textfield
+    id="filterFritext"
+    model="filter.freetext"
+    label-key="bestallningar.filter.fritext.label"
+    max-length="255"
+    on-change="onChange()"
+    placeholder-key="bestallningar.filter.fritext.placeholder">
+</ib-textfield>
+<ib-dropdown
+    id="filterLandsting"
+    ng-model="filter.vardgivareNamn"
+    ng-change="onChange()"
+    label-key="bestallningar.filter.vardgivareNamn.label"
+    items="filter.vardgivareNamnOptions">
+</ib-dropdown>
+<ib-date-range-picker
+    id="filterSlutdatumFas"
+    model="filter.slutdatumFas"
+    on-change="onChange()"
+    label-key="bestallningar.filter.slutdatumfas.label"
+    placeholder-key="bestallningar.filter.slutdatumfas.placeholder">
+</ib-date-range-picker>
+<ib-dropdown
+    id="filterStatus"
+    ng-model="filter.status"
+    ng-change="onChange()"
+    label-key="bestallningar.filter.status.label"
+    items="filter.statusOptions">
+</ib-dropdown>
+<button class="btn btn-primary" ng-click="resetFilter()" ng-disabled="filter.isDefault()">
+  <message key="bestallningar.filter.resetfilter.label"></message>
+</button>

@@ -1,7 +1,7 @@
 ib-spinner {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  flex: 1 1 auto;
 
   .ib-spinner {
     text-align: center;
@@ -12,6 +12,6 @@ ib-spinner {
   .ib-spinner__content {
     display: flex;
     flex-direction: column;
-    flex: 1;
+    flex: 1 1 auto;
   }
 }
