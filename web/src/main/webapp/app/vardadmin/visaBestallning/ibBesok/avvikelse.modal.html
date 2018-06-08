@@ -41,17 +41,18 @@
           </td>
           <td>
             <ib-date-picker-field target-model="avvikelse.datum"
-                                  format="yyyy-MM-dd"
-                                  date-format-error="Ogiltigt datumformat, ange ett datum som ÅÅÅÅ-MM-DD"
                                   ib-date-picker-field
+                                  required="true"
                                   append-to-body="true"
                                   add-date-parser="strict"
+                                  format="yyyy-MM-dd"
+                                  date-format-error="Ogiltigt datumformat, ange ett datum som ÅÅÅÅ-MM-DD"
                                   min-date-error="Möjligt startdatum får tidigast vara dagens datum"
                                   max-date-error="Möjligt kallelsedatum får inte vara efter besöksdatum"
                                   max-date="{{ maxDate }}">
             </ib-date-picker-field>
             <message key="avvikelse.label.tid"></message>
-            <ib-time-picker data-date="avvikelse.tid"></ib-time-picker>
+            <ib-time-picker required="true" data-date="avvikelse.tid"></ib-time-picker>
           </td>
         </tr>
 
@@ -75,7 +76,7 @@
     </form>
   </div>
   <div class="modal-footer">
-    <button type="button" id="avvikelse-modal-skicka" class="btn btn-primary" ng-click="send()" data-ng-disabled="avvikelseForm.$invalid">
+    <button type="button" id="avvikelse-modal-skicka" class="btn btn-primary" ng-click="send()" data-ng-disabled="avvikelseForm.$invalid || !avvikelse.datum || !avvikelse.tid">
       Spara
     </button>
     <button type="button" id="avvikelse-modal-cancel" class="btn btn-default" ng-click="$dismiss()">

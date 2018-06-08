@@ -21,14 +21,7 @@
     color: $ib-color-11;
   }
 
-  .big-flex-wrapper {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .flex-wrapper {
-    display: flex;
-    flex-direction: row;
+  .flex-row {
     padding-bottom: 15px;
 
     > span:first-child {
