@@ -19,7 +19,7 @@
 
 angular.module('ibApp')
     .controller('RegistreraMottagenHandlingModalCtrl',
-        function ($scope, $uibModalInstance, HandlingProxy, $stateParams) {
+        function ($scope, $uibModalInstance, HandlingProxy, $stateParams, $state) {
             'use strict';
 
             $scope.vm = {
@@ -41,13 +41,12 @@ angular.module('ibApp')
                 var date = moment($scope.registerValue).format('YYYY-MM-DD');
 
                 HandlingProxy.registerReceivedAction(date, $stateParams.utredningsId)
-                    .then(function (data) {
-                        angular.copy(data, $scope.utredning);
+                    .then(function () {
+                        $uibModalInstance.close();
+                        $state.reload();
                     }).finally(function () { // jshint ignore:line
-                    $scope.vm.busySaving = false;
-                });
-
-                $uibModalInstance.close();
+                        $scope.vm.busySaving = false;
+                    });
             };
         }
     );

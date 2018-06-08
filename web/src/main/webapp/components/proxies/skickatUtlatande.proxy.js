@@ -28,7 +28,14 @@ angular.module('ibApp').factory('SkickatUtlatandeProxy',
                 utlatandeSentDate: date
             };
 
-            return ProxyTemplate.postTemplate(restPath, request, {});
+            var config =  {
+                errorMessageConfig: {
+                    errorTitleKey: 'server.error.registersentutlatande.title',
+                    errorTextKey: 'server.error.registersentutlatande.text'
+                }
+            };
+
+            return ProxyTemplate.postTemplate(restPath, request, config);
         }
         
         // Return public API for the service

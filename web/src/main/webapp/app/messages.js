@@ -329,6 +329,10 @@ var ibMessages = {
         'server.error.getnotifieringpreference.text': 'Försök igen eller kontakta support',
         'server.error.setnotifieringpreference.title': 'Kunde inte spara notifieringsintällningar',
         'server.error.setnotifieringpreference.text': 'Försök igen eller kontakta support',
+        'server.error.registerreceived.title': 'Kunde inte registrera mottagen handling',
+        'server.error.registerreceived.text': 'Försök igen eller kontakta support',
+        'server.error.registersentutlatande.title': 'Kunde inte registrera skickat utlåtande',
+        'server.error.registersentutlatande.text': 'Försök igen eller kontakta support',
 
         'common.error.spi.fel01': 'Ett tekniskt fel uppstod när vårdenheten skulle hämtas. Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraNationellKundservice>'
     },
