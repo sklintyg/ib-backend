@@ -202,8 +202,8 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
 
         if (request.getHandelseTyp().equals(HandelseTyp.AVVIKELSE_RAPPORTERAD)) {
             BesokStatus besokStatus = BesokStatusResolver.resolveStaticStatus(uppdateratBesok);
-            checkState(Objects.equals(BesokStatus.AVVIKELSE_RAPPORTERAD, besokStatus) ||
-                    Objects.equals(BesokStatus.PATIENT_UTEBLEV, besokStatus));
+            checkState(Objects.equals(BesokStatus.AVVIKELSE_RAPPORTERAD, besokStatus)
+                    || Objects.equals(BesokStatus.PATIENT_UTEBLEV, besokStatus));
             logService.log(new PatientPdlLoggable(uppdateradUtredning.getInvanare().getPersonId()), PdlLogType.AVVIKELSE_RAPPORTERAD);
             myndighetIntegrationService.reportDeviation(createReportDeviationRequestDto(request,
                     uppdateratBesok.getAvvikelse().getAvvikelseId()));
