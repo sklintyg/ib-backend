@@ -28,5 +28,25 @@
     color: $ib-color-09;
   }
 
+  .flex-row {
+    padding-bottom: 10px;
+  }
 
+  ib-checkbox-wrapper > .ib-checkbox label {
+    position: static;
+  }
+
+  table {
+    width: 100%;
+
+    td {
+      padding-bottom: 10px;
+      vertical-align: middle;
+    }
+
+    ib-date-picker-field, ib-time-picker {
+      display: inline-block;
+      vertical-align: middle;
+    }
+  }
 }

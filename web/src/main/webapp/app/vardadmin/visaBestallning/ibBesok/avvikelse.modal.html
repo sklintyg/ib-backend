@@ -4,59 +4,68 @@
     <h4 class="modal-title">Rapportera avvikelse</h4>
   </div>
   <div class="modal-body">
+    <ib-alert-message alert-id="avvikelse-info" alert-message-id="avvikelse.info" alert-severity="info"></ib-alert-message>
+
     <form name="avvikelseForm" novalidate autocomplete="off">
-      <div class="flex-column">
+      <table>
+        <tr>
+          <td>
+            <ib-help-text-label label-key="avvikelse.label.orsakadav"></ib-help-text-label>
+          </td>
+          <td>
+            <div class="row">
+              <span class="col-md-6">
+                <ib-dropdown id="orsakatAv" ng-model="avvikelse.orsakatAv" ng-change="onChange()"
+                             items="orsakList">
+                </ib-dropdown>
+              </span>
+            </div>
+          </td>
+        </tr>
 
-        {{avvikelse}}
-
-        <div class="flex-row">
-          <ib-alert-message alert-id="avvikelse-info" alert-message-id="avvikelse.info" alert-severity="info"></ib-alert-message>
-        </div>
-
-        <div class="flex-row">
-          <span><ib-help-text-label label-key="avvikelse.label.orsakadav"></ib-help-text-label></span>
-          <span>
-            <ib-dropdown id="orsakatAv" ng-model="avvikelse.orsakatAv" ng-change="onChange()"
-                         items="orsakList">
-            </ib-dropdown>
-          </span>
-        </div>
-
-        <div class="flex-row">
-          <span><ib-help-text-label label-key="avvikelse.label.invanareuteblev"></ib-help-text-label></span>
-          <span>
+        <tr>
+          <td>
+            <ib-help-text-label label-key="avvikelse.label.invanareuteblev"></ib-help-text-label>
+          </td>
+          <td>
             <ib-checkbox-wrapper>
               <input type="checkbox" ng-model="avvikelse.invanareUteblev" ng-true-value="true" ng-false-value="false">
               <label></label>
             </ib-checkbox-wrapper>
-          </span>
-        </div>
+          </td>
+        </tr>
 
-        <div class="flex-row">
-          <ib-help-text-label label-key="avvikelse.label.avvikelseuppstod"></ib-help-text-label>
-          <ib-date-picker-field target-model="avvikelse.datum" format="yyyy-MM-dd"
+        <tr>
+          <td>
+            <ib-help-text-label label-key="avvikelse.label.datum"></ib-help-text-label>
+          </td>
+          <td>
+            <ib-date-picker-field target-model="avvikelse.datum" format="yyyy-MM-dd"
                                 date-format-error="Ogiltigt datumformat, ange ett datum som ÅÅÅÅ-MM-DD"
                                 ib-date-picker-field append-to-body="true" add-date-parser="strict">
-          </ib-date-picker-field>
-        </div>
+            </ib-date-picker-field>
+            <message key="avvikelse.label.tid"></message>
+            <ib-time-picker data-date="avvikelse.tid"></ib-time-picker>
+          </td>
+        </tr>
 
-        <div class="flex-row">
-          <ib-help-text-label label-key="avvikelse.label.from"></ib-help-text-label>
-          <ib-time-picker data-date="avvikelse.tid"></ib-time-picker>
-        </div>
+        <tr>
+          <td class="top-align">
+            <ib-help-text-label label-key="avvikelse.label.kommentar"></ib-help-text-label>
+          </td>
+          <td>
+            <ib-textarea
+                id="beskrivning"
+                model="avvikelse.beskrivning"
+                required="false"
+                placeholder-text="Frivilligt"
+                max-length="255"
+                col-size="12">
+            </ib-textarea>
+          </td>
+        </tr>
 
-        <div class="flex-row">
-          <ib-textarea
-              id="beskrivning"
-              model="avvikelse.beskrivning"
-              required="false"
-              placeholder-text="Frivilligt"
-              max-length="255"
-              col-size="12">
-          </ib-textarea>
-        </div>
-
-      </div>
+      </table>
     </form>
   </div>
   <div class="modal-footer">

@@ -117,6 +117,11 @@ var ibMessages = {
 
         // Avvikelse modal
         'avvikelse.info': '<p>När en avvikelse registreras skickas meddelande till Försäkringskassans handläggare som kommer fatta ett beslut om hur återstående besök ska hanteras.</p>Besöket ska inte avbokas utan beslut från Försäkringskassans handläggare.',
+        'avvikelse.label.orsakadav': 'Orsakad av',
+        'avvikelse.label.invanareuteblev': 'Invånare uteblev',
+        'avvikelse.label.datum': 'Avvikelse uppstod',
+        'avvikelse.label.tid': 'kl.',
+        'avvikelse.label.kommentar': 'Kommentar',
 
         // Registrera mottagen handling modal
         'registrera-mottagen-handling.label.info': 'Här anges datumet för när handlingarna mottogs. Detta datum visas inte för Försäkringskassan utan är till för vården att kunna följa händelser kring utredningen.\n' +
