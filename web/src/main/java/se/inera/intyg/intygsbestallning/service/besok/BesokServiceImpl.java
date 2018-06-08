@@ -218,6 +218,36 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
     }
 
     @Override
+    public void avbokaBesok(Long besokId) {
+        Utredning utredning = utredningRepository.findByBesokList_Id(besokId)
+                .orElseThrow(() -> new IbNotFoundException(MessageFormat.format("Besok with id {0} was not found.", besokId)));
+
+        checkUserVardenhetTilldeladToBestallning(utredning);
+
+        Besok besokToUpdate = utredning.getBesokList().stream()
+                .filter(b -> b.getId().equals(besokId))
+                .collect(onlyElement());
+
+        BesokStatus besokStatus = BesokStatusResolver.resolveStaticStatus(besokToUpdate);
+        if (besokStatus != BesokStatus.AVVIKELSE_MOTTAGEN) {
+            throw new IbServiceException(IbErrorCodeEnum.BAD_STATE,
+                    MessageFormat.format("Besok with id {0} is in an incorrect state {1}.", besokId, besokStatus));
+        }
+
+        besokToUpdate.setBesokStatus(BesokStatusTyp.INSTALLD_VARDKONTAKT);
+
+        Handelse besokHandelse = HandelseUtil.createBesokAvbokat(besokToUpdate, userService.getUser().getNamn());
+        besokToUpdate.getHandelseList().add(besokHandelse);
+        utredning.getHandelseList().add(besokHandelse);
+
+        logService.log(new PatientPdlLoggable(utredning.getInvanare().getPersonId()), PdlLogType.BESOK_AVBOKAT);
+
+        utredningRepository.save(utredning);
+
+        reportBesok(utredning, besokToUpdate);
+    }
+
+    @Override
     public LocalDate addArbetsdagar(Map<String, String> map) {
         LocalDate date = LocalDate.parse(map.get("datum"), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         return businessDaysBean.addBusinessDays(date, Integer.parseInt(map.get("arbetsdagar")));

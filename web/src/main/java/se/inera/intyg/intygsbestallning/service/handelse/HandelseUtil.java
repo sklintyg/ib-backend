@@ -130,6 +130,24 @@ public final class HandelseUtil {
                 .build();
     }
 
+
+    public static Handelse createBesokAvbokat(Besok besok, String anvandare) {
+        StringBuilder textBuilder = new StringBuilder();
+
+        textBuilder.append(MessageFormat.format("Besök {0} {1} - {2} hos {3} avbokat",
+                besok.getBesokStartTid().format(DateTimeFormatter.ISO_DATE),
+                besok.getBesokStartTid().format(TIME_FORMATTER),
+                besok.getBesokSlutTid().format(TIME_FORMATTER),
+                besok.getDeltagareProfession().getLabel()));
+
+        return aHandelse()
+                .withSkapad(LocalDateTime.now())
+                .withHandelseTyp(HandelseTyp.AVBOKAT_BESOK)
+                .withAnvandare(anvandare)
+                .withHandelseText(textBuilder.toString())
+                .build();
+    }
+
     public static Handelse createKompletteringBegard() {
         return aHandelse()
                 .withSkapad(LocalDateTime.now())

@@ -51,6 +51,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
+import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
@@ -71,11 +72,14 @@ import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSend
 import se.inera.intyg.intygsbestallning.service.pdl.LogService;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PdlLogType;
+import se.inera.intyg.intygsbestallning.service.stateresolver.BesokStatus;
+import se.inera.intyg.intygsbestallning.service.stateresolver.BesokStatusResolver;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.ServiceTestUtil;
 import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokRequest;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
+import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.ReportCareContactType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BesokServiceImplTest {
@@ -550,6 +554,97 @@ public class BesokServiceImplTest {
         verify(myndighetIntegrationService, times(0))
                 .reportDeviation(any(ReportDeviationRequestDto.class));
     }
+
+    @Test
+    public void testAvbokaBesokSuccess() {
+        when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
+
+        Utredning utredning = createUtredningForAvbokaBesokTest();
+        Besok besok = Besok.copyFrom(utredning.getBesokList().get(0));
+        doReturn(Optional.of(utredning))
+                .when(utredningRepository)
+                .findByBesokList_Id(eq(BESOK_ID));
+
+        besokService.avbokaBesok(BESOK_ID);
+
+        verify(logService).log(any(PDLLoggable.class), eq(PdlLogType.BESOK_AVBOKAT));
+
+        final ReportCareContactRequestDto dto = aReportCareContactRequestDto()
+                .withAssessmentId(utredning.getUtredningId())
+                .withAssessmentCareContactId(BESOK_ID.toString())
+                .withParticipatingProfession(besok.getDeltagareProfession().name())
+                .withInterpreterStatus(besok.getTolkStatus().getLabel())
+                .withInvitationDate(SchemaDateUtil.toStringFromLocalDateTime(besok.getKallelseDatum()))
+                .withInvitationChannel(besok.getKallelseForm().getCvValue())
+                .withStartTime(besok.getBesokStartTid())
+                .withEndTime(besok.getBesokSlutTid())
+                // Status should be changed to INSTALLD when besok is avbokat
+                .withVisitStatus(BesokStatusTyp.INSTALLD_VARDKONTAKT.getCvValue())
+                .build();
+
+        verify(myndighetIntegrationService, times(1))
+                .reportCareContactInteraction(eq(dto));
+
+        ArgumentCaptor<Utredning> argumentCaptor = ArgumentCaptor.forClass(Utredning.class);
+        verify(utredningRepository).save(argumentCaptor.capture());
+        Besok savedBesok = argumentCaptor.getValue().getBesokList().get(0);
+        assertEquals(HandelseTyp.AVBOKAT_BESOK, savedBesok.getHandelseList().get(1).getHandelseTyp());
+        assertEquals(BesokStatus.AVBOKAT, BesokStatusResolver.resolveStaticStatus(savedBesok));
+    }
+
+    @Test
+    public void testAvbokaBesokNotFound() {
+        doReturn(Optional.empty())
+                .when(utredningRepository)
+                .findByBesokList_Id(eq(BESOK_ID));
+
+        assertThatThrownBy(() -> besokService.avbokaBesok(BESOK_ID))
+                .isExactlyInstanceOf(IbNotFoundException.class)
+                .hasFieldOrPropertyWithValue("errorCode", IbErrorCodeEnum.NOT_FOUND);
+    }
+
+    @Test
+    public void testAvbokaBesokInvalidState() {
+        when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
+
+        Utredning utredning = createUtredningForBesokTest();
+        doReturn(Optional.of(utredning))
+                .when(utredningRepository)
+                .findByBesokList_Id(eq(BESOK_ID));
+
+        assertThatThrownBy(() -> besokService.avbokaBesok(BESOK_ID))
+                .isExactlyInstanceOf(IbServiceException.class)
+                .hasFieldOrPropertyWithValue("errorCode", IbErrorCodeEnum.BAD_STATE);
+    }
+
+    @Test
+    public void testAvbokatBesokInvalidVardenhet() {
+        when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
+
+        Utredning utredning = createUtredningForAvbokaBesokTest();
+        utredning.getBestallning().get().setTilldeladVardenhetHsaId("AnnanVardenhet");
+        doReturn(Optional.of(utredning))
+                .when(utredningRepository)
+                .findByBesokList_Id(eq(BESOK_ID));
+
+        assertThatThrownBy(() -> besokService.avbokaBesok(BESOK_ID))
+                .isExactlyInstanceOf(IbAuthorizationException.class)
+                .hasFieldOrPropertyWithValue("errorCode", IbErrorCodeEnum.UNAUTHORIZED);
+    }
+
+    private Utredning createUtredningForAvbokaBesokTest() {
+        Utredning utredning = createUtredningForBesokTest();
+        Besok besok = utredning.getBesokList().get(0);
+        besok.setAvvikelse(anAvvikelse()
+                .withOrsakatAv(AvvikelseOrsak.VARDEN)
+                .withTidpunkt(LocalDateTime.now())
+                .build());
+        besok.getHandelseList().add(aHandelse()
+            .withHandelseTyp(HandelseTyp.AVVIKELSE_MOTTAGEN)
+            .build());
+        return utredning;
+    }
+
 
     private Utredning createUtredningForBesokTest() {
         Utredning utredning = TestDataGen.createUtredning();
