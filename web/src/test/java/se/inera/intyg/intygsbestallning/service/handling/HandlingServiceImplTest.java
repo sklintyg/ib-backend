@@ -73,7 +73,7 @@ public class HandlingServiceImplTest {
         when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
 
         testee.registerNewHandling(1L, buildRequest());
-        verify(utredningRepository, times(1)).save(any());
+        verify(utredningRepository, times(1)).saveUtredning(any());
         verify(logService, times(1)).logHandlingMottagen(any(Utredning.class));
         verify(notifieringSendService, times(1)).notifieraVardenhetNyBestallning(any(Utredning.class));
     }

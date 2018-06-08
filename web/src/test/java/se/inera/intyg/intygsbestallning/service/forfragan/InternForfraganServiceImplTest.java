@@ -157,7 +157,7 @@ public class InternForfraganServiceImplTest {
         assertEquals(InternForfraganStatus.INKOMMEN, response.getInternForfraganList().get(1).getStatus());
 
         ArgumentCaptor<Utredning> utredningArgument = ArgumentCaptor.forClass(Utredning.class);
-        verify(utredningRepository).save(utredningArgument.capture());
+        verify(utredningRepository).saveUtredning(utredningArgument.capture());
 
         Utredning utredning = utredningArgument.getValue();
         assertEquals(kommentar, utredning.getExternForfragan().getInternForfraganList().get(0).getKommentar());
@@ -302,7 +302,7 @@ public class InternForfraganServiceImplTest {
         assertEquals(vardenhetNamn1, response.getInternForfraganList().get(0).getVardenhetNamn());
 
         ArgumentCaptor<Utredning> utredningArgument = ArgumentCaptor.forClass(Utredning.class);
-        verify(utredningRepository).save(utredningArgument.capture());
+        verify(utredningRepository).saveUtredning(utredningArgument.capture());
 
         Utredning utredning = utredningArgument.getValue();
         assertEquals(kommentar, utredning.getExternForfragan().getInternForfraganList().get(0).getKommentar());
@@ -652,7 +652,7 @@ public class InternForfraganServiceImplTest {
                 invocation -> invocation.getArgument(0));
         when(organizationUnitService.getVardenhet(vardenhetId1)).thenReturn(new Vardenhet(vardenhetId1, vardenhetId1Namn));
         when(userService.getUser()).thenReturn(new IbUser("", userName));
-        when(utredningRepository.save(any(Utredning.class))).thenAnswer(
+        when(utredningRepository.saveUtredning(any(Utredning.class))).thenAnswer(
                 invocation -> invocation.getArgument(0));
 
         final InternForfraganSvarItem result = internForfraganService.besvaraInternForfragan(utredningId,

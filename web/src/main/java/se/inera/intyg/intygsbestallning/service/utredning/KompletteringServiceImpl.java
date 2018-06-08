@@ -85,7 +85,7 @@ public class KompletteringServiceImpl extends BaseUtredningService implements Ko
 
                     utredning.getIntygList().add(komplt);
                     utredning.getHandelseList().add(HandelseUtil.createKompletteringBegard());
-                    utredningRepository.save(utredning);
+                    utredningRepository.saveUtredning(utredning);
                     utredningRepository.flush();
 
                     // This is a slightly awkward way to get the ID of the newly persisted komplettering.
@@ -138,7 +138,7 @@ public class KompletteringServiceImpl extends BaseUtredningService implements Ko
 
         optionalUtredning.get().getHandelseList().add(HandelseUtil.createKompletteringMottagen(request.getMottagetDatum()));
 
-        utredningRepository.save(optionalUtredning.get());
+        utredningRepository.saveUtredning(optionalUtredning.get());
     }
 
     /*

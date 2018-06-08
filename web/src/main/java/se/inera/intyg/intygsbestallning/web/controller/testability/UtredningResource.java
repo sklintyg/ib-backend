@@ -52,7 +52,7 @@ public class UtredningResource {
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public Response createUtredning(@RequestBody Utredning utredning) {
-        Utredning savedUtredning = utredningRepository.save(utredning);
+        Utredning savedUtredning = utredningRepository.saveUtredning(utredning);
         return Response.ok(savedUtredning).build();
     }
 

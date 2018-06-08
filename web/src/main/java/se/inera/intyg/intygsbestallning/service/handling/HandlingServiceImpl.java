@@ -83,7 +83,7 @@ public class HandlingServiceImpl extends BaseUtredningService implements Handlin
                 .withUrsprung(HandlingUrsprungTyp.UPPDATERING)
                 .build();
         utredning.getHandlingList().add(handling);
-        utredningRepository.save(utredning);
+        utredningRepository.saveUtredning(utredning);
 
         IbUser user = userService.getUser();
 

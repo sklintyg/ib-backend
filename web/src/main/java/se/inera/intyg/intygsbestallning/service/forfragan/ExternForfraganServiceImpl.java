@@ -227,7 +227,7 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
         utredning.getHandelseList().add(HandelseUtil.createForfraganBesvarad(true, userService.getUser().getNamn(),
                 vardenhet.getNamn()));
 
-        utredningRepository.save(utredning);
+        utredningRepository.saveUtredning(utredning);
 
         return createGetUtredningResponse(utredning);
     }
@@ -254,7 +254,7 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
 
         utredning.getHandelseList().add(HandelseUtil.createForfraganBesvarad(false, userService.getUser().getNamn(), null));
 
-        utredningRepository.save(utredning);
+        utredningRepository.saveUtredning(utredning);
 
         return createGetUtredningResponse(utredning);
     }

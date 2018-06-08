@@ -231,7 +231,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         }
         utredning.getHandelseList().add(HandelseUtil.createOrderReceived(order.getBestallare().getMyndighet(), order.getOrderDate()));
 
-        utredningRepository.save(utredning);
+        utredningRepository.saveUtredning(utredning);
         notifieringSendService.notifieraVardenhetNyBestallning(utredning);
         return utredning;
     }
@@ -250,7 +250,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
         Utredning save = qualifyForUpdatering(update, utredning);
 
-        save = utredningRepository.save(save);
+        save = utredningRepository.saveUtredning(save);
         notifieringSendService.notifieraVardenhetUppdateradBestallning(save);
         return save;
     }
@@ -277,10 +277,10 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                     .withSkickatDatum(LocalDate.now().atStartOfDay())
                     .withUrsprung(HandlingUrsprungTyp.BESTALLNING)
                     .build());
-            sparadUtredning = utredningRepository.save(utredning);
+            sparadUtredning = utredningRepository.saveUtredning(utredning);
             notifieringSendService.notifieraVardenhetNyBestallning(utredning);
         } else {
-            sparadUtredning = utredningRepository.save(utredning);
+            sparadUtredning = utredningRepository.saveUtredning(utredning);
 
         }
         return sparadUtredning;
@@ -340,7 +340,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                     .withHandelseList(Collections.singletonList(handelse));
             utredning = utredningBuilder.build();
             checkState(Objects.equals(UtredningStatus.VANTAR_PA_SVAR, UtredningStatusResolver.resolveStaticStatus(utredning)));
-            sparadUtredning = utredningRepository.save(utredning);
+            sparadUtredning = utredningRepository.saveUtredning(utredning);
             notifieringSendService.notifieraVardenhetNyInternforfragan(utredning);
         } else {
             handelse = HandelseUtil.createForfraganMottagen(request.getLandstingHsaId());
@@ -349,7 +349,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                     .withHandelseList(Collections.singletonList(handelse));
             utredning = utredningBuilder.build();
             checkState(Objects.equals(UtredningStatus.FORFRAGAN_INKOMMEN, UtredningStatusResolver.resolveStaticStatus(utredning)));
-            sparadUtredning = utredningRepository.save(utredning);
+            sparadUtredning = utredningRepository.saveUtredning(utredning);
             notifieringSendService.notifieraLandstingNyExternforfragan(utredning);
         }
         return sparadUtredning;
@@ -366,7 +366,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
         utredning.setAvbrutenDatum(LocalDateTime.now());
         utredning.setAvbrutenAnledning(endUtredningRequest.getEndReason());
-        utredningRepository.save(utredning);
+        utredningRepository.saveUtredning(utredning);
     }
 
     private Utredning qualifyForUpdatering(final UpdateOrderRequest update, final Utredning original) {

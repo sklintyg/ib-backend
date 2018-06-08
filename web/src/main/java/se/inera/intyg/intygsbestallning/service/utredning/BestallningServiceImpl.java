@@ -132,7 +132,7 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
                     .build();
             utredning.setBetalning(betalning);
         }
-        utredningRepository.save(utredning);
+        utredningRepository.saveUtredning(utredning);
     }
 
     @Override

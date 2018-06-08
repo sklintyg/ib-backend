@@ -75,7 +75,7 @@ public class KompletteringServiceImplTest {
 
         assertEquals(new Long(2L), kompletteringsId);
 
-        verify(utredningRepository).save(any(Utredning.class));
+        verify(utredningRepository).saveUtredning(any(Utredning.class));
     }
 
     @Test(expected = IllegalStateException.class)
@@ -90,7 +90,7 @@ public class KompletteringServiceImplTest {
             when(utredningRepository.findById(anyLong())).thenReturn(Optional.of(utredning));
             kompletteringService.registerNewKomplettering(buildRequest());
         } catch (Exception e) {
-            verify(utredningRepository, times(0)).save(any(Utredning.class));
+            verify(utredningRepository, times(0)).saveUtredning(any(Utredning.class));
             throw e;
         }
     }

@@ -21,17 +21,16 @@ package se.inera.intyg.intygsbestallning.persistence.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-
 //CHECKSTYLE:OFF MethodName
 //CHECKSTYLE:OFF LineLength
-public interface UtredningRepository extends JpaRepository<Utredning, Long>, UtredningRepositoryCustom {
+public interface UtredningRepository extends UtredningRepositoryCustom, JpaRepository<Utredning, Long> {
 
     /**
      * Variant query that filters out any Utredningar that are in a closed state.

@@ -18,47 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
-import com.google.common.collect.ImmutableList;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
-import se.inera.intyg.infra.integration.hsa.client.OrganizationUnitService;
-import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
-import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
-import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
-import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
-import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
-import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
-import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
-import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
-import se.inera.intyg.intygsbestallning.persistence.model.type.MyndighetTyp;
-import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
-import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
-import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
-import se.inera.intyg.intygsbestallning.service.user.UserService;
-import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
-import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
-import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
-import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
-import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItemFactory;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItemFactory;
-import se.riv.infrastructure.directory.organization.getunitresponder.v1.UnitType;
-import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
-
-import javax.xml.ws.WebServiceException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Optional;
-
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -91,6 +50,46 @@ import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createExtern
 import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createHandlaggare;
 import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createUpdateOrderType;
 import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createUtredning;
+
+import com.google.common.collect.ImmutableList;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
+import se.riv.infrastructure.directory.organization.getunitresponder.v1.UnitType;
+import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
+import javax.xml.ws.WebServiceException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Optional;
+import se.inera.intyg.infra.integration.hsa.client.OrganizationUnitService;
+import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
+import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
+import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
+import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
+import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
+import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
+import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
+import se.inera.intyg.intygsbestallning.persistence.model.type.MyndighetTyp;
+import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
+import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
+import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
+import se.inera.intyg.intygsbestallning.service.user.UserService;
+import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItemFactory;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItemFactory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtredningServiceImplTest {
@@ -285,7 +284,7 @@ public class UtredningServiceImplTest {
                 .build();
 
         utredningService.registerNewUtredning(order);
-        Mockito.verify(utredningRepository).save(argumentCaptor.capture());
+        Mockito.verify(utredningRepository).saveUtredning(argumentCaptor.capture());
 
         final Utredning captured = argumentCaptor.getValue();
         assertNotNull(captured);
@@ -349,7 +348,7 @@ public class UtredningServiceImplTest {
 
         doReturn(utredning)
                 .when(utredningRepository)
-                .save(any(Utredning.class));
+                .saveUtredning(any(Utredning.class));
 
         final AssessmentRequest request = anAssessmentRequest()
                 .withUtredningsTyp(AFU_UTVIDGAD)
@@ -405,7 +404,7 @@ public class UtredningServiceImplTest {
 
         doReturn(modifieradUtrening)
                 .when(utredningRepository)
-                .save(any(Utredning.class));
+                .saveUtredning(any(Utredning.class));
 
         final Utredning uppdateradUtredning = utredningService.updateOrder(updateOrderRequest);
         assertEquals(AFU_UTVIDGAD, uppdateradUtredning.getUtredningsTyp());
@@ -571,7 +570,7 @@ public class UtredningServiceImplTest {
         utredningService.endUtredning(request);
 
         ArgumentCaptor<Utredning> captor = ArgumentCaptor.forClass(Utredning.class);
-        verify(utredningRepository).save(captor.capture());
+        verify(utredningRepository).saveUtredning(captor.capture());
 
         Utredning utredning = captor.getValue();
         assertNotNull(utredning);

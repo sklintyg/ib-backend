@@ -130,7 +130,7 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
                                 hsaOrganizationsService.getVardenhet(vardenhetHsaId).getNamn()))
                         .collect(toList()));
 
-        utredningRepository.save(utredning);
+        utredningRepository.saveUtredning(utredning);
 
         return createGetUtredningResponse(utredning);
     }
@@ -173,7 +173,7 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
                                 .build())
                         .build());
 
-        utredningRepository.save(utredning);
+        utredningRepository.saveUtredning(utredning);
 
         return createGetUtredningResponse(utredning);
     }
@@ -286,7 +286,7 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
                 forfraganSvar.getKommentar(), forfraganSvar.getBorjaDatum());
 
         utredning.getHandelseList().add(internForfraganBesvarad);
-        utredningRepository.save(utredning);
+        utredningRepository.saveUtredning(utredning);
     }
 
     protected String validateSvarRequest(ForfraganSvarRequest svar) {

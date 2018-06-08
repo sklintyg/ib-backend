@@ -310,7 +310,7 @@ public class BesokServiceImplTest {
                 argThat(arg -> arg == PdlLogType.BESOK_ANDRAT));
 
         ArgumentCaptor<Utredning> utredningCaptor = ArgumentCaptor.forClass(Utredning.class);
-        verify(utredningRepository).save(utredningCaptor.capture());
+        verify(utredningRepository).saveUtredning(utredningCaptor.capture());
         assertEquals(HandelseTyp.OMBOKAT_BESOK, utredningCaptor.getValue().getHandelseList().get(0).getHandelseTyp());
     }
 
@@ -366,7 +366,7 @@ public class BesokServiceImplTest {
                 argThat(arg -> arg == PdlLogType.BESOK_ANDRAT));
 
         ArgumentCaptor<Utredning> utredningCaptor = ArgumentCaptor.forClass(Utredning.class);
-        verify(utredningRepository).save(utredningCaptor.capture());
+        verify(utredningRepository).saveUtredning(utredningCaptor.capture());
         assertEquals(HandelseTyp.UPPDATERA_BESOK, utredningCaptor.getValue().getHandelseList().get(0).getHandelseTyp());
     }
 
@@ -442,7 +442,7 @@ public class BesokServiceImplTest {
 
         doReturn(utredningAfterSavedAvvikelse)
                 .when(utredningRepository)
-                .save(any());
+                .saveUtredning(any());
 
         besokService.reportBesokAvvikelse(request);
 
@@ -487,7 +487,7 @@ public class BesokServiceImplTest {
 
         doReturn(utredningAfterSavedAvvikelse)
                 .when(utredningRepository)
-                .save(any());
+                .saveUtredning(any());
 
         besokService.reportBesokAvvikelse(request);
 

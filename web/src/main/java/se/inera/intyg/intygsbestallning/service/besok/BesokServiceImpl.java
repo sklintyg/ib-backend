@@ -159,10 +159,10 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
             utredning.setUtredningsTyp(UtredningsTyp.AFU_UTVIDGAD);
             reportBesok(utredning, besok);
             final LocalDateTime nyttSistaDatum = updateUtredningWithUtredningsTypAfuUtvidgad(utredning);
-            utredningRepository.save(utredning);
+            utredningRepository.saveUtredning(utredning);
             return RegisterBesokResponse.withUpdatedUtredningsTyp(nyttSistaDatum.toString());
         } else {
-            utredningRepository.save(utredning);
+            utredningRepository.saveUtredning(utredning);
             reportBesok(utredning, besok);
             return RegisterBesokResponse.withNotUpdatedUtredgningsTyp();
         }
@@ -195,7 +195,7 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
         optionalUtredning.get().getHandelseList().add(besokHandelse);
         besokToUpdate.getHandelseList().add(besokHandelse);
 
-        final Utredning uppdateradUtredning = utredningRepository.save(optionalUtredning.get());
+        final Utredning uppdateradUtredning = utredningRepository.saveUtredning(optionalUtredning.get());
         final Besok uppdateratBesok = uppdateradUtredning.getBesokList().stream()
                 .filter(b -> b.getId().equals(request.getBesokId()))
                 .collect(onlyElement());

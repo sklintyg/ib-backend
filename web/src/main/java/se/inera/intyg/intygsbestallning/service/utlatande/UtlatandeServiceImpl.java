@@ -96,7 +96,7 @@ public class UtlatandeServiceImpl extends BaseUtredningService implements Utlata
         IbUser user = userService.getUser();
         utredning.getHandelseList().add(HandelseUtil.createUtlatandeSkickat(user.getNamn(), utlatandeSentDate));
 
-        utredningRepository.save(utredning);
+        utredningRepository.saveUtredning(utredning);
 
         return UtredningStatusResolver.resolveStaticStatus(utredning);
     }
@@ -121,7 +121,7 @@ public class UtlatandeServiceImpl extends BaseUtredningService implements Utlata
         intyg.setSistaDatumKompletteringsbegaran(request.getSistaKompletteringsDatum());
 
         optionalUtredning.get().getHandelseList().add(HandelseUtil.createUtlatandeMottaget(request.getMottagetDatum()));
-        utredningRepository.save(optionalUtredning.get());
+        utredningRepository.saveUtredning(optionalUtredning.get());
     }
 
     private LocalDate parseDate(SendUtlatandeRequest request) {

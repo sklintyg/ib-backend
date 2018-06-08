@@ -70,7 +70,7 @@ public class UtredningBootstrapBean {
 
         try {
             Utredning utredning = new CustomObjectMapper().readValue(res.getInputStream(), Utredning.class);
-            utredningRepository.save(utredning);
+            utredningRepository.saveUtredning(utredning);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -92,7 +92,7 @@ public class UtredningBootstrapBean {
                     .withPostort("11221")
                     .build());
             utredning.setHandlaggare(new Handlaggare());
-            utredningRepository.save(utredning);
+            utredningRepository.saveUtredning(utredning);
             date = date.plusDays(1);
         }
     }

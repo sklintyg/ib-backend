@@ -18,14 +18,18 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.repository;
 
-import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.support.JpaEntityInformation;
+import org.springframework.data.jpa.repository.support.JpaEntityInformationSupport;
+import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
 
+@Transactional
 public class UtredningRepositoryImpl implements UtredningRepositoryCustom {
 
-    @PersistenceContext
+    @Autowired
     private EntityManager entityManager;
 
     @Override
@@ -33,4 +37,18 @@ public class UtredningRepositoryImpl implements UtredningRepositoryCustom {
         entityManager.persist(utredning);
     }
 
+    @Override
+    public <S extends Utredning> S saveUtredning(S utredning) {
+        JpaEntityInformation<Utredning, ?> entityInformation =
+                JpaEntityInformationSupport.getEntityInformation(Utredning.class, entityManager);
+
+        utredning.setStatus(UtredningStatusResolver.resolveStaticStatus(utredning));
+
+        if (entityInformation.isNew(utredning)) {
+            entityManager.persist(utredning);
+            return utredning;
+        } else {
+            return entityManager.merge(utredning);
+        }
+    }
 }

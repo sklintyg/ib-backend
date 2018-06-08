@@ -33,13 +33,10 @@ import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.Invana
 import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 
+import com.google.common.collect.Lists;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-
-import com.google.common.collect.ImmutableList;
-
+import java.util.List;
 import se.inera.intyg.intygsbestallning.persistence.model.Anteckning;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
@@ -49,6 +46,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar;
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
+import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
 import se.inera.intyg.intygsbestallning.persistence.model.RegistreradVardenhet;
@@ -75,12 +73,15 @@ public final class TestDataFactory {
     }
 
     public static Invanare buildInvanare() {
+        List<TidigareUtforare> tidigareUtforareList = Lists.newArrayList();
+        tidigareUtforareList.add(buildTidigareUtforare());
+
         return anInvanare()
                 .withBakgrundNulage("bakgrund")
                 .withPersonId("personId")
                 .withPostort("postort")
                 .withSarskildaBehov("behov")
-                .withTidigareUtforare(Collections.singletonList(buildTidigareUtforare()))
+                .withTidigareUtforare(tidigareUtforareList)
                 .build();
     }
 
@@ -113,6 +114,17 @@ public final class TestDataFactory {
     }
 
     public static ExternForfragan buildExternForfragan() {
+        final InternForfragan internForfragan = anInternForfragan()
+                .withForfraganSvar(buildForfraganSvar())
+                .withVardenhetHsaId(VE_HSA_ID)
+                .withBesvarasSenastDatum(LocalDateTime.now())
+                .withKommentar("kommentar")
+                .withTilldeladDatum(LocalDateTime.now())
+                .withSkapadDatum(LocalDateTime.now())
+                .build();
+
+        List<InternForfragan> internForfraganList = Lists.newArrayList(internForfragan);
+
         return anExternForfragan()
                 .withLandstingHsaId(VG_HSA_ID)
                 .withBesvarasSenastDatum(LocalDateTime.now())
@@ -120,15 +132,7 @@ public final class TestDataFactory {
                 .withAvvisatKommentar("avvisatKommentar")
                 .withKommentar("kommentar")
                 .withInkomDatum(LocalDateTime.now())
-                .withInternForfraganList(Arrays.asList(
-                        anInternForfragan()
-                                .withForfraganSvar(buildForfraganSvar())
-                                .withVardenhetHsaId(VE_HSA_ID)
-                                .withBesvarasSenastDatum(LocalDateTime.now())
-                                .withKommentar("kommentar")
-                                .withTilldeladDatum(LocalDateTime.now())
-                                .withSkapadDatum(LocalDateTime.now())
-                                .build()))
+                .withInternForfraganList(internForfraganList)
                 .build();
     }
 

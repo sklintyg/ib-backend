@@ -387,7 +387,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                 .withMottagare(mottagare)
                 .build());
 
-        utredningRepository.save(utredning);
+        utredningRepository.saveUtredning(utredning);
     }
 
     private void sendNotifiering(String emailAddress, String subject, String body) {

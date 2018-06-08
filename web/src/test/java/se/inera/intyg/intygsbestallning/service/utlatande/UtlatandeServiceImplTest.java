@@ -102,7 +102,7 @@ public class UtlatandeServiceImplTest {
                 argThat(arg -> arg == PdlLogType.UTREDNING_UPPDATERAD));
 
         ArgumentCaptor<Utredning> utredningArgument = ArgumentCaptor.forClass(Utredning.class);
-        verify(utredningRepository).save(utredningArgument.capture());
+        verify(utredningRepository).saveUtredning(utredningArgument.capture());
         utredning = utredningArgument.getValue();
         assertEquals(HandelseTyp.UTLATANDE_SKICKAT, utredning.getHandelseList().get(0).getHandelseTyp());
     }

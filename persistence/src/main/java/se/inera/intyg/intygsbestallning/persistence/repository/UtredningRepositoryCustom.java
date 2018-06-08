@@ -18,10 +18,9 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.repository;
 
-import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 
-@Transactional(value = "transactionManager", readOnly = false)
 public interface UtredningRepositoryCustom {
     void persist(Utredning utredning);
+    <S extends Utredning> S saveUtredning(S entity);
 }

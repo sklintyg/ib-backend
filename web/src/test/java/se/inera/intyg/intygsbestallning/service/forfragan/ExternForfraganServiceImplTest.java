@@ -181,7 +181,7 @@ public class ExternForfraganServiceImplTest {
         assertEquals("postnr", respondToPerformerRequest.getPostalCode());
 
         ArgumentCaptor<Utredning> utredningArgument = ArgumentCaptor.forClass(Utredning.class);
-        verify(utredningRepository).save(utredningArgument.capture());
+        verify(utredningRepository).saveUtredning(utredningArgument.capture());
 
         Utredning utredning = utredningArgument.getValue();
         assertNotNull(utredning.getExternForfragan().getInternForfraganList().get(0).getTilldeladDatum());
@@ -362,7 +362,7 @@ public class ExternForfraganServiceImplTest {
         assertEquals(kommentar, respondToPerformerRequest.getComment());
 
         ArgumentCaptor<Utredning> utredningArgument = ArgumentCaptor.forClass(Utredning.class);
-        verify(utredningRepository).save(utredningArgument.capture());
+        verify(utredningRepository).saveUtredning(utredningArgument.capture());
 
         Utredning utredning = utredningArgument.getValue();
         assertNotNull(utredning.getExternForfragan().getAvvisatDatum());
