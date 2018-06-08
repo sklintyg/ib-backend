@@ -5,7 +5,12 @@
     <button class="btn btn-primary" ng-click="oppnaRedovisaBesok()"><span>Redovisa besök</span></button>
   </div>
 
-  <table id="samordnare-utredning-handelser-table" class="table table-striped ib-table-striped">
+  <div class="ib-besoklist-empty" ng-if="bestallning.besokList == 0">
+    <img src="/app/vardadmin/visaBestallning/ibBesok/inga_besok.svg">
+    Inga besök finns inlagda än
+  </div>
+
+  <table id="samordnare-utredning-handelser-table" class="table table-striped ib-table-striped" ng-if="bestallning.besokList.length > 0">
     <thead>
     <tr>
       <th ib-table-head label-key="label.table.bestallning.besok.column.besoktid"></th>
@@ -28,7 +33,7 @@
       <td>{{::row.besokStatus.label}}</td>
       <td>
         <button type="button" class="btn btn-link btn-link__purelink" ng-click="row.showDetails=!row.showDetails"
-                ng-switch="row.showDetails">
+                ng-switch="row.showDetails" ng-if="row.handelseList.length > 1">
           <span ng-switch-default>Visa detaljer <i class="material-icons">expand_more</i></span>
           <span ng-switch-when="true">Dölj detaljer <i class="material-icons">expand_less</i></span>
         </button>
