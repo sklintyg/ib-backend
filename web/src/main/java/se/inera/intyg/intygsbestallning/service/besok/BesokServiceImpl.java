@@ -263,15 +263,12 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
     }
 
     private LocalDateTime updateUtredningWithUtredningsTypAfuUtvidgad(Utredning utredning) {
-
         final LocalDateTime nyttSistaDatum = myndighetIntegrationService
                 .updateAssessment(utredning.getUtredningId(), UtredningsTyp.AFU_UTVIDGAD.name());
-
         if (utredning.getIntygList().size() == 1 && !utredning.getIntygList().get(0).isKomplettering()) {
             utredning.getIntygList().get(0).setSistaDatum(nyttSistaDatum);
             return nyttSistaDatum;
         }
-
         throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, MessageFormat.format(
                 "assessment with id {0} is in an incorrect state", utredning.getUtredningId()));
     }

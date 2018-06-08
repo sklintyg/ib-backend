@@ -205,7 +205,7 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
             vardgivare = hsaOrganizationsService.getVardgivareInfo(vardgivareHsaId);
         } catch (RuntimeException re) {
             LOG.error("RuntimeException while while querying HSA for hsaId " + internForfragan.getVardenhetHsaId(), re);
-            throw new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.HSA, re.getMessage());
+            throw new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.HSA, re.getMessage(), null);
         }
 
         ForfraganSvar forfraganSvar = internForfragan.getForfraganSvar();

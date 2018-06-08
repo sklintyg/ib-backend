@@ -235,7 +235,7 @@ public class ExternForfraganServiceImplTest {
         when(utredningRepository.findById(utredningId)).thenReturn(
                 createValidUtredningForAcceptExternForfragan(utredningId, landstingHsaId, vardenhetId1));
 
-        doThrow(new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.MYNDIGHET, "")).when(
+        doThrow(new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.MYNDIGHET, "", null)).when(
                 myndighetIntegrationService).respondToPerformerRequest(ArgumentMatchers.any(RespondToPerformerRequestDto.class));
 
         testee.acceptExternForfragan(utredningId, landstingHsaId, vardenhetId1);
@@ -411,7 +411,7 @@ public class ExternForfraganServiceImplTest {
                         .build())
                 .build()));
 
-        doThrow(new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.MYNDIGHET, "")).when(
+        doThrow(new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.MYNDIGHET, "", null)).when(
                 myndighetIntegrationService).respondToPerformerRequest(ArgumentMatchers.any(RespondToPerformerRequestDto.class));
 
         testee.avvisaExternForfragan(utredningId, landstingHsaId, kommentar);
