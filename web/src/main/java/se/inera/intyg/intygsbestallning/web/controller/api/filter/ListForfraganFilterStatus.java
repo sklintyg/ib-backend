@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public enum ListForfraganFilterStatus {
     ALL("Visa alla"),
     PAGAENDE("Pågående"),
-    KRAVER_ATGARD("Kräver åtgärd"),
+    BEHOVER_ATGARDAS("Behöver åtgärdas"),
     VANTAR_ANNAN_AKTOR("Väntar på annan aktör"),
     AVSLUTADE("Avslutade");
 

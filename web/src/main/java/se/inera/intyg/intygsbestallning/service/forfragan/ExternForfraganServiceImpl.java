@@ -316,7 +316,7 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
             statuses.add(ListForfraganFilterStatus.ALL);
             switch (ifs) {
             case INKOMMEN:
-                statuses.addAll(Arrays.asList(ListForfraganFilterStatus.PAGAENDE, ListForfraganFilterStatus.KRAVER_ATGARD));
+                statuses.addAll(Arrays.asList(ListForfraganFilterStatus.PAGAENDE, ListForfraganFilterStatus.BEHOVER_ATGARDAS));
                 break;
             case ACCEPTERAD_VANTAR_PA_TILLDELNINGSBESLUT:
             case TILLDELAD_VANTAR_PA_BESTALLNING:

@@ -47,8 +47,8 @@ angular.module('ibApp').factory('ibUtredningFilterModel',
                 id: null,
                 label: 'Visa alla'
             },{
-                id: 'KRAVER_ATGARD',
-                label: 'Kräver åtgärd'
+                id: 'BEHOVER_ATGARDAS',
+                label: 'Behöver åtgärdas'
             },{
                 id: 'VANTAR_ANNAN_AKTOR',
                 label: 'Väntar på annan aktör'

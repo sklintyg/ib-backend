@@ -82,7 +82,7 @@ var ibMessages = {
         // Skicka forfragan modal
         'skicka.forfragan.vardenheter.no.results': 'Det finns inga vårdenheter tillagda i landstinget.',
         'skicka.forfragan.vardenheter.error':'Ett tekniskt fel uppstod när information om vårdenheter skulle hämtas. Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraNationellKundservice>',
-        'skicka.forfragan.vardenheter.heading': 'Nedan visas de vårdenheter som finns avtalade för landstinget.',
+        'skicka.forfragan.vardenheter.heading': 'Nedan visas de vårdenheter som finns avtalade för landstinget. Förfrågan kan skickas till flera vårdenheter samtidigt.',
         'skicka.forfragan.vardenheter.validation': 'Minst en vårdenhet måste väljas',
         'skicka.forfragan.redanskickad.tooltip': 'En förfrågan har redan skickats till enheten.',
         'skicka.forfragan.egna.label': 'Vårdenheter i det egna landstingets regi',
@@ -158,14 +158,14 @@ var ibMessages = {
         'label.table.utredningar.column.typ': 'Utredningstyp',
         'label.table.utredningar.column.vardenhet': 'Vårdenhet',
         'label.table.utredningar.column.fas': 'Fas',
-        'label.table.utredningar.column.slutdatumfas': 'Slutdatum fas',
+        'label.table.utredningar.column.slutdatumfas': 'Slutdatum',
         'label.table.utredningar.column.status': 'Status',
 
         // Lista utredningar filter
         'utredningar.filter.fritext.label': 'Fritextsökning',
         'utredningar.filter.fritext.placeholder': 'Skriv sökord',
         'utredningar.filter.fas.label': 'Fas',
-        'utredningar.filter.slutdatumfas.label': 'Slutdatum fas',
+        'utredningar.filter.slutdatumfas.label': 'Slutdatum',
         'utredningar.filter.slutdatumfas.placeholder': 'Visa alla',
         'utredningar.filter.status.label': 'Status',
         'utredningar.filter.resetfilter.label': 'Återställ sökfilter',
@@ -208,14 +208,14 @@ var ibMessages = {
         'label.table.bestallningar.column.vardgivareNamn': 'Landsting',
         'label.table.bestallningar.column.patientId': 'Personnummer',
         'label.table.bestallningar.column.patientNamn': 'Namn',
-        'label.table.bestallningar.column.slutdatumfas': 'Slutdatum fas',
+        'label.table.bestallningar.column.slutdatumfas': 'Slutdatum',
         'label.table.bestallningar.column.status': 'Status',
 
         // Lista bestallningar filter
         'bestallningar.filter.fritext.label': 'Fritextsökning',
         'bestallningar.filter.fritext.placeholder': 'Skriv sökord',
         'bestallningar.filter.vardgivarenamn.label': 'Landsting',
-        'bestallningar.filter.slutdatumfas.label': 'Slutdatum fas',
+        'bestallningar.filter.slutdatumfas.label': 'Slutdatum',
         'bestallningar.filter.slutdatumfas.placeholder': 'Visa alla',
         'bestallningar.filter.status.label': 'Status',
         'bestallningar.filter.resetfilter.label': 'Återställ sökfilter',
