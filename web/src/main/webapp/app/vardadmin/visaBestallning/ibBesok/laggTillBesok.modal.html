@@ -33,11 +33,11 @@
                     </span>
                     <span class="time">
                         <span class="asterisk" ng-if="!besokStartTid">*</span><ib-help-text-label label-key="lagg-till-besok.label.from"></ib-help-text-label>
-                        <ib-time-picker data-date="besokStartTid"></ib-time-picker>
+                        <ib-time-picker data-date="besokStartTid" dom-id="besokStart" required="true"></ib-time-picker>
                     </span>
                     <span class="time">
                         <span class="asterisk" ng-if="!besokSlutTid">*</span><ib-help-text-label label-key="lagg-till-besok.label.to"></ib-help-text-label>
-                        <ib-time-picker data-date="besokSlutTid"></ib-time-picker>
+                        <ib-time-picker data-date="besokSlutTid" dom-id="besokSlut" required="true"></ib-time-picker>
                     </span>
                 </div>
                 <div class="flex-wrapper">
