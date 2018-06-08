@@ -123,6 +123,14 @@ angular.module('ibApp').directive('ibTimePicker',
                 scope.componentErrors = function() {
                     return $parse('form.' + scope.domId + '.$error')(scope);
                 };
+
+                scope.$watch('date', function(newVal, oldVal) {
+                    if (newVal || newVal !== oldVal) {
+                        if(DateUtilsService.isDate(newVal)) {
+                            setTimeStringFromDate(newVal);
+                        }
+                    }
+                });
             }
         };
     });

@@ -26,15 +26,6 @@
     flex-direction: column;
   }
 
-  .asterisk {
-    display: inline-block;
-    align-self: center;
-    color: red;
-    position: absolute;
-    left: -9px;
-    font-size: 20px;
-  }
-
   .flex-wrapper {
     display: flex;
     flex-direction: row;

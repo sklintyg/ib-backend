@@ -1,4 +1,6 @@
 ib-help-text-label {
+  position: relative;
+
   h4 {
     @extend %ib-typo-06;
     color: $ib-color-09;

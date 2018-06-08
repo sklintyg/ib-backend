@@ -23,7 +23,9 @@ angular.module('ibApp').directive('ibHelpTextLabel', [ function() {
         restrict: 'E',
         scope: {
             labelKey: '@',
-            helpKey: '@'
+            helpKey: '@',
+            required: '=',
+            requiredExpr: '='
         },
         templateUrl: '/components/commonDirectives/form/ibHelpTextLabel/ibHelpTextLabel.directive.html'
     };

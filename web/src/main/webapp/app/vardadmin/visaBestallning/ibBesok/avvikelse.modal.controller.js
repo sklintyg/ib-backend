@@ -33,12 +33,14 @@ angular.module('ibApp')
                 }
             ];
 
+            $scope.maxDate = moment().format('YYYY-MM-DD');
+
             $scope.avvikelse = {
                 besokId: besokId,
                 orsakatAv: 'PATIENT',
                 beskrivning: undefined,
-                datum: undefined,
-                tid: undefined,
+                datum: new Date(),
+                tid: new Date(),
                 invanareUteblev: false
             };
 
