@@ -19,6 +19,7 @@
 package se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning;
 
 import org.springframework.stereotype.Component;
+import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.stateresolver.ErsattsResolver;
@@ -44,7 +45,7 @@ public class AvslutadBestallningListItemFactory {
                 .withUtredningsId(utredning.getUtredningId())
                 .withUtredningsTyp(utredning.getUtredningsTyp().name())
                 .withStatus(utredning.getStatus())
-                .withVardgivareHsaId(utredning.getExternForfragan().getLandstingHsaId())
+                .withVardgivareHsaId(utredning.getExternForfragan().map(ExternForfragan::getLandstingHsaId).orElse(null))
                 .withVardgivareNamn("Enriched later")
                 .withAvslutsDatum(resolveAvslutsDatum(utredning))
                 .withErsatts(ErsattsResolver.resolveUtredningErsatts(utredning, businessDays))

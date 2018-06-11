@@ -18,21 +18,22 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning;
 
+import static java.util.Objects.nonNull;
+
+import com.google.common.collect.Lists;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
+import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.service.stateresolver.SlutDatumFasResolver;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
+import se.inera.intyg.intygsbestallning.service.stateresolver.SlutDatumFasResolver;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.HandelseListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.VardenhetListItem;
-
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static java.util.Objects.nonNull;
 
 public class GetUtredningResponse {
     private static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
@@ -71,10 +72,12 @@ public class GetUtredningResponse {
                 .withStatusAndFas(status)
                 .withSlutdatumFas(
                         SlutDatumFasResolver.resolveSlutDatumFas(utredning, status).map(DateTimeFormatter.ISO_DATE::format).orElse(null))
-                .withInkomDatum(nonNull(utredning.getExternForfragan())
-                        ? utredning.getExternForfragan().getInkomDatum().format(formatter) : null)
-                .withBesvarasSenastDatum(nonNull(utredning.getExternForfragan())
-                        ? utredning.getExternForfragan().getBesvarasSenastDatum().format(formatter) : null)
+                .withInkomDatum(utredning.getExternForfragan()
+                        .map(ef -> ef.getInkomDatum().format(formatter))
+                        .orElse(null))
+                .withBesvarasSenastDatum(utredning.getExternForfragan()
+                        .map(ef -> ef.getBesvarasSenastDatum().format(formatter))
+                        .orElse(null))
                 .withBostadsort(nonNull(utredning.getInvanare())
                         ? utredning.getInvanare().getPostort() : null)
                 .withTidigareUtredd(!utredning.getInvanare().getTidigareUtforare().isEmpty())
@@ -82,11 +85,13 @@ public class GetUtredningResponse {
                 .withBehovTolk(utredning.getTolkBehov() != null)
                 .withTolkSprak(utredning.getTolkSprak())
                 .withSarskildaBehov(utredning.getInvanare().getSarskildaBehov())
-                .withKommentar(utredning.getExternForfragan().getKommentar())
+                .withKommentar(utredning.getExternForfragan().map(ExternForfragan::getKommentar).orElse(null))
                 .withHandlaggareNamn(utredning.getHandlaggare().getFullstandigtNamn())
                 .withHandlaggareTelefonnummer(utredning.getHandlaggare().getTelefonnummer())
                 .withHandlaggareEpost(utredning.getHandlaggare().getEmail())
-                .withInternForfraganList(utredning, utredning.getExternForfragan().getInternForfraganList())
+                .withInternForfraganList(utredning.getExternForfragan()
+                        .map(ExternForfragan::getInternForfraganList)
+                        .orElse(Lists.newArrayList()))
                 .withHandelseList(utredning.getHandelseList())
                 .build();
 
@@ -341,16 +346,16 @@ public class GetUtredningResponse {
             return this;
         }
 
-        public GetUtredningResponseBuilder withInternForfraganList(Utredning utredning, List<InternForfragan> internForfraganList) {
+        public GetUtredningResponseBuilder withInternForfraganList(List<InternForfragan> internForfraganList) {
             this.internForfraganList = internForfraganList.stream()
-                    .map(internForfragan -> UtredningInternForfraganListItem.from(utredning, internForfragan))
+                    .map(UtredningInternForfraganListItem::from)
                     .collect(Collectors.toList());
             return this;
         }
 
         public GetUtredningResponseBuilder withHandelseList(List<Handelse> handelseList) {
             this.handelseList = handelseList.stream()
-                    .map(handelse ->  HandelseListItem.from(handelse, false))
+                    .map(handelse -> HandelseListItem.from(handelse, false))
                     .collect(Collectors.toList());
             return this;
         }

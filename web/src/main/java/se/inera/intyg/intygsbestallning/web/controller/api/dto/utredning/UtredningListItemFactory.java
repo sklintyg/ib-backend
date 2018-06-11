@@ -73,8 +73,8 @@ public class UtredningListItemFactory {
     }
 
     private String resolveTilldeladVardenhetHsaId(Utredning utredning) {
-        if (utredning.getExternForfragan() != null) {
-            Optional<String> optionalVardenhetHsaId = utredning.getExternForfragan().getInternForfraganList().stream()
+        if (utredning.getExternForfragan().isPresent()) {
+            Optional<String> optionalVardenhetHsaId = utredning.getExternForfragan().get().getInternForfraganList().stream()
                     .filter(intf -> nonNull(intf.getTilldeladDatum()))
                     .map(InternForfragan::getVardenhetHsaId)
                     .findFirst();

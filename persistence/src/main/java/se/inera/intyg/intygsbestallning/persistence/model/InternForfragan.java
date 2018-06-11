@@ -23,10 +23,11 @@ import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan
 
 import com.google.common.base.MoreObjects;
 import org.hibernate.annotations.Type;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -34,6 +35,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import se.inera.intyg.intygsbestallning.persistence.model.status.InternForfraganStatus;
 
 @Entity
 @Table(name = "INTERN_FORFRAGAN")
@@ -68,6 +70,10 @@ public final class InternForfragan {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "FORFRAGAN_SVAR_ID")
     private ForfraganSvar forfraganSvar;
+
+    @Column(name = "STATUS", nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private InternForfraganStatus status;
 
     public InternForfragan() {
     }
@@ -154,6 +160,14 @@ public final class InternForfragan {
         this.direkttilldelad = direkttilldelad;
     }
 
+    public InternForfraganStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(InternForfraganStatus status) {
+        this.status = status;
+    }
+
     public static final class InternForfraganBuilder {
         private Long id;
         private String vardenhetHsaId;
@@ -163,6 +177,7 @@ public final class InternForfragan {
         private String kommentar;
         private ForfraganSvar forfraganSvar;
         private Boolean direkttilldelad;
+        private InternForfraganStatus status;
 
         private InternForfraganBuilder() {
         }
@@ -211,6 +226,11 @@ public final class InternForfragan {
             return this;
         }
 
+        public InternForfraganBuilder withStatus(InternForfraganStatus status) {
+            this.status = status;
+            return this;
+        }
+
         public InternForfragan build() {
             InternForfragan internForfragan = new InternForfragan();
             internForfragan.setId(id);
@@ -221,6 +241,7 @@ public final class InternForfragan {
             internForfragan.setKommentar(kommentar);
             internForfragan.setForfraganSvar(forfraganSvar);
             internForfragan.setDirekttilldelad(direkttilldelad);
+            internForfragan.setStatus(status);
             return internForfragan;
         }
     }
@@ -241,14 +262,15 @@ public final class InternForfragan {
                 && Objects.equals(skapadDatum, that.skapadDatum)
                 && Objects.equals(kommentar, that.kommentar)
                 && Objects.equals(forfraganSvar, that.forfraganSvar)
-                && Objects.equals(direkttilldelad, that.direkttilldelad);
+                && Objects.equals(direkttilldelad, that.direkttilldelad)
+                && Objects.equals(status, that.status);
     }
 
     @Override
     public int hashCode() {
 
         return Objects.hash(id, vardenhetHsaId, tilldeladDatum, besvarasSenastDatum, skapadDatum, kommentar, forfraganSvar,
-                direkttilldelad);
+                direkttilldelad, status);
     }
 
     @Override
@@ -262,6 +284,7 @@ public final class InternForfragan {
                 .add("kommentar", kommentar)
                 .add("forfraganSvar", forfraganSvar)
                 .add("direktTilldelad", direkttilldelad)
+                .add("status", status)
                 .toString();
     }
 }

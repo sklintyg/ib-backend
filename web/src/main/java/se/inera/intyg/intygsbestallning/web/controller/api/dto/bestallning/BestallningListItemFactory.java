@@ -20,14 +20,14 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.stateresolver.SlutDatumFasResolver;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Component
 public class BestallningListItemFactory {
@@ -56,7 +56,7 @@ public class BestallningListItemFactory {
                 .withKraverAtgard(actorInThisContext == utredningStatus.getNextActor())
                 .withUtredningsId(utredning.getUtredningId())
                 .withUtredningsTyp(utredning.getUtredningsTyp().name())
-                .withVardgivareHsaId(utredning.getExternForfragan().getLandstingHsaId())
+                .withVardgivareHsaId(utredning.getExternForfragan().map(ExternForfragan::getLandstingHsaId).orElse(null))
                 .withVardgivareNamn(null)
                 .build();
     }

@@ -20,15 +20,14 @@ package se.inera.intyg.intygsbestallning.persistence.model.status;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.time.LocalDateTime;
+import java.util.List;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 public class UtredningStatusResolver {
 
@@ -40,6 +39,10 @@ public class UtredningStatusResolver {
 
     public static UtredningStatus resolveStaticStatus(Utredning utredning) {
         // How to resolve statuses....
+
+        utredning.getExternForfragan()
+                .ifPresent(ex -> ex.getInternForfraganList()
+                        .forEach(in -> in.setStatus(InternForfraganStatusResolver.resolveStaticStatus(utredning, in))));
 
         if (utredning.getAvbrutenDatum() != null) {
             return UtredningStatus.AVBRUTEN;
@@ -94,7 +97,7 @@ public class UtredningStatusResolver {
                     && intyg.getMottagetDatum() != null
                     && !intyg.isKomplettering()
                     && (intyg.getSistaDatumKompletteringsbegaran() != null
-                            && intyg.getSistaDatumKompletteringsbegaran().isAfter(LocalDateTime.now())))) {
+                    && intyg.getSistaDatumKompletteringsbegaran().isAfter(LocalDateTime.now())))) {
                 return UtredningStatus.UTLATANDE_MOTTAGET;
             }
 
@@ -191,30 +194,30 @@ public class UtredningStatusResolver {
 
     private static UtredningStatus handleForfraganFas(Utredning utredning) {
         // AVVISAD
-        if (utredning.getExternForfragan() != null && utredning.getExternForfragan().getAvvisatDatum() != null) {
+        if (utredning.getExternForfragan().isPresent() && utredning.getExternForfragan().get().getAvvisatDatum() != null) {
             return UtredningStatus.AVVISAD;
         }
 
         // FORFRAGAN_INKOMMEN - får ej finnas några internförfrågan alls.
-        if (utredning.getExternForfragan() != null && utredning.getExternForfragan().getInternForfraganList().size() == 0) {
+        if (utredning.getExternForfragan().isPresent() && utredning.getExternForfragan().get().getInternForfraganList().size() == 0) {
             return UtredningStatus.FORFRAGAN_INKOMMEN;
         }
 
         // VANTAR_PA_SVAR - måste finnas internförfrågan - men ingen får vara tilldelad eller accepterad.
-        if (utredning.getExternForfragan() != null && !isAccepterad(utredning.getExternForfragan().getInternForfraganList())
-                && !isTilldelad(utredning.getExternForfragan().getInternForfraganList())) {
+        if (utredning.getExternForfragan().isPresent() && !isAccepterad(utredning.getExternForfragan().get().getInternForfraganList())
+                && !isTilldelad(utredning.getExternForfragan().get().getInternForfraganList())) {
             return UtredningStatus.VANTAR_PA_SVAR;
         }
 
         // TILLDELA_UTREDNING - måste finnas internförfrågan som är accepterad - men får ej vara tilldelad.
-        if (utredning.getExternForfragan() != null && isAccepterad(utredning.getExternForfragan().getInternForfraganList())
-                && !isTilldelad(utredning.getExternForfragan().getInternForfraganList())) {
+        if (utredning.getExternForfragan().isPresent() && isAccepterad(utredning.getExternForfragan().get().getInternForfraganList())
+                && !isTilldelad(utredning.getExternForfragan().get().getInternForfraganList())) {
             return UtredningStatus.TILLDELA_UTREDNING;
         }
 
         // TILLDELAD_VANTAR_PA_BESTALLNING - måste finnas internförfrågan som är accepterad - som är tilldelad.
-        if (utredning.getExternForfragan() != null
-                && isAccepteradAndTilldelad(utredning.getExternForfragan().getInternForfraganList())) {
+        if (utredning.getExternForfragan().isPresent()
+                && isAccepteradAndTilldelad(utredning.getExternForfragan().get().getInternForfraganList())) {
             return UtredningStatus.TILLDELAD_VANTAR_PA_BESTALLNING;
         }
         throw new IllegalStateException("Invalid sub-state in phase FORFRAGAN!");

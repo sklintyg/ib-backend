@@ -411,7 +411,7 @@ public class UtredningServiceImplTest {
 
         assertEquals(createBestallning(), uppdateradUtredning.getBestallning().orElse(null));
         assertEquals(createHandlaggare(), uppdateradUtredning.getHandlaggare());
-        assertEquals(createExternForfragan(), uppdateradUtredning.getExternForfragan());
+        assertEquals(createExternForfragan(), uppdateradUtredning.getExternForfragan().orElse(null));
         assertTrue(uppdateradUtredning.getTolkBehov());
         assertEquals(tolkSprak, uppdateradUtredning.getTolkSprak());
 

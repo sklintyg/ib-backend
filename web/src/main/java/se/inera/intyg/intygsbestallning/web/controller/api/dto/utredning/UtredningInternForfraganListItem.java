@@ -18,22 +18,18 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning;
 
-import se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar;
-import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
-import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganFas;
-import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStateResolver;
-import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardenhetEnrichable;
+import static java.util.Objects.nonNull;
 
 import java.time.format.DateTimeFormatter;
-
-import static java.util.Objects.nonNull;
+import se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar;
+import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
+import se.inera.intyg.intygsbestallning.persistence.model.status.InternForfraganFas;
+import se.inera.intyg.intygsbestallning.persistence.model.status.InternForfraganStatus;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardenhetEnrichable;
 
 public class UtredningInternForfraganListItem implements VardenhetEnrichable {
 
     private static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
-    private static InternForfraganStateResolver internForfraganStateResolver = new InternForfraganStateResolver();
 
     private String vardenhetHsaId;
     private String vardenhetNamn;
@@ -48,11 +44,11 @@ public class UtredningInternForfraganListItem implements VardenhetEnrichable {
     private String telefon;
     private String epost;
 
-    public static UtredningInternForfraganListItem from(Utredning utredning, InternForfragan internForfragan) {
+    public static UtredningInternForfraganListItem from(InternForfragan internForfragan) {
         final ForfraganSvar forfraganSvar = internForfragan.getForfraganSvar();
         return UtredningInternForfraganListItemBuilder.aUtredningInternForfraganListItem()
                 .withVardenhetHsaId(internForfragan.getVardenhetHsaId())
-                .withStatusAndFas(internForfraganStateResolver.resolveStatus(utredning, internForfragan))
+                .withStatusAndFas(internForfragan.getStatus())
                 .withBorjaDatum(nonNull(forfraganSvar) && nonNull(forfraganSvar.getBorjaDatum())
                         ? forfraganSvar.getBorjaDatum().format(formatter) : null)
                 .withMeddelande(nonNull(forfraganSvar) ? forfraganSvar.getKommentar() : null)
@@ -63,14 +59,6 @@ public class UtredningInternForfraganListItem implements VardenhetEnrichable {
                 .withTelefon(nonNull(forfraganSvar) ? forfraganSvar.getUtforareTelefon() : null)
                 .withEpost(nonNull(forfraganSvar) ? forfraganSvar.getUtforareEpost() : null)
                 .build();
-    }
-
-    public static InternForfraganStateResolver getInternForfraganStateResolver() {
-        return internForfraganStateResolver;
-    }
-
-    public static void setInternForfraganStateResolver(InternForfraganStateResolver internForfraganStateResolver) {
-        UtredningInternForfraganListItem.internForfraganStateResolver = internForfraganStateResolver;
     }
 
     @Override

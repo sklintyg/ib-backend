@@ -126,7 +126,7 @@ public class UtredningRepositoryTest {
 
         utr.setBetalning(buildBetalning());
 
-        Utredning savedUtredning = utredningRepository.save(utr);
+        Utredning savedUtredning = utredningRepository.saveUtredning(utr);
 
         Optional<Utredning> savedAndRetreived = utredningRepository.findById(savedUtredning.getUtredningId());
         assertTrue(savedAndRetreived.isPresent());
@@ -145,7 +145,7 @@ public class UtredningRepositoryTest {
         assertEquals("syfte", bestallning.getSyfte());
         assertEquals(VE_HSA_ID, bestallning.getTilldeladVardenhetHsaId());
 
-        ExternForfragan externForfragan = utredning.getExternForfragan();
+        ExternForfragan externForfragan = utredning.getExternForfragan().orElse(null);
         assertNotNull(externForfragan);
         assertEquals("avvisatKommentar", externForfragan.getAvvisatKommentar());
         assertEquals("kommentar", externForfragan.getKommentar());

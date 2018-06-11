@@ -20,11 +20,9 @@ package se.inera.intyg.intygsbestallning.service.statistics;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
-import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStateResolver;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
-import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
+import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.BestallningListItemFactory;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItemFactory;
@@ -37,9 +35,6 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.Utredni
  */
 @Service
 public class StatisticsServiceImpl implements StatisticsService {
-
-    private UtredningStatusResolver utredningStatusResolver = new UtredningStatusResolver();
-    private InternForfraganStateResolver internForfraganStateResolver = new InternForfraganStateResolver();
 
     @Autowired
     private BestallningListItemFactory bestallningListItemFactory;

@@ -25,7 +25,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
+import se.inera.intyg.intygsbestallning.persistence.model.status.InternForfraganStatus;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItemFactory;
@@ -78,6 +78,7 @@ public class InternForfraganListItemFactoryTest {
                                 .withSkapadDatum(LocalDate.of(2018, 1, 1).atStartOfDay())
                                 .withVardenhetHsaId(VARDENHET_HSA_ID)
                                 .withKommentar(LANDSTING_KOMMENTAR)
+                                .withStatus(InternForfraganStatus.INKOMMEN)
                                 .withForfraganSvar(aForfraganSvar()
                                         .withBorjaDatum(LocalDate.of(2020, 1, 1))
                                         .build())
@@ -133,10 +134,10 @@ public class InternForfraganListItemFactoryTest {
         return anUtredning()
                     .withUtredningsTyp(AFU)
                     .withExternForfragan(anExternForfragan()
-
                             .withInternForfraganList(Collections.singletonList(anInternForfragan()
                                     .withVardenhetHsaId(VARDENHET_HSA_ID)
                                     .withBesvarasSenastDatum(besvaraSenastDatum)
+                                    .withStatus(InternForfraganStatus.INKOMMEN)
                                     .build()))
                             .build())
                     .build();

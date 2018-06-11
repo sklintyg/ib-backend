@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
@@ -38,6 +39,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 
@@ -60,7 +62,7 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
     @Test
     public void testAvvisad() {
         Utredning utr = buildBaseUtredning();
-        utr.getExternForfragan().setAvvisatDatum(LocalDateTime.now());
+        utr.getExternForfragan().get().setAvvisatDatum(LocalDateTime.now());
         UtredningStatus status = testee.resolveStatus(utr);
         assertEquals(UtredningStatus.AVVISAD, status);
         assertEquals(UtredningFas.AVSLUTAD, status.getUtredningFas());
@@ -79,7 +81,7 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
     @Test
     public void testResolvesVantarPaSvar() {
         Utredning utr = buildBaseUtredning();
-        utr.getExternForfragan().getInternForfraganList().add(buildInternForfragan(null, null));
+        utr.getExternForfragan().map(ExternForfragan::getInternForfraganList).map(iff -> iff.add(buildInternForfragan(null, null)));
         UtredningStatus status = testee.resolveStatus(utr);
         assertEquals(UtredningStatus.VANTAR_PA_SVAR, status);
         assertEquals(UtredningFas.FORFRAGAN, status.getUtredningFas());
@@ -89,7 +91,7 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
     @Test
     public void testResolvesVantarPaSvarWhenAvbojd() {
         Utredning utr = buildBaseUtredning();
-        utr.getExternForfragan().getInternForfraganList().add(buildInternForfragan(buildForfraganSvar(SvarTyp.AVBOJ), null));
+        utr.getExternForfragan().map(ExternForfragan::getInternForfraganList).map(iff -> iff.add(buildInternForfragan(buildForfraganSvar(SvarTyp.AVBOJ), null)));
         UtredningStatus status = testee.resolveStatus(utr);
         assertEquals(UtredningStatus.VANTAR_PA_SVAR, status);
         assertEquals(UtredningFas.FORFRAGAN, status.getUtredningFas());
@@ -99,7 +101,9 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
     @Test
     public void testResolvesTilldelaUtredningWhenAccepterad() {
         Utredning utr = buildBaseUtredning();
-        utr.getExternForfragan().getInternForfraganList().add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), null));
+        utr.getExternForfragan()
+                .map(ExternForfragan::getInternForfraganList)
+                .map(iff -> iff.add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), null)));
         UtredningStatus status = testee.resolveStatus(utr);
         assertEquals(UtredningStatus.TILLDELA_UTREDNING, status);
         assertEquals(UtredningFas.FORFRAGAN, status.getUtredningFas());
@@ -109,8 +113,9 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
     @Test
     public void testResolvesTilldelaUtredning() {
         Utredning utr = buildBaseUtredning();
-        utr.getExternForfragan().getInternForfraganList()
-                .add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
+        utr.getExternForfragan()
+                .map(ExternForfragan::getInternForfraganList)
+                .map(iff -> iff.add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now())));
         UtredningStatus status = testee.resolveStatus(utr);
         assertEquals(UtredningStatus.TILLDELAD_VANTAR_PA_BESTALLNING, status);
         assertEquals(UtredningFas.FORFRAGAN, status.getUtredningFas());
@@ -120,8 +125,9 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
     @Test
     public void testResolvesBestallningMottagenVantarPaHandlingar() {
         Utredning utr = buildBaseUtredning();
-        utr.getExternForfragan().getInternForfraganList()
-                .add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
+        utr.getExternForfragan()
+                .map(ExternForfragan::getInternForfraganList)
+                .map(iff -> iff.add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now())));
         utr.setBestallning(buildBestallning(null));
         utr.getIntygList().add(buildBestalltIntyg());
         utr.getHandlingList().clear();
@@ -136,8 +142,8 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
     @Test
     public void testResolvesUppdateradBestallningVantarPaHandlingar() {
         Utredning utr = buildBaseUtredning();
-        utr.getExternForfragan().getInternForfraganList()
-                .add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
+        utr.getExternForfragan().map(ExternForfragan::getInternForfraganList)
+                .map(iff -> iff.add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now())));
         utr.setBestallning(buildBestallning(LocalDateTime.now()));
         utr.getIntygList().add(buildBestalltIntyg());
         utr.getHandlingList().clear();
@@ -151,8 +157,8 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
     @Test
     public void testResolvesHandlingarMottagnaVantaPaBesok() {
         Utredning utr = buildBaseUtredning();
-        utr.getExternForfragan().getInternForfraganList()
-                .add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
+        utr.getExternForfragan().map(ExternForfragan::getInternForfraganList)
+                .map(iff -> iff.add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now())));
         utr.setBestallning(buildBestallning(null));
         utr.getIntygList().add(buildBestalltIntyg());
         utr.getHandlingList().add(buildHandling(LocalDateTime.now(), null));
@@ -166,8 +172,9 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
     @Test
     public void testResolvesAvvikelseMottagen() {
         Utredning utr = buildBaseUtredning();
-        utr.getExternForfragan().getInternForfraganList()
-                .add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
+        utr.getExternForfragan()
+                .map(ExternForfragan::getInternForfraganList)
+                .map(iff -> iff.add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now())));
         utr.setBestallning(buildBestallning(null));
         utr.getIntygList().add(buildBestalltIntyg());
         utr.getHandlingList().add(buildHandling(LocalDateTime.now(), null));
@@ -189,8 +196,9 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
     @Test
     public void testResolvesUtredningPagar() {
         Utredning utr = buildBaseUtredning();
-        utr.getExternForfragan().getInternForfraganList()
-                .add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
+        utr.getExternForfragan()
+                .map(ExternForfragan::getInternForfraganList)
+                .map(iff -> iff.add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now())));
         utr.setBestallning(buildBestallning(null));
         utr.getIntygList().add(buildBestalltIntyg());
         utr.getHandlingList().add(buildHandling(LocalDateTime.now(), null));
@@ -208,8 +216,9 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
     @Test
     public void testResolvesUtlatandeSkickat() {
         Utredning utr = buildBaseUtredning();
-        utr.getExternForfragan().getInternForfraganList()
-                .add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
+        utr.getExternForfragan()
+                .map(ExternForfragan::getInternForfraganList)
+                .map(iff -> iff.add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now())));
         utr.setBestallning(buildBestallning(null));
         Intyg intyg = buildBestalltIntyg();
         intyg.setSkickatDatum(LocalDateTime.now());
@@ -229,8 +238,9 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
     @Test
     public void testResolvesUtlatandeMottaget() {
         Utredning utr = buildBaseUtredning();
-        utr.getExternForfragan().getInternForfraganList()
-                .add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
+        utr.getExternForfragan()
+                .map(ExternForfragan::getInternForfraganList)
+                .map(iff -> iff.add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now())));
         utr.setBestallning(buildBestallning(null));
         Intyg intyg = buildBestalltIntyg();
         intyg.setSkickatDatum(LocalDateTime.now());
@@ -252,8 +262,9 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
     @Test
     public void testResolveAvslutadEjTolkEjKomplt() {
         Utredning utr = buildBaseUtredning();
-        utr.getExternForfragan().getInternForfraganList()
-                .add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
+        utr.getExternForfragan()
+                .map(ExternForfragan::getInternForfraganList)
+                .map(iff -> iff.add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now())));
         utr.setBestallning(buildBestallning(null));
         Intyg intyg = buildBestalltIntyg();
         intyg.setSkickatDatum(LocalDateTime.now());
@@ -276,8 +287,8 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
     @Test
     public void testResolveAvslutadTolkRedovisadEjKomplt() {
         Utredning utr = buildBaseUtredning();
-        utr.getExternForfragan().getInternForfraganList()
-                .add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
+        utr.getExternForfragan().map(ExternForfragan::getInternForfraganList)
+                .map(iff -> iff.add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now())));
         utr.setBestallning(buildBestallning(null));
         Intyg intyg = buildBestalltIntyg();
         intyg.setSkickatDatum(LocalDateTime.now());
@@ -368,8 +379,8 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
 
     private Utredning buildBasicUtredningForKompletteringTest() {
         Utredning utr = buildBaseUtredning();
-        utr.getExternForfragan().getInternForfraganList()
-                .add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now()));
+        utr.getExternForfragan().map(ExternForfragan::getInternForfraganList)
+                .map(iff -> iff.add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now())));
         utr.setBestallning(buildBestallning(null));
         Intyg intyg = buildBestalltIntyg();
         intyg.setSkickatDatum(LocalDateTime.now());

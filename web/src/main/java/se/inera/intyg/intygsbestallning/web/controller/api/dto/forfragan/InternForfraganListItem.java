@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan;
 
-import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
+import se.inera.intyg.intygsbestallning.persistence.model.status.InternForfraganStatus;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FreeTextSearchable;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListForfraganFilterStatus;
 

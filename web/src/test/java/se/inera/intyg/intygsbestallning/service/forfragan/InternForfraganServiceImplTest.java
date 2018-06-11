@@ -35,12 +35,7 @@ import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.Invana
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.Optional;
-
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -48,9 +43,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import com.google.common.collect.ImmutableList;
-
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.Optional;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
@@ -58,17 +55,15 @@ import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationExceptio
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.integration.myndighet.service.MyndighetIntegrationService;
-import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.status.InternForfraganStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.RegiFormTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
-import se.inera.intyg.intygsbestallning.persistence.repository.InternForfraganRepository;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
-import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
@@ -89,9 +84,6 @@ public class InternForfraganServiceImplTest {
 
     @Mock
     private UtredningRepository utredningRepository;
-
-    @Mock
-    private InternForfraganRepository internForfraganRepository;
 
     @Mock
     private HsaOrganizationsService organizationUnitService;
@@ -171,12 +163,12 @@ public class InternForfraganServiceImplTest {
         verify(utredningRepository).saveUtredning(utredningArgument.capture());
 
         Utredning utredning = utredningArgument.getValue();
-        assertEquals(kommentar, utredning.getExternForfragan().getInternForfraganList().get(0).getKommentar());
-        assertEquals(kommentar, utredning.getExternForfragan().getInternForfraganList().get(1).getKommentar());
+        assertEquals(kommentar, utredning.getExternForfragan().get().getInternForfraganList().get(0).getKommentar());
+        assertEquals(kommentar, utredning.getExternForfragan().get().getInternForfraganList().get(1).getKommentar());
 
-        assertEquals(2, utredning.getExternForfragan().getInternForfraganList().size());
-        assertEquals(vardenhetId1, utredning.getExternForfragan().getInternForfraganList().get(0).getVardenhetHsaId());
-        assertEquals(vardenhetId2, utredning.getExternForfragan().getInternForfraganList().get(1).getVardenhetHsaId());
+        assertEquals(2, utredning.getExternForfragan().get().getInternForfraganList().size());
+        assertEquals(vardenhetId1, utredning.getExternForfragan().get().getInternForfraganList().get(0).getVardenhetHsaId());
+        assertEquals(vardenhetId2, utredning.getExternForfragan().get().getInternForfraganList().get(1).getVardenhetHsaId());
 
         assertEquals(2, utredning.getHandelseList().size());
         assertEquals(HandelseTyp.INTERNFORFRAGAN_SKICKAD, utredning.getHandelseList().get(0).getHandelseTyp());
@@ -316,11 +308,11 @@ public class InternForfraganServiceImplTest {
         verify(utredningRepository).saveUtredning(utredningArgument.capture());
 
         Utredning utredning = utredningArgument.getValue();
-        assertEquals(kommentar, utredning.getExternForfragan().getInternForfraganList().get(0).getKommentar());
-        assertTrue(utredning.getExternForfragan().getInternForfraganList().get(0).getDirekttilldelad());
+        assertEquals(kommentar, utredning.getExternForfragan().get().getInternForfraganList().get(0).getKommentar());
+        assertTrue(utredning.getExternForfragan().get().getInternForfraganList().get(0).getDirekttilldelad());
 
-        assertEquals(1, utredning.getExternForfragan().getInternForfraganList().size());
-        assertEquals(vardenhetId1, utredning.getExternForfragan().getInternForfraganList().get(0).getVardenhetHsaId());
+        assertEquals(1, utredning.getExternForfragan().get().getInternForfraganList().size());
+        assertEquals(vardenhetId1, utredning.getExternForfragan().get().getInternForfraganList().get(0).getVardenhetHsaId());
     }
 
     @Test(expected = IbNotFoundException.class)
@@ -629,6 +621,7 @@ public class InternForfraganServiceImplTest {
                         .withLandstingHsaId(landstingHsaId)
                         .withInternForfraganList(ImmutableList.of(anInternForfragan()
                                 .withId(internForfragaId)
+                                .withStatus(InternForfraganStatus.TILLDELAD_VANTAR_PA_BESTALLNING)
                                 .withForfraganSvar(aForfraganSvar()
                                         .build())
                                 .build()))
@@ -658,16 +651,16 @@ public class InternForfraganServiceImplTest {
                                 anInternForfragan()
                                         .withId(internForfragaId1)
                                         .withVardenhetHsaId(vardenhetId1)
+                                        .withStatus(InternForfraganStatus.INKOMMEN)
                                         .build(),
                                 anInternForfragan()
                                         .withId(internForfragaId2)
+                                        .withStatus(InternForfraganStatus.INKOMMEN)
                                         .withVardenhetHsaId(vardenhetId2)
                                         .build()))
                         .build())
                 .build();
         when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(utredningMock));
-        when(internForfraganRepository.save(any(InternForfragan.class))).thenAnswer(
-                invocation -> invocation.getArgument(0));
         when(organizationUnitService.getVardenhet(vardenhetId1)).thenReturn(new Vardenhet(vardenhetId1, vardenhetId1Namn));
         when(userService.getUser()).thenReturn(new IbUser("", userName));
         when(utredningRepository.saveUtredning(any(Utredning.class))).thenAnswer(
@@ -697,14 +690,13 @@ public class InternForfraganServiceImplTest {
                         .withInternForfraganList(Arrays.asList(
                                 anInternForfragan()
                                         .withId(internForfragaId1)
+                                        .withStatus(InternForfraganStatus.INKOMMEN)
                                         .withVardenhetHsaId(vardenhetId1)
                                         .build()))
                         .build())
                 .build();
         when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(utredningMock));
         when(vardgivareService.listVardenheterForVardgivare(landstingHsaId)).thenReturn(new GetVardenheterForVardgivareResponse());
-        when(internForfraganRepository.save(any(InternForfragan.class))).thenAnswer(
-                invocation -> invocation.getArgument(0));
         when(organizationUnitService.getVardenhet(vardenhetId1)).thenReturn(new Vardenhet(vardenhetId1, vardenhetId1Namn));
         when(userService.getUser()).thenReturn(new IbUser("", userName));
         when(utredningRepository.saveUtredning(any(Utredning.class))).thenAnswer(
@@ -736,6 +728,7 @@ public class InternForfraganServiceImplTest {
                         .withInternForfraganList(Arrays.asList(
                                 anInternForfragan()
                                         .withId(internForfragaId1)
+                                        .withStatus(InternForfraganStatus.INKOMMEN)
                                         .withVardenhetHsaId(vardenhetId1)
                                         .withForfraganSvar(null)
                                         .build()))
@@ -751,8 +744,6 @@ public class InternForfraganServiceImplTest {
                         .build()));
         when(vardgivareService.listVardenheterForVardgivare(landstingHsaId)).thenReturn(egetRegiResponse);
         doNothing().when(notifieringSendService).notifieraLandstingSamtligaVardenheterHarSvaratPaInternforfragan(utredningMock);
-        when(internForfraganRepository.save(any(InternForfragan.class))).thenAnswer(
-                invocation -> invocation.getArgument(0));
         when(organizationUnitService.getVardenhet(vardenhetId1)).thenReturn(new Vardenhet(vardenhetId1, vardenhetId1Namn));
         when(userService.getUser()).thenReturn(new IbUser("", userName));
         when(utredningRepository.saveUtredning(any(Utredning.class))).thenAnswer(

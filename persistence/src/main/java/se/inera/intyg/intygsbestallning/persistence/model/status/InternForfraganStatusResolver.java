@@ -16,22 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.service.stateresolver;
+package se.inera.intyg.intygsbestallning.persistence.model.status;
 
-import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
+import com.google.common.collect.Lists;
+import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
-import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
+import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 
 /**
  * Class resposible for resolving the status of an InternForfragan.
  */
-public class InternForfraganStateResolver {
+public class InternForfraganStatusResolver {
 
-    public InternForfraganStatus resolveStatus(Utredning utredning, InternForfragan internForfragan) {
+    public InternForfraganStatus resolveStatus(final Utredning utredning, final InternForfragan internForfragan) {
+        return resolveStaticStatus(utredning, internForfragan);
+    }
+
+    public static InternForfraganStatus resolveStaticStatus(Utredning utredning, InternForfragan internForfragan) {
 
         // När externförfrågan avvisas - Systemet uppdaterar internförfrågningar i fas Förfrågan till status Ej tilldelad
-        if (utredning.getExternForfragan() != null && utredning.getExternForfragan().getAvvisatDatum() != null) {
+        if (utredning.getExternForfragan().isPresent() && utredning.getExternForfragan().get().getAvvisatDatum() != null) {
             if (internForfragan.getForfraganSvar() == null || internForfragan.getForfraganSvar().getSvarTyp() != SvarTyp.AVBOJ) {
                 return InternForfraganStatus.EJ_TILLDELAD;
             }
@@ -94,8 +100,11 @@ public class InternForfraganStateResolver {
         throw new IllegalStateException("Unable to resolve InternForfraganStatus, unresolvable state.");
     }
 
-    private boolean isTilldelad(Utredning utredning) {
-        return utredning.getExternForfragan().getInternForfraganList().stream().anyMatch(intf -> intf.getTilldeladDatum() != null);
+    private static boolean isTilldelad(Utredning utredning) {
+        return utredning.getExternForfragan()
+                .map(ExternForfragan::getInternForfraganList)
+                .orElse(Lists.newArrayList()).stream()
+                .anyMatch(intf -> intf.getTilldeladDatum() != null);
     }
 
 }

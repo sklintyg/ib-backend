@@ -18,23 +18,21 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan;
 
+import static java.util.Objects.nonNull;
+
+import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
-import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
-import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
-import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStateResolver;
-import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
-import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
-import java.util.Optional;
-
-import static java.util.Objects.nonNull;
+import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
+import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
+import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
+import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 
 @Component
 public class InternForfraganListItemFactory {
@@ -51,9 +49,6 @@ public class InternForfraganListItemFactory {
     @Value("${ib.postgang.arbetsdagar}")
     private int postgangArbetsdagar;
 
-
-    private InternForfraganStateResolver internForfraganStateResolver = new InternForfraganStateResolver();
-
     private BusinessDaysBean businessDays;
 
     public InternForfraganListItemFactory(final BusinessDaysBean businessDays) {
@@ -62,13 +57,11 @@ public class InternForfraganListItemFactory {
 
     public InternForfraganListItem from(Utredning utredning, String vardenhetId) {
 
-        InternForfragan internForfragan = utredning.getExternForfragan().getInternForfraganList()
-                .stream()
+        InternForfragan internForfragan = utredning.getExternForfragan()
+                .map(ExternForfragan::getInternForfraganList).orElse(Lists.newArrayList()).stream()
                 .filter(i -> Objects.equals(i.getVardenhetHsaId(), vardenhetId))
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
-
-        InternForfraganStatus status = internForfraganStateResolver.resolveStatus(utredning, internForfragan);
 
         return InternForfraganListItem.ForfraganListItemBuilder.aForfraganListItem()
                 .withBesvarasSenastDatum(nonNull(internForfragan.getBesvarasSenastDatum())
@@ -80,22 +73,23 @@ public class InternForfraganListItemFactory {
                 .withInkomDatum(nonNull(internForfragan.getSkapadDatum())
                         ? internForfragan.getSkapadDatum().format(FORMATTER)
                         : null)
-                .withPlaneringsDatum(resolvePlaneringsDatum(utredning.getBestallning(), businessDays))
+                .withPlaneringsDatum(resolvePlaneringsDatum(utredning.getBestallning().orElse(null), businessDays))
                 .withForfraganId(internForfragan.getId())
-                .withStatus(status)
+                .withStatus(internForfragan.getStatus())
                 .withUtredningsId(utredning.getUtredningId())
                 .withUtredningsTyp(utredning.getUtredningsTyp().name())
-                .withVardgivareHsaId(utredning.getExternForfragan().getLandstingHsaId())
-                .withVardgivareNamn(utredning.getExternForfragan().getLandstingHsaId())
-                .withKraverAtgard(status.getNextActor() == Actor.VARDADMIN)
+                .withVardgivareHsaId(utredning.getExternForfragan().map(ExternForfragan::getLandstingHsaId).orElse(null))
+                .withVardgivareNamn(utredning.getExternForfragan().map(ExternForfragan::getLandstingHsaId).orElse(null))
+                .withStatus(internForfragan.getStatus())
+                .withKraverAtgard(internForfragan.getStatus().getNextActor() == Actor.VARDADMIN)
                 .withKommentar(internForfragan.getKommentar())
                 .build();
     }
 
-    private String resolvePlaneringsDatum(Optional<Bestallning> bestallning, BusinessDaysBean businessDays) {
+    private String resolvePlaneringsDatum(final Bestallning bestallning, final BusinessDaysBean businessDays) {
 
         // Om redan beställd, ska vi då utgå från orderdatumet istället?? Dvs planeringsdatum blir orderdatum + 31 arbetsdagar?
-        if (bestallning.isPresent() && bestallning.get().getOrderDatum() != null) {
+        if (nonNull(bestallning) && nonNull(bestallning.getOrderDatum())) {
             return null;
         }
 

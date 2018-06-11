@@ -427,6 +427,10 @@
             <column name="DIREKTTILLDELAD" type="tinyint(1)">
                 <constraints nullable="true"/>
             </column>
+
+            <column name="STATUS" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
         <addAutoIncrement columnDataType="bigint"

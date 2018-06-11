@@ -35,7 +35,7 @@ import java.time.format.DateTimeFormatter;
 
 import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.core.Is.is;
-import static se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus.BESTALLD;
+import static se.inera.intyg.intygsbestallning.persistence.model.status.InternForfraganStatus.BESTALLD;
 
 public class RequestOrderMedicalAssessmentIT extends BaseRestIntegrationTest {
 

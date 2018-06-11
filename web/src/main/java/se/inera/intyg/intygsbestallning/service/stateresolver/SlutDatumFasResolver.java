@@ -18,12 +18,12 @@
  */
 package se.inera.intyg.intygsbestallning.service.stateresolver;
 
-import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
-import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
-import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-
 import java.time.LocalDateTime;
 import java.util.Optional;
+import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
+import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 
 public final class SlutDatumFasResolver {
 
@@ -39,22 +39,22 @@ public final class SlutDatumFasResolver {
      */
     public static Optional<LocalDateTime> resolveSlutDatumFas(Utredning utredning, UtredningStatus utredningStatus) {
         switch (utredningStatus.getUtredningFas()) {
-        case FORFRAGAN:
-            return Optional.ofNullable(utredning.getExternForfragan().getBesvarasSenastDatum());
-        case UTREDNING:
-            return Optional.ofNullable(utredning.getIntygList().stream()
-                    .filter(i -> !i.isKomplettering())
-                    .findAny()
-                    .map(Intyg::getSistaDatum)
-                    .orElseThrow(IllegalStateException::new));
-        case KOMPLETTERING:
-            return Optional.ofNullable(utredning.getIntygList().stream()
-                    .filter(Intyg::isKomplettering)
-                    .map(Intyg::getSistaDatum)
-                    .max(LocalDateTime::compareTo)
-                    .orElseThrow(IllegalStateException::new));
-        default:
-            return Optional.ofNullable(null);
+            case FORFRAGAN:
+                return utredning.getExternForfragan().map(ExternForfragan::getBesvarasSenastDatum);
+            case UTREDNING:
+                return Optional.of(utredning.getIntygList().stream()
+                        .filter(i -> !i.isKomplettering())
+                        .findAny()
+                        .map(Intyg::getSistaDatum)
+                        .orElseThrow(IllegalStateException::new));
+            case KOMPLETTERING:
+                return Optional.of(utredning.getIntygList().stream()
+                        .filter(Intyg::isKomplettering)
+                        .map(Intyg::getSistaDatum)
+                        .max(LocalDateTime::compareTo)
+                        .orElseThrow(IllegalStateException::new));
+            default:
+                return Optional.empty();
         }
     }
 }

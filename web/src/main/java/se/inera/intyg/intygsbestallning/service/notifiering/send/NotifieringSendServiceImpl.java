@@ -71,6 +71,7 @@ import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
+import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp;
@@ -105,10 +106,10 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
     @Override
     public void notifieraLandstingNyExternforfragan(Utredning utredning) {
-        checkState(nonNull(utredning.getExternForfragan()));
-        checkState(nonNull(utredning.getExternForfragan().getLandstingHsaId()));
+        checkState(utredning.getExternForfragan().isPresent());
+        checkState(utredning.getExternForfragan().map(ExternForfragan::getLandstingHsaId).isPresent());
 
-        final String vardenhetHsaId = utredning.getExternForfragan().getLandstingHsaId();
+        final String vardenhetHsaId = utredning.getExternForfragan().get().getLandstingHsaId();
         final String email = vardenhetService.getVardEnhetPreference(vardenhetHsaId).getEpost();
         final String body = notifieringMailBodyFactory.buildBodyForUtredning(
                 landstingNyExternforfraganMessage(),
@@ -119,12 +120,12 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
     @Override
     public void notifieraVardenhetNyInternforfragan(Utredning utredning) {
-        checkState(nonNull(utredning.getExternForfragan()));
-        checkState(isNotEmpty(utredning.getExternForfragan().getInternForfraganList()));
-        checkState(nonNull(utredning.getExternForfragan().getInternForfraganList().get(0).getForfraganSvar()));
-        checkState(nonNull(utredning.getExternForfragan().getInternForfraganList().get(0).getForfraganSvar().getUtforareEpost()));
+        checkState(utredning.getExternForfragan().isPresent());
+        checkState(isNotEmpty(utredning.getExternForfragan().get().getInternForfraganList()));
+        checkState(nonNull(utredning.getExternForfragan().get().getInternForfraganList().get(0).getForfraganSvar()));
+        checkState(nonNull(utredning.getExternForfragan().get().getInternForfraganList().get(0).getForfraganSvar().getUtforareEpost()));
 
-        final InternForfragan internForfragan = utredning.getExternForfragan().getInternForfraganList().get(0);
+        final InternForfragan internForfragan = utredning.getExternForfragan().get().getInternForfraganList().get(0);
         final String body = notifieringMailBodyFactory.buildBodyForUtredning(
                 vardenhetNyInternforfraganMessage(internForfragan),
                 internForfraganUrl(utredning));
@@ -134,10 +135,10 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
     @Override
     public void notifieraLandstingSamtligaVardenheterHarSvaratPaInternforfragan(Utredning utredning) {
-        checkState(nonNull(utredning.getExternForfragan()));
-        checkState(nonNull(utredning.getExternForfragan().getLandstingHsaId()));
+        checkState(utredning.getExternForfragan().isPresent());
+        checkState(utredning.getExternForfragan().map(ExternForfragan::getLandstingHsaId).isPresent());
 
-        final String landstingsHsaId = utredning.getExternForfragan().getLandstingHsaId();
+        final String landstingsHsaId = utredning.getExternForfragan().get().getLandstingHsaId();
         final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(landstingsHsaId, VG);
         if (preferens.isEnabled(SAMTLIGA_INTERNFORFRAGAN_BESVARATS, LANDSTING)) {
             final String email = preferens.getLandstingEpost();
@@ -341,7 +342,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
     @Override
     public void notifieraLandstingSlutdatumPasseratUtredning(Utredning utredning) {
-        String vardgivareHsaId = utredning.getExternForfragan().getLandstingHsaId();
+        String vardgivareHsaId = utredning.getExternForfragan().get().getLandstingHsaId();
         final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(vardgivareHsaId, VG);
 
         if (preferens.isEnabled(NotifieringTyp.SLUTDATUM_UTREDNING_PASSERAT, NotifieringMottagarTyp.LANDSTING)) {

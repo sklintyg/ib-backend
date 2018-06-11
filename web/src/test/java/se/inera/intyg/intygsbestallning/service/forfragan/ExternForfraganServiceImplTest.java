@@ -73,7 +73,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.ExternForfraganRepository;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
-import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
+import se.inera.intyg.intygsbestallning.persistence.model.status.InternForfraganStatus;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
@@ -190,7 +190,7 @@ public class ExternForfraganServiceImplTest {
         verify(notifieringSendService).notifieraVardenhetTilldeladUtredning(any(Utredning.class), any(InternForfragan.class), anyString());
 
         Utredning utredning = utredningArgument.getValue();
-        assertNotNull(utredning.getExternForfragan().getInternForfraganList().get(0).getTilldeladDatum());
+        assertNotNull(utredning.getExternForfragan().map(ExternForfragan::getInternForfraganList).orElse(null).get(0).getTilldeladDatum());
         assertEquals(1, utredning.getHandelseList().size());
         assertEquals(HandelseTyp.EXTERNFORFRAGAN_BESVARAD, utredning.getHandelseList().get(0).getHandelseTyp());
         assertEquals(userName, utredning.getHandelseList().get(0).getAnvandare());
@@ -371,8 +371,8 @@ public class ExternForfraganServiceImplTest {
         verify(utredningRepository).saveUtredning(utredningArgument.capture());
 
         Utredning utredning = utredningArgument.getValue();
-        assertNotNull(utredning.getExternForfragan().getAvvisatDatum());
-        assertEquals(kommentar, utredning.getExternForfragan().getAvvisatKommentar());
+        assertNotNull(utredning.getExternForfragan().map(ExternForfragan::getAvvisatDatum).orElse(null));
+        assertEquals(kommentar, utredning.getExternForfragan().map(ExternForfragan::getAvvisatKommentar).orElse(null));
         assertEquals(1, utredning.getHandelseList().size());
         assertEquals(HandelseTyp.EXTERNFORFRAGAN_BESVARAD, utredning.getHandelseList().get(0).getHandelseTyp());
         assertEquals(userName, utredning.getHandelseList().get(0).getAnvandare());
@@ -535,7 +535,10 @@ public class ExternForfraganServiceImplTest {
 
     private List<InternForfragan> buildInternForfraganList() {
         List<InternForfragan> list = new ArrayList<>();
-        list.add(anInternForfragan().withVardenhetHsaId("ve-1").build());
+        list.add(anInternForfragan()
+                .withVardenhetHsaId("ve-1")
+                .withStatus(InternForfraganStatus.EJ_TILLDELAD)
+                .build());
         return list;
     }
 

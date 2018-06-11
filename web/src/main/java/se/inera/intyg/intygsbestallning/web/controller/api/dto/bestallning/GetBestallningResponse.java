@@ -18,25 +18,27 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning;
 
-import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
-import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
-import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
-import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
-import se.inera.intyg.intygsbestallning.service.patient.Gender;
-import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
-import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
-import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.HandelseListItem;
-import se.inera.intyg.schemas.contract.Personnummer;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static java.util.Objects.isNull;
+import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
+import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
+import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
+import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
+import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
+import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
+import se.inera.intyg.intygsbestallning.service.patient.Gender;
+import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.HandelseListItem;
+import se.inera.intyg.schemas.contract.Personnummer;
 
 public class GetBestallningResponse implements PDLLoggable {
     private static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
@@ -88,17 +90,27 @@ public class GetBestallningResponse implements PDLLoggable {
         return GetBestallningResponseBuilder.agetBestallningResponse()
                 .withUtredningsId(utredning.getUtredningId())
                 .withUtredningsTyp(utredning.getUtredningsTyp())
-                .withVardgivareHsaId(!isNull(utredning.getExternForfragan())
-                        ? utredning.getExternForfragan().getLandstingHsaId() : null)
-                .withInkomDatum(!isNull(utredning.getExternForfragan())
-                        ? utredning.getExternForfragan().getInkomDatum().format(formatter) : null)
-                .withBesvarasSenastDatum(!isNull(utredning.getExternForfragan())
-                        ? utredning.getExternForfragan().getBesvarasSenastDatum().format(formatter) : null)
-                .withInvanare(!isNull(utredning.getInvanare())
-                        ? new InvanareResponse(utredning.getInvanare()) : null)
-                .withHandlaggareNamn(!isNull(utredning.getHandlaggare()) ? utredning.getHandlaggare().getFullstandigtNamn() : null)
-                .withHandlaggareTelefonnummer(!isNull(utredning.getHandlaggare()) ? utredning.getHandlaggare().getTelefonnummer() : null)
-                .withHandlaggareEpost(!isNull(utredning.getHandlaggare()) ? utredning.getHandlaggare().getEmail() : null)
+                .withVardgivareHsaId(utredning.getExternForfragan()
+                        .map(ExternForfragan::getLandstingHsaId)
+                        .orElse(null))
+                .withInkomDatum(utredning.getExternForfragan()
+                        .map(ex -> ex.getInkomDatum().format(formatter))
+                        .orElse(null))
+                .withBesvarasSenastDatum(utredning.getExternForfragan()
+                        .map(ex -> ex.getBesvarasSenastDatum().format(formatter))
+                        .orElse(null))
+                .withInvanare(nonNull(utredning.getInvanare())
+                        ? new InvanareResponse(utredning.getInvanare())
+                        : null)
+                .withHandlaggareNamn(nonNull(utredning.getHandlaggare())
+                        ? utredning.getHandlaggare().getFullstandigtNamn()
+                        : null)
+                .withHandlaggareTelefonnummer(nonNull(utredning.getHandlaggare())
+                        ? utredning.getHandlaggare().getTelefonnummer()
+                        : null)
+                .withHandlaggareEpost(nonNull(utredning.getHandlaggare())
+                        ? utredning.getHandlaggare().getEmail()
+                        : null)
                 .withBehovTolk(utredning.getTolkBehov() != null)
                 .withTolkSprak(utredning.getTolkSprak())
                 .withStatus(utredningStatus)
@@ -106,23 +118,28 @@ public class GetBestallningResponse implements PDLLoggable {
                 .withIntygSistaDatum(utredning.getIntygList()
                         .stream()
                         .filter(intyg -> intyg.getSistaDatum() != null)
-                        .sorted(Comparator.comparing(Intyg::getSistaDatum))
-                        .findFirst()
+                        .min(Comparator.comparing(Intyg::getSistaDatum))
                         .map(intyg -> intyg.getSistaDatum().format(formatter)).orElse(null))
                 .withIntygSistaDatumKomplettering(utredning.getIntygList()
                         .stream()
                         .filter(intyg -> intyg.getSistaDatumKompletteringsbegaran() != null)
-                        .sorted(Comparator.comparing(Intyg::getSistaDatumKompletteringsbegaran))
-                        .findFirst()
+                        .min(Comparator.comparing(Intyg::getSistaDatumKompletteringsbegaran))
                         .map(intyg -> intyg.getSistaDatumKompletteringsbegaran().format(formatter)).orElse(null))
                 .withAvbrutenDatum(!isNull(utredning.getAvbrutenDatum())
-                        ? utredning.getAvbrutenDatum().format(formatter) : null)
+                        ? utredning.getAvbrutenDatum().format(formatter)
+                        : null)
                 .withAvbrutenAnledning(utredning.getAvbrutenAnledning())
-                .withMeddelandeFromHandlaggare(utredning.getBestallning().map(bestallning -> bestallning.getKommentar()).orElse(null))
-                .withBesokList(utredning.getBesokList().stream().map(BesokListItem::from).collect(Collectors.toList()))
+                .withMeddelandeFromHandlaggare(utredning.getBestallning()
+                        .map(Bestallning::getKommentar)
+                        .orElse(null))
+                .withBesokList(utredning.getBesokList().stream()
+                        .map(BesokListItem::from)
+                        .collect(Collectors.toList()))
                 .withHandelseList(utredning.getHandelseList().stream()
                         .map(handelse ->  HandelseListItem.from(handelse, true)).collect(Collectors.toList()))
-                .withAnteckningList(utredning.getAnteckningList().stream().map(AnteckningListItem::from).collect(Collectors.toList()))
+                .withAnteckningList(utredning.getAnteckningList().stream()
+                        .map(AnteckningListItem::from)
+                        .collect(Collectors.toList()))
                 .build();
 
     }

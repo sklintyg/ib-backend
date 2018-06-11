@@ -18,21 +18,17 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
+import com.google.common.base.Strings;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import javax.xml.ws.WebServiceException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import javax.xml.ws.WebServiceException;
-
-import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.google.common.base.Strings;
-
 import se.inera.intyg.infra.integration.hsa.client.OrganizationUnitService;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
@@ -40,12 +36,12 @@ import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationExceptio
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
-import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStateResolver;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
+import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FreeTextSearchable;
@@ -69,14 +65,13 @@ public abstract class BaseUtredningService {
     protected OrganizationUnitService organizationUnitService;
 
     protected UtredningStatusResolver utredningStatusResolver = new UtredningStatusResolver();
-    protected InternForfraganStateResolver internForfraganStateResolver = new InternForfraganStateResolver();
 
     @NotNull
     protected Utredning getUtredningForLandsting(Long utredningId, String landstingHsaId, List<UtredningStatus> allowedStatuses) {
         Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
                 () -> new IbNotFoundException("Could not find the assessment with id " + utredningId));
 
-        if (!Objects.equals(utredning.getExternForfragan().getLandstingHsaId(), landstingHsaId)) {
+        if (!Objects.equals(utredning.getExternForfragan().map(ExternForfragan::getLandstingHsaId).orElse(null), landstingHsaId)) {
             throw new IbAuthorizationException(
                     "Utredning with assessmentId '" + utredningId + "' does not have ExternForfragan for landsting with id '"
                             + landstingHsaId + "'");

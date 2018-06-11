@@ -143,7 +143,7 @@ public final class Utredning {
                 .withBestallning(Bestallning.copyFrom(utredning.getBestallning().orElse(null)))
                 .withTolkBehov(utredning.getTolkBehov())
                 .withTolkSprak(utredning.getTolkSprak())
-                .withExternForfragan(ExternForfragan.copyFrom(utredning.getExternForfragan()))
+                .withExternForfragan(ExternForfragan.copyFrom(utredning.getExternForfragan().orElse(null)))
                 .withHandelseList(utredning.getHandelseList().stream()
                         .map(Handelse::copyFrom)
                         .collect(toList()))
@@ -243,8 +243,8 @@ public final class Utredning {
         this.avbrutenAnledning = avbrutenAnledning;
     }
 
-    public ExternForfragan getExternForfragan() {
-        return externForfragan;
+    public Optional<ExternForfragan> getExternForfragan() {
+        return Optional.ofNullable(externForfragan);
     }
 
     public void setExternForfragan(final ExternForfragan externForfragan) {

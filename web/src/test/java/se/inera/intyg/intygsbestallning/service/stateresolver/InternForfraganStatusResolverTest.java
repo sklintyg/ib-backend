@@ -19,6 +19,8 @@
 package se.inera.intyg.intygsbestallning.service.stateresolver;
 
 import org.junit.Test;
+import se.inera.intyg.intygsbestallning.persistence.model.status.InternForfraganStatusResolver;
+import se.inera.intyg.intygsbestallning.persistence.model.status.InternForfraganStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.type.EndReason;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
@@ -29,9 +31,9 @@ import java.time.LocalDateTime;
 
 import static org.junit.Assert.assertEquals;
 
-public class InternForfraganStateResolverTest extends BaseResolverTest {
+public class InternForfraganStatusResolverTest extends BaseResolverTest {
 
-    private InternForfraganStateResolver testee = new InternForfraganStateResolver();
+    private InternForfraganStatusResolver testee = new InternForfraganStatusResolver();
 
     @Test
     public void testInkommen() {

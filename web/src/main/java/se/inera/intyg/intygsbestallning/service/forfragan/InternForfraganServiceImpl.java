@@ -23,6 +23,14 @@ import static java.util.stream.Collectors.toList;
 import static se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar;
 import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,30 +38,21 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
-
-import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
-
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar;
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.status.InternForfraganStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.InternForfraganRepository;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
 import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
-import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
 import se.inera.intyg.intygsbestallning.service.vardenhet.VardenhetService;
@@ -111,12 +110,16 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
 
         // Remove duplicates
         List<String> newVardenheter = request.getVardenheter().stream()
-                .filter(vardenhetHsaId -> utredning.getExternForfragan().getInternForfraganList().stream()
+                .filter(vardenhetHsaId -> utredning.getExternForfragan()
+                        .map(ExternForfragan::getInternForfraganList)
+                        .orElse(Lists.newArrayList()).stream()
                         .map(InternForfragan::getVardenhetHsaId)
                         .noneMatch(vardenhetHsaId::equals))
                 .collect(toList());
 
-        utredning.getExternForfragan().getInternForfraganList().addAll(
+        utredning.getExternForfragan()
+                .map(ExternForfragan::getInternForfraganList)
+                .orElse(Lists.newArrayList()).addAll(
                 newVardenheter.stream()
                         .map(vardenhetHsaId -> anInternForfragan()
                                 .withVardenhetHsaId(vardenhetHsaId)
@@ -149,7 +152,9 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
                     "At least one vardenhet must be selected to create an InternForfragan");
         }
 
-        if (utredning.getExternForfragan().getInternForfraganList().stream()
+        if (utredning.getExternForfragan()
+                .map(ExternForfragan::getInternForfraganList)
+                .orElse(Lists.newArrayList()).stream()
                 .map(InternForfragan::getVardenhetHsaId)
                 .anyMatch(request.getVardenhet()::equals)) {
             throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, MessageFormat.format(
@@ -157,7 +162,9 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
         }
 
         LocalDateTime now = LocalDateTime.now();
-        utredning.getExternForfragan().getInternForfraganList().add(
+        utredning.getExternForfragan()
+                .map(ExternForfragan::getInternForfraganList)
+                .orElse(Lists.newArrayList()).add(
                 anInternForfragan()
                         .withVardenhetHsaId(request.getVardenhet())
                         .withSkapadDatum(now)
@@ -191,12 +198,13 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
         Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
                 () -> new IbNotFoundException("Utredning with assessmentId '" + utredningId + "' does not exist."));
 
-        if (utredning.getExternForfragan() == null) {
+        if (!utredning.getExternForfragan().isPresent()) {
             throw new IbNotFoundException("Utredning with assessmentId '" + utredningId + "' does not have an externforfragan?.");
         }
         // Must have an internforfragan for this vardenhet
-        InternForfragan internForfragan = utredning.getExternForfragan().getInternForfraganList()
-                .stream()
+        InternForfragan internForfragan = utredning.getExternForfragan()
+                .map(ExternForfragan::getInternForfraganList)
+                .orElse(Lists.newArrayList()).stream()
                 .filter(iff -> Objects.equals(iff.getVardenhetHsaId(), vardenhetHsaId))
                 .findFirst().orElseThrow(() -> new IbNotFoundException("Utredning with id '" + utredningId
                         + "' does not have an InternForfragan for enhet with id '" + vardenhetHsaId + "'"));
@@ -242,22 +250,21 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
 
         ForfraganSvar forfraganSvar = buildSvarEntity(svar);
         internForfragan.setForfraganSvar(forfraganSvar);
-        final InternForfragan answeredInternforfragan = internForfraganRepository.save(internForfragan);
 
-        createInternforfraganBesvaradHandelseLog(utredning, forfraganSvar, answeredInternforfragan.getVardenhetHsaId());
+        createInternforfraganBesvaradHandelseLog(utredning, forfraganSvar, internForfragan.getVardenhetHsaId());
 
         // F004: Normalflöde 5 - Notifiering skall ske när samtliga vårdenheter har besvarat internförfrågningarna
-        handleAllInternforfragningarMayBeAnswered(utredning, answeredInternforfragan);
+        handleAllInternforfragningarMayBeAnswered(utredning, internForfragan);
 
         // F004: Alternativflöde 2 - Utredningen skall tilldelas automatiskt till en vårdenhet i egen regi (när den accepterats
         // och är enda tillfrågade enheten)
-        if (shouldTillDelasAutomatiskt(utredning, answeredInternforfragan)) {
-            externForfraganService.acceptExternForfragan(utredning.getUtredningId(), utredning.getExternForfragan().getLandstingHsaId(),
-                    answeredInternforfragan.getVardenhetHsaId());
+        if (shouldTillDelasAutomatiskt(utredning, internForfragan)) {
+            externForfraganService.acceptExternForfragan(utredning.getUtredningId(), utredning.getExternForfragan()
+                            .map(ExternForfragan::getLandstingHsaId).orElse(null),
+                    internForfragan.getVardenhetHsaId());
         }
 
-        return InternForfraganSvarItem.from(answeredInternforfragan);
-
+        return InternForfraganSvarItem.from(internForfragan);
     }
 
     private boolean shouldTillDelasAutomatiskt(Utredning utredning, InternForfragan saved) {
@@ -265,8 +272,9 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
         // Rule: Vårdenheten är den enda vårdenhet som fått en internförfrågan i utredningen
         // Rule: Vårdenheten drivs i landstingets egen regi
         return saved.getForfraganSvar().getSvarTyp().equals(SvarTyp.ACCEPTERA)
-                && utredning.getExternForfragan().getInternForfraganList().size() == 1
-                && isRegiFormEgen(utredning.getExternForfragan().getLandstingHsaId(), saved.getVardenhetHsaId());
+                && utredning.getExternForfragan().map(ExternForfragan::getInternForfraganList).orElse(Lists.newArrayList()).size() == 1
+                && isRegiFormEgen(utredning.getExternForfragan()
+                .map(ExternForfragan::getLandstingHsaId).orElse(null), saved.getVardenhetHsaId());
     }
 
     private boolean isRegiFormEgen(String landstingHsaId, String vardenhetHsaId) {
@@ -278,14 +286,15 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
     private InternForfragan getAnswerableInternForfragan(Utredning utredning, ForfraganSvarRequest svar) {
 
         // Utredning must have a internforfragan matching the ForfraganSvarRequest
-        InternForfragan internForfragan = utredning.getExternForfragan().getInternForfraganList().stream()
+        InternForfragan internForfragan = utredning.getExternForfragan().map(ExternForfragan::getInternForfraganList)
+                .orElse(Lists.newArrayList()).stream()
                 .filter(i -> i.getId().equals(svar.getForfraganId()))
                 .findAny()
                 .orElseThrow(() -> new IbNotFoundException(String.format(
                         "Could not find internforfragan '%s' in utredning '%s'", svar.getForfraganId(), utredning.getUtredningId())));
 
         // .. that's in the correct state
-        InternForfraganStatus internForfraganStatus = internForfraganStateResolver.resolveStatus(utredning, internForfragan);
+        InternForfraganStatus internForfraganStatus = internForfragan.getStatus();
         if (internForfraganStatus != InternForfraganStatus.INKOMMEN) {
             throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, String.format(
                     "Internforfragan for vardenhet '%s' in utredning '%s' is in an incorrect state (%s) to answer",
@@ -303,8 +312,8 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
 
     private void handleAllInternforfragningarMayBeAnswered(Utredning utredning, InternForfragan internForfragan) {
         // Are there no internforfragan (besides the one we just answered) for this utredning still unanswered?
-        if (!utredning.getExternForfragan().getInternForfraganList().stream()
-                .anyMatch(iff -> !iff.getId().equals(internForfragan.getId()) && iff.getForfraganSvar() == null)) {
+        if (utredning.getExternForfragan().map(ExternForfragan::getInternForfraganList).orElse(Lists.newArrayList()).stream()
+                .noneMatch(iff -> !iff.getId().equals(internForfragan.getId()) && iff.getForfraganSvar() == null)) {
             notifieringSendService.notifieraLandstingSamtligaVardenheterHarSvaratPaInternforfragan(utredning);
         }
     }

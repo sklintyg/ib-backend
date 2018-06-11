@@ -49,13 +49,13 @@ import se.inera.intyg.intygsbestallning.integration.myndighet.service.MyndighetI
 import se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.status.InternForfraganStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.ExternForfraganRepository;
 import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
 import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
-import se.inera.intyg.intygsbestallning.service.stateresolver.InternForfraganStatus;
 import se.inera.intyg.intygsbestallning.service.util.GenericComparator;
 import se.inera.intyg.intygsbestallning.service.util.PagingUtil;
 import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
@@ -180,13 +180,13 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
         Utredning utredning = getUtredningForLandsting(utredningId, landstingHsaId, ImmutableList.of(UtredningStatus.VANTAR_PA_SVAR,
                 UtredningStatus.TILLDELA_UTREDNING));
 
-        InternForfragan internForfragan = utredning.getExternForfragan().getInternForfraganList().stream()
+        InternForfragan internForfragan = utredning.getExternForfragan().get().getInternForfraganList().stream()
                 .filter(i -> i.getVardenhetHsaId().equals(vardenhetHsaId))
                 .findAny()
                 .orElseThrow(() -> new IbNotFoundException(MessageFormat.format(
                         "Could not find internforfragan for {0} in utredning {1}", vardenhetHsaId, utredningId)));
 
-        InternForfraganStatus internForfraganStatus = internForfraganStateResolver.resolveStatus(utredning, internForfragan);
+        InternForfraganStatus internForfraganStatus = internForfragan.getStatus();
         if (internForfraganStatus != InternForfraganStatus.ACCEPTERAD_VANTAR_PA_TILLDELNINGSBESLUT
                 && internForfraganStatus != InternForfraganStatus.DIREKTTILLDELAD) {
             throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, MessageFormat.format(
@@ -254,8 +254,8 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
                 .withComment(kommentar)
                 .build());
 
-        utredning.getExternForfragan().setAvvisatDatum(LocalDateTime.now());
-        utredning.getExternForfragan().setAvvisatKommentar(kommentar);
+        utredning.getExternForfragan().get().setAvvisatDatum(LocalDateTime.now());
+        utredning.getExternForfragan().get().setAvvisatKommentar(kommentar);
 
         utredning.getHandelseList().add(HandelseUtil.createExternForfraganBesvarad(false, userService.getUser().getNamn(), null));
 
