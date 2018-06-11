@@ -41,7 +41,7 @@ angular.module('ibApp').directive('ibBesok', function($log, $uibModal, $state, $
             };
 
             $scope.openAvvikelseModal = function(besokId) {
-                openModal('avvikelse.modal.html', 'AvvikelseModalCtrl', {besokId:besokId});
+                openModal('avvikelse.modal.html', 'AvvikelseModalCtrl', {besokId: besokId});
             };
 
             function openModal(templateUrl, controller, resolveObject) {

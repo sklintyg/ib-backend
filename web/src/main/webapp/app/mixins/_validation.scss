@@ -1,12 +1,13 @@
 input.ng-invalid {
-  border-color:  $ib-color-04 !important;
+  border-color:  $ib-color-11 !important;
 }
 
 .asterisk {
   display: inline-block;
   align-self: center;
-  color: red;
+  color: $ib-color-11;
   position: absolute;
-  left: -9px;
+  left: -11px;
   font-size: 20px;
+  top: 3px;
 }

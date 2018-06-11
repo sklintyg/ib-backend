@@ -25,13 +25,14 @@
           <span class="time">
             <ib-help-text-label required="true" required-expr="!besokStartTid"
                                 label-key="lagg-till-besok.label.from"></ib-help-text-label>
-            <ib-time-picker data-date="besokStartTid" dom-id="dateBesokStart"
+            <ib-time-picker data-date="besokStartTid" dom-id="dateBesokStart" required="false"
                             show-field-errors="false"></ib-time-picker>
           </span>
           <span class="time">
             <ib-help-text-label required="true" required-expr="!besokSlutTid"
                                 label-key="lagg-till-besok.label.to"></ib-help-text-label>
-            <ib-time-picker data-date="besokSlutTid" dom-id="dateBesokSlut" show-field-errors="false"></ib-time-picker>
+            <ib-time-picker data-date="besokSlutTid" dom-id="dateBesokSlut" required="false"
+                            show-field-errors="false"></ib-time-picker>
           </span>
         </div>
         <div class="flex-column">

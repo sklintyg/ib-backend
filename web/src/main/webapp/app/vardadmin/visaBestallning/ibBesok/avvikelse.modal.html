@@ -42,6 +42,7 @@
           <td>
             <ib-date-picker-field target-model="avvikelse.datum"
                                   ib-date-picker-field
+                                  dom-id="avvikelseDatum"
                                   required="true"
                                   append-to-body="true"
                                   add-date-parser="strict"
@@ -49,13 +50,18 @@
                                   date-format-error="Ogiltigt datumformat, ange ett datum som ÅÅÅÅ-MM-DD"
                                   min-date-error="Möjligt startdatum får tidigast vara dagens datum"
                                   max-date-error="Möjligt kallelsedatum får inte vara efter besöksdatum"
-                                  max-date="{{ maxDate }}">
+                                  max-date="{{ maxDate }}"
+                                  show-field-errors="false">
             </ib-date-picker-field>
             <message key="avvikelse.label.tid"></message>
-            <ib-time-picker required="true" data-date="avvikelse.tid"></ib-time-picker>
+            <ib-time-picker dom-id="avvikelseTid" required="true" data-date="avvikelse.tid" show-field-errors="false"></ib-time-picker>
           </td>
         </tr>
-
+        <tr>
+          <td>
+            <ib-field-error-list errors="avvikelseForm.avvikelseDatum.$error"></ib-field-error-list>
+            <ib-field-error-list errors="avvikelseForm.avvikelseTid.$error"></ib-field-error-list>
+          </td>
         <tr>
           <td class="top-align">
             <ib-help-text-label label-key="avvikelse.label.kommentar"></ib-help-text-label>
