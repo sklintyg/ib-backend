@@ -44,16 +44,21 @@ angular.module('ibApp')
                 invanareUteblev: false
             };
 
+            $scope.showSaveErrorMessage = false;
+
             $scope.send = function () {
 
+                $scope.showSaveErrorMessage = false;
                 var avvikelseDto = angular.copy($scope.avvikelse);
 
                 avvikelseDto.tid = DateUtilsService.formatTime(avvikelseDto.tid);
 
                 BesokProxy.createBesokAvvikelse(avvikelseDto).then(function() {
                     $uibModalInstance.close();
+                    $scope.showSaveErrorMessage = false;
                 }, function() {
                     //show felmeddelande
+                    $scope.showSaveErrorMessage = true;
                 });
                 
             };

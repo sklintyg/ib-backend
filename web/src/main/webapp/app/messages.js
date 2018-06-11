@@ -123,6 +123,7 @@ var ibMessages = {
         'avvikelse.label.datum': 'Avvikelse uppstod',
         'avvikelse.label.tid': 'kl.',
         'avvikelse.label.kommentar': 'Kommentar',
+        'avvikelse.error.teknisktfel': 'Avvikelsen kunde inte rapporteras på grund av tekniskt fel. Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraNationellKundservice>',
 
         // Registrera mottagen handling modal
         'registrera-mottagen-handling.label.info': 'Här anges datumet för när handlingarna mottogs. Detta datum visas inte för Försäkringskassan utan är till för vården att kunna följa händelser kring utredningen.\n' +

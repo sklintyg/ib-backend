@@ -76,6 +76,10 @@
     </form>
   </div>
   <div class="modal-footer">
+
+    <ib-alert-message ng-if="showSaveErrorMessage" alert-message-id="avvikelse.error.teknisktfel"
+                      alert-id="avvikelse.error.teknisktfel" alert-severity="danger"></ib-alert-message>
+
     <button type="button" id="avvikelse-modal-skicka" class="btn btn-primary" ng-click="send()" data-ng-disabled="avvikelseForm.$invalid || !avvikelse.datum || !avvikelse.tid">
       Spara
     </button>
