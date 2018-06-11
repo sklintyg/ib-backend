@@ -1,6 +1,6 @@
 <div class="ib-besok-wrapper">
   <div class="table-actionbar">
-    <button class="btn btn-success" ng-click="oppnaLaggTillBesok()" ng-disabled="laggTillBesokDisabled()"><span>Lägg till besök</span>
+    <button class="btn btn-success" ng-click="oppnaLaggTillBesok()" ng-disabled="hanteraBesokDisabled()"><span>Lägg till besök</span>
     </button>
     <button class="btn btn-primary" ng-click="oppnaRedovisaBesok()"><span>Redovisa besök</span></button>
   </div>
@@ -40,7 +40,7 @@
       </td>
       <td>
         <div class="btn-group" uib-dropdown is-open="status.isopen">
-          <button id="hantera-button" type="button" class="btn btn-default" uib-dropdown-toggle ng-disabled="disabled">
+          <button id="hantera-button" type="button" class="btn btn-default" uib-dropdown-toggle ng-disabled="hanteraBesokDisabled()">
             Hantera
             <i class="material-icons md-18">{{status.isopen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}</i>
           </button>
