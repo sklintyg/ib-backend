@@ -51,11 +51,10 @@ ib-time-picker {
     box-shadow: 2px 2px 4px 0 $black_12;
   }
 
-  .text-invalid, INPUT.ng-invalid-dateperiod, INPUT.ng-invalid-min-date,
-  INPUT.ng-invalid-max-date, INPUT.ng-invalid-date {
+  .text-invalid, INPUT.ng-invalid {
     border-color: $ib-color-11;
 
-    &+ SPAN.input-group-btn {
+    + SPAN.input-group-btn {
       button {
         border-right-color: $ib-color-11;
         border-top-color: $ib-color-11;
