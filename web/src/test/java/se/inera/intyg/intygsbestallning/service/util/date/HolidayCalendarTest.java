@@ -71,38 +71,38 @@ public class HolidayCalendarTest {
 
     @Test
     public void testIsBusinessday() {
-        assertEquals(testee.isBusinessDay(FRI_2014_07_11), true);
-        assertEquals(testee.isBusinessDay(MON_2014_07_14), true);
+        assertEquals(true, testee.isBusinessDay(FRI_2014_07_11));
+        assertEquals(true, testee.isBusinessDay(MON_2014_07_14));
 
-        assertEquals(testee.isBusinessDay(FRI_2018_08_10), true);
-        assertEquals(testee.isBusinessDay(MON_2018_08_13), true);
+        assertEquals(true, testee.isBusinessDay(FRI_2018_08_10));
+        assertEquals(true, testee.isBusinessDay(MON_2018_08_13));
 
-        assertEquals(testee.isBusinessDay(FRI_2020_09_11), true);
-        assertEquals(testee.isBusinessDay(MON_2020_09_14), true);
+        assertEquals(true, testee.isBusinessDay(FRI_2020_09_11));
+        assertEquals(true, testee.isBusinessDay(MON_2020_09_14));
     }
 
     @Test
     public void testDaysBetweenSaturdaySunday() {
-        assertEquals(testee.daysBetween(FRI_2018_08_10, MON_2018_08_13), 1);
+        assertEquals(1, testee.daysBetween(FRI_2018_08_10, MON_2018_08_13));
     }
 
     @Test
     public void testDaysBeetweenPreEasterAndPostNextWeekend() {
-        assertEquals(testee.daysBetween(WED_2018_03_28, FRI_2018_04_13), 10);
+        assertEquals(10, testee.daysBetween(WED_2018_03_28, FRI_2018_04_13));
     }
 
     @Test
     public void testSaturdaySundayIsHoliday() {
-        assertEquals(testee.isHoliday(SAT_2014_07_12), true);
-        assertEquals(testee.isHoliday(SUN_2014_07_13), true);
+        assertEquals(true, testee.isHoliday(SAT_2014_07_12));
+        assertEquals(true, testee.isHoliday(SUN_2014_07_13));
 
-        assertEquals(testee.isHoliday(SAT_2018_08_11), true);
-        assertEquals(testee.isHoliday(SUN_2018_08_12), true);
-        assertEquals(testee.isHoliday(SAT_2018_08_18), true);
-        assertEquals(testee.isHoliday(SUN_2018_08_19), true);
+        assertEquals(true, testee.isHoliday(SAT_2018_08_11));
+        assertEquals(true, testee.isHoliday(SUN_2018_08_12));
+        assertEquals(true, testee.isHoliday(SAT_2018_08_18));
+        assertEquals(true, testee.isHoliday(SUN_2018_08_19));
 
-        assertEquals(testee.isHoliday(SAT_2020_09_12), true);
-        assertEquals(testee.isHoliday(SUN_2020_09_13), true);
+        assertEquals(true, testee.isHoliday(SAT_2020_09_12));
+        assertEquals(true, testee.isHoliday(SUN_2020_09_13));
     }
 
 }
