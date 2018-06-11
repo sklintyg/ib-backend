@@ -21,6 +21,10 @@
     color: $ib-color-11;
   }
 
+  .flex-column ib-field-error-list:last-child {
+    padding-bottom: 15px;
+  }
+
   .flex-row {
     padding-bottom: 15px;
 

@@ -25,20 +25,20 @@
           <span class="time">
             <ib-help-text-label required="true" required-expr="!besokStartTid"
                                 label-key="lagg-till-besok.label.from"></ib-help-text-label>
-            <ib-time-picker data-date="besokStartTid" dom-id="dateBesokStart" required="true"
+            <ib-time-picker data-date="besokStartTid" dom-id="dateBesokStart"
                             show-field-errors="false"></ib-time-picker>
           </span>
           <span class="time">
             <ib-help-text-label required="true" required-expr="!besokSlutTid"
                                 label-key="lagg-till-besok.label.to"></ib-help-text-label>
-            <ib-time-picker data-date="besokSlutTid" dom-id="dateBesokSlut" required="true"
-                            show-field-errors="false"></ib-time-picker>
+            <ib-time-picker data-date="besokSlutTid" dom-id="dateBesokSlut" show-field-errors="false"></ib-time-picker>
           </span>
         </div>
         <div class="flex-column">
-          <ib-field-error-list errors="laggTillBesokForm.dateBesokDatum.$error"></ib-field-error-list>
-          <ib-field-error-list errors="laggTillBesokForm.dateBesokStart.$error"></ib-field-error-list>
-          <ib-field-error-list errors="laggTillBesokForm.dateBesokSlut.$error"></ib-field-error-list>
+          <ib-field-error-list errors="error" ng-repeat="error in [laggTillBesokForm.dateBesokDatum.$error,
+                                  laggTillBesokForm.dateBesokStart.$error,
+                                  laggTillBesokForm.dateBesokSlut.$error] track by $index"
+                               ng-if="error.pattern || error.date"></ib-field-error-list>
         </div>
         <div class="flex-row">
           <span>
@@ -74,8 +74,8 @@
                                 max-date-error="Möjligt kallelsedatum får inte vara efter besöksdatum"
                                 max-date="{{ besokDatum }}" format="yyyy-MM-dd"
                                 date-format-error="Ogiltigt datumformat, ange ett datum som ÅÅÅÅ-MM-DD"
-                                ib-date-picker-field append-to-body="true"
-                                add-date-parser="strict" dom-id="besokKallelseDatum" show-field-errors="false"></ib-date-picker-field>
+                                ib-date-picker-field append-to-body="true" add-date-parser="strict"
+                                dom-id="besokKallelseDatum" show-field-errors="false"></ib-date-picker-field>
           <ib-radio-wrapper>
             <input type="radio" value="BREVKONTAKT" ng-model="besok.kallelseForm">
             <label ng-click="besok.kallelseForm = 'BREVKONTAKT'" ng-attr-for="utforarTypEnhet">Per post</label>
