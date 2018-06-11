@@ -36,7 +36,8 @@ angular.module('ibApp').directive('ibDatePickerField',['$timeout', '$parse', 'Da
                 addDateParser: '@',
                 dateOptions: '@',
                 onBlur: '&',
-                appendToBody: '='
+                appendToBody: '=',
+                showFieldErrors: '=?'
             },
             templateUrl: '/components/commonDirectives/form/ibDatePickerField/ibDatePickerField.directive.html',
             link: function($scope, element, attr, ctrls) {
@@ -45,6 +46,10 @@ angular.module('ibApp').directive('ibDatePickerField',['$timeout', '$parse', 'Da
                 $scope.componentErrors = function() {
                     return $parse('form.' + $scope.domId + '.$error')($scope);
                 };
+
+                if ($scope.showFieldErrors !== false) {
+                    $scope.showFieldErrors = true;
+                }
 
                 var activeDate = new Date();
 

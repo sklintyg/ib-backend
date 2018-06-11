@@ -27,5 +27,5 @@
       <button type="button" id="{{::domId}}-toggle" class="btn btn-default"  ng-class="{border:isFocused}" ng-click="toggleOpen($event)" ng-disabled="pickerState.isOpen"><i class="material-icons">date_range</i></button>
     </span>
   </span>
-  <ib-field-error-list errors="componentErrors()" min-date-error="{{minDateError}}" date-format-error="{{dateFormatError}}"></ib-field-error-list>
+  <ib-field-error-list ng-if="showFieldErrors" errors="componentErrors()" min-date-error="{{minDateError}}" date-format-error="{{dateFormatError}}"></ib-field-error-list>
 </span>

@@ -29,11 +29,15 @@ angular.module('ibApp').directive('ibTimePicker',
                 placeholderKey: '@',
                 date: '=',
                 required: '=',
-                domId: '@'
+                domId: '@',
+                showFieldErrors: '=?'
             },
             templateUrl: '/components/commonDirectives/ibTimePicker/ibTimePicker.directive.html',
             link: function(scope, element, attr, formCtrl) {
                 scope.form = formCtrl;
+                if (scope.showFieldErrors !== false) {
+                    scope.showFieldErrors = true;
+                }
 
                 var plate = $(element).find('.plate');
 

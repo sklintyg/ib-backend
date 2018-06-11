@@ -18,7 +18,7 @@
         ng-disabled="isOpen"><i class="material-icons">schedule</i></button>
     </span>
   </div>
-  <ib-field-error-list class="error-field" errors="componentErrors()" pattern-error="{{patternError}}" required-error="{{requiredError}}"></ib-field-error-list>
+  <ib-field-error-list ng-if="showFieldErrors" class="error-field" errors="componentErrors()" pattern-error="{{patternError}}" required-error="{{requiredError}}"></ib-field-error-list>
   <div class="plate" ng-show="isOpen">
       <div uib-timepicker ng-model="date"
            hour-step="1" minute-step="10"

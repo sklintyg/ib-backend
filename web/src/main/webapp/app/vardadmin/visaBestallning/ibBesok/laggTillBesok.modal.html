@@ -14,46 +14,53 @@
       <div class="flex-column">
         <div class="flex-row">
           <span class="date">
-              <ib-help-text-label required="true" required-expr="!besokDatum"
-                                  label-key="lagg-till-besok.label.date"></ib-help-text-label>
-              <ib-date-picker-field target-model="besokDatum" format="yyyy-MM-dd"
-                                    date-format-error="Ogiltigt datumformat, ange ett datum som ÅÅÅÅ-MM-DD"
-                                    ib-date-picker-field append-to-body="true" add-date-parser="strict">
-              </ib-date-picker-field>
+            <ib-help-text-label required="true" required-expr="!besokDatum"
+                                label-key="lagg-till-besok.label.date"></ib-help-text-label>
+            <ib-date-picker-field target-model="besokDatum" format="yyyy-MM-dd"
+                                  date-format-error="Ogiltigt datumformat, ange ett datum som ÅÅÅÅ-MM-DD"
+                                  ib-date-picker-field append-to-body="true" add-date-parser="strict"
+                                  dom-id="dateBesokDatum" show-field-errors="false">
+            </ib-date-picker-field>
           </span>
           <span class="time">
             <ib-help-text-label required="true" required-expr="!besokStartTid"
                                 label-key="lagg-till-besok.label.from"></ib-help-text-label>
-            <ib-time-picker data-date="besokStartTid" dom-id="besokStart" required="true"></ib-time-picker>
+            <ib-time-picker data-date="besokStartTid" dom-id="dateBesokStart" required="true"
+                            show-field-errors="false"></ib-time-picker>
           </span>
           <span class="time">
             <ib-help-text-label required="true" required-expr="!besokSlutTid"
                                 label-key="lagg-till-besok.label.to"></ib-help-text-label>
-            <ib-time-picker data-date="besokSlutTid" dom-id="besokSlut" required="true"></ib-time-picker>
+            <ib-time-picker data-date="besokSlutTid" dom-id="dateBesokSlut" required="true"
+                            show-field-errors="false"></ib-time-picker>
           </span>
+        </div>
+        <div class="flex-column">
+          <ib-field-error-list errors="laggTillBesokForm.dateBesokDatum.$error"></ib-field-error-list>
+          <ib-field-error-list errors="laggTillBesokForm.dateBesokStart.$error"></ib-field-error-list>
+          <ib-field-error-list errors="laggTillBesokForm.dateBesokSlut.$error"></ib-field-error-list>
         </div>
         <div class="flex-row">
           <span>
-              <ib-help-text-label required="true" required-expr="!besok.profession"
-                                  label-key="lagg-till-besok.label.profession"></ib-help-text-label>
+            <ib-help-text-label required="true" required-expr="!besok.profession"
+                                label-key="lagg-till-besok.label.profession"></ib-help-text-label>
           </span>
           <ib-dropdown id="profession" ng-model="besok.profession" ng-change="onChange()"
                        items="professionList"></ib-dropdown>
         </div>
         <div class="flex-row">
           <span><ib-help-text-label label-key="lagg-till-besok.label.name"></ib-help-text-label></span>
-          <span id="interpreter-input-field"><input class="form-control" type="text"
-                                                    ng-model="besok.utredandeVardPersonalNamn"
-                                                    placeholder="Namn på utredande vårdpersonal"></span>
+          <span id="interpreter-input-field">
+            <input class="form-control" type="text" ng-model="besok.utredandeVardPersonalNamn"
+                   placeholder="Namn på utredande vårdpersonal">
+          </span>
         </div>
         <div class="flex-row">
           <span><ib-help-text-label label-key="lagg-till-besok.label.interpreter"></ib-help-text-label></span>
           <span>
             <ib-checkbox-wrapper>
-            <input type="checkbox" ng-model="besok.tolkStatus" ng-true-value="'BOKAT'" ng-false-value="">
-            <label>
-                {{}}
-            </label>
+              <input type="checkbox" ng-model="besok.tolkStatus" ng-true-value="'BOKAT'" ng-false-value="">
+              <label>{{}}</label>
             </ib-checkbox-wrapper>
           </span>
         </div>
@@ -68,7 +75,7 @@
                                 max-date="{{ besokDatum }}" format="yyyy-MM-dd"
                                 date-format-error="Ogiltigt datumformat, ange ett datum som ÅÅÅÅ-MM-DD"
                                 ib-date-picker-field append-to-body="true"
-                                add-date-parser="strict"></ib-date-picker-field>
+                                add-date-parser="strict" dom-id="besokKallelseDatum" show-field-errors="false"></ib-date-picker-field>
           <ib-radio-wrapper>
             <input type="radio" value="BREVKONTAKT" ng-model="besok.kallelseForm">
             <label ng-click="besok.kallelseForm = 'BREVKONTAKT'" ng-attr-for="utforarTypEnhet">Per post</label>
@@ -78,6 +85,9 @@
             <label ng-click="besok.kallelseForm = 'TELEFONKONTAKT'" ng-attr-for="utforarTypUnderleverantor">Per
               telefon</label>
           </ib-radio-wrapper>
+        </div>
+        <div class="flex-column">
+          <ib-field-error-list errors="laggTillBesokForm.besokKallelseDatum.$error"></ib-field-error-list>
         </div>
       </div>
     </form>
