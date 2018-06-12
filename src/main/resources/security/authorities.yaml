@@ -62,6 +62,7 @@ knownPrivileges:
   - &kp110 ACCEPTERA_EXTERNFORFRAGAN
   - &kp120 HANTERA_BESOK
   - &kp130 SPARA_ANTECKNING
+  - &kp140 AVSLUTA_UTREDNING
 
 # De roller som systemet har
 knownRoles:
@@ -143,6 +144,11 @@ privileges:
       desc: Spara Anteckning
       intygstyper: # Implicit alla
       requestOrigins: # Implicit alla
+  - &p140
+      name: *kp140
+      desc: Avsluta Utredning
+      intygstyper: # Implicit alla
+      requestOrigins: # Implicit alla
 # Roller
 roles:
   - &r010
@@ -157,6 +163,7 @@ roles:
       - *p090 # HANTERA_INTERNFORFRAGAN
       - *p120 # HANTERA_BESOK
       - *p130 # SPARA_ANTECKNING
+      - *p140 # AVSLUTA_UTREDNING
   - &r020
     name: *kr020 # FMU_SAMORDNARE
     desc: FMU Samordnare

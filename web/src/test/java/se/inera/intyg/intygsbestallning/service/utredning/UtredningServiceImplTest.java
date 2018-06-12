@@ -567,7 +567,7 @@ public class UtredningServiceImplTest {
                 .withEndReason(AvslutOrsak.JAV)
                 .build();
 
-        utredningService.endUtredning(request);
+        utredningService.avslutaUtredning(request);
 
         ArgumentCaptor<Utredning> captor = ArgumentCaptor.forClass(Utredning.class);
         verify(utredningRepository).saveUtredning(captor.capture());
@@ -590,7 +590,7 @@ public class UtredningServiceImplTest {
                 .withEndReason(AvslutOrsak.JAV)
                 .build();
 
-        utredningService.endUtredning(request);
+        utredningService.avslutaUtredning(request);
     }
 
     @Test(expected = IbServiceException.class)
@@ -608,7 +608,7 @@ public class UtredningServiceImplTest {
                 .build();
 
         try {
-            utredningService.endUtredning(request);
+            utredningService.avslutaUtredning(request);
         } catch (IbServiceException ise) {
             assertEquals(IbErrorCodeEnum.ALREADY_EXISTS, ise.getErrorCode());
             throw ise;

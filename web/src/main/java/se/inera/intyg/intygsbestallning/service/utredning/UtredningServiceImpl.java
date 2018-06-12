@@ -53,6 +53,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
+import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
@@ -80,6 +82,8 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.MyndighetTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
 import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
+import se.inera.intyg.intygsbestallning.service.stateresolver.BesokStatus;
+import se.inera.intyg.intygsbestallning.service.stateresolver.BesokStatusResolver;
 import se.inera.intyg.intygsbestallning.service.util.GenericComparator;
 import se.inera.intyg.intygsbestallning.service.util.PagingUtil;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
@@ -357,18 +361,20 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     }
 
     @Override
-    public void endUtredning(final EndUtredningRequest request) {
+    public void avslutaUtredning(final EndUtredningRequest request) {
         final Utredning utredning = utredningRepository.findById(request.getUtredningId())
                 .orElseThrow(() -> new IbNotFoundException(MessageFormat.format(
                         "Could not find the assessment with id {0}", request.getUtredningId())));
 
-        if (nonNull(utredning.getAvbrutenDatum())) {
+        if (nonNull(utredning.getAvbrutenDatum()) || nonNull(utredning.getAvbrutenAnledning())) {
             throw new IbServiceException(IbErrorCodeEnum.ALREADY_EXISTS, "EndAssessment has already been performed for this Utredning");
         }
 
         final AvslutOrsak orsak = request.getAvslutOrsak();
-        final String vardAdministrator = request.getVardAdministrator().orElse(null);
 
+        qualifyForAvslutaUtredning(orsak, utredning);
+
+        final String vardAdministrator = request.getUser().map(IbUser::getNamn).orElse(null);
         utredning.setAvbrutenDatum(LocalDateTime.now());
         utredning.setAvbrutenAnledning(orsak);
         utredning.setArkiverad(true);
@@ -377,10 +383,22 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         utredning.getHandelseList().add(handelse);
 
         final Utredning uppdateradUtredning = utredningRepository.save(utredning);
-
         verifyAvslutaUtredningStatusar(orsak, uppdateradUtredning);
-
         notifieraUtredningAvslutad(orsak, uppdateradUtredning);
+    }
+
+
+    private void qualifyForAvslutaUtredning(final AvslutOrsak orsak, final Utredning utredning) {
+        if (orsak == AvslutOrsak.INGEN_KOMPLETTERING_BEGARD) {
+           checkState(isKorrektStatusForIngenKompletteringBegard(utredning));
+        }
+    }
+
+    private Boolean isKorrektStatusForIngenKompletteringBegard(Utredning utredning) {
+        return (UtredningStatusResolver.resolveStaticStatus(utredning) == UtredningStatus.REDOVISA_TOLK)
+                && utredning.getBesokList().stream()
+                .map(BesokStatusResolver::resolveStaticStatus)
+                .noneMatch(besokStatus -> (besokStatus == BesokStatus.BOKAT) || (besokStatus == BesokStatus.AVBOKAT));
     }
 
     private void verifyAvslutaUtredningStatusar(final AvslutOrsak orsak, final Utredning utredning) {
@@ -429,9 +447,11 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         } else if (orsak == AvslutOrsak.JAV) {
             notifieringSendService.notifieraLandstingAvslutadPgaJav(utredning);
             notifieringSendService.notifieraVardenhetAvslutadPgaJav(utredning);
-        } else {
+        } else if (orsak == AvslutOrsak.UTREDNING_AVBRUTEN){
             notifieringSendService.notifieraLandstingAvslutadUtredning(utredning);
             notifieringSendService.notifieraVardenhetAvslutadUtredning(utredning);
+        } else {
+            LOG.info(MessageFormat.format("Utredning with id {0} ended because of reason {1}", utredning.getUtredningId(), orsak));
         }
     }
 

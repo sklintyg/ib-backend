@@ -45,7 +45,7 @@ public class EndAssessmentResponderImpl implements EndAssessmentResponderInterfa
         checkArgument(isNotEmpty(logicalAddress), "LogcialAddress needs to be defined");
         checkArgument(nonNull(endAssessmentType), "Request need to be defined");
 
-        utredningService.endUtredning(EndUtredningRequest.from(endAssessmentType));
+        utredningService.avslutaUtredning(EndUtredningRequest.from(endAssessmentType));
 
         EndAssessmentResponseType response = new EndAssessmentResponseType();
         response.setResult(ok());

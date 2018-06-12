@@ -18,15 +18,18 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning.dto;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.primitives.Longs.tryParse;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import com.google.common.primitives.Longs;
 import se.riv.intygsbestallning.certificate.order.endassessment.v1.EndAssessmentType;
 import java.util.List;
 import java.util.Optional;
+import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
@@ -34,12 +37,12 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
 public final class EndUtredningRequest {
     private final Long utredningId;
     private final AvslutOrsak avslutOrsak;
-    private final String vardAdministrator;
+    private final IbUser user;
 
     private EndUtredningRequest(final EndUtredningRequestBuilder builder) {
         this.utredningId = builder.utredningId;
         this.avslutOrsak = builder.avslutOrsak;
-        this.vardAdministrator = builder.vardAdministrator;
+        this.user = builder.user;
     }
 
     public static EndUtredningRequest from(EndAssessmentType endAssessmentType) {
@@ -51,6 +54,18 @@ public final class EndUtredningRequest {
                                 ? AvslutOrsak.valueOf(endAssessmentType.getEndingCondition().getCode())
                                 : null)
                 .withUtredningId(tryParse(endAssessmentType.getAssessmentId().getExtension()))
+                .build();
+    }
+
+    public static EndUtredningRequest from(final String utredningId, final IbUser user) {
+
+        checkArgument(nonNull(utredningId));
+        checkArgument(nonNull(user));
+
+        return EndUtredningRequestBuilder.anEndUtredningRequest()
+                .withEndReason(AvslutOrsak.INGEN_KOMPLETTERING_BEGARD)
+                .withUtredningId(tryParse(utredningId))
+                .withUser(user)
                 .build();
     }
 
@@ -77,14 +92,14 @@ public final class EndUtredningRequest {
         return avslutOrsak;
     }
 
-    public Optional<String> getVardAdministrator() {
-        return Optional.ofNullable(vardAdministrator);
+    public Optional<IbUser> getUser() {
+        return Optional.ofNullable(user);
     }
 
     public static final class EndUtredningRequestBuilder {
         private Long utredningId;
         private AvslutOrsak avslutOrsak;
-        private String vardAdministrator;
+        private IbUser user;
 
         private EndUtredningRequestBuilder() {
         }
@@ -103,8 +118,8 @@ public final class EndUtredningRequest {
             return this;
         }
 
-        public EndUtredningRequestBuilder withVardAdministrator(String vardAdministrator) {
-            this.vardAdministrator = vardAdministrator;
+        public EndUtredningRequestBuilder withUser(IbUser user) {
+            this.user = user;
             return this;
         }
 

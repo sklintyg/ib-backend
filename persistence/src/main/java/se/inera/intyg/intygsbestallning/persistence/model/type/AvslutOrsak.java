@@ -22,5 +22,5 @@ public enum AvslutOrsak {
     INGEN_BESTALLNING,
     JAV,
     UTREDNING_AVBRUTEN,
-    AVSLUTAD
+    INGEN_KOMPLETTERING_BEGARD
 }

@@ -144,9 +144,20 @@ public final class NotifieringMailMeddelandeUtil {
                 + "beställning utifrån förfrågan {0}. Utredningen avslutas.", utredning.getUtredningId());
     }
 
-    public static String avslutaPgaJavMessage(final Utredning utredning) {
+    public static String avslutadPgaJavMessage(final Utredning utredning) {
         return MessageFormat.format("Försäkringskassan har valt att avsluta utredning {0} utifrån "
                         + "att det råder jävsförhållanden.",
+                utredning.getUtredningId());
+    }
+
+    public static String landstingAvslutadUtredningMessage(final Utredning utredning) {
+        return MessageFormat.format("Försäkrinsgkassan har beslutat att avbryta utredning {0}.",
+                utredning.getUtredningId());
+    }
+
+    public static String vardenhetAvslutadUtredningMessage(final Utredning utredning) {
+        return MessageFormat.format("Försäkrinsgkassan har beslutat att avbryta utredning {0}"
+                        + "\nOm det finns återstående besök i utredningen måste dessa avbokas.",
                 utredning.getUtredningId());
     }
 }

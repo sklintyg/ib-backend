@@ -88,7 +88,7 @@ public interface UtredningService {
      *
      * @param endUtredningRequest
      */
-    void endUtredning(EndUtredningRequest endUtredningRequest);
+    void avslutaUtredning(EndUtredningRequest endUtredningRequest);
 
     Utredning updateOrder(UpdateOrderRequest update);
 
