@@ -12,7 +12,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-angular.module('ibApp').directive('ibBesok', function($log, $uibModal, $state, $q) {
+angular.module('ibApp').directive('ibBesok', function($log, ibDialog, BesokProxy) {
     'use strict';
 
     return {
@@ -26,6 +26,10 @@ angular.module('ibApp').directive('ibBesok', function($log, $uibModal, $state, $
             $scope.hanteraBesokDisabled = function() {
                 return !$scope.bestallning || $scope.bestallning.fas.id !== 'UTREDNING' ||
                     $scope.bestallning.status.id === 'UTLATANDE_SKICKAT' || $scope.bestallning.status.id === 'UTLATANDE_MOTTAGET';
+            };
+
+            $scope.isAvvikelseMottagen = function(besokStatus) {
+                return besokStatus.id === 'AVVIKELSE_MOTTAGEN';
             };
 
             $scope.oppnaLaggTillBesok = function() {
@@ -44,24 +48,28 @@ angular.module('ibApp').directive('ibBesok', function($log, $uibModal, $state, $
                 openModal('avvikelse.modal.html', 'AvvikelseModalCtrl', {besokId: besokId});
             };
 
+            $scope.openAvbokaModal = function(besokId) {
+                ibDialog.confirm({
+                    domId: 'avbokaModal',
+                    titleText: 'Avboka besök',
+                    bodyText: 'Är du säker på att du vill avboka besöket?',
+                    confirmText: 'Bekräfta'
+                }).then(function() {
+                    BesokProxy.avboka(besokId).then(function(){
+                        $log.info('Successfully requested avbokning');
+                    }, function(){
+                        ibDialog.message('failAvbokaModal',
+                            'Tekniskt fel',
+                            'Besöket kunde inte avbokas på grund av tekniskt fel.' +
+                            ' Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning' +
+                            ' och i andra hand <LINK:ineraNationellKundservice>');
+                    });
+                });
+            };
+
             function openModal(templateUrl, controller, resolveObject) {
-                var promise = $q.defer();
-                var modalInstance = $uibModal.open({
-                    templateUrl: '/app/vardadmin/visaBestallning/ibBesok/' + templateUrl,
-                    size: 'md',
-                    controller: controller,
-                    resolve: resolveObject
-                });
-
-                //angular > 1.5 warns if promise rejection is not handled (e.g backdrop-click == rejection)
-                modalInstance.result.catch(function () {}); //jshint ignore:line
-
-                modalInstance.result.then(function(result) {
-                    $state.reload();
-                    promise.resolve(result);
-                });
-
-                return promise.promise;
+                var templatePath = '/app/vardadmin/visaBestallning/ibBesok/';
+                return  ibDialog.modal(templatePath + templateUrl, controller, resolveObject);
             }
         }
     };

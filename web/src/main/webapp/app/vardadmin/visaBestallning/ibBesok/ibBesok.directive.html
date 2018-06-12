@@ -45,9 +45,9 @@
             <i class="material-icons md-18">{{status.isopen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}</i>
           </button>
           <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="hantera-button">
-            <li role="menuitem"><a ng-click="openAndraModal()">Ändra</a></li>
-            <li role="menuitem"><a ng-click="openAvbokaModal()">Avboka</a></li>
-            <li role="menuitem"><a ng-click="openAvvikelseModal(row.besokId)">Avvikelse</a></li>
+            <li role="menuitem" ng-if="!isAvvikelseMottagen(row.besokStatus)"><a ng-click="openAndraModal(row.besokId)">Ändra</a></li>
+            <li role="menuitem" ng-if="isAvvikelseMottagen(row.besokStatus)"><a ng-click="openAvbokaModal(row.besokId)">Avboka</a></li>
+            <li role="menuitem" ng-if="!isAvvikelseMottagen(row.besokStatus)"><a ng-click="openAvvikelseModal(row.besokId)">Avvikelse</a></li>
           </ul>
         </div>
       </td>

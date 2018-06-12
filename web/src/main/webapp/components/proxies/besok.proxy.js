@@ -28,10 +28,16 @@ angular.module('ibApp').factory('BesokProxy',
             return ProxyTemplate.putTemplate(restPath, besok, {});
         }
 
-        function _createBesokAvvikelse(besok) {
+        function _createBesokAvvikelse(besokId) {
             var restPath = besokRestPath + 'avvikelse';
 
-            return ProxyTemplate.putTemplate(restPath, besok, {});
+            return ProxyTemplate.putTemplate(restPath, besokId, {});
+        }
+
+        function _avboka(besokId) {
+            var restPath = besokRestPath + 'avboka' + '/' + besokId;
+
+            return ProxyTemplate.putTemplate(restPath, besokId, {});
         }
 
         function _getProffessionsTyper() {
@@ -50,6 +56,7 @@ angular.module('ibApp').factory('BesokProxy',
         return {
             createBesok: _createBesok,
             createBesokAvvikelse: _createBesokAvvikelse,
+            avboka: _avboka,
             getProffessionsTyper: _getProffessionsTyper,
             addArbetsdagar: _addArbetsdagar
         };

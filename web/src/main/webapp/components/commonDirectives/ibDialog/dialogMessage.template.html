@@ -1,0 +1,17 @@
+<div id="{{dialogModel.domId}}">
+  <div class="modal-header">
+    <button class="close" data-dismiss="modal" data-ng-click="$dismiss()"><i class="material-icons">close</i></button>
+    <h4 class="modal-title">{{dialogModel.titleText}}</h4>
+  </div>
+  <div class="modal-body">
+    {{dialogModel.bodyText}}
+  </div>
+  <div class="modal-footer">
+    <button type="button" id="{{dialogModel.domId}}-confirm" class="btn btn-primary" ng-click="ok()">
+      {{dialogModel.confirmText}}
+    </button>
+    <button ng-if="dialogModel.allowCancel" type="button" id="{{dialogModel.domId}}-cancel" class="btn btn-default" ng-click="$dismiss()">
+      <span message key="common.cancel"></span>
+    </button>
+  </div>
+</div>

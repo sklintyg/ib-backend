@@ -19,7 +19,7 @@
 
 angular.module('ibApp')
     .controller('AvvikelseModalCtrl',
-        function($log, $scope, $uibModalInstance, BesokProxy, DateUtilsService, besokId) {
+        function($log, $scope, $uibModalInstance, BesokProxy, DateUtilsService, dialogModel) {
             'use strict';
 
             $scope.orsakList = [
@@ -36,7 +36,7 @@ angular.module('ibApp')
             $scope.maxDate = moment().format('YYYY-MM-DD');
 
             $scope.avvikelse = {
-                besokId: besokId,
+                besokId: dialogModel.besokId,
                 orsakatAv: 'PATIENT',
                 beskrivning: undefined,
                 datum: new Date(),

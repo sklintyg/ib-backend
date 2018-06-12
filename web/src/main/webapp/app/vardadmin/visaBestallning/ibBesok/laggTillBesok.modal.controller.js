@@ -19,7 +19,7 @@
 
 angular.module('ibApp')
     .controller('LaggTillBesokModalCtrl',
-        function($log, $scope, $uibModalInstance, BesokProxy, utredningsId, APP_CONFIG, messageService, moment) {
+        function($log, $scope, $uibModalInstance, BesokProxy, dialogModel, APP_CONFIG, messageService, moment) {
             'use strict';
 
             var chooseOption = {
@@ -46,7 +46,7 @@ angular.module('ibApp')
             $scope.besokDatum = undefined;
 
             $scope.besok = {
-                utredningId: utredningsId,
+                utredningId: dialogModel.utredningsId,
                 utredandeVardPersonalNamn: '',
                 profession: undefined,
                 tolkStatus: undefined,
