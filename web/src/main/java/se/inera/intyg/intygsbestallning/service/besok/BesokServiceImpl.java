@@ -218,6 +218,7 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
     }
 
     @Override
+    @Transactional
     public void avbokaBesok(Long besokId) {
         Utredning utredning = utredningRepository.findByBesokList_Id(besokId)
                 .orElseThrow(() -> new IbNotFoundException(MessageFormat.format("Besok with id {0} was not found.", besokId)));
