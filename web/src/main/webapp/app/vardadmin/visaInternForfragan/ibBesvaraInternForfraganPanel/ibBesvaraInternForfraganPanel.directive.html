@@ -97,8 +97,8 @@
           <ib-horisontal-textfield id="epost"
                                    model="vm.model.utforareEpost"
                                    label-key="internforfragan.besvara.form.utforareepost.label"
-                                   pattern="'^[^@]{1,}@[^@]{1,}\\.[^@\.]{1,}$'"
-                                   pattern-error="Ange en giltig e-postadress"
+                                   pattern="{{vm.emailPattern}}"
+                                   pattern-error="Fyll i giltig e-postadress"
                                    max-length="255"></ib-horisontal-textfield>
         </div>
       </div>

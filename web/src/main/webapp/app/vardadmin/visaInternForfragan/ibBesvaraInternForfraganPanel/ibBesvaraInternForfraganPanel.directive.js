@@ -18,7 +18,7 @@
  */
 
 angular.module('ibApp').directive('ibBesvaraInternForfraganPanel',
-    function($log, InternForfraganSvarViewState, VardenhetProxy) {
+    function($log, InternForfraganSvarViewState, VardenhetProxy, EMAIL_REGEXP_PATTERN) {
         'use strict';
         var  basePath = '/app/vardadmin/visaInternForfragan';
 
@@ -28,6 +28,7 @@ angular.module('ibApp').directive('ibBesvaraInternForfraganPanel',
 
             link: function($scope) {
                 $scope.vm = {
+                    emailPattern: EMAIL_REGEXP_PATTERN,
                     model: InternForfraganSvarViewState.getModel(),
                     minBorjaDatum: moment().format('YYYY-MM-DD')
                 };

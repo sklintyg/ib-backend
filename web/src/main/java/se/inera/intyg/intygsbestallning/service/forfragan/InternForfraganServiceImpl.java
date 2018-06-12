@@ -77,7 +77,12 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.GetVard
 public class InternForfraganServiceImpl extends BaseUtredningService implements InternForfraganService {
 
     private static final Pattern POSTNR_REGEXP = Pattern.compile("\\d{5}");
-    private static final Pattern EPOST_REGEXP = Pattern.compile("^[^@]{1,}@[^@]{1,}\\.[^@\\.]{1,}$");
+
+    //Taken from angular.js EMAIL_REGEXP (which in turn is based on chromiums <input type="email"> validation.)
+    private static final Pattern EPOST_REGEXP = Pattern.compile(
+            "^(?=.{1,254}$)(?=.{1,64}@)[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+(\\.[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+)*"
+                   + "@[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?(\\.[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*$");
+
     private static final Pattern DATUM_REGEXP = Pattern.compile("\\d{4}-\\d{2}-\\d{2}");
 
     @Autowired

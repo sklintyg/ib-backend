@@ -599,13 +599,13 @@ public class InternForfraganServiceImplTest {
         forfraganSvarRequest = buildValidInternForfraganSvarRequest(SvarTyp.ACCEPTERA, 1L);
         forfraganSvarRequest.setUtforareEpost(null);
         assertNull(internForfraganService.validateSvarRequest(forfraganSvarRequest));
-        forfraganSvarRequest.setUtforareEpost("a@b");
-        assertTrue(internForfraganService.validateSvarRequest(forfraganSvarRequest).contains("UtforareEpost"));
         forfraganSvarRequest.setUtforareEpost("a@@b.se");
         assertTrue(internForfraganService.validateSvarRequest(forfraganSvarRequest).contains("UtforareEpost"));
         forfraganSvarRequest.setUtforareEpost("a@@b.se.");
         assertTrue(internForfraganService.validateSvarRequest(forfraganSvarRequest).contains("UtforareEpost"));
         forfraganSvarRequest.setUtforareEpost("@b.se.");
+        assertTrue(internForfraganService.validateSvarRequest(forfraganSvarRequest).contains("UtforareEpost"));
+        forfraganSvarRequest.setUtforareEpost("a@bserver..se");
         assertTrue(internForfraganService.validateSvarRequest(forfraganSvarRequest).contains("UtforareEpost"));
         forfraganSvarRequest.setUtforareEpost("a@b.se.");
         assertTrue(internForfraganService.validateSvarRequest(forfraganSvarRequest).contains("UtforareEpost"));

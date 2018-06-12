@@ -16,10 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-angular.module('ibApp').controller('ibEditNotifieringDialogCtrl', [ '$scope', '$log', 'NotifieringPreferenceProxy', 'unitContext',
-    function($scope, $log, NotifieringPreferenceProxy, unitContext) {
+angular.module('ibApp').controller('ibEditNotifieringDialogCtrl', [ '$scope', '$log', 'NotifieringPreferenceProxy',
+    'unitContext', 'EMAIL_REGEXP_PATTERN',
+    function($scope, $log, NotifieringPreferenceProxy, unitContext, EMAIL_REGEXP_PATTERN) {
     'use strict';
+
     $scope.vm = {
+        emailPattern: EMAIL_REGEXP_PATTERN,
         unitContext: unitContext,
         model: null,
         loading: true,
