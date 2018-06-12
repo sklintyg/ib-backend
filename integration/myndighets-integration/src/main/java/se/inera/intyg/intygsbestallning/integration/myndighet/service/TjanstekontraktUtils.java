@@ -53,16 +53,18 @@ public final class TjanstekontraktUtils {
         request.setAssessmentId(anII(sourceSystemHsaId, dto.getAssessmentId().toString()));
         PerformerRequestResponseType performerRequestResponseType = new PerformerRequestResponseType();
         performerRequestResponseType.setComment(dto.getComment());
-        CareUnitType careUnitType = new CareUnitType();
-        careUnitType.setCareGiverId(anII(HSA_ID_ROOT, dto.getCareGiverId()));
-        careUnitType.setCareGiverName(dto.getCareGiverName());
-        careUnitType.setCareUnitId(anII(HSA_ID_ROOT, dto.getCareUnitId()));
-        careUnitType.setCareUnitName(dto.getCareUnitName());
-        careUnitType.setPhoneNumber(dto.getPhoneNumber());
-        careUnitType.setEmail(dto.getEmail());
-        careUnitType.setSubcontractorName(dto.getSubcontractorName());
-        careUnitType.setPostalAddress(anAddressType(dto.getPostalAddress(), dto.getPostalCity(), dto.getPostalCode()));
-        performerRequestResponseType.setPerformerCareUnit(careUnitType);
+        if (dto.getCareUnitId() != null || dto.getCareGiverId() != null) {
+            CareUnitType careUnitType = new CareUnitType();
+            careUnitType.setCareGiverId(anII(HSA_ID_ROOT, dto.getCareGiverId()));
+            careUnitType.setCareGiverName(dto.getCareGiverName());
+            careUnitType.setCareUnitId(anII(HSA_ID_ROOT, dto.getCareUnitId()));
+            careUnitType.setCareUnitName(dto.getCareUnitName());
+            careUnitType.setPhoneNumber(dto.getPhoneNumber());
+            careUnitType.setEmail(dto.getEmail());
+            careUnitType.setSubcontractorName(dto.getSubcontractorName());
+            careUnitType.setPostalAddress(anAddressType(dto.getPostalAddress(), dto.getPostalCity(), dto.getPostalCode()));
+            performerRequestResponseType.setPerformerCareUnit(careUnitType);
+        }
         performerRequestResponseType.setResponse(aCv(dto.getResponseCode(), KV_SVAR_BESTALLNING_CODESYSTEM, null));
         request.setResponse(performerRequestResponseType);
         return request;
