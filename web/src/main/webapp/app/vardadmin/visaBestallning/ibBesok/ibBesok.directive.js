@@ -66,6 +66,15 @@ angular.module('ibApp').directive('ibBesok', function($log, ibDialog, BesokProxy
                 });
             };
 
+            $scope.oppnaRedovisaBesok = function() {
+                openModal('redovisaBesok/redovisaBesok.modal.html', 'RedovisaBesokModalCtrl',
+                    {bestallning: $scope.bestallning}).then(function(result) {
+                    $log.info(result);
+                }, function(error) {
+                    $log.error(error);
+                });
+            };
+
             $scope.openAvvikelseModal = function(besokId) {
                 openModal('avvikelse.modal.html', 'AvvikelseModalCtrl', {utredningId: $scope.bestallning.utredningsId, besokId: besokId});
             };

@@ -1,0 +1,56 @@
+/*!
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#redovisa-besok-modal {
+  ib-checkgroup .control-label {
+    @extend %ib-typo-05;
+    color: $ib-color-09;
+  }
+
+  .control-label {
+    @extend %ib-typo-06;
+    color: $ib-color-09;
+  }
+
+  .flex-row {
+    padding-bottom: 10px;
+  }
+
+  ib-checkbox-wrapper > .ib-checkbox label {
+    position: static;
+  }
+
+  table {
+    width: 100%;
+
+    td {
+      vertical-align: middle;
+    }
+
+    ib-date-picker-field, ib-time-picker {
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    ib-radiogroup ib-radio-wrapper {
+      padding-top: 2px;
+      padding-bottom: 2px;
+    }
+  }
+}

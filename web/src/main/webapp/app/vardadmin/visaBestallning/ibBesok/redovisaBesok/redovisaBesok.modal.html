@@ -1,0 +1,69 @@
+<div id="redovisa-besok-modal">
+  <div class="modal-header">
+    <button class="close" data-dismiss="modal" data-ng-click="$dismiss()"><i class="material-icons">close</i></button>
+    <h4 class="modal-title">Redovisa besök</h4>
+  </div>
+  <div class="modal-body">
+    <p><message key="redovisaBesok.info"></message></p>
+    <form name="redovisaBesokForm" novalidate autocomplete="off">
+      <table class="table table-striped ib-table-striped">
+        <thead>
+          <tr>
+            <th>Besökstid</th>
+            <th>Profession</th>
+            <th>Tolkens deltagande</th>
+            <th>Status för besök</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="besok in vm.besokList track by $index">
+            <td>
+              {{::besok.besokDatum}} {{::besok.besokStartTid}}-{{::besok.besokSlutTid}}
+            </td>
+            <td>
+              {{::besok.professionLabel}}
+            </td>
+            <td>
+              <ib-radiogroup id="{{::besok.besokId}}-redovisa-besok-modal-{{$index}}"
+                             ng-if="besok.tolkDeltog"
+                             model="besok.tolkDeltog"
+                             on-change="validate()"
+                             items="vm.deltarItems"
+                             items-disabled="besok.disabledDeltarItems"
+                             disabled-tooltip-key="redovisa.redanskickad.tooltip"></ib-radiogroup>
+            </td>
+            <td>
+              <ib-checkbox-wrapper>
+                <input id="{{::besok.besokId}}-genomfort-{{$index}}"
+                       type="checkbox"
+                       ng-model="besok.genomfort"
+                       ng-true-value="true" ng-false-value="false"
+                       ng-disabled="besok.besokStatus === 'GENOMFORT'">
+                <label for="{{::besok.besokId}}-genomfort-{{$index}}">Genomfört</label>
+              </ib-checkbox-wrapper>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </form>
+  </div>
+  <div class="modal-footer">
+
+    <div>
+      <ib-alert-message ng-if="vm.showSaveErrorMessage" alert-message-id="redovisaBesok.error.teknisktfel"
+                        alert-id="redovisaBesok.error.teknisktfel" alert-severity="danger"></ib-alert-message>
+    </div>
+
+    <ib-button btn-id="redovisa-besok-modal-skicka"
+               btn-class="btn btn-primary"
+               busy="vm.inProgress"
+               btn-click="send()"
+               ng-disabled="redovisaBesokForm.$invalid">
+      <span message key="common.confirm"></span>
+    </ib-button>
+
+    <button type="button" id="redovisa-besok-modal-cancel" class="btn btn-default" ng-click="$dismiss()">
+      <span message key="common.cancel"></span>
+    </button>
+  </div>
+</div>

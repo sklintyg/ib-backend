@@ -13,6 +13,7 @@
        popover-append-to-body="true">
     <ib-radio-wrapper>
       <input ng-attr-id="{{::inputId}}-{{::item.id|ibDomIdFilter}}"
+             name="{{inputId}}"
              type="radio"
              value="{{item.id}}"
              ng-model="model.selected"
@@ -23,4 +24,7 @@
       </label>
     </ib-radio-wrapper>
   </div>
+
+  <ib-field-error-list ng-if="showFieldErrors" class="error-field" errors="componentErrors()" pattern-error="{{patternError}}" required-error="{{requiredError}}"></ib-field-error-list>
+
 </div>

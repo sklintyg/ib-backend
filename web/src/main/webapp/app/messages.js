@@ -118,6 +118,15 @@ var ibMessages = {
         'lagg-till-besok.error.teknisktfel': 'Besöket kunde inte sparas på grund av tekniskt fel. Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraNationellKundservice>',
         'lagg-till-besok.error.teknisktfelafu': 'Utredningstypen kunde inte uppdateras på grund av tekniskt fel. Utredningen är fortsatt AFU.\n Rapportera en avvikelse orsakad av vården för besöket och lägg till det igen vid ett senare tillfälle.\n Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraNationellKundservice>',
 
+        // Redovisa besök modal
+        'redovisabesok.info': 'Alla besök som har genomförts måste vården redovisa. För besök som ej har genomförts ska en avvikelse rapporteras.\n' +
+        '\n' +
+        'För de besök där tolk har varit inbokad måste vården även redovisa om tolk faktiskt deltog vid besöket eller inte.\n' +
+        '\n' +
+        'Markera nedan om besöket är genomfört och markera om tolk deltog för respektive besök.\n' +
+        '\n' +
+        'Endast bokade besök där starttidpunkten har passerats visas i listan.',
+
         // Avvikelse modal
         'avvikelse.info': '<p>När en avvikelse registreras skickas meddelande till Försäkringskassans handläggare som kommer fatta ett beslut om hur återstående besök ska hanteras.</p>Besöket ska inte avbokas utan beslut från Försäkringskassans handläggare.',
         'avvikelse.label.orsakadav': 'Orsakad av',

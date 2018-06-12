@@ -30,12 +30,20 @@ angular.module('ibApp').directive('ibRadiogroup', function() {
             onChange: '&'
         },
         templateUrl: '/components/commonDirectives/form/ibRadiogroup/ibRadiogroup.directive.html',
-        link: function($scope, element, attr) {
+        link: function($scope, element, attr, formCtrl) {
+
+            $scope.form = formCtrl;
+            if ($scope.showFieldErrors !== false) {
+                $scope.showFieldErrors = true;
+            }
 
             attr.$observe('id', function(id) {
                 $scope.inputId = id + '-input';
             });
 
+            $scope.componentErrors = function() {
+                return $parse('form.' + attr.id + '.$error')($scope);
+            };
         }
     };
 });
