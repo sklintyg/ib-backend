@@ -41,7 +41,7 @@ import static se.inera.intyg.intygsbestallning.persistence.model.type.Notifierin
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.avslutadPgaJavMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.avvikelseRapporteradAvVardenMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.externForfraganUrl;
-import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.ingenBeställningMessage;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.ingenBestallningMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.internForfraganUrl;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.landstingAvslutadUtredningMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.landstingAvvikelseRapporteradAvFKMessage;
@@ -56,7 +56,7 @@ import static se.inera.intyg.intygsbestallning.service.notifiering.util.Notifier
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.vardenhetAvvikelseRapporteradAvFKMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.vardenhetNyInternforfraganMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.vardenhetTilldeladUtredning;
-import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_AVSLUTAD_PGA_JÄV;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_AVSLUTAD_PGA_JAV;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_AVSLUTAD_UTREDNING;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_AVVIKELSE_MOTTAGEN_FRAN_FK;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_AVVIKELSE_RAPPORTERAD_AV_VARDEN;
@@ -216,7 +216,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
         if (preferens.isEnabled(SAMTLIGA_INTERNFORFRAGAN_BESVARATS, LANDSTING)) {
             String email = preferens.getLandstingEpost();
             String body = notifieringMailBodyFactory.buildBodyForUtredning(
-                    ingenBeställningMessage(utredning),
+                    ingenBestallningMessage(utredning),
                     utredningUrl(utredning));
             sendNotifiering(email, SUBJECT_INGEN_BESTALLNING, body);
             saveNotifiering(utredning, INGEN_BESTALLNING, LANDSTING);
@@ -233,7 +233,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
             String email = vardenhetService.getVardEnhetPreference(id).getEpost();
             if (isNotEmpty(email)) {
                 String body = notifieringMailBodyFactory.buildBodyForUtredning(
-                        ingenBeställningMessage(utredning),
+                        ingenBestallningMessage(utredning),
                         internForfraganUrl(utredning));
 
                 sendNotifiering(email, SUBJECT_INGEN_BESTALLNING, body);
@@ -275,7 +275,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
             String body = notifieringMailBodyFactory.buildBodyForUtredning(
                     avslutadPgaJavMessage(utredning),
                     utredningUrl(utredning));
-            sendNotifiering(email, SUBJECT_AVSLUTAD_PGA_JÄV, body);
+            sendNotifiering(email, SUBJECT_AVSLUTAD_PGA_JAV, body);
             saveNotifiering(utredning, UTREDNING_AVSLUTAD_PGA_JAV, LANDSTING);
         }
     }
@@ -295,7 +295,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                 String body = notifieringMailBodyFactory.buildBodyForUtredning(
                         avslutadPgaJavMessage(utredning),
                         utredningUrl(utredning));
-                sendNotifiering(email, SUBJECT_AVSLUTAD_PGA_JÄV, body);
+                sendNotifiering(email, SUBJECT_AVSLUTAD_PGA_JAV, body);
                 saveNotifiering(utredning, UTREDNING_AVSLUTAD_PGA_JAV, VARDENHET);
             }
         }

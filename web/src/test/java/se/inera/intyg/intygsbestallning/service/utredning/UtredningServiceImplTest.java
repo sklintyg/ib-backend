@@ -45,6 +45,7 @@ import static se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentR
 import static se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare.BestallareBuilder.aBestallare;
 import static se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest.EndUtredningRequestBuilder.anEndUtredningRequest;
 import static se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest.OrderRequestBuilder.anOrderRequest;
+import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.DATE_TIME;
 import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createBestallning;
 import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createExternForfragan;
 import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createHandlaggare;
@@ -558,9 +559,19 @@ public class UtredningServiceImplTest {
     public void testEndUtredningSuccess() {
         final Long utredningId = 1L;
 
-        when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
+        doReturn(Optional.of(anUtredning()
                 .withUtredningId(utredningId)
-                .build()));
+                .build()))
+                .when(utredningRepository)
+                .findById(utredningId);
+
+        doReturn(anUtredning()
+                .withUtredningId(utredningId)
+                .withAvbrutenDatum(DATE_TIME.plusMonths(2))
+                .withAvbrutenAnledning(AvslutOrsak.JAV)
+                .build())
+                .when(utredningRepository)
+                .saveUtredning(any(Utredning.class));
 
         EndUtredningRequest request = anEndUtredningRequest()
                 .withUtredningId(utredningId)

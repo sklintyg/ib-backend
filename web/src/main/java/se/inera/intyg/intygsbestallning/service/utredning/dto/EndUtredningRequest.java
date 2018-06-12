@@ -25,7 +25,6 @@ import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
-import com.google.common.primitives.Longs;
 import se.riv.intygsbestallning.certificate.order.endassessment.v1.EndAssessmentType;
 import java.util.List;
 import java.util.Optional;

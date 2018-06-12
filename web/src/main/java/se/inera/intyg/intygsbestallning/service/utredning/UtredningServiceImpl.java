@@ -21,7 +21,7 @@ package se.inera.intyg.intygsbestallning.service.utredning;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.base.Strings.isNullOrEmpty;
-import static com.google.common.collect.MoreCollectors.onlyElement;
+import static com.google.common.collect.MoreCollectors.toOptional;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
@@ -53,7 +53,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Predicate;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
@@ -382,7 +381,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         final Handelse handelse = createHandelseUtredningAvslutad(orsak, vardAdministrator);
         utredning.getHandelseList().add(handelse);
 
-        final Utredning uppdateradUtredning = utredningRepository.save(utredning);
+        final Utredning uppdateradUtredning = utredningRepository.saveUtredning(utredning);
         verifyAvslutaUtredningStatusar(orsak, uppdateradUtredning);
         notifieraUtredningAvslutad(orsak, uppdateradUtredning);
     }
@@ -390,7 +389,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
     private void qualifyForAvslutaUtredning(final AvslutOrsak orsak, final Utredning utredning) {
         if (orsak == AvslutOrsak.INGEN_KOMPLETTERING_BEGARD) {
-           checkState(isKorrektStatusForIngenKompletteringBegard(utredning));
+            checkState(isKorrektStatusForIngenKompletteringBegard(utredning));
         }
     }
 
@@ -406,17 +405,22 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         checkArgument(nonNull(orsak));
         checkArgument(nonNull(utredning));
 
-        final InternForfragan internForfragan = utredning.getExternForfragan()
-                .map(ExternForfragan::getInternForfraganList).orElse(Lists.newArrayList()).stream()
-                .filter(InternForfragan::getDirekttilldelad)
-                .collect(onlyElement());
-
         checkState(UtredningStatus.AVBRUTEN == UtredningStatusResolver.resolveStaticStatus(utredning));
 
-        final InternForfraganStatus internForfraganStatus =
-                InternForfraganStatusResolver.resolveStaticStatus(utredning, internForfragan);
-
         if (orsak == AvslutOrsak.INGEN_BESTALLNING) {
+            checkState(utredning.getExternForfragan().isPresent());
+
+            final Optional<InternForfragan> optionalInternForfragan = utredning.getExternForfragan().get()
+                    .getInternForfraganList().stream()
+                    .filter(InternForfragan::getDirekttilldelad)
+                    .collect(toOptional());
+
+            checkState(optionalInternForfragan.isPresent());
+
+            final InternForfragan internForfragan = optionalInternForfragan.get();
+            final InternForfraganStatus internForfraganStatus =
+                    InternForfraganStatusResolver.resolveStaticStatus(utredning, internForfragan);
+
             checkState(InternForfraganStatus.INGEN_BESTALLNING == internForfraganStatus);
         }
     }
@@ -447,7 +451,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         } else if (orsak == AvslutOrsak.JAV) {
             notifieringSendService.notifieraLandstingAvslutadPgaJav(utredning);
             notifieringSendService.notifieraVardenhetAvslutadPgaJav(utredning);
-        } else if (orsak == AvslutOrsak.UTREDNING_AVBRUTEN){
+        } else if (orsak == AvslutOrsak.UTREDNING_AVBRUTEN) {
             notifieringSendService.notifieraLandstingAvslutadUtredning(utredning);
             notifieringSendService.notifieraVardenhetAvslutadUtredning(utredning);
         } else {
