@@ -40,6 +40,7 @@ public class InternForfraganListItem implements FreeTextSearchable {
     private List<ListForfraganFilterStatus> filterStatusar;
     private String kommentar;
     private boolean kraverAtgard;
+    private boolean rejectIsProhibited;
 
     public Long getUtredningsId() {
         return utredningsId;
@@ -151,6 +152,14 @@ public class InternForfraganListItem implements FreeTextSearchable {
 
     public void setKommentar(String kommentar) {
         this.kommentar = kommentar;
+    }
+
+    public boolean isRejectIsProhibited() {
+        return rejectIsProhibited;
+    }
+
+    public void setRejectIsProhibited(boolean rejectIsProhibited) {
+        this.rejectIsProhibited = rejectIsProhibited;
     }
 
     @Override

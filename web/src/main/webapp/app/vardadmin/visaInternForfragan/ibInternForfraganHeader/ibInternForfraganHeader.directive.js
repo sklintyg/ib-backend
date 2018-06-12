@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-angular.module('ibApp').directive('ibInternForfraganHeader', function($window, $state, InternForfraganSvarViewState) {
+angular.module('ibApp').directive('ibInternForfraganHeader', function($window, $state, InternForfraganSvarViewState, messageService) {
     'use strict';
 
     return {
@@ -40,8 +40,19 @@ angular.module('ibApp').directive('ibInternForfraganHeader', function($window, $
                 return InternForfraganSvarViewState.isValidToSubmit();
             };
 
+            $scope.rejectIsProhibited = function() {
+                return $scope.internForfragan.rejectIsProhibited;
+            };
+
+            $scope.getRejectToolTipText = function() {
+                if ($scope.rejectIsProhibited()) {
+                    return messageService.getProperty('internforfragan.besvara.rejectbtn.rejectProhibited.tooltip');
+                }
+                return '';
+            };
+
             $scope.canReject = function() {
-                return InternForfraganSvarViewState.isValidToSubmit();
+                return InternForfraganSvarViewState.isValidToSubmit() && !$scope.rejectIsProhibited();
             };
         }
     };

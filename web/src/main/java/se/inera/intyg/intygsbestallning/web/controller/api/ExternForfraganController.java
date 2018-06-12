@@ -68,7 +68,9 @@ public class ExternForfraganController {
     public ResponseEntity<GetUtredningResponse> avvisaExternForfragan(@PathVariable("utredningsId") Long utredningsId,
                                                                       @RequestBody String kommentar) {
         IbUser user = userService.getUser();
-        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_AVVISA_EXTERNFORFRAGAN)
+        authoritiesValidator.given(user)
+                .privilege(AuthoritiesConstants.PRIVILEGE_AVVISA_EXTERNFORFRAGAN)
+                .features(AuthoritiesConstants.FEATURE_EXTERNFORFRAGAN_FAR_AVVISAS)
                 .orThrow(new IbAuthorizationException(AVVISA_EXTERN_FORFRAGAN_NOT_ALLOWED));
         return ResponseEntity.ok(externForfraganService.avvisaExternForfragan(utredningsId, user.getCurrentlyLoggedInAt().getId(),
                 kommentar));

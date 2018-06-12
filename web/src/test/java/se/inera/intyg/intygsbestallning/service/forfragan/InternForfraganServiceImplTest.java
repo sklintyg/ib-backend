@@ -23,6 +23,7 @@ import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -35,7 +36,12 @@ import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.Invana
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU;
 
-import com.google.common.collect.ImmutableList;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.Optional;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -43,13 +49,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.Optional;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
+import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
@@ -67,6 +73,7 @@ import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSend
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
+import se.inera.intyg.intygsbestallning.service.utredning.ServiceTestUtil;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.service.vardgivare.VardgivareService;
 import se.inera.intyg.intygsbestallning.service.vardgivare.dto.VardenhetItem;
@@ -82,6 +89,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.GetVard
 @RunWith(MockitoJUnitRunner.class)
 public class InternForfraganServiceImplTest {
 
+    private static final String INTERNFORFRAGAN_KOMMENTAR = "Svarskommentar";
     @Mock
     private UtredningRepository utredningRepository;
 
@@ -502,10 +510,18 @@ public class InternForfraganServiceImplTest {
                         .build())
                 .build()));
 
+        GetVardenheterForVardgivareResponse vardenheter = new GetVardenheterForVardgivareResponse();
+        vardenheter.setEgetLandsting(Arrays.asList(buildVardenhet(vardenhetId, RegiFormTyp.EGET_LANDSTING)));
+        when(vardgivareService.listVardenheterForVardgivare(anyString())).thenReturn(vardenheter);
+
+        when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
+
         final GetInternForfraganResponse response = internForfraganService.getInternForfragan(utredningId, vardenhetId);
 
         assertEquals(utredningId, response.getUtredning().getUtredningsId());
+
         assertEquals(0, response.getUtredning().getInternForfraganList().size());
+        assertTrue(response.getInternForfragan().isRejectIsProhibited());
         assertEquals(landstingKommentar, response.getInternForfragan().getKommentar());
         assertEquals(landstingHsaId, response.getInternForfragan().getVardgivareHsaId());
         assertEquals(SvarTyp.ACCEPTERA, response.getInternForfraganSvar().getSvarTyp());
@@ -759,6 +775,61 @@ public class InternForfraganServiceImplTest {
         verify(externForfraganService, times(1)).acceptExternForfragan(utredningId, landstingHsaId, vardenhetId1);
     }
 
+    @Test
+    public void testBesvaraInternForfraganAlternativFlode5() {
+        // F004: Alternativflöde 5 - Landstingets enda vårdenhet avvisar internförfrågan
+        final Long utredningId = 1L;
+        final String landstingHsaId = "landstingHsaId";
+        Long internForfragaId1 = 2L;
+        String vardenhetId1 = "vardenhetHsaId1";
+        String vardenhetId1Namn = "vardenhetHsaId1Namn";
+        String userName = "Anvandare1";
+        Utredning utredningMock = anUtredning()
+                .withUtredningId(utredningId)
+                .withUtredningsTyp(AFU)
+                .withExternForfragan(anExternForfragan()
+                        .withLandstingHsaId(landstingHsaId)
+                        .withInternForfraganList(Arrays.asList(
+                                anInternForfragan()
+                                        .withId(internForfragaId1)
+                                        .withStatus(InternForfraganStatus.INKOMMEN)
+                                        .withVardenhetHsaId(vardenhetId1)
+                                        .withForfraganSvar(null)
+                                        .build()))
+                        .build())
+                .build();
+        when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(utredningMock));
+        GetVardenheterForVardgivareResponse egetRegiResponse = new GetVardenheterForVardgivareResponse();
+        egetRegiResponse.setEgetLandsting(ImmutableList.of(
+                VardenhetItem.VardenhetItemBuilder
+                        .aVardenhetItem()
+                        .withId(vardenhetId1)
+                        .withRegiForm(RegiFormTyp.EGET_LANDSTING)
+                        .build()));
+        when(vardgivareService.listVardenheterForVardgivare(landstingHsaId)).thenReturn(egetRegiResponse);
+        doNothing().when(notifieringSendService).notifieraLandstingSamtligaVardenheterHarSvaratPaInternforfragan(utredningMock);
+        when(organizationUnitService.getVardenhet(vardenhetId1)).thenReturn(new Vardenhet(vardenhetId1, vardenhetId1Namn));
+
+        IbUser ibUser = new IbUser("", userName);
+        Feature feature = new Feature();
+        feature.setName(se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants.FEATURE_EXTERNFORFRAGAN_FAR_AVVISAS);
+        feature.setGlobal(true);
+        ibUser.setFeatures(ImmutableMap.of(feature.getName(), feature));
+        when(userService.getUser()).thenReturn(ibUser);
+
+        when(utredningRepository.saveUtredning(any(Utredning.class))).thenAnswer(
+                invocation -> invocation.getArgument(0));
+        when(externForfraganService.avvisaExternForfragan(utredningId, landstingHsaId, INTERNFORFRAGAN_KOMMENTAR)).thenReturn(null);
+
+        final InternForfraganSvarItem result = internForfraganService.besvaraInternForfragan(utredningId,
+                buildValidInternForfraganSvarRequest(SvarTyp.AVBOJ, internForfragaId1));
+
+        assertNotNull(result);
+        assertEquals("Utforarnamn", result.getUtforareNamn());
+        verify(notifieringSendService, times(1)).notifieraLandstingSamtligaVardenheterHarSvaratPaInternforfragan(any(Utredning.class));
+        verify(externForfraganService, times(1)).avvisaExternForfragan(utredningId, landstingHsaId, INTERNFORFRAGAN_KOMMENTAR);
+    }
+
     private ForfraganSvarRequest buildValidInternForfraganSvarRequest(SvarTyp svarTyp, Long internForfraganId) {
         ForfraganSvarRequest svar = new ForfraganSvarRequest();
         svar.setForfraganId(internForfraganId);
@@ -769,7 +840,17 @@ public class InternForfraganServiceImplTest {
         svar.setUtforarePostnr("12345");
         svar.setUtforarePostort("postort");
         svar.setUtforareEpost("example@example.com");
+        svar.setKommentar(INTERNFORFRAGAN_KOMMENTAR);
         svar.setBorjaDatum(LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_DATE));
         return svar;
+    }
+
+    private VardenhetItem buildVardenhet(String vardenehetId, RegiFormTyp regiFormTyp) {
+        return VardenhetItem.VardenhetItemBuilder.aVardenhetItem()
+                .withId(vardenehetId)
+                .withLabel(vardenehetId + "-name")
+                .withRegiForm(regiFormTyp)
+                .build();
+
     }
 }

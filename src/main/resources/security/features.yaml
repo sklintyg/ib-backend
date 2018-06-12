@@ -4,8 +4,11 @@
 knownIntygstyper: []
 
 knownFeatures:
-
-# Aktiverade features i Rehabstöd
+  - &kf010 EXTERNFORFRAGAN_FAR_AVVISAS
+# Aktiverade features i IB
 features:
-
+  - &f010
+    name: *kf010
+    desc: Styr om det är tillåtet att avvisa en externförfrågan.
+    global: true
 pilots:

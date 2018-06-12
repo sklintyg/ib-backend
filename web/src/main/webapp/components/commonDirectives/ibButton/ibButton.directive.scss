@@ -6,6 +6,10 @@ ib-button {
     i.material-icons {
       font-size: inherit;
     }
+    
+    &[disabled] {
+      pointer-events: none
+    }
     .busy {
       position: absolute;
       display: flex;

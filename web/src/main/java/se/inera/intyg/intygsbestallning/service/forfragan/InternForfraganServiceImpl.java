@@ -23,14 +23,6 @@ import static java.util.stream.Collectors.toList;
 import static se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar;
 import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -38,6 +30,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
+
+import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+
+import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
+import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
@@ -92,6 +97,8 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
 
     @Value("${ib.besvara.forfragan.arbetsdagar:2}")
     private int besvaraForfraganArbetsdagar;
+
+    private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     @Override
     @Transactional
@@ -219,6 +226,7 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
 
         final InternForfraganListItem internForfraganListItem = internForfraganListItemFactory.from(utredning,
                 internForfragan.getVardenhetHsaId());
+        internForfraganListItem.setRejectIsProhibited(rejectIsProhibited(utredning, internForfragan.getVardenhetHsaId()));
 
         // Either return existing svar or a partial svar based on vardenhet preferences
         InternForfraganSvarItem internForfraganSvarItem = InternForfraganSvarItem.from(internForfragan);
@@ -253,18 +261,47 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
 
         createInternforfraganBesvaradHandelseLog(utredning, forfraganSvar, internForfragan.getVardenhetHsaId());
 
-        // F004: Normalflöde 5 - Notifiering skall ske när samtliga vårdenheter har besvarat internförfrågningarna
+        // F004: Normalflöde 5 - Notifiering till landstinget skall ske när samtliga vårdenheter har besvarat
+        // internförfrågningarna
         handleAllInternforfragningarMayBeAnswered(utredning, internForfragan);
 
-        // F004: Alternativflöde 2 - Utredningen skall tilldelas automatiskt till en vårdenhet i egen regi (när den accepterats
-        // och är enda tillfrågade enheten)
+        // F004: Alternativflöde 2 - Utredningen skall tilldelas automatiskt till en vårdenhet i egen regi när den accepterats
+        // och är ENDA tillfrågade enheten.
         if (shouldTillDelasAutomatiskt(utredning, internForfragan)) {
             externForfraganService.acceptExternForfragan(utredning.getUtredningId(), utredning.getExternForfragan()
                             .map(ExternForfragan::getLandstingHsaId).orElse(null),
                     internForfragan.getVardenhetHsaId());
         }
+        // F004: Alternativflöde 5 - Landstingets enda vårdenheten avvisar internförfrågan
+        if (shouldAvvisaExternForfraganAutomatiskt(utredning, internForfragan)) {
+            externForfraganService.avvisaExternForfragan(utredning.getUtredningId(),
+                    utredning.getExternForfragan().get().getLandstingHsaId(),
+                    forfraganSvar.getKommentar());
+        }
 
         return InternForfraganSvarItem.from(internForfragan);
+    }
+
+    private boolean rejectIsProhibited(Utredning utredning, String vardenhetHsaId) {
+        // Internforfragan får EJ avvisas givet att:
+        // - Feature EXTERNFORFRAGAN_FAR_AVVISAS är disabled.
+        // - Vårdenheten är den enda registrerade VE i landstinget
+        // - Vårdenheten drivs i landstingets egen regi
+
+        boolean avvisaExternForfraganFeatureEnabled = authoritiesValidator.given(userService.getUser())
+                .features(AuthoritiesConstants.FEATURE_EXTERNFORFRAGAN_FAR_AVVISAS).isVerified();
+
+        return !avvisaExternForfraganFeatureEnabled
+                && isOnlyVardenhetEgenRegiForLandsting(utredning.getExternForfragan().get().getLandstingHsaId(), vardenhetHsaId);
+    }
+
+    private boolean shouldAvvisaExternForfraganAutomatiskt(Utredning utredning, InternForfragan saved) {
+        // Rule: Vårdenheten avvisar förfrågan
+        // Rule: Vårdenheten är den enda registrerade vårdenheten för landstinget
+        // Rule: Vårdenheten drivs i landstingets egen regi
+        return saved.getForfraganSvar().getSvarTyp().equals(SvarTyp.AVBOJ)
+                && isOnlyVardenhetEgenRegiForLandsting(utredning.getExternForfragan().get().getLandstingHsaId(), saved.getVardenhetHsaId());
+
     }
 
     private boolean shouldTillDelasAutomatiskt(Utredning utredning, InternForfragan saved) {
@@ -275,6 +312,17 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
                 && utredning.getExternForfragan().map(ExternForfragan::getInternForfraganList).orElse(Lists.newArrayList()).size() == 1
                 && isRegiFormEgen(utredning.getExternForfragan()
                 .map(ExternForfragan::getLandstingHsaId).orElse(null), saved.getVardenhetHsaId());
+    }
+
+    private boolean isOnlyVardenhetEgenRegiForLandsting(String landstingHsaId, String vardenhetHsaId) {
+        final GetVardenheterForVardgivareResponse enheter = vardgivareService
+                .listVardenheterForVardgivare(landstingHsaId);
+
+        // RegiFormTyp check is redundant since they are already grouped by that
+        return enheter.getAnnatLandsting().isEmpty()
+                && enheter.getPrivat().isEmpty()
+                && enheter.getEgetLandsting().size() == 1
+                && enheter.getEgetLandsting().get(0).getId().equals(vardenhetHsaId);
     }
 
     private boolean isRegiFormEgen(String landstingHsaId, String vardenhetHsaId) {
@@ -307,6 +355,15 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
                     "Internforfragan for vardenhet '%s' in utredning '%s' already have an answer", internForfragan.getVardenhetHsaId(),
                     utredning.getUtredningId()));
         }
+
+        // Are we allowed to reject his?
+        if (SvarTyp.AVBOJ.name().equals(svar.getSvarTyp()) && rejectIsProhibited(utredning, internForfragan.getVardenhetHsaId())) {
+            throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, String.format(
+                    "Internforfragan for vardenhet '%s' in utredning '%s' is not allowed to be rejected!",
+                    internForfragan.getVardenhetHsaId(),
+                    utredning.getUtredningId()));
+        }
+
         return internForfragan;
     }
 

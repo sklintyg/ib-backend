@@ -93,9 +93,9 @@ angular.module('ibApp').factory('ibAuthorityService',
                 if (feature.indexOf('!') === 0) {
                     // we have a not
                     feature = feature.slice(1);
-                    return !featureService.isFeatureActive(feature, intygstyp);
+                    return !featureService.hasFeature(feature, intygstyp);
                 } else {
-                    return featureService.isFeatureActive(feature, intygstyp);
+                    return featureService.hasFeature(feature, intygstyp);
                 }
             }
 

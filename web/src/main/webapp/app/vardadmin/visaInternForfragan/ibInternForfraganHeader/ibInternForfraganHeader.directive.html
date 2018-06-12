@@ -47,15 +47,21 @@
               <span message key="internforfragan.besvara.acceptbtn.label"></span>
             </ib-button>
 
-            <ib-button
-                btn-id="reject-internforfragan-btn"
-                btn-class="btn-secondary"
-                btn-disabled="!canReject()"
-                busy="vm.widgetState.busyRejecting"
-                btn-click="onReject()">
-              <i class="material-icons">cancel</i>
-              <span message key="internforfragan.besvara.rejectbtn.label"></span>
-            </ib-button>
+            <div uib-popover="{{getRejectToolTipText()}}"
+                 popover-placement="auto top"
+                 popover-append-to-body="false"
+                 popover-trigger="mouseenter"
+                 popover-popup-delay="300">
+              <ib-button
+                  btn-id="reject-internforfragan-btn"
+                  btn-class="btn-secondary"
+                  btn-disabled="!canReject()"
+                  busy="vm.widgetState.busyRejecting"
+                  btn-click="onReject()">
+                <i class="material-icons">cancel</i>
+                <span message key="internforfragan.besvara.rejectbtn.label"></span>
+              </ib-button>
+            </div>
           </div>
         </div>
       </div>

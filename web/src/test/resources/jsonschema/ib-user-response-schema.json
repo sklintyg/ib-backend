@@ -34,7 +34,7 @@
     "features": {
       "additionalProperties": false,
       "properties": {
-        "SRS": {
+        "EXTERNFORFRAGAN_FAR_AVVISAS": {
           "additionalProperties": false,
           "properties": {
             "desc": {

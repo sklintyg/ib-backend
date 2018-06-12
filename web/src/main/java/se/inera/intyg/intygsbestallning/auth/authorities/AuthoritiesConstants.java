@@ -44,6 +44,8 @@ public final class AuthoritiesConstants {
     public static final String PRIVILEGE_LISTA_BESTALLNINGAR = "LISTA_BESTALLNINGAR";
     public static final String PRIVILEGE_VISA_BESTALLNING = "VISA_BESTALLNING";
 
+    // Features
+    public static final String FEATURE_EXTERNFORFRAGAN_FAR_AVVISAS = "EXTERNFORFRAGAN_FAR_AVVISAS";
 
     // constructors
 
