@@ -29,15 +29,30 @@ public class IbRestExceptionResponse {
 
     private String message;
 
+    private Long errorEntityId;
+
     public IbRestExceptionResponse(IbErrorCodeEnum errorCode, String message) {
         this.errorCode = errorCode;
         this.message = message;
+    }
+
+    public IbRestExceptionResponse(IbErrorCodeEnum errorCode, String message, Long errorEntityId) {
+        this.errorCode = errorCode;
+        this.message = message;
+        this.errorEntityId = errorEntityId;
     }
 
     public IbRestExceptionResponse(IbErrorCodeEnum errorCode, IbExternalSystemEnum externalSystem, String message) {
         this.errorCode = errorCode;
         this.externalSystem = externalSystem;
         this.message = message;
+    }
+
+    public IbRestExceptionResponse(IbErrorCodeEnum errorCode, IbExternalSystemEnum externalSystem, String message, Long errorEntityId) {
+        this.errorCode = errorCode;
+        this.externalSystem = externalSystem;
+        this.message = message;
+        this.errorEntityId = errorEntityId;
     }
 
     public IbErrorCodeEnum getErrorCode() {
@@ -62,5 +77,13 @@ public class IbRestExceptionResponse {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public Long getErrorEntityId() {
+        return errorEntityId;
+    }
+
+    public void setErrorEntityId(Long errorEntityId) {
+        this.errorEntityId = errorEntityId;
     }
 }

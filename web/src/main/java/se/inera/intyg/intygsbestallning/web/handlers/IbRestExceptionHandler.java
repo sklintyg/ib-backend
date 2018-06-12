@@ -45,7 +45,7 @@ public class IbRestExceptionHandler {
         LOG.warn("Authorization exception occured! Internal error code: {} Error message: {}", e.getErrorCode(),
                 e.getMessage());
         IbRestExceptionResponse response =
-                new IbRestExceptionResponse(e.getErrorCode(), e.getMessage());
+                new IbRestExceptionResponse(e.getErrorCode(), e.getMessage(), e.getErrorEntityId());
         return response;
     }
 
@@ -56,7 +56,7 @@ public class IbRestExceptionHandler {
         LOG.warn("Not found exception occured! Internal error code: {} Error message: {}", e.getErrorCode(),
                 e.getMessage());
         IbRestExceptionResponse response =
-                new IbRestExceptionResponse(e.getErrorCode(), e.getMessage());
+                new IbRestExceptionResponse(e.getErrorCode(), e.getMessage(), e.getErrorEntityId());
         return response;
     }
 
@@ -83,7 +83,7 @@ public class IbRestExceptionHandler {
         LOG.warn("Internal exception occured! Internal error code: {} Error message: {}", e.getErrorCode(),
                 e.getMessage());
         IbRestExceptionResponse response =
-                new IbRestExceptionResponse(e.getErrorCode(), e.getMessage());
+                new IbRestExceptionResponse(e.getErrorCode(), e.getMessage(), e.getErrorEntityId());
         return response;
     }
 
@@ -93,7 +93,7 @@ public class IbRestExceptionHandler {
     public IbRestExceptionResponse serviceExceptionHandler(HttpServletRequest request, IbJMSException re) {
         LOG.error("Unhandled IbJMSException occured!", re);
         IbRestExceptionResponse response = new IbRestExceptionResponse(
-                IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, re.getMessage());
+                IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, re.getMessage(), re.getErrorEntityId());
         return response;
     }
 
@@ -103,7 +103,7 @@ public class IbRestExceptionHandler {
     public IbRestExceptionResponse serviceExceptionHandler(HttpServletRequest request, IbExternalServiceException e) {
         LOG.error("External service exception occured!", e);
         IbRestExceptionResponse response = new IbRestExceptionResponse(
-                IbErrorCodeEnum.EXTERNAL_ERROR, e.getExternalSystem(), e.getMessage());
+                IbErrorCodeEnum.EXTERNAL_ERROR, e.getExternalSystem(), e.getMessage(), e.getErrorEntityId());
         return response;
     }
 

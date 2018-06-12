@@ -324,6 +324,19 @@ public final class HandelseUtil {
                 .build();
     }
 
+    public static Handelse createBesokRedovisat(final Besok besok, final String anvandare) {
+        String text = MessageFormat.format("Besök {0} {1} redovisades som genomfört",
+                besok.getBesokStartTid().format(DateTimeFormatter.ISO_DATE),
+                besok.getBesokStartTid().format(TIME_FORMATTER));
+
+        return aHandelse()
+                .withSkapad(LocalDateTime.now())
+                .withAnvandare(anvandare)
+                .withHandelseTyp(HandelseTyp.REDOVISAT_BESOK)
+                .withHandelseText(text)
+                .build();
+    }
+
     public static Handelse createExternForfraganMottagen(final String landstingHsaId) {
 
         return aHandelse()

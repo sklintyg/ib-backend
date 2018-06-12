@@ -28,6 +28,7 @@ public enum PdlLogType {
     BESOK_SKAPAT("Besök skapat", ActivityType.CREATE, ResourceType.RESOURCE_TYPE_FMU_BESOK),
     BESOK_ANDRAT("Besök ändrat", ActivityType.UPDATE, ResourceType.RESOURCE_TYPE_FMU_BESOK),
     BESOK_AVBOKAT("Besök avbokat", ActivityType.UPDATE, ResourceType.RESOURCE_TYPE_FMU_BESOK),
+    BESOK_REDOVISAT("Besök redovisat", ActivityType.UPDATE, ResourceType.RESOURCE_TYPE_FMU_BESOK),
     AVVIKELSE_RAPPORTERAD("Avvikelse rapporterad", ActivityType.UPDATE, ResourceType.RESOURCE_TYPE_FMU_AVVIKELSE),
     TOLK_REDOVISAD("Tolk redovisad", ActivityType.UPDATE, ResourceType.RESOURCE_TYPE_FMU_TOLK),
     ANTECKNING_SKAPAD("Anteckning skapad", ActivityType.CREATE, ResourceType.RESOURCE_TYPE_FMU_ANTECKNING);

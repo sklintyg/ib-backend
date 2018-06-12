@@ -38,7 +38,10 @@ import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.KallelseFormTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.MyndighetTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokRequest;
 import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentType;
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
@@ -242,6 +245,19 @@ public final class TestDataGen {
                 .withDeltagareFullstandigtNamn(request.getUtredandeVardPersonalNamn().orElse(null))
                 .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
                 .build());
+    }
+
+    public static Besok createBesok(long besokId) {
+        return aBesok()
+                .withId(besokId)
+                .withBesokStartTid(DATE_TIME)
+                .withBesokSlutTid(DATE_TIME.plusHours(1))
+                .withDeltagareProfession(DeltagarProfessionTyp.LK)
+                .withKallelseDatum(DATE_TIME)
+                .withKallelseForm(KallelseFormTyp.BREVKONTAKT)
+                .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
+                .withTolkStatus(TolkStatusTyp.BOKAT)
+                .build();
     }
 
     public static Handlaggare createHandlaggare() {

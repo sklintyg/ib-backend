@@ -18,22 +18,24 @@
  */
 package se.inera.intyg.intygsbestallning.common.exception;
 
-public class IbExternalServiceException extends RuntimeException {
-    private final IbErrorCodeEnum errorCode;
+public class IbExternalServiceException extends IbServiceException {
     private final IbExternalSystemEnum externalSystem;
     private final IbFailingServiceMethodEnum failingServiceMethod;
 
     public IbExternalServiceException(final IbErrorCodeEnum errorCode, final IbExternalSystemEnum externalSystem,
-                                      final String message, final IbFailingServiceMethodEnum failingServiceMethod) {
-        super(message);
-        this.errorCode = errorCode;
+                                      final String message, final IbFailingServiceMethodEnum failingServiceMethod, Long errorEntityId) {
+        super(errorCode, message, errorEntityId);
         this.externalSystem = externalSystem;
         this.failingServiceMethod = failingServiceMethod;
     }
 
-    public IbErrorCodeEnum getErrorCode() {
-        return errorCode;
+    public IbExternalServiceException(final IbErrorCodeEnum errorCode, final IbExternalSystemEnum externalSystem,
+                                      final String message, final IbFailingServiceMethodEnum failingServiceMethod) {
+        super(errorCode, message);
+        this.externalSystem = externalSystem;
+        this.failingServiceMethod = failingServiceMethod;
     }
+
 
     public IbExternalSystemEnum getExternalSystem() {
         return externalSystem;

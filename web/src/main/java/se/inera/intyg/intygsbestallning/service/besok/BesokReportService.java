@@ -16,13 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.common.exception;
+package se.inera.intyg.intygsbestallning.service.besok;
 
-public class IbAuthorizationException extends IbServiceException {
-    public IbAuthorizationException(String message) {
-        super(IbErrorCodeEnum.UNAUTHORIZED, message);
-    }
-    public IbAuthorizationException(String message, Long errorEntityId) {
-        super(IbErrorCodeEnum.UNAUTHORIZED, message, errorEntityId);
-    }
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RedovisaBesokRequest;
+
+public interface BesokReportService {
+    void redovisaBesokInNewTransaction(Utredning utredning, RedovisaBesokRequest.RedovisaBesokListItem besokRequest);
 }

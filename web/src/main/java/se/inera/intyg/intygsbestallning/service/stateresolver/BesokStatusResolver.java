@@ -21,6 +21,7 @@ package se.inera.intyg.intygsbestallning.service.stateresolver;
 import org.apache.commons.lang3.BooleanUtils;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
+import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 
 public class BesokStatusResolver {
@@ -30,6 +31,9 @@ public class BesokStatusResolver {
     }
 
     public static BesokStatus resolveStaticStatus(Besok besok) {
+        if (besok.getBesokStatus() == BesokStatusTyp.AVSLUTAD_VARDKONTAKT) {
+            return BesokStatus.GENOMFORT;
+        }
         if (besok.getAvvikelse() != null && BooleanUtils.toBoolean(besok.getAvvikelse().getInvanareUteblev())) {
             return BesokStatus.PATIENT_UTEBLEV;
         }

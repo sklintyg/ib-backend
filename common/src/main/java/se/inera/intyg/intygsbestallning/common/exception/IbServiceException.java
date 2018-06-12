@@ -20,13 +20,29 @@ package se.inera.intyg.intygsbestallning.common.exception;
 
 public class IbServiceException extends RuntimeException {
     private final IbErrorCodeEnum errorCode;
+    private Long errorEntityId;
 
     public IbServiceException(IbErrorCodeEnum errorCode, String message) {
         super(message);
         this.errorCode = errorCode;
+        this.errorEntityId = null;
+    }
+
+    public IbServiceException(IbErrorCodeEnum errorCode, String message, Long errorEntityId) {
+        super(message);
+        this.errorCode = errorCode;
+        this.errorEntityId = errorEntityId;
     }
 
     public IbErrorCodeEnum getErrorCode() {
         return errorCode;
+    }
+
+    public Long getErrorEntityId() {
+        return errorEntityId;
+    }
+
+    public void setErrorEntityId(Long errorEntityId) {
+        this.errorEntityId = errorEntityId;
     }
 }

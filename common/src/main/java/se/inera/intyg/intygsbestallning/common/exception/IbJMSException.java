@@ -22,4 +22,7 @@ public class IbJMSException extends IbServiceException {
     public IbJMSException(IbErrorCodeEnum errorCode, String message) {
         super(errorCode, message);
     }
+    public IbJMSException(IbErrorCodeEnum errorCode, String message, Long errorEntityId) {
+        super(errorCode, message, errorEntityId);
+    }
 }

@@ -27,6 +27,7 @@ import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationExceptio
 import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
 import se.inera.intyg.intygsbestallning.service.besok.BesokService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RedovisaBesokRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.ReportBesokAvvikelseVardenRequest;
@@ -87,6 +88,17 @@ public class BesokController {
                 .orThrow(new IbAuthorizationException(EDIT_NOT_ALLOWED));
 
         besokService.avbokaBesok(besokId);
+    }
+
+    @PutMapping("/redovisa")
+    public void redovisaBesok(@RequestBody final RedovisaBesokRequest request) {
+
+        final IbUser user = userService.getUser();
+        authoritiesValidator.given(user)
+                .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_BESOK)
+                .orThrow(new IbAuthorizationException(EDIT_NOT_ALLOWED));
+
+        besokService.redovisaBesok(request);
     }
 
     @PostMapping("/addarbetsdagar")

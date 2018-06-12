@@ -22,4 +22,7 @@ public class IbNotFoundException extends IbServiceException {
     public IbNotFoundException(String message) {
         super(IbErrorCodeEnum.NOT_FOUND, message);
     }
+    public IbNotFoundException(String message, Long errorEntityId) {
+        super(IbErrorCodeEnum.NOT_FOUND, message, errorEntityId);
+    }
 }

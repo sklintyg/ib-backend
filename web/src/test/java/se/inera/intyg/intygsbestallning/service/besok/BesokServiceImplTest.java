@@ -60,6 +60,7 @@ import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportDeviatio
 import se.inera.intyg.intygsbestallning.integration.myndighet.service.MyndighetIntegrationServiceImpl;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.type.AvvikelseOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
@@ -77,6 +78,7 @@ import se.inera.intyg.intygsbestallning.service.stateresolver.BesokStatusResolve
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.ServiceTestUtil;
 import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RedovisaBesokRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokRequest;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
 import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.ReportCareContactType;
@@ -103,6 +105,9 @@ public class BesokServiceImplTest {
 
     @Mock
     private LogService logService;
+
+    @Mock
+    private BesokReportService besokReportService;
 
     @InjectMocks
     private BesokServiceImpl besokService;
@@ -150,7 +155,7 @@ public class BesokServiceImplTest {
                 .withAssessmentId(utredning.getUtredningId())
                 .withAssessmentCareContactId(BESOK_ID.toString())
                 .withParticipatingProfession(besok.getDeltagareProfession().name())
-                .withInterpreterStatus(besok.getTolkStatus().getLabel())
+                .withInterpreterStatus(besok.getTolkStatus().getId())
                 .withInvitationDate(SchemaDateUtil.toStringFromLocalDateTime(besok.getKallelseDatum()))
                 .withInvitationChannel(besok.getKallelseForm().getCvValue())
                 .withStartTime(besok.getBesokStartTid())
@@ -197,7 +202,7 @@ public class BesokServiceImplTest {
                 .withAssessmentId(utredning.getUtredningId())
                 .withAssessmentCareContactId(BESOK_ID.toString())
                 .withParticipatingProfession(besok.getDeltagareProfession().name())
-                .withInterpreterStatus(besok.getTolkStatus().getLabel())
+                .withInterpreterStatus(besok.getTolkStatus().getId())
                 .withInvitationDate(SchemaDateUtil.toStringFromLocalDateTime(besok.getKallelseDatum()))
                 .withInvitationChannel(besok.getKallelseForm().getCvValue())
                 .withStartTime(besok.getBesokStartTid())
@@ -299,7 +304,7 @@ public class BesokServiceImplTest {
                 .withAssessmentId(utredning.getUtredningId())
                 .withAssessmentCareContactId(BESOK_ID.toString())
                 .withParticipatingProfession(request.getProfession().name())
-                .withInterpreterStatus(request.getTolkStatus().getLabel())
+                .withInterpreterStatus(request.getTolkStatus().getId())
                 .withInvitationDate(SchemaDateUtil.toStringFromLocalDateTime(request.getKallelseDatum()))
                 .withInvitationChannel(request.getKallelseForm().getCvValue())
                 .withStartTime(LocalDateTime.of(request.getBesokDatum(), request.getBesokStartTid()))
@@ -355,7 +360,7 @@ public class BesokServiceImplTest {
                 .withAssessmentId(utredning.getUtredningId())
                 .withAssessmentCareContactId(BESOK_ID.toString())
                 .withParticipatingProfession(request.getProfession().name())
-                .withInterpreterStatus(request.getTolkStatus().getLabel())
+                .withInterpreterStatus(request.getTolkStatus().getId())
                 .withInvitationDate(SchemaDateUtil.toStringFromLocalDateTime(request.getKallelseDatum()))
                 .withInvitationChannel(request.getKallelseForm().getCvValue())
                 .withStartTime(LocalDateTime.of(request.getBesokDatum(), request.getBesokStartTid()))
@@ -573,7 +578,7 @@ public class BesokServiceImplTest {
                 .withAssessmentId(utredning.getUtredningId())
                 .withAssessmentCareContactId(BESOK_ID.toString())
                 .withParticipatingProfession(besok.getDeltagareProfession().name())
-                .withInterpreterStatus(besok.getTolkStatus().getLabel())
+                .withInterpreterStatus(besok.getTolkStatus().getId())
                 .withInvitationDate(SchemaDateUtil.toStringFromLocalDateTime(besok.getKallelseDatum()))
                 .withInvitationChannel(besok.getKallelseForm().getCvValue())
                 .withStartTime(besok.getBesokStartTid())
@@ -632,6 +637,88 @@ public class BesokServiceImplTest {
                 .hasFieldOrPropertyWithValue("errorCode", IbErrorCodeEnum.UNAUTHORIZED);
     }
 
+    @Test
+    public void testRedovisaBesokSuccess() {
+        when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
+
+        Utredning utredning = createUtredningForRedovisaBesokTest();
+        doReturn(Optional.of(utredning))
+                .when(utredningRepository)
+                .findById(eq(UTREDNING_ID));
+
+        RedovisaBesokRequest request = new RedovisaBesokRequest();
+        request.setUtredningId(UTREDNING_ID);
+        RedovisaBesokRequest.RedovisaBesokListItem besokRequest1 = new RedovisaBesokRequest.RedovisaBesokListItem(1L, true, false);
+        RedovisaBesokRequest.RedovisaBesokListItem besokRequest2 = new RedovisaBesokRequest.RedovisaBesokListItem(2L, false, false);
+        RedovisaBesokRequest.RedovisaBesokListItem besokRequest3 = new RedovisaBesokRequest.RedovisaBesokListItem(3L, true, true);
+        request.setRedovisaBesokList(ImmutableList.of(besokRequest1, besokRequest2, besokRequest3));
+        besokService.redovisaBesok(request);
+
+        besokReportService.redovisaBesokInNewTransaction(eq(utredning), eq(besokRequest1));
+        besokReportService.redovisaBesokInNewTransaction(eq(utredning), eq(besokRequest2));
+        besokReportService.redovisaBesokInNewTransaction(eq(utredning), eq(besokRequest3));
+    }
+
+    @Test
+    public void testRedovisaBesokFailUtredningNotFound() {
+        doReturn(Optional.empty())
+                .when(utredningRepository)
+                .findById(eq(UTREDNING_ID));
+
+        RedovisaBesokRequest request = new RedovisaBesokRequest();
+        request.setUtredningId(UTREDNING_ID);
+
+        assertThatThrownBy(() -> besokService.redovisaBesok(request))
+                .isExactlyInstanceOf(IbNotFoundException.class)
+                .hasFieldOrPropertyWithValue("errorCode", IbErrorCodeEnum.NOT_FOUND);
+    }
+
+    @Test
+    public void testRedovisaBesokFailFelaktigVardenhet() {
+        when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
+
+        Utredning utredning = createUtredningForRedovisaBesokTest();
+        utredning.getBestallning().get().setTilldeladVardenhetHsaId("AnnanVardenhet");
+        doReturn(Optional.of(utredning))
+                .when(utredningRepository)
+                .findById(eq(UTREDNING_ID));
+
+        RedovisaBesokRequest request = new RedovisaBesokRequest();
+        request.setUtredningId(UTREDNING_ID);
+
+        assertThatThrownBy(() -> besokService.redovisaBesok(request))
+                .isExactlyInstanceOf(IbAuthorizationException.class)
+                .hasFieldOrPropertyWithValue("errorCode", IbErrorCodeEnum.UNAUTHORIZED);
+    }
+
+    @Test
+    public void testRedovisaBesokFailIncorrectState() {
+        when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
+
+        Utredning utredning = createUtredningForRedovisaBesokTest();
+        utredning.setStatus(UtredningStatus.AVSLUTAD);
+        doReturn(Optional.of(utredning))
+                .when(utredningRepository)
+                .findById(eq(UTREDNING_ID));
+
+        RedovisaBesokRequest request = new RedovisaBesokRequest();
+        request.setUtredningId(UTREDNING_ID);
+
+        assertThatThrownBy(() -> besokService.redovisaBesok(request))
+                .isExactlyInstanceOf(IbServiceException.class)
+                .hasFieldOrPropertyWithValue("errorCode", IbErrorCodeEnum.BAD_STATE);
+    }
+
+    private Utredning createUtredningForRedovisaBesokTest() {
+        Utredning utredning = createUtredningForBesokTest();
+        utredning.setStatus(UtredningStatus.UTREDNING_PAGAR);
+        utredning.setBesokList(ImmutableList.of(
+                aBesok().withId(1L).build(),
+                aBesok().withId(2L).build(),
+                aBesok().withId(3L).build()));
+        return utredning;
+    }
+
     private Utredning createUtredningForAvbokaBesokTest() {
         Utredning utredning = createUtredningForBesokTest();
         Besok besok = utredning.getBesokList().get(0);
@@ -644,7 +731,6 @@ public class BesokServiceImplTest {
             .build());
         return utredning;
     }
-
 
     private Utredning createUtredningForBesokTest() {
         Utredning utredning = TestDataGen.createUtredning();

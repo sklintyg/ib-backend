@@ -20,8 +20,6 @@ package se.inera.intyg.intygsbestallning.service.besok;
 
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.MoreCollectors.onlyElement;
-import static java.util.Objects.nonNull;
-import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto.ReportCareContactRequestDtoBuilder.aReportCareContactRequestDto;
 import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportDeviationRequestDto.ReportDeviationRequestDtoBuilder.aReportDeviationRequestDto;
 import static se.inera.intyg.intygsbestallning.persistence.model.Avvikelse.AvvikelseBuilder.anAvvikelse;
 import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
@@ -49,13 +47,13 @@ import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
-import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto;
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportDeviationRequestDto;
 import se.inera.intyg.intygsbestallning.integration.myndighet.service.MyndighetIntegrationService;
 import se.inera.intyg.intygsbestallning.persistence.model.Avvikelse;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
@@ -70,13 +68,13 @@ import se.inera.intyg.intygsbestallning.service.stateresolver.BesokStatusResolve
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
-import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RedovisaBesokRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokResponse;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
 
 @Service
-public class BesokServiceImpl extends BaseUtredningService implements BesokService {
+public class BesokServiceImpl extends BaseBesokService implements BesokService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -102,6 +100,9 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
 
     @Autowired
     private BusinessDaysBean businessDaysBean;
+
+    @Autowired
+    private BesokReportService besokReportService;
 
     @Override
     @Transactional
@@ -249,6 +250,23 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
     }
 
     @Override
+    @Transactional
+    public void redovisaBesok(final RedovisaBesokRequest request) {
+        final Utredning utredning = utredningRepository.findById(request.getUtredningId())
+                .orElseThrow(() -> new IbNotFoundException("Utredning with id '" + request.getUtredningId() + "' does not exist."));
+
+        checkUserVardenhetTilldeladToBestallning(utredning);
+
+        if (utredning.getStatus().getUtredningFas() == UtredningFas.AVSLUTAD) {
+            throw new IbServiceException(IbErrorCodeEnum.BAD_STATE,
+                    MessageFormat.format("Utredning with id {0} is in an incorrect state {1} for redovisaBesok", utredning.getUtredningId(),
+                            utredning.getStatus().getId()));
+        }
+
+        request.getRedovisaBesokList().forEach(b -> besokReportService.redovisaBesokInNewTransaction(utredning, b));
+    }
+
+    @Override
     public LocalDate addArbetsdagar(Map<String, String> map) {
         LocalDate date = LocalDate.parse(map.get("datum"), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         return businessDaysBean.addBusinessDays(date, Integer.parseInt(map.get("arbetsdagar")));
@@ -272,10 +290,6 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
         }
         throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, MessageFormat.format(
                 "assessment with id {0} is in an incorrect state", utredning.getUtredningId()));
-    }
-
-    private void reportBesok(final Utredning utredning, final Besok besok) {
-        myndighetIntegrationService.reportCareContactInteraction(createReportCareContactRequestDto(utredning, besok));
     }
 
     private Besok createBesok(final RegisterBesokRequest request) {
@@ -305,20 +319,6 @@ public class BesokServiceImpl extends BaseUtredningService implements BesokServi
         return !besok.getBesokStartTid().toLocalDate().equals(request.getBesokDatum())
                 || !besok.getBesokStartTid().toLocalTime().equals(request.getBesokStartTid())
                 || !besok.getBesokSlutTid().toLocalTime().equals(request.getBesokSlutTid());
-    }
-
-    private ReportCareContactRequestDto createReportCareContactRequestDto(final Utredning utredning, final Besok besok) {
-        return aReportCareContactRequestDto()
-                .withAssessmentId(utredning.getUtredningId())
-                .withAssessmentCareContactId(besok.getId().toString())
-                .withParticipatingProfession(besok.getDeltagareProfession().name())
-                .withInterpreterStatus(nonNull(besok.getTolkStatus()) ? besok.getTolkStatus().getLabel() : null)
-                .withInvitationDate(SchemaDateUtil.toStringFromLocalDateTime(besok.getKallelseDatum()))
-                .withInvitationChannel(besok.getKallelseForm().getCvValue())
-                .withStartTime(besok.getBesokStartTid())
-                .withEndTime(besok.getBesokSlutTid())
-                .withVisitStatus(besok.getBesokStatus().getCvValue())
-                .build();
     }
 
     private ReportDeviationRequestDto createReportDeviationRequestDto(final ReportBesokAvvikelseRequest avvikelseRequest,

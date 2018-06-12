@@ -19,6 +19,7 @@
 package se.inera.intyg.intygsbestallning.service.besok;
 
 import se.inera.intyg.intygsbestallning.persistence.model.Avvikelse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RedovisaBesokRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokResponse;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
@@ -35,4 +36,6 @@ public interface BesokService {
     LocalDate addArbetsdagar(Map<String, String> map);
 
     void avbokaBesok(Long besokId);
+
+    void redovisaBesok(RedovisaBesokRequest request);
 }

@@ -33,8 +33,7 @@ public enum BesokStatus implements SortableLabel {
     AVVIKELSE_MOTTAGEN("Avvikelse mottagen", VARDADMIN),
     AVBOKAT("Avbokat", null),
     PATIENT_UTEBLEV("Patient uteblev", null),
-    GENOMFORT("Genomfört", null),
-    EJ_GENOMFORT("Ej genomfört", null);
+    GENOMFORT("Genomfört", null);
 
     private final String id;
     private final String label;

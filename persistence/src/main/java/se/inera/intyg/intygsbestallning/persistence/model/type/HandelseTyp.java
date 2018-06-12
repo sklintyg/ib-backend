@@ -45,7 +45,8 @@ public enum HandelseTyp {
     JAV(Typ.BESTALLNING),
     UTREDNING_AVBRUTEN(Typ.UTREDNING),
     NY_ANTECKNING(Typ.ANTECKNING),
-    AVBOKAT_BESOK(Typ.BESOK);
+    AVBOKAT_BESOK(Typ.BESOK),
+    REDOVISAT_BESOK(Typ.BESOK);
 
     private final Typ typ;
 
