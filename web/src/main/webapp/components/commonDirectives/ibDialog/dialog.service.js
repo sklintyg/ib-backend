@@ -39,7 +39,7 @@ angular.module('ibApp').factory('ibDialog',
                 domId: domId,
                 titleText: titleText,
                 bodyText: bodyText,
-                confirmText: 'OK',
+                confirmText: 'Stäng',
                 allowCancel: false
             });
         }

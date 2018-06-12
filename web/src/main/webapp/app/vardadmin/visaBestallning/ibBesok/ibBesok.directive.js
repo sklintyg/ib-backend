@@ -12,7 +12,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-angular.module('ibApp').directive('ibBesok', function($log, ibDialog, BesokProxy) {
+angular.module('ibApp').directive('ibBesok', function($log, ibDialog, BesokProxy, moment) {
     'use strict';
 
     return {
@@ -35,12 +35,15 @@ angular.module('ibApp').directive('ibBesok', function($log, ibDialog, BesokProxy
             $scope.oppnaLaggTillBesok = function() {
                 openModal('laggTillBesok.modal.html', 'LaggTillBesokModalCtrl',
                         {utredningsId: $scope.bestallning.utredningsId}).then(function(result) {
-                    $log.info(result);
                     if (result.nyttSistaDatum) {
-                        openModal('utredningstypAndrad.modal.html', 'UtredningstypAndradCtrl', {nyttDatum: result.nyttSistaDatum});
+                        ibDialog.message('utredningsTypAndradModal', 'Utredningstyp ändrad',
+                            'Utredningstypen är ändrad till AFU utvidgad. Nytt slutdatum är ' +
+                            moment(result.nyttSistaDatum).format('YYYY-MM-DD'));
                     }
                 }, function(error) {
-                    $log.error(error);
+                    if (error) {
+                        $log.error(error);
+                    }
                 });
             };
 
