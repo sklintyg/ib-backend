@@ -1,7 +1,7 @@
 <div id="lagg-till-besok-modal">
   <div class="modal-header">
     <button class="close" data-dismiss="modal" data-ng-click="$dismiss()"><i class="material-icons">close</i></button>
-    <h4 class="modal-title">Lägg till besök</h4>
+    <h4 class="modal-title">{{besokId ? 'Ändra besök':'Lägg till besök'}}</h4>
   </div>
   <div class="modal-body">
     <ib-alert-message ng-if="besok.profession && besok.profession !== 'LK'" alert-id="lagg-till-besok.info.profession"

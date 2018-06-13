@@ -34,14 +34,29 @@ angular.module('ibApp').directive('ibBesok', function($log, ibDialog, BesokProxy
 
             $scope.oppnaLaggTillBesok = function() {
                 openModal('laggTillBesok.modal.html', 'LaggTillBesokModalCtrl',
-                        {utredningsId: $scope.bestallning.utredningsId}).then(function(result) {
+                        {utredningsId: $scope.bestallning.utredningsId, besok: undefined}).then(function(result) {
                     if (result.nyttSistaDatum) {
                         ibDialog.message('utredningsTypAndradModal', 'Utredningstyp ändrad',
                             'Utredningstypen är ändrad till AFU utvidgad. Nytt slutdatum är ' +
                             moment(result.nyttSistaDatum).format('YYYY-MM-DD'));
                     }
                 }, function(error) {
-                    if (error) {
+                    if (error && error !== 'backdrop click') {
+                        $log.error(error);
+                    }
+                });
+            };
+
+            $scope.openAndraModal = function(besok) {
+                openModal('laggTillBesok.modal.html', 'LaggTillBesokModalCtrl',
+                    {utredningsId: $scope.bestallning.utredningsId, besok: besok}).then(function(result) {
+                    if (result.nyttSistaDatum) {
+                        ibDialog.message('utredningsTypAndradModal', 'Utredningstyp ändrad',
+                            'Utredningstypen är ändrad till AFU utvidgad. Nytt slutdatum är ' +
+                            moment(result.nyttSistaDatum).format('YYYY-MM-DD'));
+                    }
+                }, function(error) {
+                    if (error && error !== 'backdrop click') {
                         $log.error(error);
                     }
                 });

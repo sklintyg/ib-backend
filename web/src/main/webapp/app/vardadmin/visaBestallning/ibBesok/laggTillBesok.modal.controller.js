@@ -26,7 +26,8 @@ angular.module('ibApp')
                 id: undefined,
                 label: 'Välj i listan'
             };
-
+            var besok = dialogModel.besok || {};
+            $scope.besokId = besok.besokId;
             $scope.showReportErrorMessage = false;
             $scope.showUpdateAssessmentErrorMessage = false;
             $scope.professionList = [chooseOption];
@@ -38,26 +39,34 @@ angular.module('ibApp')
             });
 
             $scope.investigativePersonnel = 'Namn på utredande vårdpersonal';
-
-            $scope.besokStartTid = '';
-            $scope.besokSlutTid = '';
-
-            $scope.besokKallelse = undefined;
-            $scope.besokDatum = undefined;
+            
+            function getDateTime(time) {
+                var dateTime = new Date();
+                if(time.indexOf(':') !== -1) {
+                    dateTime.setHours(time.split(':')[0]);
+                    dateTime.setMinutes(time.split(':')[1]);
+                }
+                return dateTime;
+            }
 
             $scope.besok = {
-                utredandeVardPersonalNamn: '',
-                profession: undefined,
-                tolkStatus: undefined,
-                kallelseForm: 'BREVKONTAKT',
-                kallelseDatum: undefined,
-                besokDatum: undefined,
-                besokStartTid: '',
-                besokSlutTid: ''
+                utredandeVardPersonalNamn: besok.namn ? besok.namn : '',
+                profession: besok.profession && besok.profession.id ? besok.profession.id : undefined,
+                tolkStatus: besok.tolkStatus ? besok.tolkStatus : undefined,
+                kallelseForm: besok.kallelseForm && besok.kallelseForm.id ? besok.kallelseForm.id : 'BREVKONTAKT',
+                kallelseDatum: besok.kallelseDatum ? besok.kallelseDatum : undefined,
+                besokDatum: besok.besokDatum ? besok.besokDatum : undefined,
+                besokStartTid: besok.besokStartTid ? getDateTime(besok.besokStartTid) : '',
+                besokSlutTid: besok.besokSlutTid ? getDateTime(besok.besokSlutTid) : ''
             };
 
-            var kallelsedatumMedArbetsdagar;
+            $scope.besokStartTid = $scope.besok.besokStartTid;
+            $scope.besokSlutTid = $scope.besok.besokSlutTid;
 
+            $scope.besokKallelse = $scope.besok.kallelseDatum;
+            $scope.besokDatum = $scope.besok.besokDatum;
+
+            var kallelsedatumMedArbetsdagar;
 
             function formatTime(date) {
                 var hours = date.getHours();
@@ -74,7 +83,14 @@ angular.module('ibApp')
                 $scope.besok.besokStartTid = formatTime($scope.besokStartTid);
                 $scope.besok.besokSlutTid = formatTime($scope.besokSlutTid);
                 $scope.skickar = true;
-                BesokProxy.createBesok(dialogModel.utredningsId, $scope.besok).then(function(result) {
+
+                var besokCall;
+                if(besok.besokId) {
+                    besokCall = BesokProxy.updateBesok(dialogModel.utredningsId, besok.besokId, $scope.besok);
+                } else {
+                    besokCall = BesokProxy.createBesok(dialogModel.utredningsId, $scope.besok);
+                }
+                besokCall.then(function(result) {
                     $uibModalInstance.close(result);
                     $scope.skickar = false;
                 }, function(error) {
@@ -85,7 +101,6 @@ angular.module('ibApp')
                         $scope.showUpdateAssessmentErrorMessage = true;
                     }
                 });
-                
             };
 
             function hamtaDagar() {
