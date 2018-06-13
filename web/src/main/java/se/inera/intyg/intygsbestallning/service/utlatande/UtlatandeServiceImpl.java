@@ -31,11 +31,11 @@ import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
 import se.inera.intyg.intygsbestallning.service.pdl.LogService;
-import se.inera.intyg.intygsbestallning.service.pdl.dto.PatientPdlLoggable;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PdlLogType;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
+import se.inera.intyg.intygsbestallning.service.pdl.dto.UtredningPdlLoggable;
 import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utlatande.SendUtlatandeRequest;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportUtlatandeMottagetRequest;
@@ -91,7 +91,7 @@ public class UtlatandeServiceImpl extends BaseUtredningService implements Utlata
 
         intyg.setSkickatDatum(utlatandeSentDate);
 
-        logService.log(new PatientPdlLoggable(utredning.getInvanare().getPersonId()), PdlLogType.UTREDNING_UPPDATERAD);
+        logService.log(new UtredningPdlLoggable(utredning), PdlLogType.UTREDNING_UPPDATERAD);
 
         IbUser user = userService.getUser();
         utredning.getHandelseList().add(HandelseUtil.createUtlatandeSkickat(user.getNamn(), utlatandeSentDate));

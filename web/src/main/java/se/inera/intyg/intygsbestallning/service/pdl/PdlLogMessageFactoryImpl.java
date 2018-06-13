@@ -82,6 +82,7 @@ public class PdlLogMessageFactoryImpl implements PdlLogMessageFactory {
 
         PdlLogMessage pdlLogMessage = getLogMessage(pdlLogType.getActivityType());
         pdlLogMessage.setActivityArgs(pdlLogType.getActivityArgs());
+        pdlLogMessage.setActivityLevel(loggable.getActivityLevel());
         populateWithCurrentUserAndCareUnit(pdlLogMessage, user);
 
         // Add resources

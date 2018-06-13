@@ -30,4 +30,9 @@ public class PatientPdlLoggable implements PDLLoggable {
     public String getPatientId() {
         return patientId;
     }
+
+    @Override
+    public String getActivityLevel() {
+        return null;
+    }
 }

@@ -317,6 +317,11 @@ public class GetBestallningResponse implements PDLLoggable {
         return invanare.personId;
     }
 
+    @Override
+    public String getActivityLevel() {
+        return utredningsId.toString();
+    }
+
     public static final class GetBestallningResponseBuilder {
         private Long utredningsId;
         private UtredningsTyp utredningsTyp;

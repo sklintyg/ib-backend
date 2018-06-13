@@ -81,7 +81,6 @@ import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RedovisaBesokRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokRequest;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
-import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.ReportCareContactType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BesokServiceImplTest {

@@ -61,8 +61,8 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
 import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
 import se.inera.intyg.intygsbestallning.service.pdl.LogService;
-import se.inera.intyg.intygsbestallning.service.pdl.dto.PatientPdlLoggable;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PdlLogType;
+import se.inera.intyg.intygsbestallning.service.pdl.dto.UtredningPdlLoggable;
 import se.inera.intyg.intygsbestallning.service.stateresolver.BesokStatus;
 import se.inera.intyg.intygsbestallning.service.stateresolver.BesokStatusResolver;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
@@ -141,7 +141,7 @@ public class BesokServiceImpl extends BaseBesokService implements BesokService {
 
             updateBesok(besok, request);
 
-            logService.log(new PatientPdlLoggable(utredning.getInvanare().getPersonId()), PdlLogType.BESOK_ANDRAT);
+            logService.log(new UtredningPdlLoggable(utredning), PdlLogType.BESOK_ANDRAT);
         }  else {
             besok = createBesok(request);
             utredning.getBesokList().add(besok);
@@ -150,7 +150,7 @@ public class BesokServiceImpl extends BaseBesokService implements BesokService {
             // Save besok here to get its id for reportBesok
             utredningRepository.persist(utredning);
 
-            logService.log(new PatientPdlLoggable(utredning.getInvanare().getPersonId()), PdlLogType.BESOK_SKAPAT);
+            logService.log(new UtredningPdlLoggable(utredning), PdlLogType.BESOK_SKAPAT);
         }
 
         utredning.getHandelseList().add(besokHandelse);
@@ -205,7 +205,7 @@ public class BesokServiceImpl extends BaseBesokService implements BesokService {
             BesokStatus besokStatus = BesokStatusResolver.resolveStaticStatus(uppdateratBesok);
             checkState(Objects.equals(BesokStatus.AVVIKELSE_RAPPORTERAD, besokStatus)
                     || Objects.equals(BesokStatus.PATIENT_UTEBLEV, besokStatus));
-            logService.log(new PatientPdlLoggable(uppdateradUtredning.getInvanare().getPersonId()), PdlLogType.AVVIKELSE_RAPPORTERAD);
+            logService.log(new UtredningPdlLoggable(uppdateradUtredning), PdlLogType.AVVIKELSE_RAPPORTERAD);
             myndighetIntegrationService.reportDeviation(createReportDeviationRequestDto(request,
                     uppdateratBesok.getAvvikelse().getAvvikelseId()));
             notifieringSendService.notifieraLandstingAvvikelseRapporteradAvVarden(uppdateradUtredning, besokToUpdate);
@@ -242,7 +242,7 @@ public class BesokServiceImpl extends BaseBesokService implements BesokService {
         besokToUpdate.getHandelseList().add(besokHandelse);
         utredning.getHandelseList().add(besokHandelse);
 
-        logService.log(new PatientPdlLoggable(utredning.getInvanare().getPersonId()), PdlLogType.BESOK_AVBOKAT);
+        logService.log(new UtredningPdlLoggable(utredning), PdlLogType.BESOK_AVBOKAT);
 
         utredningRepository.save(utredning);
 

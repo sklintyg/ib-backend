@@ -152,6 +152,11 @@ public class BestallningListItem implements PDLLoggable, PatientNamable, FreeTex
         this.kraverAtgard = kraverAtgard;
     }
 
+    @Override
+    public String getActivityLevel() {
+        return utredningsId.toString();
+    }
+
     /**
      * String that concatenates the searchable fields when listing this class.
      */

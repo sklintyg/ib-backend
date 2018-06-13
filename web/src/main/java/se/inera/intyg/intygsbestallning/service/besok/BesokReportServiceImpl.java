@@ -35,8 +35,8 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
 import se.inera.intyg.intygsbestallning.service.pdl.LogService;
-import se.inera.intyg.intygsbestallning.service.pdl.dto.PatientPdlLoggable;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PdlLogType;
+import se.inera.intyg.intygsbestallning.service.pdl.dto.UtredningPdlLoggable;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RedovisaBesokRequest;
 
 import java.lang.invoke.MethodHandles;
@@ -78,7 +78,7 @@ public class BesokReportServiceImpl extends BaseBesokService implements BesokRep
             besok.getHandelseList().add(besokHandelse);
             utredningRepository.saveUtredning(utredning);
 
-            logService.log(new PatientPdlLoggable(utredning.getInvanare().getPersonId()), PdlLogType.BESOK_REDOVISAT);
+            logService.log(new UtredningPdlLoggable(utredning), PdlLogType.BESOK_REDOVISAT);
 
             reportBesok(utredning, besok);
         } catch (IbExternalServiceException e) {

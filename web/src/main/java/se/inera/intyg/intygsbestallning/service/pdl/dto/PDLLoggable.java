@@ -22,4 +22,5 @@ public interface PDLLoggable {
 
     String getPatientId();
 
+    String getActivityLevel();
 }
