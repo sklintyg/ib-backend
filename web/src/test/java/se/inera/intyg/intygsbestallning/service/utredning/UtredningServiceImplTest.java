@@ -29,14 +29,20 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
+import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
+import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handelse.HandelseBuilder.aHandelse;
 import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
 import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
 import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
 import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp.AVSLUTAD_VARDKONTAKT;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp.BESTALLNING;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU_UTVIDGAD;
@@ -53,6 +59,7 @@ import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createUpdate
 import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createUtredning;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -65,6 +72,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import se.riv.infrastructure.directory.organization.getunitresponder.v1.UnitType;
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
 import javax.xml.ws.WebServiceException;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -72,16 +80,22 @@ import se.inera.intyg.infra.integration.hsa.client.OrganizationUnitService;
 import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
+import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
+import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.MyndighetTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
+import se.inera.intyg.intygsbestallning.service.stateresolver.BesokStatus;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
@@ -556,7 +570,7 @@ public class UtredningServiceImplTest {
     }
 
     @Test
-    public void testEndUtredningSuccess() {
+    public void testAvslutaUtredningJavSuccess() {
         final Long utredningId = 1L;
 
         doReturn(Optional.of(anUtredning()
@@ -590,8 +604,182 @@ public class UtredningServiceImplTest {
         assertEquals(AvslutOrsak.JAV, utredning.getAvbrutenAnledning());
     }
 
-    @Test(expected = IbNotFoundException.class)
-    public void testEndUtredningFailUtredningNotExisting() {
+    @Test
+    public void testAvslutaUtredningIngenBestallningSuccess() {
+        final Long utredningId = 1L;
+
+        final Utredning utredning = anUtredning()
+                .withUtredningId(utredningId)
+                .withExternForfragan(anExternForfragan()
+                        .withInternForfraganList(Lists.newArrayList(
+                                anInternForfragan()
+                                        .withId(1L)
+                                        .withTilldeladDatum(DATE_TIME.plusMonths(2))
+                                        .withForfraganSvar(aForfraganSvar()
+                                                .withSvarTyp(SvarTyp.ACCEPTERA)
+                                                .build())
+                                        .build()))
+                        .build())
+                .build();
+
+        Utredning uppdateradUtredning = Utredning.copyFrom(utredning);
+        assertNotNull(uppdateradUtredning);
+        uppdateradUtredning.setAvbrutenDatum(DATE_TIME.plusMonths(4));
+        uppdateradUtredning.setAvbrutenAnledning(AvslutOrsak.INGEN_BESTALLNING);
+
+        doReturn(Optional.of(utredning))
+                .when(utredningRepository)
+                .findById(utredningId);
+
+        doReturn(uppdateradUtredning)
+                .when(utredningRepository)
+                .saveUtredning(any(Utredning.class));
+
+        EndUtredningRequest request = anEndUtredningRequest()
+                .withUtredningId(utredningId)
+                .withEndReason(AvslutOrsak.INGEN_BESTALLNING)
+                .build();
+
+        utredningService.avslutaUtredning(request);
+
+        ArgumentCaptor<Utredning> captor = ArgumentCaptor.forClass(Utredning.class);
+        verify(utredningRepository).saveUtredning(captor.capture());
+
+        Utredning utredningCaptor = captor.getValue();
+        assertNotNull(utredningCaptor);
+        assertEquals(utredningId, utredningCaptor.getUtredningId());
+        assertNotNull(utredningCaptor.getAvbrutenDatum());
+        assertEquals(AvslutOrsak.INGEN_BESTALLNING, utredningCaptor.getAvbrutenAnledning());
+
+        verify(notifieringSendService, times(1)).notifieraLandstingIngenBestallning(any(Utredning.class));
+        verify(notifieringSendService, times(1)).notifieraVardenhetIngenBestallning(any(Utredning.class));
+    }
+
+    @Test
+    public void testAvslutaUtredningUtredningAvbrutenSuccess() {
+        final Long utredningId = 1L;
+
+        final Utredning utredning = anUtredning()
+                .withUtredningId(utredningId)
+                .withExternForfragan(anExternForfragan()
+                        .withInternForfraganList(Lists.newArrayList(
+                                anInternForfragan()
+                                        .withId(1L)
+                                        .withTilldeladDatum(DATE_TIME.plusMonths(2))
+                                        .withForfraganSvar(aForfraganSvar()
+                                                .withSvarTyp(SvarTyp.ACCEPTERA)
+                                                .build())
+                                        .build()))
+                        .build())
+                .build();
+
+        Utredning uppdateradUtredning = Utredning.copyFrom(utredning);
+        assertNotNull(uppdateradUtredning);
+        uppdateradUtredning.setAvbrutenDatum(DATE_TIME.plusMonths(4));
+        uppdateradUtredning.setAvbrutenAnledning(AvslutOrsak.UTREDNING_AVBRUTEN);
+
+        doReturn(Optional.of(utredning))
+                .when(utredningRepository)
+                .findById(utredningId);
+
+        doReturn(uppdateradUtredning)
+                .when(utredningRepository)
+                .saveUtredning(any(Utredning.class));
+
+        EndUtredningRequest request = anEndUtredningRequest()
+                .withUtredningId(utredningId)
+                .withEndReason(AvslutOrsak.UTREDNING_AVBRUTEN)
+                .build();
+
+        utredningService.avslutaUtredning(request);
+
+        ArgumentCaptor<Utredning> captor = ArgumentCaptor.forClass(Utredning.class);
+        verify(utredningRepository).saveUtredning(captor.capture());
+
+        Utredning utredningCaptor = captor.getValue();
+        assertNotNull(utredningCaptor);
+        assertEquals(utredningId, utredningCaptor.getUtredningId());
+        assertNotNull(utredningCaptor.getAvbrutenDatum());
+        assertEquals(AvslutOrsak.UTREDNING_AVBRUTEN, utredningCaptor.getAvbrutenAnledning());
+
+        verify(notifieringSendService, times(1)).notifieraLandstingAvslutadUtredning(any(Utredning.class));
+        verify(notifieringSendService, times(1)).notifieraVardenhetAvslutadUtredning(any(Utredning.class));
+    }
+
+    @Test
+    public void testAvslutaUtredningIngenKompletteringBegardSuccess() {
+        final Long utredningId = 1L;
+
+        final Utredning utredning = anUtredning()
+                .withUtredningId(utredningId)
+                .withBestallning(aBestallning()
+                        .withId(1L)
+                        .build())
+                .withBesokList(Lists.newArrayList(
+                        aBesok()
+                                .withTolkStatus(TolkStatusTyp.DELTAGIT)
+                                .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
+                                .withHandelseList(Lists.newArrayList(
+                                        aHandelse()
+                                                .withHandelseTyp(HandelseTyp.AVVIKELSE_RAPPORTERAD)
+                                                .build()))
+                                .build(),
+                        aBesok()
+                                .withTolkStatus(TolkStatusTyp.DELTAGIT)
+                                .withBesokStatus(BesokStatusTyp.AVSLUTAD_VARDKONTAKT)
+                                .withHandelseList(Lists.newArrayList(
+                                        aHandelse()
+                                                .withHandelseTyp(HandelseTyp.AVVIKELSE_RAPPORTERAD)
+                                                .build()))
+                                .build()
+                ))
+                .withExternForfragan(anExternForfragan()
+                        .withInternForfraganList(Lists.newArrayList(
+                                anInternForfragan()
+                                        .withId(1L)
+                                        .withTilldeladDatum(DATE_TIME.plusMonths(2))
+                                        .withForfraganSvar(aForfraganSvar()
+                                                .withSvarTyp(SvarTyp.ACCEPTERA)
+                                                .build())
+                                        .build()))
+                        .build())
+                .build();
+
+        Utredning uppdateradUtredning = Utredning.copyFrom(utredning);
+        assertNotNull(uppdateradUtredning);
+        uppdateradUtredning.setAvbrutenDatum(DATE_TIME.plusMonths(4));
+        uppdateradUtredning.setAvbrutenAnledning(AvslutOrsak.INGEN_KOMPLETTERING_BEGARD);
+
+        doReturn(Optional.of(utredning))
+                .when(utredningRepository)
+                .findById(utredningId);
+
+        doReturn(uppdateradUtredning)
+                .when(utredningRepository)
+                .saveUtredning(any(Utredning.class));
+
+        final EndUtredningRequest request = anEndUtredningRequest()
+                .withUtredningId(utredningId)
+                .withEndReason(AvslutOrsak.INGEN_KOMPLETTERING_BEGARD)
+                .withUser(IbUser.of("hsa-id", "Test-Are Testsson"))
+                .build();
+
+        utredningService.avslutaUtredning(request);
+
+        ArgumentCaptor<Utredning> captor = ArgumentCaptor.forClass(Utredning.class);
+        verify(utredningRepository).saveUtredning(captor.capture());
+
+        Utredning utredningCaptor = captor.getValue();
+        assertNotNull(utredningCaptor);
+        assertEquals(utredningId, utredningCaptor.getUtredningId());
+        assertNotNull(utredningCaptor.getAvbrutenDatum());
+        assertEquals(AvslutOrsak.INGEN_KOMPLETTERING_BEGARD, utredningCaptor.getAvbrutenAnledning());
+
+        verifyZeroInteractions(notifieringSendService);
+    }
+
+    @Test
+    public void testAvslutaUtredningFailUtredningNotExisting() {
         final Long utredningId = 1L;
 
         when(utredningRepository.findById(utredningId)).thenReturn(Optional.empty());
@@ -601,11 +789,14 @@ public class UtredningServiceImplTest {
                 .withEndReason(AvslutOrsak.JAV)
                 .build();
 
-        utredningService.avslutaUtredning(request);
+        assertThatThrownBy(() -> utredningService.avslutaUtredning(request))
+                .isExactlyInstanceOf(IbNotFoundException.class)
+                .hasMessage(MessageFormat.format("Could not find the assessment with id {0}", utredningId))
+                .hasFieldOrPropertyWithValue("errorCode", IbErrorCodeEnum.NOT_FOUND);
     }
 
-    @Test(expected = IbServiceException.class)
-    public void testEndUtredningFailAlreadyEnded() {
+    @Test
+    public void testAvslutaUtredningFailAlreadyEnded() {
         final Long utredningId = 1L;
 
         when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
@@ -618,12 +809,9 @@ public class UtredningServiceImplTest {
                 .withEndReason(AvslutOrsak.JAV)
                 .build();
 
-        try {
-            utredningService.avslutaUtredning(request);
-        } catch (IbServiceException ise) {
-            assertEquals(IbErrorCodeEnum.ALREADY_EXISTS, ise.getErrorCode());
-            throw ise;
-        }
+        assertThatThrownBy(() -> utredningService.avslutaUtredning(request))
+                .isExactlyInstanceOf(IbServiceException.class)
+                .hasMessage(MessageFormat.format("EndAssessment has already been performed for Utredning {0}", utredningId))
+                .hasFieldOrPropertyWithValue("errorCode", IbErrorCodeEnum.ALREADY_EXISTS);
     }
-
 }

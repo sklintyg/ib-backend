@@ -79,6 +79,10 @@ public class IbUser extends IntygUser implements Serializable {
         this.namn = namn;
     }
 
+    public static IbUser of(final String hsaId, final String namn) {
+        return new IbUser(hsaId, namn);
+    }
+
     /**
      * Copy-constructor that takes a populated {@link IntygUser} and the relayState (eg FMU or BP).
      *

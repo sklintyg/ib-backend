@@ -366,7 +366,8 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                         "Could not find the assessment with id {0}", request.getUtredningId())));
 
         if (nonNull(utredning.getAvbrutenDatum()) || nonNull(utredning.getAvbrutenAnledning())) {
-            throw new IbServiceException(IbErrorCodeEnum.ALREADY_EXISTS, "EndAssessment has already been performed for this Utredning");
+            throw new IbServiceException(IbErrorCodeEnum.ALREADY_EXISTS,
+                    MessageFormat.format("EndAssessment has already been performed for Utredning {0}", utredning.getUtredningId()));
         }
 
         final AvslutOrsak orsak = request.getAvslutOrsak();
@@ -389,15 +390,16 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
     private void qualifyForAvslutaUtredning(final AvslutOrsak orsak, final Utredning utredning) {
         if (orsak == AvslutOrsak.INGEN_KOMPLETTERING_BEGARD) {
-            checkState(isKorrektStatusForIngenKompletteringBegard(utredning));
+            isKorrektStatusForIngenKompletteringBegard(utredning);
         }
     }
 
-    private Boolean isKorrektStatusForIngenKompletteringBegard(Utredning utredning) {
-        return (UtredningStatusResolver.resolveStaticStatus(utredning) == UtredningStatus.REDOVISA_TOLK)
-                && utredning.getBesokList().stream()
+    private void isKorrektStatusForIngenKompletteringBegard(Utredning utredning) {
+
+        checkState(UtredningStatusResolver.resolveStaticStatus(utredning) == UtredningStatus.REDOVISA_BESOK);
+        checkState(utredning.getBesokList().stream()
                 .map(BesokStatusResolver::resolveStaticStatus)
-                .noneMatch(besokStatus -> (besokStatus == BesokStatus.BOKAT) || (besokStatus == BesokStatus.AVBOKAT));
+                .noneMatch(besokStatus -> (besokStatus == BesokStatus.BOKAT) || (besokStatus == BesokStatus.AVBOKAT)));
     }
 
     private void verifyAvslutaUtredningStatusar(final AvslutOrsak orsak, final Utredning utredning) {
@@ -412,7 +414,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
             final Optional<InternForfragan> optionalInternForfragan = utredning.getExternForfragan().get()
                     .getInternForfraganList().stream()
-                    .filter(InternForfragan::getDirekttilldelad)
+                    .filter(iff -> nonNull(iff.getTilldeladDatum()))
                     .collect(toOptional());
 
             checkState(optionalInternForfragan.isPresent());

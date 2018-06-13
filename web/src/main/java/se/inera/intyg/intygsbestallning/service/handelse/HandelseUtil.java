@@ -21,7 +21,6 @@ package se.inera.intyg.intygsbestallning.service.handelse;
 import static java.util.Objects.nonNull;
 import static se.inera.intyg.intygsbestallning.persistence.model.Handelse.HandelseBuilder.aHandelse;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.BooleanUtils;
 import org.bouncycastle.util.Strings;
 import java.text.MessageFormat;
@@ -389,6 +388,12 @@ public final class HandelseUtil {
     }
 
     public static Handelse createAvslutadUtredning(final String vardAdministrator) {
-        throw new NotImplementedException();
+        final String handelseText = "Utredningen avslutad.";
+        return aHandelse()
+                .withSkapad(LocalDateTime.now())
+                .withAnvandare(vardAdministrator)
+                .withHandelseTyp(HandelseTyp.AVSLUTAD)
+                .withHandelseText(handelseText)
+                .build();
     }
 }
