@@ -21,8 +21,10 @@ angular.module('ibApp').factory('UtredningarProxy',
     function(ProxyTemplate) {
         'use strict';
 
+        var basePath = '/api/samordnare/utredningar';
+
         function _getUtredning(utredningsId) {
-            var restPath = '/api/utredningar/' + utredningsId;
+            var restPath = basePath + '/' + utredningsId;
 
             var config =  {
                 errorMessageConfig: {
@@ -35,19 +37,19 @@ angular.module('ibApp').factory('UtredningarProxy',
         }
 
         function _getUtredningar() {
-            var restPath = '/api/utredningar';
+            var restPath = basePath;
 
             return ProxyTemplate.getTemplate(restPath, {});
         }
 
         function _getUtredningarWithFilter(query) {
-            var restPath = '/api/utredningar';
+            var restPath = basePath;
 
             return ProxyTemplate.postTemplate(restPath, query, {});
         }
 
         function _createInternForfragan(utredningsId, requestBody) {
-            var restPath = '/api/utredningar/' + utredningsId + '/createinternforfragan';
+            var restPath = basePath + '/' + utredningsId + '/createinternforfragan';
 
             var config =  {
                 errorMessageConfig: {
@@ -60,7 +62,7 @@ angular.module('ibApp').factory('UtredningarProxy',
         }
 
         function _tillDelaDirekt(utredningsId, requestBody) {
-            var restPath = '/api/utredningar/' + utredningsId + '/tilldeladirekt';
+            var restPath = basePath + '/' + utredningsId + '/tilldeladirekt';
 
             var config = {
                 errorMessageConfig: {

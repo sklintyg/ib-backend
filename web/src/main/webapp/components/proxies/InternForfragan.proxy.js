@@ -20,19 +20,21 @@
 angular.module('ibApp').factory('InternForfraganProxy', function(ProxyTemplate) {
     'use strict';
 
+    var basePath = '/api/vardadmin/internforfragningar';
+
     function _getForfragningar(query) {
-        var restPath = '/api/internforfragningar';
+        var restPath = basePath;
 
         return ProxyTemplate.postTemplate(restPath, query, {});
     }
     function _getInternForfragning(utredningsId) {
-        var restPath = '/api/internforfragningar/' + utredningsId;
+        var restPath = basePath + '/' + utredningsId;
 
         return ProxyTemplate.getTemplate(restPath, {});
     }
 
     function _getForfragningarFilterValues() {
-        var restPath = '/api/internforfragningar/list/filter';
+        var restPath = basePath + '/list/filter';
 
         return ProxyTemplate.getTemplate(restPath, {});
     }
@@ -43,7 +45,7 @@ angular.module('ibApp').factory('InternForfraganProxy', function(ProxyTemplate) 
                 errorTextKey: 'server.error.accepterainternforfragan.text'
             }
         };
-        var restPath = '/api/internforfragningar/' + utredningsId + '/besvara';
+        var restPath = basePath + '/' + utredningsId + '/besvara';
         return ProxyTemplate.postTemplate(restPath, payload, config);
     }
     function _avbojInternForfragan(utredningsId, payload) {
@@ -53,7 +55,7 @@ angular.module('ibApp').factory('InternForfraganProxy', function(ProxyTemplate) 
                 errorTextKey: 'server.error.avbojinternforfragan.text'
             }
         };
-        var restPath = '/api/internforfragningar/' + utredningsId + '/besvara';
+        var restPath = basePath + '/' + utredningsId + '/besvara';
         return ProxyTemplate.postTemplate(restPath, payload, config);
     }
 

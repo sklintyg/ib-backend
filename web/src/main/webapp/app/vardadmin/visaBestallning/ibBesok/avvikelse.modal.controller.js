@@ -36,7 +36,6 @@ angular.module('ibApp')
             $scope.maxDate = moment().format('YYYY-MM-DD');
 
             $scope.avvikelse = {
-                besokId: dialogModel.besokId,
                 orsakatAv: 'PATIENT',
                 beskrivning: undefined,
                 datum: new Date(),
@@ -53,7 +52,7 @@ angular.module('ibApp')
 
                 avvikelseDto.tid = DateUtilsService.formatTime(avvikelseDto.tid);
 
-                BesokProxy.createBesokAvvikelse(avvikelseDto).then(function() {
+                BesokProxy.createBesokAvvikelse(dialogModel.utredningId, dialogModel.besokId, avvikelseDto).then(function() {
                     $uibModalInstance.close();
                     $scope.showSaveErrorMessage = false;
                 }, function() {

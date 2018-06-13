@@ -36,7 +36,7 @@ import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
 
 @RestController
-@RequestMapping("/api/externforfragningar")
+@RequestMapping("/api/samordnare/externforfragningar")
 public class ExternForfraganController {
 
     private static final String AVCCEPT_EXTERN_FORFRAGAN_NOT_ALLOWED = "User is not allowed to accept ExternFörfrågan";

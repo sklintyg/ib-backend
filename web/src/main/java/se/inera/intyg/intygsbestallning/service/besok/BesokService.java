@@ -29,7 +29,7 @@ import java.util.Map;
 
 public interface BesokService {
 
-    RegisterBesokResponse registerBesok(final RegisterBesokRequest request);
+    RegisterBesokResponse registerBesok(final Long utredningId, final Long besokId, final RegisterBesokRequest request);
 
     Avvikelse reportBesokAvvikelse(ReportBesokAvvikelseRequest request);
 
@@ -37,5 +37,5 @@ public interface BesokService {
 
     void avbokaBesok(Long besokId);
 
-    void redovisaBesok(RedovisaBesokRequest request);
+    void redovisaBesok(Long utredningId, RedovisaBesokRequest request);
 }

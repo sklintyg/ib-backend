@@ -21,7 +21,7 @@ angular.module('ibApp').factory('VardgivareProxy',
     function(ProxyTemplate) {
         'use strict';
 
-        var endpointBaseUrl = '/api/vardgivare/vardenheter';
+        var endpointBaseUrl = '/api/samordnare/vardgivare/vardenheter';
 
         function _getVardenheter() {
             return ProxyTemplate.getTemplate(endpointBaseUrl, {});

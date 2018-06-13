@@ -21,8 +21,10 @@ angular.module('ibApp').factory('ExternForfraganProxy',
     function(ProxyTemplate) {
         'use strict';
 
+        var basePath = '/api/samordnare/externforfragningar';
+
         function _acceptExternforfragan(utredningsId, requestBody) {
-            var restPath = '/api/externforfragningar/' + utredningsId + '/accept';
+            var restPath = basePath + '/' + utredningsId + '/accept';
 
             var config = {
                 errorMessageConfig: {
@@ -37,7 +39,7 @@ angular.module('ibApp').factory('ExternForfraganProxy',
         }
 
         function _avvisaExternforfragan(utredningsId, requestBody) {
-            var restPath = '/api/externforfragningar/' + utredningsId + '/avvisa';
+            var restPath = basePath + '/' + utredningsId + '/avvisa';
 
             var config = {
                 errorMessageConfig: {

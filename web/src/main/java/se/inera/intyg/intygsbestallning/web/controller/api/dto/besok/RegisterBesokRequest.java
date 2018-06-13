@@ -33,9 +33,6 @@ import java.util.Optional;
 
 public class RegisterBesokRequest {
 
-    private Long besokId;
-    private Long utredningId;
-
     private String utredandeVardPersonalNamn;
     private DeltagarProfessionTyp profession;
     private TolkStatusTyp tolkStatus;
@@ -47,11 +44,10 @@ public class RegisterBesokRequest {
     private LocalTime besokStartTid;
     private LocalTime besokSlutTid;
 
-    public static RegisterBesokRequest from(final RegisterBesokRequest request, final String namn) {
+    public static RegisterBesokRequest from(final RegisterBesokRequest request) {
         validate(request);
 
         return aRegisterBesokRequest()
-                .withUtredningId(request.getUtredningId())
                 .withUtredandeVardPersonalNamn(request.getUtredandeVardPersonalNamn().orElse(null))
                 .withProfession(request.getProfession())
                 .withTolkStatus(request.getTolkStatus())
@@ -61,22 +57,6 @@ public class RegisterBesokRequest {
                 .withBesokStartTid(request.getBesokStartTid())
                 .withBesokSlutTid(request.getBesokSlutTid())
                 .build();
-    }
-
-    public Long getBesokId() {
-        return besokId;
-    }
-
-    public void setBesokId(Long besokId) {
-        this.besokId = besokId;
-    }
-
-    public Long getUtredningId() {
-        return utredningId;
-    }
-
-    public void setUtredningId(final Long utredningId) {
-        this.utredningId = utredningId;
     }
 
     public Optional<String> getUtredandeVardPersonalNamn() {
@@ -145,7 +125,6 @@ public class RegisterBesokRequest {
 
     public static void validate(RegisterBesokRequest request) {
         checkArgument(nonNull(request), "request may not be null");
-        checkArgument(nonNull(request.getUtredningId()), "utredningId may not be null");
         checkArgument(nonNull(request.getProfession()), "profession may not be null");
         checkArgument(nonNull(request.getBesokSlutTid()), "besokSlutTid may not be null");
         checkArgument(nonNull(request.getKallelseForm()), "kallelseForm may not be null");
@@ -156,7 +135,6 @@ public class RegisterBesokRequest {
 
 
     public static final class RegisterBesokRequestBuilder {
-        private Long utredningId;
         private String utredandeVardPersonalNamn;
         private DeltagarProfessionTyp profession;
         private TolkStatusTyp tolkStatus;
@@ -171,11 +149,6 @@ public class RegisterBesokRequest {
 
         public static RegisterBesokRequestBuilder aRegisterBesokRequest() {
             return new RegisterBesokRequestBuilder();
-        }
-
-        public RegisterBesokRequestBuilder withUtredningId(Long utredningId) {
-            this.utredningId = utredningId;
-            return this;
         }
 
         public RegisterBesokRequestBuilder withUtredandeVardPersonalNamn(String utredandeVardPersonalNamn) {
@@ -220,7 +193,6 @@ public class RegisterBesokRequest {
 
         public RegisterBesokRequest build() {
             RegisterBesokRequest registerBesokRequest = new RegisterBesokRequest();
-            registerBesokRequest.setUtredningId(utredningId);
             registerBesokRequest.setUtredandeVardPersonalNamn(utredandeVardPersonalNamn);
             registerBesokRequest.setProfession(profession);
             registerBesokRequest.setTolkStatus(tolkStatus);

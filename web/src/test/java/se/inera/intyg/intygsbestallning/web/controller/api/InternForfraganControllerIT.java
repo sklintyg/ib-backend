@@ -31,7 +31,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 public class InternForfraganControllerIT extends BaseRestIntegrationTest {
 
-    private static final String INTERN_FORFRAGAN_API_ENDPOINT = "/api/internforfragningar";
+    private static final String INTERN_FORFRAGAN_API_ENDPOINT = "/api/vardadmin/internforfragningar";
 
     @Test
     public void testListForfragningar() throws JsonProcessingException {

@@ -20,34 +20,40 @@
 angular.module('ibApp').factory('BesokProxy',
     function(ProxyTemplate) {
         'use strict';
-        var besokRestPath = '/api/vardadmin/besok/';
+        var besokRestPath = '/api/vardadmin/bestallningar/';
 
-        function _createBesok(besok) {
-            var restPath = besokRestPath;
+        function _createBesok(utredningId, besok) {
+            var restPath = besokRestPath + utredningId + '/besok';
+
+            return ProxyTemplate.postTemplate(restPath, besok, {});
+        }
+
+        function _updateBesok(utredningId, besokId, besok) {
+            var restPath = besokRestPath + utredningId + '/besok/' + besokId;
 
             return ProxyTemplate.putTemplate(restPath, besok, {});
         }
 
-        function _createBesokAvvikelse(besokId) {
-            var restPath = besokRestPath + 'avvikelse';
+        function _createBesokAvvikelse(utredningId, besokId, request) {
+            var restPath = besokRestPath + utredningId + '/besok/' + besokId + '/avvikelse';
+
+            return ProxyTemplate.putTemplate(restPath, request, {});
+        }
+
+        function _avboka(utredningId, besokId) {
+            var restPath = besokRestPath + utredningId + '/besok/' + besokId + '/avboka';
 
             return ProxyTemplate.putTemplate(restPath, besokId, {});
         }
 
-        function _avboka(besokId) {
-            var restPath = besokRestPath + 'avboka' + '/' + besokId;
-
-            return ProxyTemplate.putTemplate(restPath, besokId, {});
-        }
-
-        function _getProffessionsTyper() {
-            var restPath = besokRestPath + 'professiontyper';
+        function _getProffessionsTyper(utredningId) {
+            var restPath = besokRestPath + utredningId + '/besok/' + 'professiontyper';
 
             return ProxyTemplate.getTemplate(restPath, {});
         }
 
-        function _addArbetsdagar(datum, arbetsdagar) {
-            var restPath = besokRestPath + 'addarbetsdagar';
+        function _addArbetsdagar(utredningId, datum, arbetsdagar) {
+            var restPath = besokRestPath + utredningId + '/besok/addarbetsdagar';
 
             return ProxyTemplate.postTemplate(restPath, {datum: datum, arbetsdagar: arbetsdagar}, {});
         }
@@ -55,6 +61,7 @@ angular.module('ibApp').factory('BesokProxy',
         // Return public API for the service
         return {
             createBesok: _createBesok,
+            updateBesok: _updateBesok,
             createBesokAvvikelse: _createBesokAvvikelse,
             avboka: _avboka,
             getProffessionsTyper: _getProffessionsTyper,

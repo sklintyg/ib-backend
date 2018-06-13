@@ -48,7 +48,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.ListFor
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListForfraganFilter;
 
 @RestController
-@RequestMapping("/api/internforfragningar")
+@RequestMapping("/api/vardadmin/internforfragningar")
 public class InternForfraganController {
 
     @Autowired

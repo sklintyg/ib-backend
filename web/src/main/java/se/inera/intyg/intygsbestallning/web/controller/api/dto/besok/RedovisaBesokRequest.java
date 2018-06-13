@@ -22,17 +22,7 @@ import java.util.List;
 
 public class RedovisaBesokRequest {
 
-    private Long utredningId;
-
     private List<RedovisaBesokListItem> redovisaBesokList;
-
-    public Long getUtredningId() {
-        return utredningId;
-    }
-
-    public void setUtredningId(Long utredningId) {
-        this.utredningId = utredningId;
-    }
 
     public List<RedovisaBesokListItem> getRedovisaBesokList() {
         return redovisaBesokList;

@@ -24,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,6 +38,8 @@ import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utlatande.UtlatandeService;
 import se.inera.intyg.intygsbestallning.service.utredning.BestallningService;
+import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.AvslutadBestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.BestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.GetAvslutadeBestallningarListResponse;
@@ -63,6 +66,9 @@ public class BestallningController {
 
     @Autowired
     private UtlatandeService utlatandeService;
+
+    @Autowired
+    private UtredningService utredningService;
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
@@ -160,6 +166,20 @@ public class BestallningController {
                 .orThrow(new IbAuthorizationException("User does not have required privilege PRIVILEGE_LISTA_BESTALLNINGAR"));
 
         utlatandeService.sendUtlatande(utredningId, request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{utredningId}/avsluta")
+    public ResponseEntity avslutaUtredning(
+            @PathVariable("utredningId") final String utredningId) {
+
+        final IbUser user = userService.getUser();
+
+        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_AVSLUTA_UTREDNING)
+                .orThrow(new IbAuthorizationException("User does not have required privilege PRIVILEGE_AVSLUTA_UTREDNING"));
+
+        utredningService.avslutaUtredning(EndUtredningRequest.from(utredningId, user));
+
         return ResponseEntity.ok().build();
     }
 }

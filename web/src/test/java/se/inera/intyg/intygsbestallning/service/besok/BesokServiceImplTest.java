@@ -130,7 +130,6 @@ public class BesokServiceImplTest {
         when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
 
         RegisterBesokRequest request = new RegisterBesokRequest();
-        request.setUtredningId(UTREDNING_ID);
         request.setUtredandeVardPersonalNamn("utredandeVardPersonalNamn");
         request.setProfession(DeltagarProfessionTyp.LK);
         request.setTolkStatus(TolkStatusTyp.BOKAT);
@@ -162,7 +161,7 @@ public class BesokServiceImplTest {
                 .withVisitStatus(besok.getBesokStatus().getCvValue())
                 .build();
 
-        besokService.registerBesok(request);
+        besokService.registerBesok(UTREDNING_ID, null, request);
 
         verify(myndighetIntegrationService, times(0)).updateAssessment(eq(UTREDNING_ID), eq(UTREDNING_TYP.name()));
         verify(myndighetIntegrationService, times(1)).reportCareContactInteraction(eq(dto));
@@ -177,7 +176,6 @@ public class BesokServiceImplTest {
         when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
 
         RegisterBesokRequest request = new RegisterBesokRequest();
-        request.setUtredningId(UTREDNING_ID);
         request.setUtredandeVardPersonalNamn("utredandeVardPersonalNamn");
         request.setProfession(DeltagarProfessionTyp.PS);
         request.setTolkStatus(TolkStatusTyp.BOKAT);
@@ -209,7 +207,7 @@ public class BesokServiceImplTest {
                 .withVisitStatus(besok.getBesokStatus().getCvValue())
                 .build();
 
-        besokService.registerBesok(request);
+        besokService.registerBesok(UTREDNING_ID, null, request);
 
         verify(myndighetIntegrationService, times(1)).updateAssessment(eq(UTREDNING_ID), eq(UTREDNING_TYP.name()));
         verify(myndighetIntegrationService, times(1)).reportCareContactInteraction(eq(dto));
@@ -221,7 +219,6 @@ public class BesokServiceImplTest {
     @Test
     public void testRegisterBesokIllegalState() {
         RegisterBesokRequest request = new RegisterBesokRequest();
-        request.setUtredningId(UTREDNING_ID);
         request.setUtredandeVardPersonalNamn("utredandeVardPersonalNamn");
         request.setProfession(DeltagarProfessionTyp.PS);
         request.setTolkStatus(TolkStatusTyp.BOKAT);
@@ -238,7 +235,7 @@ public class BesokServiceImplTest {
         doReturn(Optional.of(utredning))
                 .when(utredningRepository).findById(eq(UTREDNING_ID));
 
-        assertThatThrownBy(() -> besokService.registerBesok(request))
+        assertThatThrownBy(() -> besokService.registerBesok(UTREDNING_ID, null, request))
                 .isExactlyInstanceOf(IbServiceException.class)
                 .hasMessage("Utredning with id " + UTREDNING_ID + " is in an incorrect state");
     }
@@ -249,7 +246,6 @@ public class BesokServiceImplTest {
         when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
 
         RegisterBesokRequest request = new RegisterBesokRequest();
-        request.setUtredningId(UTREDNING_ID);
         request.setUtredandeVardPersonalNamn("utredandeVardPersonalNamn");
         request.setProfession(DeltagarProfessionTyp.LK);
         request.setTolkStatus(TolkStatusTyp.BOKAT);
@@ -264,7 +260,7 @@ public class BesokServiceImplTest {
         doReturn(Optional.of(utredning))
                 .when(utredningRepository).findById(eq(UTREDNING_ID));
 
-        besokService.registerBesok(request);
+        besokService.registerBesok(UTREDNING_ID, null,request);
     }
 
     @Test
@@ -286,8 +282,6 @@ public class BesokServiceImplTest {
                 .when(utredningRepository).findById(eq(UTREDNING_ID));
 
         RegisterBesokRequest request = new RegisterBesokRequest();
-        request.setUtredningId(UTREDNING_ID);
-        request.setBesokId(BESOK_ID);
         request.setUtredandeVardPersonalNamn("changed");
         request.setProfession(DeltagarProfessionTyp.LK);
         request.setTolkStatus(TolkStatusTyp.BOKAT);
@@ -297,7 +291,7 @@ public class BesokServiceImplTest {
         request.setBesokStartTid(DATE_TIME.plusMonths(1).plusHours(4).toLocalTime());
         request.setBesokSlutTid(DATE_TIME.plusMonths(1).plusHours(6).toLocalTime());
 
-        besokService.registerBesok(request);
+        besokService.registerBesok(UTREDNING_ID, BESOK_ID,request);
 
         final ReportCareContactRequestDto dto = aReportCareContactRequestDto()
                 .withAssessmentId(utredning.getUtredningId())
@@ -342,8 +336,6 @@ public class BesokServiceImplTest {
                 .when(utredningRepository).findById(eq(UTREDNING_ID));
 
         RegisterBesokRequest request = new RegisterBesokRequest();
-        request.setUtredningId(UTREDNING_ID);
-        request.setBesokId(BESOK_ID);
         request.setUtredandeVardPersonalNamn("changed");
         request.setProfession(DeltagarProfessionTyp.AT);
         request.setTolkStatus(TolkStatusTyp.BOKAT);
@@ -353,7 +345,7 @@ public class BesokServiceImplTest {
         request.setBesokStartTid(DATE_TIME.plusMonths(1).toLocalTime());
         request.setBesokSlutTid(DATE_TIME.plusMonths(1).plusHours(1).toLocalTime());
 
-        besokService.registerBesok(request);
+        besokService.registerBesok(UTREDNING_ID, BESOK_ID,request);
 
         final ReportCareContactRequestDto dto = aReportCareContactRequestDto()
                 .withAssessmentId(utredning.getUtredningId())
@@ -398,8 +390,6 @@ public class BesokServiceImplTest {
                 .when(utredningRepository).findById(eq(UTREDNING_ID));
 
         RegisterBesokRequest request = new RegisterBesokRequest();
-        request.setUtredningId(UTREDNING_ID);
-        request.setBesokId(11111L);
         request.setUtredandeVardPersonalNamn("changed");
         request.setProfession(DeltagarProfessionTyp.AT);
         request.setTolkStatus(TolkStatusTyp.BOKAT);
@@ -409,7 +399,7 @@ public class BesokServiceImplTest {
         request.setBesokStartTid(DATE_TIME.plusMonths(1).toLocalTime());
         request.setBesokSlutTid(DATE_TIME.plusMonths(1).plusHours(1).toLocalTime());
 
-        besokService.registerBesok(request);
+        besokService.registerBesok(UTREDNING_ID, 11111L,request);
     }
 
     @Test
@@ -646,12 +636,11 @@ public class BesokServiceImplTest {
                 .findById(eq(UTREDNING_ID));
 
         RedovisaBesokRequest request = new RedovisaBesokRequest();
-        request.setUtredningId(UTREDNING_ID);
         RedovisaBesokRequest.RedovisaBesokListItem besokRequest1 = new RedovisaBesokRequest.RedovisaBesokListItem(1L, true, false);
         RedovisaBesokRequest.RedovisaBesokListItem besokRequest2 = new RedovisaBesokRequest.RedovisaBesokListItem(2L, false, false);
         RedovisaBesokRequest.RedovisaBesokListItem besokRequest3 = new RedovisaBesokRequest.RedovisaBesokListItem(3L, true, true);
         request.setRedovisaBesokList(ImmutableList.of(besokRequest1, besokRequest2, besokRequest3));
-        besokService.redovisaBesok(request);
+        besokService.redovisaBesok(UTREDNING_ID, request);
 
         besokReportService.redovisaBesokInNewTransaction(eq(utredning), eq(besokRequest1));
         besokReportService.redovisaBesokInNewTransaction(eq(utredning), eq(besokRequest2));
@@ -665,9 +654,8 @@ public class BesokServiceImplTest {
                 .findById(eq(UTREDNING_ID));
 
         RedovisaBesokRequest request = new RedovisaBesokRequest();
-        request.setUtredningId(UTREDNING_ID);
 
-        assertThatThrownBy(() -> besokService.redovisaBesok(request))
+        assertThatThrownBy(() -> besokService.redovisaBesok(UTREDNING_ID, request))
                 .isExactlyInstanceOf(IbNotFoundException.class)
                 .hasFieldOrPropertyWithValue("errorCode", IbErrorCodeEnum.NOT_FOUND);
     }
@@ -683,9 +671,8 @@ public class BesokServiceImplTest {
                 .findById(eq(UTREDNING_ID));
 
         RedovisaBesokRequest request = new RedovisaBesokRequest();
-        request.setUtredningId(UTREDNING_ID);
 
-        assertThatThrownBy(() -> besokService.redovisaBesok(request))
+        assertThatThrownBy(() -> besokService.redovisaBesok(UTREDNING_ID, request))
                 .isExactlyInstanceOf(IbAuthorizationException.class)
                 .hasFieldOrPropertyWithValue("errorCode", IbErrorCodeEnum.UNAUTHORIZED);
     }
@@ -701,9 +688,8 @@ public class BesokServiceImplTest {
                 .findById(eq(UTREDNING_ID));
 
         RedovisaBesokRequest request = new RedovisaBesokRequest();
-        request.setUtredningId(UTREDNING_ID);
 
-        assertThatThrownBy(() -> besokService.redovisaBesok(request))
+        assertThatThrownBy(() -> besokService.redovisaBesok(UTREDNING_ID, request))
                 .isExactlyInstanceOf(IbServiceException.class)
                 .hasFieldOrPropertyWithValue("errorCode", IbErrorCodeEnum.BAD_STATE);
     }

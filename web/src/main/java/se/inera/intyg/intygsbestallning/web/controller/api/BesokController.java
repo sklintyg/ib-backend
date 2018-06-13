@@ -37,7 +37,7 @@ import java.time.LocalDate;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/vardadmin/besok")
+@RequestMapping("/api/vardadmin/bestallningar/{utredningId}/besok")
 public class BesokController {
 
     private static final String EDIT_NOT_ALLOWED = "User is not allowed to edit the requested resource";
@@ -57,29 +57,41 @@ public class BesokController {
         return ResponseEntity.ok(DeltagarProfessionTyp.values());
     }
 
-    @PutMapping
-    public RegisterBesokResponse registerBesok(@RequestBody  final RegisterBesokRequest request) {
+    @PostMapping
+    public RegisterBesokResponse registerBesok(@PathVariable Long utredningId, @RequestBody  final RegisterBesokRequest request) {
 
         final IbUser user = userService.getUser();
         authoritiesValidator.given(user)
                 .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_BESOK)
                 .orThrow(new IbAuthorizationException(EDIT_NOT_ALLOWED));
 
-        return besokService.registerBesok(RegisterBesokRequest.from(request, user.getNamn()));
+        return besokService.registerBesok(utredningId, null, RegisterBesokRequest.from(request));
     }
 
-    @PutMapping("/avvikelse")
-    public void createBesokAvvikelse(@RequestBody final ReportBesokAvvikelseVardenRequest request) {
+    @PutMapping("/{besokId}")
+    public RegisterBesokResponse updateBesok(@PathVariable Long utredningId, @PathVariable Long besokId,
+                                             @RequestBody final RegisterBesokRequest request) {
 
         final IbUser user = userService.getUser();
         authoritiesValidator.given(user)
                 .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_BESOK)
                 .orThrow(new IbAuthorizationException(EDIT_NOT_ALLOWED));
 
-        besokService.reportBesokAvvikelse(ReportBesokAvvikelseRequest.from(request, user.getNamn()));
+        return besokService.registerBesok(utredningId, besokId, RegisterBesokRequest.from(request));
     }
 
-    @PutMapping("/avboka/{besokId}")
+    @PutMapping("/{besokId}/avvikelse")
+    public void createBesokAvvikelse(@PathVariable Long besokId, @RequestBody final ReportBesokAvvikelseVardenRequest request) {
+
+        final IbUser user = userService.getUser();
+        authoritiesValidator.given(user)
+                .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_BESOK)
+                .orThrow(new IbAuthorizationException(EDIT_NOT_ALLOWED));
+
+        besokService.reportBesokAvvikelse(ReportBesokAvvikelseRequest.from(besokId, request, user.getNamn()));
+    }
+
+    @PutMapping("/{besokId}/avboka")
     public void avbokaBesok(@PathVariable("besokId") Long besokId) {
 
         final IbUser user = userService.getUser();
@@ -91,14 +103,14 @@ public class BesokController {
     }
 
     @PutMapping("/redovisa")
-    public void redovisaBesok(@RequestBody final RedovisaBesokRequest request) {
+    public void redovisaBesok(@PathVariable Long utredningId, @RequestBody final RedovisaBesokRequest request) {
 
         final IbUser user = userService.getUser();
         authoritiesValidator.given(user)
                 .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_BESOK)
                 .orThrow(new IbAuthorizationException(EDIT_NOT_ALLOWED));
 
-        besokService.redovisaBesok(request);
+        besokService.redovisaBesok(utredningId, request);
     }
 
     @PostMapping("/addarbetsdagar")

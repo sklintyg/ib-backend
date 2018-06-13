@@ -21,8 +21,10 @@ angular.module('ibApp').factory('VardenhetProxy',
     function(ProxyTemplate) {
         'use strict';
 
+        var basePath = '/api/vardadmin/vardenhet/';
+        
         function _getVardenhetKontaktPreference() {
-            var restPath = '/api/vardenhet/preference';
+            var restPath = basePath + '/preference';
 
             var config =  {
                 errorMessageConfig: {
@@ -35,7 +37,7 @@ angular.module('ibApp').factory('VardenhetProxy',
         }
 
         function _setVardenhetKontaktPreference(vardenhetPreferenceRequest) {
-            var restPath = '/api/vardenhet/preference';
+            var restPath = basePath + '/preference';
 
             var config =  {
                 errorMessageConfig: {
@@ -48,7 +50,7 @@ angular.module('ibApp').factory('VardenhetProxy',
         }
 
         function _getVardenhetSvarPreference() {
-            var restPath = '/api/vardenhet/preference/svar';
+            var restPath = basePath + '/preference/svar';
 
             var config =  {
                 errorMessageConfig: {
@@ -61,7 +63,7 @@ angular.module('ibApp').factory('VardenhetProxy',
         }
 
         function _setVardenhetSvarPreference(vardenhetSvarPreferenceRequest) {
-            var restPath = '/api/vardenhet/preference/svar';
+            var restPath = basePath + '/preference/svar';
 
             var config =  {
                 errorMessageConfig: {
@@ -74,7 +76,7 @@ angular.module('ibApp').factory('VardenhetProxy',
         }
 
         function _getHsaInfo() {
-            var restPath = '/api/vardenhet/fromhsa';
+            var restPath = basePath + '/fromhsa';
 
             var config =  {
                 errorMessageConfig: {

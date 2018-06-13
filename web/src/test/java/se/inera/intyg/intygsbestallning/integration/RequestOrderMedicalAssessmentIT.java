@@ -95,7 +95,7 @@ public class RequestOrderMedicalAssessmentIT extends BaseRestIntegrationTest {
                 .body("handlaggareEpost", is("handlaggare@ineratestar.se"));
 
         // Förfrågan till vårdenheten har status Beställd
-        given().when().get("/api/internforfragningar/" + utredningId).then()
+        given().when().get("/api/vardadmin/internforfragningar/" + utredningId).then()
                 .statusCode(200)
                 .body("internForfragan.status.id", is(BESTALLD.getId()));
 

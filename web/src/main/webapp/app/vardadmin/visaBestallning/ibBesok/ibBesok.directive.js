@@ -48,7 +48,7 @@ angular.module('ibApp').directive('ibBesok', function($log, ibDialog, BesokProxy
             };
 
             $scope.openAvvikelseModal = function(besokId) {
-                openModal('avvikelse.modal.html', 'AvvikelseModalCtrl', {besokId: besokId});
+                openModal('avvikelse.modal.html', 'AvvikelseModalCtrl', {utredningId: $scope.bestallning.utredningsId, besokId: besokId});
             };
 
             $scope.openAvbokaModal = function(besokId) {
@@ -58,7 +58,7 @@ angular.module('ibApp').directive('ibBesok', function($log, ibDialog, BesokProxy
                     bodyText: 'Är du säker på att du vill avboka besöket?',
                     confirmText: 'Bekräfta'
                 }).then(function() {
-                    BesokProxy.avboka(besokId).then(function(){
+                    BesokProxy.avboka($scope.bestallning.utredningsId, besokId).then(function(){
                         $log.info('Successfully requested avbokning');
                     }, function(){
                         ibDialog.message('failAvbokaModal',

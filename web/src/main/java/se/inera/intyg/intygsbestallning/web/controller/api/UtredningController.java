@@ -24,7 +24,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,7 +35,6 @@ import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.service.forfragan.InternForfraganService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
-import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.CreateInternForfraganRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.TilldelaDirektRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningListResponse;
@@ -44,7 +42,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtre
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListUtredningRequest;
 
 @RestController
-@RequestMapping("/api/utredningar")
+@RequestMapping("/api/samordnare/utredningar")
 public class UtredningController {
 
     private static final String VIEW_NOT_ALLOWED = "User is not allowed to view the requested resource";
@@ -104,19 +102,5 @@ public class UtredningController {
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_VISA_UTREDNING)
                 .orThrow(new IbAuthorizationException(EDIT_NOT_ALLOWED));
         return ResponseEntity.ok(internForfraganService.tilldelaDirekt(utredningsId, user.getCurrentlyLoggedInAt().getId(), req));
-    }
-
-    @PutMapping("/{utredningId}/avsluta")
-    public ResponseEntity avslutaUtredning(
-            @PathVariable("utredningId") final String utredningId) {
-
-        final IbUser user = userService.getUser();
-
-        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_AVSLUTA_UTREDNING)
-                .orThrow(new IbAuthorizationException(EDIT_NOT_ALLOWED));
-
-        utredningService.avslutaUtredning(EndUtredningRequest.from(utredningId, user));
-
-        return ResponseEntity.ok().build();
     }
 }

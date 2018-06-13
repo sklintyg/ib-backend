@@ -26,20 +26,11 @@ import java.time.LocalTime;
 
 public final class ReportBesokAvvikelseVardenRequest {
 
-    private String besokId;
     private AvvikelseOrsak orsakatAv;
     private String beskrivning;
     private LocalDate datum;
     private LocalTime tid;
     private Boolean invanareUteblev;
-
-    public String getBesokId() {
-        return besokId;
-    }
-
-    public void setBesokId(String besokId) {
-        this.besokId = besokId;
-    }
 
     public AvvikelseOrsak getOrsakatAv() {
         return orsakatAv;

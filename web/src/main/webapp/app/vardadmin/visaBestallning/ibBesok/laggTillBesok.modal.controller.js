@@ -31,7 +31,7 @@ angular.module('ibApp')
             $scope.showUpdateAssessmentErrorMessage = false;
             $scope.professionList = [chooseOption];
 
-            BesokProxy.getProffessionsTyper().then(function(result) {
+            BesokProxy.getProffessionsTyper(dialogModel.utredningsId).then(function(result) {
                 $scope.professionList = $scope.professionList.concat(result);
             }, function(error) {
                 $log.error(error);
@@ -46,7 +46,6 @@ angular.module('ibApp')
             $scope.besokDatum = undefined;
 
             $scope.besok = {
-                utredningId: dialogModel.utredningsId,
                 utredandeVardPersonalNamn: '',
                 profession: undefined,
                 tolkStatus: undefined,
@@ -75,7 +74,7 @@ angular.module('ibApp')
                 $scope.besok.besokStartTid = formatTime($scope.besokStartTid);
                 $scope.besok.besokSlutTid = formatTime($scope.besokSlutTid);
                 $scope.skickar = true;
-                BesokProxy.createBesok($scope.besok).then(function(result) {
+                BesokProxy.createBesok(dialogModel.utredningsId, $scope.besok).then(function(result) {
                     $uibModalInstance.close(result);
                     $scope.skickar = false;
                 }, function(error) {
@@ -101,7 +100,7 @@ angular.module('ibApp')
 
             $scope.$watch('besokKallelse', function(newVal, oldVal) {
                 if(newVal && newVal !== oldVal) {
-                    BesokProxy.addArbetsdagar(newVal, hamtaDagar()).then(function(result) {
+                    BesokProxy.addArbetsdagar(dialogModel.utredningsId, newVal, hamtaDagar()).then(function(result) {
                         kallelsedatumMedArbetsdagar = result;
                     }, function(error) {
                         $log.error(error);
@@ -111,7 +110,7 @@ angular.module('ibApp')
 
             $scope.$watch('besok.kallelseForm', function(newVal, oldVal) {
                 if(newVal && newVal !== oldVal && $scope.besokKallelse) {
-                    BesokProxy.addArbetsdagar($scope.besokKallelse, hamtaDagar()).then(function(result) {
+                    BesokProxy.addArbetsdagar(dialogModel.utredningsId, $scope.besokKallelse, hamtaDagar()).then(function(result) {
                         kallelsedatumMedArbetsdagar = result;
                     }, function(error) {
                         $log.error(error);

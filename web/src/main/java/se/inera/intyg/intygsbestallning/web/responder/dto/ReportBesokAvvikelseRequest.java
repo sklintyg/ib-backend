@@ -74,15 +74,15 @@ public final class ReportBesokAvvikelseRequest {
         return handelseTyp;
     }
 
-    public static ReportBesokAvvikelseRequest from(final ReportBesokAvvikelseVardenRequest dto, final String samordnare) {
+    public static ReportBesokAvvikelseRequest from(final long besokId, final ReportBesokAvvikelseVardenRequest dto,
+                                                   final String samordnare) {
 
-        checkArgument(nonNull(dto.getBesokId()));
+        checkArgument(nonNull(besokId));
         checkArgument(nonNull(dto.getOrsakatAv()));
         checkArgument(nonNull(dto.getDatum()));
         checkArgument(nonNull(dto.getTid()));
         checkArgument(nonNull(dto.getInvanareUteblev()));
 
-        final Long besokId = Long.valueOf(dto.getBesokId());
         final AvvikelseOrsak orsakatAv = dto.getOrsakatAv();
         final String beskrivning = dto.getBeskrivning();
         final LocalDateTime tidpunkt = LocalDateTime.of(dto.getDatum(), dto.getTid());

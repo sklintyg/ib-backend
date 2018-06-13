@@ -32,7 +32,7 @@ import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonS
  * Created by marced on 2018-04-24.
  */
 public class VardenhetControllerIT extends BaseRestIntegrationTest {
-    private static final String VARDENHET_API_ENDPOINT = "/api/vardenhet";
+    private static final String VARDENHET_API_ENDPOINT = "/api/vardadmin/vardenhet";
     private static final String MOTTAGAR_NAMN = "Nytt namn";
     private static final String ADRESS = "Vårdgatan 44";
     private static final String POSTNUMMER = "12345";

@@ -48,7 +48,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.SearchF
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.UpdateRegiFormRequest;
 
 @RestController
-@RequestMapping("/api/vardgivare")
+@RequestMapping("/api/samordnare/vardgivare")
 public class VardgivareController {
 
     @Autowired

@@ -46,7 +46,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.Vardenh
  * Created by marced on 2018-04-23.
  */
 @RestController
-@RequestMapping("/api/vardenhet")
+@RequestMapping("/api/vardadmin/vardenhet")
 public class VardenhetController {
 
     @Autowired

@@ -21,8 +21,10 @@ angular.module('ibApp').factory('BestallningarProxy',
     function(ProxyTemplate) {
         'use strict';
 
+        var basePath = '/api/vardadmin/bestallningar';
+
         function _getBestallning(utredningsId) {
-            var restPath = '/api/vardadmin/bestallningar/' + utredningsId;
+            var restPath = basePath + '/' + utredningsId;
 
             var config =  {
                 errorMessageConfig: {
@@ -35,25 +37,25 @@ angular.module('ibApp').factory('BestallningarProxy',
         }
 
         function _getBestallningarWithFilter(query) {
-            var restPath = '/api/vardadmin/bestallningar';
+            var restPath = basePath;
 
             return ProxyTemplate.postTemplate(restPath, query, {});
         }
 
         function _getBestallningarFilterValues() {
-            var restPath = '/api/vardadmin/bestallningar/list/filter';
+            var restPath = basePath + '/list/filter';
 
             return ProxyTemplate.getTemplate(restPath, {});
         }
 
         function _getAvslutadeBestallningarWithFilter(query) {
-            var restPath = '/api/vardadmin/bestallningar/avslutade';
+            var restPath = basePath + '/avslutade';
 
             return ProxyTemplate.postTemplate(restPath, query, {});
         }
 
         function _getAvslutadeBestallningarFilterValues() {
-            var restPath = '/api/vardadmin/bestallningar/avslutade/list/filter';
+            var restPath = basePath + '/avslutade/list/filter';
 
             return ProxyTemplate.getTemplate(restPath, {});
         }

@@ -28,7 +28,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 public class UtredningControllerIT extends BaseRestIntegrationTest {
 
-    private static final String UTREDNING_API_ENDPOINT = "/api/utredningar";
+    private static final String UTREDNING_API_ENDPOINT = "/api/samordnare/utredningar";
 
     @Test
     public void testListUtredningarWithFilter() {

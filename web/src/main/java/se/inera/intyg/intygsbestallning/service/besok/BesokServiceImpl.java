@@ -106,13 +106,13 @@ public class BesokServiceImpl extends BaseBesokService implements BesokService {
 
     @Override
     @Transactional
-    public RegisterBesokResponse registerBesok(final RegisterBesokRequest request) {
+    public RegisterBesokResponse registerBesok(final Long utredningId, final Long besokId, final RegisterBesokRequest request) {
         validate(request);
 
-        LOG.debug(MessageFormat.format("Received a request to register new besok for utredning with id {0}", request.getUtredningId()));
+        LOG.debug(MessageFormat.format("Received a request to register new besok for utredning with id {0}", utredningId));
 
-        final Utredning utredning = utredningRepository.findById(request.getUtredningId())
-                .orElseThrow(() -> new IbNotFoundException("Utredning with id '" + request.getUtredningId() + "' does not exist."));
+        final Utredning utredning = utredningRepository.findById(utredningId)
+                .orElseThrow(() -> new IbNotFoundException("Utredning with id '" + utredningId + "' does not exist."));
 
         if (!BESOK_HANTERING_GODKANDA_STATUSAR.contains(UtredningStatusResolver.resolveStaticStatus(utredning))) {
             throw new IbServiceException(IbErrorCodeEnum.BAD_STATE,
@@ -123,12 +123,12 @@ public class BesokServiceImpl extends BaseBesokService implements BesokService {
 
         Besok besok;
         Handelse besokHandelse;
-        if (request.getBesokId() != null) {
+        if (besokId != null) {
             besok = utredning.getBesokList().stream()
-                    .filter(b -> b.getId().equals(request.getBesokId()))
+                    .filter(b -> b.getId().equals(besokId))
                     .findAny()
                     .orElseThrow(() -> new IbNotFoundException(MessageFormat.format(
-                            "Could not find besok \'{0}\' in utredning \'{0}\'", request.getBesokId(), request.getUtredningId())));
+                            "Could not find besok \'{0}\' in utredning \'{0}\'", besokId, utredningId)));
 
             if (isBesokOmbokat(besok, request)) {
                 besokHandelse = HandelseUtil.createOmbokatBesok(besok, LocalDateTime.of(request.getBesokDatum(),
@@ -251,9 +251,9 @@ public class BesokServiceImpl extends BaseBesokService implements BesokService {
 
     @Override
     @Transactional
-    public void redovisaBesok(final RedovisaBesokRequest request) {
-        final Utredning utredning = utredningRepository.findById(request.getUtredningId())
-                .orElseThrow(() -> new IbNotFoundException("Utredning with id '" + request.getUtredningId() + "' does not exist."));
+    public void redovisaBesok(Long utredningId, final RedovisaBesokRequest request) {
+        final Utredning utredning = utredningRepository.findById(utredningId)
+                .orElseThrow(() -> new IbNotFoundException("Utredning with id '" + utredningId + "' does not exist."));
 
         checkUserVardenhetTilldeladToBestallning(utredning);
 
