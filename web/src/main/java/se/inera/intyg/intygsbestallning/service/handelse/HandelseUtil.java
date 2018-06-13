@@ -346,4 +346,14 @@ public final class HandelseUtil {
                 .build();
     }
 
+    public static Handelse createAnteckning(final String anteckning, final String anvandare) {
+
+        return aHandelse()
+                .withAnvandare(anvandare)
+                .withSkapad(LocalDateTime.now())
+                .withHandelseTyp(HandelseTyp.NY_ANTECKNING)
+                .withHandelseText("Ny anteckning")
+                .withKommentar(anteckning)
+                .build();
+    }
 }
