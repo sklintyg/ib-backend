@@ -160,6 +160,7 @@ public class BesokServiceImpl extends BaseBesokService implements BesokService {
             utredning.setUtredningsTyp(UtredningsTyp.AFU_UTVIDGAD);
             reportBesok(utredning, besok);
             final LocalDateTime nyttSistaDatum = updateUtredningWithUtredningsTypAfuUtvidgad(utredning);
+            utredning.getHandelseList().add(HandelseUtil.createAndradUtredningstyp(nyttSistaDatum, userService.getUser().getNamn()));
             utredningRepository.saveUtredning(utredning);
             return RegisterBesokResponse.withUpdatedUtredningsTyp(nyttSistaDatum.toString());
         } else {

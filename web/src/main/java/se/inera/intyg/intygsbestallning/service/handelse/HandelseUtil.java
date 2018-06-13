@@ -396,4 +396,15 @@ public final class HandelseUtil {
                 .withHandelseText(handelseText)
                 .build();
     }
+
+    public static Handelse createAndradUtredningstyp(final LocalDateTime date, final String anvandare) {
+        final String handelseText = MessageFormat.format("Utredningstypen ändrad till Utvidgad AFU. Nytt slutdatum: {0}",
+                date.format(DateTimeFormatter.ISO_DATE));
+        return aHandelse()
+                .withSkapad(LocalDateTime.now())
+                .withAnvandare(anvandare)
+                .withHandelseTyp(HandelseTyp.ANDRAD_UTREDNINGSTYP)
+                .withHandelseText(handelseText)
+                .build();
+    }
 }
