@@ -109,6 +109,7 @@ var ibMessages = {
         'lagg-till-besok.label.name': 'Namn',
         'lagg-till-besok.label.interpreter': 'Tolk bokad',
         'lagg-till-besok.label.kallelseskickad': 'Kallelse skickad',
+        'lagg-till-besok.label.kallelseskickadhelp': 'Datum anger då kallelsen skickades till invånaren eller då invånaren kontaktades per telefon',
         'lagg-till-besok.label.viamail': 'Per post',
         'lagg-till-besok.label.viaphone': 'Per telefon',
         'lagg-till-besok.info.profession': 'Om annan profession än läkare har valts så kommer utredningstypen att ändras till "AFU utvidgad".',

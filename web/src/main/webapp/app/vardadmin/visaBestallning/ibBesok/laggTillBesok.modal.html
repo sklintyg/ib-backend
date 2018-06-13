@@ -69,6 +69,7 @@
           <span class="kallelse">
             <ib-help-text-label required="true" required-expr="!besokKallelse"
                                 label-key="lagg-till-besok.label.kallelseskickad"></ib-help-text-label>
+            <ib-help-chevron help-text-key="lagg-till-besok.label.kallelseskickadhelp"></ib-help-chevron>
           </span>
           <ib-date-picker-field target-model="besokKallelse"
                                 min-date-error="Möjligt startdatum får tidigast vara dagens datum"
@@ -86,6 +87,9 @@
             <label ng-click="besok.kallelseForm = 'TELEFONKONTAKT'" ng-attr-for="utforarTypUnderleverantor">Per
               telefon</label>
           </ib-radio-wrapper>
+        </div>
+        <div class="flex-column">
+          <ib-help-chevron-text help-text-key="lagg-till-besok.label.kallelseskickadhelp"></ib-help-chevron-text>
         </div>
         <div class="flex-column">
           <ib-field-error-list errors="laggTillBesokForm.besokKallelseDatum.$error"></ib-field-error-list>
