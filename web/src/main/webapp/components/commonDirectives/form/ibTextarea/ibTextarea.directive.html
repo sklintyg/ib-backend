@@ -1,7 +1,7 @@
 <div class="row">
   <div class="col-xs-{{::colSize}}">
     <label ng-attr-for="{{::inputId}}" class="control-label" ng-if="labelKey">
-      <span ng-if="required" class="required">*</span>
+      <span ng-if="required && requiredExpr" class="asterisk">*</span>
       <span message key="{{::labelKey}}"></span>
       <span ng-if="helpKey">
         <ib-help-chevron help-text-key="{{helpKey}}"></ib-help-chevron>

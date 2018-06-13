@@ -29,10 +29,15 @@ angular.module('ibApp').directive('ibTextarea', [ function() {
             placeholderText: '@',
             maxLength: '=',
             required: '=',
-            colSize: '@'
+            colSize: '@',
+            requiredExpr: '=?'
         },
         templateUrl: '/components/commonDirectives/form/ibTextarea/ibTextarea.directive.html',
         link: function($scope, element, attr) {
+
+            if ($scope.requiredExpr === undefined) {
+                $scope.requiredExpr = true;
+            }
 
             attr.$observe('id', function(id) {
                 $scope.inputId = id + '-textarea';

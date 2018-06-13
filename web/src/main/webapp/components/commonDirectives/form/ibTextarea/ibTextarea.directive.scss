@@ -1,12 +1,8 @@
 ib-textarea {
   label {
+    position: relative;
     @extend %ib-typo-14;
     color: $ib-color-09;
-
-    span.required {
-      @extend %ib-typo-14;
-      color: $ib-color-04;
-    }
   }
   textarea.form-control {
     width: 100%;

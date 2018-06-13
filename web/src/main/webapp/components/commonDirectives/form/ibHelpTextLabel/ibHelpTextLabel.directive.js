@@ -25,8 +25,13 @@ angular.module('ibApp').directive('ibHelpTextLabel', [ function() {
             labelKey: '@',
             helpKey: '@',
             required: '=',
-            requiredExpr: '='
+            requiredExpr: '=?'
         },
-        templateUrl: '/components/commonDirectives/form/ibHelpTextLabel/ibHelpTextLabel.directive.html'
+        templateUrl: '/components/commonDirectives/form/ibHelpTextLabel/ibHelpTextLabel.directive.html',
+        link: function(scope) {
+            if (scope.requiredExpr === undefined) {
+                scope.requiredExpr = true;
+            }
+        }
     };
 } ]);
