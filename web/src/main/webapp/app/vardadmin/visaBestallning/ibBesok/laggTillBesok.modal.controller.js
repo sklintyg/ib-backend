@@ -74,9 +74,12 @@ angular.module('ibApp')
                 $scope.besok.besokDatum = new Date($scope.besokDatum);
                 $scope.besok.besokStartTid = formatTime($scope.besokStartTid);
                 $scope.besok.besokSlutTid = formatTime($scope.besokSlutTid);
+                $scope.skickar = true;
                 BesokProxy.createBesok($scope.besok).then(function(result) {
                     $uibModalInstance.close(result);
+                    $scope.skickar = false;
                 }, function(error) {
+                    $scope.skickar = false;
                     if (error.failingServiceMethod === 'REPORT_CARE_CONTACT') {
                         $scope.showReportErrorMessage = true;
                     } else {
