@@ -9,6 +9,8 @@
 
         <ib-textarea id="avvisa-forfragan-modal-kommentar"
                      class="form-group"
+                     required="true"
+                     required-expr="!vm.kommentar.length"
                      label-key="avvisa.forfragan.kommentar.label"
                      placeholder-text="{{'avvisa.forfragan.kommentar.placeholder' | message}}"
                      model="vm.kommentar"></ib-textarea>

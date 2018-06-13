@@ -28,12 +28,10 @@ angular.module('ibApp')
             };
 
             $scope.avvisa = function() {
-                $scope.vm.inProgress = true;
-
                 if ($scope.vm.kommentar.length === 0) {
                     $scope.vm.kommentarValidationError = true;
-                }
-                else {
+                } else {
+                    $scope.vm.inProgress = true;
                     ExternForfraganProxy.avvisaExternForfragan(utredning.utredningsId, $scope.vm.kommentar)
                         .then(function(data) {
                             angular.copy(data, utredning);
