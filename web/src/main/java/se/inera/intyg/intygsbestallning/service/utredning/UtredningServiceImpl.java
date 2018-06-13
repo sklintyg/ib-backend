@@ -464,7 +464,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         switch (bli.getStatus().getUtredningFas()) {
             case AVSLUTAD:
                 return false;
-            case REDOVISA_TOLK:
+            case REDOVISA_BESOK:
                 return Strings.isNullOrEmpty(fromDate);
             case UTREDNING:
             case KOMPLETTERING:

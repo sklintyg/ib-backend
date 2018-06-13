@@ -380,7 +380,7 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
             return true;
         }
         switch (bli.getStatus().getUtredningFas()) {
-        case REDOVISA_TOLK:
+        case REDOVISA_BESOK:
             return Strings.isNullOrEmpty(fromDate);
         case UTREDNING:
         case KOMPLETTERING:

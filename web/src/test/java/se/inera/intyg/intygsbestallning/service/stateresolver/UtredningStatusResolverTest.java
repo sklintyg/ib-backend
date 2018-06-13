@@ -260,7 +260,7 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
     }
 
     @Test
-    public void testResolveAvslutadEjTolkEjKomplt() {
+    public void testResolveAvslutadBesokRedovisadeEjTolkEjKomplt() {
         Utredning utr = buildBaseUtredning();
         utr.getExternForfragan()
                 .map(ExternForfragan::getInternForfraganList)
@@ -273,7 +273,7 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
         utr.getIntygList().add(intyg);
         utr.getHandlingList().add(buildHandling(LocalDateTime.now(), null));
         utr.getBesokList().add(Besok.BesokBuilder.aBesok()
-                .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
+                .withBesokStatus(BesokStatusTyp.AVSLUTAD_VARDKONTAKT)
                 .withDeltagareProfession(DeltagarProfessionTyp.FT)
                 .withTolkStatus(null)
                 .build());
@@ -285,7 +285,7 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
     }
 
     @Test
-    public void testResolveAvslutadTolkRedovisadEjKomplt() {
+    public void testResolveAvslutadBesokRedovisadeEjKomplt() {
         Utredning utr = buildBaseUtredning();
         utr.getExternForfragan().map(ExternForfragan::getInternForfraganList)
                 .map(iff -> iff.add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now())));
@@ -297,7 +297,7 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
         utr.getIntygList().add(intyg);
         utr.getHandlingList().add(buildHandling(LocalDateTime.now(), null));
         utr.getBesokList().add(Besok.BesokBuilder.aBesok()
-                .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
+                .withBesokStatus(BesokStatusTyp.AVSLUTAD_VARDKONTAKT)
                 .withDeltagareProfession(DeltagarProfessionTyp.FT)
                 .withTolkStatus(TolkStatusTyp.DELTAGIT)
                 .withErsatts(true)
@@ -310,12 +310,12 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
     }
 
     @Test
-    public void testResolveAvslutadTolkEjRedovisadEjKomplt() {
+    public void testResolveAvslutadBesokEjRedovisadEjKomplt() {
         Utredning utr = buildBasicUtredningForKompletteringTest();
 
         UtredningStatus status = testee.resolveStatus(utr);
-        assertEquals(UtredningStatus.REDOVISA_TOLK, status);
-        assertEquals(UtredningFas.REDOVISA_TOLK, status.getUtredningFas());
+        assertEquals(UtredningStatus.REDOVISA_BESOK, status);
+        assertEquals(UtredningFas.REDOVISA_BESOK, status.getUtredningFas());
         assertEquals(Actor.VARDADMIN, status.getNextActor());
     }
 

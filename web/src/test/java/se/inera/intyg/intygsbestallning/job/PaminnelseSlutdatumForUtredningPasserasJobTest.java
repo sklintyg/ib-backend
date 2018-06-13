@@ -116,8 +116,8 @@ public class PaminnelseSlutdatumForUtredningPasserasJobTest {
 
         // Verify correct state
         UtredningStatus utredningStatus = new UtredningStatusResolver().resolveStatus(utredning);
-        if (utredningStatus != UtredningStatus.REDOVISA_TOLK) {
-            fail("Test setup must provide a Utredning in status REDOVISA_TOLK");
+        if (utredningStatus != UtredningStatus.REDOVISA_BESOK) {
+            fail("Test setup must provide a Utredning in status REDOVISA_BESOK");
         }
         when(utredningRepository.findNonNotifiedIntygSlutDatumBetween(any(LocalDateTime.class), any(LocalDateTime.class),
                 any(NotifieringTyp.class), any(NotifieringMottagarTyp.class)))

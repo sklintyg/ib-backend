@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum UtredningFas implements SortableLabel {
-    FORFRAGAN("Förfrågan"), UTREDNING("Utredning"), KOMPLETTERING("Komplettering"), REDOVISA_TOLK("Redovisa tolk"), AVSLUTAD("Avslutad");
+    FORFRAGAN("Förfrågan"), UTREDNING("Utredning"), KOMPLETTERING("Komplettering"), REDOVISA_BESOK("Redovisa besök"), AVSLUTAD("Avslutad");
 
     private final String id;
     private final String label;

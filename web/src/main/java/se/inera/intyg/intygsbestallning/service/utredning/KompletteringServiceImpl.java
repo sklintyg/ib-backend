@@ -70,7 +70,7 @@ public class KompletteringServiceImpl extends BaseUtredningService implements Ko
 
                 // Verify state. Only utredning that has been bestalld and isn't finished etc can be ordered.
                 UtredningStatus status = utredningStatusResolver.resolveStatus(utredning);
-                if (status.getUtredningFas() == UtredningFas.AVSLUTAD || status.getUtredningFas() == UtredningFas.REDOVISA_TOLK) {
+                if (status.getUtredningFas() == UtredningFas.AVSLUTAD || status.getUtredningFas() == UtredningFas.REDOVISA_BESOK) {
                     throw new IllegalStateException("Cannot add komplettering, utredning is in phase " + status.getId());
                 }
 

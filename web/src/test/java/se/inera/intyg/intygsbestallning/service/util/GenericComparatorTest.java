@@ -59,7 +59,7 @@ public class GenericComparatorTest {
                 true)).collect(Collectors.toList());
         assertEquals(UtredningStatus.AVBRUTEN, sortedList.get(0).getUtredningStatus());
         assertEquals(UtredningStatus.HANDLINGAR_MOTTAGNA_BOKA_BESOK, sortedList.get(1).getUtredningStatus());
-        assertEquals(UtredningStatus.REDOVISA_TOLK, sortedList.get(2).getUtredningStatus());
+        assertEquals(UtredningStatus.REDOVISA_BESOK, sortedList.get(2).getUtredningStatus());
     }
 
     @Test
@@ -68,7 +68,7 @@ public class GenericComparatorTest {
 
         List<TestObject> sortedList = list.stream().sorted((o1, o2) -> GenericComparator.compare(TestObject.class, o1, o2, "utredningStatus",
                 false)).collect(Collectors.toList());
-        assertEquals(UtredningStatus.REDOVISA_TOLK, sortedList.get(0).getUtredningStatus());
+        assertEquals(UtredningStatus.REDOVISA_BESOK, sortedList.get(0).getUtredningStatus());
         assertEquals(UtredningStatus.HANDLINGAR_MOTTAGNA_BOKA_BESOK, sortedList.get(1).getUtredningStatus());
         assertEquals(UtredningStatus.AVBRUTEN, sortedList.get(2).getUtredningStatus());
     }
@@ -76,7 +76,7 @@ public class GenericComparatorTest {
     private List<TestObject> buildStandardList() {
         return Arrays.asList(new TestObject("A", UtredningStatus.AVBRUTEN),
                 new TestObject("B", UtredningStatus.HANDLINGAR_MOTTAGNA_BOKA_BESOK),
-                new TestObject(null, UtredningStatus.REDOVISA_TOLK)
+                new TestObject(null, UtredningStatus.REDOVISA_BESOK)
         );
     }
 

@@ -54,8 +54,8 @@ public enum UtredningStatus implements SortableLabel {
     KOMPLETTERING_SKICKAD("Komplettering skickad", KOMPLETTERING, FK),
     KOMPLETTERING_MOTTAGEN("Komplettering mottagen", KOMPLETTERING, FK),
 
-    // Statuses in REDOVISA_TOLK phase
-    REDOVISA_TOLK("Redovisa tolk", UtredningFas.REDOVISA_TOLK, VARDADMIN),
+    // Statuses in REDOVISA_BESOK phase
+    REDOVISA_BESOK("Redovisa besök", UtredningFas.REDOVISA_BESOK, VARDADMIN),
 
     // Statuses in AVSLUTAD
     AVVISAD("Avvisad", UtredningFas.AVSLUTAD, NONE),

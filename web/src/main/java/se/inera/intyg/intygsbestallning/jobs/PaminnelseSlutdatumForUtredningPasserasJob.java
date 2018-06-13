@@ -79,7 +79,7 @@ public class PaminnelseSlutdatumForUtredningPasserasJob {
         for (Utredning utredning : utredningList) {
             UtredningStatus utredningStatus = utredningStatusResolver.resolveStatus(utredning);
 
-            if (utredningStatus.getUtredningFas() == UtredningFas.REDOVISA_TOLK
+            if (utredningStatus.getUtredningFas() == UtredningFas.REDOVISA_BESOK
                     || utredningStatus.getUtredningFas() == UtredningFas.AVSLUTAD) {
                 continue;
             }

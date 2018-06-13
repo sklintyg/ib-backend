@@ -26,8 +26,8 @@ import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
 
 public class UtredningStatusResolver {
 
@@ -117,14 +117,14 @@ public class UtredningStatusResolver {
         // Om senasteDatumForKomplettering saknas (bör ej inträffa) så
         // betraktar vi den som att vara i avslutsfas.
         if (senasteDatumForKomplettering == null) {
-            return resolveAvslutEllerTolk(utredning);
+            return resolveAvslutEllerRedovisaBesok(utredning);
         }
 
         if (utredning.getIntygList().stream().allMatch(intyg -> intyg.getMottagetDatum() != null)
                 && LocalDateTime.now().isAfter(senasteDatumForKomplettering)) {
 
-            // Om något besök inkluderade deltagande tolk...
-            return resolveAvslutEllerTolk(utredning);
+            // Alla besök måste vara redovisade
+            return resolveAvslutEllerRedovisaBesok(utredning);
         } else if (utredning.getIntygList().stream().allMatch(intyg -> intyg.getMottagetDatum() != null)
                 && !LocalDateTime.now().isAfter(senasteDatumForKomplettering)) {
 
@@ -173,22 +173,16 @@ public class UtredningStatusResolver {
         return UtredningStatus.INVALID;
     }
 
-    private static UtredningStatus resolveAvslutEllerTolk(Utredning utredning) {
+    private static UtredningStatus resolveAvslutEllerRedovisaBesok(Utredning utredning) {
+        // Finns det bokade besök som inte är redovisade?
         if (utredning.getBesokList().stream()
-                .anyMatch(besok -> besok.getTolkStatus() != null)) {
-
-            // Kolla om samtliga tolkar redovisats.
-            if (utredning.getBesokList().stream()
-                    .filter(besok -> besok.getTolkStatus() != null)
-                    .allMatch(besok -> besok.getTolkStatus() == TolkStatusTyp.DELTAGIT)) {
-                return UtredningStatus.AVSLUTAD;
-            } else {
-
-                // Dvs om vi har något TolkStatus BOKAD så måste denna redovisas (dvs sättas i DELTAGIT)
-                return UtredningStatus.REDOVISA_TOLK;
-            }
-        } else {
+                .noneMatch(besok -> besok.getBesokStatus() == BesokStatusTyp.TIDBOKAD_VARDKONTAKT)) {
             return UtredningStatus.AVSLUTAD;
+        } else {
+            // Alla besok måste redovisas som genomförda eller vara avbokade.
+            // BesokStatusTyp.TIDBOKAD_VARDKONTAKT blir antingen BesokStatusTyp.AVSLUTAD_VARDKONTAKT eller
+            // BesokStatusTyp.INSTALLD_VARDKONTAKT
+            return UtredningStatus.REDOVISA_BESOK;
         }
     }
 

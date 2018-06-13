@@ -85,7 +85,7 @@ public class UtredningListItemFactory {
     }
 
     private boolean resolveSlutdatumFasPasserat(Optional<LocalDateTime> slutdatumFas, UtredningStatus utredningStatus) {
-        if (!slutdatumFas.isPresent() || utredningStatus.getUtredningFas() == UtredningFas.REDOVISA_TOLK) {
+        if (!slutdatumFas.isPresent() || utredningStatus.getUtredningFas() == UtredningFas.REDOVISA_BESOK) {
             return false;
         }
         return LocalDate.now().compareTo(slutdatumFas.get().toLocalDate()) > 0;
