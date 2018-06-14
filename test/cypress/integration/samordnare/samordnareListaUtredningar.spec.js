@@ -2,7 +2,7 @@ import moment from 'moment'
 
 describe('Samordnare lista utredningar', function() {
 
-    var landstingHsaId = 'IFV1239877878-1043';
+    var landstingHsaId = 'IFV1239877878-1041';
 
     before(() => {
         cy.deleteUtredningarForVardgivareId(landstingHsaId)
