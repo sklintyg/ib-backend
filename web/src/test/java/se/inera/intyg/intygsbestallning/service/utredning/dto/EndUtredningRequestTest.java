@@ -35,7 +35,7 @@ public class EndUtredningRequestTest {
         endAssessmentType.setAssessmentId(anII(null, "1"));
         endAssessmentType.setEndingCondition(aCv(AvslutOrsak.JAV.name(), null, null));
 
-        EndUtredningRequest result = EndUtredningRequest.from(endAssessmentType);
+        AvslutaUtredningRequest result = AvslutaUtredningRequest.from(endAssessmentType);
 
         assertNotNull(result);
         assertEquals(Long.valueOf(1L), result.getUtredningId());

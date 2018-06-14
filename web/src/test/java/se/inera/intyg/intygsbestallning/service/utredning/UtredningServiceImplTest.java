@@ -42,14 +42,13 @@ import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan
 import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
 import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
-import static se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp.AVSLUTAD_VARDKONTAKT;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp.BESTALLNING;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU_UTVIDGAD;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.LIAG;
 import static se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest.AssessmentRequestBuilder.anAssessmentRequest;
 import static se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare.BestallareBuilder.aBestallare;
-import static se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest.EndUtredningRequestBuilder.anEndUtredningRequest;
+import static se.inera.intyg.intygsbestallning.service.utredning.dto.AvslutaUtredningRequest.EndUtredningRequestBuilder.anEndUtredningRequest;
 import static se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest.OrderRequestBuilder.anOrderRequest;
 import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.DATE_TIME;
 import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createBestallning;
@@ -95,11 +94,10 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
-import se.inera.intyg.intygsbestallning.service.stateresolver.BesokStatus;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
-import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.AvslutaUtredningRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItemFactory;
@@ -587,7 +585,7 @@ public class UtredningServiceImplTest {
                 .when(utredningRepository)
                 .saveUtredning(any(Utredning.class));
 
-        EndUtredningRequest request = anEndUtredningRequest()
+        AvslutaUtredningRequest request = anEndUtredningRequest()
                 .withUtredningId(utredningId)
                 .withEndReason(AvslutOrsak.JAV)
                 .build();
@@ -635,7 +633,7 @@ public class UtredningServiceImplTest {
                 .when(utredningRepository)
                 .saveUtredning(any(Utredning.class));
 
-        EndUtredningRequest request = anEndUtredningRequest()
+        AvslutaUtredningRequest request = anEndUtredningRequest()
                 .withUtredningId(utredningId)
                 .withEndReason(AvslutOrsak.INGEN_BESTALLNING)
                 .build();
@@ -686,7 +684,7 @@ public class UtredningServiceImplTest {
                 .when(utredningRepository)
                 .saveUtredning(any(Utredning.class));
 
-        EndUtredningRequest request = anEndUtredningRequest()
+        AvslutaUtredningRequest request = anEndUtredningRequest()
                 .withUtredningId(utredningId)
                 .withEndReason(AvslutOrsak.UTREDNING_AVBRUTEN)
                 .build();
@@ -758,7 +756,7 @@ public class UtredningServiceImplTest {
                 .when(utredningRepository)
                 .saveUtredning(any(Utredning.class));
 
-        final EndUtredningRequest request = anEndUtredningRequest()
+        final AvslutaUtredningRequest request = anEndUtredningRequest()
                 .withUtredningId(utredningId)
                 .withEndReason(AvslutOrsak.INGEN_KOMPLETTERING_BEGARD)
                 .withUser(IbUser.of("hsa-id", "Test-Are Testsson"))
@@ -784,7 +782,7 @@ public class UtredningServiceImplTest {
 
         when(utredningRepository.findById(utredningId)).thenReturn(Optional.empty());
 
-        EndUtredningRequest request = anEndUtredningRequest()
+        AvslutaUtredningRequest request = anEndUtredningRequest()
                 .withUtredningId(utredningId)
                 .withEndReason(AvslutOrsak.JAV)
                 .build();
@@ -804,7 +802,7 @@ public class UtredningServiceImplTest {
                 .withAvbrutenDatum(LocalDateTime.now())
                 .build()));
 
-        EndUtredningRequest request = anEndUtredningRequest()
+        AvslutaUtredningRequest request = anEndUtredningRequest()
                 .withUtredningId(utredningId)
                 .withEndReason(AvslutOrsak.JAV)
                 .build();

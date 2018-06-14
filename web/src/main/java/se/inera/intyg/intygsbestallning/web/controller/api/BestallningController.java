@@ -39,7 +39,7 @@ import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utlatande.UtlatandeService;
 import se.inera.intyg.intygsbestallning.service.utredning.BestallningService;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
-import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.AvslutaUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.AvslutadBestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.BestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.GetAvslutadeBestallningarListResponse;
@@ -178,7 +178,7 @@ public class BestallningController {
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_AVSLUTA_UTREDNING)
                 .orThrow(new IbAuthorizationException("User does not have required privilege PRIVILEGE_AVSLUTA_UTREDNING"));
 
-        utredningService.avslutaUtredning(EndUtredningRequest.from(utredningId, user));
+        utredningService.avslutaUtredning(AvslutaUtredningRequest.from(utredningId, user));
 
         return ResponseEntity.ok().build();
     }

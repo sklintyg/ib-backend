@@ -20,7 +20,7 @@ package se.inera.intyg.intygsbestallning.service.utredning;
 
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
-import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.AvslutaUtredningRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningListResponse;
@@ -86,9 +86,9 @@ public interface UtredningService {
     /**
      * Ends the utredning with the reason if available.
      *
-     * @param endUtredningRequest
+     * @param avslutaUtredningRequest
      */
-    void avslutaUtredning(EndUtredningRequest endUtredningRequest);
+    void avslutaUtredning(AvslutaUtredningRequest avslutaUtredningRequest);
 
     Utredning updateOrder(UpdateOrderRequest update);
 

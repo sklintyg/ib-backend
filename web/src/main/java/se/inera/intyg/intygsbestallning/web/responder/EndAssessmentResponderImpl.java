@@ -30,7 +30,7 @@ import se.riv.intygsbestallning.certificate.order.endassessment.v1.EndAssessment
 import se.riv.intygsbestallning.certificate.order.endassessment.v1.EndAssessmentType;
 import se.riv.intygsbestallning.certificate.order.endassessment.v1.rivtabp21.EndAssessmentResponderInterface;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
-import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.AvslutaUtredningRequest;
 
 @Service
 @SchemaValidation
@@ -45,7 +45,7 @@ public class EndAssessmentResponderImpl implements EndAssessmentResponderInterfa
         checkArgument(isNotEmpty(logicalAddress), "LogcialAddress needs to be defined");
         checkArgument(nonNull(endAssessmentType), "Request need to be defined");
 
-        utredningService.avslutaUtredning(EndUtredningRequest.from(endAssessmentType));
+        utredningService.avslutaUtredning(AvslutaUtredningRequest.from(endAssessmentType));
 
         EndAssessmentResponseType response = new EndAssessmentResponseType();
         response.setResult(ok());

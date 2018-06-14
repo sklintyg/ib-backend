@@ -33,18 +33,18 @@ import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
 
-public final class EndUtredningRequest {
+public final class AvslutaUtredningRequest {
     private final Long utredningId;
     private final AvslutOrsak avslutOrsak;
     private final IbUser user;
 
-    private EndUtredningRequest(final EndUtredningRequestBuilder builder) {
+    private AvslutaUtredningRequest(final EndUtredningRequestBuilder builder) {
         this.utredningId = builder.utredningId;
         this.avslutOrsak = builder.avslutOrsak;
         this.user = builder.user;
     }
 
-    public static EndUtredningRequest from(EndAssessmentType endAssessmentType) {
+    public static AvslutaUtredningRequest from(EndAssessmentType endAssessmentType) {
         validate(endAssessmentType);
 
         return EndUtredningRequestBuilder.anEndUtredningRequest()
@@ -56,7 +56,7 @@ public final class EndUtredningRequest {
                 .build();
     }
 
-    public static EndUtredningRequest from(final String utredningId, final IbUser user) {
+    public static AvslutaUtredningRequest from(final String utredningId, final IbUser user) {
 
         checkArgument(nonNull(utredningId));
         checkArgument(nonNull(user));
@@ -65,6 +65,16 @@ public final class EndUtredningRequest {
                 .withEndReason(AvslutOrsak.INGEN_KOMPLETTERING_BEGARD)
                 .withUtredningId(tryParse(utredningId))
                 .withUser(user)
+                .build();
+    }
+
+    public static AvslutaUtredningRequest from(final String utredningId) {
+
+        checkArgument(nonNull(utredningId));
+
+        return EndUtredningRequestBuilder.anEndUtredningRequest()
+                .withEndReason(AvslutOrsak.INGEN_KOMPLETTERING_BEGARD)
+                .withUtredningId(tryParse(utredningId))
                 .build();
     }
 
@@ -122,8 +132,8 @@ public final class EndUtredningRequest {
             return this;
         }
 
-        public EndUtredningRequest build() {
-            return new EndUtredningRequest(this);
+        public AvslutaUtredningRequest build() {
+            return new AvslutaUtredningRequest(this);
         }
     }
 }

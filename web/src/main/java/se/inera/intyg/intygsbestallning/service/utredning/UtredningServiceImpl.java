@@ -87,7 +87,7 @@ import se.inera.intyg.intygsbestallning.service.util.GenericComparator;
 import se.inera.intyg.intygsbestallning.service.util.PagingUtil;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare;
-import se.inera.intyg.intygsbestallning.service.utredning.dto.EndUtredningRequest;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.AvslutaUtredningRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
@@ -360,7 +360,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     }
 
     @Override
-    public void avslutaUtredning(final EndUtredningRequest request) {
+    public void avslutaUtredning(final AvslutaUtredningRequest request) {
         final Utredning utredning = utredningRepository.findById(request.getUtredningId())
                 .orElseThrow(() -> new IbNotFoundException(MessageFormat.format(
                         "Could not find the assessment with id {0}", request.getUtredningId())));
@@ -438,7 +438,6 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         } else if (orsak == AvslutOrsak.UTREDNING_AVBRUTEN) {
             return HandelseUtil.createUtredningAvbruten();
         } else {
-            checkArgument(nonNull(vardAdministrator));
             return HandelseUtil.createAvslutadUtredning(vardAdministrator);
         }
     }

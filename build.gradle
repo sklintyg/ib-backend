@@ -16,7 +16,7 @@ ext {
     aspectjWeaverVersion = "1.8.9"
     commonsCodecVersion = "1.10"
     commonsIoVersion = "2.4"
-    commonsLang3Version = "3.1"
+    commonsLang3Version = "3.7"
     commonsCollectionsVersion = "4.1"
     commonsLangVersion = "2.6"
     cxfVersion = "3.1.3"
