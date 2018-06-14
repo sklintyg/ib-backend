@@ -102,8 +102,8 @@
                       alert-id="lagg-till-besok.error.teknisktfel" alert-severity="danger"></ib-alert-message>
     <ib-alert-message ng-if="showUpdateAssessmentErrorMessage" alert-message-id="lagg-till-besok.error.teknisktfelafu"
                       alert-id="lagg-till-besok.error.teknisktfelafu" alert-severity="danger"></ib-alert-message>
-    <ib-button btn-id="lagg-till-besok-modal-skicka" btn-class="btn-primary" ng-click="send()" busy="skickar"
-            ng-disabled="!besokDatum || !besokStartTid || !besokSlutTid || !besok.profession || !besokKallelse">
+    <ib-button btn-id="lagg-till-besok-modal-skicka" btn-class="btn-primary" btn-click="send()" busy="skickar"
+            btn-disabled="!besokDatum || !besokStartTid || !besokSlutTid || !besok.profession || !besokKallelse">
       Spara
     </ib-button>
     <button type="button" id="lagg-till-besok-modal-cancel" class="btn btn-default" ng-click="$dismiss()">
