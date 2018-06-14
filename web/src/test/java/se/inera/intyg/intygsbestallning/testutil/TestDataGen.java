@@ -37,6 +37,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Handling;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.KallelseFormTyp;
@@ -214,7 +215,26 @@ public final class TestDataGen {
                 .withHandelseList(Lists.newArrayList())
                 .withInvanare(createInvanare())
                 .build();
+        utredning.setStatus(UtredningStatusResolver.resolveStaticStatus(utredning));
+        return utredning;
+    }
 
+    public static Utredning createUtredningForKompletterandeFragestallningMottagen() {
+        Utredning utredning = TestDataGen.createUtredning();
+        utredning.setIntygList(ImmutableList.of(
+                anIntyg()
+                        .withId(1L)
+                        .withKomplettering(false)
+                        .withMottagetDatum(TestDataGen.DATE_TIME)
+                        .withSkickatDatum(TestDataGen.DATE_TIME)
+                        .withSistaDatumKompletteringsbegaran(LocalDateTime.now().plusDays(7))
+                        .build(),
+                anIntyg()
+                        .withId(2L)
+                        .withKomplettering(true)
+                        .withSistaDatum(LocalDateTime.now().plusDays(14))
+                        .build()));
+        utredning.setStatus(UtredningStatusResolver.resolveStaticStatus(utredning));
         return utredning;
     }
 

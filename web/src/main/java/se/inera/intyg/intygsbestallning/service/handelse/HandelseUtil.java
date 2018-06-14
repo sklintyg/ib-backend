@@ -407,4 +407,15 @@ public final class HandelseUtil {
                 .withHandelseText(handelseText)
                 .build();
     }
+
+    public static Handelse createKompletterandeFragestallningMottagen(LocalDate fragestallningMottagenDatum, String anvandare) {
+        final String handelseText = MessageFormat.format("Kompletterande frågeställning mottagen {0}",
+                fragestallningMottagenDatum.format(DateTimeFormatter.ISO_DATE));
+        return aHandelse()
+                .withSkapad(LocalDateTime.now())
+                .withAnvandare(anvandare)
+                .withHandelseTyp(HandelseTyp.KOMPLETTERANDE_FRAGESTALLNING_MOTTAGEN)
+                .withHandelseText(handelseText)
+                .build();
+    }
 }

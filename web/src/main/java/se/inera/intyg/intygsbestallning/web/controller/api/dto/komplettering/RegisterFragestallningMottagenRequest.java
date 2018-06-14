@@ -16,17 +16,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.service.utredning;
+package se.inera.intyg.intygsbestallning.web.controller.api.dto.komplettering;
 
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.komplettering.RegisterFragestallningMottagenRequest;
-import se.inera.intyg.intygsbestallning.web.responder.dto.ReportKompletteringMottagenRequest;
-import se.riv.intygsbestallning.certificate.order.requestmedicalcertificatesupplement.v1.RequestMedicalCertificateSupplementType;
+import java.time.LocalDate;
 
-public interface KompletteringService {
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Objects.nonNull;
 
-    long registerNewKomplettering(RequestMedicalCertificateSupplementType request);
+public class RegisterFragestallningMottagenRequest {
+    private LocalDate fragestallningMottagenDatum;
 
-    void reportKompletteringMottagen(ReportKompletteringMottagenRequest request);
+    public LocalDate getFragestallningMottagenDatum() {
+        return fragestallningMottagenDatum;
+    }
 
-    void registerFragestallningMottagen(Long utredningId, RegisterFragestallningMottagenRequest request);
+    public void setFragestallningMottagenDatum(LocalDate fragestallningMottagenDatum) {
+        this.fragestallningMottagenDatum = fragestallningMottagenDatum;
+    }
+
+    public void validate() {
+        checkArgument(nonNull(fragestallningMottagenDatum), "fragestallningMottagenDatum may not be null");
+    }
 }

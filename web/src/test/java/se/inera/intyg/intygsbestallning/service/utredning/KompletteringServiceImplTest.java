@@ -23,14 +23,24 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
+import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
+import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
+import se.inera.intyg.intygsbestallning.service.pdl.LogService;
+import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
+import se.inera.intyg.intygsbestallning.service.pdl.dto.PdlLogType;
+import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.komplettering.RegisterFragestallningMottagenRequest;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportKompletteringMottagenRequest;
 import se.riv.intygsbestallning.certificate.order.reportsupplementreceival.v1.ReportSupplementReceivalType;
 import se.riv.intygsbestallning.certificate.order.requestmedicalcertificatesupplement.v1.RequestMedicalCertificateSupplementType;
@@ -58,6 +68,12 @@ public class KompletteringServiceImplTest {
 
     @Mock
     private UtredningRepository utredningRepository;
+
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private LogService logService;
 
     @InjectMocks
     private KompletteringServiceImpl kompletteringService;
@@ -206,6 +222,70 @@ public class KompletteringServiceImplTest {
         assertThatThrownBy(() -> kompletteringService.reportKompletteringMottagen(request))
                 .isExactlyInstanceOf(IbServiceException.class)
                 .hasMessageEndingWith("is in an incorrect state.");
+    }
+
+    @Test
+    public void testRegisterFragestallningMottagenSuccess() {
+        Mockito.when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
+
+        Utredning utredning = TestDataGen.createUtredningForKompletterandeFragestallningMottagen();
+        doReturn(Optional.of(utredning))
+                .when(utredningRepository)
+                .findById(TestDataGen.getUtredningId());
+
+        RegisterFragestallningMottagenRequest request = new RegisterFragestallningMottagenRequest();
+        request.setFragestallningMottagenDatum(LocalDate.of(2018,11,11));
+        kompletteringService.registerFragestallningMottagen(TestDataGen.getUtredningId(), request);
+
+        verify(logService).log(any(PDLLoggable.class), eq(PdlLogType.UTREDNING_UPPDATERAD));
+        verify(utredningRepository).saveUtredning(eq(utredning));
+        assertEquals(HandelseTyp.KOMPLETTERANDE_FRAGESTALLNING_MOTTAGEN, utredning.getHandelseList().get(0).getHandelseTyp());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testRegisterFragestallningMottagenFailMissingArgument() {
+        RegisterFragestallningMottagenRequest request = new RegisterFragestallningMottagenRequest();
+        kompletteringService.registerFragestallningMottagen(TestDataGen.getUtredningId(), request);
+    }
+
+    @Test(expected = IbNotFoundException.class)
+    public void testRegisterFragestallningMottagenFailUtredningNotFound() {
+        doReturn(Optional.empty())
+                .when(utredningRepository)
+                .findById(TestDataGen.getUtredningId());
+
+        RegisterFragestallningMottagenRequest request = new RegisterFragestallningMottagenRequest();
+        request.setFragestallningMottagenDatum(LocalDate.of(2018,11,11));
+        kompletteringService.registerFragestallningMottagen(TestDataGen.getUtredningId(), request);
+    }
+
+    @Test
+    public void testRegisterFragestallningMottagenFailBadState() {
+        Utredning utredning = TestDataGen.createUtredning();
+        doReturn(Optional.of(utredning))
+                .when(utredningRepository)
+                .findById(TestDataGen.getUtredningId());
+
+        RegisterFragestallningMottagenRequest request = new RegisterFragestallningMottagenRequest();
+        request.setFragestallningMottagenDatum(LocalDate.of(2018,11,11));
+        assertThatThrownBy(() -> kompletteringService.registerFragestallningMottagen(TestDataGen.getUtredningId(), request))
+                .isExactlyInstanceOf(IbServiceException.class)
+                .hasFieldOrPropertyWithValue("errorCode", IbErrorCodeEnum.BAD_STATE);
+    }
+
+    @Test(expected = IbAuthorizationException.class)
+    public void testRegisterFragestallningMottagenFailDifferentVardenhet() {
+        Mockito.when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
+
+        Utredning utredning = TestDataGen.createUtredningForKompletterandeFragestallningMottagen();
+        utredning.getBestallning().get().setTilldeladVardenhetHsaId("AnnanVardenhet");
+        doReturn(Optional.of(utredning))
+                .when(utredningRepository)
+                .findById(TestDataGen.getUtredningId());
+
+        RegisterFragestallningMottagenRequest request = new RegisterFragestallningMottagenRequest();
+        request.setFragestallningMottagenDatum(LocalDate.of(2018,11,11));
+        kompletteringService.registerFragestallningMottagen(TestDataGen.getUtredningId(), request);
     }
 
     private RequestMedicalCertificateSupplementType buildRequest() {

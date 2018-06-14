@@ -20,6 +20,7 @@ package se.inera.intyg.intygsbestallning.service.utredning;
 
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
@@ -31,6 +32,10 @@ import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
+import se.inera.intyg.intygsbestallning.service.pdl.LogService;
+import se.inera.intyg.intygsbestallning.service.pdl.dto.PdlLogType;
+import se.inera.intyg.intygsbestallning.service.pdl.dto.UtredningPdlLoggable;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.komplettering.RegisterFragestallningMottagenRequest;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportKompletteringMottagenRequest;
 import se.riv.intygsbestallning.certificate.order.requestmedicalcertificatesupplement.v1.RequestMedicalCertificateSupplementType;
 
@@ -46,6 +51,9 @@ import java.util.function.Predicate;
 @Service
 @Transactional
 public class KompletteringServiceImpl extends BaseUtredningService implements KompletteringService {
+
+    @Autowired
+    private LogService logService;
 
     private static final ImmutableList<UtredningStatus> GODKANDA_STATUSAR_KOMPLETTERING_MOTTAGEN = ImmutableList.of(
             UtredningStatus.KOMPLETTERINGSBEGARAN_MOTTAGEN_VANTAR_PA_FRAGESTALLNING,
@@ -141,10 +149,44 @@ public class KompletteringServiceImpl extends BaseUtredningService implements Ko
         utredningRepository.saveUtredning(optionalUtredning.get());
     }
 
+    @Override
+    @Transactional
+    public void registerFragestallningMottagen(Long utredningId, RegisterFragestallningMottagenRequest request) {
+        request.validate();
+
+        final Utredning utredning = utredningRepository.findById(utredningId)
+                .orElseThrow(() -> new IbNotFoundException("Utredning with id '" + utredningId + "' does not exist."));
+
+        if (utredning.getStatus() != UtredningStatus.KOMPLETTERINGSBEGARAN_MOTTAGEN_VANTAR_PA_FRAGESTALLNING) {
+            throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, MessageFormat.format(
+                    "Utredning with id {0} is in an incorrect state {1}", utredning.getUtredningId(), utredning.getStatus().getId()));
+        }
+
+        checkUserVardenhetTilldeladToBestallning(utredning);
+
+        Intyg intyg = utredning.getIntygList().stream()
+                .filter(i -> i.isKomplettering()
+                        && i.getFragestallningMottagenDatum() == null
+                        && i.getSkickatDatum() == null
+                        && i.getSistaDatum().isAfter(LocalDateTime.now()))
+                .max(Comparator.comparing(Intyg::getId))
+                .orElseThrow(() -> new IbServiceException(IbErrorCodeEnum.BAD_STATE, MessageFormat.format(
+                        "Utredning with id {0} is missing a kompletterande intyg waiting for fragestallning", utredningId)));
+
+        intyg.setFragestallningMottagenDatum(request.getFragestallningMottagenDatum().atStartOfDay());
+
+        utredning.getHandelseList().add(HandelseUtil.createKompletterandeFragestallningMottagen(request.getFragestallningMottagenDatum(),
+                userService.getUser().getNamn()));
+
+        utredningRepository.saveUtredning(utredning);
+
+        logService.log(new UtredningPdlLoggable(utredning), PdlLogType.UTREDNING_UPPDATERAD);
+    }
+
     /*
-         lastDateForSupplementReceival might be null or empty string and if so,
-         return null, otherwise try to parse the string as a valid date.
-     */
+             lastDateForSupplementReceival might be null or empty string and if so,
+             return null, otherwise try to parse the string as a valid date.
+         */
     private LocalDateTime getSistaDatum(String lastDateForSupplementReceival) {
         if (StringUtils.isBlank(lastDateForSupplementReceival)) {
             return null;

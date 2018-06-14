@@ -42,6 +42,7 @@ public final class AuthoritiesConstants {
     public static final String PRIVILEGE_ACCEPTERA_EXTERNFORFRAGAN = "ACCEPTERA_EXTERNFORFRAGAN";
     public static final String PRIVILEGE_HANTERA_BESOK = "HANTERA_BESOK";
     public static final String PRIVILEGE_SPARA_ANTECKNING = "SPARA_ANTECKNING";
+    public static final String PRIVILEGE_REGISTRERA_KOMPLETTERING = "REGISTRERA_KOMPLETTERING";
 
     public static final String PRIVILEGE_LISTA_BESTALLNINGAR = "LISTA_BESTALLNINGAR";
     public static final String PRIVILEGE_VISA_BESTALLNING = "VISA_BESTALLNING";
