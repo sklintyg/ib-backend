@@ -36,6 +36,7 @@ import se.inera.intyg.intygsbestallning.service.pdl.LogService;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PdlLogType;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.UtredningPdlLoggable;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.komplettering.RegisterFragestallningMottagenRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.komplettering.RegisterSkickadKompletteringRequest;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportKompletteringMottagenRequest;
 import se.riv.intygsbestallning.certificate.order.requestmedicalcertificatesupplement.v1.RequestMedicalCertificateSupplementType;
 
@@ -183,10 +184,44 @@ public class KompletteringServiceImpl extends BaseUtredningService implements Ko
         logService.log(new UtredningPdlLoggable(utredning), PdlLogType.UTREDNING_UPPDATERAD);
     }
 
+    @Override
+    public void registerSkickadKomplettering(Long utredningId, RegisterSkickadKompletteringRequest request) {
+        request.validate();
+
+        final Utredning utredning = utredningRepository.findById(utredningId)
+                .orElseThrow(() -> new IbNotFoundException("Utredning with id '" + utredningId + "' does not exist."));
+
+        if (utredning.getStatus().getUtredningFas() != UtredningFas.KOMPLETTERING
+                || utredning.getStatus() == UtredningStatus.KOMPLETTERING_MOTTAGEN
+                || utredning.getStatus() == UtredningStatus.KOMPLETTERING_SKICKAD) {
+            throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, MessageFormat.format(
+                    "Utredning with id {0} is in an incorrect state {1}", utredning.getUtredningId(), utredning.getStatus().getId()));
+        }
+
+        checkUserVardenhetTilldeladToBestallning(utredning);
+
+        Intyg intyg = utredning.getIntygList().stream()
+                .filter(i -> i.isKomplettering()
+                        && i.getSkickatDatum() == null
+                        && i.getSistaDatum().isAfter(LocalDateTime.now()))
+                .max(Comparator.comparing(Intyg::getId))
+                .orElseThrow(() -> new IbServiceException(IbErrorCodeEnum.BAD_STATE, MessageFormat.format(
+                        "Utredning with id {0} is missing a kompletterande intyg ready to be sent", utredningId)));
+
+        intyg.setSkickatDatum(request.getKompletteringSkickadDatum().atStartOfDay());
+
+        utredning.getHandelseList().add(HandelseUtil.createKompletteringSkickad(request.getKompletteringSkickadDatum(),
+                userService.getUser().getNamn()));
+
+        utredningRepository.saveUtredning(utredning);
+
+        logService.log(new UtredningPdlLoggable(utredning), PdlLogType.UTREDNING_UPPDATERAD);
+    }
+
     /*
-             lastDateForSupplementReceival might be null or empty string and if so,
-             return null, otherwise try to parse the string as a valid date.
-         */
+         lastDateForSupplementReceival might be null or empty string and if so,
+         return null, otherwise try to parse the string as a valid date.
+     */
     private LocalDateTime getSistaDatum(String lastDateForSupplementReceival) {
         if (StringUtils.isBlank(lastDateForSupplementReceival)) {
             return null;

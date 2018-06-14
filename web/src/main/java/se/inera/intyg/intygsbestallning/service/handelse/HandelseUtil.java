@@ -418,4 +418,15 @@ public final class HandelseUtil {
                 .withHandelseText(handelseText)
                 .build();
     }
+
+    public static Handelse createKompletteringSkickad(LocalDate kompletteringSkickatDatum, String anvandare) {
+        final String handelseText = MessageFormat.format("Komplettering skickad {0}",
+                kompletteringSkickatDatum.format(DateTimeFormatter.ISO_DATE));
+        return aHandelse()
+                .withSkapad(LocalDateTime.now())
+                .withAnvandare(anvandare)
+                .withHandelseTyp(HandelseTyp.KOMPLETTERING_SKICKAD)
+                .withHandelseText(handelseText)
+                .build();
+    }
 }

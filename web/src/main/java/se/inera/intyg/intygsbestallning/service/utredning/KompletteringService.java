@@ -19,6 +19,7 @@
 package se.inera.intyg.intygsbestallning.service.utredning;
 
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.komplettering.RegisterFragestallningMottagenRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.komplettering.RegisterSkickadKompletteringRequest;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportKompletteringMottagenRequest;
 import se.riv.intygsbestallning.certificate.order.requestmedicalcertificatesupplement.v1.RequestMedicalCertificateSupplementType;
 
@@ -29,4 +30,6 @@ public interface KompletteringService {
     void reportKompletteringMottagen(ReportKompletteringMottagenRequest request);
 
     void registerFragestallningMottagen(Long utredningId, RegisterFragestallningMottagenRequest request);
+
+    void registerSkickadKomplettering(Long utredningId, RegisterSkickadKompletteringRequest request);
 }

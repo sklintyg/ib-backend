@@ -41,6 +41,7 @@ import se.inera.intyg.intygsbestallning.service.pdl.dto.PdlLogType;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.komplettering.RegisterFragestallningMottagenRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.komplettering.RegisterSkickadKompletteringRequest;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportKompletteringMottagenRequest;
 import se.riv.intygsbestallning.certificate.order.reportsupplementreceival.v1.ReportSupplementReceivalType;
 import se.riv.intygsbestallning.certificate.order.requestmedicalcertificatesupplement.v1.RequestMedicalCertificateSupplementType;
@@ -286,6 +287,70 @@ public class KompletteringServiceImplTest {
         RegisterFragestallningMottagenRequest request = new RegisterFragestallningMottagenRequest();
         request.setFragestallningMottagenDatum(LocalDate.of(2018,11,11));
         kompletteringService.registerFragestallningMottagen(TestDataGen.getUtredningId(), request);
+    }
+
+    @Test
+    public void testRegisterSkickadKompletteringSuccess() {
+        Mockito.when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
+
+        Utredning utredning = TestDataGen.createUtredningForSkickaKomplettering();
+        doReturn(Optional.of(utredning))
+                .when(utredningRepository)
+                .findById(TestDataGen.getUtredningId());
+
+        RegisterSkickadKompletteringRequest request = new RegisterSkickadKompletteringRequest();
+        request.setKompletteringSkickadDatum(LocalDate.of(2018,11,11));
+        kompletteringService.registerSkickadKomplettering(TestDataGen.getUtredningId(), request);
+
+        verify(logService).log(any(PDLLoggable.class), eq(PdlLogType.UTREDNING_UPPDATERAD));
+        verify(utredningRepository).saveUtredning(eq(utredning));
+        assertEquals(HandelseTyp.KOMPLETTERING_SKICKAD, utredning.getHandelseList().get(0).getHandelseTyp());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testRegisterSkickadKompletteringFailMissingArgument() {
+        RegisterSkickadKompletteringRequest request = new RegisterSkickadKompletteringRequest();
+        kompletteringService.registerSkickadKomplettering(TestDataGen.getUtredningId(), request);
+    }
+
+    @Test(expected = IbNotFoundException.class)
+    public void testRegisterSkickadKompletteringFailUtredningNotFound() {
+        doReturn(Optional.empty())
+                .when(utredningRepository)
+                .findById(TestDataGen.getUtredningId());
+
+        RegisterSkickadKompletteringRequest request = new RegisterSkickadKompletteringRequest();
+        request.setKompletteringSkickadDatum(LocalDate.of(2018,11,11));
+        kompletteringService.registerSkickadKomplettering(TestDataGen.getUtredningId(), request);
+    }
+
+    @Test
+    public void testRegisterSkickadKompletteringFailBadState() {
+        Utredning utredning = TestDataGen.createUtredning();
+        doReturn(Optional.of(utredning))
+                .when(utredningRepository)
+                .findById(TestDataGen.getUtredningId());
+
+        RegisterSkickadKompletteringRequest request = new RegisterSkickadKompletteringRequest();
+        request.setKompletteringSkickadDatum(LocalDate.of(2018,11,11));
+        assertThatThrownBy(() -> kompletteringService.registerSkickadKomplettering(TestDataGen.getUtredningId(), request))
+                .isExactlyInstanceOf(IbServiceException.class)
+                .hasFieldOrPropertyWithValue("errorCode", IbErrorCodeEnum.BAD_STATE);
+    }
+
+    @Test(expected = IbAuthorizationException.class)
+    public void testRegisterSkickadKompletteringFailDifferentVardenhet() {
+        Mockito.when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
+
+        Utredning utredning = TestDataGen.createUtredningForSkickaKomplettering();
+        utredning.getBestallning().get().setTilldeladVardenhetHsaId("AnnanVardenhet");
+        doReturn(Optional.of(utredning))
+                .when(utredningRepository)
+                .findById(TestDataGen.getUtredningId());
+
+        RegisterSkickadKompletteringRequest request = new RegisterSkickadKompletteringRequest();
+        request.setKompletteringSkickadDatum(LocalDate.of(2018,11,11));
+        kompletteringService.registerSkickadKomplettering(TestDataGen.getUtredningId(), request);
     }
 
     private RequestMedicalCertificateSupplementType buildRequest() {

@@ -30,6 +30,7 @@ import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesV
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.KompletteringService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.komplettering.RegisterFragestallningMottagenRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.komplettering.RegisterSkickadKompletteringRequest;
 
 @RestController
 @RequestMapping("/api/vardadmin/bestallningar/{utredningId}/komplettering")
@@ -45,7 +46,7 @@ public class KompletteringController {
 
     @PutMapping("/fragestallningmottagen")
     public void registerFragestallningMottagen(@PathVariable("utredningId") Long utredningId,
-                                      @RequestBody final RegisterFragestallningMottagenRequest request) {
+                                               @RequestBody final RegisterFragestallningMottagenRequest request) {
         final IbUser user = userService.getUser();
         authoritiesValidator.given(user)
                 .privilege(AuthoritiesConstants.PRIVILEGE_REGISTRERA_KOMPLETTERING);
@@ -53,4 +54,13 @@ public class KompletteringController {
         kompletteringService.registerFragestallningMottagen(utredningId, request);
     }
 
+    @PutMapping("/skickad")
+    public void registerSkickadKomplettering(@PathVariable("utredningId") Long utredningId,
+                                             @RequestBody final RegisterSkickadKompletteringRequest request) {
+        final IbUser user = userService.getUser();
+        authoritiesValidator.given(user)
+                .privilege(AuthoritiesConstants.PRIVILEGE_REGISTRERA_KOMPLETTERING);
+
+        kompletteringService.registerSkickadKomplettering(utredningId, request);
+    }
 }

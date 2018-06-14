@@ -238,6 +238,27 @@ public final class TestDataGen {
         return utredning;
     }
 
+    public static Utredning createUtredningForSkickaKomplettering() {
+        Utredning utredning = TestDataGen.createUtredning();
+        utredning.setIntygList(ImmutableList.of(
+                anIntyg()
+                        .withId(1L)
+                        .withKomplettering(false)
+                        .withMottagetDatum(TestDataGen.DATE_TIME)
+                        .withSkickatDatum(TestDataGen.DATE_TIME)
+                        .withSistaDatumKompletteringsbegaran(LocalDateTime.now().plusDays(7))
+                        .build(),
+                anIntyg()
+                        .withId(2L)
+                        .withKomplettering(true)
+                        .withFragestallningMottagenDatum(LocalDateTime.now())
+                        .withSistaDatum(LocalDateTime.now().plusDays(14))
+                        .build()));
+        utredning.setStatus(UtredningStatusResolver.resolveStaticStatus(utredning));
+        return utredning;
+    }
+
+
     private static List<Intyg> createIntyg() {
         return ImmutableList.of(anIntyg()
                 .withId(1L)
