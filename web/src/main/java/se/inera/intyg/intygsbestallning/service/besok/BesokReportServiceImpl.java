@@ -65,13 +65,7 @@ public class BesokReportServiceImpl extends BaseBesokService implements BesokRep
                 besok.setBesokStatus(BesokStatusTyp.AVSLUTAD_VARDKONTAKT);
             }
 
-            if (besokRequest.getTolkDeltog() == null) {
-                besok.setTolkStatus(null);
-            } else if (besokRequest.getTolkDeltog()) {
-                besok.setTolkStatus(TolkStatusTyp.DELTAGIT);
-            } else if (!besokRequest.getTolkDeltog()) {
-                besok.setTolkStatus(TolkStatusTyp.BOKAT);
-            }
+            besok.setTolkStatus(besokRequest.getTolkStatus());
 
             Handelse besokHandelse = HandelseUtil.createBesokRedovisat(besok, userService.getUser().getNamn());
             utredning.getHandelseList().add(besokHandelse);

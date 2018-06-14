@@ -17,10 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('ibApp').directive('ibRadiogroup', function() {
+angular.module('ibApp').directive('ibRadiogroup', function($parse) {
     'use strict';
     return {
         restrict: 'E',
+        require: '^form',
         scope: {
             labelKey: '@',
             model: '=',
@@ -42,7 +43,7 @@ angular.module('ibApp').directive('ibRadiogroup', function() {
             });
 
             $scope.componentErrors = function() {
-                return $parse('form.' + attr.id + '.$error')($scope);
+                return $parse('form["' + attr.id + '"].$error')($scope);
             };
         }
     };

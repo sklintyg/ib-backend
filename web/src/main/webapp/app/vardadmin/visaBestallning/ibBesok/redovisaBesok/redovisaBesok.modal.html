@@ -24,9 +24,9 @@
               {{::besok.professionLabel}}
             </td>
             <td>
-              <ib-radiogroup id="{{::besok.besokId}}-redovisa-besok-modal-{{$index}}"
-                             ng-if="besok.tolkDeltog"
-                             model="besok.tolkDeltog"
+              <ib-radiogroup id="redovisa-besok-modal-{{$index}}"
+                             ng-if="besok.tolkStatus"
+                             model="besok.tolkStatus"
                              on-change="validate()"
                              items="vm.deltarItems"
                              items-disabled="besok.disabledDeltarItems"

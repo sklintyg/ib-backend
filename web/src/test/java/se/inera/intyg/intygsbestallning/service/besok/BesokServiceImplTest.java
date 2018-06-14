@@ -636,9 +636,9 @@ public class BesokServiceImplTest {
                 .findById(eq(UTREDNING_ID));
 
         RedovisaBesokRequest request = new RedovisaBesokRequest();
-        RedovisaBesokRequest.RedovisaBesokListItem besokRequest1 = new RedovisaBesokRequest.RedovisaBesokListItem(1L, true, false);
-        RedovisaBesokRequest.RedovisaBesokListItem besokRequest2 = new RedovisaBesokRequest.RedovisaBesokListItem(2L, false, false);
-        RedovisaBesokRequest.RedovisaBesokListItem besokRequest3 = new RedovisaBesokRequest.RedovisaBesokListItem(3L, true, true);
+        RedovisaBesokRequest.RedovisaBesokListItem besokRequest1 = new RedovisaBesokRequest.RedovisaBesokListItem(1L, TolkStatusTyp.DELTAGIT, false);
+        RedovisaBesokRequest.RedovisaBesokListItem besokRequest2 = new RedovisaBesokRequest.RedovisaBesokListItem(2L, TolkStatusTyp.EJ_DELTAGIT, false);
+        RedovisaBesokRequest.RedovisaBesokListItem besokRequest3 = new RedovisaBesokRequest.RedovisaBesokListItem(3L, TolkStatusTyp.DELTAGIT, true);
         request.setRedovisaBesokList(ImmutableList.of(besokRequest1, besokRequest2, besokRequest3));
         besokService.redovisaBesok(UTREDNING_ID, request);
 

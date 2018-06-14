@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto.besok;
 
+import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
+
 import java.util.List;
 
 public class RedovisaBesokRequest {
@@ -34,15 +36,15 @@ public class RedovisaBesokRequest {
 
     public static class RedovisaBesokListItem {
         private Long besokId;
-        private Boolean tolkDeltog;
+        private TolkStatusTyp tolkStatus;
         private boolean genomfort;
 
         public RedovisaBesokListItem() {
         }
 
-        public RedovisaBesokListItem(Long besokId, Boolean tolkDeltog, boolean genomfort) {
+        public RedovisaBesokListItem(Long besokId, TolkStatusTyp tolkStatus, boolean genomfort) {
             this.besokId = besokId;
-            this.tolkDeltog = tolkDeltog;
+            this.tolkStatus = tolkStatus;
             this.genomfort = genomfort;
         }
 
@@ -54,12 +56,12 @@ public class RedovisaBesokRequest {
             this.besokId = besokId;
         }
 
-        public Boolean getTolkDeltog() {
-            return tolkDeltog;
+        public TolkStatusTyp getTolkStatus() {
+            return tolkStatus;
         }
 
-        public void setTolkDeltog(Boolean tolkDeltog) {
-            this.tolkDeltog = tolkDeltog;
+        public void setTolkStatus(TolkStatusTyp tolkStatus) {
+            this.tolkStatus = tolkStatus;
         }
 
         public boolean isGenomfort() {

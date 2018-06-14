@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
@@ -16,15 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+angular.module('ibApp').directive('ibPopoverWrapper',
+        function() {
+            'use strict';
 
-.unbreakable {
-  white-space: nowrap;
-}
-
-.top-align {
-  vertical-align: top !important;
-}
-
-.inline-block {
-  display: inline-block;
-}
+            return {
+                restrict: 'E',
+                transclude: true,
+                scope: {
+                    popoverEnable: '=',
+                    popoverText: '@'
+                },
+                templateUrl: '/components/commonDirectives/form/ibPopoverWrapper/ibPopoverWrapper.directive.html'
+            };
+        });

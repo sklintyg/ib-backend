@@ -19,7 +19,7 @@
 
 angular.module('ibApp')
     .controller('RedovisaBesokModalCtrl',
-        function($log, $scope, $uibModalInstance, BesokProxy, DateUtilsService, dialogModel, ObjectHelper) {
+        function($log, $scope, $uibModalInstance, BesokProxy, DateUtilsService, dialogModel, redovisaBesokService) {
             'use strict';
 
             // Setup view model
@@ -28,32 +28,28 @@ angular.module('ibApp')
                 showSaveErrorMessage: false,
                 deltarItems: [
                     {
-                        id: 'DELTOG',
+                        id: 'DELTAGIT',
                         label: 'Deltog'
                     },
                     {
-                        id: null,
+                        id: 'EJ_DELTAGIT',
                         label: 'Deltog ej'
                     }
                 ],
                 inProgress: false
-            }
+            };
 
             // Transform utredning besokList to local besokList view model
             $scope.vm.besokList = dialogModel.bestallning.besokList.
                 filter(function(besok) {
-                    var besokStartTime = moment(besok.besokDatum + ' ' + besok.besokStartTid);
-                    var isStartTimeExpired = moment().isAfter(besokStartTime);
-                    return (isStartTimeExpired && (besok.besokStatus.id == 'BOKAT' ||
-                            besok.besokStatus.id == 'OMBOKAT' ||
-                            besok.besokStatus.id == 'GENOMFORT'));
+                    return redovisaBesokService.shouldBesokBeRedovisat(besok);
                 }).
                 map(function(besok) {
-                    var genomfort = besok.besokStatus.id == 'GENOMFORT';
+                    var genomfort = besok.besokStatus.id === 'GENOMFORT';
 
                     var disabledDeltarItems = {
-                        'DELTOG' : genomfort,
-                        null : genomfort
+                        'DELTAGIT': genomfort,
+                        'EJ_DELTAGIT': genomfort
                     };
 
                     return {
@@ -63,17 +59,21 @@ angular.module('ibApp')
                         besokStartTid: besok.besokStartTid,
                         besokSlutTid: besok.besokSlutTid,
                         professionLabel: besok.profession.label,
-                        tolkDeltog: besok.tolkStatus,
+                        tolkStatus: {
+                            selected: besok.tolkStatus === null ? null : besok.tolkStatus.id
+                        },
                         disabledDeltarItems: disabledDeltarItems,
-                        genomfort: genomfort
-                    }
+                        genomfort: genomfort,
+                        originalGenomfort: genomfort
+                    };
                 });
 
             $scope.validate = function() {
                 $scope.vm.besokList.forEach(function(besok) {
                     besok.invalid = false;
-                    if(!besok.tolkDeltog && besok.genomfort)
+                    if(!besok.tolkStatus && besok.genomfort) {
                         besok.invalid = true;
+                    }
                 });
             };
 
@@ -83,21 +83,30 @@ angular.module('ibApp')
                 var redovisaBesokDto = {
                     utredningId: dialogModel.bestallning.utredningsId,
                     redovisaBesokList: []
-                }
+                };
 
                 // Transform besokList vm for backend
-                redovisaBesokDto.redovisaBesokList = $scope.vm.besokList.map(function(item) {
-                    return {
-                        besokId: item.besokId,
-                        tolkDeltog: item.tolkDeltog.id,
-                        genomfort: item.genomfort
-                    }
-                });
+                redovisaBesokDto.redovisaBesokList = $scope.vm.besokList.
+                    filter(function(item) {
+                        return !item.originalGenomfort && item.genomfort;
+                    })
+                    .map(function(item) {
+                        return {
+                            besokId: item.besokId,
+                            tolkStatus: item.tolkStatus.selected,
+                            genomfort: item.genomfort
+                        };
+                    });
+
+                if(redovisaBesokDto.redovisaBesokList.length < 1) {
+                    $scope.vm.showSaveErrorMessage = true;
+                    return;
+                }
 
                 // Send
                 $scope.vm.showSaveErrorMessage = false;
                 $scope.vm.inProgress = true;
-                BesokProxy.redovisaBesok(redovisaBesokDto).then(function() {
+                BesokProxy.redovisaBesok(redovisaBesokDto.utredningId, redovisaBesokDto).then(function() {
                     $scope.vm.inProgress = false;
                     $uibModalInstance.close();
                     $scope.vm.showSaveErrorMessage = false;

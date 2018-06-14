@@ -17,14 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.unbreakable {
-  white-space: nowrap;
-}
-
-.top-align {
-  vertical-align: top !important;
-}
-
-.inline-block {
+ib-popover-wrapper {
   display: inline-block;
+
+  div {
+    display: inline-block;
+    cursor: not-allowed;
+  }
+
+  [disabled] {
+    pointer-events: none;
+  }
 }

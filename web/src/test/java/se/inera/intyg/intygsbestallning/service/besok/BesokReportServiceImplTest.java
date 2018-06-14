@@ -96,7 +96,7 @@ public class BesokReportServiceImplTest {
                 .withVisitStatus(BesokStatusTyp.AVSLUTAD_VARDKONTAKT.getCvValue())
                 .build();
 
-        RedovisaBesokRequest.RedovisaBesokListItem besokRequest = new RedovisaBesokRequest.RedovisaBesokListItem(1L, true, true);
+        RedovisaBesokRequest.RedovisaBesokListItem besokRequest = new RedovisaBesokRequest.RedovisaBesokListItem(1L, TolkStatusTyp.DELTAGIT, true);
 
         besokReportService.redovisaBesokInNewTransaction(utredning, besokRequest);
 
@@ -114,7 +114,7 @@ public class BesokReportServiceImplTest {
                 TestDataGen.createBesok(2L),
                 TestDataGen.createBesok(3L)));
 
-        RedovisaBesokRequest.RedovisaBesokListItem besokRequest = new RedovisaBesokRequest.RedovisaBesokListItem(4L, true, false);
+        RedovisaBesokRequest.RedovisaBesokListItem besokRequest = new RedovisaBesokRequest.RedovisaBesokListItem(4L, TolkStatusTyp.DELTAGIT, false);
 
         assertThatThrownBy(() -> besokReportService.redovisaBesokInNewTransaction(utredning, besokRequest))
                 .isExactlyInstanceOf(IbNotFoundException.class)
@@ -134,7 +134,7 @@ public class BesokReportServiceImplTest {
                 TestDataGen.createBesok(2L),
                 TestDataGen.createBesok(3L)));
 
-        RedovisaBesokRequest.RedovisaBesokListItem besokRequest = new RedovisaBesokRequest.RedovisaBesokListItem(1L, true, false);
+        RedovisaBesokRequest.RedovisaBesokListItem besokRequest = new RedovisaBesokRequest.RedovisaBesokListItem(1L, TolkStatusTyp.DELTAGIT, false);
 
         assertThatThrownBy(() -> besokReportService.redovisaBesokInNewTransaction(utredning, besokRequest))
                 .isExactlyInstanceOf(IbExternalServiceException.class)

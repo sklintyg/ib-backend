@@ -34,8 +34,8 @@ angular.module('ibApp').factory('BesokProxy',
             return ProxyTemplate.putTemplate(restPath, besok, {});
         }
 
-        function _redovisaBesok(redovisaBesokDto) {
-            var restPath = besokRestPath + 'redovisa';
+        function _redovisaBesok(utredningId, redovisaBesokDto) {
+            var restPath = besokRestPath + utredningId + '/besok/redovisa';
 
             return ProxyTemplate.putTemplate(restPath, redovisaBesokDto, {});
         }

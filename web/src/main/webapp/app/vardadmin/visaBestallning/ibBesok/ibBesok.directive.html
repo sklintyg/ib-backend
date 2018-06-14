@@ -1,8 +1,13 @@
 <div class="ib-besok-wrapper">
   <div class="table-actionbar">
-    <button class="btn btn-success" ng-click="oppnaLaggTillBesok()" ng-disabled="hanteraBesokDisabled()"><span>Lägg till besök</span>
+    <button class="btn btn-success" ng-click="oppnaLaggTillBesok()" ng-disabled="hanteraBesokDisabled()">Lägg till besök
     </button>
-    <button class="btn btn-primary" ng-click="oppnaRedovisaBesok()"><span>Redovisa besök</span></button>
+    <ib-popover-wrapper popover-text="Inga besök har genomförts än"
+                        popover-enable="!isRedovisaBesokEnabled()">
+      <button class="btn btn-primary"
+              ng-click="oppnaRedovisaBesok()"
+              data-ng-disabled="!isRedovisaBesokEnabled()">Redovisa besök</button>
+    </ib-popover-wrapper>
   </div>
 
   <div class="ib-besoklist-empty" ng-if="bestallning.besokList == 0">

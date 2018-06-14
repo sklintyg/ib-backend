@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
@@ -17,14 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.unbreakable {
-  white-space: nowrap;
-}
-
-.top-align {
-  vertical-align: top !important;
-}
-
-.inline-block {
-  display: inline-block;
-}
+angular.module('ibApp')
+    .service('redovisaBesokService', function() {
+        this.shouldBesokBeRedovisat = function(besok) {
+            var besokStartTime = moment(besok.besokDatum + ' ' + besok.besokStartTid);
+            var isStartTimeExpired = moment().isAfter(besokStartTime);
+            return (isStartTimeExpired && (besok.besokStatus.id === 'BOKAT' ||
+                besok.besokStatus.id === 'OMBOKAT' ||
+                besok.besokStatus.id === 'GENOMFORT'))
+        };
+    });

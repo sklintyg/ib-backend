@@ -12,7 +12,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-angular.module('ibApp').directive('ibBesok', function($log, ibDialog, BesokProxy, moment) {
+angular.module('ibApp').directive('ibBesok', function($log, ibDialog, BesokProxy, moment, redovisaBesokService) {
     'use strict';
 
     return {
@@ -26,6 +26,13 @@ angular.module('ibApp').directive('ibBesok', function($log, ibDialog, BesokProxy
             $scope.showErsatts = function() {
                 return $scope.bestallning.status.id === 'AVSLUTAD' || $scope.bestallning.status.id === 'AVBRUTEN';
             };
+
+            $scope.isRedovisaBesokEnabled = function() {
+                return $scope.bestallning && $scope.bestallning.besokList && $scope.bestallning.besokList.
+                            filter(function(besok) {
+                                return redovisaBesokService.shouldBesokBeRedovisat(besok);
+                            }).length > 0;
+            }
 
             $scope.hanteraBesokDisabled = function() {
                 return !$scope.bestallning || $scope.bestallning.fas.id !== 'UTREDNING' ||
