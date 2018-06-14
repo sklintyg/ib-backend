@@ -81,6 +81,10 @@ angular
                     _redirect($state, toState.name, event, 'app.vardadmin.pagaendeBestallningar', {}, {
                         location: 'replace',  reload : true
                     });
+                }                else if (UserModel.get().currentRole.name === 'BP_VARDADMIN') {
+                    _redirect($state, toState.name, event, 'app.bpadmin.aktivaBestallningar', {}, {
+                        location: 'replace',  reload : true
+                    });
                 }
             }
             if (toState.data && angular.isFunction(toState.data.rule)) {

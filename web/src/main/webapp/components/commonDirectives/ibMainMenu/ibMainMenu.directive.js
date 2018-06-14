@@ -96,6 +96,19 @@ angular.module('ibApp').directive('ibMainMenu', ['$state', 'UserModel', 'StatPol
                         id: 'menu-vardadministrator-avslutadeBestallningar'
                     });
                 }
+                else if (UserModel.get().currentRole.name === 'BP_VARDADMIN') {
+
+                    menu.push({
+                        state: 'app.bpadmin.aktivaBestallningar',
+                        label: 'Aktiva',
+                        id: 'menu-bp-vardadministrator-listaForfragningar',
+
+                        getStat: function() {
+                            return '';
+                        }
+                    });
+
+                }
 
                 return menu;
             }
