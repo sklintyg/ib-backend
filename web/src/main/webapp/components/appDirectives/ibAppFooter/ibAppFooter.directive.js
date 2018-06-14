@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,21 +16,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+angular.module('ibApp').directive('ibAppFooter', ['$uibModal', function($uibModal) {
+    'use strict';
 
-angular.module('ibApp')
-    .controller('footerCtrl',
-        function($scope, $uibModal) {
-            'use strict';
+    return {
+        restrict: 'E',
+        scope: {},
+        templateUrl: '/components/appDirectives/ibAppFooter/ibAppFooter.directive.html',
+        link: function($scope) {
 
             $scope.openInfoDialog = function($event, template) {
                 if ($event) {
                     $event.preventDefault();
                 }
                 $uibModal.open({
-                    templateUrl: '/app/footer/footer.' + template + '.html',
+                    templateUrl: '/components/appDirectives/ibAppFooter/footer.' + template + '.html',
                     size: 'md',
                     windowClass: 'footer-info-dialog-modal'
                 });
             };
 
-        });
+        }
+    };
+}]);

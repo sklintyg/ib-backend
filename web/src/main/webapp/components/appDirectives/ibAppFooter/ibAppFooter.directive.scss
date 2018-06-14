@@ -1,0 +1,32 @@
+ib-app-footer {
+  display: block;
+  background: $ib-color-28;
+  padding: 30px 0;
+  box-shadow: inset 1px 4px 9px -6px $ib-color-07;
+
+
+  h3 {
+    @extend %ib-typo-14;
+    color: $ib-color-08;
+    margin: 0;
+  }
+  p {
+    @extend %ib-typo-07;
+    color: $ib-color-08;
+  }
+
+}
+
+.footer-info-dialog-modal {
+
+  //this modal should appear a bit down on the page
+  .modal-dialog {
+    margin-top: 50px;
+  }
+
+  .modal-body {
+    padding: 20px 20px 40px 20px;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+}

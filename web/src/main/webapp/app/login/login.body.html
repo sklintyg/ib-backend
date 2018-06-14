@@ -1,26 +1,27 @@
-<div class="container index-page">
-    <div id="content-body" class="row">
-        <div class="col-xs-12 col-sm-6">
-            <img class="welcome-image"
-                 src="/assets/images/landningssida.png"/>
-        </div>
-        <div class="col-xs-12 col-sm-6 text-part">
-            <h2>Välkommen till Intygsbeställning</h2>
-            <p>
-            </p>
+<div class="ib-workarea-vflex-container login-page">
+  <div class="centered-constrained-content login-body">
+    <div class="row">
+      <div class="col-xs-12 col-sm-6">
+        <img class="welcome-image" src="/assets/images/landningssida.png" />
+      </div>
+      <div class="col-xs-12 col-sm-6 text-part">
+        <h2>Välkommen till Intygsbeställning</h2>
+        <p>Intygsbeställning - FMU är verktyget som håller reda på dina förfrågningar och beställningar gällande
+          försäkringsmedicinska utredningar. För att logga in måste du har ett giltigt SITHS- eller EFOS-kort, samt vara
+          registrerad som behörig användare.</p>
 
-            <p class="login-button">
-                <a class="btn btn-primary" href="/saml/login/alias/defaultAlias?targetApplication=FMU"><i
-                        class="icon icon-login"></i> Logga in med
-                    SITHS-kort* (FMU)</a>
-                <a class="btn btn-primary" href="/saml/login/alias/defaultAlias?targetApplication=BP"><i
-                        class="icon icon-login"></i> Logga in med
-                    SITHS-kort* (BP)</a>
-            </p>
-            <p>
-                *Du måste ha rätt behörighet i HSA-katalogen. <span dynamiclink key="rehabstodAnvandarmanualPdf"></span>.
-            </p>
-        </div>
-        <div class="clearfix"></div>
+        <p class="login-button">
+          <a class="btn btn-primary" href="/saml/login/alias/defaultAlias?targetApplication=FMU"><i
+              class="icon icon-login"></i> Logga in med
+            SITHS-kort (FMU)</a>
+          <a class="btn btn-primary" href="/saml/login/alias/defaultAlias?targetApplication=BP"><i
+              class="icon icon-login"></i> Logga in med
+            SITHS-kort (BP)</a>
+        </p>
+
+      </div>
     </div>
+  </div>
+
+  <ib-app-footer></ib-app-footer>
 </div>

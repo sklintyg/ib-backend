@@ -1,11 +1,8 @@
 .login-page {
-  padding-top: 40px;
+  overflow: auto;
 
-  .text-part {
-    padding-left: 20px;
-    h2 {
-      padding-top: 0;
-    }
+  .login-body {
+    flex:1 0 auto;
   }
   .welcome-image {
     width: 100%;

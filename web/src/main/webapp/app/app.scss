@@ -38,7 +38,6 @@
 // injector
 @import 'error/error.scss';
 @import 'error/restErrorDialog.scss';
-@import 'footer/footer.scss';
 @import 'login/login.page.scss';
 @import 'samordnare/avslutadeUtredningar/avslutadeUtredningar.page.scss';
 @import 'samordnare/avslutadeUtredningar/avslutadeUtredningarFilter/avslutadeUtredningarFilter.directive.scss';
@@ -79,6 +78,7 @@
 @import 'vardadmin/visaInternForfragan/ibInternForfraganHeader/ibInternForfraganHeader.directive.scss';
 @import 'vardadmin/visaInternForfragan/ibInternForfraganHeader/ibInternForfraganHeaderStatus/ibInternForfraganHeaderStatus.directive.scss';
 @import 'vardadmin/visaInternForfragan/visaInternForfragan.page.scss';
+@import 'appDirectives/ibAppFooter/ibAppFooter.directive.scss';
 @import 'appDirectives/ibAppHeader/ibAppHeader.directive.scss';
 @import 'appDirectives/ibAppHeader/ibAppHeader.variables.scss';
 @import 'appDirectives/ibAppHeader/ibHeaderActions/about/aboutDialog.template.scss';

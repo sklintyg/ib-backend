@@ -6,12 +6,6 @@
     "target": "_blank"
   },
   {
-    "key": "ineraNationellKundserviceFelanmalan",
-    "url": "http://www.inera.se/felanmalan",
-    "text": "Kontaktinformation till Kundservice",
-    "target": "_blank"
-  },
-  {
     "key": "ptsCookies",
     "url": "https://www.pts.se/sv/Privat/Internet/Skydd-av-uppgifter/Fragor-och-svar-om-kakor-for-anvandare1/",
     "text": "Post- och telestyrelsens webbplats.",
@@ -21,6 +15,18 @@
     "key": "ptsCookiesBanner",
     "url": "https://www.pts.se/sv/Privat/Internet/Skydd-av-uppgifter/Fragor-och-svar-om-kakor-for-anvandare1/",
     "text": "Post- och telestyrelsens webbplats",
+    "target": "_blank"
+  },
+  {
+    "key": "ineraHomepage",
+    "url": "https://www.inera.se",
+    "text": "www.inera.se",
+    "target": "_blank"
+  },
+  {
+    "key": "ineraContactAndSupport",
+    "url": "https://www.inera.se/kundservice",
+    "text": "Kontakt och support",
     "target": "_blank"
   }
 ]

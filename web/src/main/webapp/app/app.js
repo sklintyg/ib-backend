@@ -34,10 +34,6 @@ angular.module('ibApp').config(function($stateProvider) {
             'navbar@': {
                 templateUrl: '/app/navbar/navbar.html',
                 controller: 'NavbarCtrl'
-            },
-            'footer@': {
-                templateUrl: '/app/footer/footer.html',
-                controller: 'footerCtrl'
             }
         }
     });
