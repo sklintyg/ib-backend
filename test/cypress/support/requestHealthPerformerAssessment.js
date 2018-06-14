@@ -1,11 +1,12 @@
 
 import xml2js from 'xml2js'
 
-Cypress.Commands.add("requestHealthPerformerAssesment", (requestData) => {
+Cypress.Commands.add("requestHealthPerformerAssessment", (requestData) => {
 
-    var url = 'http://localhost:8991/services/request-healthcare-performer-for-assessment-responder';
+    var url = Cypress.env('requestHealthcarePerformerForAssessment');
+	console.log('!!url: ' + url);
     var request = createRequest(requestData);
-
+	//var request = afuBody();
     return cy.request('POST', url, request).then((response) => {
         cy.log(response.body);
         assert.equal(response.status, 200);
@@ -36,11 +37,11 @@ function createRequest(requestData) {
                 '<urn1:RequestHealthcarePerformerForAssessment>' +
                     '<urn1:certificateType>' +
                         '<urn2:code>' + requestData.utredningsTyp + '</urn2:code>' +
-                        '<urn2:codeSystem></urn2:codeSystem>' +
+                        '<urn2:codeSystem>b64ea353-e8f6-4832-b563-fc7d46f29548</urn2:codeSystem>' +
                     '</urn1:certificateType>' +
                     '<urn1:lastResponseDate>' + requestData.besvaraSenastDatum + '</urn1:lastResponseDate>' +
                     '<urn1:coordinatingCountyCouncilId>' +
-                        '<urn2:root></urn2:root>' +
+                        '<urn2:root>1.2.752.129.2.1.4.1</urn2:root>' +
                         '<urn2:extension>' + requestData.landstingHsaId + '</urn2:extension>' +
                     '</urn1:coordinatingCountyCouncilId>' +
 /*                    // <!--Optional:-->

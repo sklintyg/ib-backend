@@ -2,5 +2,8 @@
   "baseUrl": "http://localhost:8991",
   "screenshotsFolder": "build/test-results/screenshots/",
   "videosFolder": "build/test-results/videos/",
-  "viewportWidth": 1400, "viewportHeight": 660
+  "viewportWidth": 1400, "viewportHeight": 660,
+  "env": {
+    "host": "dev"
+  }
 }

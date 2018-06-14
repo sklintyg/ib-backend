@@ -11,7 +11,33 @@
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
 
-module.exports = (on, config) => {
+const enviroments = {
+	"ip30" : {
+		"baseUrl": "https://ib-backend-route-test-intyg.app-ocpsbx1-ind.ocp.osl.basefarm.net",
+		"env": {
+			"host":"ip30",
+			"requestHealthcarePerformerForAssessment": "/services/request-healthcare-performer-for-assessment-responder"
+		}
+	},
+	"ip40" : {
+		"baseUrl": "placeholder"
+	},
+	"dev" : {
+		"baseUrl": "http://localhost:8991",
+		"requestHealthcarePerformerForAssessment": "/services/request-healthcare-performer-for-assessment-responder"
+	},
+	"demo" : {
+		"baseUrl": "placeholder"
+	}	
+}
+
+module.exports = (on, config) => { 
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
+	const env = config.env.host || 'dev'
+	console.log(config)
+	// modify config values
+	config.baseUrl = enviroments[env].baseUrl
+	config.env = enviroments[env].env
+	return config
 }

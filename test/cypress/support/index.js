@@ -15,7 +15,7 @@
 
 // Import commands.js using ES2015 syntax:
 import './commands'
-import './requestHealthPerformerAssesment'
+import './requestHealthPerformerAssessment'
 import './utredningar'
 import './vardenheter'
 import './notificationsettings'
