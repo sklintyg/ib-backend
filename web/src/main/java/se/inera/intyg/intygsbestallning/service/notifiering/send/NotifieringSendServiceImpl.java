@@ -19,6 +19,8 @@
 package se.inera.intyg.intygsbestallning.service.notifiering.send;
 
 import static com.google.common.base.Preconditions.checkState;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType.VE;
 import static se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType.VG;
@@ -139,14 +141,18 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
     @Override
     public void notifieraVardenhetNyInternforfragan(Utredning utredning) {
-        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, AVVIKELSE_RAPPORTERAD_AV_VARDEN);
-        final String id = bestallning.getTilldeladVardenhetHsaId();
-        final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VE);
+        checkState(utredning.getExternForfragan().isPresent());
+        checkState(isNotEmpty(utredning.getExternForfragan().get().getInternForfraganList()));
+        checkState(nonNull(utredning.getExternForfragan().get().getInternForfraganList().get(0).getForfraganSvar()));
+        checkState(utredning.getExternForfragan().map(ExternForfragan::getLandstingHsaId).isPresent());
+
+        String landstingsHsaId = utredning.getExternForfragan().map(ExternForfragan::getLandstingHsaId).get();
 
         final InternForfragan internForfragan = utredning.getExternForfragan().get().getInternForfraganList().get(0);
+        final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(landstingsHsaId, VG);
 
         if (preferens.isEnabled(NY_INTERNFORFRAGAN, VARDENHET)) {
-            String email = vardenhetService.getVardEnhetPreference(id).getEpost();
+            String email = vardenhetService.getVardEnhetPreference(landstingsHsaId).getEpost();
             if (isNotEmpty(email)) {
 
                 final String body = notifieringMailBodyFactory.buildBodyForUtredning(
@@ -181,7 +187,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
     @Override
     public void notifieraVardenhetTilldeladUtredning(Utredning utredning, InternForfragan tillDeladInternForfragan, String landstingNamn) {
         final String utforareEpost = tillDeladInternForfragan.getForfraganSvar().getUtforareEpost();
-        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, AVVIKELSE_RAPPORTERAD_AV_VARDEN);
+        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, UTREDNING_TILLDELAD);
         final String id = bestallning.getTilldeladVardenhetHsaId();
         final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VG);
 
@@ -209,7 +215,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
     @Override
     public void notifieraLandstingIngenBestallning(final Utredning utredning) {
-        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, AVVIKELSE_RAPPORTERAD_AV_VARDEN);
+        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, INGEN_BESTALLNING);
         final String id = bestallning.getTilldeladVardenhetHsaId();
         final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VG);
 
@@ -225,7 +231,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
     @Override
     public void notifieraVardenhetIngenBestallning(final Utredning utredning) {
-        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, AVVIKELSE_RAPPORTERAD_AV_VARDEN);
+        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, INGEN_BESTALLNING);
         final String id = bestallning.getTilldeladVardenhetHsaId();
         final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VE);
 
@@ -244,7 +250,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
     @Override
     public void notifieraVardenhetNyBestallning(Utredning utredning) {
-        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, AVVIKELSE_RAPPORTERAD_AV_VARDEN);
+        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, NY_BESTALLNING);
         final String id = bestallning.getTilldeladVardenhetHsaId();
         final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VE);
 
@@ -263,7 +269,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
     @Override
     public void notifieraLandstingAvslutadPgaJav(final Utredning utredning) {
-        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, AVVIKELSE_RAPPORTERAD_AV_VARDEN);
+        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, UTREDNING_AVSLUTAD_PGA_JAV);
         final String id = bestallning.getTilldeladVardenhetHsaId();
         final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VG);
 
@@ -282,7 +288,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
     @Override
     public void notifieraVardenhetAvslutadPgaJav(Utredning utredning) {
-        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, AVVIKELSE_RAPPORTERAD_AV_VARDEN);
+        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, UTREDNING_AVSLUTAD_PGA_JAV);
         final String id = bestallning.getTilldeladVardenhetHsaId();
         final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VE);
 
@@ -303,7 +309,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
     @Override
     public void notifieraVardenhetUppdateradBestallning(Utredning utredning) {
-        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, AVVIKELSE_RAPPORTERAD_AV_VARDEN);
+        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, UPPDATERAD_BESTALLNING);
         final String id = bestallning.getTilldeladVardenhetHsaId();
         final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VE);
 
@@ -339,7 +345,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
     @Override
     public void notifieraVardenhetAvvikelseMottagenFranFK(Utredning utredning, Besok besok) {
-        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, AVVIKELSE_RAPPORTERAD_AV_VARDEN);
+        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, AVVIKELSE_MOTTAGEN_AV_FK);
         final String id = bestallning.getTilldeladVardenhetHsaId();
         final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VE);
 
@@ -359,7 +365,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
     @Override
     public void notifieraLandstingAvvikelseMottagenFranFK(Utredning utredning, Besok besok) {
-        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, AVVIKELSE_RAPPORTERAD_AV_VARDEN);
+        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, AVVIKELSE_MOTTAGEN_AV_FK);
         final String id = bestallning.getTilldeladVardenhetHsaId();
         final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VE);
 
@@ -376,7 +382,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
     @Override
     public void notifieraVardenhetAvslutadUtredning(Utredning utredning) {
-        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, AVVIKELSE_RAPPORTERAD_AV_VARDEN);
+        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, UTREDNING_AVSLUTAD_PGA_AVBRUTEN);
         final String id = bestallning.getTilldeladVardenhetHsaId();
         final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VE);
 
@@ -396,7 +402,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
     @Override
     public void notifieraLandstingAvslutadUtredning(Utredning utredning) {
-        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, AVVIKELSE_RAPPORTERAD_AV_VARDEN);
+        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, UTREDNING_AVSLUTAD_PGA_AVBRUTEN);
         final String id = bestallning.getTilldeladVardenhetHsaId();
         final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VE);
 
