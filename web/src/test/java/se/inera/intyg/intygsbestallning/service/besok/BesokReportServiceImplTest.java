@@ -21,6 +21,7 @@ package se.inera.intyg.intygsbestallning.service.besok;
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -28,6 +29,7 @@ import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbExternalServiceException;
 import se.inera.intyg.intygsbestallning.common.exception.IbExternalSystemEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
+import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto;
 import se.inera.intyg.intygsbestallning.integration.myndighet.service.MyndighetIntegrationService;
@@ -46,12 +48,14 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RedovisaBes
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto.ReportCareContactRequestDtoBuilder.aReportCareContactRequestDto;
 
@@ -107,6 +111,27 @@ public class BesokReportServiceImplTest {
     }
 
     @Test
+    public void testRedovisaBesokInNewTransactionSuccessNotGenomfort() {
+        Utredning utredning = TestDataGen.createUtredning();
+        utredning.setBesokList(ImmutableList.of(
+                TestDataGen.createBesok(1L),
+                TestDataGen.createBesok(2L),
+                TestDataGen.createBesok(3L)));
+
+        RedovisaBesokRequest.RedovisaBesokListItem besokRequest = new RedovisaBesokRequest.RedovisaBesokListItem(1L, TolkStatusTyp.DELTAGIT, false);
+
+        besokReportService.redovisaBesokInNewTransaction(utredning, besokRequest);
+
+        ArgumentCaptor<Utredning> savedUtredningCaptor = ArgumentCaptor.forClass(Utredning.class);
+        verify(utredningRepository, times(1)).saveUtredning(savedUtredningCaptor.capture());
+        assertEquals(TolkStatusTyp.DELTAGIT, savedUtredningCaptor.getValue().getBesokList().get(0).getTolkStatus());
+        assertEquals(BesokStatusTyp.TIDBOKAD_VARDKONTAKT, savedUtredningCaptor.getValue().getBesokList().get(0).getBesokStatus());
+
+        verifyZeroInteractions(myndighetIntegrationService);
+        verifyZeroInteractions(logService);
+    }
+
+    @Test
     public void testRedovisaBesokInNewTransactionFailBesokNotFound() {
         Utredning utredning = TestDataGen.createUtredning();
         utredning.setBesokList(ImmutableList.of(
@@ -134,10 +159,25 @@ public class BesokReportServiceImplTest {
                 TestDataGen.createBesok(2L),
                 TestDataGen.createBesok(3L)));
 
-        RedovisaBesokRequest.RedovisaBesokListItem besokRequest = new RedovisaBesokRequest.RedovisaBesokListItem(1L, TolkStatusTyp.DELTAGIT, false);
+        RedovisaBesokRequest.RedovisaBesokListItem besokRequest = new RedovisaBesokRequest.RedovisaBesokListItem(1L, TolkStatusTyp.DELTAGIT, true);
 
         assertThatThrownBy(() -> besokReportService.redovisaBesokInNewTransaction(utredning, besokRequest))
                 .isExactlyInstanceOf(IbExternalServiceException.class)
+                .hasFieldOrPropertyWithValue("errorEntityId", 1L);
+    }
+
+    @Test
+    public void testRedovisaBesokInNewTransactionFailTolkStatus() {
+        Utredning utredning = TestDataGen.createUtredning();
+        utredning.setBesokList(ImmutableList.of(
+                TestDataGen.createBesok(1L),
+                TestDataGen.createBesok(2L),
+                TestDataGen.createBesok(3L)));
+
+        RedovisaBesokRequest.RedovisaBesokListItem besokRequest = new RedovisaBesokRequest.RedovisaBesokListItem(1L, TolkStatusTyp.BOKAT, true);
+
+        assertThatThrownBy(() -> besokReportService.redovisaBesokInNewTransaction(utredning, besokRequest))
+                .isExactlyInstanceOf(IbServiceException.class)
                 .hasFieldOrPropertyWithValue("errorEntityId", 1L);
     }
 }

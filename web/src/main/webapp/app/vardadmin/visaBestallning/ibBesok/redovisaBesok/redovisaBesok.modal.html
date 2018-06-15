@@ -24,13 +24,15 @@
               {{::besok.professionLabel}}
             </td>
             <td>
-              <ib-radiogroup id="redovisa-besok-modal-{{$index}}"
-                             ng-if="besok.tolkStatus"
-                             model="besok.tolkStatus"
-                             on-change="validate()"
-                             items="vm.deltarItems"
-                             items-disabled="besok.disabledDeltarItems"
-                             disabled-tooltip-key="redovisa.redanskickad.tooltip"></ib-radiogroup>
+              <div ng-if="besok.tolkStatus.selected !== 'EJ_BOKAT'" class="tolk-status">
+                <span ng-if="besok.genomfort && besok.tolkStatus.selected !== 'EJ_DELTAGIT' && besok.tolkStatus.selected !== 'DELTAGIT'" class="asterisk">*</span>
+                <ib-radiogroup id="redovisa-besok-modal-{{$index}}"
+                               model="besok.tolkStatus"
+                               on-change="validate()"
+                               items="vm.deltarItems"
+                               items-disabled="besok.disabledDeltarItems"
+                               disabled-tooltip-key="redovisa.redanskickad.tooltip"></ib-radiogroup>
+              </div>
             </td>
             <td>
               <ib-checkbox-wrapper>
@@ -50,8 +52,11 @@
   <div class="modal-footer">
 
     <div>
-      <ib-alert-message ng-if="vm.showSaveErrorMessage" alert-message-id="redovisaBesok.error.teknisktfel"
-                        alert-id="redovisaBesok.error.teknisktfel" alert-severity="danger"></ib-alert-message>
+      <ib-alert-message ng-if="vm.showSaveErrorMessage" alert-id="redovisabesok.error.teknisktfel" alert-severity="danger">
+        <message key="redovisaBesok.error.teknisktfel"></message> {{vm.saveErrorBesok.besokDatum}} {{vm.saveErrorBesok.besokStartTid}}
+      </ib-alert-message>
+      <ib-alert-message ng-if="vm.showValidationErrorMessage" alert-message-id="redovisabesok.error.validation"
+                        alert-id="redovisabesok.error.validation" alert-severity="danger"></ib-alert-message>
     </div>
 
     <ib-button btn-id="redovisa-besok-modal-skicka"

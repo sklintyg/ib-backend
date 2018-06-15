@@ -19,11 +19,12 @@
 
 angular.module('ibApp')
     .service('redovisaBesokService', function() {
+        'use strict';
         this.shouldBesokBeRedovisat = function(besok) {
             var besokStartTime = moment(besok.besokDatum + ' ' + besok.besokStartTid);
             var isStartTimeExpired = moment().isAfter(besokStartTime);
             return (isStartTimeExpired && (besok.besokStatus.id === 'BOKAT' ||
                 besok.besokStatus.id === 'OMBOKAT' ||
-                besok.besokStatus.id === 'GENOMFORT'))
+                besok.besokStatus.id === 'GENOMFORT'));
         };
     });

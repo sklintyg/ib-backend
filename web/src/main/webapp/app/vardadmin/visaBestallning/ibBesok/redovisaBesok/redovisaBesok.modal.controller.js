@@ -88,7 +88,7 @@ angular.module('ibApp')
                 // Transform besokList vm for backend
                 redovisaBesokDto.redovisaBesokList = $scope.vm.besokList.
                     filter(function(item) {
-                        return !item.originalGenomfort && item.genomfort;
+                        return !item.originalGenomfort;
                     })
                     .map(function(item) {
                         return {
@@ -98,8 +98,11 @@ angular.module('ibApp')
                         };
                     });
 
-                if(redovisaBesokDto.redovisaBesokList.length < 1) {
-                    $scope.vm.showSaveErrorMessage = true;
+                $scope.vm.showValidationErrorMessage = false;
+                if (redovisaBesokDto.redovisaBesokList.filter(function(item) {
+                    return item.tolkStatus === 'BOKAT' && item.genomfort;
+                    }).length > 0) {
+                    $scope.vm.showValidationErrorMessage = true;
                     return;
                 }
 
@@ -110,9 +113,19 @@ angular.module('ibApp')
                     $scope.vm.inProgress = false;
                     $uibModalInstance.close();
                     $scope.vm.showSaveErrorMessage = false;
-                }, function() {
+                }, function(error) {
                     $scope.vm.inProgress = false;
                     $scope.vm.showSaveErrorMessage = true;
+                    if (error.errorEntityId) {
+                        $scope.vm.saveErrorBesok = dialogModel.bestallning.besokList
+                            .filter(function(besok) { return besok.besokId === error.errorEntityId; });
+                        if ($scope.vm.saveErrorBesok.length === 1) {
+                            $scope.vm.saveErrorBesok = $scope.vm.saveErrorBesok[0];
+                        }
+                        else {
+                            $scope.vm.saveErrorBesok = null;
+                        }
+                    }
                 });
             };
         });

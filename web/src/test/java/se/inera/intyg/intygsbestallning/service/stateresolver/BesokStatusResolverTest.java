@@ -91,7 +91,7 @@ public class BesokStatusResolverTest {
     }
 
     @Test
-    public void TestPatientUteblev() {
+    public void TestInvanareUteblev() {
         Besok besok = aBesok()
                 .withAvvikelse(anAvvikelse()
                         .withOrsakatAv(AvvikelseOrsak.PATIENT)
@@ -101,7 +101,7 @@ public class BesokStatusResolverTest {
                         aHandelse().withHandelseTyp(HandelseTyp.AVVIKELSE_RAPPORTERAD).build()))
                 .build();
         BesokStatus status = testee.resolveStatus(besok);
-        assertEquals(BesokStatus.PATIENT_UTEBLEV, status);
+        assertEquals(BesokStatus.INVANARE_UTEBLEV, status);
     }
 
 }

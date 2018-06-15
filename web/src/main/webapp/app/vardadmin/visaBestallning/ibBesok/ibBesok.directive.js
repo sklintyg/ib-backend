@@ -32,11 +32,13 @@ angular.module('ibApp').directive('ibBesok', function($log, ibDialog, BesokProxy
                             filter(function(besok) {
                                 return redovisaBesokService.shouldBesokBeRedovisat(besok);
                             }).length > 0;
-            }
+            };
 
-            $scope.hanteraBesokDisabled = function() {
+            $scope.hanteraBesokDisabled = function(besok) {
+                var disabledBesokStatusList = ['INVANARE_UTEBLEV', 'AVVIKELSE_RAPPORTERAD', 'AVBOKAT', 'GENOMFORT'];
                 return !$scope.bestallning || $scope.bestallning.fas.id !== 'UTREDNING' ||
-                    $scope.bestallning.status.id === 'UTLATANDE_SKICKAT' || $scope.bestallning.status.id === 'UTLATANDE_MOTTAGET';
+                    $scope.bestallning.status.id === 'UTLATANDE_SKICKAT' || $scope.bestallning.status.id === 'UTLATANDE_MOTTAGET' ||
+                    (besok && disabledBesokStatusList.indexOf(besok.besokStatus.id) >= 0);
             };
 
             $scope.isAvvikelseMottagen = function(besokStatus) {

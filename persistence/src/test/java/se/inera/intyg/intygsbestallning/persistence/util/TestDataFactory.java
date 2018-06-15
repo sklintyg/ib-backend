@@ -61,6 +61,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungT
 import se.inera.intyg.intygsbestallning.persistence.model.type.KallelseFormTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.RegiFormTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 
@@ -190,6 +191,7 @@ public final class TestDataFactory {
                 .withKallelseDatum(LocalDateTime.now())
                 .withDeltagareProfession(DeltagarProfessionTyp.FT)
                 .withDeltagareFullstandigtNamn("Håkan Fysiosson")
+                .withTolkStatus(TolkStatusTyp.EJ_BOKAT)
                 .withAvvikelse(anAvvikelse()
                         .withTidpunkt(LocalDateTime.now())
                         .withOrsakatAv(AvvikelseOrsak.PATIENT)

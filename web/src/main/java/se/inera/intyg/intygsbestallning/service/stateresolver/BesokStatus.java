@@ -32,7 +32,7 @@ public enum BesokStatus implements SortableLabel {
     AVVIKELSE_RAPPORTERAD("Avvikelse rapporterad", null),
     AVVIKELSE_MOTTAGEN("Avvikelse mottagen", VARDADMIN),
     AVBOKAT("Avbokat", null),
-    PATIENT_UTEBLEV("Patient uteblev", null),
+    INVANARE_UTEBLEV("Invånare uteblev", null),
     GENOMFORT("Genomfört", null);
 
     private final String id;

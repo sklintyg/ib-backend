@@ -33,6 +33,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
 import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
 
 public final class HandelseUtil {
@@ -291,7 +292,8 @@ public final class HandelseUtil {
     }
 
     public static Handelse createUppdateraBesok(final Besok besok, final DeltagarProfessionTyp newProfession,
-                                                final String newDeltagareFullstandigtNamn, final String vardadministrator) {
+                                                final String newDeltagareFullstandigtNamn, final TolkStatusTyp newTolkStatus,
+                                                final String vardadministrator) {
 
         StringBuilder text = new StringBuilder();
         text.append(MessageFormat.format("Uppdaterat besök {0} {1} - {2}",
@@ -305,7 +307,7 @@ public final class HandelseUtil {
 
         if (besok.getTolkStatus() != null) {
             text.append(MessageFormat.format(". Tolk bokad: {0}",
-                    besok.getTolkStatus().getLabel()));
+                    newTolkStatus.getLabel()));
         }
 
         String kommentar = "";

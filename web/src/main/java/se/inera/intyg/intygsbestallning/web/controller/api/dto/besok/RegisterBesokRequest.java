@@ -131,6 +131,7 @@ public class RegisterBesokRequest {
         checkArgument(nonNull(request.getKallelseDatum()), "kallelseDatum may not be null");
         checkArgument(nonNull(request.getBesokDatum()), "besokDatum may not be null");
         checkArgument(nonNull(request.getBesokStartTid()), "besokStartTid may not be null");
+        checkArgument(nonNull(request.getTolkStatus()), "tolkStatus may not be null");
     }
 
 

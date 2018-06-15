@@ -61,20 +61,36 @@ public class BesokReportServiceImpl extends BaseBesokService implements BesokRep
                             "Could not find besok {0} in utredning {1}", besokRequest.getBesokId(), utredning.getUtredningId()),
                             besokRequest.getBesokId()));
 
-            if (besokRequest.isGenomfort()) {
-                besok.setBesokStatus(BesokStatusTyp.AVSLUTAD_VARDKONTAKT);
+            if (besok.getBesokStatus() == BesokStatusTyp.AVSLUTAD_VARDKONTAKT) {
+                throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, MessageFormat.format(
+                        "Besok {0} in utredning {1} has already been redovisat", besokRequest.getBesokId(), utredning.getUtredningId()),
+                        besokRequest.getBesokId());
             }
 
             besok.setTolkStatus(besokRequest.getTolkStatus());
 
-            Handelse besokHandelse = HandelseUtil.createBesokRedovisat(besok, userService.getUser().getNamn());
-            utredning.getHandelseList().add(besokHandelse);
-            besok.getHandelseList().add(besokHandelse);
+            if (besokRequest.isGenomfort()) {
+                // If tolk was BOKAT for this besok it must be redovisat as DELTAGIT or EJ_DELTAGIT
+                if (besok.getTolkStatus() == TolkStatusTyp.BOKAT && besokRequest.getTolkStatus() != TolkStatusTyp.DELTAGIT
+                        &&  besokRequest.getTolkStatus() != TolkStatusTyp.EJ_DELTAGIT) {
+                    throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, MessageFormat.format(
+                            "Besok {0} in utredning {1} has TolkStatus BOKAT, request needs to set DELTAGIT or EJ_DELTAGIT",
+                            besokRequest.getBesokId(), utredning.getUtredningId()), besokRequest.getBesokId());
+                }
+
+                besok.setBesokStatus(BesokStatusTyp.AVSLUTAD_VARDKONTAKT);
+
+                Handelse besokHandelse = HandelseUtil.createBesokRedovisat(besok, userService.getUser().getNamn());
+                utredning.getHandelseList().add(besokHandelse);
+                besok.getHandelseList().add(besokHandelse);
+
+                logService.log(new UtredningPdlLoggable(utredning), PdlLogType.BESOK_REDOVISAT);
+
+                reportBesok(utredning, besok);
+            }
+
             utredningRepository.saveUtredning(utredning);
 
-            logService.log(new UtredningPdlLoggable(utredning), PdlLogType.BESOK_REDOVISAT);
-
-            reportBesok(utredning, besok);
         } catch (IbExternalServiceException e) {
             LOG.error("IbExternalServiceException occured", e);
             e.setErrorEntityId(besokRequest.getBesokId());

@@ -126,6 +126,8 @@ var ibMessages = {
         'Markera nedan om besöket är genomfört och markera om tolk deltog för respektive besök.\n' +
         '\n' +
         'Endast bokade besök där starttidpunkten har passerats visas i listan.',
+        'redovisabesok.error.teknisktfel': 'Ett fel uppstod vid redovisning av besök',
+        'redovisabesok.error.validation': 'Tolkens deltagande måste anges för genomförda besök',
 
         // Avvikelse modal
         'avvikelse.info': '<p>När en avvikelse registreras skickas meddelande till Försäkringskassans handläggare som kommer fatta ett beslut om hur återstående besök ska hanteras.</p>Besöket ska inte avbokas utan beslut från Försäkringskassans handläggare.',

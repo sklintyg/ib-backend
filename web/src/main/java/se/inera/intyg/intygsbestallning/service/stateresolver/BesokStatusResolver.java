@@ -35,7 +35,7 @@ public class BesokStatusResolver {
             return BesokStatus.GENOMFORT;
         }
         if (besok.getAvvikelse() != null && BooleanUtils.toBoolean(besok.getAvvikelse().getInvanareUteblev())) {
-            return BesokStatus.PATIENT_UTEBLEV;
+            return BesokStatus.INVANARE_UTEBLEV;
         }
         if (besok.getHandelseList().stream().map(Handelse::getHandelseTyp).anyMatch(HandelseTyp.AVBOKAT_BESOK::equals)) {
             return BesokStatus.AVBOKAT;

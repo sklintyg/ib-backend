@@ -136,7 +136,7 @@ public class BesokServiceImpl extends BaseBesokService implements BesokService {
                         request.getProfession(), request.getUtredandeVardPersonalNamn().orElse(""), userService.getUser().getNamn());
             } else {
                 besokHandelse = HandelseUtil.createUppdateraBesok(besok, request.getProfession(), request.getUtredandeVardPersonalNamn()
-                        .orElse(""), userService.getUser().getNamn());
+                        .orElse(""), request.getTolkStatus(), userService.getUser().getNamn());
             }
 
             updateBesok(besok, request);
@@ -205,7 +205,7 @@ public class BesokServiceImpl extends BaseBesokService implements BesokService {
         if (request.getHandelseTyp().equals(HandelseTyp.AVVIKELSE_RAPPORTERAD)) {
             BesokStatus besokStatus = BesokStatusResolver.resolveStaticStatus(uppdateratBesok);
             checkState(Objects.equals(BesokStatus.AVVIKELSE_RAPPORTERAD, besokStatus)
-                    || Objects.equals(BesokStatus.PATIENT_UTEBLEV, besokStatus),
+                    || Objects.equals(BesokStatus.INVANARE_UTEBLEV, besokStatus),
                     MessageFormat.format("Utredning with id {0} is in an incorrect state", uppdateradUtredning.getUtredningId()));
             logService.log(new UtredningPdlLoggable(uppdateradUtredning), PdlLogType.AVVIKELSE_RAPPORTERAD);
             myndighetIntegrationService.reportDeviation(createReportDeviationRequestDto(request,

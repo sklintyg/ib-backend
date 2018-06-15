@@ -651,7 +651,7 @@
             </column>
 
             <column name="TOLK_STATUS" type="varchar(64)">
-                <constraints nullable="true"/>
+                <constraints nullable="false"/>
             </column>
 
             <column name="KALLELSE_FORM" type="varchar(64)">

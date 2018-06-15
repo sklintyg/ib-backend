@@ -54,6 +54,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.KallelseFormTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 
@@ -218,7 +219,7 @@ public class UtredningRepositoryTest {
         assertEquals(DeltagarProfessionTyp.FT, besok.getDeltagareProfession());
         assertEquals(KallelseFormTyp.TELEFONKONTAKT, besok.getKallelseForm());
         assertNotNull(besok.getBesokStartTid());
-        assertNull(besok.getTolkStatus());
+        assertEquals(TolkStatusTyp.EJ_BOKAT, besok.getTolkStatus());
         assertNull(besok.getErsatts());
 
         Avvikelse avvikelse = besok.getAvvikelse();

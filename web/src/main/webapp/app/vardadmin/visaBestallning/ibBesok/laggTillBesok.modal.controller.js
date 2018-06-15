@@ -52,7 +52,7 @@ angular.module('ibApp')
             $scope.besok = {
                 utredandeVardPersonalNamn: besok.namn ? besok.namn : '',
                 profession: besok.profession && besok.profession.id ? besok.profession.id : undefined,
-                tolkStatus: besok.tolkStatus ? besok.tolkStatus : undefined,
+                tolkStatus: besok.tolkStatus ? besok.tolkStatus.id : 'EJ_BOKAT',
                 kallelseForm: besok.kallelseForm && besok.kallelseForm.id ? besok.kallelseForm.id : 'BREVKONTAKT',
                 kallelseDatum: besok.kallelseDatum ? besok.kallelseDatum : undefined,
                 besokDatum: besok.besokDatum ? besok.besokDatum : undefined,
@@ -95,10 +95,10 @@ angular.module('ibApp')
                     $scope.skickar = false;
                 }, function(error) {
                     $scope.skickar = false;
-                    if (error.failingServiceMethod === 'REPORT_CARE_CONTACT') {
-                        $scope.showReportErrorMessage = true;
-                    } else {
+                    if (error.failingServiceMethod === 'UPDATE_ASSESSMENT') {
                         $scope.showUpdateAssessmentErrorMessage = true;
+                    } else {
+                        $scope.showReportErrorMessage = true;
                     }
                 });
             };

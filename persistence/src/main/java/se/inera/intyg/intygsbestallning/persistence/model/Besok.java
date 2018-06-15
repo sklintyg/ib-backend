@@ -71,7 +71,7 @@ public final class Besok {
     @Enumerated(value = EnumType.STRING)
     private BesokStatusTyp besokStatus;
 
-    @Column(name = "TOLK_STATUS")
+    @Column(name = "TOLK_STATUS", nullable = false)
     @Enumerated(value = EnumType.STRING)
     private TolkStatusTyp tolkStatus;
 
