@@ -19,6 +19,7 @@
     .tab-content, .tab-content > .active {
       display: flex;
       flex-direction: column;
+      flex: 1 1 auto;
     }
 
     > .bottom-fadeout-gradient {
