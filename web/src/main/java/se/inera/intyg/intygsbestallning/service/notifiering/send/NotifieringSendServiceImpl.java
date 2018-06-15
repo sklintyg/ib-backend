@@ -187,9 +187,8 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
     @Override
     public void notifieraVardenhetTilldeladUtredning(Utredning utredning, InternForfragan tillDeladInternForfragan, String landstingNamn) {
         final String utforareEpost = tillDeladInternForfragan.getForfraganSvar().getUtforareEpost();
-        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, UTREDNING_TILLDELAD);
-        final String id = bestallning.getTilldeladVardenhetHsaId();
-        final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VG);
+        final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(
+                tillDeladInternForfragan.getVardenhetHsaId(), VG);
 
         if (preferens.isEnabled(UTREDNING_TILLDELAD, NotifieringMottagarTyp.VARDENHET)) {
             if (isNotEmpty(utforareEpost)) {
