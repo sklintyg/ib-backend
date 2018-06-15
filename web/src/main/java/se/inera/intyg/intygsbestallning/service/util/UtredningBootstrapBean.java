@@ -27,19 +27,13 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.intygsbestallning.common.integration.json.CustomObjectMapper;
-import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-
-import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
 
 @Service
 @DependsOn("dbUpdate")
@@ -62,8 +56,6 @@ public class UtredningBootstrapBean {
             LOG.debug("Loading resource " + res.getFilename());
             addUtredning(res);
         }
-
-        addTestUtredningar();
     }
 
     private void addUtredning(Resource res) {
@@ -75,26 +67,6 @@ public class UtredningBootstrapBean {
             throw new RuntimeException(e);
         }
 
-    }
-
-    private void addTestUtredningar() {
-        LocalDateTime startDate = LocalDateTime.now().minusDays(EXTRA_TEST_DATA_MINUS_DAYS);
-        LocalDateTime date = startDate;
-        for (int i = 0; i < EXTRA_TEST_DATA; i++) {
-            Utredning utredning = new Utredning();
-            utredning.setUtredningsTyp(UtredningsTyp.AFU);
-            utredning.setExternForfragan(anExternForfragan()
-                    .withLandstingHsaId("IFV1239877878-1041")
-                    .withBesvarasSenastDatum(date)
-                    .withInkomDatum(startDate)
-                    .build());
-            utredning.setInvanare(anInvanare()
-                    .withPostort("11221")
-                    .build());
-            utredning.setHandlaggare(new Handlaggare());
-            utredningRepository.saveUtredning(utredning);
-            date = date.plusDays(1);
-        }
     }
 
     private List<Resource> getResourceListing(String classpathResourcePath) {
