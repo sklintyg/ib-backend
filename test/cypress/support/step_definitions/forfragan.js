@@ -2,6 +2,8 @@
 let moment = require('moment');
 let utredningsId;
 
+let landstingHsaId = 'IFV1239877878-1041';
+
 given('att Försäkringskassan har skickat en förfrågan AFU till samordnare', () => {
 	
     let date = moment().add(1, 'days').format('YYYY-MM-DD');
@@ -9,7 +11,7 @@ given('att Försäkringskassan har skickat en förfrågan AFU till samordnare', 
 	cy.requestHealthPerformerAssessment({
             utredningsTyp: 'AFU',
             besvaraSenastDatum: date.replace(/-/g,''),
-            landstingHsaId: 'IFV1239877878-1041',
+            landstingHsaId: landstingHsaId,
             invanare: {
                 ort: 'hemma'
             },
@@ -21,7 +23,22 @@ given('att Försäkringskassan har skickat en förfrågan AFU till samordnare', 
         });
 })
  
-when('jag är inloggad som samordnare på Intygsbeställningen', () => {
-	cy.login('Gunnel Grävling (Samordnare 2 | Intygsbeställning)');
+
+then('ska förfrågans status vara {string} för {string}', (status, roll) => {
+    cy.login(getUser(roll, landstingHsaId));
     cy.visit('/#/app/samordnare/listaUtredningar/visaUtredning/' + utredningsId);
-})        
+console.log(status);
+console.log(roll);
+})      
+
+
+
+
+
+function getUser(roll, landsting) {
+    let user;
+    if (roll === 'samordnare' && landsting === 'IFV1239877878-1041') {
+        user = 'Gunnel Grävling (Samordnare 2 | Intygsbeställning)';
+    }
+    return user;
+}

@@ -5,8 +5,7 @@ Feature: FMU-AF02
 Scenario: Direkt tilldelning - [Förfrågan till accept]
 	#Förfrågan
 	Given att Försäkringskassan har skickat en förfrågan AFU till samordnare 
-	When jag är inloggad som samordnare på Intygsbeställningen
-	Then ska förfrågans status vara "Tilldela utredning"
+	Then ska förfrågans status vara "Tilldela utredning" för "samordnare"
 	
 	#When jag tilldelar förfrågan 
 	#Then ska förfrågans status vara "Direkt tilldelad"
