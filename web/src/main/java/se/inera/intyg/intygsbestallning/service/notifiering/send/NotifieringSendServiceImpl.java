@@ -213,12 +213,11 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
     }
 
     @Override
-    public void notifieraLandstingIngenBestallning(final Utredning utredning) {
-        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, INGEN_BESTALLNING);
-        final String id = bestallning.getTilldeladVardenhetHsaId();
-        final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VG);
+    public void notifieraLandstingIngenBestallning(final Utredning utredning, final InternForfragan internForfragan) {
+        final GetNotificationPreferenceResponse preferens =
+                notifieringPreferenceService.getNotificationPreference(internForfragan.getVardenhetHsaId(), VE);
 
-        if (preferens.isEnabled(SAMTLIGA_INTERNFORFRAGAN_BESVARATS, LANDSTING)) {
+        if (preferens.isEnabled(INGEN_BESTALLNING, LANDSTING)) {
             String email = preferens.getLandstingEpost();
             String body = notifieringMailBodyFactory.buildBodyForUtredning(
                     ingenBestallningMessage(utredning),
@@ -229,20 +228,19 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
     }
 
     @Override
-    public void notifieraVardenhetIngenBestallning(final Utredning utredning) {
-        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, INGEN_BESTALLNING);
-        final String id = bestallning.getTilldeladVardenhetHsaId();
-        final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VE);
+    public void notifieraVardenhetIngenBestallning(final Utredning utredning, final InternForfragan internForfragan) {
+        final GetNotificationPreferenceResponse preferens =
+                notifieringPreferenceService.getNotificationPreference(internForfragan.getVardenhetHsaId(), VE);
 
-        if (preferens.isEnabled(UTREDNING_AVSLUTAD_PGA_AVBRUTEN, VARDENHET)) {
-            String email = vardenhetService.getVardEnhetPreference(id).getEpost();
+        if (preferens.isEnabled(INGEN_BESTALLNING, VARDENHET)) {
+            String email = vardenhetService.getVardEnhetPreference(internForfragan.getVardenhetHsaId()).getEpost();
             if (isNotEmpty(email)) {
                 String body = notifieringMailBodyFactory.buildBodyForUtredning(
                         ingenBestallningMessage(utredning),
                         internForfraganUrl(utredning));
 
                 sendNotifiering(email, SUBJECT_INGEN_BESTALLNING, body);
-                saveNotifiering(utredning, AVVIKELSE_MOTTAGEN_AV_FK, VARDENHET);
+                saveNotifiering(utredning, INGEN_BESTALLNING, VARDENHET);
             }
         }
     }

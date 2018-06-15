@@ -84,6 +84,7 @@ import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationExceptio
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
@@ -649,8 +650,8 @@ public class UtredningServiceImplTest {
         assertNotNull(utredningCaptor.getAvbrutenDatum());
         assertEquals(AvslutOrsak.INGEN_BESTALLNING, utredningCaptor.getAvbrutenAnledning());
 
-        verify(notifieringSendService, times(1)).notifieraLandstingIngenBestallning(any(Utredning.class));
-        verify(notifieringSendService, times(1)).notifieraVardenhetIngenBestallning(any(Utredning.class));
+        verify(notifieringSendService, times(1)).notifieraLandstingIngenBestallning(any(Utredning.class), any(InternForfragan.class));
+        verify(notifieringSendService, times(1)).notifieraVardenhetIngenBestallning(any(Utredning.class), any(InternForfragan.class));
     }
 
     @Test

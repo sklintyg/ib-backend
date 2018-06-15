@@ -36,9 +36,9 @@ public interface NotifieringSendService {
 
     void notifieraLandstingPaminnelseSvaraExternforfragan(Utredning utredning);
 
-    void notifieraLandstingIngenBestallning(Utredning utredning);
+    void notifieraLandstingIngenBestallning(Utredning utredning, InternForfragan internForfragan);
 
-    void notifieraVardenhetIngenBestallning(Utredning utredning);
+    void notifieraVardenhetIngenBestallning(Utredning utredning, InternForfragan internForfragan);
 
     void notifieraVardenhetNyBestallning(Utredning utredning);
 

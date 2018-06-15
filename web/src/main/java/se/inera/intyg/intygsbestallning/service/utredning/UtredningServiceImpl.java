@@ -86,8 +86,8 @@ import se.inera.intyg.intygsbestallning.service.stateresolver.BesokStatusResolve
 import se.inera.intyg.intygsbestallning.service.util.GenericComparator;
 import se.inera.intyg.intygsbestallning.service.util.PagingUtil;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
-import se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AvslutaUtredningRequest;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
@@ -383,8 +383,8 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         utredning.getHandelseList().add(handelse);
 
         final Utredning uppdateradUtredning = utredningRepository.saveUtredning(utredning);
-        verifyAvslutaUtredningStatusar(orsak, uppdateradUtredning);
-        notifieraUtredningAvslutad(orsak, uppdateradUtredning);
+        final Optional<InternForfragan> internForfragan = verifyAvslutaUtredningStatusar(orsak, uppdateradUtredning);
+        notifieraUtredningAvslutad(orsak, uppdateradUtredning, internForfragan.orElse(null));
     }
 
 
@@ -402,7 +402,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .noneMatch(besokStatus -> (besokStatus == BesokStatus.BOKAT) || (besokStatus == BesokStatus.AVBOKAT)));
     }
 
-    private void verifyAvslutaUtredningStatusar(final AvslutOrsak orsak, final Utredning utredning) {
+    private Optional<InternForfragan> verifyAvslutaUtredningStatusar(final AvslutOrsak orsak, final Utredning utredning) {
 
         checkArgument(nonNull(orsak));
         checkArgument(nonNull(utredning));
@@ -424,7 +424,10 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                     InternForfraganStatusResolver.resolveStaticStatus(utredning, internForfragan);
 
             checkState(InternForfraganStatus.INGEN_BESTALLNING == internForfraganStatus);
+
+            return optionalInternForfragan;
         }
+        return Optional.empty();
     }
 
     private Handelse createHandelseUtredningAvslutad(final AvslutOrsak orsak, final String vardAdministrator) {
@@ -442,13 +445,13 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         }
     }
 
-    private void notifieraUtredningAvslutad(final AvslutOrsak orsak, final Utredning utredning) {
+    private void notifieraUtredningAvslutad(final AvslutOrsak orsak, final Utredning utredning, final InternForfragan internForfragan) {
 
         checkArgument(nonNull(orsak));
 
         if (orsak == AvslutOrsak.INGEN_BESTALLNING) {
-            notifieringSendService.notifieraVardenhetIngenBestallning(utredning);
-            notifieringSendService.notifieraLandstingIngenBestallning(utredning);
+            notifieringSendService.notifieraVardenhetIngenBestallning(utredning, internForfragan);
+            notifieringSendService.notifieraLandstingIngenBestallning(utredning, internForfragan);
         } else if (orsak == AvslutOrsak.JAV) {
             notifieringSendService.notifieraLandstingAvslutadPgaJav(utredning);
             notifieringSendService.notifieraVardenhetAvslutadPgaJav(utredning);
