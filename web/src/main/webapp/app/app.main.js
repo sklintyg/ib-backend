@@ -54,6 +54,6 @@ deferredBootstrapper.bootstrap({
         if (error && error.status === 403) {
             reason = 'denied';
         }
-        window.location.href = '/error.jsp?reason=' + reason; // jshint ignore:line
+        window.location.href = '/index.html?reason=' + reason; // jshint ignore:line
     }
 });

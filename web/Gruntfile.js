@@ -439,9 +439,6 @@ module.exports = function(grunt) {
                     ],
                     '<%= config.client %>/welcome.html': [
                         '<%= config.client %>/{app,components}/**/*.css'
-                    ],
-                    '<%= config.client %>/error.jsp': [
-                        '<%= config.client %>/{app,components}/**/*.css'
                     ]
                 }
             }

@@ -53,7 +53,7 @@ angular.module('ibApp').factory('sessionCheckService',
                     if (response.data.authenticated === false) {
                         $log.debug('No longer authenticated - redirecting to loggedout');
                         _stopPolling();
-                        $window.location.href = '/error.jsp?reason=inactivity-timeout';
+                        $window.location.href = '/index.html?reason=inactivity-timeout';
                     }
                 } else {
                     $log.debug('_getSessionInfo returned unexpected data:' + response.data);

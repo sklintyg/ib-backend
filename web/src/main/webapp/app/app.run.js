@@ -60,8 +60,8 @@ angular
             $log.debug('$stateChangeStart: from "' + fromState.name + '" to "' + toState.name + '"');
 
 
-            if (!UserModel.get().loggedIn && toState.name !== 'app.login') {
-                // app.login is the only valid route when not authenticated
+            if (!UserModel.get().loggedIn && toState.name !== 'app.login' && toState.name !== 'app.exit') {
+                // app.login is the only valid route when not authenticated and not going to exit state
                 _redirect($state, toState.name, event, 'app.login', {}, {
                     location: 'replace'
                 });
@@ -81,7 +81,7 @@ angular
                     _redirect($state, toState.name, event, 'app.vardadmin.pagaendeBestallningar', {}, {
                         location: 'replace',  reload : true
                     });
-                }                else if (UserModel.get().currentRole.name === 'BP_VARDADMIN') {
+                }  else if (UserModel.get().currentRole.name === 'BP_VARDADMIN') {
                     _redirect($state, toState.name, event, 'app.bpadmin.aktivaBestallningar', {}, {
                         location: 'replace',  reload : true
                     });

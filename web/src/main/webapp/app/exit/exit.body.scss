@@ -1,0 +1,11 @@
+.exit-page {
+  overflow: auto;
+
+  .exit-body {
+    flex:1 0 auto;
+
+    h2 {
+      @extend %ib-typo-02;
+    }
+  }
+}

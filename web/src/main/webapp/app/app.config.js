@@ -25,8 +25,21 @@ angular
     http403ResponseInterceptorProvider, stConfig, $compileProvider) {
     'use strict';
 
-        // Default route is "Landing page"
-        $urlRouterProvider.otherwise('/app/login');
+
+
+        //Handle app init routing logic not covered by internal app state configs.
+        $urlRouterProvider.otherwise(function($injector, $location) {
+            // handles server login flow error redirects, session timeouts etc
+            if($location.absUrl().indexOf('?reason=') !== -1) {
+                return '/app/exit';
+            } else {
+                // otherwise default to login landingpage
+                return '/app/login';
+            }
+
+        });
+
+
 
         // Use /#/ syntax. True = regular / syntax
         $locationProvider.html5Mode(false);

@@ -1,0 +1,90 @@
+<div class="ib-workarea-vflex-container exit-page">
+  <div class="centered-constrained-content exit-body">
+
+    <div ng-switch="reason">
+
+
+      <div ng-switch-when="logout">
+        <h2 class="page-header">Intygsbeställning - Du är nu utloggad</h2>
+        <ib-alert-message alert-severity="success">
+          Din webbläsare kan hålla kvar information även efter utloggningen. Du bör därför stänga samtliga öppna
+          webbläsarfönster.
+        </ib-alert-message>
+      </div>
+
+
+      <div ng-switch-when="login.failed">
+        <h2 class="page-header">Intygsbeställning - Inlogging misslyckades</h2>
+        <ib-alert-message alert-severity="danger">
+          Inloggningen misslyckades. Gå tillbaka till <a href="/">startsidan</a>
+        </ib-alert-message>
+      </div>
+
+
+      <div ng-switch-when="inactivity-timeout">
+        <h2 class="page-header">Intygsbeställning</h2>
+        <ib-alert-message alert-severity="warning">
+          Du har blivit automatiskt utloggad eftersom du varit inaktiv en längre tid. Gå tillbaka till <a href="/">startsidan</a>
+          för att logga in igen.
+        </ib-alert-message>
+      </div>
+
+
+      <div ng-switch-when="denied">
+        <h2 class="page-header">Intygsbeställning</h2>
+        <ib-alert-message alert-severity="danger">
+          Åtkomst nekad. Gå tillbaka till <a href="/">startsidan</a>.
+        </ib-alert-message>
+      </div>
+
+
+      <div ng-switch-when="notfound">
+        <h2 class="page-header">Intygsbeställning</h2>
+        <ib-alert-message alert-severity="danger">
+          Sidan finns inte. Gå tillbaka till <a href="/">startsidan</a>.
+        </ib-alert-message>
+      </div>
+
+
+      <div ng-switch-when="login.medarbetaruppdrag">
+        <h2 class="page-header">Intygsbeställning - Medarbetaruppdrag saknas</h2>
+        <ib-alert-message alert-severity="danger">
+          Det krävs minst ett giltigt medarbetaruppdrag med ändamål 'Vård och behandling' för att använda
+          Intygsbeställning.
+        </ib-alert-message>
+      </div>
+
+
+      <div ng-switch-when="login.hsaerror">
+        <h2 class="page-header">Intygsbeställning - Tekniskt fel i kommunikation mot HSA</h2>
+        <ib-alert-message alert-severity="danger">
+          Det uppstod ett tekniskt fel när din behörighet skulle kontrolleras.
+
+        </ib-alert-message>
+      </div>
+
+
+      <div ng-switch-when="login.no-hsa-ib-systemrole">
+        <h2 class="page-header">Intygsbeställning - Saknad behörighet i HSA</h2>
+        <ib-alert-message alert-severity="danger">
+          Du saknar behörighet. För att få åtkomst till Försäkringsmedicinska utredningar krävs att du har har minst en giltig systemroll.<br>
+          För åtkomst till vårdenhet krävs dessutom ett giltigt medarbetaruppdrag.
+        </ib-alert-message>
+      </div>
+
+
+      <!-- catch all other / undefined reasons-->
+      <div ng-switch-default>
+        <h2 class="page-header">Intygsbeställning - Tekniskt fel</h2>
+        <ib-alert-message alert-severity="danger">
+          Tyvärr har ett tekniskt problem uppstått i Intygsbeställning.<br>
+          Gå till <a href="/">startsidan</a> och försök igen för att se om felet är tillfälligt.<br>
+          Kontakta annars i första hand din lokala IT-avdelning och i andra hand
+          <span dynamiclink key="ineraNationellKundservice"></span>
+        </ib-alert-message>
+      </div>
+    </div>
+  </div>
+
+  <ib-app-footer></ib-app-footer>
+</div>

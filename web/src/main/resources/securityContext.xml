@@ -87,20 +87,20 @@
     <property name="exceptionMappings">
       <props>
         <prop key="org.springframework.security.authentication.BadCredentialsException">
-          /error.jsp?reason=login.failed
+          /index.html?reason=login.failed
         </prop>
         <prop key="se.inera.intyg.infra.security.exception.MissingMedarbetaruppdragException">
-          /error.jsp?reason=login.medarbetaruppdrag
+          /index.html?reason=login.medarbetaruppdrag
         </prop>
         <prop key="se.inera.intyg.intygsbestallning.auth.exceptions.MissingIBSystemRoleException">
-          /error.jsp?reason=login.saknar-hsa-rehabroll
+          /index.html?reason=login.no-hsa-ib-systemrole
         </prop>
         <prop key="se.inera.intyg.infra.security.exception.HsaServiceException">
-          /error.jsp?reason=login.hsaerror
+          /index.html?reason=login.hsaerror
         </prop>
       </props>
     </property>
-    <property name="defaultFailureUrl" value="/error.jsp?reason=login.failed"/>
+    <property name="defaultFailureUrl" value="/index.html?reason=login.failed"/>
   </bean>
 
   <bean id="http403ForbiddenEntryPoint"
@@ -134,7 +134,7 @@
       <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint">
         <security:csrf disabled="true"/>
         <security:access-denied-handler error-page="/welcome.html"/>
-        <security:logout logout-url="/logout" logout-success-url="/welcome.html" invalidate-session="true"/>
+        <security:logout logout-url="/logout" logout-success-url="/?reason=logout" invalidate-session="true"/>
         <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
         <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
         <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy" />
@@ -175,7 +175,7 @@
     <security:http use-expressions="false" entry-point-ref="samlEntryPoint" request-matcher-ref="samlRequestMatcher">
       <security:csrf disabled="true"/>
       <security:headers/>
-      <security:logout logout-url="/logout" logout-success-url="/welcome.html" invalidate-session="true"/>
+      <security:logout logout-url="/logout" logout-success-url="/?reason=logout" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
@@ -186,7 +186,7 @@
     <!-- This will allow frontend to act correctly on ajax requests          -->
     <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint">
       <security:csrf disabled="true"/>
-      <security:logout logout-url="/logout" logout-success-url="/welcome.html" invalidate-session="true"/>
+      <security:logout logout-url="/logout" logout-success-url="/?reason=logout" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
       <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy" />
@@ -468,7 +468,7 @@
     <!-- Handler for successful logout -->
     <bean id="successLogoutHandler"
           class="org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler">
-      <property name="defaultTargetUrl" value="/error.jsp?reason=logout"/>
+      <property name="defaultTargetUrl" value="/?reason=logout"/>
       <property name="alwaysUseDefaultTargetUrl" value="true" />
     </bean>
   </beans>
