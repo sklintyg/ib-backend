@@ -287,6 +287,7 @@ var ibMessages = {
         'internforfragan.besvara.form.kontaktinformation.label': 'Kontaktinformation',
         'internforfragan.besvara.form.kontaktinformation.label.help': 'Vid beställning skickas handlingarna till adressen som angivits här.',
         'internforfragan.besvara.form.utforaretyp.label': 'Val av leverantör',
+        'internforfragan.besvara.form.utforaretyp.view.label': 'Leverantör',
         'internforfragan.besvara.form.utforarenamn.label': 'Mottagare',
         'internforfragan.besvara.form.utforareadress.label': 'Adress',
         'internforfragan.besvara.form.utforarepostnr.label': 'Postnummer',
