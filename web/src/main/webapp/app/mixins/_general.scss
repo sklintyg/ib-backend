@@ -23,7 +23,7 @@ body {
 }
 
 // Hide IE10+ clear icon, as it doesn't work well with angular
-input[type=search]::-ms-clear {
+input::-ms-clear {
   display: none;
 }
 

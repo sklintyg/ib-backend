@@ -33,12 +33,14 @@ describe('Vårdadmin besvarar internförfrågningar', function() {
         cy.visit('/#/app/vardadmin/listaForfragningar');
         cy.get('#vardadmin-lista-forfragningar-resulttext').should('have.text', 'Sökresultat: 2 av 2 förfrågningar');
         cy.get('#visa-internforfragan-' + utredningId1).click();
+        cy.get('#open-accept-internforfragan-dialog-btn').click();
         cy.get('#adress_input').type('{selectall}{backspace}');
         cy.get('#accept-internforfragan-btn').should('be.disabled');
         fillFields();
         cy.get('#accept-internforfragan-btn').should('be.enabled');
         cy.get('#accept-internforfragan-btn').click();
-        cy.get('#accept-internforfragan-btn').should('be.disabled');
+        cy.get('#open-accept-internforfragan-dialog-btn').should('be.disabled');
+        cy.get('#open-reject-internforfragan-dialog-btn').should('be.disabled');
         cy.get('#internforfragan-accepterad-alert').should('be.visible');
 
     });
@@ -48,12 +50,14 @@ describe('Vårdadmin besvarar internförfrågningar', function() {
         cy.visit('/#/app/vardadmin/listaForfragningar');
         cy.get('#vardadmin-lista-forfragningar-resulttext').should('have.text', 'Sökresultat: 2 av 2 förfrågningar');
         cy.get('#visa-internforfragan-' + utredningId2).click();
-        cy.get('#adress_input').type('{selectall}{backspace}');
+        cy.get('#open-reject-internforfragan-dialog-btn').click();
+        cy.get('#kommentar_textarea').type('{selectall}{backspace}');
         cy.get('#reject-internforfragan-btn').should('be.disabled');
-        fillFields();
+        cy.get('#kommentar_textarea').type('Vi kan inte ta detta');
         cy.get('#reject-internforfragan-btn').should('be.enabled');
         cy.get('#reject-internforfragan-btn').click();
-        cy.get('#reject-internforfragan-btn').should('be.disabled');
+        cy.get('#open-reject-internforfragan-dialog-btn').should('be.disabled');
+        cy.get('#open-accept-internforfragan-dialog-btn').should('be.disabled');
         cy.get('#internforfragan-avbojd-alert').should('be.visible');
     });
 

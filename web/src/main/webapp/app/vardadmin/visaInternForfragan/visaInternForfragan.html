@@ -99,18 +99,11 @@
       </ib-spinner>
     </div>
 
-    <div class="ib-workarea-supportpanel">
+    <div class="ib-workarea-supportpanel internforfragan-svar">
       <ib-spinner label="common.label.loading" show-spinner="vm.loading">
-        <div ng-switch="vm.data.internForfragan.status.id">
-          <div ng-switch-when="INKOMMEN">
-            <ib-besvara-intern-forfragan-panel
-                intern-forfragan-svar-view-state="internForfraganSvarViewState"></ib-besvara-intern-forfragan-panel>
-          </div>
-
-          <div ng-switch-default>
+        <div ng-if="vm.data.internForfragan.status.id !== 'INKOMMEN'">
             <ib-besvarad-intern-forfragan-panel
                 intern-forfragan-svar-view-state="internForfraganSvarViewState"></ib-besvarad-intern-forfragan-panel>
-          </div>
         </div>
       </ib-spinner>
     </div>

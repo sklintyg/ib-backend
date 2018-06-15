@@ -24,8 +24,7 @@ describe('Vårdadmin ange standardinställningar', function() {
 
             cy.bytEnhet('IFV1239877878-1042');
 
-            cy.get('#expand-unitmenu-btn').click();
-            cy.get('#unitmenu-ve-contact-settings-link').click();
+            cy.visaVEKontaktInstallningModal();
             cy.get('.ib-header-unit-settings-dialog-template').should('be.visible');
             cy.get('#mottagarNamn-input').should('not.have.text', this.updatedSettings.mottagarNamn);
             cy.get('#cancel-unit-settings-btn').click();
@@ -56,7 +55,7 @@ describe('Vårdadmin ange standardinställningar', function() {
 
             cy.visaVESvarInstallningModal();
 
-            cy.get('#standardsvar-textarea').type('{selectall}' + standardSvar);
+            cy.get('#standardsvar_textarea').type('{selectall}' + standardSvar);
 
 
             cy.get('#save-unit-settings-btn').click();
@@ -65,7 +64,7 @@ describe('Vårdadmin ange standardinställningar', function() {
             cy.bytEnhet('IFV1239877878-1042');
 
             cy.visaVESvarInstallningModal();
-            cy.get('#standardsvar-textarea').should('not.have.text', standardSvar);
+            cy.get('#standardsvar_textarea').should('not.have.text', standardSvar);
             cy.get('#cancel-unit-settings-btn').click();
 
             //Byt tillbaka till första enheten
@@ -73,7 +72,7 @@ describe('Vårdadmin ange standardinställningar', function() {
 
             cy.visaVESvarInstallningModal();
 
-            cy.get('#standardsvar-textarea').should('have.value', standardSvar);
+            cy.get('#standardsvar_textarea').should('have.value', standardSvar);
 
         });
     });

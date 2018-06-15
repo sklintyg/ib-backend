@@ -4,40 +4,42 @@
   }
 
   .ib-workarea-supportpanel {
-    $tab-border-color: $ib-color-15;
+    &.internforfragan-svar {
+      $tab-border-color: $ib-color-15;
 
-    $tab-text-color: $ib-color-19;
-    $tab-text-color-hover: $ib-color-21;
+      $tab-text-color: $ib-color-19;
+      $tab-text-color-hover: $ib-color-21;
 
-    $tab-background-color: $ib-color-00;
-    $tab-background-color-hover: $ib-color-28;
+      $tab-background-color: $ib-color-00;
+      $tab-background-color-hover: $ib-color-28;
 
-    $active-tab-text-color: $ib-color-19;
-    $active-tab-background-color: $ib-color-15;
-    $active-tab-border-color: $active-tab-background-color;
+      $active-tab-text-color: $ib-color-19;
+      $active-tab-background-color: $ib-color-15;
+      $active-tab-border-color: $active-tab-background-color;
 
-    display: flex;
-    flex: auto;
-    flex-direction: column;
-    height: 100%;
-    padding: 8px 0 2px 8px;
-    overflow-y: auto;
+      display: flex;
+      flex: 2 1 0%;
+      flex-direction: column;
+      height: 100%;
+      padding: 8px 0 2px 8px;
+      overflow-y: auto;
 
-    .single-tab-workarea {
-      background-color: $ib-color-00;
-      border: 1px solid $ib-color-15;
-      border-radius: 4px;
-      padding: 10px;
+      .single-tab-workarea {
+        background-color: $ib-color-00;
+        border: 1px solid $ib-color-15;
+        border-radius: 4px;
+        padding: 10px;
 
-      .single-tab-content {
-        max-width: 700px;
-        padding: 20px;
+        .single-tab-content {
+          max-width: 700px;
+          padding: 20px;
 
-        ib-alert-message, .alert {
-          display: block;
+          ib-alert-message, .alert {
+            display: block;
+          }
         }
-      }
 
+      }
     }
   }
 }

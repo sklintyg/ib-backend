@@ -399,30 +399,41 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
         if (!Arrays.stream(SvarTyp.values()).anyMatch((t) -> t.name().equals(svar.getSvarTyp()))) {
             return "Invalid svarTypValue " + svar.getSvarTyp();
         }
-        if (!Arrays.stream(UtforareTyp.values()).anyMatch((t) -> t.name().equals(svar.getUtforareTyp()))) {
-            return "Invalid UtforareTyp " + svar.getUtforareTyp();
+
+        if (SvarTyp.AVBOJ.name().equals(svar.getSvarTyp())) {
+            //Validate ACCEPTERA request
+            if (Strings.isNullOrEmpty(svar.getKommentar())) {
+                return "Mandatory kommentar missing";
+            }
+        } else {
+            //Validate ACCEPTERA request
+            if (!Arrays.stream(UtforareTyp.values()).anyMatch((t) -> t.name().equals(svar.getUtforareTyp()))) {
+                return "Invalid UtforareTyp " + svar.getUtforareTyp();
+            }
+
+            if (Strings.isNullOrEmpty(svar.getUtforareNamn())) {
+                return "Mandatory UtforareNamn missing";
+            }
+            if (Strings.isNullOrEmpty(svar.getUtforareAdress())) {
+                return "Mandatory UtforareAdress missing";
+            }
+            if (!patternMatches(svar.getUtforarePostnr(), POSTNR_REGEXP, true)) {
+                return "Invalid mandatory UtforarePostnr value";
+            }
+            if (Strings.isNullOrEmpty(svar.getUtforarePostort())) {
+                return "Mandatory UtforarePostort missing";
+            }
+            if (!patternMatches(svar.getUtforareEpost(), EPOST_REGEXP, false)) {
+                return "Invalid UtforareEpost format";
+            }
+            if (!patternMatches(svar.getBorjaDatum(), DATUM_REGEXP, false)) {
+                return "Invalid BorjaDatum value '" + svar.getBorjaDatum() + "'";
+            } else if (!Strings.isNullOrEmpty(svar.getBorjaDatum()) && LocalDate.parse(svar.getBorjaDatum()).isBefore(LocalDate.now())) {
+                return "Invalid BorjaDatum value - must not be before today";
+            }
         }
 
-        if (Strings.isNullOrEmpty(svar.getUtforareNamn())) {
-            return "Mandatory UtforareNamn missing";
-        }
-        if (Strings.isNullOrEmpty(svar.getUtforareAdress())) {
-            return "Mandatory UtforareAdress missing";
-        }
-        if (!patternMatches(svar.getUtforarePostnr(), POSTNR_REGEXP, true)) {
-            return "Invalid mandatory UtforarePostnr value";
-        }
-        if (Strings.isNullOrEmpty(svar.getUtforarePostort())) {
-            return "Mandatory UtforarePostort missing";
-        }
-        if (!patternMatches(svar.getUtforareEpost(), EPOST_REGEXP, false)) {
-            return "Invalid UtforareEpost format";
-        }
-        if (!patternMatches(svar.getBorjaDatum(), DATUM_REGEXP, false)) {
-            return "Invalid BorjaDatum value '" + svar.getBorjaDatum() + "'";
-        } else if (!Strings.isNullOrEmpty(svar.getBorjaDatum()) && LocalDate.parse(svar.getBorjaDatum()).isBefore(LocalDate.now())) {
-            return "Invalid BorjaDatum value - must not be before today";
-        }
+
 
         return null;
     }
@@ -437,18 +448,26 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
     }
 
     private ForfraganSvar buildSvarEntity(ForfraganSvarRequest svarRequest) {
-        return ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar()
-                .withSvarTyp(SvarTyp.valueOf(svarRequest.getSvarTyp()))
-                .withUtforareTyp(UtforareTyp.valueOf(svarRequest.getUtforareTyp()))
-                .withUtforareNamn(svarRequest.getUtforareNamn())
-                .withUtforareAdress(svarRequest.getUtforareAdress())
-                .withUtforarePostnr(svarRequest.getUtforarePostnr())
-                .withUtforarePostort(svarRequest.getUtforarePostort())
-                .withUtforareTelefon(svarRequest.getUtforareTelefon())
-                .withUtforareEpost(svarRequest.getUtforareEpost())
-                .withKommentar(svarRequest.getKommentar())
-                .withBorjaDatum(!Strings.isNullOrEmpty(svarRequest.getBorjaDatum()) ? LocalDate.parse(svarRequest.getBorjaDatum()) : null)
-                .build();
+        if (SvarTyp.AVBOJ.name().equals(svarRequest.getSvarTyp())) {
+            return ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar()
+                    .withSvarTyp(SvarTyp.valueOf(svarRequest.getSvarTyp()))
+                    .withKommentar(svarRequest.getKommentar())
+                    .build();
+        } else {
+            return ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar()
+                    .withSvarTyp(SvarTyp.valueOf(svarRequest.getSvarTyp()))
+                    .withUtforareTyp(UtforareTyp.valueOf(svarRequest.getUtforareTyp()))
+                    .withUtforareNamn(svarRequest.getUtforareNamn())
+                    .withUtforareAdress(svarRequest.getUtforareAdress())
+                    .withUtforarePostnr(svarRequest.getUtforarePostnr())
+                    .withUtforarePostort(svarRequest.getUtforarePostort())
+                    .withUtforareTelefon(svarRequest.getUtforareTelefon())
+                    .withUtforareEpost(svarRequest.getUtforareEpost())
+                    .withKommentar(svarRequest.getKommentar())
+                    .withBorjaDatum(
+                            !Strings.isNullOrEmpty(svarRequest.getBorjaDatum()) ? LocalDate.parse(svarRequest.getBorjaDatum()) : null)
+                    .build();
+        }
 
     }
 

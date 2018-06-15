@@ -623,6 +623,12 @@ public class InternForfraganServiceImplTest {
         forfraganSvarRequest.setBorjaDatum(LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_DATE));
         assertNull(internForfraganService.validateSvarRequest(forfraganSvarRequest));
 
+        //vid AVBOJ är endast kommentar mandatory
+        forfraganSvarRequest = new ForfraganSvarRequest();
+        forfraganSvarRequest.setSvarTyp(SvarTyp.AVBOJ.name());
+        assertTrue(internForfraganService.validateSvarRequest(forfraganSvarRequest).contains("kommentar"));
+        forfraganSvarRequest.setKommentar(INTERNFORFRAGAN_KOMMENTAR);
+        assertNull(internForfraganService.validateSvarRequest(forfraganSvarRequest));
     }
 
     @Test(expected = IbServiceException.class)
@@ -825,7 +831,7 @@ public class InternForfraganServiceImplTest {
                 buildValidInternForfraganSvarRequest(SvarTyp.AVBOJ, internForfragaId1));
 
         assertNotNull(result);
-        assertEquals("Utforarnamn", result.getUtforareNamn());
+        assertEquals(INTERNFORFRAGAN_KOMMENTAR, result.getKommentar());
         verify(notifieringSendService, times(1)).notifieraLandstingSamtligaVardenheterHarSvaratPaInternforfragan(any(Utredning.class));
         verify(externForfraganService, times(1)).avvisaExternForfragan(utredningId, landstingHsaId, INTERNFORFRAGAN_KOMMENTAR);
     }
@@ -834,6 +840,13 @@ public class InternForfraganServiceImplTest {
         ForfraganSvarRequest svar = new ForfraganSvarRequest();
         svar.setForfraganId(internForfraganId);
         svar.setSvarTyp(svarTyp.name());
+
+        if (svarTyp.equals(SvarTyp.AVBOJ)) {
+            svar.setKommentar(INTERNFORFRAGAN_KOMMENTAR);
+            return svar;
+        }
+
+
         svar.setUtforareTyp(UtforareTyp.ENHET.name());
         svar.setUtforareNamn("Utforarnamn");
         svar.setUtforareAdress("gatan");

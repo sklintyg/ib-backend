@@ -281,7 +281,8 @@ var ibMessages = {
         'label.table.avslutade.bestallningar.column.utbetald': 'Utbetald',
 
         //Internförfrågningar
-        'internforfragan.besvara.form.title': 'Svar på förfrågan',
+        'internforfragan.besvara.form.acceptera.title': 'Acceptera förfrågan',
+        'internforfragan.besvara.form.avvisa.title': 'Avvisa förfrågan',
         'internforfragan.besvara.form.borjadatum.label': 'Möjligt startdatum',
         'internforfragan.besvara.form.kontaktinformation.label': 'Kontaktinformation',
         'internforfragan.besvara.form.kontaktinformation.label.help': 'Vid beställning skickas handlingarna till adressen som angivits här.',
@@ -295,7 +296,10 @@ var ibMessages = {
         'internforfragan.besvara.form.kommentar.label': 'Meddelande',
         'internforfragan.besvara.form.kommentar.label.help': 'Meddelandet visas för Försäkringskassan och eventuell samordnare hos Landstinget.',
         'internforfragan.besvara.acceptbtn.label': 'Acceptera förfrågan',
+        'internforfragan.besvara.acceptbtn.send.label': 'Skicka',
+
         'internforfragan.besvara.rejectbtn.label': 'Avvisa förfrågan',
+        'internforfragan.besvara.rejectbtn.send.label': 'Skicka',
         'internforfragan.besvara.rejectbtn.rejectProhibited.tooltip': 'Som enda vårdenhet i landstinget är det inte möjligt att avvisa förfrågan',
 
         //Errors for reporting IO / backend error responses for REST requests
@@ -324,8 +328,8 @@ var ibMessages = {
         'server.error.listvardenhet.text': 'Ett tekniskt fel uppstod när information om vårdenheterna skulle hämtas. Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraNationellKundservice>',
         'server.error.accepterainternforfragan.title': 'Kunde inte acceptera förfrågan',
         'server.error.accepterainternforfragan.text': 'Försök igen eller kontakta support',
-        'server.error.avbojinternforfragan.title': 'Kunde inte avböja förfrågan',
-        'server.error.avbojinternforfragan.text': 'Försök igen eller kontakta support',
+        'server.error.avvisainternforfragan.title': 'Kunde inte avvisa förfrågan',
+        'server.error.avvisainternforfragan.text': 'Försök igen eller kontakta support',
         'server.error.gethsainfo.title': 'Kunde inte hämta adressuppgifter från hsa',
         'server.error.gethsainfo.text': 'Försök igen eller kontakta support',
         'server.error.getnotifieringpreference.title': 'Kunde inte hämta notifieringsintällningar',

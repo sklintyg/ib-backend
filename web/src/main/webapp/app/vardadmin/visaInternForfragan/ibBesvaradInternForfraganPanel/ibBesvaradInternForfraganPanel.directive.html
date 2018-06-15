@@ -7,7 +7,7 @@
       Förfrågan accepterades
     </ib-alert-message>
 
-    <ib-alert-message alert-id="internforfragan-avbojd-alert" alert-severity="info"
+    <ib-alert-message alert-id="internforfragan-avbojd-alert" alert-severity="success"
                       ng-if="vm.model.svarTyp === 'AVBOJ'">
       Förfrågan avvisades
     </ib-alert-message>
@@ -15,26 +15,28 @@
 
     <card-modal>
 
-      <ib-help-text-label label-key="internforfragan.besvara.form.borjadatum.label"></ib-help-text-label>
-      <card-value>
-        {{vm.model.borjaDatum}}
-      </card-value>
-      <ib-help-text-label label-key="internforfragan.besvara.form.utforaretyp.label"></ib-help-text-label>
-      <card-value>
-        <span ng-switch="vm.model.utforareTyp">
-          <span ng-switch-when="UNDERLEVERANTOR">Underleverantör</span>
-          <span ng-switch-default>Vårdenhet</span>
-        </span>
-      </card-value>
-      <ib-help-text-label label-key="internforfragan.besvara.form.kontaktinformation.label"></ib-help-text-label>
-      <card-value class="wide">
-        {{vm.model.utforareNamn}}<br>
-        {{vm.model.utforareAdress}}<br>
-        {{vm.model.utforarePostnr}} {{vm.model.utforarePostort}}<br>
+      <div ng-if="vm.model.svarTyp === 'ACCEPTERA'">
+        <ib-help-text-label label-key="internforfragan.besvara.form.borjadatum.label"></ib-help-text-label>
+        <card-value>
+          {{vm.model.borjaDatum}}
+        </card-value>
+        <ib-help-text-label label-key="internforfragan.besvara.form.utforaretyp.label"></ib-help-text-label>
+        <card-value>
+          <span ng-switch="vm.model.utforareTyp">
+            <span ng-switch-when="UNDERLEVERANTOR">Underleverantör</span>
+            <span ng-switch-default>Vårdenhet</span>
+          </span>
+        </card-value>
+        <ib-help-text-label label-key="internforfragan.besvara.form.kontaktinformation.label"></ib-help-text-label>
+        <card-value class="wide">
+          {{vm.model.utforareNamn}}<br>
+          {{vm.model.utforareAdress}}<br>
+          {{vm.model.utforarePostnr}} {{vm.model.utforarePostort}}<br>
 
-        {{vm.model.utforareTelefon}}<br>
-        {{vm.model.utforareEpost}}<br>
-      </card-value>
+          {{vm.model.utforareTelefon}}<br>
+          {{vm.model.utforareEpost}}<br>
+        </card-value>
+      </div>
 
       <ib-help-text-label label-key="internforfragan.besvara.form.kommentar.label"></ib-help-text-label>
       <card-value class="wide">

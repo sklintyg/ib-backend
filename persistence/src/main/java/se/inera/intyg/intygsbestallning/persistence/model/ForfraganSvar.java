@@ -50,19 +50,19 @@ public final class ForfraganSvar {
     private SvarTyp svarTyp;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "UTFORARE_TYP", nullable = false)
+    @Column(name = "UTFORARE_TYP")
     private UtforareTyp utforareTyp;
 
-    @Column(name = "UTFORARE_NAMN", nullable = false)
+    @Column(name = "UTFORARE_NAMN")
     private String utforareNamn;
 
-    @Column(name = "UTFORARE_ADRESS", nullable = false)
+    @Column(name = "UTFORARE_ADRESS")
     private String utforareAdress;
 
-    @Column(name = "UTFORARE_POSTNUMMER", nullable = false)
+    @Column(name = "UTFORARE_POSTNUMMER")
     private String utforarePostnr;
 
-    @Column(name = "UTFORARE_POSTORT", nullable = false)
+    @Column(name = "UTFORARE_POSTORT")
     private String utforarePostort;
 
     @Column(name = "UTFORARE_TELEFONNUMMER")

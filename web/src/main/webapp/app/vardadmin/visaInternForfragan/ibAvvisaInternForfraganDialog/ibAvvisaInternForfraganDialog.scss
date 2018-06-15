@@ -1,0 +1,35 @@
+
+.ib-reject-internforfragan-dialog-template {
+  div.modal-body {
+    overflow-y: hidden;
+    padding-bottom: 40px;
+    max-height: 95vh;
+    .scrollable-body {
+      max-height: 65vh;
+    }
+  }
+  .modal-footer {
+    ib-button {
+      display: inline-block;
+      margin-right: 10px;
+    }
+  }
+
+  h3 {
+    @extend %ib-typo-02;
+    color: $ib-color-07;
+  }
+
+  .flex-grid {
+    display: flex;
+
+    .col {
+      flex: 1;
+      padding: 10px 20px;
+      &.col-2 {
+        flex: 2;
+      }
+    }
+  }
+
+}

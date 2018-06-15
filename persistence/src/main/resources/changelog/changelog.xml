@@ -866,4 +866,29 @@
             newColumnName="POSTNUMMER"
             columnDataType="varchar(255)"/>
     </changeSet>
+
+
+    <changeSet id="6" author="mc">
+        <comment>Change so that only svarsTyp is mandatory</comment>
+        <dropNotNullConstraint
+            columnDataType="varchar(32)"
+            columnName="UTFORARE_TYP"
+            tableName="FORFRAGAN_SVAR"/>
+        <dropNotNullConstraint
+            columnDataType="varchar(255)"
+            columnName="UTFORARE_NAMN"
+            tableName="FORFRAGAN_SVAR"/>
+        <dropNotNullConstraint
+            columnDataType="varchar(255)"
+            columnName="UTFORARE_ADRESS"
+            tableName="FORFRAGAN_SVAR"/>
+        <dropNotNullConstraint
+            columnDataType="varchar(255)"
+            columnName="UTFORARE_POSTORT"
+            tableName="FORFRAGAN_SVAR"/>
+        <dropNotNullConstraint
+            columnDataType="varchar(255)"
+            columnName="UTFORARE_POSTNUMMER"
+            tableName="FORFRAGAN_SVAR"/>
+    </changeSet>
 </databaseChangeLog>

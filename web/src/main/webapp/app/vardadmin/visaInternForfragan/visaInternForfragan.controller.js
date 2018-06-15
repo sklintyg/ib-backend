@@ -19,7 +19,7 @@
 
 angular.module('ibApp')
     .controller('VisaInternForfraganCtrl',
-        function($log, $state, $scope, $filter, $stateParams, InternForfraganProxy, VardenhetProxy, InternForfraganSvarViewState) {
+        function($log, $state, $scope, $filter, $stateParams, InternForfraganProxy, InternForfraganSvarViewState) {
             'use strict';
 
             InternForfraganSvarViewState.reset();
@@ -65,34 +65,5 @@ angular.module('ibApp')
             }).finally(function() { // jshint ignore:line
                 $scope.vm.loading = false;
             });
-
-            $scope.onAccept = function() {
-                $log.debug('onAccept()');
-                var model = angular.copy(InternForfraganSvarViewState.getModel());
-                model.svarTyp='ACCEPTERA';
-
-                InternForfraganSvarViewState.getWidgetState().busyAccepting = true;
-                InternForfraganProxy.accepteraInternForfragan($stateParams.utredningsId, model).then(function() {
-                    //Things in related utredningsstate could have changed - reload state to make sure we show correct state of everything
-                    $state.reload();
-                }, function(error) {}).finally(function() { // jshint ignore:line
-                    InternForfraganSvarViewState.getWidgetState().busyAccepting = false;
-                });
-            };
-
-
-            $scope.onReject = function() {
-                $log.debug('onReject()');
-                var model = angular.copy(InternForfraganSvarViewState.getModel());
-                model.svarTyp='AVBOJ';
-
-                InternForfraganSvarViewState.getWidgetState().busyRejecting = true;
-                InternForfraganProxy.avbojInternForfragan($stateParams.utredningsId, model).then(function() {
-                    //Things in related utredningsstate could have changed - reload state to make sure we show correct state of everything
-                    $state.reload();
-                }, function(error) {}).finally(function() { // jshint ignore:line
-                    InternForfraganSvarViewState.getWidgetState().busyRejecting = false;
-                });
-            };
         }
     );

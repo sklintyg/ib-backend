@@ -38,11 +38,10 @@
           <div class="flex-col-min buttonbar">
             <!-- Buttonbar -->
             <ib-button
-                btn-id="accept-internforfragan-btn"
+                btn-id="open-accept-internforfragan-dialog-btn"
                 btn-class="btn-primary"
-                btn-disabled="!canAccept()"
-                busy="vm.widgetState.busyAccepting"
-                btn-click="onAccept()">
+                btn-disabled="!openAcceptDialogEnabled()"
+                btn-click="onAcceptClick()">
               <i class="material-icons">check</i>
               <span message key="internforfragan.besvara.acceptbtn.label"></span>
             </ib-button>
@@ -53,11 +52,10 @@
                  popover-trigger="mouseenter"
                  popover-popup-delay="300">
               <ib-button
-                  btn-id="reject-internforfragan-btn"
+                  btn-id="open-reject-internforfragan-dialog-btn"
                   btn-class="btn-secondary"
-                  btn-disabled="!canReject()"
-                  busy="vm.widgetState.busyRejecting"
-                  btn-click="onReject()">
+                  btn-disabled="!openRejectDialogEnabled()"
+                  btn-click="onRejectClick()">
                 <i class="material-icons">cancel</i>
                 <span message key="internforfragan.besvara.rejectbtn.label"></span>
               </ib-button>

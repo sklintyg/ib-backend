@@ -16,14 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-angular.module('ibApp').directive('ibInternForfraganHeader', function($window, $state, InternForfraganSvarViewState, messageService) {
+angular.module('ibApp').directive('ibInternForfraganHeader', function($window, $state, $uibModal, InternForfraganSvarViewState, messageService) {
     'use strict';
 
     return {
         restrict: 'E',
         scope: {
             internForfragan: '<',
-            onAccept: '&',
             onReject: '&'
         },
         templateUrl: '/app/vardadmin/visaInternForfragan/ibInternForfraganHeader/ibInternForfraganHeader.directive.html',
@@ -36,9 +35,7 @@ angular.module('ibApp').directive('ibInternForfraganHeader', function($window, $
                 model: InternForfraganSvarViewState.getModel(),
                 widgetState: InternForfraganSvarViewState.getWidgetState()
             };
-            $scope.canAccept = function() {
-                return InternForfraganSvarViewState.isValidToSubmit();
-            };
+
 
             $scope.rejectIsProhibited = function() {
                 return $scope.internForfragan.rejectIsProhibited;
@@ -51,8 +48,43 @@ angular.module('ibApp').directive('ibInternForfraganHeader', function($window, $
                 return '';
             };
 
-            $scope.canReject = function() {
-                return InternForfraganSvarViewState.isValidToSubmit() && !$scope.rejectIsProhibited();
+            $scope.openRejectDialogEnabled = function() {
+                return !$scope.vm.model.svarTyp && !$scope.rejectIsProhibited();
+            };
+
+            $scope.onRejectClick = function() {
+
+                var dlgInstance = $uibModal.open({
+                    templateUrl: '/app/vardadmin/visaInternForfragan/ibAvvisaInternForfraganDialog/ibAvvisaInternForfraganDialog.html',
+                    controller: 'ibAvvisaInternForfraganDlgController',
+                    size: 'md',
+                    id: 'ibVvisaInternForfraganDlg',
+                    keyboard: true
+                });
+                //angular > 1.5 warns if promise rejection is not handled (e.g backdrop-click == rejection)
+                dlgInstance.result.catch(function () {}); //jshint ignore:line
+
+            };
+
+
+
+            $scope.openAcceptDialogEnabled = function() {
+                return !$scope.vm.model.svarTyp;
+            };
+
+            $scope.onAcceptClick = function() {
+
+                var dlgInstance = $uibModal.open({
+                    templateUrl: '/app/vardadmin/visaInternForfragan/ibAccepteraInternForfraganDialog/ibAccepteraInternForfraganDialog.html',
+                    controller: 'ibAccepteraInternForfraganDlgController',
+                    size: 'md',
+                    id: 'ibAccepteraInternForfraganDlg',
+                    keyboard: true,
+                    windowClass: 'ib-acceptera-internforfragan-dialog-window-class'
+                });
+                //angular > 1.5 warns if promise rejection is not handled (e.g backdrop-click == rejection)
+                dlgInstance.result.catch(function () {}); //jshint ignore:line
+
             };
         }
     };

@@ -8,12 +8,16 @@
         <ib-help-chevron-text help-text-key="{{helpKey}}"></ib-help-chevron-text>
       </span>
     </label>
-    <textarea ng-attr-id="{{::inputId}}" ng-attr-rows="{{rows || 4 }}"
+    <textarea ng-attr-id="{{::inputId}}"
+              ng-attr-name="{{::inputId}}"
+              ng-attr-rows="{{rows || 4 }}"
               type="text"
               class="form-control"
               ng-model="model"
               ng-disabled="isDisabled"
+              ng-required="required && requiredExpr"
               ng-attr-placeholder="{{::placeholderText}}"
               maxlength="{{:: maxLength || 255}}"></textarea>
+    <ib-field-error-list errors="componentErrors()" required-error="{{requiredError}}"></ib-field-error-list>
   </div>
 </div>
