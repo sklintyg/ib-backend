@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
@@ -42,6 +43,7 @@ public class CustomObjectMapper extends ObjectMapper {
         configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         registerModule(new Module());
+        registerModule(new Jdk8Module());
 
         setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));
     }
