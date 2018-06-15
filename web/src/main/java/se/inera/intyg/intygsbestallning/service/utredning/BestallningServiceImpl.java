@@ -19,7 +19,6 @@
 package se.inera.intyg.intygsbestallning.service.utredning;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +35,6 @@ import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Betalning;
-import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
 import se.inera.intyg.intygsbestallning.service.patient.PatientNameEnricher;
@@ -93,15 +91,7 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
         Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
                 () -> new IbNotFoundException("Utredning with assessmentId '" + utredningId + "' does not exist."));
 
-        if (utredning.getExternForfragan()
-                .map(ExternForfragan::getInternForfraganList)
-                .orElse(Lists.newArrayList()).stream()
-                .noneMatch(internForfragan -> internForfragan.getVardenhetHsaId().equals(vardenhetHsaId)
-                        && internForfragan.getTilldeladDatum() != null)) {
-            throw new IbAuthorizationException(
-                    "Utredning with assessmentId '" + utredningId + "' has not been tilldelad to vardgivare with id '"
-                            + vardenhetHsaId + "'");
-        }
+        checkUserVardenhetTilldeladToBestallning(utredning);
 
         GetBestallningResponse getBestallningResponse = GetBestallningResponse.from(utredning,
                 utredningStatusResolver.resolveStatus(utredning));
