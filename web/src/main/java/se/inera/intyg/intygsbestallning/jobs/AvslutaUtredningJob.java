@@ -73,12 +73,12 @@ public class AvslutaUtredningJob {
         final NotifieringTyp typ = SLUTDATUM_UTREDNING_PASSERAT;
         final NotifieringMottagarTyp mottagare = VARDENHET;
 
-        utredningRepository.findNonNotifiedSlutDatumBefore(tidpunkt, typ, mottagare).stream()
+        utredningRepository.findNonNotifiedSistaDatumKompletteringsBegaranBefore(tidpunkt, typ, mottagare).stream()
                 .filter(isKorrektStatus())
                 .filter(isQualified())
                 .forEach(avslutaUtredning);
 
-        utredningRepository.findNonNotifiedSlutDatumBefore(tidpunkt, typ, mottagare).stream()
+        utredningRepository.findNonNotifiedSistaDatumKompletteringsBegaranBefore(tidpunkt, typ, mottagare).stream()
                 .filter(isKorrektStatus())
                 .filter(isQualified())
                 .forEach(avslutaUtredning);

@@ -68,7 +68,7 @@ public class AvslutaUtredningJobTest {
 
         doReturn(ImmutableList.of(utredning1, utredning2, utredning3))
                 .when(utredningRepository)
-                .findNonNotifiedSlutDatumBefore(
+                .findNonNotifiedSistaDatumKompletteringsBegaranBefore(
                         any(LocalDateTime.class),
                         any(NotifieringTyp.class),
                         any(NotifieringMottagarTyp.class));
