@@ -891,4 +891,14 @@
             columnName="UTFORARE_POSTNUMMER"
             tableName="FORFRAGAN_SVAR"/>
     </changeSet>
+
+
+    <changeSet id="7" author="mc">
+        <comment>Add unique constraint on REGISTRERAD_VARDENHET: An Registered VE should only exist once per VG</comment>
+        <addUniqueConstraint
+            columnNames="VARDGIVARE_HSA_ID, VARDENHET_HSA_ID"
+            constraintName="REGISTRERAD_VARDENHET_VARDGIVARE_VARDENHET_UNIQUE_CONST"
+            tableName="REGISTRERAD_VARDENHET"/>
+
+    </changeSet>
 </databaseChangeLog>

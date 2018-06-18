@@ -50,12 +50,17 @@ public class UtredningBootstrapBean {
 
     @PostConstruct
     public void initData() {
-
-        List<Resource> files = getResourceListing("bootstrap-utredning/*.json");
-        for (Resource res : files) {
-            LOG.debug("Loading resource " + res.getFilename());
-            addUtredning(res);
+        long count = utredningRepository.count();
+        if (utredningRepository.count() > 0) {
+            LOG.info(count + " utredningar already exists in DB - skipping bootstrap of utredningar");
+        } else {
+            List<Resource> files = getResourceListing("bootstrap-utredning/*.json");
+            for (Resource res : files) {
+                LOG.debug("Loading resource " + res.getFilename());
+                addUtredning(res);
+            }
         }
+
     }
 
     private void addUtredning(Resource res) {
