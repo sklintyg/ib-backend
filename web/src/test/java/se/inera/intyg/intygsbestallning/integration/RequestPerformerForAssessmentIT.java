@@ -55,7 +55,7 @@ public class RequestPerformerForAssessmentIT extends BaseRestIntegrationTest {
                 "true", "en", "Engelska", "Hasse Handläggarsson",
                 "123-123456", "handlaggaren@inera.se"));
 
-        given().body(requestTemplate.render()).when().post("/services/request-healthcare-performer-for-assessment-responder").then()
+        given().body(requestTemplate.render()).when().post("/services/request-performer-for-assessment-responder").then()
                 .statusCode(200).rootPath(BASE)
                 .body("result.resultCode", is("OK"));
     }

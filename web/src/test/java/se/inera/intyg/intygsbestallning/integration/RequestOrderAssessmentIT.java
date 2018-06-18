@@ -75,7 +75,7 @@ public class RequestOrderAssessmentIT extends BaseRestIntegrationTest {
                         "Kommer från Tolvmåla"));
 
 
-        given().body(requestTemplate.render()).when().post("/services/order-medical-assessment-responder").then()
+        given().body(requestTemplate.render()).when().post("/services/order-assessment-responder").then()
                 .statusCode(200).rootPath(BASE)
                 .body("result.resultCode", is("OK"))
                 .body("assessmentId.extension", Matchers.notNullValue());
