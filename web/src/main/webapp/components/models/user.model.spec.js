@@ -25,80 +25,65 @@ describe('Model: UserModel', function() {
 
     var UserModel;
     var testJsonData = {
-        hsaId: 'IFV1239877878-1049',
-        namn: 'Jan Nilsson',
-        titel: '',
-        urval: null,
-        authenticationScheme: 'urn:inera:rehabstod:siths:fake',
-        vardgivare: [{
-            '@class': 'se.inera.intyg.infra.integration.hsa.model.Vardgivare',
-            id: 'IFV1239877878-1041',
-            namn: 'WebCert-Vårdgivare1',
-            vardenheter: [{
-                '@class': 'se.inera.intyg.infra.integration.hsa.model.Vardenhet',
-                id: 'IFV1239877878-1042',
-                namn: 'WebCert-Enhet1',
-                epost: 'enhet1@webcert.invalid.se',
-                postadress: 'Storgatan 1',
-                postnummer: '12345',
-                postort: 'Småmåla',
-                telefonnummer: '0101234567890',
-                arbetsplatskod: '1234567890',
-                start: null,
-                end: null,
-                mottagningar: [{
-                    '@class':'se.inera.intyg.infra.integration.hsa.model.Mottagning',
-                    'id':'mottagning 1',
-                    'namn':'mottagning 1',
-                    'epost':null,
-                    'postadress':'',
-                    'postnummer':null,
-                    'postort':null,
-                    'telefonnummer':'',
-                    'arbetsplatskod':null,
-                    'agandeForm':'OFFENTLIG',
-                    'start':null,
-                    'end':null,
-                    'parentHsaId':'IFV1239877878-1042'
-                }]
-            }]
-        }],
-        'befattningar': [],
-        'valdVardenhet': {
-            '@class': 'se.inera.intyg.infra.integration.hsa.model.Vardenhet',
-            id: 'IFV1239877878-1042',
-            namn: 'WebCert-Enhet1',
-            epost: 'enhet1@webcert.invalid.se',
-            postadress: 'Storgatan 1',
-            postnummer: '12345',
-            postort: 'Småmåla',
-            telefonnummer: '0101234567890',
-            arbetsplatskod: '1234567890',
-            start: null,
-            end: null,
-            mottagningar: []
+        'hsaId': 'ib-user-3',
+        'namn': 'Harald Alltsson',
+        'titel': '',
+        'authenticationScheme': 'urn:inera:intygsbestallning:siths:fake',
+
+        'authoritiesTree': [ {
+            'id': 'kronoberg',
+            'name': 'Landstinget Kronoberg',
+            'vardenheter': [],
+            'type': 'VG',
+            'samordnare': true
+        }, {
+            'id': 'ostergotland',
+            'name': 'Landstinget Östergötland',
+            'vardenheter': [ {
+                'id': 'linkoping',
+                'name': 'Linköpings Universitetssjukhus',
+                'type': 'VE',
+                'parentName': 'Landstinget Östergötland',
+                'parentId': 'ostergotland'
+            } ],
+            'type': 'VG',
+            'samordnare': false
+        }, {
+            'id': 'IFV1239877878-1041',
+            'name': 'WebCert-Vårdgivare1',
+            'vardenheter': [ {
+                'id': 'IFV1239877878-1042',
+                'name': 'WebCert-Enhet1',
+                'type': 'VE',
+                'parentName': 'WebCert-Vårdgivare1',
+                'parentId': 'IFV1239877878-1041'
+            } ],
+            'type': 'VG',
+            'samordnare': true
+        }, {
+            'id': 'IFV1239877878-1043',
+            'name': 'WebCert-Vårdgivare2',
+            'vardenheter': [ {
+                'id': 'IFV1239877878-104D',
+                'name': 'WebCert-Enhet3',
+                'type': 'VE',
+                'parentName': 'WebCert-Vårdgivare2',
+                'parentId': 'IFV1239877878-1043'
+            } ],
+            'type': 'VG',
+            'samordnare': false
+        } ],
+        'currentRole': {
+            'name': 'FMU_VARDADMIN',
+            'desc': 'FMU Vårdadministratör'
         },
-        valdVardgivare: {
-            '@class': 'se.inera.intyg.infra.integration.hsa.model.Vardgivare',
-            id: 'IFV1239877878-1041',
-            namn: 'WebCert-Vårdgivare1',
-            vardenheter: [{
-                '@class': 'se.inera.intyg.infra.integration.hsa.model.Vardenhet',
-                id: 'IFV1239877878-1042',
-                namn: 'WebCert-Enhet1',
-                epost: 'enhet1@webcert.invalid.se',
-                postadress: 'Storgatan 1',
-                postnummer: '12345',
-                postort: 'Småmåla',
-                telefonnummer: '0101234567890',
-                arbetsplatskod: '1234567890',
-                start: null,
-                end: null,
-                mottagningar: []
-            }]
-        },
-        'roles': {'LAKARE': {'name': 'LAKARE', 'desc': 'Läkare', 'privileges': []}},
-        'totaltAntalVardenheter': 2
+        'currentlyLoggedInAt': {
+            'id': 'IFV1239877878-1042',
+            'name': 'WebCert-Enhet1',
+            'type': 'VE',
+            'parentName': 'WebCert-Vårdgivare1',
+            'parentId': 'IFV1239877878-1041'
+        }
     };
 
     // Initialize the controller and a mock scope
@@ -109,23 +94,18 @@ describe('Model: UserModel', function() {
     describe('set', function() {
         it('should set name correctly', function() {
             UserModel.set(testJsonData);
-            expect(UserModel.get().namn).toEqual('Jan Nilsson');
+            expect(UserModel.get().namn).toEqual('Harald Alltsson');
 
         });
     });
-/*
-    describe('test getUnitNameById', function() {
-        it('should handle getUnitNameById', function() {
-            //Arrange
+    describe('selectableSystemroles count', function() {
+        it('should report selectableSystemroles correctly', function() {
             UserModel.set(testJsonData);
-
-            //Assert
-            expect(UserModel.getUnitNameById('unknown')).toEqual('');
-            expect(UserModel.getUnitNameById('IFV1239877878-1042')).toEqual('WebCert-Enhet1');
-            expect(UserModel.getUnitNameById('mottagning 1')).toEqual('mottagning 1');
-
-
+            expect(UserModel.getSelectableSystemRolesCount()).toEqual(5);
+            UserModel.get().authoritiesTree[0].samordnare = false;
+            expect(UserModel.getSelectableSystemRolesCount()).toEqual(4);
+            UserModel.get().authoritiesTree[1].vardenheter = [];
+            expect(UserModel.getSelectableSystemRolesCount()).toEqual(3);
         });
     });
-*/
 });

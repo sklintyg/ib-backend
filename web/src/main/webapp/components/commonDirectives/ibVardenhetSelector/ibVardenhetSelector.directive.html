@@ -1,7 +1,4 @@
 <div class="ib-vardenhet-selector">
-  <div ng-if="showRoleSwitchMessage" class="alert alert-info">
-    <span message key="{{::roleSwitchMessageKey}}"></span>
-  </div>
 
   <div ng-repeat="vg in model.vardgivare | orderBy:'name'">
 

@@ -33,7 +33,7 @@ angular.module('ibApp').directive('ibHeaderActions',
 
                     function _canChangeSystemRole(user) {
                         return angular.isObject(user) && user.currentlyLoggedInAt &&
-                            user.authoritiesTree && user.authoritiesTree.length > 1;
+                            UserModel.getSelectableSystemRolesCount() > 1;
                     }
 
                     $scope.vm = {

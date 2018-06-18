@@ -37,7 +37,6 @@ angular.module('ibApp').factory('UserModel',
             data.titel = null;
 
             data.loggedIn = false;
-            data.roleSwitchPossible = false;
             return data;
         }
 
@@ -71,31 +70,20 @@ angular.module('ibApp').factory('UserModel',
             get: function() {
                 return data;
             },
-            getUnitNameById: function(id) {
-                var result = '';
-                if (angular.isArray(data.authoritiesTree)) {
 
+            getSelectableSystemRolesCount: function() {
+                var result = 0;
+                if (angular.isArray(data.authoritiesTree)) {
                     angular.forEach(data.authoritiesTree, function(vg) {
-                        angular.forEach(vg.vardenheter, function(ve) {
-                            if (ve.id === id) {
-                                result = ve.namn;
-                                return;
-                            }
-                            angular.forEach(ve.mottagningar, function(m) {
-                                if (m.id === id) {
-                                    result = m.namn;
-                                    return;
-                                }
-                            });
-                        });
+                        if (vg.samordnare === true) {
+                            result++;
+                        }
+                        result+=vg.vardenheter.length;
                     });
                 }
                 return result;
             },
 
-            isRoleSwitchPossible: function() {
-                return data.roleSwitchPossible;
-            },
 
             fakeLogin: function() {
                 if (data.authenticationScheme === data.fakeSchemeId) {

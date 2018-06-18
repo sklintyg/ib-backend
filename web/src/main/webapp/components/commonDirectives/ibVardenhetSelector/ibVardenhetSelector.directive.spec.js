@@ -51,7 +51,7 @@ describe('Directive: IbVardenhetSelector', function() {
         $scope = $rootScope.$new();
         //Setup common prerequsites for all tests
         $scope.userParameter = userJson;
-        element = $compile('<ib-vardenhet-selector user="userParameter" expand-vardgivare="true"/> roleSwitchMessageKey="temp"')($scope);
+        element = $compile('<ib-vardenhet-selector user="userParameter" expand-vardgivare="true"/>')($scope);
         $scope.$digest();
 
         elementScope = element.isolateScope() || element.scope();

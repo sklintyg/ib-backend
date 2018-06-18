@@ -25,13 +25,10 @@ angular.module('ibApp').directive('ibVardenhetSelector', function() {
         scope: {
             'user': '=',
             'onUnitSelection': '&',
-            'expandVardgivare': '=',
-            'roleSwitchMessageKey': '@'
+            'expandVardgivare': '='
         },
         templateUrl: '/components/commonDirectives/ibVardenhetSelector/ibVardenhetSelector.directive.html',
         link: function($scope) {
-            // Add variable to scope whether to show the role switch info dialog or not.
-            $scope.showRoleSwitchMessage = $scope.user.roleSwitchPossible;
 
             //Create lo local copy with only required info
             var model = {};
