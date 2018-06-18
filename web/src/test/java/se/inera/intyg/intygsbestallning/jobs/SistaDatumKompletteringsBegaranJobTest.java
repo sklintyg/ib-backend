@@ -22,6 +22,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
+import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.DATE_TIME;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
@@ -32,8 +34,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.time.LocalDateTime;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
-import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AvslutaUtredningRequest;
@@ -41,7 +43,7 @@ import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
 
 
 @RunWith(MockitoJUnitRunner.class)
-public class AvslutaUtredningJobTest {
+public class SistaDatumKompletteringsBegaranJobTest {
 
     @Mock
     private UtredningRepository utredningRepository;
@@ -50,7 +52,7 @@ public class AvslutaUtredningJobTest {
     private UtredningService utredningService;
 
     @InjectMocks
-    private AvslutaUtredningJob avslutaUtredningJob;
+    private SistaDatumKompletteringsBegaranJob sistaDatumKompletteringsBegaranJob;
 
     @Test
     public void test() {
@@ -66,15 +68,23 @@ public class AvslutaUtredningJobTest {
         final Utredning utredning3 = TestDataGen.createUtredning();
         utredning3.setStatus(UtredningStatus.AVVIKELSE_MOTTAGEN);
 
-        doReturn(ImmutableList.of(utredning1, utredning2, utredning3))
+        //Should match the condition to notify Vardgivare - REDOVISA BESOK
+        final Utredning utredning4 = TestDataGen.createUtredning();
+        utredning4.setStatus(UtredningStatus.UTLATANDE_MOTTAGET);
+        utredning4.getIntygList().get(0).setSistaDatumKompletteringsbegaran(DATE_TIME);
+        utredning4.getBesokList().add(aBesok()
+                .withTolkStatus(TolkStatusTyp.BOKAT)
+                .build());
+
+        doReturn(ImmutableList.of(utredning1, utredning2, utredning3, utredning4))
                 .when(utredningRepository)
                 .findNonNotifiedSistaDatumKompletteringsBegaranBefore(
                         any(LocalDateTime.class),
-                        any(NotifieringTyp.class),
-                        any(NotifieringMottagarTyp.class));
+                        any(NotifieringTyp.class));
 
-        avslutaUtredningJob.executeJob();
+        sistaDatumKompletteringsBegaranJob.executeJob();
 
-        verify(utredningService, times(4)).avslutaUtredning(any(AvslutaUtredningRequest.class));
+        verify(utredningService, times(2)).avslutaUtredning(any(AvslutaUtredningRequest.class));
+        verify(utredningService, times(1)).updateStatusToRedovisaBesok(any(Utredning.class));
     }
 }

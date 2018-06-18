@@ -260,6 +260,14 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     }
 
     @Override
+    public void updateStatusToRedovisaBesok(final Utredning utredning) {
+        final Utredning savedUtredning = utredningRepository.saveUtredning(utredning);
+        checkState(UtredningStatus.REDOVISA_BESOK == savedUtredning.getStatus());
+
+        notifieringSendService.notifieraVardenhetRedovisaBesok(utredning);
+    }
+
+    @Override
     public Utredning registerNewUtredning(OrderRequest order) {
         Utredning utredning = anUtredning()
                 .withUtredningsTyp(order.getUtredningsTyp())

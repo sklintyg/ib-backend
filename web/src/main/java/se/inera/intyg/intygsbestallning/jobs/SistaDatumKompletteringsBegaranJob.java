@@ -20,8 +20,7 @@ package se.inera.intyg.intygsbestallning.jobs;
 
 import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.KOMPLETTERING_MOTTAGEN;
 import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.UTLATANDE_MOTTAGET;
-import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp.VARDENHET;
-import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.SLUTDATUM_UTREDNING_PASSERAT;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.PAMINNELSEDATUM_KOMPLETTERING_PASSERAS;
 
 import com.google.common.collect.ImmutableList;
 import net.javacrumbs.shedlock.core.SchedulerLock;
@@ -35,12 +34,12 @@ import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
-import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.stateresolver.BesokStatus;
 import se.inera.intyg.intygsbestallning.service.stateresolver.BesokStatusResolver;
@@ -49,7 +48,7 @@ import se.inera.intyg.intygsbestallning.service.utredning.dto.AvslutaUtredningRe
 
 @Component
 @Transactional
-public class AvslutaUtredningJob {
+public class SistaDatumKompletteringsBegaranJob {
 
     private static final long LOCK_AT_LEAST = 1000 * 15L;
     private static final long LOCK_AT_MOST = 1000 * 30L;
@@ -70,18 +69,10 @@ public class AvslutaUtredningJob {
         LOG.info("Starting: Avsluta Utredning Job from Scheduled Cron Expression");
 
         final LocalDateTime tidpunkt = LocalDate.now().atStartOfDay();
-        final NotifieringTyp typ = SLUTDATUM_UTREDNING_PASSERAT;
-        final NotifieringMottagarTyp mottagare = VARDENHET;
 
-        utredningRepository.findNonNotifiedSistaDatumKompletteringsBegaranBefore(tidpunkt, typ, mottagare).stream()
+        utredningRepository.findNonNotifiedSistaDatumKompletteringsBegaranBefore(tidpunkt, PAMINNELSEDATUM_KOMPLETTERING_PASSERAS).stream()
                 .filter(isKorrektStatus())
-                .filter(isQualified())
-                .forEach(avslutaUtredning);
-
-        utredningRepository.findNonNotifiedSistaDatumKompletteringsBegaranBefore(tidpunkt, typ, mottagare).stream()
-                .filter(isKorrektStatus())
-                .filter(isQualified())
-                .forEach(avslutaUtredning);
+                .forEach(avslutaUtredningOrRedovisaBesok);
     }
 
     private Predicate<Utredning> isKorrektStatus() {
@@ -89,12 +80,24 @@ public class AvslutaUtredningJob {
         return utr -> godkandaStatusar.contains(utr.getStatus());
     }
 
-    private Predicate<Utredning> isQualified() {
+    private Predicate<Utredning> isQualifiedForAvslutaUtredning() {
         return utr -> utr.getBesokList().stream()
                 .noneMatch(besok -> (BesokStatusResolver.resolveStaticStatus(besok) == BesokStatus.BOKAT)
                         || (BesokStatusResolver.resolveStaticStatus(besok) == BesokStatus.OMBOKAT));
     }
 
-    private final Consumer<Utredning> avslutaUtredning =
-            utr -> utredningService.avslutaUtredning(AvslutaUtredningRequest.from(utr.getUtredningId().toString()));
+    private Predicate<Utredning> isQualifiedForRedovisaBesok() {
+        return utr -> utr.getBesokList().stream()
+                .anyMatch(besok -> besok.getTolkStatus() == TolkStatusTyp.BOKAT);
+    }
+
+    private final Consumer<Utredning> avslutaUtredningOrRedovisaBesok = utr -> {
+        Optional.of(utr)
+                .filter(isQualifiedForAvslutaUtredning())
+                .ifPresent(utredning -> utredningService.avslutaUtredning(AvslutaUtredningRequest.from(utr.getUtredningId().toString())));
+
+        Optional.of(utr)
+                .filter(isQualifiedForRedovisaBesok())
+                .ifPresent(utredningService::updateStatusToRedovisaBesok);
+    };
 }

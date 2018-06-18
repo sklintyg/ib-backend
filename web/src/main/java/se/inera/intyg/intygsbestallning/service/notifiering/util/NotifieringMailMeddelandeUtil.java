@@ -160,4 +160,9 @@ public final class NotifieringMailMeddelandeUtil {
                         + "\nOm det finns återstående besök i utredningen måste dessa avbokas.",
                 utredning.getUtredningId());
     }
+
+    public static String paminnelseRedovisaBesok(final Utredning utredning) {
+        return MessageFormat.format("Det finns besök i utredning {0} som ännu inte har redovisats.",
+                utredning.getUtredningId());
+    }
 }

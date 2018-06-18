@@ -33,6 +33,7 @@ import static se.inera.intyg.intygsbestallning.persistence.model.type.Notifierin
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.NY_BESTALLNING;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.NY_EXTERNFORFRAGAN;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.NY_INTERNFORFRAGAN;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.PAMINNELSE_REDOVISA_BESOK;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.SAMTLIGA_INTERNFORFRAGAN_BESVARATS;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.SLUTDATUM_UTREDNING_PASSERAT;
@@ -67,6 +68,8 @@ import static se.inera.intyg.intygsbestallning.service.notifiering.util.Notifier
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_FMU_UTREDNING_TILLDELAD_VARDENHETEN;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_INGEN_BESTALLNING;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_NY_FMU_EXTERN_FORFRAGAN;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_NY_FMU_INTERN_FORFRAGAN;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_REDOVISA_BESOK;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_SAMTLIGA_INTERNFORFRAGAN_BESVARATS;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_UTREDNING_SLUTDATUM_PAMINNELSE;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_UTREDNING_SLUTDATUM_PASSERAT;
@@ -95,6 +98,7 @@ import se.inera.intyg.intygsbestallning.persistence.repository.UtredningReposito
 import se.inera.intyg.intygsbestallning.service.mail.MailService;
 import se.inera.intyg.intygsbestallning.service.notifiering.preferens.NotifieringPreferenceService;
 import se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailBodyFactory;
+import se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil;
 import se.inera.intyg.intygsbestallning.service.vardenhet.VardenhetService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.notification.GetNotificationPreferenceResponse;
 
@@ -159,7 +163,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                         vardenhetNyInternforfraganMessage(internForfragan),
                         internForfraganUrl(utredning));
 
-                sendNotifiering(internForfragan.getForfraganSvar().getUtforareEpost(), SUBJECT_NY_FMU_EXTERN_FORFRAGAN, body);
+                sendNotifiering(internForfragan.getForfraganSvar().getUtforareEpost(), SUBJECT_NY_FMU_INTERN_FORFRAGAN, body);
                 saveNotifiering(utredning, NY_INTERNFORFRAGAN, VARDENHET);
             }
         }
@@ -514,7 +518,21 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
     @Override
     public void notifieraVardenhetRedovisaBesok(Utredning utredning) {
-        throw new NotImplementedException();
+        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, PAMINNELSE_REDOVISA_BESOK);
+        final String id = bestallning.getTilldeladVardenhetHsaId();
+        final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VE);
+
+        if (preferens.isEnabled(PAMINNELSE_REDOVISA_BESOK, VARDENHET)) {
+            final String email = vardenhetService.getVardEnhetPreference(id).getEpost();
+            if (isNotEmpty(email)) {
+                final String body = notifieringMailBodyFactory.buildBodyForUtredning(
+                        NotifieringMailMeddelandeUtil.paminnelseRedovisaBesok(utredning),
+                        utredningUrl(utredning));
+
+                sendNotifiering(email, SUBJECT_REDOVISA_BESOK, body);
+                saveNotifiering(utredning, PAMINNELSE_REDOVISA_BESOK, VARDENHET);
+            }
+        }
     }
 
     private void saveNotifiering(

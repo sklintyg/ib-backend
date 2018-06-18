@@ -90,6 +90,17 @@ public interface UtredningService {
      */
     void avslutaUtredning(AvslutaUtredningRequest avslutaUtredningRequest);
 
+    /**
+     * Updates the order on an existing Utredning.
+     *
+     * @param update
+     */
     Utredning updateOrder(UpdateOrderRequest update);
 
+    /**
+     * Updates the utredning state to 'REDOVISA_BESOK' and notifies the vardenhet.
+     *
+     * @param utredning
+     */
+    void updateStatusToRedovisaBesok(Utredning utredning);
 }
