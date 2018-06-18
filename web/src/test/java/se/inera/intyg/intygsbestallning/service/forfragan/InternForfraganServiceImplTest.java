@@ -765,7 +765,6 @@ public class InternForfraganServiceImplTest {
                         .withRegiForm(RegiFormTyp.EGET_LANDSTING)
                         .build()));
         when(vardgivareService.listVardenheterForVardgivare(landstingHsaId)).thenReturn(egetRegiResponse);
-        doNothing().when(notifieringSendService).notifieraLandstingSamtligaVardenheterHarSvaratPaInternforfragan(utredningMock);
         when(organizationUnitService.getVardenhet(vardenhetId1)).thenReturn(new Vardenhet(vardenhetId1, vardenhetId1Namn));
         when(userService.getUser()).thenReturn(new IbUser("", userName));
         when(utredningRepository.saveUtredning(any(Utredning.class))).thenAnswer(
@@ -777,7 +776,7 @@ public class InternForfraganServiceImplTest {
 
         assertNotNull(result);
         assertEquals("Utforarnamn", result.getUtforareNamn());
-        verify(notifieringSendService, times(1)).notifieraLandstingSamtligaVardenheterHarSvaratPaInternforfragan(any(Utredning.class));
+        verify(notifieringSendService, times(0)).notifieraLandstingSamtligaVardenheterHarSvaratPaInternforfragan(any(Utredning.class));
         verify(externForfraganService, times(1)).acceptExternForfragan(utredningId, landstingHsaId, vardenhetId1);
     }
 

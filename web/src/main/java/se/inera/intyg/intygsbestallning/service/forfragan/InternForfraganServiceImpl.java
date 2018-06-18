@@ -266,16 +266,16 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
 
         createInternforfraganBesvaradHandelseLog(utredning, forfraganSvar, internForfragan.getVardenhetHsaId());
 
-        // F004: Normalflöde 5 - Notifiering till landstinget skall ske när samtliga vårdenheter har besvarat
-        // internförfrågningarna
-        handleAllInternforfragningarMayBeAnswered(utredning, internForfragan);
-
         // F004: Alternativflöde 2 - Utredningen skall tilldelas automatiskt till en vårdenhet i egen regi när den accepterats
         // och är ENDA tillfrågade enheten.
         if (shouldTillDelasAutomatiskt(utredning, internForfragan)) {
             externForfraganService.acceptExternForfragan(utredning.getUtredningId(), utredning.getExternForfragan()
                             .map(ExternForfragan::getLandstingHsaId).orElse(null),
                     internForfragan.getVardenhetHsaId());
+        } else {
+            // F004: Normalflöde 5 - Notifiering till landstinget skall ske när samtliga vårdenheter har besvarat
+            // internförfrågningarna - endast notifiera om Alternativflöde 2 ovan inte inträffat
+            handleAllInternforfragningarMayBeAnswered(utredning, internForfragan);
         }
         // F004: Alternativflöde 5 - Landstingets enda vårdenheten avvisar internförfrågan
         if (shouldAvvisaExternForfraganAutomatiskt(utredning, internForfragan)) {
