@@ -60,13 +60,8 @@ angular.module('ibApp').provider('http403ResponseInterceptor',
                 // for 403 responses - redirect browser to configured redirect url
                 if (rejection.status === 403) {
 
-                    var redirectUrl = config.redirectUrl;
-                    if (UserModel.get().authenticationScheme === UserModel.get().fakeSchemeId) {
-                        redirectUrl = '/welcome.html?utloggad';
-                    }
-
                     UserModel.get().loggedIn = false;
-                    $window.location.href = redirectUrl;
+                    $window.location.href = config.redirectUrl;
                 }
                 // signal rejection (arguably not meaningful here since we just
                 // issued a redirect)

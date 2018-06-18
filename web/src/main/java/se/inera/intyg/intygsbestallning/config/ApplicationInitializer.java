@@ -18,7 +18,10 @@
  */
 package se.inera.intyg.intygsbestallning.config;
 
-import io.prometheus.client.exporter.MetricsServlet;
+import javax.servlet.FilterRegistration;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRegistration;
+
 import org.apache.cxf.transport.servlet.CXFServlet;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.web.WebApplicationInitializer;
@@ -29,18 +32,14 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.DispatcherServlet;
+
+import io.prometheus.client.exporter.MetricsServlet;
 import se.inera.intyg.intygsbestallning.integration.myndighet.config.MyndighetIntegrationClientConfiguration;
 import se.inera.intyg.intygsbestallning.integration.myndighet.config.MyndighetIntegrationConfiguration;
 import se.inera.intyg.intygsbestallning.integration.myndighet.stubs.MyndighetIntegrationStubConfiguration;
 import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigDev;
 import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigJndi;
 import se.inera.intyg.intygsbestallning.web.filters.SessionTimeoutFilter;
-
-import javax.servlet.FilterRegistration;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration;
-
-import static se.inera.intyg.intygsbestallning.web.controller.api.SessionStatusController.SESSION_STATUS_CHECK_URI;
 
 public class ApplicationInitializer implements WebApplicationInitializer {
 
@@ -64,8 +63,7 @@ public class ApplicationInitializer implements WebApplicationInitializer {
                 MyndighetIntegrationConfiguration.class,
                 MyndighetIntegrationClientConfiguration.class,
                 MyndighetIntegrationStubConfiguration.class,
-                JobConfiguration.class
-        );
+                JobConfiguration.class);
 
         servletContext.addListener(new ContextLoaderListener(appContext));
 
@@ -78,7 +76,7 @@ public class ApplicationInitializer implements WebApplicationInitializer {
         // Session Timeout filter
         FilterRegistration.Dynamic sessionTimeoutFilter = servletContext.addFilter("sessionTimeoutFilter", SessionTimeoutFilter.class);
         sessionTimeoutFilter.addMappingForUrlPatterns(null, false, "/*");
-        sessionTimeoutFilter.setInitParameter("getSessionStatusUri", SESSION_STATUS_CHECK_URI);
+        sessionTimeoutFilter.setInitParameter("ignoredUrl", "/api/stats/");
 
         // Spring security filter
         FilterRegistration.Dynamic springSecurityFilterChain = servletContext.addFilter("springSecurityFilterChain",
@@ -93,13 +91,14 @@ public class ApplicationInitializer implements WebApplicationInitializer {
         unitSelectedAssuranceFilter.setInitParameter("ignoredUrls", "/api/config,/api/user,/api/user/andraenhet");
 
         // pdlConsentGiven filter
-//        FilterRegistration.Dynamic pdlConsentGivenAssuranceFilter = servletContext.addFilter("pdlConsentGivenAssuranceFilter",
-//                DelegatingFilterProxy.class);
-//        pdlConsentGivenAssuranceFilter.setInitParameter("targetFilterLifecycle", "true");
-//        pdlConsentGivenAssuranceFilter.addMappingForUrlPatterns(null, false, "/api/*");
-//        pdlConsentGivenAssuranceFilter.setInitParameter("ignoredUrls",
-//                SESSION_STATUS_CHECK_URI + "," + SESSION_STATUS_REQUEST_MAPPING + SESSION_STATUS_EXTEND
-//                        + ",/api/config,/api/user,/api/user/giveconsent,/api/sjukfall/summary,/api/stub");
+        // FilterRegistration.Dynamic pdlConsentGivenAssuranceFilter =
+        // servletContext.addFilter("pdlConsentGivenAssuranceFilter",
+        // DelegatingFilterProxy.class);
+        // pdlConsentGivenAssuranceFilter.setInitParameter("targetFilterLifecycle", "true");
+        // pdlConsentGivenAssuranceFilter.addMappingForUrlPatterns(null, false, "/api/*");
+        // pdlConsentGivenAssuranceFilter.setInitParameter("ignoredUrls",
+        // SESSION_STATUS_CHECK_URI + "," + SESSION_STATUS_REQUEST_MAPPING + SESSION_STATUS_EXTEND
+        // + ",/api/config,/api/user,/api/user/giveconsent,/api/sjukfall/summary,/api/stub");
 
         FilterRegistration.Dynamic characterEncodingFilter = servletContext.addFilter("characterEncodingFilter",
                 CharacterEncodingFilter.class);

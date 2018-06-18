@@ -50,7 +50,7 @@ angular
         });
 
         // Configure 403 interceptor provider
-        http403ResponseInterceptorProvider.setRedirectUrl('/');
+        http403ResponseInterceptorProvider.setRedirectUrl('/?reason=inactivity-timeout');
         $httpProvider.interceptors.push('http403ResponseInterceptor');
 
         // Configure restErrorResponseInterceptorProvider interceptor provider

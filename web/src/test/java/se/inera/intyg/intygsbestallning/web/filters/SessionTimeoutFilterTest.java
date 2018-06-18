@@ -23,6 +23,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static se.inera.intyg.intygsbestallning.web.filters.SessionTimeoutFilter.SESSION_LAST_ACCESS_TIME;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,10 +37,10 @@ import javax.servlet.http.HttpSession;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SessionTimeoutFilterTest {
-    private static final String TEST_URI = "/test";
-    private static final int FIVE_SECONDS_AGO = 5000;
-    private static final int ONE_SECOND = 1;
-    private static final int HALF_AN_HOUR = 1800;
+    private static final String IGNORED_URL = "/test";
+    private static final int ONE_SECOND = 1000;
+    private static final int HALF_AN_HOUR = ONE_SECOND * 60 * 30;
+    private static final int SESSION_MAX_TTL_SECONDS = 30;
 
     @Mock
     private HttpServletRequest request;
@@ -54,28 +55,45 @@ public class SessionTimeoutFilterTest {
     private HttpSession session;
 
     @Test
-    public void testDoFilterInternalWillInvalidateAnExpiredSession() throws Exception {
+    public void testDoNothingWhenNoSession() throws Exception {
         // Arrange
-        setupMocks(ONE_SECOND, TEST_URI);
+        when(request.getSession(false)).thenReturn(null);
         SessionTimeoutFilter filter = new SessionTimeoutFilter();
-        filter.setGetSessionStatusUri(TEST_URI);
+        filter.setIgnoredUrl(IGNORED_URL);
 
         // Act
         filter.doFilterInternal(request, response, filterChain);
 
         // Assert
         verify(filterChain).doFilter(request, response);
+        verify(session, never()).setAttribute(any(), any());
+
+    }
+
+    @Test
+    public void testWillInvalidateSessionWhenExpired() throws Exception {
+        // Arrange
+        setupMocks(System.currentTimeMillis() - HALF_AN_HOUR, IGNORED_URL);
+        SessionTimeoutFilter filter = new SessionTimeoutFilter();
+        filter.setIgnoredUrl(IGNORED_URL);
+
+        // Act
+        filter.doFilterInternal(request, response, filterChain);
+
+        // Assert
+        verify(filterChain).doFilter(request, response);
+        verify(session).getMaxInactiveInterval();
         verify(session).invalidate();
         verify(session, never()).setAttribute(any(), any());
 
     }
 
     @Test
-    public void testDoFilterInternalWillNotInvalidateValidSession() throws Exception {
+    public void testWillNotInvalidateValidSessionWhenNotExpired() throws Exception {
         // Arrange
+        setupMocks(System.currentTimeMillis(), "anotherurl");
         SessionTimeoutFilter filter = new SessionTimeoutFilter();
-        filter.setGetSessionStatusUri(TEST_URI);
-        setupMocks(HALF_AN_HOUR, "anotherurl");
+        filter.setIgnoredUrl(IGNORED_URL);
 
         // Act
         filter.doFilterInternal(request, response, filterChain);
@@ -83,17 +101,17 @@ public class SessionTimeoutFilterTest {
         // Assert
         verify(filterChain).doFilter(request, response);
         verify(session, never()).invalidate();
-        verify(session).setAttribute(eq(SessionTimeoutFilter.LAST_ACCESS_TIME_ATTRIBUTE_NAME), any());
+        verify(session).setAttribute(eq(SESSION_LAST_ACCESS_TIME), any());
 
     }
 
-    private void setupMocks(int sessionLengthInSeconds, String reportedRequestURI) {
+    private void setupMocks(Long lastAccess, String reportedRequestURI) {
 
         when(request.getSession(false)).thenReturn(session);
         when(request.getRequestURI()).thenReturn(reportedRequestURI);
-        when(session.getAttribute(eq(SessionTimeoutFilter.LAST_ACCESS_TIME_ATTRIBUTE_NAME)))
-                .thenReturn(System.currentTimeMillis() - FIVE_SECONDS_AGO);
-        when(session.getMaxInactiveInterval()).thenReturn(sessionLengthInSeconds);
+        when(session.getAttribute(eq(SESSION_LAST_ACCESS_TIME)))
+                .thenReturn(lastAccess);
+        when(session.getMaxInactiveInterval()).thenReturn(SESSION_MAX_TTL_SECONDS);
 
     }
 }

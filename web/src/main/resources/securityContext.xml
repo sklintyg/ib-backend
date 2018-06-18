@@ -134,7 +134,7 @@
       <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint">
         <security:csrf disabled="true"/>
         <security:access-denied-handler error-page="/welcome.html"/>
-        <security:logout logout-url="/logout" logout-success-url="/?reason=logout" invalidate-session="true"/>
+        <security:logout logout-url="/logout" logout-success-url="/#/app" invalidate-session="true"/>
         <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
         <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
         <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy" />
@@ -175,7 +175,7 @@
     <security:http use-expressions="false" entry-point-ref="samlEntryPoint" request-matcher-ref="samlRequestMatcher">
       <security:csrf disabled="true"/>
       <security:headers/>
-      <security:logout logout-url="/logout" logout-success-url="/?reason=logout" invalidate-session="true"/>
+      <security:logout logout-url="/logout" logout-success-url="/#/app" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
@@ -186,7 +186,7 @@
     <!-- This will allow frontend to act correctly on ajax requests          -->
     <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint">
       <security:csrf disabled="true"/>
-      <security:logout logout-url="/logout" logout-success-url="/?reason=logout" invalidate-session="true"/>
+      <security:logout logout-url="/logout" logout-success-url="/#/app" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
       <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy" />
@@ -468,7 +468,7 @@
     <!-- Handler for successful logout -->
     <bean id="successLogoutHandler"
           class="org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler">
-      <property name="defaultTargetUrl" value="/?reason=logout"/>
+      <property name="defaultTargetUrl" value="/#/app"/>
       <property name="alwaysUseDefaultTargetUrl" value="true" />
     </bean>
   </beans>

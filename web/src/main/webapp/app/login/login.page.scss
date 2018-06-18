@@ -9,9 +9,10 @@
     padding-bottom: 20px;
   }
 
-  @media (max-width: $screen-xs-max) {
+  @media (max-width: $screen-sm-max) {
     .btn-primary {
       display: block;
+      margin-bottom: 10px;
       width: 100%;
     }
   }

@@ -26,8 +26,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
@@ -35,64 +33,32 @@ import org.springframework.web.filter.OncePerRequestFilter;
  */
 public class SessionTimeoutFilter extends OncePerRequestFilter {
 
-    public static final String SECONDS_UNTIL_SESSIONEXPIRE_ATTRIBUTE_KEY = SessionTimeoutFilter.class.getName() + ".secondsToLive";
-
-    private static final Logger LOG = LoggerFactory.getLogger(SessionTimeoutFilter.class);
-
-    static final String LAST_ACCESS_TIME_ATTRIBUTE_NAME = SessionTimeoutFilter.class.getName() + ".SessionLastAccessTime";
-
+    protected static final String SESSION_LAST_ACCESS_TIME = "SessionLastAccessTime";
     private static final long MILLISECONDS_PER_SECONDS = 1000;
 
-    private String getSessionStatusUri;
+    private String ignoredUrl;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        checkSessionValidity(request);
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            Long lastAccess = (Long) session.getAttribute(SESSION_LAST_ACCESS_TIME);
 
+            long inactiveTimeInMs = lastAccess == null ? 0 : System.currentTimeMillis() - lastAccess;
+            long maxInactiveTimeInMs = MILLISECONDS_PER_SECONDS * session.getMaxInactiveInterval();
+
+            if (inactiveTimeInMs > maxInactiveTimeInMs) {
+                session.invalidate();
+            } else if (!request.getRequestURI().contains(ignoredUrl)) {
+                session.setAttribute(SESSION_LAST_ACCESS_TIME, System.currentTimeMillis());
+            }
+        }
         filterChain.doFilter(request, response);
     }
 
-    private void checkSessionValidity(HttpServletRequest request) {
-        // Get existing session - if any
-        HttpSession session = request.getSession(false);
-
-        // Is it a request that should'nt prolong the expiration?
-        boolean isSessionStatusRequest = request.getRequestURI().contains(getSessionStatusUri);
-        if (session != null) {
-            Long lastAccess = (Long) session.getAttribute(LAST_ACCESS_TIME_ATTRIBUTE_NAME);
-
-            // Set an request attribute that other parties further down the request chaing can use.
-            Long msUntilExpire = updateTimeLeft(request, session);
-
-            if (msUntilExpire <= 0) {
-                LOG.info("Session expired " + msUntilExpire + " ms ago. Invalidating it now!");
-                session.invalidate();
-            } else if (!isSessionStatusRequest || lastAccess == null) {
-                // Update lastaccessed for ALL requests except status requests
-                session.setAttribute(LAST_ACCESS_TIME_ATTRIBUTE_NAME, System.currentTimeMillis());
-                updateTimeLeft(request, session);
-            }
-        }
+    public void setIgnoredUrl(String ignoredUrl) {
+        this.ignoredUrl = ignoredUrl;
     }
-
-    private Long updateTimeLeft(HttpServletRequest request, HttpSession session) {
-        Long lastAccess = (Long) session.getAttribute(LAST_ACCESS_TIME_ATTRIBUTE_NAME);
-        long inactiveTime = (lastAccess == null) ? 0 : (System.currentTimeMillis() - lastAccess);
-        long maxInactiveTime = session.getMaxInactiveInterval() * MILLISECONDS_PER_SECONDS;
-
-        long msUntilExpire = maxInactiveTime - inactiveTime;
-        request.setAttribute(SECONDS_UNTIL_SESSIONEXPIRE_ATTRIBUTE_KEY, msUntilExpire / MILLISECONDS_PER_SECONDS);
-        return msUntilExpire;
-    }
-
-    public String getGetSessionStatusUri() {
-        return getSessionStatusUri;
-    }
-
-    public void setGetSessionStatusUri(String getSessionStatusUri) {
-        this.getSessionStatusUri = getSessionStatusUri;
-    }
-
 }
