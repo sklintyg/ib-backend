@@ -27,16 +27,16 @@ import se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
-import se.riv.intygsbestallning.certificate.order.ordermedicalassessment.v1.OrderMedicalAssessmentResponseType;
-import se.riv.intygsbestallning.certificate.order.ordermedicalassessment.v1.OrderMedicalAssessmentType;
-import se.riv.intygsbestallning.certificate.order.ordermedicalassessment.v1.rivtabp21.OrderMedicalAssessmentResponderInterface;
+import se.riv.intygsbestallning.certificate.order.orderassessment.v1.OrderAssessmentResponseType;
+import se.riv.intygsbestallning.certificate.order.orderassessment.v1.OrderAssessmentType;
+import se.riv.intygsbestallning.certificate.order.orderassessment.v1.rivtabp21.OrderAssessmentResponderInterface;
 
 import static java.util.Objects.isNull;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
 
 @Service
 @SchemaValidation
-public class OrderMedicalAssessmentResponderImpl implements OrderMedicalAssessmentResponderInterface {
+public class OrderAssessmentResponderImpl implements OrderAssessmentResponderInterface {
 
     @Autowired
     private UtredningService utredningService;
@@ -45,8 +45,8 @@ public class OrderMedicalAssessmentResponderImpl implements OrderMedicalAssessme
     private String sourceSystemHsaId;
 
     @Override
-    public OrderMedicalAssessmentResponseType orderMedicalAssessment(
-            final String logicalAddress, final OrderMedicalAssessmentType request) {
+    public OrderAssessmentResponseType orderAssessment(
+            final String logicalAddress, final OrderAssessmentType request) {
 
         Preconditions.checkArgument(!isNull(logicalAddress));
         Preconditions.checkArgument(!isNull(request));
@@ -61,7 +61,7 @@ public class OrderMedicalAssessmentResponderImpl implements OrderMedicalAssessme
             utredning = utredningService.registerOrder(orderRequest);
         }
 
-        OrderMedicalAssessmentResponseType response = new OrderMedicalAssessmentResponseType();
+        OrderAssessmentResponseType response = new OrderAssessmentResponseType();
         response.setAssessmentId(
                 anII(isNull(request.getAssessmentId()) ? sourceSystemHsaId : request.getAssessmentId().getRoot(),
                         utredning.getUtredningId().toString()));

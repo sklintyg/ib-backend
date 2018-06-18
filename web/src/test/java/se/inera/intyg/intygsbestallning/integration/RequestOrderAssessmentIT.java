@@ -37,9 +37,9 @@ import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.core.Is.is;
 import static se.inera.intyg.intygsbestallning.persistence.model.status.InternForfraganStatus.BESTALLD;
 
-public class RequestOrderMedicalAssessmentIT extends BaseRestIntegrationTest {
+public class RequestOrderAssessmentIT extends BaseRestIntegrationTest {
 
-    private static final String BASE = "Envelope.Body.OrderMedicalAssessmentResponse.";
+    private static final String BASE = "Envelope.Body.OrderAssessmentResponse.";
 
     private ST requestTemplate;
 
@@ -49,14 +49,14 @@ public class RequestOrderMedicalAssessmentIT extends BaseRestIntegrationTest {
     public void setupTestSpecific() {
         RestAssured.requestSpecification = new RequestSpecBuilder().setContentType("application/xml;charset=utf-8").build();
 
-        templateGroup = new STGroupFile("integrationtests/RequestOrderMedicalAssessment/request1.stg");
+        templateGroup = new STGroupFile("integrationtests/RequestOrderAssessment/request1.stg");
         requestTemplate = templateGroup.getInstanceOf("request");
     }
 
     @Test
-    public void requestOrderMedicalAssessmentWorks() {
+    public void requestOrderAssessmentWorks() {
         // First, utilize testability API to inject an Utredning ready to be supplemented.
-        String json = loadJson("integrationtests/RequestOrderMedicalAssessment/utredning-tilldelad.json");
+        String json = loadJson("integrationtests/RequestOrderAssessment/utredning-tilldelad.json");
 
         ResponseBodyExtractionOptions body = given().body(json).when().contentType("application/json")
                 .post("/api/test/utredningar").then()
@@ -65,7 +65,7 @@ public class RequestOrderMedicalAssessmentIT extends BaseRestIntegrationTest {
         Integer utredningId = body.jsonPath().get("entity.utredningId");
 
         requestTemplate.add("data",
-                new RequestOrderMedicalAssessmentIT.RequestOrderMedicalAssessment("" + utredningId,
+                new RequestOrderAssessmentIT.RequestOrderAssessment("" + utredningId,
                         "IFV1239877878-1042",
                         "AFU", true, "sv", "Detta är en kommentar",
                         LocalDate.now().plusDays(25).format(DateTimeFormatter.ISO_DATE), false,
@@ -103,7 +103,7 @@ public class RequestOrderMedicalAssessmentIT extends BaseRestIntegrationTest {
         deleteUtredning(utredningId);
     }
 
-    private static class RequestOrderMedicalAssessment {
+    private static class RequestOrderAssessment {
         public final String assessmentId;
         public final String vardenhetHsaId;
         public final String utredningTyp;
@@ -124,7 +124,7 @@ public class RequestOrderMedicalAssessmentIT extends BaseRestIntegrationTest {
         public final String patientBehov;
         public final String patientBakgrund;
 
-        public RequestOrderMedicalAssessment(String assessmentId, String vardenhetHsaId, String utredningTyp, boolean behovTolk,
+        public RequestOrderAssessment(String assessmentId, String vardenhetHsaId, String utredningTyp, boolean behovTolk,
                 String tolkSprak, String kommentar, String sistaDatum, boolean dokumentViaPost, String syfte, String planeradeAtgarder,
                 String orderDatum, String handlaggareNamn, String handlaggareTelefon, String handlaggareEpost, String patientPersonId,
                 String patientFornamn, String patientEfternamn, String patientBehov, String patientBakgrund) {

@@ -10,7 +10,7 @@ ext {
     monitoringSchemaVersion = "1.0.0.3"
     internalMonitoringSchemaVersion = "1.0.2"
     schemasContractVersion = "2.1.6"
-    intygsbestallningCertificateOrderSchemasVersion = "1.0-RC3"
+    intygsbestallningCertificateOrderSchemasVersion = "1.0-RC4"
 
     activemqVersion = "5.13.4"
     aspectjWeaverVersion = "1.8.9"

@@ -1,11 +1,11 @@
 ┍━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┯━━━━━━━━━━━┑
 │ Kontrakt                                │ Roll      │
 ├─────────────────────────────────────────┼───────────┤
-│ RequestHealthCarePerformerForAssessment │ Responder │
+│ RequestPerformerForAssessment           │ Responder │
 │                                         │           │
 │ RespondToPerformerRequest               │ Client    │
 │                                         │           │
-│ OrderMedicalAssessment                  │ Responder │
+│ OrderAssessment                         │ Responder │
 │                                         │           │
 │ UpdateOrder                             │ Responder │
 │                                         │           │

@@ -18,17 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning.dto;
 
-import org.jetbrains.annotations.NotNull;
-import org.junit.Test;
-import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
-import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
-import se.riv.intygsbestallning.certificate.order.ordermedicalassessment.v1.OrderMedicalAssessmentType;
-import se.riv.intygsbestallning.certificate.order.v1.AddressType;
-import se.riv.intygsbestallning.certificate.order.v1.AuthorityAdministrativeOfficialType;
-import se.riv.intygsbestallning.certificate.order.v1.CitizenType;
-
-import java.time.LocalDate;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -37,11 +26,21 @@ import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.aCv;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU;
 
+import org.jetbrains.annotations.NotNull;
+import org.junit.Test;
+import se.riv.intygsbestallning.certificate.order.orderassessment.v1.OrderAssessmentType;
+import se.riv.intygsbestallning.certificate.order.v1.AddressType;
+import se.riv.intygsbestallning.certificate.order.v1.AuthorityAdministrativeOfficialType;
+import se.riv.intygsbestallning.certificate.order.v1.CitizenType;
+import java.time.LocalDate;
+import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
+import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+
 public class OrderRequestTest {
 
     @Test
     public void testFromRequestComplete() {
-        OrderMedicalAssessmentType request = createFullRequest();
+        OrderAssessmentType request = createFullRequest();
 
         OrderRequest result = OrderRequest.from(request);
         assertNotNull(result);
@@ -71,7 +70,7 @@ public class OrderRequestTest {
 
     @Test
     public void testFromRequestAf() {
-        OrderMedicalAssessmentType request = createFullRequest();
+        OrderAssessmentType request = createFullRequest();
         request.setAssessmentId(null);
         request.setOrderDate(null);
         request.setLastDateForCertificateReceival(null);
@@ -103,7 +102,7 @@ public class OrderRequestTest {
 
     @Test(expected = IbServiceException.class)
     public void testConvertFailCertificateType() {
-        OrderMedicalAssessmentType request = createFullRequest();
+        OrderAssessmentType request = createFullRequest();
         request.setCertificateType(aCv("notExisting", null, null));
 
         assertErrorCode(request, BAD_REQUEST);
@@ -111,7 +110,7 @@ public class OrderRequestTest {
 
     @Test(expected = IbServiceException.class)
     public void testConvertFailOrderDate() {
-        OrderMedicalAssessmentType request = createFullRequest();
+        OrderAssessmentType request = createFullRequest();
         request.setOrderDate(null);
 
         assertErrorCode(request, BAD_REQUEST);
@@ -119,7 +118,7 @@ public class OrderRequestTest {
 
     @Test(expected = IbServiceException.class)
     public void testConvertFailOrderNameMissing() {
-        OrderMedicalAssessmentType request = createFullRequest();
+        OrderAssessmentType request = createFullRequest();
         request.getCitizen().setFirstName(null);
         request.getCitizen().setMiddleName(null);
         request.getCitizen().setLastName(null);
@@ -129,15 +128,15 @@ public class OrderRequestTest {
 
     @Test(expected = IbServiceException.class)
     public void testConvertFailIntygSentDate() {
-        OrderMedicalAssessmentType request = createFullRequest();
+        OrderAssessmentType request = createFullRequest();
         request.setLastDateForCertificateReceival(null);
 
         assertErrorCode(request, BAD_REQUEST);
     }
 
     @NotNull
-    private OrderMedicalAssessmentType createFullRequest() {
-        OrderMedicalAssessmentType request = new OrderMedicalAssessmentType();
+    private OrderAssessmentType createFullRequest() {
+        OrderAssessmentType request = new OrderAssessmentType();
         request.setCertificateType(aCv(AFU.name(), null, null));
         request.setOrderDate("2018-01-01");
         request.setLastDateForCertificateReceival("2019-01-01");
@@ -173,8 +172,8 @@ public class OrderRequestTest {
         return request;
     }
 
-    private void assertErrorCode(OrderMedicalAssessmentType request,
-            IbErrorCodeEnum errorCodeEnum) {
+    private void assertErrorCode(OrderAssessmentType request,
+                                 IbErrorCodeEnum errorCodeEnum) {
         try {
             OrderRequest.from(request);
         } catch (IbServiceException ise) {

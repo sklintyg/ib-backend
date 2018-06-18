@@ -1,12 +1,12 @@
 delimiters "$", "$"
 
 request(data) ::= <<
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:itintegration:registry:1" xmlns:urn1="urn:riv-application:intygsbestallning:certificate:order:OrderMedicalAssessmentResponder:1" xmlns:urn2="urn:riv-application:intygsbestallning:certificate:order:1">
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:itintegration:registry:1" xmlns:urn1="urn:riv-application:intygsbestallning:certificate:order:OrderAssessmentResponder:1" xmlns:urn2="urn:riv-application:intygsbestallning:certificate:order:1">
    <soapenv:Header>
       <urn:LogicalAddress>?</urn:LogicalAddress>
    </soapenv:Header>
    <soapenv:Body>
-      <urn1:OrderMedicalAssessment>
+      <urn1:OrderAssessment>
          <!--Optional:-->
          <urn1:assessmentId>
             <urn2:root></urn2:root>
@@ -72,7 +72,7 @@ request(data) ::= <<
             <!--You may enter ANY elements at this point-->
          </urn1:citizen>
          <!--You may enter ANY elements at this point-->
-      </urn1:OrderMedicalAssessment>
+      </urn1:OrderAssessment>
    </soapenv:Body>
 </soapenv:Envelope>
 >>

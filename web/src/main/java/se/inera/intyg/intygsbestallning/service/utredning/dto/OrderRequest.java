@@ -18,22 +18,21 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning.dto;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
 import com.google.common.base.Joiner;
 import com.google.common.primitives.Longs;
 import org.apache.commons.lang3.BooleanUtils;
-import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
-import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
-import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
-import se.riv.intygsbestallning.certificate.order.ordermedicalassessment.v1.OrderMedicalAssessmentType;
+import se.riv.intygsbestallning.certificate.order.orderassessment.v1.OrderAssessmentType;
 import se.riv.intygsbestallning.certificate.order.v1.AuthorityAdministrativeOfficialType;
 import se.riv.intygsbestallning.certificate.order.v1.CitizenType;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
+import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
+import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 
 public final class OrderRequest {
     private Long utredningId;
@@ -56,7 +55,7 @@ public final class OrderRequest {
     private OrderRequest() {
     }
 
-    public static OrderRequest from(OrderMedicalAssessmentType source) {
+    public static OrderRequest from(OrderAssessmentType source) {
         validate(source);
 
         AuthorityAdministrativeOfficialType bestallareSource = source.getAuthorityAdministrativeOfficial();
@@ -99,7 +98,7 @@ public final class OrderRequest {
                 .build();
     }
 
-    private static void validate(OrderMedicalAssessmentType source) {
+    private static void validate(OrderAssessmentType source) {
         List<String> errors = new ArrayList<>();
         try {
             UtredningsTyp.valueOf(source.getCertificateType().getCode());

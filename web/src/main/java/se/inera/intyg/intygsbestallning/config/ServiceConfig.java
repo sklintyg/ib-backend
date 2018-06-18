@@ -18,9 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.config;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.cxf.Bus;
 import org.apache.cxf.jaxws.EndpointImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +26,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.support.ServletContextAttributeExporter;
-
+import java.util.HashMap;
+import java.util.Map;
 import se.inera.intyg.intygsbestallning.service.monitoring.HealthCheckService;
 import se.inera.intyg.intygsbestallning.service.monitoring.InternalPingForConfigurationResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.EndAssessmentResponderImpl;
-import se.inera.intyg.intygsbestallning.web.responder.OrderMedicalAssessmentResponderImpl;
+import se.inera.intyg.intygsbestallning.web.responder.OrderAssessmentResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.ReportCertificateReceivalResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.ReportDeviationInteractionResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.ReportSupplementReceivalResponderImpl;
@@ -47,7 +45,7 @@ import se.inera.intyg.intygsbestallning.web.responder.UpdateOrderResponderImpl;
         "se.inera.intyg.intygsbestallning.auth",
         "se.inera.intyg.intygsbestallning.common",
         "se.inera.intyg.intygsbestallning.jobs",
-        "se.inera.intyg.intygsbestallning.web" })
+        "se.inera.intyg.intygsbestallning.web"})
 public class ServiceConfig {
 
     @Autowired
@@ -78,7 +76,7 @@ public class ServiceConfig {
     private ReportCertificateReceivalResponderImpl reportCertificateReceivalResponder;
 
     @Autowired
-    private OrderMedicalAssessmentResponderImpl orderMedicalAssessmentResponder;
+    private OrderAssessmentResponderImpl orderAssessmentResponder;
 
     @Autowired
     private ReportDeviationInteractionResponderImpl reportDeviationInteractionResponder;
@@ -117,7 +115,7 @@ public class ServiceConfig {
     }
 
     @Bean
-    public EndpointImpl requestMedicalCertificateSupplementEndpoint() {
+    public EndpointImpl requestCertificateSupplementEndpoint() {
         EndpointImpl endpoint = new EndpointImpl(bus, requestMedicalCertificateSupplementResponder);
         endpoint.publish("/request-medical-certificate-supplement-responder");
         return endpoint;
@@ -138,9 +136,9 @@ public class ServiceConfig {
     }
 
     @Bean
-    public EndpointImpl orderMedicalAssessmentResponderEndpoint() {
-        EndpointImpl endpoint = new EndpointImpl(bus, orderMedicalAssessmentResponder);
-        endpoint.publish("/order-medical-assessment-responder");
+    public EndpointImpl orderAssessmentResponderEndpoint() {
+        EndpointImpl endpoint = new EndpointImpl(bus, orderAssessmentResponder);
+        endpoint.publish("/order-assessment-responder");
         return endpoint;
     }
 
