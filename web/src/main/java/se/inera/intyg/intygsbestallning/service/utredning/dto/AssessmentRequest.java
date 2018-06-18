@@ -27,7 +27,7 @@ import static se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare.
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentType;
+import se.riv.intygsbestallning.certificate.order.requestperformerforassessment.v1.RequestPerformerForAssessmentType;
 import se.riv.intygsbestallning.certificate.order.v1.AddressType;
 import se.riv.intygsbestallning.certificate.order.v1.AuthorityAdministrativeOfficialType;
 import se.riv.intygsbestallning.certificate.order.v1.CVType;
@@ -96,7 +96,7 @@ public class AssessmentRequest {
         return invanareTidigareUtforare;
     }
 
-    public static AssessmentRequest from(final RequestHealthcarePerformerForAssessmentType request) {
+    public static AssessmentRequest from(final RequestPerformerForAssessmentType request) {
 
         validate(request);
 
@@ -150,7 +150,7 @@ public class AssessmentRequest {
                 .build();
     }
 
-    private static void validate(final RequestHealthcarePerformerForAssessmentType source) {
+    private static void validate(final RequestPerformerForAssessmentType source) {
         List<String> errors = Lists.newArrayList();
         final List<UtredningsTyp> godkandaUtredningsTyper = ImmutableList.of(AFU, AFU_UTVIDGAD);
 

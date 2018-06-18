@@ -18,45 +18,44 @@
  */
 package se.inera.intyg.intygsbestallning.web.responder;
 
-import org.apache.cxf.annotations.SchemaValidation;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
-import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
-import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentResponseType;
-import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentType;
-import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.rivtabp21.RequestHealthcarePerformerForAssessmentResponderInterface;
-
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.nonNull;
 import static se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil.ok;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
 
+import org.apache.cxf.annotations.SchemaValidation;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import se.riv.intygsbestallning.certificate.order.requestperformerforassessment.v1.RequestPerformerForAssessmentResponseType;
+import se.riv.intygsbestallning.certificate.order.requestperformerforassessment.v1.RequestPerformerForAssessmentType;
+import se.riv.intygsbestallning.certificate.order.requestperformerforassessment.v1.rivtabp21.RequestPerformerForAssessmentResponderInterface;
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
+
 @Service
 @SchemaValidation
-public class RequestHealthcarePerformerForAssessmentResponderImpl
-        implements RequestHealthcarePerformerForAssessmentResponderInterface {
+public class RequestPerformerForAssessmentResponderImpl implements RequestPerformerForAssessmentResponderInterface {
 
     @Value("${source.system.hsaid:}")
     private String sourceSystemHsaId;
 
     private final UtredningService utredningService;
 
-    public RequestHealthcarePerformerForAssessmentResponderImpl(final UtredningService utredningService) {
+    public RequestPerformerForAssessmentResponderImpl(final UtredningService utredningService) {
         this.utredningService = utredningService;
     }
 
     @Override
-    public RequestHealthcarePerformerForAssessmentResponseType requestHealthcarePerformerForAssessment(
-            final String logicalAddress, final RequestHealthcarePerformerForAssessmentType request) {
+    public RequestPerformerForAssessmentResponseType requestPerformerForAssessment(
+            final String logicalAddress, final RequestPerformerForAssessmentType request) {
 
         checkArgument(nonNull(logicalAddress));
         checkArgument(nonNull(request));
 
         final Utredning sparadUtredning = utredningService.registerNewUtredning(AssessmentRequest.from(request));
 
-        RequestHealthcarePerformerForAssessmentResponseType response = new RequestHealthcarePerformerForAssessmentResponseType();
+        RequestPerformerForAssessmentResponseType response = new RequestPerformerForAssessmentResponseType();
         response.setResult(ok());
         response.setAssessmentId(anII(sourceSystemHsaId, sparadUtredning.getUtredningId().toString()));
         return response;

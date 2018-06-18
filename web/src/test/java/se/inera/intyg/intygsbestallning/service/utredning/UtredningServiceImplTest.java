@@ -334,7 +334,7 @@ public class UtredningServiceImplTest {
     }
 
     @Test
-    public void registerNewUtredningFromRequestHealthCarePerformerForAssesment() throws HsaServiceCallException {
+    public void registerNewUtredningFromRequestPerformerForAssesment() throws HsaServiceCallException {
 
         final LocalDateTime dateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 12);
 

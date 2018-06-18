@@ -18,15 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning.dto;
 
-import com.google.common.collect.ImmutableList;
-import org.junit.Test;
-import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
-import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
-import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentType;
-
-import java.text.MessageFormat;
-import java.time.LocalDateTime;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
@@ -34,12 +25,20 @@ import static org.junit.Assert.assertNotNull;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.aCv;
 import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createFullRequest;
 
+import com.google.common.collect.ImmutableList;
+import org.junit.Test;
+import se.riv.intygsbestallning.certificate.order.requestperformerforassessment.v1.RequestPerformerForAssessmentType;
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
+
 public class AssessmentRequestTest {
 
     @Test
     public void testToConvertFromRequest() {
 
-        final RequestHealthcarePerformerForAssessmentType request = createFullRequest();
+        final RequestPerformerForAssessmentType request = createFullRequest();
         final AssessmentRequest converted = AssessmentRequest.from(request);
 
         assertEquals(UtredningsTyp.AFU, converted.getUtredningsTyp());
@@ -70,7 +69,7 @@ public class AssessmentRequestTest {
 
         final String okandUtredningsTyp = "okand-typ";
 
-        RequestHealthcarePerformerForAssessmentType request = createFullRequest();
+        RequestPerformerForAssessmentType request = createFullRequest();
         request.setCertificateType(aCv(okandUtredningsTyp, null, null));
 
         assertThatThrownBy(() -> AssessmentRequest.from(request))
@@ -86,7 +85,7 @@ public class AssessmentRequestTest {
 
         final UtredningsTyp felakrigUtredningsTyp = UtredningsTyp.LIAG;
 
-        RequestHealthcarePerformerForAssessmentType request = createFullRequest();
+        RequestPerformerForAssessmentType request = createFullRequest();
         request.setCertificateType(aCv(felakrigUtredningsTyp.name(), null, null));
 
         assertThatThrownBy(() -> AssessmentRequest.from(request))

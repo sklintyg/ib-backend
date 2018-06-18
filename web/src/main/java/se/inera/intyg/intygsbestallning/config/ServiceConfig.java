@@ -35,8 +35,8 @@ import se.inera.intyg.intygsbestallning.web.responder.OrderAssessmentResponderIm
 import se.inera.intyg.intygsbestallning.web.responder.ReportCertificateReceivalResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.ReportDeviationInteractionResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.ReportSupplementReceivalResponderImpl;
-import se.inera.intyg.intygsbestallning.web.responder.RequestHealthcarePerformerForAssessmentResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.RequestMedicalCertificateSupplementResponderImpl;
+import se.inera.intyg.intygsbestallning.web.responder.RequestPerformerForAssessmentResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.UpdateOrderResponderImpl;
 
 @Configuration
@@ -61,7 +61,7 @@ public class ServiceConfig {
     private InternalPingForConfigurationResponderImpl internalPingForConfigurationResponder;
 
     @Autowired
-    private RequestHealthcarePerformerForAssessmentResponderImpl requestHealthcarePerformerForAssessmentResponder;
+    private RequestPerformerForAssessmentResponderImpl requestPerformerForAssessmentResponder;
 
     @Autowired
     private UpdateOrderResponderImpl updateOrderResponder;
@@ -101,9 +101,9 @@ public class ServiceConfig {
     }
 
     @Bean
-    public EndpointImpl requestHealthcarePerformerForAssessmentResponderEndpoint() {
-        EndpointImpl endpoint = new EndpointImpl(bus, requestHealthcarePerformerForAssessmentResponder);
-        endpoint.publish("/request-healthcare-performer-for-assessment-responder");
+    public EndpointImpl requestPerformerForAssessmentResponderEndpoint() {
+        EndpointImpl endpoint = new EndpointImpl(bus, requestPerformerForAssessmentResponder);
+        endpoint.publish("/request-performer-for-assessment-responder");
         return endpoint;
     }
 

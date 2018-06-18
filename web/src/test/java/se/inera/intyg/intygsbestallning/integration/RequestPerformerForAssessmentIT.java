@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.intygsbestallning.integration;
 
+import static com.jayway.restassured.RestAssured.given;
+import static org.hamcrest.core.Is.is;
+
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.builder.RequestSpecBuilder;
 import org.junit.After;
@@ -28,12 +31,9 @@ import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 import se.inera.intyg.intygsbestallning.web.BaseRestIntegrationTest;
 
-import static com.jayway.restassured.RestAssured.given;
-import static org.hamcrest.core.Is.is;
+public class RequestPerformerForAssessmentIT extends BaseRestIntegrationTest {
 
-public class RequestHealthcarePerformerForAssessmentIT extends BaseRestIntegrationTest {
-
-    private static final String BASE = "Envelope.Body.RequestHealthcarePerformerForAssessmentResponse.";
+    private static final String BASE = "Envelope.Body.RequestPerformerForAssessmentResponse.";
 
     private ST requestTemplate;
 
@@ -43,13 +43,13 @@ public class RequestHealthcarePerformerForAssessmentIT extends BaseRestIntegrati
     public void setupTestSpecific() {
         RestAssured.requestSpecification = new RequestSpecBuilder().setContentType("application/xml;charset=utf-8").build();
 
-        templateGroup = new STGroupFile("integrationtests/RequestHealthcarePerformerAssessment/request1.stg");
+        templateGroup = new STGroupFile("integrationtests/RequestPerformerAssessment/request1.stg");
         requestTemplate = templateGroup.getInstanceOf("request");
     }
 
     @Test
-    public void requestHealthcarePerformerForAssessmentWorks() {
-        requestTemplate.add("data", new RequestHealthcarePerformerAssessment("20180512",
+    public void requestPerformerForAssessmentWorks() {
+        requestTemplate.add("data", new RequestPerformerAssessment("20180512",
                 "IFV1239877878-1043",
                 "Kommentar",
                 "true", "en", "Engelska", "Hasse Handläggarsson",
@@ -66,7 +66,7 @@ public class RequestHealthcarePerformerForAssessmentIT extends BaseRestIntegrati
     }
 
     @SuppressWarnings("unused")
-    private static class RequestHealthcarePerformerAssessment {
+    private static class RequestPerformerAssessment {
         public final String lastResponseDate;
         public final String vardgivareHsaId;
         public final String comment;
@@ -77,9 +77,9 @@ public class RequestHealthcarePerformerForAssessmentIT extends BaseRestIntegrati
         public final String handlaggareTelefonnummer;
         public final String handlaggareEpost;
 
-        public RequestHealthcarePerformerAssessment(String lastResponseDate, String vardgivareHsaId, String comment, String behovTolk,
-                String tolkSprakCode, String tolkSprakName, String handlaggareNamn, String handlaggareTelefonnummer,
-                String handlaggareEpost) {
+        public RequestPerformerAssessment(String lastResponseDate, String vardgivareHsaId, String comment, String behovTolk,
+                                          String tolkSprakCode, String tolkSprakName, String handlaggareNamn, String handlaggareTelefonnummer,
+                                          String handlaggareEpost) {
             this.lastResponseDate = lastResponseDate;
             this.vardgivareHsaId = vardgivareHsaId;
             this.comment = comment;

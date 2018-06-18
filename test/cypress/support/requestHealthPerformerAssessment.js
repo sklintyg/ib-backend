@@ -1,9 +1,9 @@
 
 import xml2js from 'xml2js'
 
-Cypress.Commands.add("requestHealthPerformerAssessment", (requestData) => {
+Cypress.Commands.add("requestPerformerForAssessment", (requestData) => {
 
-    var url = Cypress.env('requestHealthcarePerformerForAssessment');
+    var url = Cypress.env('requestPerformerForAssessment');
 	console.log('!!url: ' + url);
     var request = createRequest(requestData);
 	//var request = afuBody();
@@ -16,7 +16,7 @@ Cypress.Commands.add("requestHealthPerformerAssessment", (requestData) => {
                     reject(err);
                 }
                 else {
-                    var response = result['soap:Envelope']['soap:Body'][0]['ns2:RequestHealthcarePerformerForAssessmentResponse'][0];
+                    var response = result['soap:Envelope']['soap:Body'][0]['ns2:RequestPerformerForAssessmentResponse'][0];
                     assert.equal(response['ns2:result'][0].resultCode, 'OK');
                     var assessmentId = response['ns2:assessmentId'][0].extension[0];
                     cy.log(assessmentId);
@@ -29,12 +29,12 @@ Cypress.Commands.add("requestHealthPerformerAssessment", (requestData) => {
 });
 
 function createRequest(requestData) {
-    var request = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:itintegration:registry:1" xmlns:urn1="urn:riv-application:intygsbestallning:certificate:order:RequestHealthcarePerformerForAssessmentResponder:1" xmlns:urn2="urn:riv-application:intygsbestallning:certificate:order:1">' +
+    var request = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:itintegration:registry:1" xmlns:urn1="urn:riv-application:intygsbestallning:certificate:order:RequestPerformerForAssessmentResponder:1" xmlns:urn2="urn:riv-application:intygsbestallning:certificate:order:1">' +
         '<soapenv:Header>' +
             '<urn:LogicalAddress>?</urn:LogicalAddress>' +
         '</soapenv:Header>' +
             '<soapenv:Body>' +
-                '<urn1:RequestHealthcarePerformerForAssessment>' +
+                '<urn1:RequestPerformerForAssessment>' +
                     '<urn1:certificateType>' +
                         '<urn2:code>' + requestData.utredningsTyp + '</urn2:code>' +
                         '<urn2:codeSystem>b64ea353-e8f6-4832-b563-fc7d46f29548</urn2:codeSystem>' +
@@ -99,7 +99,7 @@ function createRequest(requestData) {
                             '<urn2:extension>?</urn2:extension>' +
                         '</urn2:earlierAssessmentPerformer>' +*/
                     '</urn1:citizen>' +
-                '</urn1:RequestHealthcarePerformerForAssessment>' +
+                '</urn1:RequestPerformerForAssessment>' +
             '</soapenv:Body>' +
         '</soapenv:Envelope>';
 

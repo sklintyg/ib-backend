@@ -32,20 +32,19 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.riv.intygsbestallning.certificate.order.requestperformerforassessment.v1.RequestPerformerForAssessmentResponseType;
+import se.riv.intygsbestallning.certificate.order.requestperformerforassessment.v1.RequestPerformerForAssessmentType;
+import se.riv.intygsbestallning.certificate.order.v1.AuthorityAdministrativeOfficialType;
+import se.riv.intygsbestallning.certificate.order.v1.CitizenLimitedType;
+import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
+import java.text.MessageFormat;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
-import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentResponseType;
-import se.riv.intygsbestallning.certificate.order.requesthealthcareperformerforassessment.v1.RequestHealthcarePerformerForAssessmentType;
-import se.riv.intygsbestallning.certificate.order.v1.AuthorityAdministrativeOfficialType;
-import se.riv.intygsbestallning.certificate.order.v1.CitizenLimitedType;
-import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
-
-import java.text.MessageFormat;
 
 @RunWith(MockitoJUnitRunner.class)
-public class RequestHealthcarePerformerForAssessmentResponderImplTest {
+public class RequestPerformerForAssessmentResponderImplTest {
 
     public static final String LOGICAL_ADDRESS = "logicalAddress";
 
@@ -53,17 +52,17 @@ public class RequestHealthcarePerformerForAssessmentResponderImplTest {
     private UtredningService utredningService;
 
     @InjectMocks
-    private RequestHealthcarePerformerForAssessmentResponderImpl assessmentResponder;
+    private RequestPerformerForAssessmentResponderImpl assessmentResponder;
 
     @Test
-    public void requestHealthcarePerformerForAssessmentOk() {
+    public void requestPerformerForAssessmentOk() {
 
         final Long utredningId = 1L;
 
         CitizenLimitedType citizen = new CitizenLimitedType();
         citizen.setPostalCity("11111");
 
-        RequestHealthcarePerformerForAssessmentType request = new RequestHealthcarePerformerForAssessmentType();
+        RequestPerformerForAssessmentType request = new RequestPerformerForAssessmentType();
         request.setCertificateType(aCv(AFU.name(), null, null));
         request.setAuthorityAdministrativeOfficial(new AuthorityAdministrativeOfficialType());
         request.setCitizen(citizen);
@@ -73,8 +72,8 @@ public class RequestHealthcarePerformerForAssessmentResponderImplTest {
                 .build()
         ).when(utredningService).registerNewUtredning(AssessmentRequest.from(request));
 
-        final RequestHealthcarePerformerForAssessmentResponseType response =
-                assessmentResponder.requestHealthcarePerformerForAssessment(LOGICAL_ADDRESS, request);
+        final RequestPerformerForAssessmentResponseType response =
+                assessmentResponder.requestPerformerForAssessment(LOGICAL_ADDRESS, request);
 
         assertNotNull(response);
         assertEquals(utredningId.toString(), response.getAssessmentId().getExtension());
@@ -84,25 +83,25 @@ public class RequestHealthcarePerformerForAssessmentResponderImplTest {
     }
 
     @Test
-    public void requestHealthcarePerformerForAssessmentOkandUtredningsTypNok() {
+    public void requestPerformerForAssessmentOkandUtredningsTypNok() {
 
         final String okandUtredningsTyp = "okand-typ";
-            RequestHealthcarePerformerForAssessmentType request = new RequestHealthcarePerformerForAssessmentType();
-            request.setCertificateType(aCv(okandUtredningsTyp, null, null));
+        RequestPerformerForAssessmentType request = new RequestPerformerForAssessmentType();
+        request.setCertificateType(aCv(okandUtredningsTyp, null, null));
 
-        assertThatThrownBy(() -> assessmentResponder.requestHealthcarePerformerForAssessment(LOGICAL_ADDRESS, request))
+        assertThatThrownBy(() -> assessmentResponder.requestPerformerForAssessment(LOGICAL_ADDRESS, request))
                 .isExactlyInstanceOf(IbServiceException.class)
                 .hasMessage(MessageFormat.format("CertificateType: {0} is not of a known type", okandUtredningsTyp));
     }
 
     @Test
-    public void requestHealthcarePerformerForAssessmentFelaktigUtredningsTypNok() {
+    public void requestPerformerForAssessmentFelaktigUtredningsTypNok() {
 
         final String felakrigUtredningsTyp = UtredningsTyp.LIAG.name();
-        RequestHealthcarePerformerForAssessmentType request = new RequestHealthcarePerformerForAssessmentType();
+        RequestPerformerForAssessmentType request = new RequestPerformerForAssessmentType();
         request.setCertificateType(aCv(felakrigUtredningsTyp, null, null));
 
-        assertThatThrownBy(() -> assessmentResponder.requestHealthcarePerformerForAssessment(LOGICAL_ADDRESS, request))
+        assertThatThrownBy(() -> assessmentResponder.requestPerformerForAssessment(LOGICAL_ADDRESS, request))
                 .isExactlyInstanceOf(IbServiceException.class)
                 .hasMessage(MessageFormat.format(
                         "CertificateType: {0} is not a valid a valid type. Use one of the following types: {1})",

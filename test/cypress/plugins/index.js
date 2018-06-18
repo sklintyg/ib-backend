@@ -16,7 +16,7 @@ const enviroments = {
 		"baseUrl": "https://ib-backend-route-test-intyg.app-ocpsbx1-ind.ocp.osl.basefarm.net",
 		"env": {
 			"host":"ip30",
-			"requestHealthcarePerformerForAssessment": "/services/request-healthcare-performer-for-assessment-responder"
+			"requestPerformerForAssessment": "/services/request-performer-for-assessment-responder"
 		}
 	},
 	"ip40" : {
@@ -24,7 +24,7 @@ const enviroments = {
 	},
 	"dev" : {
 		"baseUrl": "http://localhost:8991",
-		"requestHealthcarePerformerForAssessment": "/services/request-healthcare-performer-for-assessment-responder"
+		"requestPerformerForAssessment": "/services/request-performer-for-assessment-responder"
 	},
 	"demo" : {
 		"baseUrl": "placeholder"
