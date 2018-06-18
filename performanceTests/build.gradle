@@ -1,0 +1,62 @@
+apply plugin: 'scala'
+
+ext {
+    gatlingVersion = '2.3.1'
+    gatlingBaseUrl =  System.properties['ib.baseUrl'] ?: "http://localhost:8990"
+    simulation = System.properties['gatlingSimulation']
+}
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets.test.output.classesDir = new File(buildDir, "classes/scala")
+
+task gatling(dependsOn: 'build') {
+    doLast {
+        logger.lifecycle(" ---- Executing all Gatling scenarios from: ${sourceSets.test.output.classesDir} ----")
+        sourceSets.test.output.classesDirs.singleFile.eachFileRecurse { file ->
+            if (file.isFile() && !isUtilFile(file)) {
+                def gatlingScenarioClass = (file.getPath() - (sourceSets.test.output.classesDir.getPath() + File.separator) - '.class')
+                        .replace(File.separator, '.')
+                javaexec {
+                    main = 'io.gatling.app.Gatling'
+                    jvmArgs "-DbaseUrl=${gatlingBaseUrl}"
+                    classpath = sourceSets.test.runtimeClasspath
+                    args '-sf', sourceSets.test.output,
+                            '-bf', sourceSets.test.output.classesDir,
+                            '-s', gatlingScenarioClass,
+                            '-rf', 'build/reports/gatling'
+                }
+            }
+        }
+        logger.lifecycle(" ---- Done executing all Gatling scenarios ----")
+    }
+}
+
+task gatlingSingleTest(dependsOn: 'build') {
+    doLast {
+        javaexec {
+            main = 'io.gatling.app.Gatling'
+            jvmArgs "-DbaseUrl=${gatlingBaseUrl}"
+            classpath = sourceSets.test.runtimeClasspath
+            args '-sf', sourceSets.test.output,
+                    '-bf', sourceSets.test.output.classesDir,
+                    '-s', "se.inera.intyg.intygsbestallning.$simulation",
+                    '-rf', 'build/reports/gatling'
+        }
+    }
+}
+
+
+static def isUtilFile(File file) {
+    return (file.name.contains("\$")  || file.name.startsWith("Conf") || file.name.startsWith("Headers") ||
+            file.name.startsWith("Utils") || file.name.startsWith("Login"))
+}
+
+dependencies {
+    testCompile "org.scala-lang:scala-library:2.12.1"
+    testCompile "io.gatling:gatling-app:${gatlingVersion}"
+    testCompile "io.gatling.highcharts:gatling-charts-highcharts:${gatlingVersion}"
+    testCompile "org.scalaj:scalaj-http_2.12:2.4.0"
+}

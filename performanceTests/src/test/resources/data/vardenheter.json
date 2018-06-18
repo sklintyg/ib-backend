@@ -1,0 +1,27 @@
+[
+  {
+    "vardgivareHsaId" : "IFV1239877878-1041",
+    "vardenhetHsaId" : "IFV1239877878-1042",
+    "status" : "Utredning",
+    "freeText" : "Fritext",
+    "fromDate" : "2018-04-27T00:00:00",
+    "toDate" : "2018-05-27T00:00:00"
+  },
+  {
+    "vardgivareHsaId" : "IFV1239877878-1041",
+    "vardenhetHsaId" : "TSTNMT2321000156-105N",
+    "status" : "Utredning",
+    "freeText" : "Fritext",
+    "fromDate" : "2018-04-27T00:00:00",
+    "toDate" : "2018-05-27T00:00:00"
+  },
+  {
+    "vardgivareHsaId" : "IFV1239877878-1041",
+    "vardenhetHsaId" : "IFV1239877878-1043",
+    "status" : "Utredning",
+    "freeText" : "Fritext",
+    "fromDate" : "2018-04-27T00:00:00",
+    "toDate" : "2018-05-27T00:00:00"
+  }
+]
+
