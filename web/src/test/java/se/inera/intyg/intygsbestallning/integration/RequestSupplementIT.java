@@ -35,9 +35,9 @@ import java.time.format.DateTimeFormatter;
 import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.core.Is.is;
 
-public class RequestMedicalCertificateSupplementIT extends BaseRestIntegrationTest {
+public class RequestSupplementIT extends BaseRestIntegrationTest {
 
-    private static final String BASE = "Envelope.Body.RequestMedicalCertificateSupplementResponse.";
+    private static final String BASE = "Envelope.Body.RequestSupplementResponse.";
 
     private ST requestTemplate;
 
@@ -47,14 +47,14 @@ public class RequestMedicalCertificateSupplementIT extends BaseRestIntegrationTe
     public void setupTestSpecific() {
         RestAssured.requestSpecification = new RequestSpecBuilder().setContentType("application/xml;charset=utf-8").build();
 
-        templateGroup = new STGroupFile("integrationtests/RequestMedicalCertificateSupplement/request1.stg");
+        templateGroup = new STGroupFile("integrationtests/RequestSupplement/request1.stg");
         requestTemplate = templateGroup.getInstanceOf("request");
     }
 
     @Test
-    public void requestRequestMedicalCertificateSupplementWorks() {
+    public void requestRequestSupplementWorks() {
         // First, utilize testability API to inject an Utredning ready to be supplemented.
-        String json = loadJson("integrationtests/RequestMedicalCertificateSupplement/utredning.json");
+        String json = loadJson("integrationtests/RequestSupplement/utredning.json");
 
         ResponseBodyExtractionOptions body = given().body(json).when().contentType("application/json")
                 .post("/api/test/utredningar").then()
@@ -64,9 +64,9 @@ public class RequestMedicalCertificateSupplementIT extends BaseRestIntegrationTe
         Integer utredningId = body.jsonPath().get("entity.utredningId");
 
         requestTemplate.add("data",
-                new RequestMedicalCertificateSupplement("" + utredningId, LocalDate.now().format(DateTimeFormatter.ISO_DATE)));
+                new RequestSupplement("" + utredningId, LocalDate.now().format(DateTimeFormatter.ISO_DATE)));
 
-        given().body(requestTemplate.render()).when().post("/services/request-medical-certificate-supplement-responder").then()
+        given().body(requestTemplate.render()).when().post("/services/request-supplement-responder").then()
                 .statusCode(200).rootPath(BASE)
                 .body("result.resultCode", is("OK"))
                 .body("assessmentId.extension", Matchers.notNullValue());
@@ -76,11 +76,11 @@ public class RequestMedicalCertificateSupplementIT extends BaseRestIntegrationTe
     }
 
     @SuppressWarnings("unused")
-    private static class RequestMedicalCertificateSupplement {
+    private static class RequestSupplement {
         public final String assessmentId;
         public final String sistaDatum;
 
-        public RequestMedicalCertificateSupplement(String assessmentId, String sistaDatum) {
+        public RequestSupplement(String assessmentId, String sistaDatum) {
             this.assessmentId = assessmentId;
             this.sistaDatum = sistaDatum;
         }

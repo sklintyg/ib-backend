@@ -18,26 +18,25 @@
  */
 package se.inera.intyg.intygsbestallning.web.responder;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import se.inera.intyg.intygsbestallning.service.utredning.KompletteringService;
-import se.riv.intygsbestallning.certificate.order.requestmedicalcertificatesupplement.v1.RequestMedicalCertificateSupplementResponseType;
-import se.riv.intygsbestallning.certificate.order.requestmedicalcertificatesupplement.v1.RequestMedicalCertificateSupplementType;
+import se.riv.intygsbestallning.certificate.order.requestsupplement.v1.RequestSupplementResponseType;
+import se.riv.intygsbestallning.certificate.order.requestsupplement.v1.RequestSupplementType;
 import se.riv.intygsbestallning.certificate.order.v1.IIType;
 import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import se.inera.intyg.intygsbestallning.service.utredning.KompletteringService;
 
 @RunWith(MockitoJUnitRunner.class)
-public class RequestMedicalCertificateSupplementResponderImplTest {
+public class RequestSupplementResponderImplTest {
 
     private static final String ERROR_MESSAGE = "some error message";
 
@@ -45,48 +44,48 @@ public class RequestMedicalCertificateSupplementResponderImplTest {
     private KompletteringService kompletteringService;
 
     @InjectMocks
-    private RequestMedicalCertificateSupplementResponderImpl testee;
+    private RequestSupplementResponderImpl testee;
 
     @Test
     public void testOk() {
-        when(kompletteringService.registerNewKomplettering(any(RequestMedicalCertificateSupplementType.class))).thenReturn(1L);
-        RequestMedicalCertificateSupplementResponseType response = testee.requestMedicalCertificateSupplement("", buildRequest());
+        when(kompletteringService.registerNewKomplettering(any(RequestSupplementType.class))).thenReturn(1L);
+        RequestSupplementResponseType response = testee.requestSupplement("", buildRequest());
         assertEquals(ResultCodeType.OK, response.getResult().getResultCode());
     }
 
     @Test
     public void testWhenLastDateForSupplementReceivalIsNull() {
-        when(kompletteringService.registerNewKomplettering(any(RequestMedicalCertificateSupplementType.class))).thenReturn(1L);
+        when(kompletteringService.registerNewKomplettering(any(RequestSupplementType.class))).thenReturn(1L);
 
-        RequestMedicalCertificateSupplementType request = buildRequest();
+        RequestSupplementType request = buildRequest();
         buildRequest().setLastDateForSupplementReceival(null);
 
-        RequestMedicalCertificateSupplementResponseType response = testee.requestMedicalCertificateSupplement("", request);
+        RequestSupplementResponseType response = testee.requestSupplement("", request);
         assertEquals(ResultCodeType.OK, response.getResult().getResultCode());
     }
 
     @Test
     public void testExceptionsAreMappedOntoError() {
-        when(kompletteringService.registerNewKomplettering(any(RequestMedicalCertificateSupplementType.class))).thenThrow(new IllegalStateException(ERROR_MESSAGE));
-        RequestMedicalCertificateSupplementResponseType response = testee.requestMedicalCertificateSupplement("", buildRequest());
+        when(kompletteringService.registerNewKomplettering(any(RequestSupplementType.class))).thenThrow(new IllegalStateException(ERROR_MESSAGE));
+        RequestSupplementResponseType response = testee.requestSupplement("", buildRequest());
         assertEquals(ERROR_MESSAGE, response.getResult().getResultText());
         assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
     }
 
     @Test
     public void testExceptionsWhenLastDateForSupplementReceivalIsNotParsable() {
-        when(kompletteringService.registerNewKomplettering(any(RequestMedicalCertificateSupplementType.class))).thenThrow(new IllegalStateException(ERROR_MESSAGE));
+        when(kompletteringService.registerNewKomplettering(any(RequestSupplementType.class))).thenThrow(new IllegalStateException(ERROR_MESSAGE));
 
-        RequestMedicalCertificateSupplementType request = buildRequest();
+        RequestSupplementType request = buildRequest();
         buildRequest().setLastDateForSupplementReceival("2018-06-aa"); // bad date
 
-        RequestMedicalCertificateSupplementResponseType response = testee.requestMedicalCertificateSupplement("", request);
+        RequestSupplementResponseType response = testee.requestSupplement("", request);
         assertEquals(ERROR_MESSAGE, response.getResult().getResultText());
         assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
     }
 
-    private RequestMedicalCertificateSupplementType buildRequest() {
-        RequestMedicalCertificateSupplementType req = new RequestMedicalCertificateSupplementType();
+    private RequestSupplementType buildRequest() {
+        RequestSupplementType req = new RequestSupplementType();
         IIType id = new IIType();
         id.setExtension("1");
         req.setAssessmentId(id);

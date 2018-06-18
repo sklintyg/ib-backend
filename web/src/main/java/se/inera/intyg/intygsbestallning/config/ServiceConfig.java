@@ -35,8 +35,8 @@ import se.inera.intyg.intygsbestallning.web.responder.OrderAssessmentResponderIm
 import se.inera.intyg.intygsbestallning.web.responder.ReportCertificateReceivalResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.ReportDeviationInteractionResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.ReportSupplementReceivalResponderImpl;
-import se.inera.intyg.intygsbestallning.web.responder.RequestMedicalCertificateSupplementResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.RequestPerformerForAssessmentResponderImpl;
+import se.inera.intyg.intygsbestallning.web.responder.RequestSupplementResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.UpdateOrderResponderImpl;
 
 @Configuration
@@ -67,7 +67,7 @@ public class ServiceConfig {
     private UpdateOrderResponderImpl updateOrderResponder;
 
     @Autowired
-    private RequestMedicalCertificateSupplementResponderImpl requestMedicalCertificateSupplementResponder;
+    private RequestSupplementResponderImpl requestSupplementResponder;
 
     @Autowired
     private ReportSupplementReceivalResponderImpl reportSupplementReceivalResponder;
@@ -116,8 +116,8 @@ public class ServiceConfig {
 
     @Bean
     public EndpointImpl requestCertificateSupplementEndpoint() {
-        EndpointImpl endpoint = new EndpointImpl(bus, requestMedicalCertificateSupplementResponder);
-        endpoint.publish("/request-medical-certificate-supplement-responder");
+        EndpointImpl endpoint = new EndpointImpl(bus, requestSupplementResponder);
+        endpoint.publish("/request-supplement-responder");
         return endpoint;
     }
 

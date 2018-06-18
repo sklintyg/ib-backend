@@ -1,12 +1,12 @@
 delimiters "$", "$"
 
 request(data) ::= <<
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:itintegration:registry:1" xmlns:urn1="urn:riv-application:intygsbestallning:certificate:order:RequestMedicalCertificateSupplementResponder:1" xmlns:urn2="urn:riv-application:intygsbestallning:certificate:order:1">
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:itintegration:registry:1" xmlns:urn1="urn:riv-application:intygsbestallning:certificate:order:RequestSupplementResponder:1" xmlns:urn2="urn:riv-application:intygsbestallning:certificate:order:1">
    <soapenv:Header>
       <urn:LogicalAddress>123</urn:LogicalAddress>
    </soapenv:Header>
    <soapenv:Body>
-      <urn1:RequestMedicalCertificateSupplement>
+      <urn1:RequestSupplement>
          <urn1:assessmentId>
             <urn2:root>123</urn2:root>
             <urn2:extension>$data.assessmentId$</urn2:extension>
@@ -15,7 +15,7 @@ request(data) ::= <<
          <!--Optional:-->
          <urn1:lastDateForSupplementReceival>$data.sistaDatum$</urn1:lastDateForSupplementReceival>
          <!--You may enter ANY elements at this point-->
-      </urn1:RequestMedicalCertificateSupplement>
+      </urn1:RequestSupplement>
    </soapenv:Body>
 </soapenv:Envelope>
 >>

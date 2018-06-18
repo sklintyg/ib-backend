@@ -44,7 +44,7 @@ public class HandlingControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_VARDADMIN);
 
         // Set up Utredning.
-        String json = loadJson("integrationtests/RequestMedicalCertificateSupplement/utredning.json");
+        String json = loadJson("integrationtests/RequestSupplement/utredning.json");
 
         ResponseBodyExtractionOptions body = given().body(json).when().contentType("application/json")
                 .post("/api/test/utredningar").then()

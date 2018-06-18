@@ -23,6 +23,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import se.riv.intygsbestallning.certificate.order.requestsupplement.v1.RequestSupplementType;
+import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Comparator;
+import java.util.Optional;
+import java.util.function.Predicate;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
@@ -38,16 +47,6 @@ import se.inera.intyg.intygsbestallning.service.pdl.dto.UtredningPdlLoggable;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.komplettering.RegisterFragestallningMottagenRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.komplettering.RegisterSkickadKompletteringRequest;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportKompletteringMottagenRequest;
-import se.riv.intygsbestallning.certificate.order.requestmedicalcertificatesupplement.v1.RequestMedicalCertificateSupplementType;
-
-import java.text.MessageFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.Comparator;
-import java.util.Optional;
-import java.util.function.Predicate;
 
 @Service
 @Transactional
@@ -70,7 +69,7 @@ public class KompletteringServiceImpl extends BaseUtredningService implements Ko
     }
 
     @Override
-    public long registerNewKomplettering(RequestMedicalCertificateSupplementType request) {
+    public long registerNewKomplettering(RequestSupplementType request) {
         try {
             Long assessmentId = Long.parseLong(request.getAssessmentId().getExtension());
             Optional<Utredning> utredningOptional = utredningRepository.findById(assessmentId);

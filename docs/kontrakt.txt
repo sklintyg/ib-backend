@@ -23,6 +23,6 @@
 │                                         │           │
 │ ReportContinuationDecision              │ Responder │
 │                                         │           │
-│ RequestMedicalCertificateSupplement     │ Responder │
+│ RequestSupplement                       │ Responder │
 │                                         │           │
 ┕━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┷━━━━━━━━━━━┙

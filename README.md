@@ -52,7 +52,7 @@ De körs inte automatiskt vid bygge av applikationen utan man behöver köra dem
     
 Man kan exekvera enskilda tester genom exempelvis:
 
-    $ ./gradlew restassured --tests *RequestMedicalCertificateSupplementIT.requestRequestMedicalCertificateSupplementWorks
+    $ ./gradlew restassured --tests *RequestSupplementIT.requestRequestSupplementWorks
     
 För att debugga själva testet, lägg på --debug-jvm dvs:
 

@@ -18,6 +18,20 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.powermock.api.mockito.PowerMockito.when;
+import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
+import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
+import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
+
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,13 +39,20 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.riv.intygsbestallning.certificate.order.reportsupplementreceival.v1.ReportSupplementReceivalType;
+import se.riv.intygsbestallning.certificate.order.requestsupplement.v1.RequestSupplementType;
+import se.riv.intygsbestallning.certificate.order.v1.IIType;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Optional;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
@@ -43,26 +64,6 @@ import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.komplettering.RegisterFragestallningMottagenRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.komplettering.RegisterSkickadKompletteringRequest;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportKompletteringMottagenRequest;
-import se.riv.intygsbestallning.certificate.order.reportsupplementreceival.v1.ReportSupplementReceivalType;
-import se.riv.intygsbestallning.certificate.order.requestmedicalcertificatesupplement.v1.RequestMedicalCertificateSupplementType;
-import se.riv.intygsbestallning.certificate.order.v1.IIType;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
-import static org.powermock.api.mockito.PowerMockito.when;
-import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
-import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
-import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KompletteringServiceImplTest {
@@ -235,7 +236,7 @@ public class KompletteringServiceImplTest {
                 .findById(TestDataGen.getUtredningId());
 
         RegisterFragestallningMottagenRequest request = new RegisterFragestallningMottagenRequest();
-        request.setFragestallningMottagenDatum(LocalDate.of(2018,11,11));
+        request.setFragestallningMottagenDatum(LocalDate.of(2018, 11, 11));
         kompletteringService.registerFragestallningMottagen(TestDataGen.getUtredningId(), request);
 
         verify(logService).log(any(PDLLoggable.class), eq(PdlLogType.UTREDNING_UPPDATERAD));
@@ -256,7 +257,7 @@ public class KompletteringServiceImplTest {
                 .findById(TestDataGen.getUtredningId());
 
         RegisterFragestallningMottagenRequest request = new RegisterFragestallningMottagenRequest();
-        request.setFragestallningMottagenDatum(LocalDate.of(2018,11,11));
+        request.setFragestallningMottagenDatum(LocalDate.of(2018, 11, 11));
         kompletteringService.registerFragestallningMottagen(TestDataGen.getUtredningId(), request);
     }
 
@@ -268,7 +269,7 @@ public class KompletteringServiceImplTest {
                 .findById(TestDataGen.getUtredningId());
 
         RegisterFragestallningMottagenRequest request = new RegisterFragestallningMottagenRequest();
-        request.setFragestallningMottagenDatum(LocalDate.of(2018,11,11));
+        request.setFragestallningMottagenDatum(LocalDate.of(2018, 11, 11));
         assertThatThrownBy(() -> kompletteringService.registerFragestallningMottagen(TestDataGen.getUtredningId(), request))
                 .isExactlyInstanceOf(IbServiceException.class)
                 .hasFieldOrPropertyWithValue("errorCode", IbErrorCodeEnum.BAD_STATE);
@@ -285,7 +286,7 @@ public class KompletteringServiceImplTest {
                 .findById(TestDataGen.getUtredningId());
 
         RegisterFragestallningMottagenRequest request = new RegisterFragestallningMottagenRequest();
-        request.setFragestallningMottagenDatum(LocalDate.of(2018,11,11));
+        request.setFragestallningMottagenDatum(LocalDate.of(2018, 11, 11));
         kompletteringService.registerFragestallningMottagen(TestDataGen.getUtredningId(), request);
     }
 
@@ -299,7 +300,7 @@ public class KompletteringServiceImplTest {
                 .findById(TestDataGen.getUtredningId());
 
         RegisterSkickadKompletteringRequest request = new RegisterSkickadKompletteringRequest();
-        request.setKompletteringSkickadDatum(LocalDate.of(2018,11,11));
+        request.setKompletteringSkickadDatum(LocalDate.of(2018, 11, 11));
         kompletteringService.registerSkickadKomplettering(TestDataGen.getUtredningId(), request);
 
         verify(logService).log(any(PDLLoggable.class), eq(PdlLogType.UTREDNING_UPPDATERAD));
@@ -320,7 +321,7 @@ public class KompletteringServiceImplTest {
                 .findById(TestDataGen.getUtredningId());
 
         RegisterSkickadKompletteringRequest request = new RegisterSkickadKompletteringRequest();
-        request.setKompletteringSkickadDatum(LocalDate.of(2018,11,11));
+        request.setKompletteringSkickadDatum(LocalDate.of(2018, 11, 11));
         kompletteringService.registerSkickadKomplettering(TestDataGen.getUtredningId(), request);
     }
 
@@ -332,7 +333,7 @@ public class KompletteringServiceImplTest {
                 .findById(TestDataGen.getUtredningId());
 
         RegisterSkickadKompletteringRequest request = new RegisterSkickadKompletteringRequest();
-        request.setKompletteringSkickadDatum(LocalDate.of(2018,11,11));
+        request.setKompletteringSkickadDatum(LocalDate.of(2018, 11, 11));
         assertThatThrownBy(() -> kompletteringService.registerSkickadKomplettering(TestDataGen.getUtredningId(), request))
                 .isExactlyInstanceOf(IbServiceException.class)
                 .hasFieldOrPropertyWithValue("errorCode", IbErrorCodeEnum.BAD_STATE);
@@ -349,12 +350,12 @@ public class KompletteringServiceImplTest {
                 .findById(TestDataGen.getUtredningId());
 
         RegisterSkickadKompletteringRequest request = new RegisterSkickadKompletteringRequest();
-        request.setKompletteringSkickadDatum(LocalDate.of(2018,11,11));
+        request.setKompletteringSkickadDatum(LocalDate.of(2018, 11, 11));
         kompletteringService.registerSkickadKomplettering(TestDataGen.getUtredningId(), request);
     }
 
-    private RequestMedicalCertificateSupplementType buildRequest() {
-        RequestMedicalCertificateSupplementType req = new RequestMedicalCertificateSupplementType();
+    private RequestSupplementType buildRequest() {
+        RequestSupplementType req = new RequestSupplementType();
         IIType id = new IIType();
         id.setExtension("1");
         req.setAssessmentId(id);

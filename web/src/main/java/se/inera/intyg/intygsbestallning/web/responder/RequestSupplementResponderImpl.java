@@ -18,38 +18,37 @@
  */
 package se.inera.intyg.intygsbestallning.web.responder;
 
-import com.google.common.base.Preconditions;
-import org.apache.cxf.annotations.SchemaValidation;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import se.inera.intyg.intygsbestallning.service.utredning.KompletteringService;
-import se.riv.intygsbestallning.certificate.order.requestmedicalcertificatesupplement.v1.RequestMedicalCertificateSupplementResponseType;
-import se.riv.intygsbestallning.certificate.order.requestmedicalcertificatesupplement.v1.RequestMedicalCertificateSupplementType;
-import se.riv.intygsbestallning.certificate.order.requestmedicalcertificatesupplement.v1.rivtabp21.RequestMedicalCertificateSupplementResponderInterface;
-
-import java.util.Objects;
-
 import static se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil.error;
 import static se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil.ok;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
 
+import com.google.common.base.Preconditions;
+import org.apache.cxf.annotations.SchemaValidation;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import se.riv.intygsbestallning.certificate.order.requestsupplement.v1.RequestSupplementResponseType;
+import se.riv.intygsbestallning.certificate.order.requestsupplement.v1.RequestSupplementType;
+import se.riv.intygsbestallning.certificate.order.requestsupplement.v1.rivtabp21.RequestSupplementResponderInterface;
+import java.util.Objects;
+import se.inera.intyg.intygsbestallning.service.utredning.KompletteringService;
+
 @Service
 @SchemaValidation
-public class RequestMedicalCertificateSupplementResponderImpl implements RequestMedicalCertificateSupplementResponderInterface {
+public class RequestSupplementResponderImpl implements RequestSupplementResponderInterface {
 
     @Value("${source.system.hsaid:}")
     private String sourceSystemHsaId;
 
     private final KompletteringService kompletteringService;
 
-    public RequestMedicalCertificateSupplementResponderImpl(final KompletteringService kompletteringService) {
+    public RequestSupplementResponderImpl(final KompletteringService kompletteringService) {
         this.kompletteringService = kompletteringService;
     }
 
     @Override
-    public RequestMedicalCertificateSupplementResponseType requestMedicalCertificateSupplement(
-            final String logicalAddress, final RequestMedicalCertificateSupplementType request) {
-        RequestMedicalCertificateSupplementResponseType response = new RequestMedicalCertificateSupplementResponseType();
+    public RequestSupplementResponseType requestSupplement(
+            final String logicalAddress, final RequestSupplementType request) {
+        RequestSupplementResponseType response = new RequestSupplementResponseType();
 
         Preconditions.checkArgument(null != logicalAddress);
         Preconditions.checkArgument(null != request);
