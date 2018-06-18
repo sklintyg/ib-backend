@@ -60,8 +60,10 @@ public class RegistreradeVardenheterBootstrapBean {
         try {
             RegistreradVardenhet registreradVardenhet = new CustomObjectMapper().readValue(res.getInputStream(),
                     RegistreradVardenhet.class);
-            if (registreradVardenhetRepository.findByVardgivareHsaIdAndVardenhetHsaId(registreradVardenhet.getVardgivareHsaId(), registreradVardenhet.getVardenhetHsaId()).isPresent()) {
-                LOG.info("Vardenhet " + registreradVardenhet.getVardenhetHsaId() + " already added to vardgivare " + registreradVardenhet.getVardgivareHsaId() + " - skipping add");
+            if (registreradVardenhetRepository.findByVardgivareHsaIdAndVardenhetHsaId(registreradVardenhet.getVardgivareHsaId(),
+                    registreradVardenhet.getVardenhetHsaId()).isPresent()) {
+                LOG.info("Vardenhet " + registreradVardenhet.getVardenhetHsaId() + " already added to vardgivare "
+                        + registreradVardenhet.getVardgivareHsaId() + " - skipping add");
             } else {
                 registreradVardenhetRepository.save(registreradVardenhet);
             }
