@@ -31,8 +31,8 @@ input::-ms-clear {
   width: 100%;
   overflow-y: auto;
   max-width: $ib-max-content-width;
-  margin: 0 auto;
-  padding-bottom: 20px;
+  margin: 0 auto 20px auto;
+  padding: 0 30px;
 }
 
 .ib-body {
