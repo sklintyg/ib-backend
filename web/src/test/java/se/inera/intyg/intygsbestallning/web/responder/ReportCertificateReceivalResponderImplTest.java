@@ -18,25 +18,26 @@
  */
 package se.inera.intyg.intygsbestallning.web.responder;
 
-import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import se.inera.intyg.intygsbestallning.service.utlatande.UtlatandeServiceImpl;
-import se.inera.intyg.intygsbestallning.web.responder.dto.ReportUtlatandeMottagetRequest;
-import se.riv.intygsbestallning.certificate.order.reportcertificatereceival.v1.ReportCertificateReceivalResponseType;
-import se.riv.intygsbestallning.certificate.order.reportcertificatereceival.v1.ReportCertificateReceivalType;
-import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import se.riv.intygsbestallning.certificate.order.reportcertificatereceival.v1.ReportCertificateReceivalResponseType;
+import se.riv.intygsbestallning.certificate.order.reportcertificatereceival.v1.ReportCertificateReceivalType;
+import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
+import se.inera.intyg.intygsbestallning.service.utlatande.UtlatandeServiceImpl;
+import se.inera.intyg.intygsbestallning.web.responder.dto.ReportUtlatandeMottagetRequest;
+import se.inera.intyg.intygsbestallning.web.responder.resulthandler.ResultFactory;
+
 @RunWith(MockitoJUnitRunner.class)
-public class ReportCertificateReceivalResponderImplTest {
+public class ReportCertificateReceivalResponderImplTest implements ResultFactory {
 
     @Mock
     private UtlatandeServiceImpl utlatandeService;
@@ -69,23 +70,28 @@ public class ReportCertificateReceivalResponderImplTest {
         type.setReceivedDate(MOTTAGET_DATUM);
         type.setLastDateForSupplementRequest(SISTA_DATUM);
 
-        Assertions.assertThatThrownBy(() -> responder.reportCertificateReceival(null, type))
-                .isExactlyInstanceOf(IllegalArgumentException.class);
+        final ReportCertificateReceivalResponseType response = responder.reportCertificateReceival(null, type);
+
+        assertThat(response.getResult().getResultCode()).isEqualTo(ResultCodeType.ERROR);
+        assertThat(response.getResult().getResultText()).isEqualTo(LOGICAL_ADDRESS);
     }
 
     @Test
     public void reportCertificateReceivalNoRequest() {
 
-        Assertions.assertThatThrownBy(() -> responder.reportCertificateReceival("address", null))
-                .isExactlyInstanceOf(IllegalArgumentException.class);
+        final ReportCertificateReceivalResponseType response = responder.reportCertificateReceival("address", null);
+
+        assertThat(response.getResult().getResultCode()).isEqualTo(ResultCodeType.ERROR);
+        assertThat(response.getResult().getResultText()).isEqualTo(REQUEST);
     }
 
     @Test
     public void reportCertificateReceivalEmptyRequest() {
 
         ReportCertificateReceivalType type = new ReportCertificateReceivalType();
+        final ReportCertificateReceivalResponseType response = responder.reportCertificateReceival("address", type);
 
-        Assertions.assertThatThrownBy(() -> responder.reportCertificateReceival(null, type))
-                .isExactlyInstanceOf(IllegalArgumentException.class);
+        assertThat(response.getResult().getResultCode()).isEqualTo(ResultCodeType.ERROR);
+        assertThat(response.getResult().getResultText()).isEqualTo("AssessmentId must be defined");
     }
 }

@@ -16,26 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.common.util;
+package se.inera.intyg.intygsbestallning.web.responder.resulthandler;
 
-import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
 import se.riv.intygsbestallning.certificate.order.v1.ResultType;
+import se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil;
 
-public final class ResultTypeUtil {
+public interface ResultFactory {
 
-    private ResultTypeUtil() {
+    String LOGICAL_ADDRESS = "LogicalAddress needs to be defined";
+    String REQUEST = "Request need to be defined";
+
+    default ResultType toResultTypeOK() {
+        return ResultTypeUtil.ok();
     }
 
-    public static ResultType ok() {
-        ResultType result = new ResultType();
-        result.setResultCode(ResultCodeType.OK);
-        return result;
-    }
-
-    public static ResultType error(String text) {
-        ResultType result = new ResultType();
-        result.setResultCode(ResultCodeType.ERROR);
-        result.setResultText(text);
-        return result;
+    default ResultType toResultTypeError(final Exception exception) {
+        return ResultTypeUtil.error(exception.getMessage());
     }
 }

@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.web.responder;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -41,8 +42,6 @@ import se.riv.intygsbestallning.certificate.order.v1.CitizenType;
 import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
 import java.lang.reflect.Field;
 import java.util.Objects;
-import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
-import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 
@@ -76,7 +75,7 @@ public class OrderAssessmentResponderImplTest {
         request.setCitizen(citizen);
         request.setLastDateForCertificateReceival("20180101");
         request.setOrderDate("20180101");
-        OrderAssessmentResponseType response = responder.orderAssessment("", request);
+        OrderAssessmentResponseType response = responder.orderAssessment("address", request);
 
         assertNotNull(response);
         assertEquals(ResultCodeType.OK, response.getResult().getResultCode());
@@ -101,7 +100,7 @@ public class OrderAssessmentResponderImplTest {
         CitizenType citizen = new CitizenType();
         citizen.setPersonalIdentity(anII(null, "personnummer"));
         request.setCitizen(citizen);
-        OrderAssessmentResponseType response = responder.orderAssessment("", request);
+        OrderAssessmentResponseType response = responder.orderAssessment("address", request);
 
         assertNotNull(response);
         assertEquals(ResultCodeType.OK, response.getResult().getResultCode());
@@ -109,16 +108,14 @@ public class OrderAssessmentResponderImplTest {
         assertEquals(utredningId.toString(), response.getAssessmentId().getExtension());
     }
 
-    @Test(expected = IbServiceException.class)
+    @Test
     public void orderAssessmentFail() {
-        try {
-            OrderAssessmentType request = new OrderAssessmentType();
-            request.setCertificateType(aCv("NonExistingCode", null, null));
-            responder.orderAssessment("", request);
-        } catch (IbServiceException ise) {
-            assertEquals(IbErrorCodeEnum.BAD_REQUEST, ise.getErrorCode());
-            assertNotNull(ise.getMessage());
-            throw ise;
-        }
+
+        OrderAssessmentType request = new OrderAssessmentType();
+        request.setCertificateType(aCv("NonExistingCode", null, null));
+        final OrderAssessmentResponseType response = responder.orderAssessment("address", request);
+
+        assertThat(response.getResult().getResultCode()).isEqualTo(ResultCodeType.ERROR);
+        assertThat(response.getResult().getResultText()).isEqualTo("CertificateType is not of a known type");
     }
 }

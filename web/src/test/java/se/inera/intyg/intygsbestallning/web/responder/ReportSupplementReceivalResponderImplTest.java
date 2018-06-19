@@ -18,22 +18,25 @@
  */
 package se.inera.intyg.intygsbestallning.web.responder;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.riv.intygsbestallning.certificate.order.reportsupplementreceival.v1.ReportSupplementReceivalResponseType;
+import se.riv.intygsbestallning.certificate.order.reportsupplementreceival.v1.ReportSupplementReceivalType;
+import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
 import se.inera.intyg.intygsbestallning.service.utredning.KompletteringServiceImpl;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportKompletteringMottagenRequest;
-import se.riv.intygsbestallning.certificate.order.reportsupplementreceival.v1.ReportSupplementReceivalType;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
+import se.inera.intyg.intygsbestallning.web.responder.resulthandler.ResultFactory;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ReportSupplementReceivalResponderImplTest {
+public class ReportSupplementReceivalResponderImplTest implements ResultFactory {
 
     @Mock
     private KompletteringServiceImpl kompletteringService;
@@ -80,13 +83,16 @@ public class ReportSupplementReceivalResponderImplTest {
 
         final ReportKompletteringMottagenRequest request = ReportKompletteringMottagenRequest.from(type);
 
-        assertThatThrownBy(() -> responder.reportSupplementReceival(null, type))
-                .isExactlyInstanceOf(IllegalArgumentException.class);
+        final ReportSupplementReceivalResponseType response = responder.reportSupplementReceival(null, type);
+
+        assertThat(response.getResult().getResultCode()).isEqualTo(ResultCodeType.ERROR);
+        assertThat(response.getResult().getResultText()).isEqualTo(LOGICAL_ADDRESS);
     }
 
     @Test
     public void reportSupplementReceivalNoTypeNok() {
-        assertThatThrownBy(() -> responder.reportSupplementReceival("logicalAddress", null))
-                .isExactlyInstanceOf(IllegalArgumentException.class);
+        final ReportSupplementReceivalResponseType response = responder.reportSupplementReceival("logicalAddress", null);
+        assertThat(response.getResult().getResultCode()).isEqualTo(ResultCodeType.ERROR);
+        assertThat(response.getResult().getResultText()).isEqualTo(REQUEST);
     }
 }

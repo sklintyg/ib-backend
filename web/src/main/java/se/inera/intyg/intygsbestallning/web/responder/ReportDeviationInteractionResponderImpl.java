@@ -21,13 +21,12 @@ package se.inera.intyg.intygsbestallning.web.responder;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.lang.invoke.MethodHandles.lookup;
 import static java.util.Objects.nonNull;
-import static se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil.ok;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.ReportDeviationResponseType;
@@ -36,33 +35,43 @@ import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.rivtabp21.R
 import se.inera.intyg.intygsbestallning.persistence.model.Avvikelse;
 import se.inera.intyg.intygsbestallning.service.besok.BesokService;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
+import se.inera.intyg.intygsbestallning.web.responder.resulthandler.ResultFactory;
 
 @Service
 @SchemaValidation
-public class ReportDeviationInteractionResponderImpl implements ReportDeviationResponderInterface {
-
-    private final Logger log = LoggerFactory.getLogger(lookup().lookupClass());
-
-    @Autowired
-    private BesokService besokService;
+public class ReportDeviationInteractionResponderImpl implements ReportDeviationResponderInterface, ResultFactory {
 
     @Value("${source.system.hsaid:}")
     private String sourceSystemHsaId;
+
+    private final BesokService besokService;
+
+    private final Logger log = LoggerFactory.getLogger(lookup().lookupClass());
+
+    public ReportDeviationInteractionResponderImpl(final BesokService besokService) {
+        this.besokService = besokService;
+    }
 
     @Override
     public ReportDeviationResponseType reportDeviation(
             final String logicalAddress, final ReportDeviationType request) {
 
-        log.info("ReportDeviationResponseType received request");
+        log.info("Received ReportDeviationInteraction request");
 
-        checkArgument(nonNull(logicalAddress));
-        checkArgument(nonNull(request));
+        try {
+            checkArgument(StringUtils.isNotEmpty(logicalAddress), LOGICAL_ADDRESS);
+            checkArgument(nonNull(request), REQUEST);
 
-        final Avvikelse avvikelse = besokService.reportBesokAvvikelse(ReportBesokAvvikelseRequest.from(request));
+            final Avvikelse avvikelse = besokService.reportBesokAvvikelse(ReportBesokAvvikelseRequest.from(request));
 
-        ReportDeviationResponseType response = new ReportDeviationResponseType();
-        response.setDeviationId(anII(sourceSystemHsaId, avvikelse.getAvvikelseId().toString()));
-        response.setResult(ok());
-        return response;
+            ReportDeviationResponseType response = new ReportDeviationResponseType();
+            response.setDeviationId(anII(sourceSystemHsaId, avvikelse.getAvvikelseId().toString()));
+            response.setResult(toResultTypeOK());
+            return response;
+        } catch (final Exception e) {
+            ReportDeviationResponseType response = new ReportDeviationResponseType();
+            response.setResult(toResultTypeError(e));
+            return response;
+        }
     }
 }

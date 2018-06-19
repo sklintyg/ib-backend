@@ -18,44 +18,53 @@
  */
 package se.inera.intyg.intygsbestallning.web.responder;
 
-import org.apache.cxf.annotations.SchemaValidation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import se.inera.intyg.intygsbestallning.service.utredning.KompletteringService;
-import se.inera.intyg.intygsbestallning.web.responder.dto.ReportKompletteringMottagenRequest;
-import se.riv.intygsbestallning.certificate.order.reportsupplementreceival.v1.ReportSupplementReceivalResponseType;
-import se.riv.intygsbestallning.certificate.order.reportsupplementreceival.v1.ReportSupplementReceivalType;
-import se.riv.intygsbestallning.certificate.order.reportsupplementreceival.v1.rivtabp21.ReportSupplementReceivalResponderInterface;
-
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.lang.invoke.MethodHandles.lookup;
 import static java.util.Objects.nonNull;
-import static se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil.ok;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
+
+import org.apache.cxf.annotations.SchemaValidation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import se.riv.intygsbestallning.certificate.order.reportsupplementreceival.v1.ReportSupplementReceivalResponseType;
+import se.riv.intygsbestallning.certificate.order.reportsupplementreceival.v1.ReportSupplementReceivalType;
+import se.riv.intygsbestallning.certificate.order.reportsupplementreceival.v1.rivtabp21.ReportSupplementReceivalResponderInterface;
+import se.inera.intyg.intygsbestallning.service.utredning.KompletteringService;
+import se.inera.intyg.intygsbestallning.web.responder.dto.ReportKompletteringMottagenRequest;
+import se.inera.intyg.intygsbestallning.web.responder.resulthandler.ResultFactory;
 
 @Service
 @SchemaValidation
-public class ReportSupplementReceivalResponderImpl implements ReportSupplementReceivalResponderInterface {
+public class ReportSupplementReceivalResponderImpl implements ReportSupplementReceivalResponderInterface, ResultFactory {
+
+    private final KompletteringService kompletteringService;
 
     private final Logger log = LoggerFactory.getLogger(lookup().lookupClass());
 
-    @Autowired
-    private KompletteringService kompletteringService;
+    public ReportSupplementReceivalResponderImpl(final KompletteringService kompletteringService) {
+        this.kompletteringService = kompletteringService;
+    }
 
     @Override
     public ReportSupplementReceivalResponseType reportSupplementReceival(
             final String logicalAddress, final ReportSupplementReceivalType request) {
 
-        log.debug("Received ReportSupplementReveival request");
+        log.info("Received ReportSupplementReceival request");
 
-        checkArgument(nonNull(logicalAddress));
-        checkArgument(nonNull(request));
+        try {
+            checkArgument(isNotEmpty(logicalAddress), LOGICAL_ADDRESS);
+            checkArgument(nonNull(request), REQUEST);
 
-        kompletteringService.reportKompletteringMottagen(ReportKompletteringMottagenRequest.from(request));
+            kompletteringService.reportKompletteringMottagen(ReportKompletteringMottagenRequest.from(request));
 
-        ReportSupplementReceivalResponseType response = new ReportSupplementReceivalResponseType();
-        response.setResult(ok());
-        return response;
+            ReportSupplementReceivalResponseType response = new ReportSupplementReceivalResponseType();
+            response.setResult(toResultTypeOK());
+            return response;
+        } catch (final Exception e) {
+            ReportSupplementReceivalResponseType response = new ReportSupplementReceivalResponseType();
+            response.setResult(toResultTypeError(e));
+            return response;
+        }
     }
 }

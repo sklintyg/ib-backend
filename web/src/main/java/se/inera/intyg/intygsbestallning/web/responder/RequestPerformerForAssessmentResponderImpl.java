@@ -19,11 +19,14 @@
 package se.inera.intyg.intygsbestallning.web.responder;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static java.lang.invoke.MethodHandles.lookup;
 import static java.util.Objects.nonNull;
-import static se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil.ok;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
 
 import org.apache.cxf.annotations.SchemaValidation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.riv.intygsbestallning.certificate.order.requestperformerforassessment.v1.RequestPerformerForAssessmentResponseType;
@@ -32,15 +35,18 @@ import se.riv.intygsbestallning.certificate.order.requestperformerforassessment.
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
+import se.inera.intyg.intygsbestallning.web.responder.resulthandler.ResultFactory;
 
 @Service
 @SchemaValidation
-public class RequestPerformerForAssessmentResponderImpl implements RequestPerformerForAssessmentResponderInterface {
+public class RequestPerformerForAssessmentResponderImpl implements RequestPerformerForAssessmentResponderInterface, ResultFactory {
 
     @Value("${source.system.hsaid:}")
     private String sourceSystemHsaId;
 
     private final UtredningService utredningService;
+
+    private final Logger log = LoggerFactory.getLogger(lookup().lookupClass());
 
     public RequestPerformerForAssessmentResponderImpl(final UtredningService utredningService) {
         this.utredningService = utredningService;
@@ -50,14 +56,22 @@ public class RequestPerformerForAssessmentResponderImpl implements RequestPerfor
     public RequestPerformerForAssessmentResponseType requestPerformerForAssessment(
             final String logicalAddress, final RequestPerformerForAssessmentType request) {
 
-        checkArgument(nonNull(logicalAddress));
-        checkArgument(nonNull(request));
+        log.info("RequestPerformerForAssessment received request");
 
-        final Utredning sparadUtredning = utredningService.registerNewUtredning(AssessmentRequest.from(request));
+        try {
+            checkArgument(isNotEmpty(logicalAddress), LOGICAL_ADDRESS);
+            checkArgument(nonNull(request), REQUEST);
 
-        RequestPerformerForAssessmentResponseType response = new RequestPerformerForAssessmentResponseType();
-        response.setResult(ok());
-        response.setAssessmentId(anII(sourceSystemHsaId, sparadUtredning.getUtredningId().toString()));
-        return response;
+            final Utredning sparadUtredning = utredningService.registerNewUtredning(AssessmentRequest.from(request));
+
+            RequestPerformerForAssessmentResponseType response = new RequestPerformerForAssessmentResponseType();
+            response.setResult(toResultTypeOK());
+            response.setAssessmentId(anII(sourceSystemHsaId, sparadUtredning.getUtredningId().toString()));
+            return response;
+        } catch (final Exception e) {
+            RequestPerformerForAssessmentResponseType response = new RequestPerformerForAssessmentResponseType();
+            response.setResult(toResultTypeError(e));
+            return response;
+        }
     }
 }

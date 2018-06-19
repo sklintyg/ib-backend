@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.web.responder;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.doReturn;
@@ -38,7 +38,6 @@ import se.riv.intygsbestallning.certificate.order.v1.AuthorityAdministrativeOffi
 import se.riv.intygsbestallning.certificate.order.v1.CitizenLimitedType;
 import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
 import java.text.MessageFormat;
-import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
@@ -89,9 +88,9 @@ public class RequestPerformerForAssessmentResponderImplTest {
         RequestPerformerForAssessmentType request = new RequestPerformerForAssessmentType();
         request.setCertificateType(aCv(okandUtredningsTyp, null, null));
 
-        assertThatThrownBy(() -> assessmentResponder.requestPerformerForAssessment(LOGICAL_ADDRESS, request))
-                .isExactlyInstanceOf(IbServiceException.class)
-                .hasMessage(MessageFormat.format("CertificateType: {0} is not of a known type", okandUtredningsTyp));
+        final RequestPerformerForAssessmentResponseType response = assessmentResponder.requestPerformerForAssessment(LOGICAL_ADDRESS, request);
+        assertThat(response.getResult().getResultCode()).isEqualTo(ResultCodeType.ERROR);
+        assertThat(response.getResult().getResultText()).isEqualTo("CertificateType: okand-typ is not of a known type");
     }
 
     @Test
@@ -101,11 +100,13 @@ public class RequestPerformerForAssessmentResponderImplTest {
         RequestPerformerForAssessmentType request = new RequestPerformerForAssessmentType();
         request.setCertificateType(aCv(felakrigUtredningsTyp, null, null));
 
-        assertThatThrownBy(() -> assessmentResponder.requestPerformerForAssessment(LOGICAL_ADDRESS, request))
-                .isExactlyInstanceOf(IbServiceException.class)
-                .hasMessage(MessageFormat.format(
-                        "CertificateType: {0} is not a valid a valid type. Use one of the following types: {1})",
+        final RequestPerformerForAssessmentResponseType response = assessmentResponder.requestPerformerForAssessment(LOGICAL_ADDRESS, request);
+
+        assertThat(response.getResult().getResultCode()).isEqualTo(ResultCodeType.ERROR);
+        assertThat(response.getResult().getResultText()).isEqualTo(
+                MessageFormat.format("CertificateType: {0} is not a valid a valid type. Use one of the following types: {1})",
                         felakrigUtredningsTyp,
                         ImmutableList.of(UtredningsTyp.AFU, UtredningsTyp.AFU_UTVIDGAD)));
+
     }
 }

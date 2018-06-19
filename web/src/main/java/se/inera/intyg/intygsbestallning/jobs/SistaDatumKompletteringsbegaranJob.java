@@ -31,6 +31,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import java.lang.invoke.MethodHandles;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -66,7 +67,7 @@ public class SistaDatumKompletteringsbegaranJob {
     @SchedulerLock(name = JOB_NAME, lockAtLeastFor = LOCK_AT_LEAST, lockAtMostFor = LOCK_AT_MOST)
     public void executeJob() {
 
-        LOG.info("Starting: Avsluta Utredning Job from Scheduled Cron Expression");
+        LOG.info(MessageFormat.format("Starting: {0} from Scheduled Cron Expression", JOB_NAME));
 
         final LocalDateTime tidpunkt = LocalDate.now().atStartOfDay();
 

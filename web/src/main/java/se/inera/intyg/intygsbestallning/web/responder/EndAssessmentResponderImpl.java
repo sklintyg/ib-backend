@@ -19,36 +19,52 @@
 package se.inera.intyg.intygsbestallning.web.responder;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static java.lang.invoke.MethodHandles.lookup;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
-import static se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil.ok;
 
 import org.apache.cxf.annotations.SchemaValidation;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import se.riv.intygsbestallning.certificate.order.endassessment.v1.EndAssessmentResponseType;
 import se.riv.intygsbestallning.certificate.order.endassessment.v1.EndAssessmentType;
 import se.riv.intygsbestallning.certificate.order.endassessment.v1.rivtabp21.EndAssessmentResponderInterface;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AvslutaUtredningRequest;
+import se.inera.intyg.intygsbestallning.web.responder.resulthandler.ResultFactory;
 
 @Service
 @SchemaValidation
-public class EndAssessmentResponderImpl implements EndAssessmentResponderInterface {
+public class EndAssessmentResponderImpl implements EndAssessmentResponderInterface, ResultFactory {
 
-    @Autowired
-    private UtredningService utredningService;
+    private final UtredningService utredningService;
+
+    private final Logger log = LoggerFactory.getLogger(lookup().lookupClass());
+
+    public EndAssessmentResponderImpl(final UtredningService utredningService) {
+        this.utredningService = utredningService;
+    }
 
     @Override
-    public EndAssessmentResponseType endAssessment(String logicalAddress, EndAssessmentType endAssessmentType) {
+    public EndAssessmentResponseType endAssessment(
+            final String logicalAddress, final EndAssessmentType request) {
 
-        checkArgument(isNotEmpty(logicalAddress), "LogcialAddress needs to be defined");
-        checkArgument(nonNull(endAssessmentType), "Request need to be defined");
+        log.info("Received EndAssessment request");
 
-        utredningService.avslutaUtredning(AvslutaUtredningRequest.from(endAssessmentType));
+        try {
+            checkArgument(isNotEmpty(logicalAddress), LOGICAL_ADDRESS);
+            checkArgument(nonNull(request), REQUEST);
 
-        EndAssessmentResponseType response = new EndAssessmentResponseType();
-        response.setResult(ok());
-        return response;
+            utredningService.avslutaUtredning(AvslutaUtredningRequest.from(request));
+
+            EndAssessmentResponseType response = new EndAssessmentResponseType();
+            response.setResult(toResultTypeOK());
+            return response;
+        } catch (final Exception e) {
+            EndAssessmentResponseType response = new EndAssessmentResponseType();
+            response.setResult(toResultTypeError(e));
+            return response;
+        }
     }
 }

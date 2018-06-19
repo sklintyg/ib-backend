@@ -18,37 +18,52 @@
  */
 package se.inera.intyg.intygsbestallning.web.responder;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
-import static java.util.Objects.isNull;
-import static se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil.ok;
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.lang.invoke.MethodHandles.lookup;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
-import com.google.common.base.Preconditions;
 import org.apache.cxf.annotations.SchemaValidation;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
-import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderResponseType;
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.rivtabp21.UpdateOrderResponderInterface;
+import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
+import se.inera.intyg.intygsbestallning.web.responder.resulthandler.ResultFactory;
 
 @Service
 @SchemaValidation
-public class UpdateOrderResponderImpl implements UpdateOrderResponderInterface {
+public class UpdateOrderResponderImpl implements UpdateOrderResponderInterface, ResultFactory {
 
-    @Autowired
-    private UtredningService utredningService;
+    private final UtredningService utredningService;
+
+    private final Logger log = LoggerFactory.getLogger(lookup().lookupClass());
+
+    public UpdateOrderResponderImpl(final UtredningService utredningService) {
+        this.utredningService = utredningService;
+    }
 
     @Override
     public UpdateOrderResponseType updateOrder(final String logicalAddress, final UpdateOrderType request) {
 
-        Preconditions.checkArgument(!isNullOrEmpty(logicalAddress));
-        Preconditions.checkArgument(!isNull(request));
+        log.info("ReportDeviationInteraction received request");
 
-        utredningService.updateOrder(UpdateOrderRequest.from(request));
+        try {
+            checkArgument(isNotEmpty(logicalAddress), LOGICAL_ADDRESS);
+            checkArgument(nonNull(request), REQUEST);
 
-        UpdateOrderResponseType updateOrderResponseType = new UpdateOrderResponseType();
-        updateOrderResponseType.setResult(ok());
-        return updateOrderResponseType;
+            utredningService.updateOrder(UpdateOrderRequest.from(request));
+
+            UpdateOrderResponseType updateOrderResponseType = new UpdateOrderResponseType();
+            updateOrderResponseType.setResult(toResultTypeOK());
+            return updateOrderResponseType;
+        } catch (final Exception e) {
+            UpdateOrderResponseType updateOrderResponseType = new UpdateOrderResponseType();
+            updateOrderResponseType.setResult(toResultTypeError(e));
+            return updateOrderResponseType;
+        }
     }
 }

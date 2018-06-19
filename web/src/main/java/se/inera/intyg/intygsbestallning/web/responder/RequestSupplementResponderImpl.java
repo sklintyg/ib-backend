@@ -18,28 +18,35 @@
  */
 package se.inera.intyg.intygsbestallning.web.responder;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.lang.invoke.MethodHandles.lookup;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil.error;
-import static se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil.ok;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
 
-import com.google.common.base.Preconditions;
 import org.apache.cxf.annotations.SchemaValidation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.riv.intygsbestallning.certificate.order.requestsupplement.v1.RequestSupplementResponseType;
 import se.riv.intygsbestallning.certificate.order.requestsupplement.v1.RequestSupplementType;
 import se.riv.intygsbestallning.certificate.order.requestsupplement.v1.rivtabp21.RequestSupplementResponderInterface;
-import java.util.Objects;
 import se.inera.intyg.intygsbestallning.service.utredning.KompletteringService;
+import se.inera.intyg.intygsbestallning.web.responder.resulthandler.ResultFactory;
 
 @Service
 @SchemaValidation
-public class RequestSupplementResponderImpl implements RequestSupplementResponderInterface {
+public class RequestSupplementResponderImpl implements RequestSupplementResponderInterface, ResultFactory {
 
     @Value("${source.system.hsaid:}")
     private String sourceSystemHsaId;
 
     private final KompletteringService kompletteringService;
+
+    private final Logger log = LoggerFactory.getLogger(lookup().lookupClass());
 
     public RequestSupplementResponderImpl(final KompletteringService kompletteringService) {
         this.kompletteringService = kompletteringService;
@@ -50,23 +57,25 @@ public class RequestSupplementResponderImpl implements RequestSupplementResponde
             final String logicalAddress, final RequestSupplementType request) {
         RequestSupplementResponseType response = new RequestSupplementResponseType();
 
-        Preconditions.checkArgument(null != logicalAddress);
-        Preconditions.checkArgument(null != request);
-
-        if (Objects.isNull(request.getAssessmentId()) || Objects.isNull(request.getAssessmentId().getExtension())) {
-            response.setResult(error("Request is missing required field assessmentId"));
-            return response;
-        }
+        log.info("RequestSupplement received request");
 
         try {
+
+            checkArgument(isNotEmpty(logicalAddress), LOGICAL_ADDRESS);
+            checkArgument(nonNull(request), REQUEST);
+
+            if (isNull(request.getAssessmentId()) || isNull(request.getAssessmentId().getExtension())) {
+                response.setResult(error("Request is missing required field assessmentId"));
+                return response;
+            }
+
             long kompletteringsId = kompletteringService.registerNewKomplettering(request);
-            response.setResult(ok());
+            response.setResult(toResultTypeOK());
             response.setSupplementRequestId(anII(sourceSystemHsaId, String.valueOf(kompletteringsId)));
             return response;
         } catch (Exception e) {
-            response.setResult(error(e.getMessage()));
+            response.setResult(toResultTypeError(e));
             return response;
         }
     }
-
 }

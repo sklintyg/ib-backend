@@ -49,7 +49,7 @@ public class RequestSupplementResponderImplTest {
     @Test
     public void testOk() {
         when(kompletteringService.registerNewKomplettering(any(RequestSupplementType.class))).thenReturn(1L);
-        RequestSupplementResponseType response = testee.requestSupplement("", buildRequest());
+        RequestSupplementResponseType response = testee.requestSupplement("address", buildRequest());
         assertEquals(ResultCodeType.OK, response.getResult().getResultCode());
     }
 
@@ -58,16 +58,16 @@ public class RequestSupplementResponderImplTest {
         when(kompletteringService.registerNewKomplettering(any(RequestSupplementType.class))).thenReturn(1L);
 
         RequestSupplementType request = buildRequest();
-        buildRequest().setLastDateForSupplementReceival(null);
+        request.setLastDateForSupplementReceival(null);
 
-        RequestSupplementResponseType response = testee.requestSupplement("", request);
+        RequestSupplementResponseType response = testee.requestSupplement("address", request);
         assertEquals(ResultCodeType.OK, response.getResult().getResultCode());
     }
 
     @Test
     public void testExceptionsAreMappedOntoError() {
         when(kompletteringService.registerNewKomplettering(any(RequestSupplementType.class))).thenThrow(new IllegalStateException(ERROR_MESSAGE));
-        RequestSupplementResponseType response = testee.requestSupplement("", buildRequest());
+        RequestSupplementResponseType response = testee.requestSupplement("address", buildRequest());
         assertEquals(ERROR_MESSAGE, response.getResult().getResultText());
         assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
     }
@@ -79,7 +79,7 @@ public class RequestSupplementResponderImplTest {
         RequestSupplementType request = buildRequest();
         buildRequest().setLastDateForSupplementReceival("2018-06-aa"); // bad date
 
-        RequestSupplementResponseType response = testee.requestSupplement("", request);
+        RequestSupplementResponseType response = testee.requestSupplement("address", request);
         assertEquals(ERROR_MESSAGE, response.getResult().getResultText());
         assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
     }

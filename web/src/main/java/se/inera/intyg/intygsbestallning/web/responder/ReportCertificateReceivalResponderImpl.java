@@ -18,37 +18,53 @@
  */
 package se.inera.intyg.intygsbestallning.web.responder;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.lang.invoke.MethodHandles.lookup;
+import static java.util.Objects.nonNull;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.annotations.SchemaValidation;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.intygsbestallning.service.utlatande.UtlatandeService;
-import se.inera.intyg.intygsbestallning.web.responder.dto.ReportUtlatandeMottagetRequest;
 import se.riv.intygsbestallning.certificate.order.reportcertificatereceival.v1.ReportCertificateReceivalResponseType;
 import se.riv.intygsbestallning.certificate.order.reportcertificatereceival.v1.ReportCertificateReceivalType;
 import se.riv.intygsbestallning.certificate.order.reportcertificatereceival.v1.rivtabp21.ReportCertificateReceivalResponderInterface;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static java.util.Objects.nonNull;
-import static se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil.ok;
+import se.inera.intyg.intygsbestallning.service.utlatande.UtlatandeService;
+import se.inera.intyg.intygsbestallning.web.responder.dto.ReportUtlatandeMottagetRequest;
+import se.inera.intyg.intygsbestallning.web.responder.resulthandler.ResultFactory;
 
 @Service
 @SchemaValidation
-public class ReportCertificateReceivalResponderImpl implements ReportCertificateReceivalResponderInterface {
+public class ReportCertificateReceivalResponderImpl implements ReportCertificateReceivalResponderInterface, ResultFactory {
 
-    @Autowired
-    private UtlatandeService utlatandeService;
+    private final UtlatandeService utlatandeService;
+
+    private final Logger log = LoggerFactory.getLogger(lookup().lookupClass());
+
+    public ReportCertificateReceivalResponderImpl(final UtlatandeService utlatandeService) {
+        this.utlatandeService = utlatandeService;
+    }
 
     @Override
     public ReportCertificateReceivalResponseType reportCertificateReceival(
             final String logicalAddress, final ReportCertificateReceivalType request) {
 
-        checkArgument(nonNull(logicalAddress));
-        checkArgument(nonNull(request));
+        log.info("Received ReportCertificateReceival request");
 
-        utlatandeService.reportUtlatandeMottaget(ReportUtlatandeMottagetRequest.from(request));
+        try {
+            checkArgument(StringUtils.isNotEmpty(logicalAddress), LOGICAL_ADDRESS);
+            checkArgument(nonNull(request), REQUEST);
 
-        ReportCertificateReceivalResponseType response = new ReportCertificateReceivalResponseType();
-        response.setResult(ok());
-        return response;
+            utlatandeService.reportUtlatandeMottaget(ReportUtlatandeMottagetRequest.from(request));
+
+            ReportCertificateReceivalResponseType response = new ReportCertificateReceivalResponseType();
+            response.setResult(toResultTypeOK());
+            return response;
+        } catch (final Exception e) {
+            ReportCertificateReceivalResponseType response = new ReportCertificateReceivalResponseType();
+            response.setResult(toResultTypeError(e));
+            return response;
+        }
     }
 }

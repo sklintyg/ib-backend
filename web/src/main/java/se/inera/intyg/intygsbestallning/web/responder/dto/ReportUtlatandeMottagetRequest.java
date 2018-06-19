@@ -58,10 +58,10 @@ public final class ReportUtlatandeMottagetRequest {
 
     public static ReportUtlatandeMottagetRequest from(final ReportCertificateReceivalType external) {
 
-        checkArgument(nonNull(external));
-        checkArgument(nonNull(external.getAssessmentId()));
-        checkArgument(nonNull(external.getReceivedDate()));
-        checkArgument(nonNull(external.getLastDateForSupplementRequest()));
+        checkArgument(nonNull(external), "ReportCertificateReceivalType must be defined");
+        checkArgument(nonNull(external.getAssessmentId()), "AssessmentId must be defined");
+        checkArgument(nonNull(external.getReceivedDate()), "ReceivalDate must be defined");
+        checkArgument(nonNull(external.getLastDateForSupplementRequest()), "LastDateForSupplementRequest must be defined");
 
         final Long assessmentId = Long.valueOf(external.getAssessmentId().getExtension());
         final LocalDateTime mottagetDatum = toLocalDateTimeFromDateType(external.getReceivedDate());

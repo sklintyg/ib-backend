@@ -18,25 +18,26 @@
  */
 package se.inera.intyg.intygsbestallning.web.responder;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
-import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
-import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
-import se.riv.intygsbestallning.certificate.order.endassessment.v1.EndAssessmentResponseType;
-import se.riv.intygsbestallning.certificate.order.endassessment.v1.EndAssessmentType;
-import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.aCv;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import se.riv.intygsbestallning.certificate.order.endassessment.v1.EndAssessmentResponseType;
+import se.riv.intygsbestallning.certificate.order.endassessment.v1.EndAssessmentType;
+import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
+import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
+import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
+import se.inera.intyg.intygsbestallning.web.responder.resulthandler.ResultFactory;
+
 @RunWith(MockitoJUnitRunner.class)
-public class EndAssessmentResponderImplTest {
+public class EndAssessmentResponderImplTest implements ResultFactory {
 
     @Mock
     private UtredningService utredningService;
@@ -57,22 +58,29 @@ public class EndAssessmentResponderImplTest {
         assertEquals(ResultCodeType.OK, response.getResult().getResultCode());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testEndAssessmentFailPreconditionLogicalAddress() {
-        responder.endAssessment(null, new EndAssessmentType());
+        final EndAssessmentResponseType response = responder.endAssessment(null, new EndAssessmentType());
+        assertThat(response.getResult().getResultCode()).isEqualTo(ResultCodeType.ERROR);
+        assertThat(response.getResult().getResultText()).isEqualTo(LOGICAL_ADDRESS);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testEndAssessmentFailPreconditionRequest() {
-        responder.endAssessment("logicalAddress", null);
+        final EndAssessmentResponseType response = responder.endAssessment("logicalAddress", null);
+        assertThat(response.getResult().getResultCode()).isEqualTo(ResultCodeType.ERROR);
+        assertThat(response.getResult().getResultText()).isEqualTo(REQUEST);
     }
 
-    @Test(expected = IbServiceException.class)
+    @Test
     public void testEndAssessmentFailConvert() {
         EndAssessmentType request = new EndAssessmentType();
         request.setAssessmentId(anII(null, "utredningId"));
         request.setEndingCondition(aCv("nonExistingCode", null, null));
 
-        responder.endAssessment("logicalAdress", request);
+        final EndAssessmentResponseType response = responder.endAssessment("logicalAdress", request);
+
+        assertThat(response.getResult().getResultCode()).isEqualTo(ResultCodeType.ERROR);
+        assertThat(response.getResult().getResultText()).isEqualTo("EndingCondition is not of a known type");
     }
 }
