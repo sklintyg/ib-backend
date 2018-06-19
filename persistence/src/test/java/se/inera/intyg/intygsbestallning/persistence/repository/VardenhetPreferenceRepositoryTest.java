@@ -37,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigDev;
 import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigTest;
 import se.inera.intyg.intygsbestallning.persistence.model.VardenhetPreference;
+import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
 
 /**
  * Created by marced on 2018-04-23.
@@ -63,7 +64,7 @@ public class VardenhetPreferenceRepositoryTest {
 
     @Test
     public void testSave() {
-        VardenhetPreference saved = buildSampleVardenhetPreference();
+        VardenhetPreference saved = buildSampleVardenhetPreference(UtforareTyp.ENHET);
         saved = vardenhetPreferenceRepository.save(saved);
 
         String internreferens = saved.getVardenhetHsaId();
@@ -74,29 +75,32 @@ public class VardenhetPreferenceRepositoryTest {
 
     @Test
     public void testFindByVardenhetHsaIdOptionalEmptyWhenNotFound() {
-        VardenhetPreference saved = buildSampleVardenhetPreference();
+        VardenhetPreference saved = buildSampleVardenhetPreference(UtforareTyp.ENHET);
         saved = vardenhetPreferenceRepository.save(saved);
 
         String internreferens = saved.getVardenhetHsaId();
 
         assertNotNull(internreferens);
 
-        Optional<VardenhetPreference> read = vardenhetPreferenceRepository.findByVardenhetHsaId("finns ej");
+        Optional<VardenhetPreference> read = vardenhetPreferenceRepository.findByVardenhetHsaIdAndUtforareTyp("finns ej", UtforareTyp.ENHET);
         assertFalse(read.isPresent());
     }
 
     @Test
-    public void testFindByVardenhetHsaId() {
-        VardenhetPreference saved = buildSampleVardenhetPreference();
+    public void testFindByVardenhetHsaIdAndUtforareType() {
+        VardenhetPreference saved = buildSampleVardenhetPreference(UtforareTyp.ENHET);
         saved = vardenhetPreferenceRepository.save(saved);
 
         String internreferens = saved.getVardenhetHsaId();
 
         assertNotNull(internreferens);
 
-        Optional<VardenhetPreference> read = vardenhetPreferenceRepository.findByVardenhetHsaId(DEFAULT_HSA_ID);
+        Optional<VardenhetPreference> readNotFound = vardenhetPreferenceRepository.findByVardenhetHsaIdAndUtforareTyp(DEFAULT_HSA_ID, UtforareTyp.UNDERLEVERANTOR);
+        assertFalse(readNotFound.isPresent());
+        Optional<VardenhetPreference> read = vardenhetPreferenceRepository.findByVardenhetHsaIdAndUtforareTyp(DEFAULT_HSA_ID, UtforareTyp.ENHET);
         assertTrue(read.isPresent());
         assertEquals(DEFAULT_HSA_ID, read.get().getVardenhetHsaId());
+        assertEquals(UtforareTyp.ENHET, read.get().getUtforareTyp());
         assertEquals(DEFAULT_MOTTAGARNAMN, read.get().getMottagarNamn());
         assertEquals(DEFAULT_ADRESS, read.get().getAdress());
         assertEquals(DEFAULT_POSTORT, read.get().getPostort());
@@ -108,14 +112,14 @@ public class VardenhetPreferenceRepositoryTest {
 
     @Test
     public void testUpdate() {
-        VardenhetPreference saved = buildSampleVardenhetPreference();
+        VardenhetPreference saved = buildSampleVardenhetPreference(UtforareTyp.ENHET);
         saved = vardenhetPreferenceRepository.save(saved);
 
         String internreferens = saved.getVardenhetHsaId();
 
         assertNotNull(internreferens);
 
-        VardenhetPreference read = vardenhetPreferenceRepository.findByVardenhetHsaId(DEFAULT_HSA_ID).get();
+        VardenhetPreference read = vardenhetPreferenceRepository.findByVardenhetHsaIdAndUtforareTyp(DEFAULT_HSA_ID, UtforareTyp.ENHET).get();
         read.setStandardsvar(UPDATED_SVAR);
         read.setMottagarNamn(UPDATED_MOTTAGARNAMN);
         VardenhetPreference updated = vardenhetPreferenceRepository.saveAndFlush(read);
@@ -125,10 +129,11 @@ public class VardenhetPreferenceRepositoryTest {
 
     }
 
-    private VardenhetPreference buildSampleVardenhetPreference() {
+    private VardenhetPreference buildSampleVardenhetPreference(UtforareTyp utforareTyp) {
         VardenhetPreference vp = new VardenhetPreference();
 
         vp.setVardenhetHsaId(DEFAULT_HSA_ID);
+        vp.setUtforareTyp(utforareTyp);
 
         vp.setMottagarNamn(DEFAULT_MOTTAGARNAMN);
         vp.setAdress(DEFAULT_ADRESS);

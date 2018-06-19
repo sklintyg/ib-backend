@@ -19,9 +19,14 @@
 package se.inera.intyg.intygsbestallning.persistence.model;
 
 import com.google.common.base.MoreObjects;
+import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Objects;
@@ -31,8 +36,16 @@ import java.util.Objects;
 public final class VardenhetPreference {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "ID", nullable = false)
+    private Long id;
+
     @Column(name = "VARDENHET_HSA_ID", nullable = false)
     private String vardenhetHsaId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "UTFORARE_TYP", nullable = false)
+    private UtforareTyp utforareTyp;
 
     @Column(name = "MOTTAGAR_NAMN")
     private String mottagarNamn;
@@ -61,6 +74,14 @@ public final class VardenhetPreference {
 
     public void setVardenhetHsaId(String vardenhetHsaId) {
         this.vardenhetHsaId = vardenhetHsaId;
+    }
+
+    public UtforareTyp getUtforareTyp() {
+        return utforareTyp;
+    }
+
+    public void setUtforareTyp(UtforareTyp utforareTyp) {
+        this.utforareTyp = utforareTyp;
     }
 
     public String getMottagarNamn() {
@@ -128,7 +149,9 @@ public final class VardenhetPreference {
             return false;
         }
         final VardenhetPreference that = (VardenhetPreference) o;
-        return Objects.equals(vardenhetHsaId, that.vardenhetHsaId)
+        return Objects.equals(id, that.id)
+                && Objects.equals(vardenhetHsaId, that.vardenhetHsaId)
+                && Objects.equals(utforareTyp, that.utforareTyp)
                 && Objects.equals(mottagarNamn, that.mottagarNamn)
                 && Objects.equals(adress, that.adress)
                 && Objects.equals(postnummer, that.postnummer)
@@ -141,13 +164,14 @@ public final class VardenhetPreference {
     @Override
     public int hashCode() {
 
-        return Objects.hash(vardenhetHsaId, mottagarNamn, adress, postnummer, postort, telefonnummer, epost, standardsvar);
+        return Objects.hash(id, vardenhetHsaId, utforareTyp, mottagarNamn, adress, postnummer, postort, telefonnummer, epost, standardsvar);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("vardenhetHsaId", vardenhetHsaId)
+                .add("utforareTyp", utforareTyp)
                 .add("mottagarNamn", mottagarNamn)
                 .add("adress", adress)
                 .add("postnummer", postnummer)

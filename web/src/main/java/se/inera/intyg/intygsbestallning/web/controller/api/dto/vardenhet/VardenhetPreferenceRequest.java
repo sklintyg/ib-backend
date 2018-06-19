@@ -22,6 +22,7 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet;
  * Created by marced on 2018-04-23.
  */
 public class VardenhetPreferenceRequest {
+    private String utforareTyp;
     private String mottagarNamn;
     private String adress;
     private String postnummer;
@@ -77,4 +78,11 @@ public class VardenhetPreferenceRequest {
         this.epost = epost;
     }
 
+    public String getUtforareTyp() {
+        return utforareTyp;
+    }
+
+    public void setUtforareTyp(String utforareTyp) {
+        this.utforareTyp = utforareTyp;
+    }
 }

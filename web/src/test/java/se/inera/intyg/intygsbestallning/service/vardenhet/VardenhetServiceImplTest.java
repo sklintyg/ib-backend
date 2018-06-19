@@ -34,10 +34,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.intygsbestallning.persistence.model.VardenhetPreference;
+import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.VardenhetPreferenceRepository;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.VardenhetPreferenceRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.VardenhetPreferenceResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.VardenhetSvarPreferenceRequest;
 
 /**
  * Created by marced on 2018-04-24.
@@ -72,19 +72,20 @@ public class VardenhetServiceImplTest {
 
     @Test
     public void testGetExistingVardEnhetPreference() throws Exception {
-        VardenhetPreference expected = createVardenhetPreferenceSample();
-        when(vardenhetPreferenceRepository.findByVardenhetHsaId(eq(HSA_ID))).thenReturn(Optional.of(expected));
+        VardenhetPreference expected = createVardenhetPreferenceSample(UtforareTyp.ENHET);
+        when(vardenhetPreferenceRepository.findByVardenhetHsaIdAndUtforareTyp(eq(HSA_ID), eq(UtforareTyp.ENHET))).thenReturn(Optional.of(expected));
 
         final VardenhetPreferenceResponse result = testee.getVardEnhetPreference(HSA_ID);
 
         assertEquals(expected.getVardenhetHsaId(), result.getVardenhetHsaId());
+        assertEquals(expected.getUtforareTyp().name(), result.getUtforareTyp());
         assertEquals(expected.getMottagarNamn(), result.getMottagarNamn());
         assertEquals(expected.getAdress(), result.getAdress());
     }
 
     @Test
     public void testGetInitialVardEnhetPreference() throws Exception {
-        when(vardenhetPreferenceRepository.findByVardenhetHsaId(eq(HSA_ID))).thenReturn(Optional.empty());
+        when(vardenhetPreferenceRepository.findByVardenhetHsaIdAndUtforareTyp(eq(HSA_ID), eq(UtforareTyp.ENHET))).thenReturn(Optional.empty());
         // just echo back the argument to save()
         when(vardenhetPreferenceRepository.save(any(VardenhetPreference.class))).thenAnswer(
                 invocation -> invocation.getArgument(0));
@@ -94,6 +95,7 @@ public class VardenhetServiceImplTest {
         final VardenhetPreferenceResponse result = testee.getVardEnhetPreference(HSA_ID);
 
         assertEquals(HSA_ID, result.getVardenhetHsaId());
+        assertEquals(UtforareTyp.ENHET.name(), result.getUtforareTyp());
         assertEquals(ENHETSNAMN, result.getMottagarNamn());
         assertEquals(POSTADRESS, result.getAdress());
         assertEquals(POSTNUMMER, result.getPostnummer());
@@ -104,14 +106,16 @@ public class VardenhetServiceImplTest {
 
     @Test
     public void testSetVardEnhetPreference() throws Exception {
-        when(vardenhetPreferenceRepository.findByVardenhetHsaId(eq(HSA_ID))).thenReturn(Optional.of(createVardenhetPreferenceSample()));
+        when(vardenhetPreferenceRepository.findByVardenhetHsaIdAndUtforareTyp(eq(HSA_ID), eq(UtforareTyp.ENHET))).thenReturn(Optional.of(createVardenhetPreferenceSample(UtforareTyp.ENHET)));
         // just echo back the argument to save()
         when(vardenhetPreferenceRepository.save(any(VardenhetPreference.class))).thenAnswer(
                 invocation -> invocation.getArgument(0));
 
-        VardenhetPreferenceRequest request = createUpdateRequestSample();
+        VardenhetPreferenceRequest request = createUpdateRequestSample(UtforareTyp.ENHET.name());
         final VardenhetPreferenceResponse result = testee.setVardEnhetPreference(HSA_ID, request);
 
+        assertEquals(HSA_ID, result.getVardenhetHsaId());
+        assertEquals(request.getUtforareTyp(), result.getUtforareTyp());
         assertEquals(request.getMottagarNamn(), result.getMottagarNamn());
         assertEquals(request.getAdress(), result.getAdress());
         assertEquals(request.getPostnummer(), result.getPostnummer());
@@ -123,7 +127,7 @@ public class VardenhetServiceImplTest {
 
     @Test
     public void testSetVardEnhetSvarPreference() throws Exception {
-        when(vardenhetPreferenceRepository.findByVardenhetHsaId(eq(HSA_ID))).thenReturn(Optional.of(createVardenhetPreferenceSample()));
+        when(vardenhetPreferenceRepository.findByVardenhetHsaIdAndUtforareTyp(eq(HSA_ID), eq(UtforareTyp.ENHET))).thenReturn(Optional.of(createVardenhetPreferenceSample(UtforareTyp.ENHET)));
         // just echo back the argument to save()
         when(vardenhetPreferenceRepository.save(any(VardenhetPreference.class))).thenAnswer(
                 invocation -> invocation.getArgument(0));
@@ -135,9 +139,10 @@ public class VardenhetServiceImplTest {
 
     }
 
-    private VardenhetPreferenceRequest createUpdateRequestSample() {
+    private VardenhetPreferenceRequest createUpdateRequestSample(String utforarTyp) {
         VardenhetPreferenceRequest vpr = new VardenhetPreferenceRequest();
         vpr.setMottagarNamn(ENHETSNAMN_2);
+        vpr.setUtforareTyp(utforarTyp);
         vpr.setAdress(POSTADRESS_2);
         vpr.setPostnummer(POSTNUMMER_2);
         vpr.setPostort(POSTORT_2);
@@ -146,9 +151,10 @@ public class VardenhetServiceImplTest {
         return vpr;
     }
 
-    private VardenhetPreference createVardenhetPreferenceSample() {
+    private VardenhetPreference createVardenhetPreferenceSample(UtforareTyp utforarTyp) {
         VardenhetPreference vp = new VardenhetPreference();
         vp.setVardenhetHsaId(HSA_ID);
+        vp.setUtforareTyp(utforarTyp);
         vp.setMottagarNamn(ENHETSNAMN);
         vp.setAdress(POSTADRESS);
         vp.setPostnummer(POSTNUMMER);

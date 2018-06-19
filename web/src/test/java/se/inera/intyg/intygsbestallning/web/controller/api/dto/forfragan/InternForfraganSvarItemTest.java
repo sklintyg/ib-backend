@@ -60,6 +60,7 @@ public class InternForfraganSvarItemTest {
         vep.setTelefonnummer("122-345");
         vep.setEpost("apa@bepa.se");
         vep.setVardenhetHsaId("HSAID");
+        vep.setUtforareTyp(UtforareTyp.ENHET);
 
         vardenhetPreferenceResponse = new VardenhetPreferenceResponse(vep);
 

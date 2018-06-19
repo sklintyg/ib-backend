@@ -44,7 +44,7 @@ angular.module('ibApp').directive('ibHeaderUnit', [ '$uibModal', 'StatPollServic
 
             };
 
-            $scope.onVEContactSettingsClick = function() {
+            $scope.onVEContactSettingsClick = function(utforareTyp) {
 
                 var dlgInstance = $uibModal.open({
                     templateUrl: '/components/appDirectives/ibAppHeader/ibHeaderUnit/edit-ve-kontakt/ibEditVEKontaktDialog.html',
@@ -52,7 +52,12 @@ angular.module('ibApp').directive('ibHeaderUnit', [ '$uibModal', 'StatPollServic
                     size: 'md',
                     id: 'ibEditVEAddressDialog',
                     keyboard: true,
-                    windowClass: 'ib-header-unit-settings-dialog-window-class'
+                    windowClass: 'ib-header-unit-settings-dialog-window-class',
+                    resolve: {
+                        UtforareTyp: function() {
+                            return utforareTyp;
+                        }
+                    }
                 });
                 //angular > 1.5 warns if promise rejection is not handled (e.g backdrop-click == rejection)
                 dlgInstance.result.catch(function () {}); //jshint ignore:line

@@ -58,18 +58,27 @@ public class VardenhetController {
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     @PrometheusTimeMethod(name = "get_preference_for_vardenhet_duration_seconds", help = "Some helpful info here")
-    @GetMapping(path = "/preference", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(path = "/preference/ENHET", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<VardenhetPreferenceResponse> getPreferenceForVardenhet() {
         IbUser user = userService.getUser();
         ensureUpdateAllowed(user);
         return ResponseEntity.ok(vardenhetService.getVardEnhetPreference(user.getCurrentlyLoggedInAt().getId()));
     }
+
+    @PrometheusTimeMethod(name = "get_preference_for_vardenhet_underleverantor_duration_seconds", help = "Some helpful info here")
+    @GetMapping(path = "/preference/UNDERLEVERANTOR", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<VardenhetPreferenceResponse> getPreferenceForUnderleverantor() {
+        IbUser user = userService.getUser();
+        ensureUpdateAllowed(user);
+        return ResponseEntity.ok(vardenhetService.getVardEnhetUnderleverantorPreference(user.getCurrentlyLoggedInAt().getId()));
+    }
+
     @PrometheusTimeMethod(name = "get_hsaAdressInfo_for_vardenhet_duration_seconds", help = "Some helpful info here")
     @GetMapping(path = "/fromhsa", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<VardenhetPreferenceResponse> getHsaAdressInfo() {
         IbUser user = userService.getUser();
         ensureUpdateAllowed(user);
-        return ResponseEntity.ok(vardenhetService.getHsaAdressInfo(user.getCurrentlyLoggedInAt().getId()));
+        return ResponseEntity.ok(vardenhetService.getVardenhetPreferenceFromHsaAdressInfo(user.getCurrentlyLoggedInAt().getId()));
     }
 
     @PrometheusTimeMethod(name = "set_preference_for_vardenhet_duration_seconds", help = "Some helpful info here")

@@ -25,6 +25,7 @@ angular.module('ibApp').controller('ibAvvisaInternForfraganDlgController',
             model: InternForfraganSvarViewState.getModel(),
             busy :false
         };
+        $scope.vm.model.kommentar = undefined;
 
         //Connect form instance
         $scope.$watch('forfraganSvarForm', function(form) {

@@ -37,9 +37,20 @@ public interface VardenhetService {
      */
     VardenhetPreferenceResponse getVardEnhetPreference(String hsaId);
 
+    /**
+     * Returns the latest vardenhets underleverantor preference.
+     * If a preference for the hsaId is not already present in repository, it will return an empty
+     * VardenhetPreferenceResponse so a result is guaranteed.
+     *
+     * @param hsaId
+     *            id for the vardenhet underleverantor to get preference for
+     * @return latest or initial preference
+     */
+    VardenhetPreferenceResponse getVardEnhetUnderleverantorPreference(String hsaId);
+
     VardenhetPreferenceResponse setVardEnhetPreference(String hsaId, VardenhetPreferenceRequest vardenhetPreferenceRequest);
 
     VardenhetPreferenceResponse setVardEnhetSvarPreference(String hsaId, String svar);
 
-    VardenhetPreferenceResponse getHsaAdressInfo(String hsaId);
+    VardenhetPreferenceResponse getVardenhetPreferenceFromHsaAdressInfo(String hsaId);
 }

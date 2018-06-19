@@ -26,6 +26,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.VardenhetPreference;
 public class VardenhetPreferenceResponse {
 
     private String vardenhetHsaId;
+    private String utforareTyp;
     private String mottagarNamn;
     private String adress;
     private String postnummer;
@@ -36,6 +37,7 @@ public class VardenhetPreferenceResponse {
 
     public VardenhetPreferenceResponse(VardenhetPreference vardenhetPreference) {
         this.vardenhetHsaId = vardenhetPreference.getVardenhetHsaId();
+        this.utforareTyp = vardenhetPreference.getUtforareTyp().name();
         this.mottagarNamn = vardenhetPreference.getMottagarNamn();
         this.adress = vardenhetPreference.getAdress();
         this.postnummer = vardenhetPreference.getPostnummer();
@@ -51,6 +53,14 @@ public class VardenhetPreferenceResponse {
 
     public void setVardenhetHsaId(String vardenhetHsaId) {
         this.vardenhetHsaId = vardenhetHsaId;
+    }
+
+    public String getUtforareTyp() {
+        return utforareTyp;
+    }
+
+    public void setUtforareTyp(String utforareTyp) {
+        this.utforareTyp = utforareTyp;
     }
 
     public String getMottagarNamn() {

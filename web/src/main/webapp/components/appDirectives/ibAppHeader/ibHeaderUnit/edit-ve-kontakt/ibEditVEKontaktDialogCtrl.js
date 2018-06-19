@@ -16,19 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-angular.module('ibApp').controller('ibEditVEKontaktDialogCtrl', [ '$scope', '$log', 'VardenhetProxy', function($scope, $log, VardenhetProxy) {
+angular.module('ibApp').controller('ibEditVEKontaktDialogCtrl', [ '$scope', '$log', 'VardenhetProxy', 'UtforareTyp',
+    function($scope, $log, VardenhetProxy, UtforareTyp) {
     'use strict';
     $scope.vm = {
+        utforareTyp: UtforareTyp,
         model: null,
         loading: true,
         saving: false,
         fetchinghsa: false
     };
 
-    VardenhetProxy.getVardenhetKontaktPreference().then(function(vardenhetPreference) {
+    VardenhetProxy.getVardenhetKontaktPreference(UtforareTyp).then(function(vardenhetPreference) {
         $scope.vm.model = vardenhetPreference;
     }, function(error) {
-        $log.error('failed to load preference!' + error);
+        $log.error('failed to load ' + UtforareTyp + ' preference!' + error);
     }).finally(function() { // jshint ignore:line
         $scope.vm.loading = false;
     });

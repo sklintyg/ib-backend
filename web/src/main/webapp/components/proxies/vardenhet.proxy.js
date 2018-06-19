@@ -21,10 +21,10 @@ angular.module('ibApp').factory('VardenhetProxy',
     function(ProxyTemplate) {
         'use strict';
 
-        var basePath = '/api/vardadmin/vardenhet/';
+        var basePath = '/api/vardadmin/vardenhet';
         
-        function _getVardenhetKontaktPreference() {
-            var restPath = basePath + '/preference';
+        function _getVardenhetKontaktPreference(utforareTyp) {
+            var restPath = basePath + '/preference/' + utforareTyp;
 
             var config =  {
                 errorMessageConfig: {

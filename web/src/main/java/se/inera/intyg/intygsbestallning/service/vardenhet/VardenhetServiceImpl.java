@@ -21,11 +21,12 @@ package se.inera.intyg.intygsbestallning.service.vardenhet;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.annotation.Transactional;
+
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.intygsbestallning.persistence.model.VardenhetPreference;
+import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.VardenhetPreferenceRepository;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.VardenhetPreferenceRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.VardenhetPreferenceResponse;
@@ -46,19 +47,31 @@ public class VardenhetServiceImpl implements VardenhetService {
     @Override
     public VardenhetPreferenceResponse getVardEnhetPreference(String hsaId) {
         return new VardenhetPreferenceResponse(
-                vardenhetPreferenceRepository.findByVardenhetHsaId(hsaId).orElseGet(() -> createInitialPreference(hsaId)));
+                vardenhetPreferenceRepository.findByVardenhetHsaIdAndUtforareTyp(hsaId, UtforareTyp.ENHET)
+                        .orElseGet(() -> createInitialPreference(hsaId, UtforareTyp.ENHET)));
     }
 
     @Override
-    public VardenhetPreferenceResponse getHsaAdressInfo(String hsaId) {
+    public VardenhetPreferenceResponse getVardEnhetUnderleverantorPreference(String hsaId) {
         return new VardenhetPreferenceResponse(
-                buildVardenhetPreferenceFromHsaVardenhet(hsaId, hsaOrganizationsService.getVardenhet(hsaId)));
+                vardenhetPreferenceRepository.findByVardenhetHsaIdAndUtforareTyp(hsaId, UtforareTyp.UNDERLEVERANTOR)
+                        .orElseGet(() -> createInitialPreference(hsaId, UtforareTyp.UNDERLEVERANTOR)));
+    }
+
+    @Override
+    public VardenhetPreferenceResponse getVardenhetPreferenceFromHsaAdressInfo(String hsaId) {
+        return new VardenhetPreferenceResponse(
+                buildVardenhetPreferenceFromHsaVardenhet(hsaId, UtforareTyp.ENHET, hsaOrganizationsService.getVardenhet(hsaId)));
     }
 
     @Override
     public VardenhetPreferenceResponse setVardEnhetPreference(String hsaId, VardenhetPreferenceRequest vardenhetPreferenceRequest) {
-        VardenhetPreference entity = vardenhetPreferenceRepository.findByVardenhetHsaId(hsaId)
-                .orElse(buildVardenhetPreferenceFromHsaVardenhet(hsaId, null));
+        UtforareTyp utforareTyp = UtforareTyp.valueOf(vardenhetPreferenceRequest.getUtforareTyp());
+
+        // Get existing entity or create new
+        VardenhetPreference entity = vardenhetPreferenceRepository.findByVardenhetHsaIdAndUtforareTyp(hsaId, utforareTyp)
+                .orElseGet(() -> buildVardenhetPreferenceFromHsaVardenhet(hsaId, utforareTyp, null));
+        // update user supplied values
         entity.setMottagarNamn(vardenhetPreferenceRequest.getMottagarNamn());
         entity.setAdress(vardenhetPreferenceRequest.getAdress());
         entity.setPostnummer(vardenhetPreferenceRequest.getPostnummer());
@@ -69,9 +82,17 @@ public class VardenhetServiceImpl implements VardenhetService {
         return new VardenhetPreferenceResponse(vardenhetPreferenceRepository.save(entity));
     }
 
-    private VardenhetPreference createInitialPreference(String hsaId) {
-        VardenhetPreference initialPreference = buildVardenhetPreferenceFromHsaVardenhet(hsaId,
-                hsaOrganizationsService.getVardenhet(hsaId));
+    /**
+     * Creates an initial default preference, for UtforareTyp.ENHET types, the initial adress info is taken from hsa lookup.
+     *
+     * @param hsaId
+     * @param utforareTyp
+     * @return
+     */
+    private VardenhetPreference createInitialPreference(String hsaId, UtforareTyp utforareTyp) {
+
+        VardenhetPreference initialPreference = buildVardenhetPreferenceFromHsaVardenhet(hsaId, utforareTyp,
+                utforareTyp.equals(UtforareTyp.ENHET) ? hsaOrganizationsService.getVardenhet(hsaId) : null);
 
         return vardenhetPreferenceRepository.save(initialPreference);
 
@@ -79,16 +100,17 @@ public class VardenhetServiceImpl implements VardenhetService {
 
     @Override
     public VardenhetPreferenceResponse setVardEnhetSvarPreference(String hsaId, String svar) {
-        VardenhetPreference entity = vardenhetPreferenceRepository.findByVardenhetHsaId(hsaId)
-                .orElse(buildVardenhetPreferenceFromHsaVardenhet(hsaId, null));
+        VardenhetPreference entity = vardenhetPreferenceRepository.findByVardenhetHsaIdAndUtforareTyp(hsaId, UtforareTyp.ENHET)
+                .orElseGet(() -> buildVardenhetPreferenceFromHsaVardenhet(hsaId, UtforareTyp.ENHET, null));
         entity.setStandardsvar(svar);
         return new VardenhetPreferenceResponse(vardenhetPreferenceRepository.save(entity));
     }
 
     @NotNull
-    private VardenhetPreference buildVardenhetPreferenceFromHsaVardenhet(String hsaId, Vardenhet vardenhet) {
+    private VardenhetPreference buildVardenhetPreferenceFromHsaVardenhet(String hsaId, UtforareTyp utforareTyp, Vardenhet vardenhet) {
         VardenhetPreference preference = new VardenhetPreference();
         preference.setVardenhetHsaId(hsaId);
+        preference.setUtforareTyp(utforareTyp);
         if (vardenhet != null) {
             preference.setMottagarNamn(vardenhet.getNamn());
             preference.setAdress(vardenhet.getPostadress());

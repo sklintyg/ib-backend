@@ -19,7 +19,8 @@
 <div uib-dropdown is-open="menu.expanded">
   <ul uib-dropdown-menu ng-if="getUser().currentlyLoggedInAt.type ==='VE'">
     <li><a href="" id="unitmenu-ve-notification-settings-link" ng-click="onEditNotifieringSettingsClick()">Notifieringsinställningar för vårdenheten</a></li>
-    <li><a href="" id="unitmenu-ve-contact-settings-link" ng-click="onVEContactSettingsClick()">Kontaktuppgifter till vårdenheten</a></li>
+    <li><a href="" id="unitmenu-ve-contact-settings-link" ng-click="onVEContactSettingsClick('ENHET')">Kontaktuppgifter till vårdenheten</a></li>
+    <li><a href="" id="unitmenu-ul-contact-settings-link" ng-click="onVEContactSettingsClick('UNDERLEVERANTOR')">Kontaktuppgifter till underleverantör</a></li>
     <li><a href="" id="unitmenu-ve-standardsvar-settings-link" ng-click="onVESvarSettingsClick()">Standardsvar för vårdenheten</a></li>
   </ul>
   <ul uib-dropdown-menu ng-if="getUser().currentlyLoggedInAt.type ==='VG'">

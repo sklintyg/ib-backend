@@ -55,6 +55,13 @@ Cypress.Commands.add("visaVEKontaktInstallningModal", () => {
     cy.get('#unitmenu-ve-contact-settings-link').click();
     cy.get('#save-unit-settings-btn').should('be.visible');
 });
+
+Cypress.Commands.add("visaVEUnderleverantorKontaktInstallningModal", () => {
+    cy.get('#expand-unitmenu-btn').click();
+cy.get('#unitmenu-ul-contact-settings-link').click();
+cy.get('#save-unit-settings-btn').should('be.visible');
+});
+
 Cypress.Commands.add("visaVESvarInstallningModal", () => {
     cy.get('#expand-unitmenu-btn').click();
     cy.get('#unitmenu-ve-standardsvar-settings-link').click();

@@ -54,10 +54,11 @@ var ibMessages = {
 
         //Unit settings dialogs
         'unitsettings.spinner.loading': 'Hämtar standsinställningar...',
-        'unitsettings.kontakt.change.modal.label': 'Inställningar',
-        'unitsettings.kontakt.change.adress.title': 'Hantera kontaktuppgifter',
-        'unitsettings.kontakt.change.adress.desc': 'Denna adress är den som handlingar ska skickas till som standard. Du kan alltid ändra adressen i en enskild förfrågan innan du svarar.',
-        'unitsettings.kontakt.form.mottagarnamn': 'Mottagarnamn',
+        'unitsettings.kontakt.change.enhet.modal.label': 'Kontaktuppgifter till vårdenheten',
+        'unitsettings.kontakt.change.enhet.adress.desc': 'Denna adress är den som handlingar ska skickas till när du väljer vårdenhet som leverantör i svar på förfrågan. Du kan alltid ändra adressen i en enskild förfrågan innan du svarar.',
+        'unitsettings.kontakt.change.underleverantor.modal.label': 'Kontaktuppgifter till underleverantör',
+        'unitsettings.kontakt.change.underleverantor.adress.desc': 'Denna adress är den som handlingar ska skickas till när du väljer underleverantör som leverantör i svar på förfrågan. Du kan alltid ändra adressen i en enskild förfrågan innan du svarar.',
+        'unitsettings.kontakt.form.mottagarnamn': 'Mottagare',
         'unitsettings.kontakt.form.adress': 'Adress',
         'unitsettings.kontakt.form.postnummer': 'Postnummer',
         'unitsettings.kontakt.form.postort': 'Postort',

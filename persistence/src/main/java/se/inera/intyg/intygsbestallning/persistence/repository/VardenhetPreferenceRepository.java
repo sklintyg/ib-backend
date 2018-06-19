@@ -22,6 +22,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.intygsbestallning.persistence.model.VardenhetPreference;
+import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
 
 import java.util.Optional;
 
@@ -32,10 +33,10 @@ import java.util.Optional;
 public interface VardenhetPreferenceRepository extends JpaRepository<VardenhetPreference, String> {
 
     /**
-     * Finds an entity by it's hsaId.
+     * Finds an entity by it's hsaId and utforareTyp.
      * @param hsaId
      * @return
      * VardenhetPreference for this hsaId if exists.
      */
-    Optional<VardenhetPreference> findByVardenhetHsaId(String hsaId);
+    Optional<VardenhetPreference> findByVardenhetHsaIdAndUtforareTyp(String hsaId, UtforareTyp utforareTyp);
 }
