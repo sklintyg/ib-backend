@@ -77,7 +77,7 @@ public final class Utredning {
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime avbrutenDatum;
 
-    @Column(name = "AVBRUTEN_ANLEDNING")
+    @Column(name = "AVBRUTEN_ORSAK")
     @Enumerated(EnumType.STRING)
     private AvslutOrsak avbrutenAnledning;
 

@@ -283,7 +283,7 @@
                 <constraints nullable="true"/>
             </column>
 
-            <column name="AVBRUTEN_ANLEDNING" type="varchar(16)">
+            <column name="AVBRUTEN_ORSAK" type="varchar(32)">
                 <constraints nullable="true"/>
             </column>
 
