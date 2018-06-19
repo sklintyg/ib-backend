@@ -1,12 +1,12 @@
-<div id="registrera-mottagen-handling-modal">
+<div id="registrera-status-modal">
     <div class="modal-header">
         <button class="close" data-dismiss="modal" data-ng-click="$dismiss()"><i class="material-icons">close</i>
         </button>
-        <h4 class="modal-title">Datum för mottagna handlingar</h4>
+        <h4 class="modal-title">{{ titleKey | message }}</h4>
     </div>
     <div class="modal-body">
         <span class="label-margin">
-            <p message key="registrera-mottagen-handling.label.info"></p>
+            <p>{{ infoKey | message }}</p>
         </span>
         <form>
             <ib-date-picker-field
@@ -20,7 +20,7 @@
         </form>
     </div>
     <div class="modal-footer button-flex-wrapper">
-        <ib-button btn-id="register-received-action"
+        <ib-button btn-id="register-status-modal-sent-btn"
                    btn-class="btn btn-primary button-margin"
                    btn-click="save()"
                    btn-disabled="correctDate()"
@@ -28,7 +28,7 @@
         >
             <span message key="common.save"></span>
         </ib-button>
-        <button type="button" id="register-received-modal-cancel" class="btn btn-default" ng-click="$dismiss()">
+        <button type="button" id="register-status-modal-cancel" class="btn btn-default" ng-click="$dismiss()">
             <span message key="common.cancel"></span>
         </button>
     </div>

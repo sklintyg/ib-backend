@@ -1,18 +1,27 @@
 <div class="white-space-no-wrap">
-    <button ng-if="correctFasId()"
+    <button ng-if="hasFasId('UTREDNING')"
             type="button"
             id="registreraMottagenBtn"
             class="btn btn-primary"
-            ng-click="registerReceivedAction()"
-            ng-disabled="registerReceivedDisabled()">
+            ng-click="registerReceivedHandling()"
+            ng-disabled="registerReceivedHandlingDisabled()">
         <i class="material-icons">move_to_inbox</i> Registrera mottagen handling
     </button>
-    <button ng-if="correctFasId()"
+    <button ng-if="hasFasId('UTREDNING')"
             type="button"
             id="registreraSkickat"
             class="btn btn-primary"
-            ng-click="registerSent()"
-            ng-disabled="registerSentDisabled()">
+            ng-click="registerSentUtlatande()"
+            ng-disabled="registerSentUtlatandeDisabled()">
         <i class="material-icons">reply</i> Registrera skickat utlåtande
+    </button>
+	
+    <button ng-if="hasFasId('KOMPLETTERING')"
+            type="button"
+            id="registreraKompletteringMottagenBtn"
+            class="btn btn-primary"
+            ng-click="registerReceivedKomplettering()"
+            ng-disabled="registerReceivedKompletteringDisabled()">
+        <i class="material-icons">move_to_inbox</i> Registrera mottagen komplettering
     </button>
 </div>

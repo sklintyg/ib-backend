@@ -158,7 +158,7 @@ public class BestallningController {
     }
 
     @PrometheusTimeMethod(name = "send_utlatande_duration_seconds", help = "Some helpful info here")
-    @PostMapping(path = "/{utredningsId}/sendutlatande", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "/{utredningsId}/sendutlatande", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UtredningStatus> sendUtlatande(@PathVariable("utredningsId") Long utredningId,
                                                          @RequestBody SendUtlatandeRequest request) {
         IbUser user = userService.getUser();

@@ -128,12 +128,18 @@ var ibMessages = {
         'avvikelse.error.teknisktfel': 'Avvikelsen kunde inte rapporteras på grund av tekniskt fel. Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraNationellKundservice>',
 
         // Registrera mottagen handling modal
+        'registrera-mottagen-handling.label.title': 'Datum för mottagna handlingar',
         'registrera-mottagen-handling.label.info': 'Här anges datumet för när handlingarna mottogs. Detta datum visas inte för Försäkringskassan utan är till för vården att kunna följa händelser kring utredningen.\n' +
         '\n' + 'Avser handlingar som tillhör beställningen.',
 
-        // Registrera skickat utlåtande modal
-        'registrera-skickat-utlatande.label.info': 'Här anges datumet för när utlåtande skickades. Detta datum visas inte för Försäkringskassan utan är till för vården att kunna följa händelser kring utredningen.',
+        // Registrera mottagen komplettering modal
+        'registrera-mottagen-komplettering.label.title': 'Datum för mottagna kompletteringar',
+        'registrera-mottagen-komplettering.label.info': 'Här anges datumet för när den kompletterande frågeställningen mottogs. Detta datum visas inte för Försäkringskassan utan är till för vården för att kunna följa händelser kring utredningen.\n' +
+        '\n' + 'Avser kompletterande frågeställning avseende utlåtandet.',
 
+        // Registrera skickat utlåtande modal
+        'registrera-skickat-utlatande.label.title': 'Datum för skickat utlåtande',
+        'registrera-skickat-utlatande.label.info': 'Här anges datumet för när utlåtande skickades. Detta datum visas inte för Försäkringskassan utan är till för vården att kunna följa händelser kring utredningen.',
 
         //Registrerade vårdenheter
         'hantera-enheter.label.table.vardenheter.column.namn': 'Namn',
@@ -342,6 +348,8 @@ var ibMessages = {
         'server.error.registerreceived.text': 'Försök igen eller kontakta support',
         'server.error.registersentutlatande.title': 'Kunde inte registrera skickat utlåtande',
         'server.error.registersentutlatande.text': 'Försök igen eller kontakta support',
+        'server.error.registerkompletteringreceived.title': 'Kunde inte registrera mottagen komplettering',
+        'server.error.registerkompletteringreceived.text': 'Försök igen eller kontakta support',
 
         'common.error.spi.fel01': 'Ett tekniskt fel uppstod när vårdenheten skulle hämtas. Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraNationellKundservice>'
     },

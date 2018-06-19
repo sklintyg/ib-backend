@@ -29,11 +29,29 @@ angular.module('ibApp').directive('ibBestallningButtonBar',
             templateUrl: '/app/vardadmin/visaBestallning/bestallningHeader/ibBestallningHeaderButtonBar/ibBestallningButtonBar.directive.html',
             link: function ($scope) {
 
+                var openModal = function openModal(action, msgsKey) {
+                    var modalInstance = $uibModal.open({
+                        templateUrl: '/app/vardadmin/visaBestallning/bestallningHeader/ibBestallningHeaderButtonBar/registreraStatus/' +
+                            'registreraStatus.modal.html',
+                        size: 'md',
+                        controller: 'RegistreraStatusModalCtrl',
+                        resolve: {
+                            modalOptions: {
+                                action: action,
+                                title: msgsKey + '.label.title',
+                                info: msgsKey + '.label.info'
+                            }
+                        }
+                    });
+                    //angular > 1.5 warns if promise rejection is not handled (e.g backdrop-click == rejection)
+                    modalInstance.result.catch(function () {}); //jshint ignore:line
+                };
+
                 $scope.vm = {
                     acceptInProgress: false
                 };
 
-                $scope.registerReceivedDisabled = function () {
+                $scope.registerReceivedHandlingDisabled = function () {
                     if ($scope.bestallning.status.id === 'BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR' ||
                         $scope.bestallning.status.id === 'UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR') {
                         return false;
@@ -41,43 +59,32 @@ angular.module('ibApp').directive('ibBestallningButtonBar',
                     return true;
                 };
 
-                $scope.registerSentDisabled = function () {
+                $scope.registerSentUtlatandeDisabled = function () {
                     return $scope.bestallning.status.id === 'UTLATANDE_SKICKAT' ||
                         $scope.bestallning.status.id === 'UTLATANDE_MOTTAGET';
                 };
 
-                $scope.correctFasId = function () {
-                    if ($scope.bestallning !== undefined && $scope.bestallning.fas.id === 'UTREDNING') {
+                $scope.registerReceivedKompletteringDisabled = function () {
+                    return $scope.bestallning.status.id !== 'KOMPLETTERINGSBEGARAN_MOTTAGEN_VANTAR_PA_FRAGESTALLNING';
+                };
+
+                $scope.hasFasId = function (id) {
+                    if ($scope.bestallning !== undefined && $scope.bestallning.fas.id === id) {
                         return true;
                     }
                     return false;
                 };
 
-                $scope.registerReceivedAction = function () {
-                    var modalInstance = $uibModal.open({
-                        templateUrl: '/app/vardadmin/visaBestallning/bestallningHeader/ibBestallningHeaderButtonBar/registreraMottagenHandling/' +
-                        'registreraMottagenHandling.modal.html',
-                        size: 'md',
-                        controller: 'RegistreraMottagenHandlingModalCtrl',
-                        resolve: {
-                            bestallning: $scope.bestallning
-                        }
-                    });
-                    //angular > 1.5 warns if promise rejection is not handled (e.g backdrop-click == rejection)
-                    modalInstance.result.catch(function () {}); //jshint ignore:line
+                $scope.registerReceivedHandling = function () {
+                    openModal('registerReceivedHandling', 'registrera-mottagen-handling');
                 };
-                $scope.registerSent = function () {
-                    var modalInstance = $uibModal.open({
-                        templateUrl: '/app/vardadmin/visaBestallning/bestallningHeader/ibBestallningHeaderButtonBar/registreraSkickatUtlatande/' +
-                        'registreraSkickatUtlatande.modal.html',
-                        size: 'md',
-                        controller: 'RegistreraSkickatUtlatandeModalCtrl',
-                        resolve: {
-                            bestallning: $scope.bestallning
-                        }
-                    });
-                    //angular > 1.5 warns if promise rejection is not handled (e.g backdrop-click == rejection)
-                    modalInstance.result.catch(function () {}); //jshint ignore:line
+
+                $scope.registerReceivedKomplettering = function () {
+                    openModal('registerReceivedKomplettering', 'registrera-mottagen-komplettering');
+                };
+
+                $scope.registerSentUtlatande = function () {
+                    openModal('registerSentUtlatande', 'registrera-skickat-utlatande');
                 };
             }
         };

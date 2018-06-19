@@ -18,14 +18,17 @@
  */
 
 angular.module('ibApp')
-    .controller('RegistreraMottagenHandlingModalCtrl',
-        function ($scope, $uibModalInstance, HandlingProxy, $stateParams, $state) {
+    .controller('RegistreraStatusModalCtrl',
+        function ($scope, $uibModalInstance, RegistreraStatusProxy, modalOptions, $stateParams, $state) {
             'use strict';
 
             $scope.vm = {
                 busySaving: false
             };
-
+            
+            $scope.titleKey = modalOptions.title;
+            $scope.infoKey = modalOptions.info;
+            
             $scope.registerValue = new Date();
 
             $scope.correctDate = function () {
@@ -36,17 +39,19 @@ angular.module('ibApp')
             };
 
             $scope.save = function () {
+
                 $scope.vm.busySaving = true;
 
                 var date = moment($scope.registerValue).format('YYYY-MM-DD');
 
-                HandlingProxy.registerReceivedAction(date, $stateParams.utredningsId)
+                RegistreraStatusProxy[modalOptions.action](date, $stateParams.utredningsId)
                     .then(function () {
                         $uibModalInstance.close();
                         $state.reload();
                     }).finally(function () { // jshint ignore:line
                         $scope.vm.busySaving = false;
                     });
+
             };
         }
     );
