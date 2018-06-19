@@ -205,13 +205,15 @@ public class BesokServiceImpl extends BaseBesokService implements BesokService {
         if (request.getHandelseTyp().equals(HandelseTyp.AVVIKELSE_RAPPORTERAD)) {
             BesokStatus besokStatus = BesokStatusResolver.resolveStaticStatus(uppdateratBesok);
             checkState(Objects.equals(BesokStatus.AVVIKELSE_RAPPORTERAD, besokStatus)
-                    || Objects.equals(BesokStatus.PATIENT_UTEBLEV, besokStatus));
+                    || Objects.equals(BesokStatus.PATIENT_UTEBLEV, besokStatus),
+                    MessageFormat.format("Utredning with id {0} is in an incorrect state", uppdateradUtredning.getUtredningId()));
             logService.log(new UtredningPdlLoggable(uppdateradUtredning), PdlLogType.AVVIKELSE_RAPPORTERAD);
             myndighetIntegrationService.reportDeviation(createReportDeviationRequestDto(request,
                     uppdateratBesok.getAvvikelse().getAvvikelseId()));
             notifieringSendService.notifieraLandstingAvvikelseRapporteradAvVarden(uppdateradUtredning, besokToUpdate);
         } else {
-            checkState(Objects.equals(BesokStatus.AVVIKELSE_MOTTAGEN, BesokStatusResolver.resolveStaticStatus(uppdateratBesok)));
+            checkState(Objects.equals(BesokStatus.AVVIKELSE_MOTTAGEN, BesokStatusResolver.resolveStaticStatus(uppdateratBesok)),
+                    MessageFormat.format("Utredning with id {0} is in an incorrect state", uppdateradUtredning.getUtredningId()));
             notifieringSendService.notifieraLandstingAvvikelseMottagenFranFK(uppdateradUtredning, besokToUpdate);
             notifieringSendService.notifieraVardenhetAvvikelseMottagenFranFK(uppdateradUtredning, besokToUpdate);
         }

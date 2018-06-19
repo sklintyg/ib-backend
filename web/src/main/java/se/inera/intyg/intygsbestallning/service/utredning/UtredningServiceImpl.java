@@ -404,18 +404,20 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
     private void isKorrektStatusForIngenKompletteringBegard(Utredning utredning) {
 
-        checkState(UtredningStatusResolver.resolveStaticStatus(utredning) == UtredningStatus.REDOVISA_BESOK);
+        checkState(UtredningStatusResolver.resolveStaticStatus(utredning) == UtredningStatus.REDOVISA_BESOK,
+                MessageFormat.format("Utredning with id {0} is in an incorrect state", utredning.getUtredningId()));
+
         checkState(utredning.getBesokList().stream()
-                .map(BesokStatusResolver::resolveStaticStatus)
-                .noneMatch(besokStatus -> (besokStatus == BesokStatus.BOKAT) || (besokStatus == BesokStatus.AVBOKAT)));
+                        .map(BesokStatusResolver::resolveStaticStatus)
+                        .noneMatch(besokStatus -> (besokStatus == BesokStatus.BOKAT) || (besokStatus == BesokStatus.AVBOKAT)),
+                MessageFormat.format("Utredning with id {0} is in an incorrect state", utredning.getUtredningId()));
     }
 
     private Optional<InternForfragan> verifyAvslutaUtredningStatusar(final AvslutOrsak orsak, final Utredning utredning) {
 
-        checkArgument(nonNull(orsak));
-        checkArgument(nonNull(utredning));
-
-        checkState(UtredningStatus.AVBRUTEN == UtredningStatusResolver.resolveStaticStatus(utredning));
+        checkArgument(nonNull(orsak), "AvslutOrsak must be defined");
+        checkState(UtredningStatus.AVBRUTEN == UtredningStatusResolver.resolveStaticStatus(utredning),
+                MessageFormat.format("Utredning with id {0} is in an incorrect state", utredning.getUtredningId()));
 
         if (orsak == AvslutOrsak.INGEN_BESTALLNING) {
             checkState(utredning.getExternForfragan().isPresent());
@@ -425,13 +427,15 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                     .filter(iff -> nonNull(iff.getTilldeladDatum()))
                     .collect(toOptional());
 
-            checkState(optionalInternForfragan.isPresent());
+            checkState(optionalInternForfragan.isPresent(),
+                    MessageFormat.format("Utredning with id {0} is in an incorrect state", utredning.getUtredningId()));
 
             final InternForfragan internForfragan = optionalInternForfragan.get();
             final InternForfraganStatus internForfraganStatus =
                     InternForfraganStatusResolver.resolveStaticStatus(utredning, internForfragan);
 
-            checkState(InternForfraganStatus.INGEN_BESTALLNING == internForfraganStatus);
+            checkState(InternForfraganStatus.INGEN_BESTALLNING == internForfraganStatus,
+                    MessageFormat.format("Utredning with id {0} is in an incorrect state", utredning.getUtredningId()));
 
             return optionalInternForfragan;
         }
@@ -440,7 +444,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
     private Handelse createHandelseUtredningAvslutad(final AvslutOrsak orsak, final String vardAdministrator) {
 
-        checkArgument(nonNull(orsak));
+        checkArgument(nonNull(orsak), "AvslutOrsak must be defined");
 
         if (orsak == AvslutOrsak.INGEN_BESTALLNING) {
             return HandelseUtil.createIngenBestallning();
@@ -455,7 +459,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
     private void notifieraUtredningAvslutad(final AvslutOrsak orsak, final Utredning utredning, final InternForfragan internForfragan) {
 
-        checkArgument(nonNull(orsak));
+        checkArgument(nonNull(orsak), "AvslutOrsak must be defined");
 
         if (orsak == AvslutOrsak.INGEN_BESTALLNING) {
             notifieringSendService.notifieraVardenhetIngenBestallning(utredning, internForfragan);
