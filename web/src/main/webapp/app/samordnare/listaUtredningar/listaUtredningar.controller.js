@@ -22,13 +22,18 @@ angular.module('ibApp')
         function($state, $log, $scope, ibUtredningFilterModel, UtredningarProxy) {
             'use strict';
 
+            $scope.busy = false;
             $scope.filter = ibUtredningFilterModel.build();
+            $scope.utredningar = [];
+            $scope.utredningarTotal = 0;
 
             $scope.visaUtredning = function(utredningsId){
               $state.go('.visaUtredning', {utredningsId: utredningsId});
             };
 
             $scope.getUtredningarFiltered = function(appendResults) {
+
+                $scope.busy = true;
 
                 if (!appendResults) {
                     $scope.filter.currentPage = 0;
@@ -44,6 +49,8 @@ angular.module('ibApp')
                     $scope.utredningarTotal = data.totalCount;
                 }, function(error) {
                     $log.error(error);
+                }).finally(function() { // jshint ignore:line
+                    $scope.busy = false;
                 });
             };
 

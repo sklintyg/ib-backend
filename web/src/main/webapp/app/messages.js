@@ -163,6 +163,7 @@ var ibMessages = {
 
 
         // Lista utredningar tabell
+        'label.table.utredningar.loading': 'Pågående utredningar hämtas',
         'label.table.utredningar.column.id': 'Id',
         'label.table.utredningar.column.typ': 'Utredningstyp',
         'label.table.utredningar.column.vardenhet': 'Vårdenhet',
@@ -250,20 +251,23 @@ var ibMessages = {
         'avslutade.utredningar.filter.avslutsdatum.label': 'Avslutsdatum',
         'avslutade.utredningar.filter.avslutsdatum.placeholder': 'Alla valda',
         'avslutade.utredningar.filter.ersatts.label': 'Ersätts',
-        'avslutade.utredningar.filter.fakturerad.label': 'Fakturerad',
-        'avslutade.utredningar.filter.utbetald.label': 'Utbetald',
+        'avslutade.utredningar.filter.fakturerad.label': 'Fakturerat',
+        'avslutade.utredningar.filter.betald.label': 'Betald',
+        'avslutade.utredningar.filter.utbetaldfk.label': 'Utbetald FK',
         'avslutade.utredningar.filter.status.label': 'Status',
         'avslutade.utredningar.filter.resetfilter.label': 'Återställ sökfilter',
 
         // Lista avslutade utredningar (samordnare) tabell
+        'label.table.avslutade.utredningar.loading': 'Avslutade utredningar hämtas',
         'label.table.avslutade.utredningar.column.id': 'Id',
         'label.table.avslutade.utredningar.column.typ': 'Utredningstyp',
-        'label.table.avslutade.utredningar.column.vardgivareNamn': 'Landsting',
+        'label.table.avslutade.utredningar.column.vardenhetNamn': 'Vårdenhet',
         'label.table.avslutade.utredningar.column.status': 'Status',
         'label.table.avslutade.utredningar.column.avslutsdatum': 'Avslutsdatum',
         'label.table.avslutade.utredningar.column.ersatts': 'Ersätts',
         'label.table.avslutade.utredningar.column.fakturerad': 'Fakturerad',
-        'label.table.avslutade.utredningar.column.utbetald': 'Utbetald',
+        'label.table.avslutade.utredningar.column.betald': 'Betald',
+        'label.table.avslutade.utredningar.column.utbetaldfk': 'Utbetald FK',
 
         // Lista avslutade bestallningar filter
         'avslutade.bestallningar.filter.fritext.label': 'Fritextsökning',
@@ -350,6 +354,8 @@ var ibMessages = {
         'server.error.registersentutlatande.text': 'Försök igen eller kontakta support',
         'server.error.registerkompletteringreceived.title': 'Kunde inte registrera mottagen komplettering',
         'server.error.registerkompletteringreceived.text': 'Försök igen eller kontakta support',
+        'server.error.listavslutadeutredningar.title': 'Kunde inte hämta listan',
+        'server.error.listavslutadeutredningar.text': 'Försök igen eller kontakta support',
 
         'common.error.spi.fel01': 'Ett tekniskt fel uppstod när vårdenheten skulle hämtas. Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraNationellKundservice>'
     },

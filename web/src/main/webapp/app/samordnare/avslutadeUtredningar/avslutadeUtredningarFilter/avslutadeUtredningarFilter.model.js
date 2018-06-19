@@ -38,14 +38,14 @@ angular.module('ibApp').factory('ibAvslutadeUtredningarFilterModel',
             currentPage: 0,
             pageSize: 50,
             freetext: '',
-            vardgivareNamn: undefined,
             avslutsDatum: {
                 from: null,
                 to: null
             },
             ersatts: 'ALL',
             fakturerad: 'ALL',
-            utbetald: 'ALL',
+            betald: 'ALL',
+            utbetaldFk: 'ALL',
             orderBy: 'avslutsDatum',
             orderByAsc: false
         };
@@ -58,7 +58,8 @@ angular.module('ibApp').factory('ibAvslutadeUtredningarFilterModel',
             this.avslutsDatum = angular.copy(defaultFilter.avslutsDatum);
             this.ersatts = defaultFilter.ersatts;
             this.fakturerad = defaultFilter.fakturerad;
-            this.utbetald = defaultFilter.utbetald;
+            this.betald = defaultFilter.betald;
+            this.utbetaldFk = defaultFilter.utbetaldFk;
             this.orderBy = defaultFilter.orderBy;
             this.orderByAsc = defaultFilter.orderByAsc;
         };
@@ -71,7 +72,8 @@ angular.module('ibApp').factory('ibAvslutadeUtredningarFilterModel',
                 angular.equals(this.avslutsDatum, defaultFilter.avslutsDatum) &&
                 angular.equals(this.ersatts, defaultFilter.ersatts) &&
                 angular.equals(this.fakturerad, defaultFilter.fakturerad) &&
-                angular.equals(this.utbetald, defaultFilter.utbetald) &&
+                angular.equals(this.betald, defaultFilter.betald) &&
+                angular.equals(this.utbetaldFk, defaultFilter.utbetaldFk) &&
                 this.orderBy === defaultFilter.orderBy &&
                 this.orderByAsc === defaultFilter.orderByAsc;
         };
@@ -83,26 +85,17 @@ angular.module('ibApp').factory('ibAvslutadeUtredningarFilterModel',
                 pageSize: this.pageSize,
                 // Filter
                 freeText: this.freetext,
-                vardgivareNamn: this.vardgivareNamn,
                 avslutsDatumFromDate: this.avslutsDatum.from,
                 avslutsDatumToDate: this.avslutsDatum.to,
                 ersatts: this.ersatts,
                 fakturerad: this.fakturerad,
-                utbetald: this.utbetald,
+                betald: this.betald,
+                utbetaldFk: this.utbetaldFk,
 
                 // Sort
                 orderBy: this.orderBy,
                 orderByAsc: this.orderByAsc
             };
-        };
-
-        AvslutadeUtredningarFilterModel.prototype.populateFilter = function (data) {
-            // this.statusOptions = data.statuses;
-            this.ersatts = this.yesNoOptions[0].id;
-            this.fakturerad = this.yesNoOptions[0].id;
-            this.utbetald = this.yesNoOptions[0].id;
-            this.vardgivareNamnOptions = data.vardgivare;
-            this.vardgivareNamnOptions.unshift({'id': undefined, 'label': 'Visa alla'});
         };
 
         AvslutadeUtredningarFilterModel.build = function (pageSize) {

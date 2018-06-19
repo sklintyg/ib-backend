@@ -48,6 +48,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.FreeTextSearchabl
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardenhetEnrichable;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
+import se.inera.intyg.intygsbestallning.web.controller.api.filter.YesNoAllFilter;
 
 public abstract class BaseUtredningService {
     private static final Logger LOG = LoggerFactory.getLogger(UtredningService.class);
@@ -158,6 +159,32 @@ public abstract class BaseUtredningService {
             return true;
         }
         return fromDate.compareTo(compareTo) <= 0 && toDate.compareTo(compareTo) >= 0;
+    }
+
+    protected boolean buildYesNoAllPredicate(String value, YesNoAllFilter filter) {
+        if (filter == YesNoAllFilter.ALL) {
+            return true;
+        }
+        if (filter == YesNoAllFilter.YES) {
+            return !Strings.isNullOrEmpty(value);
+        }
+        if (filter == YesNoAllFilter.NO) {
+            return Strings.isNullOrEmpty(value);
+        }
+        return false;
+    }
+
+    protected boolean buildYesNoAllPredicate(boolean value, YesNoAllFilter filter) {
+        if (filter == YesNoAllFilter.ALL) {
+            return true;
+        }
+        if (filter == YesNoAllFilter.YES) {
+            return value;
+        }
+        if (filter == YesNoAllFilter.NO) {
+            return !value;
+        }
+        return false;
     }
 
     private ListFilterStatus resolveListFilterStatus(UtredningStatus us, Actor actor) {

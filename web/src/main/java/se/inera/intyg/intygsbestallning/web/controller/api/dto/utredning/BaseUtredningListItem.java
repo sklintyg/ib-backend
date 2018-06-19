@@ -16,16 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning;
 
-angular.module('ibApp').directive('ibUtbetald',
-    function() {
-        'use strict';
-
-        return {
-            restrict: 'E',
-            templateUrl: '/components/appDirectives/ibUtbetald/ibUtbetald.directive.html',
-            scope: {
-                utbetald: '<'
-            }
-        };
-    });
+public class BaseUtredningListItem {
+}

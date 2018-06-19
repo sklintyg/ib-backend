@@ -17,28 +17,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('ibApp').directive('ibFakturerad',
-    function() {
+angular.module('ibApp').directive('ibInlineEdit',
+    function($timeout) {
         'use strict';
 
         return {
             restrict: 'E',
-            templateUrl: '/components/appDirectives/ibFakturerad/ibFakturerad.directive.html',
+            templateUrl: '/components/appDirectives/ibInlineEdit/ibInlineEdit.directive.html',
             scope: {
-                fakturerad: '<'
+                model: '<',
+                editable: '<',
+                saveMethod: '&'
             },
-            link: function($scope) {
+            link: function($scope, element) {
                 $scope.editing = false;
 
                 $scope.edit = function() {
-                    $scope.editing = true;
+                    if ($scope.editable) {
+                        $scope.editing = true;
+                        $timeout(function() {
+                            element.find('INPUT').focus();
+                        });
+                    }
                 };
                 $scope.cancel = function() {
                     $scope.editing = false;
                 };
                 $scope.save = function() {
-                    // Implement real saving...
+                    $scope.saveMethod({value : $scope.model});
                     $scope.editing = false;
+                };
+                $scope.onKeypress = function(keyEvent) {
+                    if (keyEvent.which === 13) {
+                        $scope.save();
+                    }
                 };
             }
         };

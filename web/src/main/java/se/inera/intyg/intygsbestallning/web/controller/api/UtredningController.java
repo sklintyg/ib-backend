@@ -39,6 +39,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.CreateI
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.TilldelaDirektRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListAvslutadeUtredningarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListUtredningRequest;
 
 @RestController
@@ -69,6 +70,20 @@ public class UtredningController {
         // Do a SAMORDNARE search...
         GetUtredningListResponse response = utredningService
                 .findExternForfraganByLandstingHsaIdWithFilter(user.getCurrentlyLoggedInAt().getId(), req);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PrometheusTimeMethod(name = "list_avslutade_utredningar_for_user_duration_seconds", help = "Some helpful info here")
+    @PostMapping(path = "/avslutade", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GetUtredningListResponse> getAvslutadeUtredningarForUser(@RequestBody ListAvslutadeUtredningarRequest req) {
+        IbUser user = userService.getUser();
+        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_UTREDNINGAR)
+                .orThrow(new IbAuthorizationException(VIEW_NOT_ALLOWED));
+
+        // Do a SAMORDNARE search...
+        GetUtredningListResponse response = utredningService
+                .findAvslutadeExternForfraganByLandstingHsaIdWithFilter(user.getCurrentlyLoggedInAt().getId(), req);
 
         return ResponseEntity.ok(response);
     }

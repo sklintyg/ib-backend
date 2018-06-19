@@ -164,7 +164,7 @@ public class StatisticsServiceImplTest {
         List<Utredning> repoContents = buildUtredningarWithExternforfragningar(3, false);
         repoContents.addAll(buildUtredningarWithExternforfragningar(2, true));
 
-        when(utredningRepository.findByExternForfragan_LandstingHsaId_AndArkiveradFalse(VG_ID)).thenReturn(repoContents);
+        when(utredningRepository.findByExternForfragan_LandstingHsaId_AndArkiverad(VG_ID, false)).thenReturn(repoContents);
 
         final SamordnarStatisticsResponse result = testee.getStatsForSamordnare(VG_ID);
 

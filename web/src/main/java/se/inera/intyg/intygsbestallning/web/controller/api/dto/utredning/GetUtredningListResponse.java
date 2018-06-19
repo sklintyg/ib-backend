@@ -21,23 +21,23 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning;
 import java.util.List;
 
 public class GetUtredningListResponse {
-    private List<UtredningListItem> utredningar;
+    private List<? extends BaseUtredningListItem> utredningar;
     private int totalCount;
 
     private GetUtredningListResponse() {
 
     }
 
-    public GetUtredningListResponse(List<UtredningListItem> utredningar, int totalCount) {
+    public GetUtredningListResponse(List<? extends BaseUtredningListItem> utredningar, int totalCount) {
        this.utredningar = utredningar;
        this.totalCount = totalCount;
     }
 
-    public List<UtredningListItem> getUtredningar() {
+    public List<? extends BaseUtredningListItem> getUtredningar() {
         return utredningar;
     }
 
-    public void setUtredningar(List<UtredningListItem> utredningar) {
+    public void setUtredningar(List<? extends BaseUtredningListItem> utredningar) {
         this.utredningar = utredningar;
     }
 

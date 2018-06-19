@@ -1,0 +1,39 @@
+
+ib-inline-edit {
+
+  display: inline-block;
+  width: 176px;
+
+  a {
+    color: $ib-color-14;
+    &.material-icons {
+      display: inline-block;
+      padding: 4px;
+    }
+    &:hover {
+      text-decoration: none;
+      background-color: $ib-color-21;
+      color: $ib-color-00;
+    }
+  }
+
+  INPUT.form-control {
+    display: inline-block;
+    width: 120px;
+    height: 100%;
+    max-height: 38px;
+  }
+  .material-icons {
+    font-size: 16px;
+  }
+  .check-icon {
+    color: $ib-color-16;
+  }
+  .clear-icon {
+    color: $ib-color-15;
+  }
+  .value {
+    display: inline-block;
+    width: 148px;
+  }
+}

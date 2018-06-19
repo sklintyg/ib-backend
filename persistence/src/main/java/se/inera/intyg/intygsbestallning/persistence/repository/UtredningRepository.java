@@ -50,9 +50,8 @@ public interface UtredningRepository extends UtredningRepositoryCustom, JpaRepos
 
     List<Utredning> findAllByExternForfragan_LandstingHsaId(String landstingHsaId);
 
-    @Query("SELECT DISTINCT u FROM Utredning u JOIN FETCH u.externForfragan ef LEFT JOIN FETCH ef.internForfraganList ifl LEFT JOIN FETCH ifl.forfraganSvar fs LEFT JOIN FETCH u.bestallning b LEFT JOIN FETCH u.invanare inv LEFT JOIN FETCH u.handlaggare h LEFT JOIN FETCH u.betalning bet WHERE u.arkiverad = false AND ef.landstingHsaId = :landstingHsaId")
-    List<Utredning> findByExternForfragan_LandstingHsaId_AndArkiveradFalse(@Param("landstingHsaId") String landstingHsaId);
-
+    @Query("SELECT DISTINCT u FROM Utredning u JOIN FETCH u.externForfragan ef LEFT JOIN FETCH ef.internForfraganList ifl LEFT JOIN FETCH ifl.forfraganSvar fs LEFT JOIN FETCH u.bestallning b LEFT JOIN FETCH u.invanare inv LEFT JOIN FETCH u.handlaggare h LEFT JOIN FETCH u.betalning bet WHERE u.arkiverad = :arkiverad AND ef.landstingHsaId = :landstingHsaId")
+    List<Utredning> findByExternForfragan_LandstingHsaId_AndArkiverad(@Param("landstingHsaId") String landstingHsaId, @Param("arkiverad") boolean arkiverad);
 
     /**
      * Variant query that filters out any Utredningar that are in a closed state.

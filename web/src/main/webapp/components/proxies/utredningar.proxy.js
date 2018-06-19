@@ -48,6 +48,17 @@ angular.module('ibApp').factory('UtredningarProxy',
             return ProxyTemplate.postTemplate(restPath, query, {});
         }
 
+        function _getAvslutadeUtredningarWithFilter(query) {
+            var restPath = basePath + '/avslutade';
+
+            return ProxyTemplate.postTemplate(restPath, query, {
+                errorMessageConfig: {
+                    errorTitleKey: 'server.error.listavslutadeutredningar.title',
+                    errorTextKey: 'server.error.listavslutadeutredningar.text'
+                }
+            });
+        }
+
         function _createInternForfragan(utredningsId, requestBody) {
             var restPath = basePath + '/' + utredningsId + '/createinternforfragan';
 
@@ -79,6 +90,7 @@ angular.module('ibApp').factory('UtredningarProxy',
             getUtredning: _getUtredning,
             getUtredningar: _getUtredningar,
             getUtredningarWithFilter: _getUtredningarWithFilter,
+            getAvslutadeUtredningarWithFilter: _getAvslutadeUtredningarWithFilter,
             createInternForfragan: _createInternForfragan,
             tilldelaDirekt: _tillDelaDirekt
         };

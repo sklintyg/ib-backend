@@ -54,7 +54,7 @@ public class StatisticsServiceImpl implements StatisticsService {
     @Override
     public SamordnarStatisticsResponse getStatsForSamordnare(String vardgivarHsaId) {
         long requireSamordnarActionCount = utredningRepository
-                .findByExternForfragan_LandstingHsaId_AndArkiveradFalse(vardgivarHsaId)
+                .findByExternForfragan_LandstingHsaId_AndArkiverad(vardgivarHsaId, false)
                 .stream()
                 .map(u -> utredningListItemFactory.from(u))
                 .filter(uli -> uli.getStatus().getNextActor().equals(Actor.SAMORDNARE))

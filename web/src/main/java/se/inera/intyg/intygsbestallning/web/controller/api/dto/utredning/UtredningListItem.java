@@ -24,7 +24,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListIte
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FreeTextSearchable;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardenhetEnrichable;
 
-public class UtredningListItem implements FreeTextSearchable, FilterableListItem, VardenhetEnrichable {
+public class UtredningListItem extends BaseUtredningListItem implements FreeTextSearchable, FilterableListItem, VardenhetEnrichable {
 
     private Long utredningsId;
     private String utredningsTyp;

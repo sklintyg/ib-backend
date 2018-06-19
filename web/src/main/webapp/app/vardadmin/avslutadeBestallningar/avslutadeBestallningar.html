@@ -25,8 +25,8 @@
       <td>{{::row.status.label}}</td>
       <td>{{::row.avslutsDatum}}</td>
       <td><ib-yes-no value="::row.ersatts"></ib-yes-no></td>
-      <td><ib-fakturerad fakturerad="::row.fakturerad"></ib-fakturerad></td>
-      <td><ib-utbetald utbetald="::row.utbetald"></ib-utbetald></td>
+      <td><ib-inline-edit editable="true" model="::row.fakturerad"></ib-inline-edit></td>
+      <td><ib-inline-edit editable="false" model="::row.utbetald"></ib-inline-edit></td>
       <td><button class="btn btn-primary" ng-click="visaBestallning(row.utredningsId)"><span message key="common.show"></span></button></td>
     </tr>
     </tbody>

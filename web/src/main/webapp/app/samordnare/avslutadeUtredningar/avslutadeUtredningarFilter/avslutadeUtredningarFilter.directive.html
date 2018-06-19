@@ -6,13 +6,6 @@
     on-change="onChange()"
     placeholder-key="avslutade.utredningar.filter.fritext.placeholder">
 </ib-textfield>
-<ib-dropdown
-    id="filterLandsting"
-    ng-model="filter.vardgivareNamn"
-    ng-change="onChange()"
-    label-key="avslutade.utredningar.filter.vardgivareNamn.label"
-    items="filter.vardgivareNamnOptions">
-</ib-dropdown>
 <ib-date-range-picker
     id="filterAvslutsdatum"
     model="filter.avslutsDatum"
@@ -35,10 +28,17 @@
         items="filter.yesNoOptions">
 </ib-dropdown>
 <ib-dropdown
-        id="filterUtbetald"
-        ng-model="filter.utbetald"
+    id="filterUtbetald"
+    ng-model="filter.betald"
+    ng-change="onChange()"
+    label-key="avslutade.utredningar.filter.betald.label"
+    items="filter.yesNoOptions">
+</ib-dropdown>
+<ib-dropdown
+        id="filterUtbetaldFk"
+        ng-model="filter.utbetaldFk"
         ng-change="onChange()"
-        label-key="avslutade.utredningar.filter.utbetald.label"
+        label-key="avslutade.utredningar.filter.utbetaldfk.label"
         items="filter.yesNoOptions">
 </ib-dropdown>
 <button class="btn btn-primary" ng-click="resetFilter()" ng-disabled="filter.isDefault()">

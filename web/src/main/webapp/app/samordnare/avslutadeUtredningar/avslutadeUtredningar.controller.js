@@ -21,15 +21,26 @@ angular.module('ibApp')
     .controller('AvslutadeUtredningarCtrl',
         function($log, $scope, $state, ibAvslutadeUtredningarFilterModel, UtredningarProxy) {
             'use strict';
-            $scope.filter = ibAvslutadeUtredningarFilterModel.build();
 
-            $scope.getUtredningarFiltered = function(appendResults) {
+            $scope.busy = false;
+            $scope.error = undefined;
+            $scope.filter = ibAvslutadeUtredningarFilterModel.build();
+            $scope.utredningar = [];
+            $scope.utredningarTotal = 0;
+
+            $scope.visaUtredning = function(utredningsId){
+                $state.go('.visaUtredning', {utredningsId: utredningsId});
+            };
+
+            $scope.getAvslutadeUtredningarFiltered = function(appendResults) {
+
+                $scope.busy = true;
 
                 if (!appendResults) {
                     $scope.filter.currentPage = 0;
                 }
 
-                UtredningarProxy.getUtredningarWithFilter($scope.filter.convertToPayload()).then(function(data) {
+                UtredningarProxy.getAvslutadeUtredningarWithFilter($scope.filter.convertToPayload()).then(function(data) {
                     if (appendResults) {
                         $scope.utredningar = $scope.utredningar.concat(data.utredningar);
                     }
@@ -38,47 +49,18 @@ angular.module('ibApp')
                     }
                     $scope.utredningarTotal = data.totalCount;
                 }, function(error) {
+                    $scope.error = error;
                     $log.error(error);
+                }).finally(function() { // jshint ignore:line
+                    $scope.busy = false;
                 });
             };
 
+            $scope.getMore = function() {
+                $scope.filter.currentPage++;
+                $scope.getAvslutadeUtredningarFiltered(true);
+            };
 
-            /*
-                        $scope.visaUtredning = function(utredningsId){
-                            $state.go('.visaUtredning', {utredningsId: utredningsId});
-                        };
-
-                        $scope.getAvslutadeUtredningarFiltered = function(appendResults) {
-
-                            if (!appendResults) {
-                                $scope.filter.currentPage = 0;
-                            }
-
-                            UtredningarProxy.getUtredningarWithFilter($scope.filter.convertToPayload()).then(function(data) {
-                                if (appendResults) {
-                                    $scope.utredningar = $scope.utredningar.concat(data.utredningar);
-                                }
-                                else {
-                                    $scope.utredningar = data.utredningar;
-                                }
-                                $scope.utredningarTotal = data.totalCount;
-                            }, function(error) {
-                                $log.error(error);
-                            });
-                        };
-
-
-                        UtredningarProxy.getAvslutadeUtredningarFilterValues().then(function(data) {
-                            $scope.filter.populateFilter(data);
-                        }, function(error) {
-                            $log.error(error);
-                        });
-
-                        $scope.getMore = function() {
-                            $scope.filter.currentPage++;
-                            $scope.getAvslutadeUtredningarFiltered(true);
-                        };
-
-                        $scope.getAvslutadeUtredningarFiltered();*/
+            $scope.getAvslutadeUtredningarFiltered();
         }
     );

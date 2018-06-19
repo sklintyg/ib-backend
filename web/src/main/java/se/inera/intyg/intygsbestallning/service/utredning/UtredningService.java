@@ -25,6 +25,7 @@ import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListAvslutadeUtredningarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListUtredningRequest;
 
 public interface UtredningService {
@@ -38,6 +39,9 @@ public interface UtredningService {
      * @return
      */
     GetUtredningListResponse findExternForfraganByLandstingHsaIdWithFilter(String landstingHsaId, ListUtredningRequest request);
+
+    GetUtredningListResponse findAvslutadeExternForfraganByLandstingHsaIdWithFilter(String landstingHsaId,
+                                                                                    ListAvslutadeUtredningarRequest request);
 
     /**
      * Retrieves the {@link se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan} for a specific UtredningId.
@@ -103,4 +107,5 @@ public interface UtredningService {
      * @param utredning
      */
     void updateStatusToRedovisaBesok(Utredning utredning);
+
 }

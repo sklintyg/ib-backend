@@ -32,4 +32,16 @@ angular.module('ibApp').config(function($stateProvider) {
         }
     });
 
+    $stateProvider.state('app.samordnare.avslutadeUtredningar.visaUtredning', {
+        url: '/visaUtredning/:utredningsId',
+        views: {
+            'navbar@': {
+                template: '<ib-main-menu/>'
+            },
+            'content@app': {
+                templateUrl: '/app/samordnare/visaUtredning/visaUtredning.html',
+                controller: 'VisaUtredningCtrl'
+            }
+        }
+    });
 });

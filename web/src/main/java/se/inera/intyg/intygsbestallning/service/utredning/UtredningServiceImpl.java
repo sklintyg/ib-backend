@@ -91,8 +91,11 @@ import se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.AvslutadUtredningListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.AvslutadUtredningListItemFactory;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListAvslutadeUtredningarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItemFactory;
@@ -112,12 +115,15 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     private UtredningListItemFactory utredningListItemFactory;
 
     @Autowired
+    private AvslutadUtredningListItemFactory avslutadUtredningListItemFactory;
+
+    @Autowired
     private NotifieringSendService notifieringSendService;
 
     @Override
     public GetUtredningListResponse findExternForfraganByLandstingHsaIdWithFilter(String landstingHsaId, ListUtredningRequest request) {
         long start = System.currentTimeMillis();
-        List<Utredning> jpaList = utredningRepository.findByExternForfragan_LandstingHsaId_AndArkiveradFalse(landstingHsaId);
+        List<Utredning> jpaList = utredningRepository.findByExternForfragan_LandstingHsaId_AndArkiverad(landstingHsaId, false);
         LOG.info("Loading findByExternForfragan_LandstingHsaId_AndArkiveradFalse took {} ms", (System.currentTimeMillis() - start));
         start = System.currentTimeMillis();
         List<UtredningListItem> list = jpaList
@@ -161,6 +167,66 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
         Pair<Integer, Integer> bounds = PagingUtil.getBounds(total, request.getPageSize(), request.getCurrentPage());
         List<UtredningListItem> paged = filtered.subList(bounds.getFirst(), bounds.getSecond() + 1);
+
+        if (!enrichedWithVardenhetNames) {
+            // Enrich with vardenhet namn from HSA
+            start = System.currentTimeMillis();
+            enrichWithVardenhetNames(paged);
+            LOG.info("enrichWithVardenhetNames (second) took {} ms", (System.currentTimeMillis() - start));
+        }
+
+        return new GetUtredningListResponse(paged, total);
+    }
+
+    @Override
+    public GetUtredningListResponse findAvslutadeExternForfraganByLandstingHsaIdWithFilter(String landstingHsaId,
+                                                                                           ListAvslutadeUtredningarRequest request) {
+        long start = System.currentTimeMillis();
+        List<Utredning> jpaList = utredningRepository.findByExternForfragan_LandstingHsaId_AndArkiverad(landstingHsaId, true);
+        LOG.info("Loading findByExternForfragan_LandstingHsaId_AndArkiveradTrue took {} ms", (System.currentTimeMillis() - start));
+        start = System.currentTimeMillis();
+        List<AvslutadUtredningListItem> list = jpaList
+                .stream()
+                .map(avslutadUtredningListItemFactory::from)
+                .collect(toList());
+        LOG.info("UtredningListItemFactory from:: took {} ms", (System.currentTimeMillis() - start));
+
+        // If filtering by freeText or ordering by vardenhetNamn we need all vardenhetNames
+        boolean enrichedWithVardenhetNames = false;
+        if (request.getFreeText() != null || request.getOrderBy().equals("vardenhetNamn")) {
+            // Enrich with vardenhet namn from HSA
+            start = System.currentTimeMillis();
+            enrichWithVardenhetNames(list);
+            LOG.info("enrichWithVardenhetNames (first) took {} ms", (System.currentTimeMillis() - start));
+
+            enrichedWithVardenhetNames = true;
+        }
+
+        // Start actual filtering. Order is important here. We must always filter out unwanted items _before_ sorting and
+        // then finally paging.
+        start = System.currentTimeMillis();
+        List<AvslutadUtredningListItem> filtered = list.stream()
+                .filter(uli -> uli.getStatus().getUtredningFas() == UtredningFas.AVSLUTAD)
+                .filter(uli -> buildToFromPredicate(uli.getAvslutsDatum(), request.getAvslutsDatumFromDate(),
+                        request.getAvslutsDatumToDate()))
+                .filter(uli -> buildFreeTextPredicate(uli, request.getFreeText()))
+                .filter(uli -> buildYesNoAllPredicate(uli.getErsatts(), request.getErsatts()))
+                .filter(uli -> buildYesNoAllPredicate(uli.getFakturerad(), request.getFakturerad()))
+                .filter(uli -> buildYesNoAllPredicate(uli.getUtbetaldFk(), request.getUtbetaldFk()))
+                .filter(uli -> buildYesNoAllPredicate(uli.getBetald(), request.getBetald()))
+
+                .sorted((o1, o2) -> GenericComparator.compare(AvslutadUtredningListItem.class, o1, o2, request.getOrderBy(),
+                        request.isOrderByAsc()))
+                .collect(toList());
+        LOG.info("filtering of AvslutadUtredningListItem took {} ms", (System.currentTimeMillis() - start));
+        // Paging. We need to perform some bounds-checking...
+        int total = filtered.size();
+        if (total == 0) {
+            return new GetUtredningListResponse(filtered, total);
+        }
+
+        Pair<Integer, Integer> bounds = PagingUtil.getBounds(total, request.getPageSize(), request.getCurrentPage());
+        List<AvslutadUtredningListItem> paged = filtered.subList(bounds.getFirst(), bounds.getSecond() + 1);
 
         if (!enrichedWithVardenhetNames) {
             // Enrich with vardenhet namn from HSA
@@ -587,4 +653,5 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         UtredningFas utredningFas = UtredningFas.valueOf(fas);
         return uli.getFas() == utredningFas;
     }
+
 }
