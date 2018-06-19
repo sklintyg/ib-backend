@@ -43,7 +43,7 @@ import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
 
 
 @RunWith(MockitoJUnitRunner.class)
-public class SistaDatumKompletteringsBegaranJobTest {
+public class SistaDatumKompletteringsbegaranJobTest {
 
     @Mock
     private UtredningRepository utredningRepository;
@@ -52,7 +52,7 @@ public class SistaDatumKompletteringsBegaranJobTest {
     private UtredningService utredningService;
 
     @InjectMocks
-    private SistaDatumKompletteringsBegaranJob sistaDatumKompletteringsBegaranJob;
+    private SistaDatumKompletteringsbegaranJob sistaDatumKompletteringsBegaranJob;
 
     @Test
     public void test() {

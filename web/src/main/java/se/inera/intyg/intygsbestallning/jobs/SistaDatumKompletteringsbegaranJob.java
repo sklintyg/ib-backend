@@ -48,11 +48,11 @@ import se.inera.intyg.intygsbestallning.service.utredning.dto.AvslutaUtredningRe
 
 @Component
 @Transactional
-public class SistaDatumKompletteringsBegaranJob {
+public class SistaDatumKompletteringsbegaranJob {
 
     private static final long LOCK_AT_LEAST = 1000 * 15L;
     private static final long LOCK_AT_MOST = 1000 * 30L;
-    private static final String JOB_NAME = "avslutaUtredningJob";
+    private static final String JOB_NAME = "sistaDatumKompletteringsbegaranJob";
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -62,7 +62,7 @@ public class SistaDatumKompletteringsBegaranJob {
     @Autowired
     private UtredningService utredningService;
 
-    @Scheduled(cron = "${job.avsluta.utredning.cron}")
+    @Scheduled(cron = "${job.sista.datum.kompletteringsbegaran.cron}")
     @SchedulerLock(name = JOB_NAME, lockAtLeastFor = LOCK_AT_LEAST, lockAtMostFor = LOCK_AT_MOST)
     public void executeJob() {
 
