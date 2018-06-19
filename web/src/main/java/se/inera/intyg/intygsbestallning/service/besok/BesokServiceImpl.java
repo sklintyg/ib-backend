@@ -39,7 +39,6 @@ import java.lang.invoke.MethodHandles;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -68,6 +67,7 @@ import se.inera.intyg.intygsbestallning.service.stateresolver.BesokStatusResolve
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.AddArbetsdagarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RedovisaBesokRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokResponse;
@@ -268,9 +268,8 @@ public class BesokServiceImpl extends BaseBesokService implements BesokService {
     }
 
     @Override
-    public LocalDate addArbetsdagar(Map<String, String> map) {
-        LocalDate date = LocalDate.parse(map.get("datum"), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        return businessDaysBean.addBusinessDays(date, Integer.parseInt(map.get("arbetsdagar")));
+    public LocalDate addArbetsdagar(AddArbetsdagarRequest request) {
+        return businessDaysBean.addBusinessDays(request.getDatum(), request.getArbetsdagar());
     }
 
     private Avvikelse createAvvikelse(final ReportBesokAvvikelseRequest request) {
