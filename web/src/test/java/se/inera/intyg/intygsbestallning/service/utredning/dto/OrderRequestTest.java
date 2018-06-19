@@ -138,8 +138,8 @@ public class OrderRequestTest {
     private OrderAssessmentType createFullRequest() {
         OrderAssessmentType request = new OrderAssessmentType();
         request.setCertificateType(aCv(AFU.name(), null, null));
-        request.setOrderDate("2018-01-01");
-        request.setLastDateForCertificateReceival("2019-01-01");
+        request.setOrderDate("20180101");
+        request.setLastDateForCertificateReceival("20190101");
         CitizenType citizen = new CitizenType();
         citizen.setPersonalIdentity(anII(null, "personnummer"));
         citizen.setFirstName("firstname");

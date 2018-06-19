@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 
 public final class OrderRequest {
@@ -86,9 +87,9 @@ public final class OrderRequest {
                         .join(invanareSource.getFirstName(), invanareSource.getMiddleName(), invanareSource.getLastName()))
                 .withKommentar(source.getComment())
                 .withLastDateIntyg(!isNull(source.getLastDateForCertificateReceival())
-                        ? LocalDate.parse(source.getLastDateForCertificateReceival()) : null)
+                        ? SchemaDateUtil.toLocalDateFromDateType(source.getLastDateForCertificateReceival()) : null)
                 .withOrderDate(!isNull(source.getOrderDate())
-                        ? LocalDate.parse(source.getOrderDate()) : null)
+                        ? SchemaDateUtil.toLocalDateFromDateType(source.getOrderDate()) : null)
                 .withSyfte(source.getPurpose())
                 .withTolkBehov(BooleanUtils.toBoolean(source.isNeedForInterpreter()))
                 .withTolkSprak((!isNull(source.isNeedForInterpreter()) && source.isNeedForInterpreter())
