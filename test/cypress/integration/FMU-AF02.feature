@@ -5,12 +5,13 @@ Feature: FMU-AF02
 Scenario: Direkt tilldelning - [Förfrågan till accept]
 	#Förfrågan
 	Given att Försäkringskassan har skickat en förfrågan AFU till samordnare 
+	Then ska förfrågans status vara "Förfrågan inkommen" för "samordnare"
+	
+	When jag direkttilldelar förfrågan 
 	Then ska förfrågans status vara "Tilldela utredning" för "samordnare"
+	Then ska förfrågans status vara "Utredning tilldelad" för "vårdadmin"
 	
-	#When jag tilldelar förfrågan 
-	#Then ska förfrågans status vara "Direkt tilldelad"
-	
-	#Given att en vårdadmin är inloggad 
 	#When vårdadmin accepterar förfrågan
-	#Then ska förfrågans status vara "Direkt tilldelad"
+	#Then ska förfrågans status vara "Direkt tilldelad" för "samordnare"
+	#Then ska förfrågans status vara "Direkt tilldelad" för "samordnare"
 	#Then ska Försäkringskassan notifieras att förfrågan är accepterad

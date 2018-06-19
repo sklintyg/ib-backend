@@ -3,12 +3,13 @@ let moment = require('moment');
 let utredningsId;
 
 let landstingHsaId = 'IFV1239877878-1041';
+let enhetsHsaId = ''
 
 given('att Försäkringskassan har skickat en förfrågan AFU till samordnare', () => {
 	
     let date = moment().add(1, 'days').format('YYYY-MM-DD');
 
-	cy.requestHealthPerformerAssessment({
+	cy.requestPerformerForAssessment({
             utredningsTyp: 'AFU',
             besvaraSenastDatum: date.replace(/-/g,''),
             landstingHsaId: landstingHsaId,
@@ -25,20 +26,45 @@ given('att Försäkringskassan har skickat en förfrågan AFU till samordnare', 
  
 
 then('ska förfrågans status vara {string} för {string}', (status, roll) => {
-    cy.login(getUser(roll, landstingHsaId));
-    cy.visit('/#/app/samordnare/listaUtredningar/visaUtredning/' + utredningsId);
-console.log(status);
-console.log(roll);
-})      
+    goToUtredning(roll, landstingHsaId, utredningsId)
+    cy.get("#utredning-header-status").should("contain", status);
+})
 
 
+when('jag direkttilldelar förfrågan', () => {
+    goToUtredning('samordnare', landstingHsaId, utredningsId)
+    cy.get('#tilldela-direkt-button').click();
+    cy.get('#tilldela-direkt-modal-vardenheter-eget-landsting-input-IFV1239877878-1042').click();
+    cy.get('#tilldela-direkt-modal-meddelande_textarea').type('nån slags text');
+    cy.get('#tilldela-direkt-modal-skicka').click();
+
+})
 
 
-
-function getUser(roll, landsting) {
-    let user;
-    if (roll === 'samordnare' && landsting === 'IFV1239877878-1041') {
-        user = 'Gunnel Grävling (Samordnare 2 | Intygsbeställning)';
+function goToUtredning(roll, landsting, utredning) {
+    cy.login(getUser(landsting));
+    if (roll === 'samordnare') {
+        cy.get('#ib-vardenhet-selector-select-active-unit-IFV1239877878-1041-link').click();    
+        cy.get('#samordnare-lista-utredningar-table').should('contain', utredning);
+        cy.visit('/#/app/samordnare/listaUtredningar/visaUtredning/' + utredning);
+    } else if (roll === 'vårdadmin') {
+        cy.get('#ib-vardenhet-selector-select-active-unit-IFV1239877878-1042-link').click(); 
+        cy.get('#menu-vardadministrator-listaForfragningar').click();
+        cy.get('.listaForfragningar-page').should("contain", "Fritextsökning");
+        cy.get('#filterStatus-selected-item-label').click();
+        cy.get('#filterStatus-ALL').click();
+        cy.get('#vardadmin-lista-forfragningar-table').should('contain', utredning);
+        cy.visit('/#/app/vardadmin/listaForfragningar/visaInternForfragan/' + utredning);
     }
+    
+    
+}
+
+
+function getUser(landsting) {
+    let user;
+    //if (roll === 'samordnare' && landsting === 'IFV1239877878-1041') {
+        user = 'Harald Alltsson (Alla roller | Intygsbeställning)';
+    //}
     return user;
 }

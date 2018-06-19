@@ -24,7 +24,7 @@ describe('Samordnare lista utredningar', function() {
         cy.createUtredning(this.utredning1);
 
         date1 = moment().add(1, 'days').format('YYYY-MM-DD');
-        cy.requestHealthPerformerAssessment({
+        cy.requestPerformerForAssessment({
             utredningsTyp: 'AFU',
             besvaraSenastDatum: date1.replace(/-/g,''),
             landstingHsaId: landstingHsaId,
@@ -39,7 +39,7 @@ describe('Samordnare lista utredningar', function() {
         });
 
         date2 = moment().add(20, 'days').format('YYYY-MM-DD');
-        cy.requestHealthPerformerAssessment({
+        cy.requestPerformerForAssessment({
             utredningsTyp: 'AFU_UTVIDGAD',
             besvaraSenastDatum: date2.replace(/-/g,''),
             landstingHsaId: landstingHsaId,
@@ -54,7 +54,7 @@ describe('Samordnare lista utredningar', function() {
         });
 
         date3 = moment().add(35, 'days').format('YYYY-MM-DD');
-        cy.requestHealthPerformerAssessment({
+        cy.requestPerformerForAssessment({
             utredningsTyp: 'AFU',
             besvaraSenastDatum: date3.replace(/-/g,''),
             landstingHsaId: landstingHsaId,
