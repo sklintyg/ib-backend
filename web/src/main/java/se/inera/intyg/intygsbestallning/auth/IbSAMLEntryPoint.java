@@ -108,7 +108,7 @@ public class IbSAMLEntryPoint extends SAMLEntryPoint {
             }
         }
         LOG.error(
-                "Unable to resolve relayState from HTTP request since the SAMLMessageContext contained to wrapped HttpServletRequest. "
+                "Unable to resolve relayState from HTTP request since the SAMLMessageContext contained no wrapped HttpServletRequest. "
                         + "This should never happen...");
         return null;
     }

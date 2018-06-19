@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
@@ -37,7 +36,6 @@ import java.util.List;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.SLUTDATUM_UTREDNING_PASSERAT;
 
 @Component
-@Transactional
 public class SlutdatumForUtredningPasseradJob {
 
     private static final Logger LOG = LoggerFactory.getLogger(SlutdatumForUtredningPasseradJob.class);
