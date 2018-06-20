@@ -211,6 +211,7 @@ var ibMessages = {
         'label.table.bestallning.besok.column.tolk': 'Tolk',
         'label.table.bestallning.besok.column.kallelse': 'Kallelse skickad',
         'label.table.bestallning.besok.column.status': 'Status',
+        'label.table.bestallning.besok.column.ersatts': 'Ersätts',
 
         // Lista pågående utredningar (vårdadmin) tabell
         'label.table.bestallningar.column.id': 'Id',

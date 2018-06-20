@@ -19,6 +19,7 @@
       <th ib-table-head label-key="label.table.bestallning.besok.column.tolk"></th>
       <th ib-table-head label-key="label.table.bestallning.besok.column.kallelse"></th>
       <th ib-table-head label-key="label.table.bestallning.besok.column.status"></th>
+      <th ng-if="showErsatts()" ib-table-head label-key="label.table.bestallning.besok.column.ersatts"></th>
       <th></th>
       <th></th>
     </tr>
@@ -31,6 +32,7 @@
       <td>{{::row.tolkStatus.label}}</td>
       <td>{{::row.kallelseDatum}} per {{::row.kallelseForm.label}}</td>
       <td>{{::row.besokStatus.label}}</td>
+      <td ng-if="showErsatts()"><ib-yes-no value="::row.ersatts"></ib-yes-no></td>
       <td>
         <button type="button" class="btn btn-link btn-link__purelink" ng-click="row.showDetails=!row.showDetails"
                 ng-switch="row.showDetails" ng-if="row.handelseList.length > 1">

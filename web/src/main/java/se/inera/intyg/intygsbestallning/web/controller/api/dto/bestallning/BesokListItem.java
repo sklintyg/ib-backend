@@ -45,6 +45,7 @@ public class BesokListItem {
     private KallelseFormTyp kallelseForm;
     private String kallelseDatum;
     private List<HandelseListItem> handelseList;
+    private Boolean ersatts;
 
     public static BesokListItem from(Besok besok) {
         return BesokListItemBuilder.aBesokListItem()
@@ -61,6 +62,7 @@ public class BesokListItem {
                 .withHandelseList(besok.getHandelseList().stream()
                         .map(handelse ->  HandelseListItem.from(handelse, true))
                         .collect(Collectors.toList()))
+                .withErsatts(besok.getErsatts())
                 .build();
     }
 
@@ -152,6 +154,14 @@ public class BesokListItem {
         this.handelseList = handelseList;
     }
 
+    public Boolean isErsatts() {
+        return ersatts;
+    }
+
+    public void setErsatts(Boolean ersatts) {
+        this.ersatts = ersatts;
+    }
+
     public static final class  BesokListItemBuilder {
         private Long besokId;
         private BesokStatus besokStatus;
@@ -164,6 +174,7 @@ public class BesokListItem {
         private KallelseFormTyp kallelseForm;
         private String kallelseDatum;
         private List<HandelseListItem> handelseList;
+        private Boolean ersatts;
 
         private BesokListItemBuilder() {
         }
@@ -227,6 +238,11 @@ public class BesokListItem {
             return this;
         }
 
+        public BesokListItemBuilder withErsatts(Boolean ersatts) {
+            this.ersatts = ersatts;
+            return this;
+        }
+
         public BesokListItem build() {
             BesokListItem besokListItem = new BesokListItem();
             besokListItem.setBesokId(besokId);
@@ -240,7 +256,9 @@ public class BesokListItem {
             besokListItem.setProfession(profession);
             besokListItem.setTolkStatus(tolkStatus);
             besokListItem.setHandelseList(handelseList);
+            besokListItem.setErsatts(ersatts);
             return besokListItem;
         }
+
     }
 }
