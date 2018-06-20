@@ -42,7 +42,9 @@ angular.module('ibApp').factory('InternForfraganProxy', function(ProxyTemplate) 
         var config = {
             errorMessageConfig: {
                 errorTitleKey: 'server.error.accepterainternforfragan.title',
-                errorTextKey: 'server.error.accepterainternforfragan.text'
+                errorTextKey: 'server.error.accepterainternforfragan.text',
+                errorHsaTextKey: 'server.error.accepterainternforfragan.hsa.text',
+                errorMyndighetTextKey: 'server.error.accepterainternforfragan.myndighet.text'
             }
         };
         var restPath = basePath + '/' + utredningsId + '/besvara';
@@ -52,7 +54,9 @@ angular.module('ibApp').factory('InternForfraganProxy', function(ProxyTemplate) 
         var config = {
             errorMessageConfig: {
                 errorTitleKey: 'server.error.avvisainternforfragan.title',
-                errorTextKey: 'server.error.avvisainternforfragan.text'
+                errorTextKey: 'server.error.avvisainternforfragan.text',
+                errorHsaTextKey: 'server.error.avvisainternforfragan.hsa.text',
+                errorMyndighetTextKey: 'server.error.avvisainternforfragan.myndighet.text'
             }
         };
         var restPath = basePath + '/' + utredningsId + '/besvara';
