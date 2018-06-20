@@ -16,44 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.service.mail.stub;
+package se.inera.intyg.intygsbestallning.mailsender.service;
 
-public class StubbedEmail {
-
-    private String to;
-    private String subject;
-    private String body;
-
-    public StubbedEmail() {
-    }
-
-    public StubbedEmail(String to, String subject, String body) {
-        this.to = to;
-        this.subject = subject;
-        this.body = body;
-    }
-
-    public String getTo() {
-        return to;
-    }
-
-    public void setTo(String to) {
-        this.to = to;
-    }
-
-    public String getSubject() {
-        return subject;
-    }
-
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
-
-    public String getBody() {
-        return body;
-    }
-
-    public void setBody(String body) {
-        this.body = body;
-    }
+public interface IbMailSender {
+    void process(String notificationEmailJson) throws Exception;
 }

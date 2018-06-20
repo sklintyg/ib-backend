@@ -18,10 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.config;
 
-import javax.servlet.FilterRegistration;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration;
-
+import io.prometheus.client.exporter.MetricsServlet;
 import org.apache.cxf.transport.servlet.CXFServlet;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.web.WebApplicationInitializer;
@@ -32,14 +29,17 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.DispatcherServlet;
-
-import io.prometheus.client.exporter.MetricsServlet;
+import se.inera.intyg.intygsbestallning.mailsender.config.MailSenderConfig;
 import se.inera.intyg.intygsbestallning.integration.myndighet.config.MyndighetIntegrationClientConfiguration;
 import se.inera.intyg.intygsbestallning.integration.myndighet.config.MyndighetIntegrationConfiguration;
 import se.inera.intyg.intygsbestallning.integration.myndighet.stubs.MyndighetIntegrationStubConfiguration;
 import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigDev;
 import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigJndi;
 import se.inera.intyg.intygsbestallning.web.filters.SessionTimeoutFilter;
+
+import javax.servlet.FilterRegistration;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRegistration;
 
 public class ApplicationInitializer implements WebApplicationInitializer {
 
@@ -54,6 +54,7 @@ public class ApplicationInitializer implements WebApplicationInitializer {
                 PuConfiguration.class,
                 ServiceConfig.class,
                 MailConfiguration.class,
+                MailSenderConfig.class,
                 JmsConfig.class,
                 NTjPPingConfig.class,
                 SecurityConfig.class,

@@ -52,6 +52,9 @@ public class JmsConfig {
     @Value("${aggregated.pdl.logging.queue.name}")
     private String aggregatedLoggingQueueName;
 
+    @Value("${mailsender.queue.name}")
+    private String mailSenderQueueName;
+
     @Bean
     public JmsTransactionManager jmsTransactionManager() {
         return new JmsTransactionManager(connectionFactory());
@@ -80,6 +83,15 @@ public class JmsConfig {
     public JmsTemplate jmsAggregatedPDLLogTemplate() {
         JmsTemplate jmsTemplate = new JmsTemplate();
         jmsTemplate.setDefaultDestinationName(aggregatedLoggingQueueName);
+        jmsTemplate.setConnectionFactory(connectionFactory());
+        jmsTemplate.setSessionTransacted(true);
+        return jmsTemplate;
+    }
+
+    @Bean
+    public JmsTemplate jmsNotificationMailTemplate() {
+        JmsTemplate jmsTemplate = new JmsTemplate();
+        jmsTemplate.setDefaultDestinationName(mailSenderQueueName);
         jmsTemplate.setConnectionFactory(connectionFactory());
         jmsTemplate.setSessionTransacted(true);
         return jmsTemplate;

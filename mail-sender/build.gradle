@@ -1,0 +1,33 @@
+test {
+    exclude '**/*IT*'
+}
+
+task camelTest(type: Test) {
+    outputs.upToDateWhen { false }
+    include '**/*IT*'
+}
+
+dependencies {
+    compile project(':ib-common')
+
+    compile "org.springframework:spring-jms:${springContextVersion}"
+    compile "org.apache.camel:camel-spring:${camelVersion}"
+    compile "org.apache.camel:camel-core:${camelVersion}"
+    compile "org.apache.camel:camel-cxf:${camelVersion}"
+    compile "org.apache.camel:camel-jms:${camelVersion}"
+    compile "org.apache.camel:camel-jackson:${camelVersion}"
+    compile "org.apache.camel:camel-jaxb:${camelVersion}"
+    compile "org.apache.camel:camel-spring-javaconfig:${camelVersion}"
+    compile "org.apache.activemq:activemq-camel:${activemqVersion}"
+    compile "javax.jms:javax.jms-api:2.0.1"
+
+    testCompile "com.jayway.awaitility:awaitility:${awaitilityVersion}"
+    testCompile "org.kubek2k:springockito:${springockitoVersion}"
+    testCompile "org.apache.camel:camel-test-spring:${camelVersion}"
+    testCompile "org.springframework:spring-test:${springContextVersion}"
+    testCompile "org.apache.activemq:activemq-broker:${activemqVersion}"
+    testCompile "org.apache.activemq:activemq-spring:${activemqVersion}"
+    testCompile "org.dbunit:dbunit:${dbUnitVersion}"
+
+    testRuntime "com.h2database:h2:${h2Version}"
+}

@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.testability;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
@@ -26,10 +28,9 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import se.inera.intyg.intygsbestallning.service.mail.stub.MailServiceStub;
-import se.inera.intyg.intygsbestallning.service.mail.stub.StubbedEmail;
 
-import java.util.List;
+import se.inera.intyg.intygsbestallning.common.model.NotificationEmail;
+import se.inera.intyg.intygsbestallning.mailsender.service.stub.MailServiceStub;
 
 @RestController
 @RequestMapping("/api/test/emailstub")
@@ -40,7 +41,7 @@ public class MailStubController {
     private MailServiceStub mailService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<StubbedEmail>> getStubbedEmails() {
+    public ResponseEntity<List<NotificationEmail>> getStubbedEmails() {
         return ResponseEntity.ok(mailService.getMailStore());
     }
 

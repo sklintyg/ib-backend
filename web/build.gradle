@@ -93,6 +93,7 @@ dependencies {
     compile project(":ib-common")
     compile project(":ib-persistence")
     compile project(":ib-myndighets-integration")
+    compile project(":ib-mail-sender")
 
     compile "se.riv.clinicalprocess.healthcond.monitoring:clinicalprocess-healthcond-monitoring-schemas:${internalMonitoringSchemaVersion}"
     compile "se.riv.itintegration.monitoring:itintegration-monitoring-schemas:${monitoringSchemaVersion}"

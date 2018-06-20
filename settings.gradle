@@ -7,11 +7,12 @@ pluginManagement {
 
 rootProject.name = 'ib-backend'
 
-include ':web', ':common', ':persistence', ':ib-liquibase-runner', ':integration/myndighets-integration', ':test'
+include ':web', ':common', ':persistence', ':ib-liquibase-runner', ':integration/myndighets-integration',':mail-sender', ':test'
 
 project(':web').name = 'ib-web'
 project(':common').name = 'ib-common'
 project(':persistence').name = 'ib-persistence'
 project(':integration/myndighets-integration').name = 'ib-myndighets-integration'
+project(':mail-sender').name = 'ib-mail-sender'
 project(':ib-liquibase-runner').projectDir = "$rootDir/tools/liquibase-runner" as File
 project(':test').name = 'ib-test'

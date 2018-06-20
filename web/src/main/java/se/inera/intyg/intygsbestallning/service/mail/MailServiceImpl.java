@@ -19,18 +19,24 @@
 package se.inera.intyg.intygsbestallning.service.mail;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
+import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.common.model.NotificationEmail;
+
+/**
+ * Puts an ObjectMessage representing the email on a queue, that will be picked up by the mail-sender Camel route.
+ *
+ * @author eriklupander
+ */
 @Service
-@Profile(value = {"demo", "qa", "prod"})
 public class MailServiceImpl implements MailService {
 
     @Value("${mail.admin}")
@@ -40,16 +46,25 @@ public class MailServiceImpl implements MailService {
     private String fromAddress;
 
     @Autowired
-    private JavaMailSender mailSender;
+    @Qualifier("jmsNotificationMailTemplate")
+    private JmsTemplate jmsTemplate;
+
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public void sendNotificationToUnit(String mailAddress, String subject, String body) throws MessagingException {
-        MimeMessage message = mailSender.createMimeMessage();
-        message.setFrom(new InternetAddress(fromAddress));
-        message.addRecipient(Message.RecipientType.TO, new InternetAddress(mailAddress));
-
-        message.setSubject(subject);
-        message.setContent(body, "text/html; charset=utf-8");
-        mailSender.send(message);
+    public void sendNotificationToUnit(String mailAddress, String subject, String body) {
+        jmsTemplate.send(session -> {
+            try {
+                return session
+                        .createTextMessage(objectMapper.writeValueAsString(NotificationEmail.NotificationEmailBuilder.aNotificationEmail()
+                                .withToAddress(mailAddress)
+                                .withSubject(subject)
+                                .withBody(body)
+                                .build()));
+            } catch (JsonProcessingException e) {
+                throw new IbServiceException(IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
+                        "Unable to marshal notification message, reason: " + e.getMessage());
+            }
+        });
     }
 }
