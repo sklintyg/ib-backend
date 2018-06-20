@@ -4,16 +4,15 @@ import io.gatling.http.Predef._
 import io.gatling.core.session._
 import scala.concurrent.duration._
 
-class GetBestallningarForVardenhet extends Simulation {
+class GetAvslutadeBestallningarForVardenhet extends Simulation {
   before {
     println("Setup")
-    Utils.cleanUtredningarForLandstingsId("IFV1239877878-1043")
-    Utils.injectUtredningar("utredning-bestalld.json", 10)
+    Utils.injectUtredningar("utredning-avslutad.json", 10)
   }
   val numberOfUsers = 100
   val vardenheter = csv("data/vardenheter.csv").circular
-
-  val scn = scenario("GetBestallningarForVardenhet")
+  var user = ""
+  val scn = scenario("GetAvslutadeBestallningarForVardenhet")
     .feed(vardenheter)
     .exec(http("Login as ${user}")
       .post("/fake")
@@ -29,10 +28,10 @@ class GetBestallningarForVardenhet extends Simulation {
                                       | "relayState": "FMU"
                                       |}""".stripMargin.replaceAll("\n", " "))
     )
-    .exec(http("GetBestallningarForVardenhet ${vardenhetHsaId}")
-      .post("/api/vardadmin/bestallningar")
+    .exec(http("GetAvslutadeBestallningarForVardenhet for ${user} at ${vardenhetHsaId}")
+      .post("/api/vardadmin/bestallningar/avslutade")
       .headers(Headers.json)
-      .body(ElFileBody("request/getBestallningarForVardenhet.json")).asJSON
+      .body(StringBody("""{ "vardgivareHsaId" : "${vardgivareHsaId}" }""")).asJSON
       .check(
         status.is(200)
       ))

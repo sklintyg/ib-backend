@@ -14,14 +14,12 @@ class GetUtredning extends Simulation {
   val testpersonnummer = csv("data/testpersonnummerSkatteverket.csv").circular
 
   val feeder = Iterator.continually(
-    Map(
-      ("id", utredningar(random.nextInt(utredningar.size)))
-    )
+    Map(("id", utredningar(random.nextInt(utredningar.size))))
   )
 
   before {
     println("Injecting utredningar")
-    utredningar = Utils.injectUtredningar("utredning.json")
+    utredningar = Utils.injectUtredningar("utredning.json", 10)
   }
 
   val scn = scenario("GetUtredning")

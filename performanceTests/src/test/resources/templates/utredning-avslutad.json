@@ -1,0 +1,85 @@
+{
+  "utredningsTyp": "AFU",
+  "arkiverad": true,
+  "externForfragan": {
+    "landstingHsaId": "${vardgivareHsaId}",
+    "inkomDatum": "2018-04-12T10:07:12.125",
+    "besvarasSenastDatum": "2018-04-26T10:07:12.127",
+    "kommentar": "Detta är en kommentar",
+    "internForfraganList": [
+      {
+        "vardenhetHsaId": "${vardenhetHsaId}",
+        "besvarasSenastDatum": "2018-04-26T10:07:12.396",
+        "kommentar": "Bered skyndsamt!",
+        "skapadDatum": "2018-04-11T10:07:12.125",
+        "tilldeladDatum": "2018-04-26T10:07:12.127",
+        "forfraganSvar": {
+          "svarTyp": "ACCEPTERA",
+          "utforareTyp": "ENHET",
+          "utforareNamn": "Utförarenheten",
+          "utforareAdress": "Utförarvägen 1",
+          "utforarePostnr": "12345",
+          "utforarePostort": "Utförhult",
+          "utforareTelefon": "123-123412",
+          "utforareEpost": "utforare@inera.se",
+          "kommentar": "Bered skyndsamt!",
+          "borjaDatum": "2018-12-12"
+        }
+      }
+    ]
+  },
+  "besokList": [
+    {
+      "ersatts": true,
+      "besokStartTid":"2018-04-13T11:00:00.000",
+      "besokSlutTid":"2018-04-13T12:00:00.000",
+      "besokStatus": "AVSLUTAD_VARDKONTAKT",
+      "kallelseDatum":"2018-03-23T00:00:00.000",
+      "kallelseForm":"BREVKONTAKT",
+      "deltagareProfession":"LK"
+    }
+  ],
+  "invanare": {
+    "personId": "19121212-1212",
+    "fullstandigtNamn": "Tolvan Tolvansson",
+    "postort": "11121",
+    "sarskildaBehov": "Gillar glass",
+    "tidigareUtforare": [
+      {
+        "tidigareEnhetId": "${vardenhetHsaId}"
+      }
+    ]
+  },
+  "handlaggare": {
+    "fullstandigtNamn": "Hanna Handläggarsson",
+    "telefonnummer": "031-9999999",
+    "email": "epost@inera.se"
+  },
+  "bestallning": {
+    "tilldeladVardenhetHsaId": "${vardenhetHsaId}",
+    "orderDatum": "2018-04-27T00:00:00",
+    "syfte": "Att bli friskare",
+    "planeradeAktiviteter": "Bowla med gänget",
+    "kommentar": "Detta är faktiskt testdata..."
+  },
+  "betalning": {
+    "fakturaId": "faktura-123",
+    "betalningsId": "betalning-123"
+  },
+  "handlingList": [
+    {
+      "skickatDatum": "2018-04-27T00:00:00",
+      "ursprung": "BESTALLNING"
+    }
+  ],
+  "intygList": [
+    {
+      "komplettering": false,
+      "sistaDatum": "2118-05-25T00:00:00.000",
+      "skickatDatum": "2018-04-15T00:00:00.000",
+      "mottagetDatum": "2018-05-12T00:00:00.000",
+      "sistaDatumKompletteringsbegaran": null
+    }
+  ],
+  "sprakTolk": "sv"
+}

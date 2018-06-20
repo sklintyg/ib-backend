@@ -38,12 +38,12 @@ object Utils {
     utredningsIdn.clear()
   }
 
-  def injectUtredningar(file: String): List[String] = {
+  def injectUtredningar(file: String, numUtredningar: Int): List[String] = {
     val bufferedSource = fromFile("src/test/resources/data/vardenheter.csv")
     var counter = 0
     for (line <- bufferedSource.getLines().drop(1)) {
       var i = 0
-      for (i <- 1 to 10) {
+      for (i <- 1 to numUtredningar) {
         val cols = line.split(",").map(_.trim)
         utredningsIdn += createUtredning(file, cols(0), cols(1))
         counter = counter + 1
@@ -57,7 +57,7 @@ object Utils {
   def createUtredning(file: String, vardenhetHsaId: String, vardgivareHsaId: String): String = {
     var url = baseUrl + "/api/test/utredningar"
 
-    var json = fromFile(s"src/test/resources/request/${file}").mkString
+    var json = fromFile(s"src/test/resources/templates/${file}").mkString
     json = json.replaceAll("\\$\\{vardenhetHsaId\\}", vardenhetHsaId)
     json = json.replaceAll("\\$\\{vardgivareHsaId\\}", vardgivareHsaId)
 
