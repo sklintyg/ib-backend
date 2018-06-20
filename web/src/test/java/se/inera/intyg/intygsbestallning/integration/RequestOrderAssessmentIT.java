@@ -18,6 +18,10 @@
  */
 package se.inera.intyg.intygsbestallning.integration;
 
+import static com.jayway.restassured.RestAssured.given;
+import static org.hamcrest.core.Is.is;
+import static se.inera.intyg.intygsbestallning.persistence.model.status.InternForfraganStatus.BESTALLD;
+
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.builder.RequestSpecBuilder;
 import com.jayway.restassured.response.ResponseBodyExtractionOptions;
@@ -27,15 +31,10 @@ import org.junit.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
+import java.time.LocalDate;
+import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.web.BaseRestIntegrationTest;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
-import static com.jayway.restassured.RestAssured.given;
-import static org.hamcrest.core.Is.is;
-import static se.inera.intyg.intygsbestallning.persistence.model.status.InternForfraganStatus.BESTALLD;
 
 public class RequestOrderAssessmentIT extends BaseRestIntegrationTest {
 
@@ -68,8 +67,8 @@ public class RequestOrderAssessmentIT extends BaseRestIntegrationTest {
                 new RequestOrderAssessmentIT.RequestOrderAssessment("" + utredningId,
                         "IFV1239877878-1042",
                         "AFU", true, "sv", "Detta är en kommentar",
-                        LocalDate.now().plusDays(25).format(DateTimeFormatter.ISO_DATE), false,
-                        "Bli frisk", "Bowla", LocalDate.now().format(DateTimeFormatter.ISO_DATE),
+                        SchemaDateUtil.toStringFromLocalDate(LocalDate.now().plusDays(25)), false,
+                        "Bli frisk", "Bowla", SchemaDateUtil.toStringFromLocalDate(LocalDate.now()),
                         "Hanna Handläggare", "123-123123", "handlaggare@ineratestar.se",
                         "19121212-1212", "Tolvan", "Tolvansson", "Rullator",
                         "Kommer från Tolvmåla"));
