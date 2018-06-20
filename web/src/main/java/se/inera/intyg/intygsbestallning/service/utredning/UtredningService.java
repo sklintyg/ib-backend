@@ -28,6 +28,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtre
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListAvslutadeUtredningarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveBetalningForUtredningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveUtbetalningForUtredningRequest;
 
 public interface UtredningService {
 
@@ -110,4 +111,6 @@ public interface UtredningService {
     void updateStatusToRedovisaBesok(Utredning utredning);
 
     void saveBetalningsIdForUtredning(Long utredningsId, SaveBetalningForUtredningRequest request, String loggedInAtLandstingHsaId);
+
+    void saveUtbetalningsIdForUtredning(Long utredningsId, SaveUtbetalningForUtredningRequest request, String loggedInAtLandstingHsaId);
 }

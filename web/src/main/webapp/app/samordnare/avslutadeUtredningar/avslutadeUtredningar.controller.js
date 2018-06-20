@@ -72,6 +72,17 @@ angular.module('ibApp')
                     });
             };
 
+            $scope.saveUtbetald = function(row, utbetald) {
+                row.utbetaldBusy = true;
+                UtredningarProxy.saveUtbetald(row.utredningsId, utbetald)
+                    .then(function() {}, function(error) {
+                        $log.error('Error saving utbetald ' + error);
+                    })
+                    .finally(function() { //jshint ignore:line
+                        row.utbetaldBusy = false;
+                    });
+            };
+
             $scope.getAvslutadeUtredningarFiltered();
         }
     );

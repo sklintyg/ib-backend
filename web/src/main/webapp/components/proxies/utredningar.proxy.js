@@ -99,6 +99,20 @@ angular.module('ibApp').factory('UtredningarProxy',
                 }});
         }
 
+        function _saveUtbetald(utredningId, utbetalningId) {
+            var restPath = basePath + '/' + utredningId + '/utbetald';
+
+            var request = {
+                utbetalningId: utbetalningId
+            };
+
+            return ProxyTemplate.postTemplate(restPath, request, {
+                errorMessageConfig: {
+                    errorTitleKey: 'server.error.saveutbetald.title',
+                    errorTextKey: 'server.error.saveutbetald.text'
+                }});
+        }
+
         // Return public API for the service
         return {
             getUtredning: _getUtredning,
@@ -107,6 +121,7 @@ angular.module('ibApp').factory('UtredningarProxy',
             getAvslutadeUtredningarWithFilter: _getAvslutadeUtredningarWithFilter,
             createInternForfragan: _createInternForfragan,
             tilldelaDirekt: _tillDelaDirekt,
-            saveBetald: _saveBetald
+            saveBetald: _saveBetald,
+            saveUtbetald: _saveUtbetald
         };
     });

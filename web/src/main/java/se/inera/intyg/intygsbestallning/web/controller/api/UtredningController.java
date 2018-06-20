@@ -42,6 +42,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtre
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListAvslutadeUtredningarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveBetalningForUtredningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveUtbetalningForUtredningRequest;
 
 @RestController
 @RequestMapping("/api/samordnare/utredningar")
@@ -126,10 +127,21 @@ public class UtredningController {
                                                          @RequestBody SaveBetalningForUtredningRequest request) {
         IbUser user = userService.getUser();
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_UTREDNINGAR)
-                .orThrow(new IbAuthorizationException("User does not have required privilege PRIVILEGE_LISTA_BESTALLNINGAR"));
+                .orThrow(new IbAuthorizationException("User does not have required privilege PRIVILEGE_LISTA_UTREDNINGAR"));
 
         utredningService.saveBetalningsIdForUtredning(utredningsId, request, user.getCurrentlyLoggedInAt().getId());
         return ResponseEntity.ok().build();
     }
 
+    @PrometheusTimeMethod(name = "save_utbetalningsid_for_utredning_duration_seconds", help = "Some helpful info here")
+    @PostMapping(path = "/{utredningsId}/utbetald", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> saveUtbetalningsIdForUtredning(@PathVariable("utredningsId") Long utredningsId,
+                                                               @RequestBody SaveUtbetalningForUtredningRequest request) {
+        IbUser user = userService.getUser();
+        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_UTREDNINGAR)
+                .orThrow(new IbAuthorizationException("User does not have required privilege PRIVILEGE_LISTA_UTREDNINGAR"));
+
+        utredningService.saveUtbetalningsIdForUtredning(utredningsId, request, user.getCurrentlyLoggedInAt().getId());
+        return ResponseEntity.ok().build();
+    }
 }
