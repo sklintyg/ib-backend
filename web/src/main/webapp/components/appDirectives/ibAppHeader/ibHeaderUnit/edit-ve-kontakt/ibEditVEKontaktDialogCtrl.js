@@ -16,10 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-angular.module('ibApp').controller('ibEditVEKontaktDialogCtrl', [ '$scope', '$log', 'VardenhetProxy', 'UtforareTyp',
-    function($scope, $log, VardenhetProxy, UtforareTyp) {
+angular.module('ibApp').controller('ibEditVEKontaktDialogCtrl', [ '$scope', '$log', 'VardenhetProxy', 'EMAIL_REGEXP_PATTERN', 'UtforareTyp',
+    function($scope, $log, VardenhetProxy, EMAIL_REGEXP_PATTERN, UtforareTyp) {
     'use strict';
     $scope.vm = {
+        emailPattern: EMAIL_REGEXP_PATTERN,
         utforareTyp: UtforareTyp,
         model: null,
         loading: true,

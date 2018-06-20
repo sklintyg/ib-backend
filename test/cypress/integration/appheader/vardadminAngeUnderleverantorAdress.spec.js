@@ -11,12 +11,12 @@ describe('Vårdadmin ange inställningar underleverantör', function() {
 
             cy.visaVEUnderleverantorKontaktInstallningModal();
 
-            cy.get('#mottagarNamn-input').type('{selectall}' + this.updatedSettings.mottagarNamn);
-            cy.get('#adress-input').type('{selectall}' + this.updatedSettings.adress);
-            cy.get('#postnummer-input').type('{selectall}' + this.updatedSettings.postnummer);
-            cy.get('#postort-input').type('{selectall}' + this.updatedSettings.postort);
-            cy.get('#telefonnummer-input').type('{selectall}' + this.updatedSettings.telefonnummer);
-            cy.get('#epost-input').type('{selectall}{backspace}' + this.updatedSettings.epost).blur();
+            cy.get('#mottagarNamn_input').type('{selectall}' + this.updatedSettings.mottagarNamn);
+            cy.get('#adress_input').type('{selectall}' + this.updatedSettings.adress);
+            cy.get('#postnummer_input').type('{selectall}' + this.updatedSettings.postnummer);
+            cy.get('#postort_input').type('{selectall}' + this.updatedSettings.postort);
+            cy.get('#telefonnummer_input').type('{selectall}' + this.updatedSettings.telefonnummer);
+            cy.get('#epost_input').type('{selectall}{backspace}' + this.updatedSettings.epost).blur();
 
 
             cy.get('#save-unit-settings-btn').click();
@@ -26,20 +26,20 @@ describe('Vårdadmin ange inställningar underleverantör', function() {
 
             cy.visaVEUnderleverantorKontaktInstallningModal();
             cy.get('.ib-header-unit-settings-dialog-template').should('be.visible');
-            cy.get('#mottagarNamn-input').should('not.have.text', this.updatedSettings.mottagarNamn);
+            cy.get('#mottagarNamn_input').should('not.have.text', this.updatedSettings.mottagarNamn);
             cy.get('#cancel-unit-settings-btn').click();
 
             //Byt tillbaka till första enheten
             cy.bytEnhet('linkoping');
 
             cy.visaVEUnderleverantorKontaktInstallningModal();
-            cy.get('#mottagarNamn-input').should('be.visible');
-            cy.get('#mottagarNamn-input').should('have.value', this.updatedSettings.mottagarNamn);
-            cy.get('#adress-input').should('have.value', this.updatedSettings.adress);
-            cy.get('#postnummer-input').should('have.value', this.updatedSettings.postnummer);
-            cy.get('#postort-input').should('have.value', this.updatedSettings.postort);
-            cy.get('#telefonnummer-input').should('have.value', this.updatedSettings.telefonnummer);
-            cy.get('#epost-input').should('have.value', this.updatedSettings.epost);
+            cy.get('#mottagarNamn_input').should('be.visible');
+            cy.get('#mottagarNamn_input').should('have.value', this.updatedSettings.mottagarNamn);
+            cy.get('#adress_input').should('have.value', this.updatedSettings.adress);
+            cy.get('#postnummer_input').should('have.value', this.updatedSettings.postnummer);
+            cy.get('#postort_input').should('have.value', this.updatedSettings.postort);
+            cy.get('#telefonnummer_input').should('have.value', this.updatedSettings.telefonnummer);
+            cy.get('#epost_input').should('have.value', this.updatedSettings.epost);
 
         });
     });

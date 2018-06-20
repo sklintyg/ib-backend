@@ -36,16 +36,17 @@ angular.module('ibApp').controller('ibAccepteraInternForfraganDlgController',
 
         $scope.onChangeUtforareTyp = function() {
 
-            InternForfraganSvarViewState.clearUtforare();
+
             $scope.vm.fetchingPreferences = true;
             VardenhetProxy.getVardenhetKontaktPreference($scope.vm.model.utforareTyp).then(function(pref) {
+                InternForfraganSvarViewState.clearUtforare();
                 $scope.vm.model.utforareNamn = pref.mottagarNamn;
                 $scope.vm.model.utforareAdress = pref.adress;
                 $scope.vm.model.utforarePostnr = pref.postnummer;
                 $scope.vm.model.utforarePostort = pref.postort;
                 $scope.vm.model.utforareTelefon = pref.telefonnummer;
                 $scope.vm.model.utforareEpost = pref.epost;
-                $scope.vm.model.utforareEpost = pref.epost;
+                $scope.vm.model.kommentar = pref.standardsvar;
             }, function(error) {
                 $log.error('failed to load preference!' + error);
             }).finally(function() { // jshint ignore:line

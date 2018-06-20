@@ -1,110 +1,94 @@
-<div class="ib-header-unit-settings-dialog-template">
-  <div class="modal-header">
-    <button type="button" class="close" data-ng-click="$dismiss()">×</button>
-    <h3><span message key="unitsettings.kontakt.change.{{vm.utforareTyp}}.modal.label"></span></h3>
-  </div>
-
-  <div class="modal-body">
-    <div ib-spinner label="unitsettings.spinner.loading" show-spinner="vm.loading">
-      <form name="preferenceForm" class="form-horizontal" novalidate autocomplete="off">
-        <p>
-          <span message key="unitsettings.kontakt.change.{{vm.utforareTyp}}.adress.desc"></span>
-        </p>
-
-        <div class="form-group">
-          <ib-textfield
-              id="mottagarNamn"
-              model="vm.model.mottagarNamn"
-              label-key="unitsettings.kontakt.form.mottagarnamn"
-              max-length="255"
-              label-col-size="2"
-              input-col-size="10">
-            </ib-textfield>
-        </div>
-
-        <div class="form-group">
-          <ib-textfield
-              id="adress"
-              model="vm.model.adress"
-              label-key="unitsettings.kontakt.form.adress"
-              max-length="255"
-              label-col-size="2"
-              input-col-size="10">
-          </ib-textfield>
-        </div>
-
-        <!-- combined postnr/ort -->
-        <div class="form-group">
-          <ib-textfield
-              id="postnummer"
-              model="vm.model.postnummer"
-              label-key="unitsettings.kontakt.form.postnummer"
-              max-length="255"
-              label-col-size="2"
-              input-col-size="3">
-          </ib-textfield>
-          <ib-textfield class="text-right"
-              id="postort"
-              model="vm.model.postort"
-              label-key="unitsettings.kontakt.form.postort"
-              max-length="255"
-              label-col-size="2"
-              input-col-size="5">
-          </ib-textfield>
-        </div>
-
-        <div class="form-group">
-          <ib-textfield
-              id="telefonnummer"
-              model="vm.model.telefonnummer"
-              label-key="unitsettings.kontakt.form.telefonnummer"
-              max-length="255"
-              label-col-size="2"
-              input-col-size="3">
-          </ib-textfield>
-
-          <ib-textfield class="text-right"
-              id="epost"
-              model="vm.model.epost"
-              label-key="unitsettings.kontakt.form.epost"
-              max-length="255"
-              label-col-size="2"
-              input-col-size="5">
-          </ib-textfield>
-        </div>
-        <div class="form-group" ng-if="vm.utforareTyp === 'ENHET'">
-          <div class="col-xs-offset-2 col-xs-10">
-          <ib-button
-              btn-id="get-latest-hsa-adress-btn"
-              btn-class="btn-primary"
-              btn-disabled="false"
-              busy="vm.fetchinghsa"
-              btn-click="getFromHsa()">
-            <i class="material-icons">autorenew</i>
-            <span message key="unitsettings.kontakt.form.fetchfromhsa"></span>
-          </ib-button>
-          </div>
-        </div>
-      </form>
+<div class="ib-header-unit-settings-dialog-template kontakt">
+  <form name="preferenceForm" novalidate autocomplete="off">
+    <div class="modal-header">
+      <button type="button" class="close" data-ng-click="$dismiss()">×</button>
+      <h3><span message key="unitsettings.kontakt.change.{{vm.utforareTyp}}.modal.label"></span></h3>
     </div>
-  </div>
+    <fieldset ng-disabled="vm.loading || vm.saving || vm.fetchinghsa">
+      <div class="modal-body">
+        <div ib-spinner label="unitsettings.spinner.loading" show-spinner="vm.loading">
+          <ib-bottom-fadeout>
+            <div class="inner-body">
+              <p>
+                <span message key="unitsettings.kontakt.change.{{vm.utforareTyp}}.adress.desc"></span>
+              </p>
 
-  <div class="modal-footer">
-    <ib-button
-        btn-id="save-unit-settings-btn"
-        btn-class="btn-primary"
-        btn-disabled="false"
-        busy="vm.loading || vm.saving"
-        btn-click="saveChanges()">
-      <span message key="common.save"></span>
-    </ib-button>
+              <div class="flex-grid">
+                <div class="col">
 
-    <ib-button
-        btn-id="cancel-unit-settings-btn"
-        btn-class="btn-default"
-        btn-disabled="false"
-        btn-click="$dismiss()">
-      <span message key="common.cancel"></span>
-    </ib-button>
-  </div>
+                  <ib-horisontal-textfield id="mottagarNamn" model="vm.model.mottagarNamn" required="true"
+                                           required-error="Fyll i mottagarnamn"
+                                           label-key="unitsettings.kontakt.form.mottagarnamn"
+                                           max-length="255"></ib-horisontal-textfield>
+
+
+                </div>
+              </div>
+              <div class="flex-grid">
+                <div class="col">
+                  <ib-horisontal-textfield id="adress" model="vm.model.adress" required="true"
+                                           required-error="Fyll i adress" label-key="unitsettings.kontakt.form.adress"
+                                           max-length="255"></ib-horisontal-textfield>
+                </div>
+              </div>
+
+              <!-- combined postnr/ort -->
+              <div class="flex-grid">
+                <div class="col">
+                  <ib-horisontal-textfield id="postnummer" model="vm.model.postnummer" required="true"
+                                           required-error="Fyll i postnummer, 5 siffror"
+                                           label-key="unitsettings.kontakt.form.postnummer" pattern="'\\d{5}'"
+                                           pattern-error="Fyll i postnummer, 5 siffror"
+                                           max-length="5"></ib-horisontal-textfield>
+                </div>
+                <div class="col col-2">
+                  <ib-horisontal-textfield id="postort" model="vm.model.postort" required="true"
+                                           required-error="Fyll i postort" label-key="unitsettings.kontakt.form.postort"
+                                           max-length="255"></ib-horisontal-textfield>
+                </div>
+              </div>
+
+              <div class="flex-grid">
+                <div class="col">
+                  <ib-horisontal-textfield id="telefonnummer" model="vm.model.telefonnummer"
+                                           label-key="unitsettings.kontakt.form.telefonnummer"
+                                           max-length="255"></ib-horisontal-textfield>
+                </div>
+              </div>
+              <div class="flex-grid">
+                <div class="col">
+                  <ib-horisontal-textfield id="epost" model="vm.model.epost" label-key="unitsettings.kontakt.form.epost"
+                                           pattern="{{vm.emailPattern}}" pattern-error="Fyll i giltig e-postadress"
+                                           max-length="255"></ib-horisontal-textfield>
+                </div>
+              </div>
+
+
+              <div class="flex-grid" ng-if="vm.utforareTyp === 'ENHET'">
+                <div class="col"></div>
+                <div class="col">
+                  <ib-button btn-id="get-latest-hsa-adress-btn" btn-class="btn-primary" btn-disabled="false"
+                             busy="vm.fetchinghsa" btn-click="getFromHsa()">
+                    <i class="material-icons">autorenew</i>
+                    <span message key="unitsettings.kontakt.form.fetchfromhsa"></span>
+                  </ib-button>
+                </div>
+              </div>
+            </div>
+          </ib-bottom-fadeout>
+        </div>
+      </div>
+    </fieldset>
+
+    <div class="modal-footer">
+      <ib-button btn-id="save-unit-settings-btn" btn-class="btn-primary" btn-disabled="!preferenceForm.$valid"
+                 busy="vm.loading || vm.saving" btn-click="saveChanges()">
+        <span message key="common.save"></span>
+      </ib-button>
+
+      <ib-button btn-id="cancel-unit-settings-btn" btn-class="btn-default" btn-disabled="false" btn-click="$dismiss()">
+        <span message key="common.cancel"></span>
+      </ib-button>
+    </div>
+  </form>
 </div>

@@ -37,13 +37,13 @@ ib-header-unit {
 
 .ib-header-unit-settings-dialog-window-class {
 
-  .modal-dialog {
+    .modal-dialog {
     width: 650px;
   }
   .modal-body {
-    max-height: 70vh;
+    max-height: 80vh;
     overflow-y: auto;
-    padding: 16px 16px;
+    padding: 16px;
 
     // some layout helper classes used in unit setting dialogs
     .flex-grid {
@@ -51,7 +51,7 @@ ib-header-unit {
 
       .col {
         flex: 1;
-        padding: 10px 20px;
+        padding: 7px 20px;
         &.col-2 {
           flex: 2;
         }
