@@ -8,7 +8,7 @@
     <tr>
       <th ib-table-head filter="filter" filter-changed="getBestallningarFiltered()" order-by-key="utredningsId" label-key="label.table.bestallningar.column.id"></th>
       <th ib-table-head filter="filter" filter-changed="getBestallningarFiltered()" order-by-key="utredningsTyp" label-key="label.table.bestallningar.column.typ"></th>
-      <th ib-table-head filter="filter" filter-changed="getBestallningarFiltered()" order-by-key="vardgivareNamn" label-key="label.table.bestallningar.column.vardgivareNamn"></th>
+      <th ng-if="filter.vardgivareNamnOptions.length > 2" ib-table-head filter="filter" filter-changed="getBestallningarFiltered()" order-by-key="vardgivareNamn" label-key="label.table.bestallningar.column.vardgivareNamn"></th>
       <th ib-table-head filter="filter" filter-changed="getBestallningarFiltered()" order-by-key="patientId" label-key="label.table.bestallningar.column.patientId"></th>
       <th ib-table-head filter="filter" filter-changed="getBestallningarFiltered()" order-by-key="patientNamn" label-key="label.table.bestallningar.column.patientNamn"></th>
       <th ib-table-head filter="filter" filter-changed="getBestallningarFiltered()" order-by-key="slutdatumFas" label-key="label.table.bestallningar.column.slutdatumfas"></th>
@@ -20,7 +20,7 @@
     <tr ng-repeat="row in bestallningar">
       <td>{{::row.utredningsId}}</td>
       <td>{{::row.utredningsTyp}}</td>
-      <td>{{::row.vardgivareNamn}}</td>
+      <td ng-if="filter.vardgivareNamnOptions.length > 2">{{::row.vardgivareNamn}}</td>
       <td>{{::row.patientId}}</td>
       <td>{{::row.patientNamn}}</td>
       <td><ib-bestallning-slutdatum-fas slutdatum-passerat="::row.slutdatumPasserat" slutdatum-pa-vag-passeras="::row.slutdatumPaVagPasseras" slutdatum-fas="::row.slutdatumFas"></ib-bestallning-slutdatum-fas></td>

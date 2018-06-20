@@ -8,7 +8,7 @@
     <tr>
       <th ib-table-head filter="filter" filter-changed="getAvslutadeBestallningarFiltered()" order-by-key="utredningsId" label-key="label.table.avslutade.bestallningar.column.id"></th>
       <th ib-table-head filter="filter" filter-changed="getAvslutadeBestallningarFiltered()" order-by-key="utredningsTyp" label-key="label.table.avslutade.bestallningar.column.typ"></th>
-      <th ib-table-head filter="filter" filter-changed="getAvslutadeBestallningarFiltered()" order-by-key="vardgivareNamn" label-key="label.table.avslutade.bestallningar.column.vardgivareNamn"></th>
+      <th ng-if="filter.vardgivareNamnOptions.length > 2" ib-table-head filter="filter" filter-changed="getAvslutadeBestallningarFiltered()" order-by-key="vardgivareNamn" label-key="label.table.avslutade.bestallningar.column.vardgivareNamn"></th>
       <th ib-table-head filter="filter" filter-changed="getAvslutadeBestallningarFiltered()" order-by-key="status" label-key="label.table.avslutade.bestallningar.column.status"></th>
       <th ib-table-head filter="filter" filter-changed="getAvslutadeBestallningarFiltered()" order-by-key="avslutsDatum" label-key="label.table.avslutade.bestallningar.column.avslutsdatum"></th>
       <th ib-table-head filter="filter" filter-changed="getAvslutadeBestallningarFiltered()" order-by-key="ersatts" label-key="label.table.avslutade.bestallningar.column.ersatts"></th>
@@ -21,7 +21,7 @@
     <tr ng-repeat="row in bestallningar">
       <td>{{::row.utredningsId}}</td>
       <td>{{::row.utredningsTyp}}</td>
-      <td>{{::row.vardgivareNamn}}</td>
+      <td ng-if="filter.vardgivareNamnOptions.length > 2">{{::row.vardgivareNamn}}</td>
       <td>{{::row.status.label}}</td>
       <td>{{::row.avslutsDatum}}</td>
       <td><ib-yes-no value="::row.ersatts"></ib-yes-no></td>

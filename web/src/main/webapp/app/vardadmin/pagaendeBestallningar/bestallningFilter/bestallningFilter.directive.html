@@ -8,6 +8,7 @@
 </ib-textfield>
 <ib-dropdown
     id="filterLandsting"
+    ng-if="filter.vardgivareNamnOptions.length > 2"
     ng-model="filter.vardgivareNamn"
     ng-change="onChange()"
     label-key="bestallningar.filter.vardgivareNamn.label"
