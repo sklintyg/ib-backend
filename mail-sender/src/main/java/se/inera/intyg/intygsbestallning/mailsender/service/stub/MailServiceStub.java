@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.intygsbestallning.mailsender.exception.PermanentException;
+import se.inera.intyg.intygsbestallning.mailsender.exception.TemporaryException;
 import se.inera.intyg.intygsbestallning.mailsender.service.IbMailSender;
 import se.inera.intyg.intygsbestallning.common.model.NotificationEmail;
 
@@ -42,8 +43,22 @@ public class MailServiceStub implements IbMailSender {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
+    private boolean failWithTemporaryException = false;
+
+    private boolean failWithPermanentException = false;
+
+    private int attempts = 0;
+
     @Override
     public void process(String notificationEmailJson) throws Exception {
+        attempts++;
+        if (failWithPermanentException) {
+            throw new PermanentException("Forced PermanentException");
+        }
+        if (failWithTemporaryException) {
+            throw new TemporaryException("Forced TemporaryException");
+        }
+
         LOG.info("ENTER - MailServiceStub");
         NotificationEmail notificationEmail = null;
         try {
@@ -59,7 +74,25 @@ public class MailServiceStub implements IbMailSender {
         return mailStore;
     }
 
+    /**
+     * Clears any stored messages and sets the force-fails to false.
+     */
     public void clear() {
         mailStore.clear();
+        this.failWithTemporaryException = false;
+        this.failWithPermanentException = false;
+        attempts = 0;
+    }
+
+    public void setFailWithTemporaryException(boolean failWithTemporaryException) {
+        this.failWithTemporaryException = failWithTemporaryException;
+    }
+
+    public void setFailWithPermanentException(boolean failWithPermanentException) {
+        this.failWithPermanentException = failWithPermanentException;
+    }
+
+    public int getAttempts() {
+        return attempts;
     }
 }
