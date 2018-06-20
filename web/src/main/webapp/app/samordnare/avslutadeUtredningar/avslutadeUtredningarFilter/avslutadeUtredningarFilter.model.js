@@ -39,8 +39,8 @@ angular.module('ibApp').factory('ibAvslutadeUtredningarFilterModel',
             pageSize: 50,
             freetext: '',
             avslutsDatum: {
-                from: null,
-                to: null
+                from: moment().subtract(3, 'month'),
+                to: moment()
             },
             ersatts: 'ALL',
             fakturerad: 'ALL',
