@@ -55,7 +55,7 @@ public class MyndighetIntegrationServiceImpl implements MyndighetIntegrationServ
             RespondToPerformerRequestResponseType response = clientService.respondToPerformerRequest(request);
             handleResponse(response.getResult(), IbFailingServiceMethodEnum.RESPOND_TO_PERFORMER);
         } catch (RuntimeException e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             throw new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.MYNDIGHET,
                     e.getMessage(), IbFailingServiceMethodEnum.RESPOND_TO_PERFORMER);
         }
@@ -67,7 +67,7 @@ public class MyndighetIntegrationServiceImpl implements MyndighetIntegrationServ
             final ReportCareContactResponseType response = clientService.reportCareContact(request);
             handleResponse(response.getResult(), IbFailingServiceMethodEnum.REPORT_CARE_CONTACT);
         } catch (RuntimeException e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             throw new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.MYNDIGHET,
                     e.getMessage(), IbFailingServiceMethodEnum.REPORT_CARE_CONTACT);
         }
@@ -80,7 +80,7 @@ public class MyndighetIntegrationServiceImpl implements MyndighetIntegrationServ
             handleResponse(response.getResult(), IbFailingServiceMethodEnum.UPDATE_ASSESSMENT);
             return SchemaDateUtil.toLocalDateTimeFromDateType(response.getLastDateForCertificateReceival());
         } catch (RuntimeException e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             throw new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.MYNDIGHET,
                     e.getMessage(), IbFailingServiceMethodEnum.UPDATE_ASSESSMENT);
         }
@@ -92,7 +92,7 @@ public class MyndighetIntegrationServiceImpl implements MyndighetIntegrationServ
             final ReportDeviationResponseType response = clientService.reportDeviation(request);
             handleResponse(response.getResult(), IbFailingServiceMethodEnum.REPORT_DEVIATION);
         } catch (RuntimeException e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             throw new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.MYNDIGHET,
                     e.getMessage(), IbFailingServiceMethodEnum.REPORT_DEVIATION);
         }
