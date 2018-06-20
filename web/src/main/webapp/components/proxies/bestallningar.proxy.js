@@ -60,12 +60,27 @@ angular.module('ibApp').factory('BestallningarProxy',
             return ProxyTemplate.getTemplate(restPath, {});
         }
 
+        function _saveFakturerad(utredningId, fakturaId) {
+            var restPath = basePath + '/' + utredningId + '/faktura';
+
+            var request = {
+                fakturaId: fakturaId
+            };
+
+            return ProxyTemplate.postTemplate(restPath, request, {
+                errorMessageConfig: {
+                    errorTitleKey: 'server.error.savefaktura.title',
+                    errorTextKey: 'server.error.savefaktura.text'
+            }});
+        }
+
         // Return public API for the service
         return {
             getBestallning: _getBestallning,
             getBestallningarWithFilter: _getBestallningarWithFilter,
             getBestallningarFilterValues : _getBestallningarFilterValues,
             getAvslutadeBestallningarWithFilter: _getAvslutadeBestallningarWithFilter,
-            getAvslutadeBestallningarFilterValues : _getAvslutadeBestallningarFilterValues
+            getAvslutadeBestallningarFilterValues : _getAvslutadeBestallningarFilterValues,
+            saveFakturerad: _saveFakturerad
         };
     });

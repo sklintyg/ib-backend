@@ -1,14 +1,15 @@
 <span ng-switch="editing">
   <span ng-switch-when="true">
-    <input type="text" class="form-control" ng-model="model" maxlength="15" ng-keypress="onKeypress($event)">
+    <input type="text" class="form-control" ng-model="vm.model" maxlength="15" ng-keypress="onKeypress($event)">
     <a ng-click="save()" class="material-icons check-icon">check</a>
     <a ng-click="cancel()" class="material-icons clear-icon">clear</a>
   </span>
   <span ng-switch-when="false">
     <span class="value">
-      <i ng-if="model" class="material-icons check-icon">check_circle</i>
-      {{model}}
+      <i ng-if="vm.model" class="material-icons check-icon">check_circle</i>
+      {{vm.model}}
     </span>
-    <a ng-click="edit()" ng-if="editable" class="material-icons">create</a>
+    <span ng-if="busy"><i class="material-icons animate-spin">rotate_right</i></span>
+    <a ng-click="edit()" ng-if="editable && !busy" class="material-icons">create</a>
   </span>
 </span>

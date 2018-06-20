@@ -47,7 +47,6 @@ angular.module('ibApp')
                 });
             };
 
-
             BestallningarProxy.getAvslutadeBestallningarFilterValues().then(function(data) {
                 $scope.filter.populateFilter(data);
             }, function(error) {
@@ -59,6 +58,18 @@ angular.module('ibApp')
                 $scope.getAvslutadeBestallningarFiltered(true);
             };
 
+            $scope.saveFakturerad = function(row, fakturerad) {
+                row.faktureradBusy = true;
+                BestallningarProxy.saveFakturerad(row.utredningsId, fakturerad)
+                    .then(function() {}, function(error) {
+                        $log.error('Error saving fakturerad ' + error);
+                    })
+                    .finally(function() { //jshint ignore:line
+                        row.faktureradBusy = false;
+                    });
+            };
+
             $scope.getAvslutadeBestallningarFiltered();
+
         }
     );

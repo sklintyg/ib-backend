@@ -27,10 +27,15 @@ angular.module('ibApp').directive('ibInlineEdit',
             scope: {
                 model: '<',
                 editable: '<',
-                saveMethod: '&'
+                saveMethod: '&',
+                busy: '='
             },
             link: function($scope, element) {
                 $scope.editing = false;
+
+                $scope.vm = {
+                    model: $scope.model
+                };
 
                 $scope.edit = function() {
                     if ($scope.editable) {
@@ -41,10 +46,12 @@ angular.module('ibApp').directive('ibInlineEdit',
                     }
                 };
                 $scope.cancel = function() {
+                    $scope.vm.model = $scope.model;
                     $scope.editing = false;
                 };
                 $scope.save = function() {
-                    $scope.saveMethod({value : $scope.model});
+                    $scope.model = $scope.vm.model;
+                    $scope.saveMethod({model : $scope.vm.model});
                     $scope.editing = false;
                 };
                 $scope.onKeypress = function(keyEvent) {
