@@ -48,7 +48,7 @@ public final class ErsattsResolver {
 
         // Utredningen avslutad med orsak ”Jäv” eller ”Ingen beställning"
         if (utredning.getAvbrutenDatum() != null) {
-            if (utredning.getAvbrutenAnledning() == AvslutOrsak.INGEN_BESTALLNING || utredning.getAvbrutenAnledning() == AvslutOrsak.JAV) {
+            if (utredning.getAvbrutenOrsak() == AvslutOrsak.INGEN_BESTALLNING || utredning.getAvbrutenOrsak() == AvslutOrsak.JAV) {
                 return false;
             }
         }
@@ -91,8 +91,8 @@ public final class ErsattsResolver {
         }
 
         // Anrop till EndAssessment har inkommit mer än MAX_AVBOKNING_TIMMAR timmar innan besökets starttidpunkt.
-        if (utredning.getAvbrutenAnledning() != null
-                && utredning.getAvbrutenAnledning() == AvslutOrsak.UTREDNING_AVBRUTEN
+        if (utredning.getAvbrutenOrsak() != null
+                && utredning.getAvbrutenOrsak() == AvslutOrsak.UTREDNING_AVBRUTEN
                 && besok.getErsatts()
                 && utredning.getAvbrutenDatum().isBefore(besok.getBesokStartTid().minusHours(MAX_AVBOKNING_TIMMAR))) {
             return false;

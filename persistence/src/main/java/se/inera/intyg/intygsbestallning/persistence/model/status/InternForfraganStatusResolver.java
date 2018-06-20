@@ -80,7 +80,7 @@ public class InternForfraganStatusResolver {
         if (internForfragan.getForfraganSvar().getSvarTyp() == SvarTyp.ACCEPTERA && internForfragan.getTilldeladDatum() != null) {
 
             // Tilldelad enligt ovanstående kriterier, men Ingen beställning
-            if (utredning.getAvbrutenAnledning() != null && utredning.getAvbrutenAnledning() == AvslutOrsak.INGEN_BESTALLNING) {
+            if (utredning.getAvbrutenOrsak() != null && utredning.getAvbrutenOrsak() == AvslutOrsak.INGEN_BESTALLNING) {
                 return InternForfraganStatus.INGEN_BESTALLNING;
             }
 

@@ -34,7 +34,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
-import se.inera.intyg.intygsbestallning.auth.IbUser;
+
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
@@ -82,7 +82,7 @@ public class HandlingServiceImplTest {
     public void testUtredningAvbruten() {
         Utredning utredning = TestDataGen.createUtredning();
         utredning.setAvbrutenDatum(LocalDateTime.now());
-        utredning.setAvbrutenAnledning(AvslutOrsak.JAV);
+        utredning.setAvbrutenOrsak(AvslutOrsak.JAV);
         when(utredningRepository.findById(anyLong())).thenReturn(Optional.of(utredning));
         try {
             testee.registerNewHandling(1L, buildRequest());

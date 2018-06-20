@@ -79,7 +79,7 @@ public final class Utredning {
 
     @Column(name = "AVBRUTEN_ORSAK")
     @Enumerated(EnumType.STRING)
-    private AvslutOrsak avbrutenAnledning;
+    private AvslutOrsak avbrutenOrsak;
 
     @Column(name = "ARKIVERAD", nullable = false)
     private Boolean arkiverad = false;
@@ -162,7 +162,7 @@ public final class Utredning {
                 .withHandlaggare(Handlaggare.copyFrom(utredning.getHandlaggare()))
                 .withInvanare(Invanare.copyFrom(utredning.getInvanare()))
                 .withAvbrutenDatum(utredning.getAvbrutenDatum())
-                .withAvbrutenAnledning(utredning.getAvbrutenAnledning())
+                .withAvbrutenOrsak(utredning.getAvbrutenOrsak())
                 .withBetalning(utredning.getBetalning())
                 .withSkickadNotifieringList(utredning.getSkickadNotifieringList().stream()
                         .map(SkickadNotifiering::copyFrom)
@@ -235,12 +235,12 @@ public final class Utredning {
         this.besokList = besokList;
     }
 
-    public AvslutOrsak getAvbrutenAnledning() {
-        return avbrutenAnledning;
+    public AvslutOrsak getAvbrutenOrsak() {
+        return avbrutenOrsak;
     }
 
-    public void setAvbrutenAnledning(final AvslutOrsak avbrutenAnledning) {
-        this.avbrutenAnledning = avbrutenAnledning;
+    public void setAvbrutenOrsak(final AvslutOrsak avbrutenOrsak) {
+        this.avbrutenOrsak = avbrutenOrsak;
     }
 
     public Optional<ExternForfragan> getExternForfragan() {
@@ -358,7 +358,7 @@ public final class Utredning {
         if (avbrutenDatum != null ? !avbrutenDatum.equals(utredning.avbrutenDatum) : utredning.avbrutenDatum != null) {
             return false;
         }
-        if (avbrutenAnledning != utredning.avbrutenAnledning) {
+        if (avbrutenOrsak != utredning.avbrutenOrsak) {
             return false;
         }
         if (arkiverad != null ? !arkiverad.equals(utredning.arkiverad) : utredning.arkiverad != null) {
@@ -406,7 +406,7 @@ public final class Utredning {
                 tolkBehov,
                 tolkSprak,
                 avbrutenDatum,
-                avbrutenAnledning,
+                avbrutenOrsak,
                 arkiverad,
                 externForfragan,
                 handelseList,
@@ -430,7 +430,7 @@ public final class Utredning {
                 .add("tolkBehov", tolkBehov)
                 .add("tolkSprak", tolkSprak)
                 .add("avbrutenDatum", avbrutenDatum)
-                .add("avbrutenAnledning", avbrutenAnledning)
+                .add("avbrutenAnledning", avbrutenOrsak)
                 .add("arkiverad", arkiverad)
                 .add("externForfragan", externForfragan)
                 .add("handelseList", handelseList)
@@ -453,7 +453,7 @@ public final class Utredning {
         private Boolean tolkBehov;
         private String tolkSprak;
         private LocalDateTime avbrutenDatum;
-        private AvslutOrsak avbrutenAnledning;
+        private AvslutOrsak avbrutenOrsak;
         private Boolean arkiverad = false;
         private ExternForfragan externForfragan;
         private List<Handelse> handelseList = new ArrayList<>();
@@ -504,8 +504,8 @@ public final class Utredning {
             return this;
         }
 
-        public UtredningBuilder withAvbrutenAnledning(AvslutOrsak avbrutenAnledning) {
-            this.avbrutenAnledning = avbrutenAnledning;
+        public UtredningBuilder withAvbrutenOrsak(AvslutOrsak avbrutenOrsak) {
+            this.avbrutenOrsak = avbrutenOrsak;
             return this;
         }
 
@@ -577,7 +577,7 @@ public final class Utredning {
             utredning.setTolkBehov(tolkBehov);
             utredning.setTolkSprak(tolkSprak);
             utredning.setAvbrutenDatum(avbrutenDatum);
-            utredning.setAvbrutenAnledning(avbrutenAnledning);
+            utredning.setAvbrutenOrsak(avbrutenOrsak);
             utredning.setArkiverad(arkiverad);
             utredning.setExternForfragan(externForfragan);
             utredning.setHandelseList(handelseList);

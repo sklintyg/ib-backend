@@ -136,7 +136,7 @@ public class UtredningRepositoryTest {
         assertEquals(UtredningsTyp.AFU, utredning.getUtredningsTyp());
         assertFalse(utredning.getTolkBehov());
         assertNotNull(utredning.getAvbrutenDatum());
-        assertEquals(AvslutOrsak.JAV, utredning.getAvbrutenAnledning());
+        assertEquals(AvslutOrsak.JAV, utredning.getAvbrutenOrsak());
 
         Bestallning bestallning = utredning.getBestallning().orElse(null);
         assertNotNull(bestallning);

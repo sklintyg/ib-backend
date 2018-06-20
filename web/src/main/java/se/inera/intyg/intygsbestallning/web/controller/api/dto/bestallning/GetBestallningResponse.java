@@ -128,7 +128,7 @@ public class GetBestallningResponse implements PDLLoggable {
                 .withAvbrutenDatum(!isNull(utredning.getAvbrutenDatum())
                         ? utredning.getAvbrutenDatum().format(formatter)
                         : null)
-                .withAvbrutenAnledning(utredning.getAvbrutenAnledning())
+                .withAvbrutenAnledning(utredning.getAvbrutenOrsak())
                 .withMeddelandeFromHandlaggare(utredning.getBestallning()
                         .map(Bestallning::getKommentar)
                         .orElse(null))

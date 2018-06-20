@@ -584,7 +584,7 @@ public class UtredningServiceImplTest {
         doReturn(anUtredning()
                 .withUtredningId(utredningId)
                 .withAvbrutenDatum(DATE_TIME.plusMonths(2))
-                .withAvbrutenAnledning(AvslutOrsak.JAV)
+                .withAvbrutenOrsak(AvslutOrsak.JAV)
                 .build())
                 .when(utredningRepository)
                 .saveUtredning(any(Utredning.class));
@@ -603,7 +603,7 @@ public class UtredningServiceImplTest {
         assertNotNull(utredning);
         assertEquals(utredningId, utredning.getUtredningId());
         assertNotNull(utredning.getAvbrutenDatum());
-        assertEquals(AvslutOrsak.JAV, utredning.getAvbrutenAnledning());
+        assertEquals(AvslutOrsak.JAV, utredning.getAvbrutenOrsak());
     }
 
     @Test
@@ -627,7 +627,7 @@ public class UtredningServiceImplTest {
         Utredning uppdateradUtredning = Utredning.copyFrom(utredning);
         assertNotNull(uppdateradUtredning);
         uppdateradUtredning.setAvbrutenDatum(DATE_TIME.plusMonths(4));
-        uppdateradUtredning.setAvbrutenAnledning(AvslutOrsak.INGEN_BESTALLNING);
+        uppdateradUtredning.setAvbrutenOrsak(AvslutOrsak.INGEN_BESTALLNING);
 
         doReturn(Optional.of(utredning))
                 .when(utredningRepository)
@@ -651,7 +651,7 @@ public class UtredningServiceImplTest {
         assertNotNull(utredningCaptor);
         assertEquals(utredningId, utredningCaptor.getUtredningId());
         assertNotNull(utredningCaptor.getAvbrutenDatum());
-        assertEquals(AvslutOrsak.INGEN_BESTALLNING, utredningCaptor.getAvbrutenAnledning());
+        assertEquals(AvslutOrsak.INGEN_BESTALLNING, utredningCaptor.getAvbrutenOrsak());
 
         verify(notifieringSendService, times(1)).notifieraLandstingIngenBestallning(any(Utredning.class), any(InternForfragan.class));
         verify(notifieringSendService, times(1)).notifieraVardenhetIngenBestallning(any(Utredning.class), any(InternForfragan.class));
@@ -678,7 +678,7 @@ public class UtredningServiceImplTest {
         Utredning uppdateradUtredning = Utredning.copyFrom(utredning);
         assertNotNull(uppdateradUtredning);
         uppdateradUtredning.setAvbrutenDatum(DATE_TIME.plusMonths(4));
-        uppdateradUtredning.setAvbrutenAnledning(AvslutOrsak.UTREDNING_AVBRUTEN);
+        uppdateradUtredning.setAvbrutenOrsak(AvslutOrsak.UTREDNING_AVBRUTEN);
 
         doReturn(Optional.of(utredning))
                 .when(utredningRepository)
@@ -702,7 +702,7 @@ public class UtredningServiceImplTest {
         assertNotNull(utredningCaptor);
         assertEquals(utredningId, utredningCaptor.getUtredningId());
         assertNotNull(utredningCaptor.getAvbrutenDatum());
-        assertEquals(AvslutOrsak.UTREDNING_AVBRUTEN, utredningCaptor.getAvbrutenAnledning());
+        assertEquals(AvslutOrsak.UTREDNING_AVBRUTEN, utredningCaptor.getAvbrutenOrsak());
 
         verify(notifieringSendService, times(1)).notifieraLandstingAvslutadUtredning(any(Utredning.class));
         verify(notifieringSendService, times(1)).notifieraVardenhetAvslutadUtredning(any(Utredning.class));
@@ -750,7 +750,7 @@ public class UtredningServiceImplTest {
         Utredning uppdateradUtredning = Utredning.copyFrom(utredning);
         assertNotNull(uppdateradUtredning);
         uppdateradUtredning.setAvbrutenDatum(DATE_TIME.plusMonths(4));
-        uppdateradUtredning.setAvbrutenAnledning(AvslutOrsak.INGEN_KOMPLETTERING_BEGARD);
+        uppdateradUtredning.setAvbrutenOrsak(AvslutOrsak.INGEN_KOMPLETTERING_BEGARD);
 
         doReturn(Optional.of(utredning))
                 .when(utredningRepository)
@@ -775,7 +775,7 @@ public class UtredningServiceImplTest {
         assertNotNull(utredningCaptor);
         assertEquals(utredningId, utredningCaptor.getUtredningId());
         assertNotNull(utredningCaptor.getAvbrutenDatum());
-        assertEquals(AvslutOrsak.INGEN_KOMPLETTERING_BEGARD, utredningCaptor.getAvbrutenAnledning());
+        assertEquals(AvslutOrsak.INGEN_KOMPLETTERING_BEGARD, utredningCaptor.getAvbrutenOrsak());
 
         verifyZeroInteractions(notifieringSendService);
     }

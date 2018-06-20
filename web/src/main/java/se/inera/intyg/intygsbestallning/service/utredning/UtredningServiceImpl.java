@@ -442,7 +442,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .orElseThrow(() -> new IbNotFoundException(MessageFormat.format(
                         "Could not find the assessment with id {0}", request.getUtredningId())));
 
-        if (nonNull(utredning.getAvbrutenDatum()) || nonNull(utredning.getAvbrutenAnledning())) {
+        if (nonNull(utredning.getAvbrutenDatum()) || nonNull(utredning.getAvbrutenOrsak())) {
             throw new IbServiceException(IbErrorCodeEnum.ALREADY_EXISTS,
                     MessageFormat.format("EndAssessment has already been performed for Utredning {0}", utredning.getUtredningId()));
         }
@@ -453,7 +453,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
         final String vardAdministrator = request.getUser().map(IbUser::getNamn).orElse(null);
         utredning.setAvbrutenDatum(LocalDateTime.now());
-        utredning.setAvbrutenAnledning(orsak);
+        utredning.setAvbrutenOrsak(orsak);
         utredning.setArkiverad(true);
 
         final Handelse handelse = createHandelseUtredningAvslutad(orsak, vardAdministrator);

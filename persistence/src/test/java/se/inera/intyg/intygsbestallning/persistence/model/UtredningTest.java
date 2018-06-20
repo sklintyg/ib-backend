@@ -78,7 +78,7 @@ public class UtredningTest {
                 .withTolkBehov(true)
                 .withTolkSprak("sv")
                 .withAvbrutenDatum(datum.plusDays(6))
-                .withAvbrutenAnledning(AvslutOrsak.UTREDNING_AVBRUTEN)
+                .withAvbrutenOrsak(AvslutOrsak.UTREDNING_AVBRUTEN)
                 .withExternForfragan(anExternForfragan()
                         .withId(1L)
                         .withLandstingHsaId("hsaId")

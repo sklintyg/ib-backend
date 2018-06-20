@@ -52,7 +52,7 @@ public class ErsattsResolverTest {
     public void testErsattsEjVidJav() {
         Utredning utr = Utredning.UtredningBuilder.anUtredning()
                 .withAvbrutenDatum(LocalDateTime.now())
-                .withAvbrutenAnledning(AvslutOrsak.JAV)
+                .withAvbrutenOrsak(AvslutOrsak.JAV)
                 .build();
         assertFalse(ErsattsResolver.resolveUtredningErsatts(utr, businessDays));
     }
@@ -61,7 +61,7 @@ public class ErsattsResolverTest {
     public void testErsattsEjVidIngenBestallning() {
         Utredning utr = Utredning.UtredningBuilder.anUtredning()
                 .withAvbrutenDatum(LocalDateTime.now())
-                .withAvbrutenAnledning(AvslutOrsak.INGEN_BESTALLNING)
+                .withAvbrutenOrsak(AvslutOrsak.INGEN_BESTALLNING)
                 .build();
         assertFalse(ErsattsResolver.resolveUtredningErsatts(utr, businessDays));
     }
@@ -125,7 +125,7 @@ public class ErsattsResolverTest {
     public void testErsattsEjNarEndAssessmentInkomIGodTid() {
         Utredning utredning = ServiceTestUtil.buildBestallningar(1).get(0);
         utredning.setBesokList(buildBesokList(true, FEB_20));
-        utredning.setAvbrutenAnledning(AvslutOrsak.UTREDNING_AVBRUTEN);
+        utredning.setAvbrutenOrsak(AvslutOrsak.UTREDNING_AVBRUTEN);
         utredning.setAvbrutenDatum(FEB_13);
         assertFalse(ErsattsResolver.resolveBesokErsatts(utredning, utredning.getBesokList().get(0), businessDays));
     }

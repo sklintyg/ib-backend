@@ -50,7 +50,7 @@ public class InternForfraganStatusResolverTest extends BaseResolverTest {
     @Test
     public void testIngenBestallningSetButPreviouslyAvvisad() {
         Utredning utredning = buildBaseUtredning();
-        utredning.setAvbrutenAnledning(AvslutOrsak.INGEN_BESTALLNING);
+        utredning.setAvbrutenOrsak(AvslutOrsak.INGEN_BESTALLNING);
         ExternForfragan externForfragan = buildBaseExternForfragan();
         utredning.setExternForfragan(externForfragan);
         InternForfragan internForfragan = buildInternForfragan(buildForfraganSvar(SvarTyp.AVBOJ), null);
@@ -125,7 +125,7 @@ public class InternForfraganStatusResolverTest extends BaseResolverTest {
     @Test
     public void testTilldeladToSelfButIngenBestallning() {
         Utredning utredning = buildBaseUtredning();
-        utredning.setAvbrutenAnledning(AvslutOrsak.INGEN_BESTALLNING);
+        utredning.setAvbrutenOrsak(AvslutOrsak.INGEN_BESTALLNING);
         ExternForfragan externForfragan = buildBaseExternForfragan();
         utredning.setExternForfragan(externForfragan);
         InternForfragan internForfragan1 = buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now());

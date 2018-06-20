@@ -160,7 +160,7 @@ public final class TestDataFactory {
         return anUtredning()
                 .withUtredningsTyp(UtredningsTyp.AFU)
                 .withTolkBehov(false)
-                .withAvbrutenAnledning(AvslutOrsak.JAV)
+                .withAvbrutenOrsak(AvslutOrsak.JAV)
                 .withAvbrutenDatum(LocalDateTime.now())
                 .withArkiverad(false)
                 .build();
