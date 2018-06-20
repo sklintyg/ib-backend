@@ -39,11 +39,19 @@ public class VardenhetControllerIT extends BaseRestIntegrationTest {
     private static final String POSTORT = "Vårdberga";
     private static final String TELEFONNUMMER = "000-12345";
     private static final String EPOST = "ve@vg.se";
+    private static final String UTFORARE_TYP_ENHET = "ENHET";
+
 
     @Test
     public void testGetVardenhetPreference() {
         RestAssured.sessionId = getAuthSession(DEFAULT_VARDADMIN);
-        given().expect().statusCode(OK).when().get(VARDENHET_API_ENDPOINT + "/preference").then()
+        given().expect().statusCode(OK).when().get(VARDENHET_API_ENDPOINT + "/preference/ENHET").then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/ib-vardenhet-preference-response-schema.json"));
+    }
+    @Test
+    public void testGetVardenhetUnderleverantorPreference() {
+        RestAssured.sessionId = getAuthSession(DEFAULT_VARDADMIN);
+        given().expect().statusCode(OK).when().get(VARDENHET_API_ENDPOINT + "/preference/UNDERLEVERANTOR").then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/ib-vardenhet-preference-response-schema.json"));
     }
 
@@ -52,6 +60,7 @@ public class VardenhetControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_VARDADMIN);
         VardenhetPreferenceRequest request = new VardenhetPreferenceRequest();
         request.setMottagarNamn(MOTTAGAR_NAMN);
+        request.setUtforareTyp(UTFORARE_TYP_ENHET);
         request.setAdress(ADRESS);
         request.setPostnummer(POSTNUMMER);
         request.setPostort(POSTORT);
@@ -69,8 +78,9 @@ public class VardenhetControllerIT extends BaseRestIntegrationTest {
                 .body("epost", Matchers.is(request.getEpost()));
 
         // reset all properties and save again
-
-        given().contentType(ContentType.JSON).body(new VardenhetPreferenceRequest()).expect().statusCode(OK).when()
+        VardenhetPreferenceRequest emptyRequest = new VardenhetPreferenceRequest();
+        emptyRequest.setUtforareTyp(UTFORARE_TYP_ENHET);
+        given().contentType(ContentType.JSON).body(emptyRequest).expect().statusCode(OK).when()
                 .put(VARDENHET_API_ENDPOINT + "/preference")
                 .then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/ib-vardenhet-preference-response-schema.json"))

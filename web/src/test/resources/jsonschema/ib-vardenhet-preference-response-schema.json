@@ -1,8 +1,11 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Defines the transport model of a IB VardenhetPreference model, e.g returned by /api/vardenhet/preference",
+  "description": "Defines the transport model of a IB VardenhetPreference model, e.g returned by /api/vardenhet/preference/{type}",
   "properties": {
     "vardenhetHsaId": {
+      "type": "string"
+    },
+    "utforareTyp": {
       "type": "string"
     },
     "mottagarNamn": {
@@ -28,7 +31,9 @@
     }
   },
   "required": [
-    "vardenhetHsaId"
+    "vardenhetHsaId",
+    "utforareTyp"
+
   ],
   "title": "VardenhetPreferenceResponse transport model",
   "type": "object",
