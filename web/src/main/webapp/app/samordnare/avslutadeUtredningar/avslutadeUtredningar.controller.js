@@ -61,6 +61,17 @@ angular.module('ibApp')
                 $scope.getAvslutadeUtredningarFiltered(true);
             };
 
+            $scope.saveBetald = function(row, betald) {
+                row.betaldBusy = true;
+                UtredningarProxy.saveBetald(row.utredningsId, betald)
+                    .then(function() {}, function(error) {
+                        $log.error('Error saving betald ' + error);
+                    })
+                    .finally(function() { //jshint ignore:line
+                        row.betaldBusy = false;
+                    });
+            };
+
             $scope.getAvslutadeUtredningarFiltered();
         }
     );

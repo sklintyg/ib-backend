@@ -82,6 +82,7 @@ public final class TestDataGen {
     private static final String USER_NAME = "Läkar Läkarsson";
     private static final String CAREUNIT_ID = "careunit-1";
     private static final String CAREUNIT_NAME = "Vårdenhet 1";
+    private static final String LANDSTING_ID = "landsting-1";
     private static final Long UTREDNING_ID = 1L;
     private static final String PERSON_ID = "19121212-1212";
     private static final Long BESOK_ID = 1L;
@@ -326,7 +327,7 @@ public final class TestDataGen {
 
     public static ExternForfragan createExternForfragan() {
         return anExternForfragan()
-                .withLandstingHsaId("id")
+                .withLandstingHsaId(LANDSTING_ID)
                 .withInkomDatum(DATE_TIME)
                 .withBesvarasSenastDatum(DATE_TIME)
                 .withKommentar("kommentar")
@@ -366,6 +367,10 @@ public final class TestDataGen {
 
     public static String getCareunitId() {
         return CAREUNIT_ID;
+    }
+
+    public static String getLandstingId() {
+        return LANDSTING_ID;
     }
 
     public static String getPersonId() {

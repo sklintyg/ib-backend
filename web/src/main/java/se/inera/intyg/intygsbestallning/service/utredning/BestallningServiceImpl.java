@@ -46,7 +46,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus
 import se.inera.intyg.intygsbestallning.service.util.GenericComparator;
 import se.inera.intyg.intygsbestallning.service.util.PagingUtil;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.SaveFakturaForUtredningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.SaveFakturaForUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardgivareEnrichable;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.AvslutadBestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.AvslutadBestallningListItemFactory;

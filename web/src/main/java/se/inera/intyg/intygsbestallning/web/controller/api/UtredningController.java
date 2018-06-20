@@ -41,6 +41,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtre
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListAvslutadeUtredningarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListUtredningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveBetalningForUtredningRequest;
 
 @RestController
 @RequestMapping("/api/samordnare/utredningar")
@@ -118,4 +119,17 @@ public class UtredningController {
                 .orThrow(new IbAuthorizationException(EDIT_NOT_ALLOWED));
         return ResponseEntity.ok(internForfraganService.tilldelaDirekt(utredningsId, user.getCurrentlyLoggedInAt().getId(), req));
     }
+
+    @PrometheusTimeMethod(name = "save_betalningsid_for_utredning_duration_seconds", help = "Some helpful info here")
+    @PostMapping(path = "/{utredningsId}/betald", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> saveBetalningsIdForUtredning(@PathVariable("utredningsId") Long utredningsId,
+                                                         @RequestBody SaveBetalningForUtredningRequest request) {
+        IbUser user = userService.getUser();
+        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_UTREDNINGAR)
+                .orThrow(new IbAuthorizationException("User does not have required privilege PRIVILEGE_LISTA_BESTALLNINGAR"));
+
+        utredningService.saveBetalningsIdForUtredning(utredningsId, request, user.getCurrentlyLoggedInAt().getId());
+        return ResponseEntity.ok().build();
+    }
+
 }

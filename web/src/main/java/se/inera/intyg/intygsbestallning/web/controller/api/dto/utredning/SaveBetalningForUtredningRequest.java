@@ -16,17 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.web.controller.api.dto;
+package se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning;
 
-public class SaveFakturaForUtredningRequest {
+public class SaveBetalningForUtredningRequest {
 
-    private String fakturaId;
+    private String betalningId;
 
-    public String getFakturaId() {
-        return fakturaId;
+    public String getBetalningId() {
+        return betalningId;
     }
 
-    public void setFakturaId(String fakturaId) {
-        this.fakturaId = fakturaId;
+    public void setBetalningId(String betalningId) {
+        this.betalningId = betalningId;
     }
 }

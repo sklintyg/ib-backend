@@ -47,7 +47,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.GetBe
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.GetBestallningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.ListAvslutadeBestallningarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.ListBestallningRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.SaveFakturaForUtredningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.SaveFakturaForUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utlatande.SendUtlatandeRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListAvslutadeBestallningarFilter;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListBestallningFilter;

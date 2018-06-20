@@ -68,6 +68,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveBetalningForUtredningRequest;
 import se.riv.infrastructure.directory.organization.getunitresponder.v1.UnitType;
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
 import javax.xml.ws.WebServiceException;
@@ -812,5 +814,37 @@ public class UtredningServiceImplTest {
                 .isExactlyInstanceOf(IbServiceException.class)
                 .hasMessage(MessageFormat.format("EndAssessment has already been performed for Utredning {0}", utredningId))
                 .hasFieldOrPropertyWithValue("errorCode", IbErrorCodeEnum.ALREADY_EXISTS);
+    }
+
+    @Test
+    public void testSaveBetalningForUtredningSuccess() {
+        doReturn(Optional.of(TestDataGen.createUtredning())).when(utredningRepository).findById(TestDataGen.getUtredningId());
+
+        SaveBetalningForUtredningRequest request = new SaveBetalningForUtredningRequest();
+        request.setBetalningId("testBetalningId");
+        utredningService.saveBetalningsIdForUtredning(TestDataGen.getUtredningId(), request, TestDataGen.getLandstingId());
+
+        ArgumentCaptor<Utredning> utredingCaptor = ArgumentCaptor.forClass(Utredning.class);
+        verify(utredningRepository, times(1)).saveUtredning(utredingCaptor.capture());
+
+        assertEquals("testBetalningId", utredingCaptor.getValue().getBetalning().getBetalningsId());
+    }
+
+    @Test(expected = IbNotFoundException.class)
+    public void testSaveBetalningForUtredningFailNotFound() {
+        doReturn(Optional.empty()).when(utredningRepository).findById(TestDataGen.getUtredningId());
+
+        SaveBetalningForUtredningRequest request = new SaveBetalningForUtredningRequest();
+        request.setBetalningId("testBetalningId");
+        utredningService.saveBetalningsIdForUtredning(TestDataGen.getUtredningId(), request, TestDataGen.getLandstingId());
+    }
+
+    @Test(expected = IbAuthorizationException.class)
+    public void testSaveBetalningForUtredningFailDifferentLandsting() {
+        doReturn(Optional.of(TestDataGen.createUtredning())).when(utredningRepository).findById(TestDataGen.getUtredningId());
+
+        SaveBetalningForUtredningRequest request = new SaveBetalningForUtredningRequest();
+        request.setBetalningId("testBetalningId");
+        utredningService.saveBetalningsIdForUtredning(TestDataGen.getUtredningId(), request, "AnnatLandsting");
     }
 }

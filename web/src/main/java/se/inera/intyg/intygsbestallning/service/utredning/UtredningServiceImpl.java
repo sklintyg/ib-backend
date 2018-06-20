@@ -59,6 +59,7 @@ import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
+import se.inera.intyg.intygsbestallning.persistence.model.Betalning;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
@@ -97,6 +98,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtre
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListAvslutadeUtredningarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListUtredningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveBetalningForUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItemFactory;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
@@ -461,6 +463,33 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         notifieraUtredningAvslutad(orsak, uppdateradUtredning, internForfragan.orElse(null));
     }
 
+    @Override
+    @Transactional
+    public void saveBetalningsIdForUtredning(Long utredningsId, SaveBetalningForUtredningRequest request, String loggedInAtLandstingHsaId) {
+        Utredning utredning = utredningRepository.findById(utredningsId).orElseThrow(
+                () -> new IbNotFoundException("Utredning with assessmentId '" + utredningsId + "' does not exist."));
+
+        // Verify that the current vardenhet has a Bestallning.
+        if (!utredning.getExternForfragan().isPresent()) {
+            throw new IbServiceException(IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
+                    "Utredning with assessmentId '" + utredningsId + "' does not have a ExternForfragan.");
+        }
+
+        if (!utredning.getExternForfragan().get().getLandstingHsaId().equals(loggedInAtLandstingHsaId)) {
+            throw new IbAuthorizationException("The current user cannot mark Utredning with assessmentId '" + utredningsId
+                    + "' as betald, ExternForfragan is for another landsting");
+        }
+
+        if (utredning.getBetalning() != null) {
+            utredning.getBetalning().setBetalningsId(request.getBetalningId());
+        } else {
+            Betalning betalning = Betalning.BetalningBuilder.aBetalning()
+                    .withBetalningsId(request.getBetalningId())
+                    .build();
+            utredning.setBetalning(betalning);
+        }
+        utredningRepository.saveUtredning(utredning);
+    }
 
     private void qualifyForAvslutaUtredning(final AvslutOrsak orsak, final Utredning utredning) {
         if (orsak == AvslutOrsak.INGEN_KOMPLETTERING_BEGARD) {

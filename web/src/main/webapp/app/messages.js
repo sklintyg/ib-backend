@@ -362,6 +362,8 @@ var ibMessages = {
         'server.error.listavslutadeutredningar.text': 'Försök igen eller kontakta support',
         'server.error.savefaktura.title': 'Kunde inte spara faktura',
         'server.error.savefaktura.text': 'Försök igen eller kontakta support',
+        'server.error.savebetald.title': 'Kunde inte spara betalning',
+        'server.error.savebetald.text': 'Försök igen eller kontakta support',
 
         'common.error.spi.fel01': 'Ett tekniskt fel uppstod när vårdenheten skulle hämtas. Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraNationellKundservice>'
     },

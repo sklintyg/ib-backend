@@ -30,7 +30,7 @@
         <td>{{::row.avslutsDatum}}</td>
         <td><ib-yes-no value="::row.ersatts"></ib-yes-no></td>
         <td><ib-inline-edit editable="false" model="::row.fakturerad"></ib-inline-edit></td>
-        <td><ib-inline-edit editable="true" model="::row.betald"></ib-inline-edit></td>
+        <td><ib-inline-edit editable="true" model="::row.betald" save-method="saveBetald(row, model)" busy="row.betaldBusy"></ib-inline-edit></td>
         <td><ib-inline-edit editable="true" model="::row.utbetaldFk"></ib-inline-edit></td>
         <td><button class="btn btn-primary" ng-click="visaUtredning(row.utredningsId)"><span message key="common.show"></span></button></td>
       </tr>

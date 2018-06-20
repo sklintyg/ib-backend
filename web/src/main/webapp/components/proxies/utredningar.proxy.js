@@ -85,6 +85,20 @@ angular.module('ibApp').factory('UtredningarProxy',
             return ProxyTemplate.postTemplate(restPath, requestBody, config);
         }
 
+        function _saveBetald(utredningId, betalningId) {
+            var restPath = basePath + '/' + utredningId + '/betald';
+
+            var request = {
+                betalningId: betalningId
+            };
+
+            return ProxyTemplate.postTemplate(restPath, request, {
+                errorMessageConfig: {
+                    errorTitleKey: 'server.error.savebetald.title',
+                    errorTextKey: 'server.error.savebetald.text'
+                }});
+        }
+
         // Return public API for the service
         return {
             getUtredning: _getUtredning,
@@ -92,6 +106,7 @@ angular.module('ibApp').factory('UtredningarProxy',
             getUtredningarWithFilter: _getUtredningarWithFilter,
             getAvslutadeUtredningarWithFilter: _getAvslutadeUtredningarWithFilter,
             createInternForfragan: _createInternForfragan,
-            tilldelaDirekt: _tillDelaDirekt
+            tilldelaDirekt: _tillDelaDirekt,
+            saveBetald: _saveBetald
         };
     });
