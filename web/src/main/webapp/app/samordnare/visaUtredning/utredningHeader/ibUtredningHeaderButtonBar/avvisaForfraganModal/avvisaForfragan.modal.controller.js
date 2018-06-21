@@ -28,7 +28,7 @@ angular.module('ibApp')
             };
 
             $scope.avvisa = function() {
-                if ($scope.vm.kommentar.length === 0) {
+                if (!$scope.vm.kommentar || $scope.vm.kommentar.length === 0) {
                     $scope.vm.kommentarValidationError = true;
                 } else {
                     $scope.vm.inProgress = true;
