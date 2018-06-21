@@ -70,6 +70,7 @@ public class ReportDeviationInteractionResponderImpl implements ReportDeviationR
             return response;
         } catch (final Exception e) {
             ReportDeviationResponseType response = new ReportDeviationResponseType();
+            response.setDeviationId(anII(sourceSystemHsaId, ""));
             response.setResult(toResultTypeError(e));
             return response;
         }
