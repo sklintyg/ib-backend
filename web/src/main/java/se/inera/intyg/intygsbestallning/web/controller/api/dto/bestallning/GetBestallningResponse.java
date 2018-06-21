@@ -31,6 +31,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
@@ -66,6 +67,8 @@ public class GetBestallningResponse implements PDLLoggable {
     private String tolkSprak;
 
     private UtredningStatus status;
+
+    private Actor kraverAtgardAv;
 
     private UtredningFas fas;
 
@@ -115,6 +118,7 @@ public class GetBestallningResponse implements PDLLoggable {
                 .withTolkSprak(utredning.getTolkSprak())
                 .withStatus(utredningStatus)
                 .withFas(utredningStatus.getUtredningFas())
+                .withKraverAtgardAv(utredningStatus.getNextActor())
                 .withIntygSistaDatum(utredning.getIntygList()
                         .stream()
                         .filter(intyg -> intyg.getSistaDatum() != null)
@@ -248,6 +252,14 @@ public class GetBestallningResponse implements PDLLoggable {
         this.fas = fas;
     }
 
+    public Actor getKraverAtgardAv() {
+        return kraverAtgardAv;
+    }
+
+    public void setKraverAtgardAv(Actor kraverAtgardAv) {
+        this.kraverAtgardAv = kraverAtgardAv;
+    }
+
     public String getIntygSistaDatum() {
         return intygSistaDatum;
     }
@@ -344,6 +356,7 @@ public class GetBestallningResponse implements PDLLoggable {
         private List<BesokListItem> besokList;
         private List<HandelseListItem> handelseList;
         private List<AnteckningListItem> anteckningList;
+        private Actor kraverAtgardAv;
 
         private GetBestallningResponseBuilder() {
         }
@@ -457,6 +470,11 @@ public class GetBestallningResponse implements PDLLoggable {
             return this;
         }
 
+        public GetBestallningResponseBuilder withKraverAtgardAv(Actor kraverAtgardAv) {
+            this.kraverAtgardAv = kraverAtgardAv;
+            return this;
+        }
+
         public GetBestallningResponse build() {
             GetBestallningResponse getBestallningResponse = new GetBestallningResponse();
             getBestallningResponse.setUtredningsId(utredningsId);
@@ -472,6 +490,7 @@ public class GetBestallningResponse implements PDLLoggable {
             getBestallningResponse.setTolkSprak(tolkSprak);
             getBestallningResponse.setStatus(status);
             getBestallningResponse.setFas(fas);
+            getBestallningResponse.setKraverAtgardAv(kraverAtgardAv);
             getBestallningResponse.setIntygSistaDatum(intygSistaDatum);
             getBestallningResponse.setIntygSistaDatumKomplettering(intygSistaDatumKomplettering);
             getBestallningResponse.setAvbrutenDatum(avbrutenDatum);
@@ -482,6 +501,7 @@ public class GetBestallningResponse implements PDLLoggable {
             getBestallningResponse.setAnteckningList(anteckningList);
             return getBestallningResponse;
         }
+
     }
 
     public static final class InvanareResponse {

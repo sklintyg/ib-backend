@@ -1,11 +1,20 @@
 <span class="status-slot">
-  <i class="material-icons kraver-atgard" ng-if="bestallning.kraverAtgard">error</i>
-  <i class="material-icons kraver-atgard-annan" ng-if="!bestallning.kraverAtgard && bestallning.status.id!=='NONE'">alarm</i>
-  <i class="material-icons avslutad" ng-if="bestallning.status.id === 'AVSLUTAD'">archive</i>
+  <i class="material-icons kraver-atgard" ng-if="bestallning.kraverAtgardAv === 'VARDADMIN'">error</i>
+  <i class="material-icons kraver-atgard-annan" ng-if="bestallning.kraverAtgardAv && bestallning.kraverAtgardAv !== 'NONE' && bestallning.kraverAtgardAv !== 'VARDADMIN'">alarm</i>
+  <i class="material-icons avslutad" ng-if="bestallning.fas.id === 'AVSLUTAD'">archive</i>
   {{bestallning.status.label}}
 </span>
 <span class="status-slot">
-  <i class="material-icons slut-datum">event_available</i>
-  {{bestallning.besvarasSenastDatum}}
+  <span ng-switch="bestallning.fas.id">
+    <span ng-switch-when="UTREDNING">
+      <i class="material-icons slut-datum">event_available</i>
+      Slutdatum: {{bestallning.intygSistaDatum}}
+    </span>
+    <span ng-switch-when="KOMPLETTERING">
+      <i class="material-icons slut-datum">event_available</i>
+      Slutdatum: {{bestallning.intygSistaDatumKomplettering}}
+    </span>
+  </span>
+
 </span>
 

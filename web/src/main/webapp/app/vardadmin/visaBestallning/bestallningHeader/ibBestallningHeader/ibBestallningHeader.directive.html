@@ -32,13 +32,6 @@
 
           <ib-bestallning-header-status bestallning="bestallning"></ib-bestallning-header-status>
 
-          <span ng-switch="bestallning.fas.id">
-            <span ng-switch-when="FORFRAGAN">Svarsdatum:</span>
-            <span ng-switch-when="UTREDNING">Slutdatum:</span>
-            <span ng-switch-when="KOMPLETTERING">Slutdatum:</span>
-          </span>
-          {{bestallning.slutdatumFas}}
-
         </div>
 
         <div class="flex-row padding-top-small">
