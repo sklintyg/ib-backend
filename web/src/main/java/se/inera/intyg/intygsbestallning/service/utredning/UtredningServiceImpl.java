@@ -372,7 +372,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     public Utredning registerNewUtredning(final AssessmentRequest request) {
 
         ExternForfraganBuilder externForfragan = anExternForfragan()
-                .withInkomDatum(null)
+                .withInkomDatum(LocalDateTime.now())
                 .withBesvarasSenastDatum(request.getBesvaraSenastDatum())
                 .withKommentar(request.getKommentar())
                 .withLandstingHsaId(request.getLandstingHsaId());
