@@ -37,8 +37,14 @@ when('jag direkttilldelar förfrågan', () => {
     cy.get('#tilldela-direkt-modal-vardenheter-eget-landsting-input-IFV1239877878-1042').click();
     cy.get('#tilldela-direkt-modal-meddelande_textarea').type('nån slags text');
     cy.get('#tilldela-direkt-modal-skicka').click();
+    cy.get('#accepteraBtn').click();
 
 })
+
+//when('vårdadmin accepterar förfrågan', => {
+
+    
+//})
 
 
 function goToUtredning(roll, landsting, utredning) {
