@@ -18,26 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.service.besok;
 
-import static com.google.common.collect.MoreCollectors.onlyElement;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.argThat;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto.ReportCareContactRequestDtoBuilder.aReportCareContactRequestDto;
-import static se.inera.intyg.intygsbestallning.persistence.model.Avvikelse.AvvikelseBuilder.anAvvikelse;
-import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handelse.HandelseBuilder.aHandelse;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
-import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
-import static se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest.ReportBesokAvvikelseRequestBuilder.aReportBesokAvvikelseRequest;
-
 import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,10 +26,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import java.text.MessageFormat;
-import java.time.LocalDateTime;
-import java.util.Optional;
-
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
@@ -81,6 +57,31 @@ import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RedovisaBesokRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokRequest;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
+
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import static com.google.common.collect.MoreCollectors.onlyElement;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.argThat;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto.ReportCareContactRequestDtoBuilder.aReportCareContactRequestDto;
+import static se.inera.intyg.intygsbestallning.persistence.model.Avvikelse.AvvikelseBuilder.anAvvikelse;
+import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handelse.HandelseBuilder.aHandelse;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
+import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
+import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.FORFRAGAN_INKOMMEN;
+import static se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest.ReportBesokAvvikelseRequestBuilder.aReportBesokAvvikelseRequest;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BesokServiceImplTest {
@@ -237,7 +238,7 @@ public class BesokServiceImplTest {
 
         assertThatThrownBy(() -> besokService.registerBesok(UTREDNING_ID, null, request))
                 .isExactlyInstanceOf(IbServiceException.class)
-                .hasMessage("Utredning with id " + UTREDNING_ID + " is in an incorrect state");
+                .hasMessage("Utredning with id " + UTREDNING_ID + " is in an incorrect state " + FORFRAGAN_INKOMMEN.name());
     }
 
     @Test(expected = IbAuthorizationException.class)
@@ -277,6 +278,9 @@ public class BesokServiceImplTest {
                 .withBesokStartTid(DATE_TIME.plusMonths(1))
                 .withBesokSlutTid(DATE_TIME.plusMonths(1).plusHours(1))
                 .build()));
+
+        utredning.getIntygList().get(0).setSkickatDatum(null);
+        utredning.getIntygList().get(0).setMottagetDatum(null);
 
         doReturn(Optional.of(utredning))
                 .when(utredningRepository).findById(eq(UTREDNING_ID));
@@ -321,6 +325,10 @@ public class BesokServiceImplTest {
         when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
 
         Utredning utredning = TestDataGen.createUtredning();
+
+        utredning.getIntygList().get(0).setSkickatDatum(null);
+        utredning.getIntygList().get(0).setMottagetDatum(null);
+
         utredning.setUtredningsTyp(UtredningsTyp.AFU);
         utredning.setBesokList(ImmutableList.of(aBesok()
                 .withId(BESOK_ID)
@@ -375,6 +383,10 @@ public class BesokServiceImplTest {
         when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
 
         Utredning utredning = TestDataGen.createUtredning();
+
+        utredning.getIntygList().get(0).setSkickatDatum(null);
+        utredning.getIntygList().get(0).setMottagetDatum(null);
+
         utredning.setUtredningsTyp(UtredningsTyp.AFU);
         utredning.setBesokList(ImmutableList.of(aBesok()
                 .withId(BESOK_ID)

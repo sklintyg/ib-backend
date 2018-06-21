@@ -18,33 +18,9 @@
  */
 package se.inera.intyg.intygsbestallning.testutil;
 
-import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.aCv;
-import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
-import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
-import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
-import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
-import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
-import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
-import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
-import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU_UTVIDGAD;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import se.riv.intygsbestallning.certificate.order.requestperformerforassessment.v1.RequestPerformerForAssessmentType;
-import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
-import se.riv.intygsbestallning.certificate.order.v1.AddressType;
-import se.riv.intygsbestallning.certificate.order.v1.AuthorityAdministrativeOfficialType;
-import se.riv.intygsbestallning.certificate.order.v1.CitizenLimitedType;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
@@ -68,15 +44,39 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.KallelseFormTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.MyndighetTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokRequest;
+import se.riv.intygsbestallning.certificate.order.requestperformerforassessment.v1.RequestPerformerForAssessmentType;
+import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
+import se.riv.intygsbestallning.certificate.order.v1.AddressType;
+import se.riv.intygsbestallning.certificate.order.v1.AuthorityAdministrativeOfficialType;
+import se.riv.intygsbestallning.certificate.order.v1.CitizenLimitedType;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.aCv;
+import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
+import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
+import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
+import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
+import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
+import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU_UTVIDGAD;
 
 /**
  * Helper base class, provides data setup for tests.
  */
 public final class TestDataGen {
 
-    public final static LocalDateTime DATE_TIME = LocalDateTime.of(2018, 11, 11, 0, 0, 0);
-    public final static LocalDate DATE = LocalDate.of(2018, 11, 11);
-
+    public final static LocalDateTime DATE_TIME = LocalDateTime.now().plusMonths(6L).withHour(0).withMinute(0).withSecond(0).withNano(0);
+    public final static LocalDate DATE = LocalDate.now().plusMonths(6L);
 
     private static final String USER_HSA_ID = "user-1";
     private static final String USER_NAME = "Läkar Läkarsson";
@@ -260,7 +260,6 @@ public final class TestDataGen {
         utredning.setStatus(UtredningStatusResolver.resolveStaticStatus(utredning));
         return utredning;
     }
-
 
     private static List<Intyg> createIntyg() {
         return ImmutableList.of(anIntyg()

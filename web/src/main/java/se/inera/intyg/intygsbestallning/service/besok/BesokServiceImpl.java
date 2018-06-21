@@ -18,30 +18,11 @@
  */
 package se.inera.intyg.intygsbestallning.service.besok;
 
-import static com.google.common.base.Preconditions.checkState;
-import static com.google.common.collect.MoreCollectors.onlyElement;
-import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportDeviationRequestDto.ReportDeviationRequestDtoBuilder.aReportDeviationRequestDto;
-import static se.inera.intyg.intygsbestallning.persistence.model.Avvikelse.AvvikelseBuilder.anAvvikelse;
-import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
-import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.AVVIKELSE_MOTTAGEN;
-import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR;
-import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.HANDLINGAR_MOTTAGNA_BOKA_BESOK;
-import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR;
-import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.UTREDNING_PAGAR;
-import static se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokRequest.validate;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.lang.invoke.MethodHandles;
-import java.text.MessageFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.function.Predicate;
-
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
@@ -53,6 +34,8 @@ import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
@@ -64,14 +47,34 @@ import se.inera.intyg.intygsbestallning.service.pdl.dto.PdlLogType;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.UtredningPdlLoggable;
 import se.inera.intyg.intygsbestallning.service.stateresolver.BesokStatus;
 import se.inera.intyg.intygsbestallning.service.stateresolver.BesokStatusResolver;
-import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
-import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.AddArbetsdagarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RedovisaBesokRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokResponse;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
+
+import java.lang.invoke.MethodHandles;
+import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Predicate;
+
+import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.collect.MoreCollectors.onlyElement;
+import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportDeviationRequestDto.ReportDeviationRequestDtoBuilder.aReportDeviationRequestDto;
+import static se.inera.intyg.intygsbestallning.persistence.model.Avvikelse.AvvikelseBuilder.anAvvikelse;
+import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
+import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.AVVIKELSE_MOTTAGEN;
+import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR;
+import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.HANDLINGAR_MOTTAGNA_BOKA_BESOK;
+import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR;
+import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.UTREDNING_PAGAR;
+import static se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokRequest.validate;
 
 @Service
 public class BesokServiceImpl extends BaseBesokService implements BesokService {
@@ -114,9 +117,11 @@ public class BesokServiceImpl extends BaseBesokService implements BesokService {
         final Utredning utredning = utredningRepository.findById(utredningId)
                 .orElseThrow(() -> new IbNotFoundException("Utredning with id '" + utredningId + "' does not exist."));
 
-        if (!BESOK_HANTERING_GODKANDA_STATUSAR.contains(UtredningStatusResolver.resolveStaticStatus(utredning))) {
+        UtredningStatus utredningStatus = UtredningStatusResolver.resolveStaticStatus(utredning);
+        if (!BESOK_HANTERING_GODKANDA_STATUSAR.contains(utredningStatus)) {
             throw new IbServiceException(IbErrorCodeEnum.BAD_STATE,
-                    MessageFormat.format("Utredning with id {0} is in an incorrect state", utredning.getUtredningId()));
+                    MessageFormat.format("Utredning with id {0} is in an incorrect state {1}", utredning.getUtredningId(),
+                            utredningStatus));
         }
 
         checkUserVardenhetTilldeladToBestallning(utredning);
@@ -142,7 +147,7 @@ public class BesokServiceImpl extends BaseBesokService implements BesokService {
             updateBesok(besok, request);
 
             logService.log(new UtredningPdlLoggable(utredning), PdlLogType.BESOK_ANDRAT);
-        }  else {
+        } else {
             besok = createBesok(request);
             utredning.getBesokList().add(besok);
             besokHandelse = HandelseUtil.createNyttBesok(besok, userService.getUser().getNamn());
@@ -324,7 +329,7 @@ public class BesokServiceImpl extends BaseBesokService implements BesokService {
     }
 
     private ReportDeviationRequestDto createReportDeviationRequestDto(final ReportBesokAvvikelseRequest avvikelseRequest,
-                                                                      Long avvikelseId) {
+            Long avvikelseId) {
         return aReportDeviationRequestDto()
                 .withBesokId(avvikelseRequest.getBesokId().toString())
                 .withAvvikelseId(avvikelseId.toString())

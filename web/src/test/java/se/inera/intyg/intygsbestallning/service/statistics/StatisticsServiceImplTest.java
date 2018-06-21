@@ -137,7 +137,8 @@ public class StatisticsServiceImplTest {
 
     private static List<Handling> buildHandlingsLista() {
         List<Handling> handlingar = new ArrayList<>();
-        handlingar.add(new Handling());
+        handlingar.add(Handling.HandlingBuilder.aHandling()
+                .withInkomDatum(LocalDateTime.now()).build());
         return handlingar;
     }
 

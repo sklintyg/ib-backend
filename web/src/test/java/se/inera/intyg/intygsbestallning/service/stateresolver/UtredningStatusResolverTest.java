@@ -22,24 +22,24 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
-import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
-import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
-import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
-import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.Avvikelse;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
+import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.persistence.model.type.AvvikelseOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 
@@ -152,6 +152,50 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
         assertEquals(UtredningStatus.UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR, status);
         assertEquals(UtredningFas.UTREDNING, status.getUtredningFas());
         assertEquals(Actor.FK, status.getNextActor());
+    }
+
+    @Test
+    public void testResolvesUppdateradBestallningVantarPaHandlingarWhenIngaUppdateradeHandlingarMottagna() {
+        Utredning utr = buildBaseUtredning();
+        utr.getExternForfragan().map(ExternForfragan::getInternForfraganList)
+                .map(iff -> iff.add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now())));
+        utr.setBestallning(buildBestallning(LocalDateTime.now()));
+        utr.getIntygList().add(buildBestalltIntyg());
+        utr.getHandlingList().clear();
+        utr.getHandlingList().add(Handling.HandlingBuilder.aHandling().withUrsprung(HandlingUrsprungTyp.BESTALLNING).build());
+        utr.getHandlingList().add(Handling.HandlingBuilder.aHandling()
+                .withUrsprung(HandlingUrsprungTyp.UPPDATERING)
+                .withInkomDatum(null)
+                .build());
+
+        UtredningStatus status = testee.resolveStatus(utr);
+        assertEquals(UtredningStatus.UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR, status);
+        assertEquals(UtredningFas.UTREDNING, status.getUtredningFas());
+        assertEquals(Actor.FK, status.getNextActor());
+    }
+
+    @Test
+    public void testResolvesBokaBesokWhenUppdateringHandlingIsInkommen() {
+        Utredning utr = buildBaseUtredning();
+        utr.getExternForfragan().map(ExternForfragan::getInternForfraganList)
+                .map(iff -> iff.add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now())));
+        utr.setBestallning(buildBestallning(LocalDateTime.now()));
+        utr.getIntygList().add(buildBestalltIntyg());
+
+        utr.getHandlingList().clear();
+        utr.getHandlingList().add(Handling.HandlingBuilder.aHandling()
+                .withUrsprung(HandlingUrsprungTyp.BESTALLNING)
+                .withInkomDatum(LocalDateTime.now())
+                .build());
+        utr.getHandlingList().add(Handling.HandlingBuilder.aHandling()
+                .withUrsprung(HandlingUrsprungTyp.UPPDATERING)
+                .withInkomDatum(LocalDateTime.now())
+                .build());
+
+        UtredningStatus status = testee.resolveStatus(utr);
+        assertEquals(UtredningStatus.HANDLINGAR_MOTTAGNA_BOKA_BESOK, status);
+        assertEquals(UtredningFas.UTREDNING, status.getUtredningFas());
+        assertEquals(Actor.VARDADMIN, status.getNextActor());
     }
 
     @Test

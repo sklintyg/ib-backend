@@ -20,14 +20,17 @@ package se.inera.intyg.intygsbestallning.persistence.model.status;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.time.LocalDateTime;
-import java.util.List;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 public class UtredningStatusResolver {
 
@@ -38,7 +41,6 @@ public class UtredningStatusResolver {
     }
 
     public static UtredningStatus resolveStaticStatus(Utredning utredning) {
-        // How to resolve statuses....
 
         utredning.getExternForfragan()
                 .ifPresent(ex -> ex.getInternForfraganList()
@@ -56,54 +58,10 @@ public class UtredningStatusResolver {
         // Second phase - Utredning. We ALWAYS have a Bestallning here and one intyg. There can never be a komplettering
         // if intyg.size == 1.
         if (utredning.getIntygList().size() == 1) {
-
-            // UTREDNING_PAGAR_AVVIKELSE
-            if (utredning.getBesokList().stream().anyMatch(bl -> bl.getAvvikelse() != null)) {
-                return UtredningStatus.AVVIKELSE_MOTTAGEN;
+            Optional<UtredningStatus> utredningStatusOptional = handleUtredningFas(utredning);
+            if (utredningStatusOptional.isPresent()) {
+                return utredningStatusOptional.get();
             }
-
-            // BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR
-            Bestallning bestallning = utredning.getBestallning().get();
-            if (utredning.getHandlingList().size() == 0 && bestallning.getUppdateradDatum() == null) {
-                return UtredningStatus.BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR;
-            }
-
-            // BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR
-            if (utredning.getHandlingList().size() == 0 && bestallning.getUppdateradDatum() != null) {
-                return UtredningStatus.UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR;
-            }
-
-            // HANDLINGAR_MOTTAGNA_BOKA_BESOK
-            if (utredning.getHandlingList().size() > 0 && utredning.getBesokList().size() == 0) {
-                return UtredningStatus.HANDLINGAR_MOTTAGNA_BOKA_BESOK;
-            }
-
-            // UTREDNING_PAGAR
-            if (utredning.getHandlingList().size() > 0 && utredning.getBesokList().size() > 0
-                    && utredning.getIntygList().stream().noneMatch(intyg -> intyg.getSkickatDatum() != null)) {
-                return UtredningStatus.UTREDNING_PAGAR;
-            }
-
-            // Skickat - ursprungsintyget är skickat.
-            if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getSkickatDatum() != null
-                    && intyg.getMottagetDatum() == null
-                    && !intyg.isKomplettering()
-                    && (intyg.getSistaDatum() == null || intyg.getSistaDatum().isAfter(LocalDateTime.now())))) {
-                return UtredningStatus.UTLATANDE_SKICKAT;
-            }
-
-            // Skickat - ursprungsintyget är mottaget.
-            if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getSkickatDatum() != null
-                    && intyg.getMottagetDatum() != null
-                    && !intyg.isKomplettering()
-                    && (intyg.getSistaDatumKompletteringsbegaran() != null
-                    && intyg.getSistaDatumKompletteringsbegaran().isAfter(LocalDateTime.now())))) {
-                return UtredningStatus.UTLATANDE_MOTTAGET;
-            }
-
-            // Om vi har enbart 1 intyg så finns ej någon komplettering.
-            // Om intyget har skickats, men ej tagit emot av FK och ev. slutDatum passerats,
-            // vad gör vi då?
         }
 
         // Slutfas. Denna kontroll måste ske före vi tittar detaljerat på kompletteringar.
@@ -184,6 +142,93 @@ public class UtredningStatusResolver {
             // BesokStatusTyp.INSTALLD_VARDKONTAKT
             return UtredningStatus.REDOVISA_BESOK;
         }
+    }
+
+    private static Optional<UtredningStatus> handleUtredningFas(Utredning utredning) {
+        // UTREDNING_PAGAR_AVVIKELSE
+        if (utredning.getBesokList().stream().anyMatch(bl -> bl.getAvvikelse() != null)) {
+            return Optional.of(UtredningStatus.AVVIKELSE_MOTTAGEN);
+        }
+
+        // Om det INTE finns några besök bokade...
+        if (utredning.getBesokList().size() == 0) {
+            // BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR
+            Bestallning bestallning = utredning.getBestallning().get();
+            if (utredning.getHandlingList().size() == 0 && bestallning.getUppdateradDatum() == null) {
+                return Optional.of(UtredningStatus.BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR);
+            }
+
+            // Om det finns exakt 0 handlingar med mottaget-datum
+            if (utredning.getHandlingList().stream().noneMatch(handling -> handling.getInkomDatum() != null)) {
+                // BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR
+                if (bestallning.getUppdateradDatum() == null) {
+                    return Optional.of(UtredningStatus.BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR);
+                }
+
+                // BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR
+                if (bestallning.getUppdateradDatum() != null) {
+                    return Optional.of(UtredningStatus.UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR);
+                }
+            }
+            // Om det inte finns någon handling taggad UPPDATERING och inga besök och ingen uppdaterad-stämpel
+            if (bestallning.getUppdateradDatum() == null && utredning.getHandlingList().stream()
+                    .noneMatch(handling -> handling.getUrsprung() == HandlingUrsprungTyp.UPPDATERING
+                            && handling.getInkomDatum() == null)) {
+                return Optional.of(UtredningStatus.HANDLINGAR_MOTTAGNA_BOKA_BESOK);
+            }
+
+            // Om det inte finns någon handling taggad UPPDATERING och inga besök MEN vi har uppdaterad-stämpel så väntar vi på fler
+            // handlingar.
+            if (bestallning.getUppdateradDatum() != null && utredning.getHandlingList().stream()
+                    .noneMatch(handling -> handling.getUrsprung() == HandlingUrsprungTyp.UPPDATERING
+                            && handling.getInkomDatum() != null)) {
+                return Optional.of(UtredningStatus.UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR);
+            }
+
+            // Om det finns någon handling taggad UPPDATERING och inga besök
+            if (utredning.getHandlingList().stream().anyMatch(
+                    handling -> handling.getUrsprung() == HandlingUrsprungTyp.UPPDATERING && handling.getInkomDatum() != null)) {
+                return Optional.of(UtredningStatus.HANDLINGAR_MOTTAGNA_BOKA_BESOK);
+            }
+
+            // BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR
+            // if (utredning.getHandlingList().size() > 0 && bestallning.getUppdateradDatum() != null) {
+            // return UtredningStatus.UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR;
+            // }
+
+            // HANDLINGAR_MOTTAGNA_BOKA_BESOK
+            if (utredning.getHandlingList().stream().anyMatch(handling -> handling.getInkomDatum() != null)) {
+                return Optional.of(UtredningStatus.HANDLINGAR_MOTTAGNA_BOKA_BESOK);
+            }
+        }
+
+        // UTREDNING_PAGAR innan något intyg has skickats.
+        if (utredning.getBesokList().size() > 0
+                && utredning.getIntygList().stream().noneMatch(intyg -> intyg.getSkickatDatum() != null)) {
+            return Optional.of(UtredningStatus.UTREDNING_PAGAR);
+        }
+
+        // Skickat - ursprungsintyget är skickat.
+        if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getSkickatDatum() != null
+                && intyg.getMottagetDatum() == null
+                && !intyg.isKomplettering()
+                && (intyg.getSistaDatum() == null || intyg.getSistaDatum().isAfter(LocalDateTime.now())))) {
+            return Optional.of(UtredningStatus.UTLATANDE_SKICKAT);
+        }
+
+        // Skickat - ursprungsintyget är mottaget.
+        if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getSkickatDatum() != null
+                && intyg.getMottagetDatum() != null
+                && !intyg.isKomplettering()
+                && (intyg.getSistaDatumKompletteringsbegaran() != null
+                && intyg.getSistaDatumKompletteringsbegaran().isAfter(LocalDateTime.now())))) {
+            return Optional.of(UtredningStatus.UTLATANDE_MOTTAGET);
+        }
+
+        // Om vi har enbart 1 intyg så finns ej någon komplettering.
+        // Om intyget har skickats, men ej tagit emot av FK och ev. slutDatum passerats,
+        // vad gör vi då?
+        return Optional.empty();
     }
 
     private static UtredningStatus handleForfraganFas(Utredning utredning) {
