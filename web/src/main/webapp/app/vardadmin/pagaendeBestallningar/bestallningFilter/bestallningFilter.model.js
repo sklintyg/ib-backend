@@ -34,7 +34,7 @@ angular.module('ibApp').factory('ibBestallningFilterModel',
             currentPage: 0,
             pageSize: 50,
             freetext: '',
-            vardgivareNamn: undefined,
+            vardgivareHsaId: undefined,
             status: 'ALL',
             slutdatumFas: {
                 from:null,
@@ -48,7 +48,7 @@ angular.module('ibApp').factory('ibBestallningFilterModel',
             this.currentPage = defaultFilter.currentPage;
             this.pageSize = defaultFilter.pageSize;
             this.freetext = defaultFilter.freetext;
-            this.vardgivareNamn = defaultFilter.vardgivareNamn;
+            this.vardgivareHsaId = defaultFilter.vardgivareHsaId;
             this.status = defaultFilter.status;
             this.slutdatumFas = angular.copy(defaultFilter.slutdatumFas);
             this.orderBy = defaultFilter.orderBy;
@@ -59,7 +59,7 @@ angular.module('ibApp').factory('ibBestallningFilterModel',
             return this.currentPage === defaultFilter.currentPage &&
                 this.pageSize === defaultFilter.pageSize &&
                 this.freetext === defaultFilter.freetext &&
-                this.vardgivareNamn === defaultFilter.vardgivareNamn &&
+                this.vardgivareHsaId === defaultFilter.vardgivareHsaId &&
                 this.status === defaultFilter.status &&
                 angular.equals(this.slutdatumFas, defaultFilter.slutdatumFas) &&
                 this.orderBy === defaultFilter.orderBy &&
@@ -74,7 +74,7 @@ angular.module('ibApp').factory('ibBestallningFilterModel',
                 // Filter
                 freeText: this.freetext,
                 status: this.status,
-                vardgivareNamn: this.vardgivareNamn,
+                vardgivareHsaId: this.vardgivareHsaId,
                 fromDate: this.slutdatumFas.from,
                 toDate: this.slutdatumFas.to,
                 // Sort

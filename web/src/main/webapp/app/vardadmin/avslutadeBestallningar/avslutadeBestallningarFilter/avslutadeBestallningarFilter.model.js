@@ -38,7 +38,7 @@ angular.module('ibApp').factory('ibAvslutadeBestallningarFilterModel',
             currentPage: 0,
             pageSize: 50,
             freetext: '',
-            vardgivareNamn: undefined,
+            vardgivareHsaId: undefined,
             avslutsDatum: {
                 from: moment().subtract(3, 'month'),
                 to: moment()
@@ -54,7 +54,7 @@ angular.module('ibApp').factory('ibAvslutadeBestallningarFilterModel',
             this.currentPage = defaultFilter.currentPage;
             this.pageSize = defaultFilter.pageSize;
             this.freetext = defaultFilter.freetext;
-            this.vardgivareNamn = defaultFilter.vardgivareNamn;
+            this.vardgivareHsaId = defaultFilter.vardgivareHsaId;
             this.avslutsDatum = angular.copy(defaultFilter.avslutsDatum);
             this.ersatts = defaultFilter.ersatts;
             this.fakturerad = defaultFilter.fakturerad;
@@ -67,7 +67,7 @@ angular.module('ibApp').factory('ibAvslutadeBestallningarFilterModel',
             return this.currentPage === defaultFilter.currentPage &&
                 this.pageSize === defaultFilter.pageSize &&
                 this.freetext === defaultFilter.freetext &&
-                this.vardgivareNamn === defaultFilter.vardgivareNamn &&
+                this.vardgivareHsaId === defaultFilter.vardgivareHsaId &&
                 angular.equals(this.avslutsDatum, defaultFilter.avslutsDatum) &&
                 angular.equals(this.ersatts, defaultFilter.ersatts) &&
                 angular.equals(this.fakturerad, defaultFilter.fakturerad) &&
@@ -83,7 +83,7 @@ angular.module('ibApp').factory('ibAvslutadeBestallningarFilterModel',
                 pageSize: this.pageSize,
                 // Filter
                 freeText: this.freetext,
-                vardgivareNamn: this.vardgivareNamn,
+                vardgivareHsaId: this.vardgivareHsaId,
                 avslutsDatumFromDate: this.avslutsDatum.from,
                 avslutsDatumToDate: this.avslutsDatum.to,
                 ersatts: this.ersatts,

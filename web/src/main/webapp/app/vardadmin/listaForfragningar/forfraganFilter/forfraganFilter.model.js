@@ -34,7 +34,7 @@ angular.module('ibApp').factory('ibForfraganFilterModel',
             currentPage: 0,
             pageSize: 50,
             freetext: '',
-            vardgivareNamn: undefined,
+            vardgivareHsaId: undefined,
             status: 'PAGAENDE',
             inkomDatum: {
                 from:null,
@@ -56,7 +56,7 @@ angular.module('ibApp').factory('ibForfraganFilterModel',
             this.currentPage = defaultFilter.currentPage;
             this.pageSize = defaultFilter.pageSize;
             this.freetext = defaultFilter.freetext;
-            this.vardgivareNamn = defaultFilter.vardgivareNamn;
+            this.vardgivareHsaId = defaultFilter.vardgivareHsaId;
             this.status = defaultFilter.status;
             this.inkomDatum = angular.copy(defaultFilter.inkomDatum);
             this.besvarasSenastDatum = angular.copy(defaultFilter.besvarasSenastDatum);
@@ -69,7 +69,7 @@ angular.module('ibApp').factory('ibForfraganFilterModel',
             return this.currentPage === defaultFilter.currentPage &&
                 this.pageSize === defaultFilter.pageSize &&
                 this.freetext === defaultFilter.freetext &&
-                this.vardgivareNamn === defaultFilter.vardgivareNamn &&
+                this.vardgivareHsaId === defaultFilter.vardgivareHsaId &&
                 this.status === defaultFilter.status &&
                 angular.equals(this.inkomDatum, defaultFilter.inkomDatum) &&
                 angular.equals(this.besvarasSenastDatum, defaultFilter.besvarasSenastDatum) &&
@@ -86,7 +86,7 @@ angular.module('ibApp').factory('ibForfraganFilterModel',
                 // Filter
                 freeText: this.freetext,
                 status: this.status,
-                vardgivareNamn: this.vardgivareNamn,
+                vardgivareHsaId: this.vardgivareHsaId,
                 inkommetFromDate: this.inkomDatum.from,
                 inkommetToDate: this.inkomDatum.to,
 
