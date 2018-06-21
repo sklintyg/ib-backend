@@ -325,6 +325,7 @@ var ibMessages = {
         'internforfragan.besvara.rejectbtn.label': 'Avvisa förfrågan',
         'internforfragan.besvara.rejectbtn.send.label': 'Skicka',
         'internforfragan.besvara.rejectbtn.rejectProhibited.tooltip': 'Som enda vårdenhet i landstinget är det inte möjligt att avvisa förfrågan',
+        'internforfragan.besvara.reject.form.label.help': 'Meddelandet visas för samordnare hos Landstinget och eventuellt för handläggare hos Försäkringskassan.',
 
         //Errors for reporting IO / backend error responses for REST requests
         'server.error.changeunit.title': 'Kunde inte byta systemroll',
