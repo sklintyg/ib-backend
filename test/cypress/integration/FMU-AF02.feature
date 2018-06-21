@@ -8,10 +8,10 @@ Scenario: Direkt tilldelning - [Förfrågan till accept]
 	Then ska förfrågans status vara "Förfrågan inkommen" för "samordnare"
 	
 	When jag direkttilldelar förfrågan 
+	Then ska förfrågans status vara "Tilldela utredning" för "samordnare"
+	Then ska förfrågans status vara "Direkttilldelad" för "vårdadmin"
+	
+	When samordnare accepterar förfrågan
 	Then ska förfrågans status vara "Tilldelad, väntar på beställning" för "samordnare"
 	Then ska förfrågans status vara "Tilldelad, väntar på beställning" för "vårdadmin"
-	
-	#When vårdadmin accepterar förfrågan
-	#Then ska förfrågans status vara "Direkt tilldelad" för "samordnare"
-	#Then ska förfrågans status vara "Direkt tilldelad" för "samordnare"
 	#Then ska Försäkringskassan notifieras att förfrågan är accepterad
