@@ -81,6 +81,7 @@ public class OrderAssessmentResponderImpl implements OrderAssessmentResponderInt
             return response;
         } catch (final Exception e) {
             OrderAssessmentResponseType response = new OrderAssessmentResponseType();
+            response.setAssessmentId(anII(sourceSystemHsaId, ""));
             response.setResult(toResultTypeError(e));
             return response;
         }
