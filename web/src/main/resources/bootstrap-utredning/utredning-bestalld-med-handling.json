@@ -57,6 +57,26 @@
       "ursprung": "BESTALLNING"
     }
   ],
+  "anteckningList": [
+      {
+          "vardenhetHsaId":"IFV1239877878-1042",
+          "text":"Maecenas faucibus mollis interdum. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.",
+          "anvandare":"Vera Vårdadminsson",
+          "skapat":"2018-05-30T22:00:00.000"
+      },
+      {
+          "vardenhetHsaId":"IFV1239877878-1042",
+          "text":"Aenean lacinia bibendum nulla sed consectetur. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam id dolor id nibh ultricies vehicula ut id elit. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.",
+          "anvandare":"Viktor Vårdadminsson",
+          "skapat":"2018-06-12T10:27:12.000"
+      },
+      {
+          "vardenhetHsaId":"IFV1239877878-1042",
+          "text":"Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.",
+          "anvandare":"Vandra Cassandra Vårdadminsson",
+          "skapat":"2018-06-19T10:00:00.000"
+      }
+  ],
   "intygList": [
     {
       "komplettering": false,

@@ -1,0 +1,27 @@
+<div>
+  <div class="table-actionbar">
+    <button id="ny-anteckning-btn" class="btn btn-success">Ny anteckning</button>
+  </div>
+  
+  <table class="utredning-anteckningar-table table table-striped ib-table-striped">
+    <thead>
+      <tr>
+        <th class="cell-created">{{ 'label.table.bestallning.anteckningar.column.skapat' | message }}</th>
+        <th class="cell-user">{{ 'label.table.bestallning.anteckningar.column.anvandare' | message }}</th>
+        <th class="cell-note">{{ 'label.table.bestallning.anteckningar.column.text' | message }}</th>
+      </tr>
+    </thead>
+    <tbody ng-if="anteckningList.length < 1">
+      <tr>
+        <td colspan="3"><message class="td-padding" key="label.table.bestallning.anteckningar.empty"></message></td>
+      </tr>
+    </tbody>
+    <tbody>
+      <tr ng-repeat="anteckning in anteckningList">
+        <td class="cell">{{::anteckning.skapat}}</td>
+        <td class="cell">{{::anteckning.anvandare}}</td>
+        <td class="cell">{{::anteckning.text}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

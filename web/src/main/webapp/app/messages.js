@@ -172,7 +172,6 @@ var ibMessages = {
         'hantera-enheter.addunit.result.invalidunittype': 'Hittades i hsa men är inte en vårdenhet.',
         'hantera-enheter.addunit.result.searcherror': 'Ett tekniskt fel uppstod när vårdenheten skulle hämtas. Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraNationellKundservice>',
 
-
         // Lista utredningar tabell
         'label.table.utredningar.loading': 'Pågående utredningar hämtas',
         'label.table.utredningar.column.id': 'Id',
@@ -223,6 +222,12 @@ var ibMessages = {
         'label.table.bestallning.besok.column.kallelse': 'Kallelse skickad',
         'label.table.bestallning.besok.column.status': 'Status',
         'label.table.bestallning.besok.column.ersatts': 'Ersätts',
+
+        // Visa utredningar - anteckningar tabell
+        'label.table.bestallning.anteckningar.column.skapat': 'Datum',
+        'label.table.bestallning.anteckningar.column.anvandare': 'Användare',
+        'label.table.bestallning.anteckningar.column.text': 'Anteckning',
+        'label.table.bestallning.anteckningar.empty': 'Inga anteckningar skapade.',
 
         // Lista pågående utredningar (vårdadmin) tabell
         'label.table.bestallningar.column.id': 'Id',
