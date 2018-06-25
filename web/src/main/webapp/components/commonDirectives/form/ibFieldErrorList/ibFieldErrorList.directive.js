@@ -24,6 +24,7 @@ angular.module('ibApp').directive('ibFieldErrorList', [ function() {
         scope: {
             errors: '=',
             patternError: '@',
+            timeFormatError: '@',
             dateFormatError: '@',
             minDateError: '@',
             requiredError: '@'

@@ -36,10 +36,17 @@
           </span>
         </div>
         <div class="flex-column">
-          <ib-field-error-list errors="error" ng-repeat="error in [laggTillBesokForm.dateBesokDatum.$error,
-                                  laggTillBesokForm.dateBesokStart.$error,
-                                  laggTillBesokForm.dateBesokSlut.$error] track by $index"
-                               ng-if="error.pattern || error.date"></ib-field-error-list>
+          <ib-field-error-list errors="laggTillBesokForm.dateBesokDatum.$error"
+                               date-format-error="Korrekt datum måste anges"
+                               ng-if="laggTillBesokForm.dateBesokDatum.$error.pattern || laggTillBesokForm.dateBesokDatum.$error.date"></ib-field-error-list>
+
+          <ib-field-error-list errors="laggTillBesokForm.dateBesokStart.$error"
+                               pattern-error="Korrekt klockslag måste anges"
+                               ng-if="laggTillBesokForm.dateBesokStart.$error.pattern || laggTillBesokForm.dateBesokStart.$error.date"></ib-field-error-list>
+
+          <ib-field-error-list errors="laggTillBesokForm.dateBesokSlut.$error"
+                               pattern-error="Korrekt klockslag måste anges"
+                               ng-if="laggTillBesokForm.dateBesokSlut.$error.pattern || laggTillBesokForm.dateBesokSlut.$error.date"></ib-field-error-list>
         </div>
         <div class="flex-row">
           <span>
