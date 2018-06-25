@@ -27,11 +27,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
-import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
+import se.inera.intyg.intygsbestallning.persistence.model.status.InternForfraganFas;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 
 @Component
@@ -73,7 +73,7 @@ public class InternForfraganListItemFactory {
                 .withInkomDatum(nonNull(internForfragan.getSkapadDatum())
                         ? internForfragan.getSkapadDatum().format(FORMATTER)
                         : null)
-                .withPlaneringsDatum(resolvePlaneringsDatum(utredning.getBestallning().orElse(null), businessDays))
+                .withPlaneringsDatum(resolvePlaneringsDatum(internForfragan, businessDays))
                 .withForfraganId(internForfragan.getId())
                 .withStatus(internForfragan.getStatus())
                 .withUtredningsId(utredning.getUtredningId())
@@ -86,10 +86,10 @@ public class InternForfraganListItemFactory {
                 .build();
     }
 
-    private String resolvePlaneringsDatum(final Bestallning bestallning, final BusinessDaysBean businessDays) {
+    private String resolvePlaneringsDatum(final InternForfragan internForfragan, final BusinessDaysBean businessDays) {
 
-        // Om redan beställd, ska vi då utgå från orderdatumet istället?? Dvs planeringsdatum blir orderdatum + 31 arbetsdagar?
-        if (nonNull(bestallning) && nonNull(bestallning.getOrderDatum())) {
+        // 180509 Planeringsdatum ska visas som blankt när internförfrågan är avslutad
+        if (internForfragan.getStatus().getInternForfraganFas() == InternForfraganFas.AVSLUTAD) {
             return null;
         }
 

@@ -155,7 +155,10 @@ public abstract class BaseUtredningService {
     }
 
     protected boolean buildToFromPredicate(String compareTo, String fromDate, String toDate) {
-        if (Strings.isNullOrEmpty(compareTo) || Strings.isNullOrEmpty(fromDate) || Strings.isNullOrEmpty(toDate)) {
+        if (Strings.isNullOrEmpty(compareTo) && !(Strings.isNullOrEmpty(fromDate) || Strings.isNullOrEmpty(toDate))) {
+            return false;
+        }
+        if (Strings.isNullOrEmpty(fromDate) || Strings.isNullOrEmpty(toDate)) {
             return true;
         }
         return fromDate.compareTo(compareTo) <= 0 && toDate.compareTo(compareTo) >= 0;
