@@ -65,10 +65,11 @@
 @import 'vardadmin/listaForfragningar/listaForfragningar.page.scss';
 @import 'vardadmin/pagaendeBestallningar/bestallningFilter/bestallningFilter.directive.scss';
 @import 'vardadmin/pagaendeBestallningar/pagaendeBestallningar.page.scss';
+@import 'vardadmin/visaBestallning/anteckningar/skapaAnteckning.modal.scss';
 @import 'vardadmin/visaBestallning/anteckningar/visaAnteckningar.directive.scss';
+@import 'vardadmin/visaBestallning/bestallning-common.modal.scss';
 @import 'vardadmin/visaBestallning/bestallningHeader/ibBestallningHeader/ibBestallningHeader.directive.scss';
 @import 'vardadmin/visaBestallning/bestallningHeader/ibBestallningHeaderButtonBar/ibBestallningButtonBar.directive.scss';
-@import 'vardadmin/visaBestallning/bestallningHeader/ibBestallningHeaderButtonBar/registreraStatus/registreraStatus.modal.scss';
 @import 'vardadmin/visaBestallning/bestallningHeader/ibBestallningHeaderStatus/ibBestallningHeaderStatus.directive.scss';
 @import 'vardadmin/visaBestallning/ibBesok/avvikelse.modal.scss';
 @import 'vardadmin/visaBestallning/ibBesok/ibBesok.scss';

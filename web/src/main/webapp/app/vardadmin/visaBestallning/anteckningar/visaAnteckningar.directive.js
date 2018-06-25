@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-angular.module('ibApp').directive('visaAnteckningar', function($log, $timeout) {
+angular.module('ibApp').directive('visaAnteckningar', function($uibModal) {
     'use strict';
 
     return {
@@ -27,6 +27,18 @@ angular.module('ibApp').directive('visaAnteckningar', function($log, $timeout) {
         templateUrl: '/app/vardadmin/visaBestallning/anteckningar/visaAnteckningar.directive.html',
         link: function($scope) {
             
+            $scope.showCreateAnteckningModal = function () {
+                var modalInstance = $uibModal.open({
+                    templateUrl: '/app/vardadmin/visaBestallning/anteckningar/skapaAnteckning.modal.html',
+                    size: 'md',
+                    controller: 'SkapaAnteckningModalCtrl',
+                    resolve: {
+                        
+                    }
+                });
+                //angular > 1.5 warns if promise rejection is not handled (e.g backdrop-click == rejection)
+                modalInstance.result.catch(function () {}); //jshint ignore:line
+            };
         },
         controller: function($scope){
             //if (angular.isUndefined($scope.anteckningar)) {

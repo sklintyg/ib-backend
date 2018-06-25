@@ -1,0 +1,32 @@
+<div class="skapa-anteckning-modal bestallning-modal">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" data-ng-click="$dismiss()"><i class="material-icons">close</i>
+        </button>
+        <h4 class="modal-title">Ny anteckning</h4>
+    </div>
+    <div class="modal-body">
+        <p>
+            <message key="skapa-anteckning.modal.info" class="nl2br"></message>
+        </p>
+        <ib-textarea
+            id="note"
+            model="note"
+            required="true"
+            placeholder-text="Skriv anteckning här"
+            col-size="12">
+        </ib-textarea>
+    </div>
+    <div class="modal-footer button-flex-wrapper">
+        <ib-button btn-id="create-anteckning-modal-save-btn"
+                   btn-class="btn btn-primary button-margin"
+                   btn-click="save()"
+                   btn-disabled="anteckningIsEmpty()"
+                   busy="vm.busySaving"
+        >
+            <span message key="common.save"></span>
+        </ib-button>
+        <button type="button" id="create-anteckning-modal-cancel-btn" class="btn btn-default" ng-click="$dismiss()">
+            <span message key="common.cancel"></span>
+        </button>
+    </div>
+</div>

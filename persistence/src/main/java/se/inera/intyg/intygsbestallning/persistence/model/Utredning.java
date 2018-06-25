@@ -37,6 +37,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
@@ -106,6 +107,7 @@ public final class Utredning {
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "UTREDNING_ID", referencedColumnName = "UTREDNING_ID", nullable = false)
+    @OrderBy(value = "SKAPAT DESC")
     private List<Anteckning> anteckningList = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL)

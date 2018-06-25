@@ -1,6 +1,6 @@
 <div>
   <div class="table-actionbar">
-    <button id="ny-anteckning-btn" class="btn btn-success">Ny anteckning</button>
+    <button id="ny-anteckning-btn" class="btn btn-success" ng-click="showCreateAnteckningModal()">Ny anteckning</button>
   </div>
   
   <table class="utredning-anteckningar-table table table-striped ib-table-striped">
@@ -18,9 +18,9 @@
     </tbody>
     <tbody>
       <tr ng-repeat="anteckning in anteckningList">
-        <td class="cell">{{::anteckning.skapat}}</td>
-        <td class="cell">{{::anteckning.anvandare}}</td>
-        <td class="cell">{{::anteckning.text}}</td>
+        <td class="cell">{{::anteckning.skapat | date:'short'}}</td>
+        <td class="cell cell-user">{{::anteckning.anvandare}}</td>
+        <td class="cell nl2br">{{::anteckning.text}}</td>
       </tr>
     </tbody>
   </table>

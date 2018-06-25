@@ -151,7 +151,11 @@ var ibMessages = {
         // Registrera skickat utlåtande modal
         'registrera-skickat-utlatande.label.title': 'Datum för skickat utlåtande',
         'registrera-skickat-utlatande.label.info': 'Här anges datumet för när utlåtande skickades. Detta datum visas inte för Försäkringskassan utan är till för vården att kunna följa händelser kring utredningen.',
-
+        
+        // Lägg till anteckning modal
+        'skapa-anteckning.modal.info': 'Anteckningar för inte innehålla någon medicinsk information.\n' +
+        '\n' + 'Anteckningarna visas endast för vårdadministratörer på samma vårdenhet.',
+        
         //Registrerade vårdenheter
         'hantera-enheter.label.table.vardenheter.column.namn': 'Namn',
         'hantera-enheter.label.table.vardenheter.column.postadress': 'Postadress',
@@ -384,7 +388,8 @@ var ibMessages = {
         'server.error.savebetald.text': 'Försök igen eller kontakta support',
         'server.error.saveutbetald.title': 'Kunde inte spara utbetalning',
         'server.error.saveutbetald.text': 'Försök igen eller kontakta support',
-
+        'server.error.saveAnteckning.title': 'Kunde inte spara anteckning',
+        'server.error.saveAnteckning.text': 'Försök igen eller kontakta support',
         'common.error.spi.fel01': 'Ett tekniskt fel uppstod när vårdenheten skulle hämtas. Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraNationellKundservice>'
     },
     'en': {

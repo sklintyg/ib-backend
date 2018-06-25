@@ -17,21 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-visa-anteckningar{
-  
-  .utredning-anteckningar-table{
-    
-    .cell-user,
-    .cell-created{
-      width: 200px;
-    }
-    
-    .cell-user{
-      padding-right: 20px;
-    }
-    
-    td.cell{
-      vertical-align: top;
-    }
+.skapa-anteckning-modal {
+
+  textarea{
+    width: 100%;
+    resize: vertical;
   }
 }
