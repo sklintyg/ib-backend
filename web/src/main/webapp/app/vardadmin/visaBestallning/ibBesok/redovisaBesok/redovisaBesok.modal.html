@@ -52,11 +52,13 @@
   <div class="modal-footer">
 
     <div>
+      <div ng-if="vm.showValidationErrorMessage" class="validation-error">
+        <message key="redovisabesok.error.validation"></message>
+      </div>
+
       <ib-alert-message ng-if="vm.showSaveErrorMessage" alert-id="redovisabesok.error.teknisktfel" alert-severity="danger">
         <message key="redovisaBesok.error.teknisktfel"></message> {{vm.saveErrorBesok.besokDatum}} {{vm.saveErrorBesok.besokStartTid}}
       </ib-alert-message>
-      <ib-alert-message ng-if="vm.showValidationErrorMessage" alert-message-id="redovisabesok.error.validation"
-                        alert-id="redovisabesok.error.validation" alert-severity="danger"></ib-alert-message>
     </div>
 
     <ib-button btn-id="redovisa-besok-modal-skicka"

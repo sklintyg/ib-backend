@@ -27,4 +27,9 @@ angular.module('ibApp')
                 besok.besokStatus.id === 'OMBOKAT' ||
                 besok.besokStatus.id === 'GENOMFORT'));
         };
+        
+        this.isBesokRedovisningValid = function(besok){
+            return (besok.tolkStatus === 'EJ_BOKAT' && besok.genomfort) ||
+            ((besok.tolkStatus === 'DELTAGIT' || besok.tolkStatus === 'EJ_DELTAGIT') && besok.genomfort);
+        };
     });

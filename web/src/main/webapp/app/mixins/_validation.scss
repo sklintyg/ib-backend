@@ -2,6 +2,10 @@ input.ng-invalid {
   border-color:  $ib-color-11 !important;
 }
 
+.validation-error {
+  color: $ib-color-11;
+}
+
 .asterisk {
   display: inline-block;
   align-self: center;

@@ -99,9 +99,12 @@ angular.module('ibApp')
                     });
 
                 $scope.vm.showValidationErrorMessage = false;
+
+                // Validate that any rows are 'genomfort' at all
+                // Validate that if tolk has been booked, tolk and genomfort must be set for it to be a valid row
                 if (redovisaBesokDto.redovisaBesokList.filter(function(item) {
-                    return item.tolkStatus === 'BOKAT' && item.genomfort;
-                    }).length > 0) {
+                        return redovisaBesokService.isBesokRedovisningValid(item);
+                    }).length === 0) {
                     $scope.vm.showValidationErrorMessage = true;
                     return;
                 }
