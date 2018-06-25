@@ -31,7 +31,6 @@ import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
 import se.inera.intyg.intygsbestallning.web.BaseRestIntegrationTest;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.core.Is.is;
@@ -64,7 +63,7 @@ public class RequestUpdateOrderIT extends BaseRestIntegrationTest {
         Integer utredningId = body.jsonPath().get("entity.utredningId");
         requestTemplate.add("data",
                 new RequestUpdateOrder("" + utredningId, "Detta är en kommentar",
-                        SchemaDateUtil.toStringFromLocalDate(LocalDate.now().plusDays(25)),
+                        SchemaDateUtil.toDateStringFromLocalDate(LocalDate.now().plusDays(25)),
                         true,
                         "sv",
                         true,

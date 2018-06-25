@@ -45,8 +45,6 @@ import se.inera.intyg.intygsbestallning.service.utredning.ServiceTestUtil;
 import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RedovisaBesokRequest;
 
-import java.time.LocalDateTime;
-
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -93,7 +91,7 @@ public class BesokReportServiceImplTest {
                 .withAssessmentCareContactId(besok1.getId().toString())
                 .withParticipatingProfession(besok1.getDeltagareProfession().name())
                 .withInterpreterStatus(TolkStatusTyp.DELTAGIT.getId())
-                .withInvitationDate(SchemaDateUtil.toStringFromLocalDateTime(besok1.getKallelseDatum()))
+                .withInvitationDate(SchemaDateUtil.toDateStringFromLocalDateTime(besok1.getKallelseDatum()))
                 .withInvitationChannel(besok1.getKallelseForm().getCvValue())
                 .withStartTime(besok1.getBesokStartTid())
                 .withEndTime(besok1.getBesokSlutTid())

@@ -335,7 +335,7 @@ public class BesokServiceImpl extends BaseBesokService implements BesokService {
                 .withAvvikelseId(avvikelseId.toString())
                 .withOrsakatAv(avvikelseRequest.getOrsakatAv().name())
                 .withBeskrivning(avvikelseRequest.getBeskrivning().orElse(null))
-                .withTidpunkt(SchemaDateUtil.toStringFromLocalDateTime(avvikelseRequest.getTidpunkt()))
+                .withTidpunkt(SchemaDateUtil.toDateStringFromLocalDateTime(avvikelseRequest.getTidpunkt()))
                 .withInvanareUteblev(avvikelseRequest.getInvanareUteblev())
                 .withSamordnare(avvikelseRequest.getSamordnare())
                 .build();

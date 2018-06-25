@@ -44,7 +44,7 @@ public class BaseBesokService extends BaseUtredningService {
                 .withAssessmentCareContactId(besok.getId().toString())
                 .withParticipatingProfession(besok.getDeltagareProfession().name())
                 .withInterpreterStatus(nonNull(besok.getTolkStatus()) ? besok.getTolkStatus().getId() : null)
-                .withInvitationDate(SchemaDateUtil.toStringFromLocalDateTime(besok.getKallelseDatum()))
+                .withInvitationDate(SchemaDateUtil.toDateStringFromLocalDateTime(besok.getKallelseDatum()))
                 .withInvitationChannel(besok.getKallelseForm().getCvValue())
                 .withStartTime(besok.getBesokStartTid())
                 .withEndTime(besok.getBesokSlutTid())

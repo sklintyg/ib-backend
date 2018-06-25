@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.intygsbestallning.integration.myndighet.service;
 
-import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto;
-import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportDeviationRequestDto;
-import se.inera.intyg.intygsbestallning.integration.myndighet.dto.RespondToPerformerRequestDto;
+import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.aCv;
+import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
+
 import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.ReportCareContactType;
 import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.ReportDeviationType;
 import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.RespondToPerformerRequestType;
@@ -28,11 +28,11 @@ import se.riv.intygsbestallning.certificate.order.v1.AddressType;
 import se.riv.intygsbestallning.certificate.order.v1.CareUnitType;
 import se.riv.intygsbestallning.certificate.order.v1.PerformerRequestResponseType;
 import se.riv.intygsbestallning.certificate.order.v1.TimePeriodType;
-
 import java.time.LocalDateTime;
-
-import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.aCv;
-import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
+import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
+import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto;
+import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportDeviationRequestDto;
+import se.inera.intyg.intygsbestallning.integration.myndighet.dto.RespondToPerformerRequestDto;
 
 public final class TjanstekontraktUtils {
 
@@ -106,8 +106,8 @@ public final class TjanstekontraktUtils {
 
     public static TimePeriodType aTimePeriod(final LocalDateTime start, final LocalDateTime end) {
         TimePeriodType period = new TimePeriodType();
-        period.setStart(start.toString());
-        period.setEnd(end.toString());
+        period.setStart(SchemaDateUtil.toDateTimeStringFromLocalDateTime(start));
+        period.setEnd(SchemaDateUtil.toDateTimeStringFromLocalDateTime(end));
         return period;
     }
 }

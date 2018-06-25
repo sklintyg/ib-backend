@@ -40,7 +40,7 @@ angular.module('ibApp').directive('visaAnteckningar', function($uibModal) {
                 modalInstance.result.catch(function () {}); //jshint ignore:line
             };
         },
-        controller: function($scope){
+        controller: function(){
             //if (angular.isUndefined($scope.anteckningar)) {
             //    $scope.anteckningar = [];
             //}

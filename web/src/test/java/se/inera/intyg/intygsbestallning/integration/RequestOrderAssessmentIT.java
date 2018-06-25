@@ -67,8 +67,8 @@ public class RequestOrderAssessmentIT extends BaseRestIntegrationTest {
                 new RequestOrderAssessmentIT.RequestOrderAssessment("" + utredningId,
                         "IFV1239877878-1042",
                         "AFU", true, "sv", "Detta är en kommentar",
-                        SchemaDateUtil.toStringFromLocalDate(LocalDate.now().plusDays(25)), false,
-                        "Bli frisk", "Bowla", SchemaDateUtil.toStringFromLocalDate(LocalDate.now()),
+                        SchemaDateUtil.toDateStringFromLocalDate(LocalDate.now().plusDays(25)), false,
+                        "Bli frisk", "Bowla", SchemaDateUtil.toDateStringFromLocalDate(LocalDate.now()),
                         "Hanna Handläggare", "123-123123", "handlaggare@ineratestar.se",
                         "19121212-1212", "Tolvan", "Tolvansson", "Rullator",
                         "Kommer från Tolvmåla"));

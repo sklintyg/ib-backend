@@ -103,7 +103,7 @@ public class MyndighetIntegrationServiceImplTest {
         final String certificateType = UtredningsTyp.AFU_UTVIDGAD.name();
 
         UpdateAssessmentResponseType response = new UpdateAssessmentResponseType();
-        response.setLastDateForCertificateReceival(SchemaDateUtil.toStringFromLocalDateTime(DATE_TIME));
+        response.setLastDateForCertificateReceival(SchemaDateUtil.toDateStringFromLocalDateTime(DATE_TIME));
         response.setResult(ok());
 
         doReturn(response)
@@ -112,7 +112,7 @@ public class MyndighetIntegrationServiceImplTest {
 
         integrationService.updateAssessment(assessmentId, certificateType);
 
-        assertEquals(SchemaDateUtil.toStringFromLocalDateTime(DATE_TIME), response.getLastDateForCertificateReceival());
+        assertEquals(SchemaDateUtil.toDateStringFromLocalDateTime(DATE_TIME), response.getLastDateForCertificateReceival());
     }
 
     @Test
@@ -140,7 +140,7 @@ public class MyndighetIntegrationServiceImplTest {
                 .withAvvikelseId("1")
                 .withOrsakatAv(AvvikelseOrsak.PATIENT.name())
                 .withBeskrivning("beskrivning")
-                .withTidpunkt(SchemaDateUtil.toStringFromLocalDateTime(DATE_TIME))
+                .withTidpunkt(SchemaDateUtil.toDateStringFromLocalDateTime(DATE_TIME))
                 .withInvanareUteblev(true)
                 .withSamordnare("Sam Ordnare")
                 .build();

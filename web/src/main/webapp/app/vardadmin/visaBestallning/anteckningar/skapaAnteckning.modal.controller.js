@@ -29,7 +29,7 @@ angular.module('ibApp')
             };
             
             $scope.anteckningIsEmpty = function() {
-                return ($scope.note.replace(/\s/g,'') == '');
+                return ($scope.note.replace(/\s/g,'') === '');
             };
             
             $scope.save = function () {

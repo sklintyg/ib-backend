@@ -18,20 +18,28 @@
  */
 package se.inera.intyg.intygsbestallning.common.util;
 
-import org.junit.Test;
-
-import java.time.LocalDateTime;
-
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
+import static se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil.toDateTimeStringFromLocalDateTime;
 import static se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil.toLocalDateTimeFromDateType;
+
+import org.junit.Test;
+import java.time.LocalDateTime;
 
 public class SchemaDateUtilTest {
 
     @Test
     public void testToLocalDateTimeFromDateType() {
         final String dateType = "20181212";
-        final LocalDateTime expected = LocalDateTime.of(2018, 12, 12, 0,0,0);
+        final LocalDateTime expected = LocalDateTime.of(2018, 12, 12, 0, 0, 0);
 
-        assertEquals(expected, toLocalDateTimeFromDateType(dateType));
+        assertThat(toLocalDateTimeFromDateType(dateType)).isEqualTo(expected);
+    }
+
+    @Test
+    public void testToDateTimeStringFromLocalDateTime() {
+        final String expected = "20181212121212";
+        final LocalDateTime dateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12);
+
+        assertThat(toDateTimeStringFromLocalDateTime(dateTime)).isEqualTo(expected);
     }
 }

@@ -24,7 +24,8 @@ import java.time.format.DateTimeFormatter;
 
 public final class SchemaDateUtil {
 
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
     private static final DateTimeFormatter ISO_DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
     private SchemaDateUtil() {
@@ -35,18 +36,26 @@ public final class SchemaDateUtil {
     }
 
     public static LocalDateTime toLocalDateTimeFromDateType(final String dateType) {
-        return LocalDate.parse(dateType, DATE_TIME_FORMATTER).atStartOfDay();
+        return LocalDate.parse(dateType, DATE_FORMATTER).atStartOfDay();
     }
 
     public static LocalDate toLocalDateFromDateType(final String dateType) {
         return toLocalDateTimeFromDateType(dateType).toLocalDate();
     }
 
-    public static String toStringFromLocalDateTime(final LocalDateTime localDateTime) {
+    public static String toDateStringFromLocalDateTime(final LocalDateTime localDateTime) {
+        return DATE_FORMATTER.format(localDateTime);
+    }
+
+    public static String toDateStringFromLocalDate(final LocalDate localDate) {
+        return DATE_FORMATTER.format(localDate);
+    }
+
+    public static String toDateTimeStringFromLocalDateTime(final LocalDateTime localDateTime) {
         return DATE_TIME_FORMATTER.format(localDateTime);
     }
 
-    public static String toStringFromLocalDate(final LocalDate localDate) {
+    public static String toDateTimeStringFromLocalDate(final LocalDate localDate) {
         return DATE_TIME_FORMATTER.format(localDate);
     }
 }
