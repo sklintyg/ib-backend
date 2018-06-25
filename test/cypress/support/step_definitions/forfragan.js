@@ -4,6 +4,11 @@ let utredningsId;
 let landstingHsaId = 'IFV1239877878-1041';
 let enhetsHsaId = ''
 
+const enheter = {
+    "WebCert-Enhet1" : "IFV1239877878-1042",
+    "WebCert-Enhet3" : "IFV1239877878-104D"
+}
+
 given('att Försäkringskassan har skickat en förfrågan AFU till samordnare', () => {
 	
     let date = moment().add(1, 'days').format('YYYY-MM-DD');
@@ -29,13 +34,25 @@ then('ska förfrågans status vara {string} för {string}', (status, roll) => {
     cy.get("#utredning-header-status").should("contain", status);
 })
 
-when('jag direkttilldelar förfrågan', () => {
-	enhetsHsaId = 'IFV1239877878-1042';
+when('jag direkttilldelar förfrågan till enhet {string}', (enhetsNamn) => {
+    enhetsHsaId = enheter[enhetsNamn];
+    
     goToUtredning('samordnare', landstingHsaId, enhetsHsaId, utredningsId)
     cy.get('#tilldela-direkt-button').click();
     cy.get('#tilldela-direkt-modal-vardenheter-eget-landsting-input-' + enhetsHsaId).click(); //Testet felar p.g.a. elm saknar id i senaste deploy
     cy.get('#tilldela-direkt-modal-meddelande_textarea').type('nån slags text');
     cy.get('#tilldela-direkt-modal-skicka').click();
+})
+
+when('jag tilldelar förfrågan till enhet {string}', (enhetsNamn) => {
+    enhetsHsaId = enheter[enhetsNamn];
+    
+    goToUtredning('samordnare', landstingHsaId, enhetsHsaId, utredningsId)
+    cy.get('#skicka-forfragan-button').click();
+    cy.get('#skicka-forfragan-modal-vardenheter-eget-landsting-input-IFV1239877878-1042').click();
+    cy.get('#skicka-forfragan-modal-meddelande_textarea').type('Skickar förfrågan den långa vägen.');
+    cy.get('#skicka-forfragan-modal-skicka > span').click();
+    
 })
 
 when('samordnare accepterar förfrågan', () => {
@@ -52,10 +69,11 @@ then('ska Försäkringskassan notifieras att vårdenheten {string} {string} för
 	let url = 'http://mocks.sm.nordicmedtest.se:43000/validate/respondToPerformerRequest/' + utredningsId;
 	cy.request('POST', url).then((res) => { 
 		console.log(res);
-		assert.equal(res.body.assessmentId, utredningsId, 'assessmentId equal');
-		assert.equal(res.body.responseCode, responseCode, 'responseCode equal');
-		assert.equal(res.body.performerCareUnitId, enhetsHsaId, 'performerCareUnitId equal');
-		assert.equal(res.body.performerCareUnitName, vardEnhet, 'performerCareUnitName equal');
+        assert.equal(false, false, 'falskt är falskt');
+		assert.equal(res.body.assessmentId, utredningsId, 'Hittas assessmentId i FK-simulator? (Mocks-SM)');
+		assert.equal(res.body.responseCode, responseCode, 'Hittas responseCode i FK-simulator? (Mocks-SM)');
+		assert.equal(res.body.performerCareUnitId, enhetsHsaId, 'Hittas performerCareUnitId i FK-simulator? (Mocks-SM)');
+		assert.equal(res.body.performerCareUnitName, vardEnhet, 'Hittas performerCareUnitName i FK-simulator? (Mocks-SM)');
 
 	});
 })
