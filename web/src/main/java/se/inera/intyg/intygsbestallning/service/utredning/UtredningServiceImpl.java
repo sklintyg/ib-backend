@@ -303,7 +303,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                     .build();
             utredning.getHandlingList().add(handling);
         }
-        utredning.getHandelseList().add(HandelseUtil.createOrderReceived(order.getBestallare().getMyndighet(), order.getOrderDate()));
+        utredning.getHandelseList().add(HandelseUtil.createOrderReceived(order.getBestallare().getMyndighet(), order.getLastDateIntyg()));
 
         utredningRepository.saveUtredning(utredning);
         notifieringSendService.notifieraVardenhetNyBestallning(utredning);
@@ -682,9 +682,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .withTilldeladVardenhetHsaId(order.getEnhetId())
                 .withSyfte(order.getSyfte())
                 .withPlaneradeAktiviteter(order.getAtgarder())
-                .withOrderDatum(Optional.ofNullable(order.getOrderDate())
-                        .map(LocalDate::atStartOfDay)
-                        .orElse(null))
+                .withOrderDatum(LocalDateTime.now())
                 .withKommentar(order.getKommentar())
                 .build();
     }

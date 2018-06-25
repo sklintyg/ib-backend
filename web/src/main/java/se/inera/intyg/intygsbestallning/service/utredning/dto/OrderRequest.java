@@ -49,7 +49,6 @@ public final class OrderRequest {
     private String tolkSprak;
     private String kommentar;
     private LocalDate lastDateIntyg;
-    private LocalDate orderDate;
     private boolean handling;
     private String atgarder;
 
@@ -88,8 +87,6 @@ public final class OrderRequest {
                 .withKommentar(source.getComment())
                 .withLastDateIntyg(!isNull(source.getLastDateForCertificateReceival())
                         ? SchemaDateUtil.toLocalDateFromDateType(source.getLastDateForCertificateReceival()) : null)
-                .withOrderDate(!isNull(source.getOrderDate())
-                        ? SchemaDateUtil.toLocalDateFromDateType(source.getOrderDate()) : null)
                 .withSyfte(source.getPurpose())
                 .withTolkBehov(BooleanUtils.toBoolean(source.isNeedForInterpreter()))
                 .withTolkSprak((!isNull(source.isNeedForInterpreter()) && source.isNeedForInterpreter())
@@ -113,9 +110,6 @@ public final class OrderRequest {
         if (nonNull(source.getAssessmentId())) {
             if (isNull(Longs.tryParse(source.getAssessmentId().getExtension()))) {
                 errors.add("AssessmentId is not parseable as a Long");
-            }
-            if (isNull(source.getOrderDate())) {
-                errors.add("OrderDate is required when assessmentId is present");
             }
             if (isNull(source.getLastDateForCertificateReceival())) {
                 errors.add("LastDateForCertificateReceival is required when assessmentId is present");
@@ -227,14 +221,6 @@ public final class OrderRequest {
         this.lastDateIntyg = lastDateIntyg;
     }
 
-    public LocalDate getOrderDate() {
-        return orderDate;
-    }
-
-    public void setOrderDate(final LocalDate orderDate) {
-        this.orderDate = orderDate;
-    }
-
     public boolean isHandling() {
         return handling;
     }
@@ -273,7 +259,6 @@ public final class OrderRequest {
         private String tolkSprak;
         private String kommentar;
         private LocalDate lastDateIntyg;
-        private LocalDate orderDate;
         private boolean handling;
         private String atgarder;
 
@@ -349,11 +334,6 @@ public final class OrderRequest {
             return this;
         }
 
-        public OrderRequestBuilder withOrderDate(LocalDate orderDate) {
-            this.orderDate = orderDate;
-            return this;
-        }
-
         public OrderRequestBuilder withHandling(boolean handling) {
             this.handling = handling;
             return this;
@@ -379,7 +359,6 @@ public final class OrderRequest {
             orderRequest.setTolkSprak(tolkSprak);
             orderRequest.setKommentar(kommentar);
             orderRequest.setLastDateIntyg(lastDateIntyg);
-            orderRequest.setOrderDate(orderDate);
             orderRequest.setHandling(handling);
             orderRequest.setAtgarder(atgarder);
             return orderRequest;

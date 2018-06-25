@@ -186,7 +186,6 @@ public class UtredningServiceImplTest {
                 .withTolkBehov(true)
                 .withTolkSprak("sv")
                 .withSyfte("syfte")
-                .withOrderDate(LocalDate.of(2018, 1, 1))
                 .withLastDateIntyg(LocalDate.of(2019, 1, 1))
                 .withKommentar("kommentar")
                 .withInvanarePersonnummer("personnummer")
@@ -221,7 +220,6 @@ public class UtredningServiceImplTest {
         assertEquals("enhet", response.getBestallning().get().getTilldeladVardenhetHsaId());
         assertFalse(response.getIntygList().isEmpty());
         assertEquals(LocalDate.of(2019, 1, 1).atStartOfDay(), response.getIntygList().get(0).getSistaDatum());
-        assertEquals(LocalDate.of(2018, 1, 1).atStartOfDay(), response.getBestallning().get().getOrderDatum());
         assertNull(response.getBestallning().get().getUppdateradDatum());
         assertEquals("behov", response.getInvanare().getSarskildaBehov());
         assertEquals("personnummer", response.getInvanare().getPersonId());
@@ -278,7 +276,6 @@ public class UtredningServiceImplTest {
                 .withTolkBehov(true)
                 .withTolkSprak("sv")
                 .withSyfte("syfte")
-                .withOrderDate(LocalDate.of(2018, 1, 1))
                 .withLastDateIntyg(LocalDate.of(2019, 1, 1))
                 .withKommentar("kommentar")
                 .withInvanarePersonnummer("personnummer")
@@ -314,7 +311,6 @@ public class UtredningServiceImplTest {
         assertEquals("enhet", captured.getBestallning().get().getTilldeladVardenhetHsaId());
         assertFalse(captured.getIntygList().isEmpty());
         assertEquals(LocalDate.of(2019, 1, 1).atStartOfDay(), captured.getIntygList().get(0).getSistaDatum());
-        assertEquals(LocalDate.of(2018, 1, 1).atStartOfDay(), captured.getBestallning().get().getOrderDatum());
         assertNull(captured.getBestallning().get().getUppdateradDatum());
         assertEquals("behov", captured.getInvanare().getSarskildaBehov());
         assertEquals("personnummer", captured.getInvanare().getPersonId());

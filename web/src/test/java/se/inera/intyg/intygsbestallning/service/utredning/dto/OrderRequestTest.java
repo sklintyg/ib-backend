@@ -54,7 +54,6 @@ public class OrderRequestTest {
         assertEquals("sv", result.getTolkSprak());
         assertEquals(Long.valueOf(1L), result.getUtredningId());
         assertEquals(LocalDate.of(2019, 1, 1), result.getLastDateIntyg());
-        assertEquals(LocalDate.of(2018, 1, 1), result.getOrderDate());
         assertEquals(AFU, result.getUtredningsTyp());
         assertEquals("adress", result.getBestallare().getAdress());
         assertEquals("email", result.getBestallare().getEmail());
@@ -87,7 +86,6 @@ public class OrderRequestTest {
         assertEquals("sv", result.getTolkSprak());
         assertNull(result.getUtredningId());
         assertNull(result.getLastDateIntyg());
-        assertNull(result.getOrderDate());
         assertEquals(AFU, result.getUtredningsTyp());
         assertEquals("adress", result.getBestallare().getAdress());
         assertEquals("email", result.getBestallare().getEmail());
@@ -104,14 +102,6 @@ public class OrderRequestTest {
     public void testConvertFailCertificateType() {
         OrderAssessmentType request = createFullRequest();
         request.setCertificateType(aCv("notExisting", null, null));
-
-        assertErrorCode(request, BAD_REQUEST);
-    }
-
-    @Test(expected = IbServiceException.class)
-    public void testConvertFailOrderDate() {
-        OrderAssessmentType request = createFullRequest();
-        request.setOrderDate(null);
 
         assertErrorCode(request, BAD_REQUEST);
     }
