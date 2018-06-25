@@ -75,7 +75,6 @@ angular.module('ibApp').factory('ibDialog',
             modalInstance.result.catch(function () {}); //jshint ignore:line
 
             modalInstance.result.then(function(result) {
-                $state.reload();
                 promise.resolve(result);
             }, function(error) {
                 promise.reject(error);

@@ -12,7 +12,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-angular.module('ibApp').directive('ibBesok', function($log, ibDialog, BesokProxy, moment, redovisaBesokService) {
+angular.module('ibApp').directive('ibBesok', function($log, $state, ibDialog, BesokProxy, moment, redovisaBesokService) {
     'use strict';
 
     return {
@@ -51,7 +51,11 @@ angular.module('ibApp').directive('ibBesok', function($log, ibDialog, BesokProxy
                     if (result.nyttSistaDatum) {
                         ibDialog.message('utredningsTypAndradModal', 'Utredningstyp ändrad',
                             'Utredningstypen är ändrad till AFU utvidgad. Nytt slutdatum är ' +
-                            moment(result.nyttSistaDatum).format('YYYY-MM-DD'));
+                            moment(result.nyttSistaDatum).format('YYYY-MM-DD')).then(function(){
+                            $state.reload();
+                        });
+                    } else {
+                        $state.reload();
                     }
                 }, function(error) {
                     if (error && error !== 'backdrop click') {
@@ -66,7 +70,11 @@ angular.module('ibApp').directive('ibBesok', function($log, ibDialog, BesokProxy
                     if (result.nyttSistaDatum) {
                         ibDialog.message('utredningsTypAndradModal', 'Utredningstyp ändrad',
                             'Utredningstypen är ändrad till AFU utvidgad. Nytt slutdatum är ' +
-                            moment(result.nyttSistaDatum).format('YYYY-MM-DD'));
+                            moment(result.nyttSistaDatum).format('YYYY-MM-DD')).then(function() {
+                            $state.reload();
+                        });
+                    } else {
+                        $state.reload();
                     }
                 }, function(error) {
                     if (error && error !== 'backdrop click') {
@@ -77,15 +85,22 @@ angular.module('ibApp').directive('ibBesok', function($log, ibDialog, BesokProxy
 
             $scope.oppnaRedovisaBesok = function() {
                 openModal('redovisaBesok/redovisaBesok.modal.html', 'RedovisaBesokModalCtrl',
-                    {bestallning: $scope.bestallning}).then(function(result) {
-                    $log.info(result);
-                }, function(error) {
-                    $log.error(error);
-                });
+                    {
+                        bestallning: $scope.bestallning
+                    }).then(function(result) {
+                        $log.info(result);
+                        $state.reload();
+                    }, function(error) {
+                        $log.error(error);
+                    });
             };
 
             $scope.openAvvikelseModal = function(besokId) {
-                openModal('avvikelse.modal.html', 'AvvikelseModalCtrl', {utredningId: $scope.bestallning.utredningsId, besokId: besokId});
+                openModal('avvikelse.modal.html', 'AvvikelseModalCtrl', {
+                    utredningId: $scope.bestallning.utredningsId,
+                    besokId: besokId}).then(function(){
+                        $state.reload();
+                    });
             };
 
             $scope.openAvbokaModal = function(besokId) {
@@ -97,6 +112,7 @@ angular.module('ibApp').directive('ibBesok', function($log, ibDialog, BesokProxy
                 }).then(function() {
                     BesokProxy.avboka($scope.bestallning.utredningsId, besokId).then(function(){
                         $log.info('Successfully requested avbokning');
+                        $state.reload();
                     }, function(){
                         ibDialog.message('failAvbokaModal',
                             'Tekniskt fel',
@@ -109,7 +125,7 @@ angular.module('ibApp').directive('ibBesok', function($log, ibDialog, BesokProxy
 
             function openModal(templateUrl, controller, resolveObject) {
                 var templatePath = '/app/vardadmin/visaBestallning/ibBesok/';
-                return  ibDialog.modal(templatePath + templateUrl, controller, resolveObject);
+                return ibDialog.modal(templatePath + templateUrl, controller, resolveObject);
             }
         }
     };
