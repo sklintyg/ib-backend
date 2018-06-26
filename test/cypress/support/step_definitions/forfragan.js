@@ -55,9 +55,13 @@ when('jag tilldelar förfrågan till enhet {string}', (enhetsNamn) => {
     
 })
 
-when('samordnare accepterar förfrågan', () => {
-    goToUtredning('samordnare', landstingHsaId, enhetsHsaId, utredningsId)
-    cy.get('#accepteraBtn > span').click();
+when('{string} accepterar förfrågan', (roll) => {
+    goToUtredning(roll, landstingHsaId, enhetsHsaId, utredningsId)
+    acceptForfragan(roll)
+    //samordnare
+    //cy.get('#accepteraBtn > span').click();
+    //vårdaadmin
+    //cy.get('#open-accept-internforfragan-dialog-btn')
 })
 
 then('ska förfrågans status vara {string} för {string}', (status, roll) => {
@@ -77,6 +81,14 @@ then('ska Försäkringskassan notifieras att vårdenheten {string} {string} för
 
 	});
 })
+
+function acceptForfragan(roll){
+    if (roll === 'vårdadmin') {
+        cy.get('#open-accept-internforfragan-dialog-btn').click();
+    } else if (roll === samordnare) {
+        cy.get('#accepteraBtn > span').click();
+    }
+}
 
 
 function goToUtredning(roll, landsting, enhet, utredning) {
