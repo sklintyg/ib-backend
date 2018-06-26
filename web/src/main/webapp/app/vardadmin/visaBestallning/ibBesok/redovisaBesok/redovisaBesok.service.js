@@ -29,7 +29,7 @@ angular.module('ibApp')
         };
         
         this.isBesokRedovisningValid = function(besok){
-            return (besok.tolkStatus === 'EJ_BOKAT' && besok.genomfort) ||
-            ((besok.tolkStatus === 'DELTAGIT' || besok.tolkStatus === 'EJ_DELTAGIT') && besok.genomfort);
+            return besok.genomfort &&
+                (besok.tolkStatus === 'EJ_BOKAT' || besok.tolkStatus === 'DELTAGIT' || besok.tolkStatus === 'EJ_DELTAGIT');
         };
     });
