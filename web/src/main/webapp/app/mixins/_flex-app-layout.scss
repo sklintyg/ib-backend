@@ -96,13 +96,14 @@ body {
   // handle their own overflow, eg utredning / supportpanel.
   .ib-workarea-hflex-container {
     display: flex;
-    flex: 1 1 auto;
+    flex: 1 1 0%;
     min-height: 1%; //without a min-height IE11/edge wont shrink flex-items
+    position: relative;
 
     //Split horizontally in 3:2 ratio
     .ib-workarea-utredning {
       position: relative; //important: needs to be relative for anchorScroll to work
-      flex: 2 1 auto;
+      flex: 1 1 0%;
       overflow-y: auto;
       padding: 20px 15px 0 15px;
       background-color: $ib-color-27;
@@ -114,18 +115,17 @@ body {
       }
     }
     .ib-workarea-supportpanel {
-      flex: 3 1 auto;
+      flex: 2 1 0%;
       min-width: 1%;
     }
 
     > .bottom-fadeout-gradient {
       @extend %bottom-gradient;
 
-      max-width: $ib-max-content-width * 0.3;
+      max-width: $ib-max-content-width * 0.33;
       left: auto;
       z-index: 10;
       padding: 0 15px;
-      width: 60%;
     }
   }
 }

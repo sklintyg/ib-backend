@@ -4,6 +4,10 @@
     display: flex;
   }
 
+  .bottom-fadeout-gradient.bottom-fadeout-gradient__utredning {
+    max-width: 33% !important;
+  }
+
   .ib-workarea-supportpanel {
     $tab-border-color: $ib-color-15;
 
@@ -20,7 +24,7 @@
     display: flex;
     flex: auto;
     flex-direction: column;
-    height: 100%;
+    /*height: 100%;*/
     padding: 4px 0 2px 8px;
 
     // Tabs
@@ -106,7 +110,7 @@
 
     .tab-content > .tab-pane {
       padding-top: 10px;
-      height: 100%;
+      flex: 1;
     }
 
     .footer {
