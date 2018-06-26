@@ -32,6 +32,7 @@ import static se.inera.intyg.intygsbestallning.persistence.model.type.Notifierin
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.NY_BESTALLNING;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.NY_EXTERNFORFRAGAN;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.NY_INTERNFORFRAGAN;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.PAMINNELSEDATUM_KOMPLETTERING_PASSERAS;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.PAMINNELSE_REDOVISA_BESOK;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.SAMTLIGA_INTERNFORFRAGAN_BESVARATS;
@@ -50,6 +51,8 @@ import static se.inera.intyg.intygsbestallning.service.notifiering.util.Notifier
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.landstingNyExternforfraganMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.landstingSamtligaInternForfraganBesvaradeforfraganMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.nyBestallningMessage;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.paminnelseRedovisaBesok;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.paminnelseSlutDatumKomplettering;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.paminnelseSlutdatumUtredningMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.slutdatumPasseratUtredningMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.uppdateradBestallningMessage;
@@ -68,6 +71,7 @@ import static se.inera.intyg.intygsbestallning.service.notifiering.util.Notifier
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_INGEN_BESTALLNING;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_NY_FMU_EXTERN_FORFRAGAN;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_NY_FMU_INTERN_FORFRAGAN;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_PAMINNELSE_SLUTDATUM_KOMPLETTERING;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_REDOVISA_BESOK;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_SAMTLIGA_INTERNFORFRAGAN_BESVARATS;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_UTREDNING_SLUTDATUM_PAMINNELSE;
@@ -84,6 +88,7 @@ import javax.mail.MessagingException;
 import java.lang.invoke.MethodHandles;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
+import java.util.List;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
@@ -98,7 +103,6 @@ import se.inera.intyg.intygsbestallning.service.mail.MailService;
 import se.inera.intyg.intygsbestallning.service.notifiering.preferens.NotifieringPreferenceService;
 import se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringEpostResolver;
 import se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailBodyFactory;
-import se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil;
 import se.inera.intyg.intygsbestallning.service.vardenhet.VardenhetService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.notification.GetNotificationPreferenceResponse;
 
@@ -465,8 +469,23 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
     }
 
     @Override
-    public void notifieraVardenhetPaminnelseSlutdatumKomplettering(Utredning utredning) {
-        throw new NotImplementedException();
+    public void notifieraVardenhetPaminnelseSlutdatumKomplettering(Utredning utredning, List<Long> intygIds) {
+        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, SLUTDATUM_UTREDNING_PASSERAT);
+        final String id = bestallning.getTilldeladVardenhetHsaId();
+        final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VE);
+
+        if (preferens.isEnabled(PAMINNELSEDATUM_KOMPLETTERING_PASSERAS, NotifieringMottagarTyp.VARDENHET)) {
+            epostResolver.resolveVardenhetNotifieringEpost(id, utredning).ifPresent(email -> utredning.getIntygList().stream()
+                    .filter(intyg -> intygIds.contains(intyg.getId()))
+                    .forEach(intyg -> {
+                        String body = notifieringMailBodyFactory.buildBodyForUtredning(
+                                paminnelseSlutDatumKomplettering(utredning, intyg),
+                                utredningUrl(utredning));
+                        sendNotifiering(email, SUBJECT_PAMINNELSE_SLUTDATUM_KOMPLETTERING, body, utredning.getUtredningId());
+                        updateUtredningWithNotifiering(utredning, intyg.getId(), PAMINNELSEDATUM_KOMPLETTERING_PASSERAS, VARDENHET);
+                    }));
+            utredningRepository.saveUtredning(utredning);
+        }
     }
 
     @Override
@@ -489,7 +508,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
             final String email = vardenhetService.getVardEnhetPreference(id).getEpost();
             if (isNotEmpty(email)) {
                 final String body = notifieringMailBodyFactory.buildBodyForUtredning(
-                        NotifieringMailMeddelandeUtil.paminnelseRedovisaBesok(utredning),
+                        paminnelseRedovisaBesok(utredning),
                         utredningUrl(utredning));
 
                 sendNotifiering(email, SUBJECT_REDOVISA_BESOK, body, utredning.getUtredningId());
@@ -498,8 +517,9 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
         }
     }
 
-    private void saveNotifiering(
+    public void updateUtredningWithNotifiering(
             final Utredning utredning,
+            final Long intygId,
             final NotifieringTyp typ,
             final NotifieringMottagarTyp mottagare) {
 
@@ -510,9 +530,17 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
         utredning.getSkickadNotifieringList().add(aSkickadNotifiering()
                 .withSkickad(LocalDateTime.now())
                 .withTyp(typ)
+                .withIntygId(intygId)
                 .withMottagare(mottagare)
                 .build());
+    }
 
+    private void saveNotifiering(
+            final Utredning utredning,
+            final NotifieringTyp typ,
+            final NotifieringMottagarTyp mottagare) {
+
+        updateUtredningWithNotifiering(utredning, null, typ, mottagare);
         utredningRepository.saveUtredning(utredning);
     }
 

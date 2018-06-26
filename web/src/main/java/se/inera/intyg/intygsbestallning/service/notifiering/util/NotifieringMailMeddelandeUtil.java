@@ -165,4 +165,12 @@ public final class NotifieringMailMeddelandeUtil {
         return MessageFormat.format("Det finns besök i utredning {0} som ännu inte har redovisats.",
                 utredning.getUtredningId());
     }
+
+    public static String paminnelseSlutDatumKomplettering(final Utredning utredning, final Intyg intyg) {
+        return MessageFormat.format("Slutdatum för {0} för utredning {1} "
+                + "kommer snart att passeras. Om kompletteringen inte är mottagen av "
+                + "Försäkringskassan innan angivet slutdatum så kommer utredningen inte att ersättas.",
+                intyg.getSistaDatumKompletteringsbegaran().format(DateTimeFormatter.ISO_DATE),
+                utredning.getUtredningId());
+    }
 }

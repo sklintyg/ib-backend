@@ -24,6 +24,8 @@ public final class NotifieringMailSubjectConstants {
 
     }
 
+    //CHECKSTYLE:OFF LineLength
+
     public static final String SUBJECT_BESTALLNING_UPPDATERAD = "Försäkringskassan har uppdaterat en beställning";
     public static final String SUBJECT_BESTALLNING_AV_FRORSAKRINGSMEDICINSK_UTREDNING = "Beställning av Försäkringsmedicinsk utredning";
     public static final String SUBJECT_INGEN_BESTALLNING = "Försäkringskassan kommer inte skicka någon beställning";
@@ -33,9 +35,12 @@ public final class NotifieringMailSubjectConstants {
     public static final String SUBJECT_FMU_UTREDNING_TILLDELAD_VARDENHETEN = "En FMU utredning har blivit tilldelad vårdenheten";
     public static final String SUBJECT_UTREDNING_SLUTDATUM_PAMINNELSE = "Påminnelse: Slutdatum för en utredning är på väg att passeras";
     public static final String SUBJECT_UTREDNING_SLUTDATUM_PASSERAT = "Slutdatum för en utredningen har passerats";
+    public static final String SUBJECT_PAMINNELSE_SLUTDATUM_KOMPLETTERING = "Påminnelse: Slutdatum för kompletteringen är på väg att passeras";
     public static final String SUBJECT_AVVIKELSE_RAPPORTERAD_AV_VARDEN = "En vårdenhet har rapporterat en avvikelse";
     public static final String SUBJECT_AVVIKELSE_MOTTAGEN_FRAN_FK = "Försäkringskassan har rapporterat en avvikelse";
     public static final String SUBJECT_AVSLUTAD_PGA_JAV = "Utredning avslutad på grund av jävsförhållanden";
     public static final String SUBJECT_AVSLUTAD_UTREDNING = "Försäkringskassan har avbrutit utredningen";
     public static final String SUBJECT_REDOVISA_BESOK = "Redovisa besök";
+
+    //CHECKSTYLE:ON LineLength
 }

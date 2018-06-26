@@ -19,4 +19,5 @@ dependencies {
     testCompile "nl.jqno.equalsverifier:equalsverifier:${equalsVerifierVersion}"
     testCompile "org.springframework:spring-test:${springContextVersion}"
     testCompile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
+    testCompile "org.assertj:assertj-core:${assertJVersion}"
 }

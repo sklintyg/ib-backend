@@ -962,4 +962,26 @@
             tableName="VARDENHET_PREFERENCE"/>
 
     </changeSet>
+
+    <changeSet id="9" author="anell">
+        <comment>
+            Adding an INTYG_ID column on SKICKAD_NOTIFIERING
+            to be able to link a notifiering directly to a kompletteringsintyg.
+        </comment>
+
+        <addColumn tableName="SKICKAD_NOTIFIERING">
+            <column name="INTYG_ID" type="bigint">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+        <addForeignKeyConstraint
+            baseTableName="SKICKAD_NOTIFIERING"
+            baseColumnNames="INTYG_ID"
+            constraintName="SKICKAD_NOTIFIERING_INTYG_ID_FK"
+            referencedTableName="INTYG"
+            referencedColumnNames="ID"/>
+
+    </changeSet>
+
 </databaseChangeLog>
