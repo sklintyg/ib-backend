@@ -1,88 +1,100 @@
 <p>
-  Intygsbeställning är en tjänst som gör det möjligt att göra saker. </p>
+  Intygsbeställning är en tjänst som gör det möjligt för vården att ta emot förfrågningar och beställningar av intyg från myndigheter.
+</p>
 <p>
-  Nuvarande version är {{version}} </p>
+  Tjänsten är uppdelad i två delar:
+  <ul>
+    <li>Försäkringsmedicinska utredningar (FMU) - ett processtöd för att ta emot förfrågningar och beställningar av FMU
+      samt för uppföljning av utredningsprocessen och rapportering till Försäkringskassan.</li>
+    <li>Övriga förfrågningar och beställningar - ett processtöd för att ta emot och besvara övriga förfrågningar och
+      beställningar av intyg från myndigheter.</li>
+  </ul>
+</p>
+
+<p>
+  Nuvarande version är {{version}}
+</p>
 
 
-<h4>Användarkrav för tjänsten</h4>
+<h4>Användarkrav för Intygsbeställning</h4>
 
 <ul>
   <li>SITHS-kort (kallas även eTjänstekort eller tjänstekort)</li>
-  <li>Legitimeringskod kopplad till SITHS-kortet som används vid inloggning</li>
-  <li>Underskriftskod kopplad till SITHS-kortet som används för att signera intyg (endast läkare)</li>
   <li>Kortläsare</li>
   <li>NetiD installerat i datorn</li>
   <li>Rätt behörighet</li>
 </ul>
 
-<h4>Om SITHS-kortet</h4><p>
+<h4>Om SITHS-kortet</h4>
+<p>
   SITHS-kortet är en personlig legitimation som inte får lånas ut. Både kort och koder ska förvaras på ett
-  säkert sätt. </p><p>
+  säkert sätt.
+</p>
+<p>
   Om du har problem med att logga in med ditt kort eller vill veta vilken behörighet du har så kan du testa det
   här: <span dynamiclink key="testSiths"></span>
-</p><p>
+</p>
+<p>
   Om du förlorat ditt kort eller misstänker att någon obehörig fått kännedom om dina koder ska kortet spärras
   omedelbart. Om ditt kort har spärrats eller om du glömt någon av koderna ska du vända dig till din
-  SITHS-kortadministratör. </p>
+  SITHS-kortadministratör.
+</p>
 
 
 
-<h4>Användare</h4>
+<h4>Webbläsare som stöds</h4>
 <p>
-  Webcert har flera typer av användare: läkare, tandläkare och vårdadministratörer (exempelvis läkarsekreterare).
-  Behörighet för inloggning: </p>
-<ul>
-  <li>Vårdadministratör ska ha medarbetaruppdraget "Vård och behandling" i HSA.</li>
-  <li>Tandläkare ska vara legitimerad tandläkare samt ha medarbetaruppdraget ”Vård och behandling” i HSA.</li>
-  <li>Läkare ska ha medarbetaruppdraget ”Vård och behandling” i HSA samt vara något av följande:
-    <ul>
-      <li>Legitimerade läkare</li>
-      <li>AT-läkare</li>
-      <li>Läkare inom och utanför EU/ESS/Schweiz som ännu inte har svensk läkarlegitimation, men som
-        är legitimerade i sitt hemland och som av vårdgivaren har tilldelats en gruppförskrivarkod och därmed har
-        ett särskilt förordnande att utöva läkaryrket.
-      </li>
-      <li>Vikarierande examinerad läkare (examinerade AT-läkare som ännu inte fått sin legitimation och personer
-        som har tagit sin läkarexamen men ännu inte påbörjat AT-tjänstgöring) som av vårdgivaren har tilldelats en
-        gruppförskrivarkod och därmed har ett särskilt förordnande att utöva läkaryrket.
-      </li>
-    </ul>
-  </li>
-</ul>
+  För att kunna använda funktionerna i Intygsbeställning behöver du Internet Explorer 11 eller senare versioner.
+  Det går att använda andra webbläsare men då finns risk för att problem uppstår. JavaScript måste vara aktiverat i
+  din webbläsare för att du ska kunna använda Intygsbeställning.
+</p>
 
 
 
-<h4>Behörighet</h4><p>
-  Alla användare kan skapa, skriva och spara utkast, förutsatt att patienten inte har en sekretessmarkering.
-  Vårdadministratörer kan notifiera läkare om att ett intyg är klart för signering. </p><p>
-  Endast läkare och tandläkare kan skapa intyg för en patient med sekretessmarkering, signera intyg, ersätta och
-  makulera intyg samt besvara en kompletteringsfråga med ett nytt intyg. </p><p>
-  Funktionen för att kommunicera frågor och svar och begäran om komplettering av intyg, som finns tillgänglig för
-  Försäkringskassans intyg, kan hanteras av såväl läkare som vårdadministratörer. </p>
+<h4>Användarmanual</h4>
+<p>
+  Mer information om Intygsbeställning och vilken behörighet som krävs för att logga in går att få genom att läsa
+  tjänstens <span dynamicLink key="anvandarmanual"></span>
+</p>
 
 
-<h4>Invånarens intyg</h4><p>
-  I samband med att ett intyg signeras görs det tillgängligt för invånaren i Mina intyg, med undantag för
-  Dödsbevis och Dödsorsaksintyg som inte visas i Mina intyg. I Mina intyg kan invånaren skicka intyget vidare
-  elektroniskt till någon av de anslutna mottagarna eller skriva ut det. För sjukpenningintyget är det också
-  möjligt att skapa en anpassad utskrift som kan ges till arbetsgivaren. Mina intyg nås via 1177 Vårdguidens
-  e-tjänster <span dynamiclink key="1177"></span> eller via <span dynamiclink key="minaintyg"></span>. </p><p>
-  Om invånaren inte vill använda Mina intyg är det möjligt för läkaren att skicka intyget elektroniskt direkt från
-  Webcert till huvudmottagaren av intyget. Observera att detta ska göras i samråd med patienten. </p><p>
-  Läkaren kan också skriva ut det signerade intyget från Webcert och ge till patienten. </p>
+<h4>Loggning</h4>
+<p>
+  I enlighet med patientdatalagen (2008:35), även kallad PDL, måste loggning av elektronisk åtkomst av dokumenterade
+  uppgifter om en patient loggas och kontrolleras systematiskt. Syftet med loggningen är att vårdgivaren ska kunna
+  kontrollera att ingen obehörig tar del av patientuppgifter. Dessutom ger loggningen möjlighet för patienten att kunna
+  informeras om den åtkomst som har förekommit.
+</p>
+<p>
+  För dig som vårdadministratör innebär detta att din aktivitet i Intygsbeställning loggas när du väljer att se pågående
+  eller avslutade utredningar eller tar del av eller uppdaterar en enskild utredning.
+</p>
 
-<h4>Webbläsare som stöds</h4><p>
-  För att kunna använda Webcerts funktioner behöver du Internet Explorer 11 eller efterföljande versioner.
-  Det går att använda andra webbläsare men då finns viss risk för att problem uppstår. Exempelvis stödjer
-  inte webbläsarna Chrome och Edge den metod som Telia e-legitimation använder för att skapa signaturer.
-  Du måste även ha JavaScript aktiverat i din webbläsare för att kunna använda Webcert. </p>
+<h4>Om kakor (cookies)</h4>
+<p>
+  Den typ av kakor som används på den här webbplatsen kallas för sessionskakor. De lagras temporärt i din dators minne
+  under tiden du är inne på webbplatsen. Sessionskakor sparar ingen personlig information om dig och de försvinner när
+  du stänger din webbläsare.
+</p>
+<p>
+  I Intygsbeställning används sessionskakor för att du ska kunna navigera i tjänsten utan att behöva logga in på nytt
+  varje gång du går till en ny sida. För att vara säker på att kakorna inte sparas i din dator efter avslutad session
+  måste du stänga webbläsaren när du har loggat ut.
+</p>
+<p>
+  Om du inte accepterar användningen av kakor kan du ställa in webbläsaren så att kakor blockeras. Observera att det då
+  inte går att logga in.
+</p>
+<p>
+  Om du väljer att acceptera användningen av kakor kommer ditt samtyckte att lagras permanent i din webbläsare. För att
+  ta tillbaka ditt samtycke behöver du rensa kakor och annan webbplatsdata för den här webbplatsen i din webbläsare.
+</p>
+<p>
+  Mer information om kakor (cookies) finns på <span dynamiclink key="ptsCookies"></span>
+</p>
 
-<h4>Adress till vårdenheten</h4><p>
-  Intyg som utfärdas i Webcert innehåller adress- och kontaktuppgifter till den vårdenhet du är inloggad på
-  när utkastet skapas. För landstingsanställda läkare hämtas uppgifterna från HSA. Om du upptäcker att
-  adress- och kontaktinformationen är fel, så kan du begära ändring i HSA-katalogen. </p>
-
-<h4>Ansvarig för Webcert:</h4><p>
+<h4>Ansvarig för Intygsbeställning</h4>
+<p>
   <span dynamiclink key="ineraStartsida"></span><br>
   Postadress: Box 17703<br>
   118 93 Stockholm<br>

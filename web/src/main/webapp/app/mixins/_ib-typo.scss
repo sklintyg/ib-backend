@@ -87,7 +87,7 @@ Color and background should be specified at the extension point, eg:
 }
 
 %ib-typo-02 {
-  @include font-variant-medium(18px);
+  @include font-variant-regular(14px);
 }
 
 %ib-typo-03 {
@@ -129,16 +129,19 @@ Color and background should be specified at the extension point, eg:
 }
 
 %ib-typo-12 {
-  @include font-variant-regular(14px);
-  font-style: italic;
+  @include font-variant-bold(14px);
 }
 
 %ib-typo-13 {
-  @include font-variant-bold(12px);
+  @include font-variant-medium(16px);
 }
 
 %ib-typo-14 {
   @include font-variant-bold(14px);
+}
+
+%ib-typo-15 {
+  @include font-variant-medium(18px);
 }
 
 //WC - Demo font styles - ONLY to be used in views/font-demo.html!
