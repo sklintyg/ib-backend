@@ -2,7 +2,7 @@
   "utredningsTyp": "AFU",
   "arkiverad": true,
   "avbrutenDatum": "2018-05-01T13:37:00",
-  "avbrutenAnledning":"JAV",
+  "avbrutenOrsak":"JAV",
   "externForfragan": {
     "landstingHsaId": "IFV1239877878-1041",
     "inkomDatum": "2018-04-12T10:07:12.125",

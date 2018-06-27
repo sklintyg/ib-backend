@@ -19,9 +19,13 @@
 package se.inera.intyg.intygsbestallning.web.controller.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,6 +36,7 @@ import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
+import se.inera.intyg.intygsbestallning.service.export.XlsxExportService;
 import se.inera.intyg.intygsbestallning.service.forfragan.InternForfraganService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
@@ -43,6 +48,9 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListAvs
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveBetalningForUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveUtbetalningForUtredningRequest;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @RestController
 @RequestMapping("/api/samordnare/utredningar")
@@ -59,6 +67,9 @@ public class UtredningController {
 
     @Autowired
     private InternForfraganService internForfraganService;
+
+    @Autowired
+    private XlsxExportService xlsxExportService;
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
@@ -143,5 +154,48 @@ public class UtredningController {
 
         utredningService.saveUtbetalningsIdForUtredning(utredningsId, request, user.getCurrentlyLoggedInAt().getId());
         return ResponseEntity.ok().build();
+    }
+
+    @PrometheusTimeMethod(name = "excel_report_utredningar_duration_seconds", help = "Some helpful info here")
+    @PostMapping(path = "/xlsx", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResponseEntity<ByteArrayResource> excelReportUtredningar(@ModelAttribute ListUtredningRequest req) {
+        IbUser user = userService.getUser();
+        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_UTREDNINGAR)
+                .orThrow(new IbAuthorizationException(VIEW_NOT_ALLOWED));
+
+        byte[] data = xlsxExportService.export(user.getCurrentlyLoggedInAt().getId(), req);
+
+        HttpHeaders respHeaders = getHttpHeaders("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                data.length, ".xlsx", user);
+
+        return new ResponseEntity<>(new ByteArrayResource(data), respHeaders, HttpStatus.OK);
+    }
+
+    @PrometheusTimeMethod(name = "excel_report_utredningar_duration_seconds", help = "Some helpful info here")
+    @PostMapping(path = "/avslutade/xlsx", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResponseEntity<ByteArrayResource> excelReportAvslutadeUtredningar(@ModelAttribute ListAvslutadeUtredningarRequest req) {
+        IbUser user = userService.getUser();
+        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_UTREDNINGAR)
+                .orThrow(new IbAuthorizationException(VIEW_NOT_ALLOWED));
+
+        byte[] data = xlsxExportService.export(user.getCurrentlyLoggedInAt().getId(), req);
+
+        HttpHeaders respHeaders = getHttpHeaders("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                data.length, ".xlsx", user);
+
+        return new ResponseEntity<>(new ByteArrayResource(data), respHeaders, HttpStatus.OK);
+    }
+
+    private HttpHeaders getHttpHeaders(String contentType, long contentLength, String filenameExtension, IbUser user) {
+        HttpHeaders respHeaders = new HttpHeaders();
+        respHeaders.set(HttpHeaders.CONTENT_TYPE, contentType);
+        respHeaders.setContentLength(contentLength);
+        respHeaders.setContentDispositionFormData("attachment", getAttachmentFilename(user, filenameExtension));
+        return respHeaders;
+    }
+
+    private String getAttachmentFilename(IbUser user, String extension) {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH-mm");
+        return "utredningar-" + user.getCurrentlyLoggedInAt().getName() + "-" + LocalDateTime.now().format(dateTimeFormatter) + extension;
     }
 }

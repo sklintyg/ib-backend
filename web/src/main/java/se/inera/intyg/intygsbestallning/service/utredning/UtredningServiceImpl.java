@@ -163,14 +163,18 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                         request.isOrderByAsc()))
                 .collect(toList());
         LOG.info("filtering of UtredningListItem took {} ms", (System.currentTimeMillis() - start));
-        // Paging. We need to perform some bounds-checking...
-        int total = filtered.size();
-        if (total == 0) {
-            return new GetUtredningListResponse(filtered, total);
-        }
 
-        Pair<Integer, Integer> bounds = PagingUtil.getBounds(total, request.getPageSize(), request.getCurrentPage());
-        List<UtredningListItem> paged = filtered.subList(bounds.getFirst(), bounds.getSecond() + 1);
+        List<UtredningListItem> paged = filtered;
+        int total = filtered.size();
+        if (request.isPerformPaging()) {
+            // Paging. We need to perform some bounds-checking...
+            if (total == 0) {
+                return new GetUtredningListResponse(filtered, total);
+            }
+
+            Pair<Integer, Integer> bounds = PagingUtil.getBounds(total, request.getPageSize(), request.getCurrentPage());
+            paged = filtered.subList(bounds.getFirst(), bounds.getSecond() + 1);
+        }
 
         if (!enrichedWithVardenhetNames) {
             // Enrich with vardenhet namn from HSA
@@ -178,7 +182,6 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
             enrichWithVardenhetNames(paged);
             LOG.info("enrichWithVardenhetNames (second) took {} ms", (System.currentTimeMillis() - start));
         }
-
         return new GetUtredningListResponse(paged, total);
     }
 
@@ -223,14 +226,18 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                         request.isOrderByAsc()))
                 .collect(toList());
         LOG.info("filtering of AvslutadUtredningListItem took {} ms", (System.currentTimeMillis() - start));
-        // Paging. We need to perform some bounds-checking...
-        int total = filtered.size();
-        if (total == 0) {
-            return new GetUtredningListResponse(filtered, total);
-        }
 
-        Pair<Integer, Integer> bounds = PagingUtil.getBounds(total, request.getPageSize(), request.getCurrentPage());
-        List<AvslutadUtredningListItem> paged = filtered.subList(bounds.getFirst(), bounds.getSecond() + 1);
+        List<AvslutadUtredningListItem> paged = filtered;
+        int total = filtered.size();
+        if (request.isPerformPaging()) {
+            // Paging. We need to perform some bounds-checking...
+            if (total == 0) {
+                return new GetUtredningListResponse(filtered, total);
+            }
+
+            Pair<Integer, Integer> bounds = PagingUtil.getBounds(total, request.getPageSize(), request.getCurrentPage());
+            paged = filtered.subList(bounds.getFirst(), bounds.getSecond() + 1);
+        }
 
         if (!enrichedWithVardenhetNames) {
             // Enrich with vardenhet namn from HSA

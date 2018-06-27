@@ -69,6 +69,9 @@ public class UtredningListItemFactory {
 
                 // Is set later after HSA lookup.
                 .withVardenhetNamn("")
+
+                // Is used in xlsx export
+                .withUtredning(utredning)
                 .build();
     }
 

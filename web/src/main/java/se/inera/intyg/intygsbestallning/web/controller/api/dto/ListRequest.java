@@ -22,10 +22,19 @@ public abstract class ListRequest {
 
     private static final int DEFAULT_PAGE_SIZE = 50;
 
+    private boolean performPaging = true;
     private int currentPage = 0;
     private int pageSize = DEFAULT_PAGE_SIZE;
     private String orderBy = "";
     private boolean orderByAsc = true;
+
+    public void setPerformPaging(boolean performPaging) {
+        this.performPaging = performPaging;
+    }
+
+    public boolean isPerformPaging() {
+        return performPaging;
+    }
 
     public int getCurrentPage() {
         return currentPage;

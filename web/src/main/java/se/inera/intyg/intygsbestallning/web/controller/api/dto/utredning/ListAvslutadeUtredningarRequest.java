@@ -83,7 +83,7 @@ public class ListAvslutadeUtredningarRequest extends ListRequest {
         return utbetaldFk;
     }
 
-    public void setUtbetald(YesNoAllFilter utbetaldFk) {
+    public void setUtbetaldFk(YesNoAllFilter utbetaldFk) {
         this.utbetaldFk = utbetaldFk;
     }
 }

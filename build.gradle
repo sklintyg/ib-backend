@@ -38,7 +38,7 @@ ext {
     liquibaseVersion = "3.3.1"
     logbackVersion = "1.0.13"
     mysqlVersion = "5.1.40"
-    poiVersion = "3.13"
+    poiVersion = "3.17"
     prometheusClientVersion = "0.3.0"
     restAssuredVersion = "2.9.0"
     shedlockSpringVersion = "0.18.2"

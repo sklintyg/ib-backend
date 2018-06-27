@@ -19,8 +19,24 @@
 package se.inera.intyg.intygsbestallning.persistence.model.type;
 
 public enum AvslutOrsak {
-    INGEN_BESTALLNING,
-    JAV,
-    UTREDNING_AVBRUTEN,
-    INGEN_KOMPLETTERING_BEGARD
+    INGEN_BESTALLNING("Ingen beställning"),
+    JAV("Jäv"),
+    UTREDNING_AVBRUTEN("Utredning avbruten"),
+    INGEN_KOMPLETTERING_BEGARD("Ingen komplettering begärd");
+
+    private final String id;
+    private final String label;
+
+    AvslutOrsak(String label) {
+        this.id = name();
+        this.label = label;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getLabel() {
+        return label;
+    }
 }

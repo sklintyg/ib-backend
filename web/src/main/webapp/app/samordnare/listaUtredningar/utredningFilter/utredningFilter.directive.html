@@ -27,6 +27,10 @@
     label-key="utredningar.filter.status.label"
     items="filter.statusOptions">
 </ib-dropdown>
-<button class="btn btn-primary" ng-click="resetFilter()" ng-disabled="filter.isDefault()">
+<button class="btn btn-secondary" ng-click="resetFilter()" ng-disabled="filter.isDefault()">
   <message key="utredningar.filter.resetfilter.label"></message>
+</button>
+<div class="flex-space"></div>
+<button class="btn btn-primary" ng-click="excelReport()">
+  <i class="material-icons md-18">file_download</i> Exportera till excel
 </button>

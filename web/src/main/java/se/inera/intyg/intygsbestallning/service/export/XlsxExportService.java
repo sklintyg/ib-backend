@@ -16,25 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.persistence.model.type;
+package se.inera.intyg.intygsbestallning.service.export;
 
-public enum AvvikelseOrsak {
-    VARDEN("Vården"),
-    PATIENT("Patient");
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListAvslutadeUtredningarRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListUtredningRequest;
 
-    private final String id;
-    private final String label;
-
-    AvvikelseOrsak(String label) {
-        this.id = name();
-        this.label = label;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getLabel() {
-        return label;
-    }
+public interface XlsxExportService {
+    byte[] export(String loggedInAtHsaId, ListUtredningRequest request);
+    byte[] export(String loggedInAtHsaId, ListAvslutadeUtredningarRequest request);
 }

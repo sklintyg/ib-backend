@@ -52,6 +52,7 @@ public class AvslutadUtredningListItemFactory {
                 .withFakturerad(nonNull(utredning.getBetalning()) ? utredning.getBetalning().getFakturaId() : null)
                 .withBetald(nonNull(utredning.getBetalning()) ? utredning.getBetalning().getBetalningsId() : null)
                 .withUtbetaldFk(nonNull(utredning.getBetalning()) ? utredning.getBetalning().getUtbetalningsId() : null)
+                .withUtredning(utredning) // Is used in xlsx export
                 .build();
     }
 

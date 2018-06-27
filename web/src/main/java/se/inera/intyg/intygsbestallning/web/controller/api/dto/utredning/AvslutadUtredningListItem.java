@@ -18,15 +18,11 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning;
 
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FreeTextSearchable;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardenhetEnrichable;
 
-public class AvslutadUtredningListItem extends BaseUtredningListItem implements FreeTextSearchable, VardenhetEnrichable {
-    private Long utredningsId;
-    private String utredningsTyp;
-    private String vardenhetHsaId;
-    private String vardenhetNamn;
+public class AvslutadUtredningListItem extends BaseUtredningListItem implements FreeTextSearchable {
 
     private UtredningStatus status;
 
@@ -35,44 +31,6 @@ public class AvslutadUtredningListItem extends BaseUtredningListItem implements 
     private String fakturerad;
     private String betald;
     private String utbetaldFk;
-
-    public Long getUtredningsId() {
-        return utredningsId;
-    }
-
-    public void setUtredningsId(Long utredningsId) {
-        this.utredningsId = utredningsId;
-    }
-
-    public String getUtredningsTyp() {
-        return utredningsTyp;
-    }
-
-    public void setUtredningsTyp(String utredningsTyp) {
-        this.utredningsTyp = utredningsTyp;
-    }
-
-    @Override
-    public String getVardenhetHsaId() {
-        return vardenhetHsaId;
-    }
-
-    public void setVardenhetHsaId(String vardenhetHsaId) {
-        this.vardenhetHsaId = vardenhetHsaId;
-    }
-
-    public String getVardenhetNamn() {
-        return vardenhetNamn;
-    }
-
-    @Override
-    public void setVardenhetNamn(String vardenhetNamn) {
-        this.vardenhetNamn = vardenhetNamn;
-    }
-
-    @Override
-    public void setVardenhetFelmeddelande(String vardenhetFelmeddelande) {
-    }
 
     public UtredningStatus getStatus() {
         return status;
@@ -147,6 +105,7 @@ public class AvslutadUtredningListItem extends BaseUtredningListItem implements 
         private String fakturerad;
         private String betald;
         private String utbetaldFk;
+        private Utredning utredning;
 
         private AvslutadUtredningListItemBuilder() {
         }
@@ -205,6 +164,11 @@ public class AvslutadUtredningListItem extends BaseUtredningListItem implements 
             return this;
         }
 
+        public AvslutadUtredningListItemBuilder withUtredning(Utredning utredning) {
+            this.utredning = utredning;
+            return this;
+        }
+
         public AvslutadUtredningListItem build() {
             AvslutadUtredningListItem avslutadUtredningListItem = new AvslutadUtredningListItem();
             avslutadUtredningListItem.setUtredningsId(utredningsId);
@@ -217,6 +181,7 @@ public class AvslutadUtredningListItem extends BaseUtredningListItem implements 
             avslutadUtredningListItem.setFakturerad(fakturerad);
             avslutadUtredningListItem.setBetald(betald);
             avslutadUtredningListItem.setUtbetaldFk(utbetaldFk);
+            avslutadUtredningListItem.setUtredning(utredning);
             return avslutadUtredningListItem;
         }
     }
