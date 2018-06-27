@@ -8,15 +8,17 @@
         <span class="label-margin">
             <p class="nl2br">{{ infoKey | message }}</p>
         </span>
-        <form>
+        <form name="statusModalForm">
             <ib-date-picker-field
-                    target-model="registerValue"
-                    format="yyyy-MM-dd"
-                    date-format-error="Korrekt datum måste anges."
-                    ib-date-picker-field
-                    append-to-body="true"
-                    add-date-parser="strict">
+                dom-id="statusModal"
+                target-model="registerValue"
+                format="yyyy-MM-dd"
+                show-field-errors="false"
+                ib-date-picker-field
+                append-to-body="true"
+                add-date-parser="strict">
             </ib-date-picker-field>
+            <ib-field-error-list errors="statusModalForm.statusModal.$error" date-format-error="Korrekt datum måste anges."></ib-field-error-list>
         </form>
     </div>
     <div class="modal-footer button-flex-wrapper">
