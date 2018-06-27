@@ -1,0 +1,85 @@
+<!-- FÖRFRÅGAN  ----------------->
+<div class="category">
+
+  <h2>Förfrågan</h2>
+
+  <ib-faq-question title="Vilka kontaktuppgifter är det som visas som förifyllda som svar på en förfrågan?">
+    <p>Kontaktuppgifterna hämtas första gången från HSA katalogen och lagras därefter i Intygsbeställning. Om du vill
+      ändra de förvalda kontaktuppgifterna kan du redigera dessa genom att öppna menyn under vårdenheten och välja
+      Kontaktuppgifter till vårdenheten.</p>
+
+    <p>Ändringen påverkar enbart vilka kontaktuppgifter som visas som förvalda i svar på förfrågan.</p>
+
+    <p>Kontaktuppgifterna gäller för hela vårdenheten i Intygsbeställning, så de ändringar du gör kommer att visas för
+      alla vårdadministratörer på vårdenheten.</p>
+  </ib-faq-question>
+
+  <ib-faq-question title="Går det att ange ett standardmeddelande till Försäkringskassans handläggare?">
+    <p>Ja, genom att öppna menyn under vårdenheten, välj Standardsvar för vårdenheten och där ange ett meddelande som
+      du vill ska vara förvalt när vårdenheten svarar på en förfrågan.</p>
+
+    <p>Standardsvaret gäller för hela vårdenheten, så de ändringar du gör kommer att visas för alla vårdadministratörer
+      på vårdenheten.</p>
+  </ib-faq-question>
+
+  <ib-faq-question title="Vad menas med planeringsdatum?">
+    <p>Datumet anger när utredningen tidigast måste vara klar och utlåtandet mottaget av Försäkringskassan under
+      förutsättning att förfrågan besvaras och Försäkringskassan skickar beställningen idag.</p>
+
+    <p>Planeringsdatum baseras på dagens datum och kommer därför ändras om du öppnar förfrågan en annan dag.</p>
+  </ib-faq-question>
+
+  <ib-faq-question title="Kan vårdenheten bli tilldelad en utredning direkt?">
+    <p>Ja, om vårdenheten drivs i landstingets regi kan samordnaren välja att tilldela en utredning direkt till
+      vårdenheten utan att först skicka en förfrågan.</p>
+
+    <p>I det fallet kommer kontaktuppgifterna som anges som svar på förfrågan hämtas från Kontaktuppgifter till
+      vårdenheten som anges genom att klicka på vårdenheten överst på sidan. Där kan även ett Standardsvar till
+      vårdenheten anges som då kommer att skickas till Försäkringskassan som svar på förfrågan.</p>
+  </ib-faq-question>
+
+</div>
+
+<!-- UTREDNING  ----------------->
+<div class="category">
+
+  <h2>Utredning</h2>
+
+  <ib-faq-question title="När startar utredningstiden?">
+    <p>Utredningstiden baseras på det datum då Försäkringskassan skickat handlingarna. I utredningstiden ingår tid för
+      postgång.</p>
+
+    <p>Det datum som registreras som mottagningsdatum av vårdenheten är enbart för den interna uppföljningen och
+      kommuniceras inte till Försäkringskassan.</p>
+  </ib-faq-question>
+
+  <ib-faq-question title="När avslutas en utredning?">
+    <p>En utredning avslutas automatiskt när tidsgränsen för Försäkringskassans handläggare att begära komplettering
+      passerats och det inte finns några besök som behöver redovisas. Om det finns besök som behöver redovisas, måste
+      dessa först redovisas och sedan kan vårdadministratören avsluta utredningen manuellt.</p>
+
+    <p>Försäkringskassan kan även välja att avbryta en utredning i förtid om exempelvis invånaren uteblir från ett
+      inbokat besöket.</p>
+  </ib-faq-question>
+
+  <ib-faq-question title="Hur ändrar jag utredningstyp till utvidgad AFU?">
+    <p>Ändring av utredningstyp kommer att meddelas Försäkringskassan automatiskt när ett besök till någon annan
+      profession än läkare läggs till i utredningen. Utredningstiden kommer då att förlängas automatiskt.</p>
+  </ib-faq-question>
+
+  <ib-faq-question title="Hur avbokar jag ett besök?">
+    <p>Besök kan inte avbokas om det inte finns en rapporterad avvikelse för besöket.</p>
+
+    <p>Om Försäkringskassan rapporterar en avvikelse för ett besök går det att markera besöket som avbokat i
+      Intygsbeställning.</p>
+
+    <p>Om däremot vårdenheten rapporterar en avvikelse för besöket förutsätts det att det även är avbokat.</p>
+  </ib-faq-question>
+
+  <ib-faq-question title="Vad menas med avvikelser orsakade av vården?">
+    <p>I de fall ett besök måste avbokas på grund av omständigheter som vården ansvarar för och som gör att besöket inte
+      kan genomföras, rapporteras det som en avvikelse orsakad av vården. Utredningen kommer i det fallet att avbrytas
+      och vårdenheten kommer inte bli ersatt.</p>
+  </ib-faq-question>
+
+</div>
