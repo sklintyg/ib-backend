@@ -23,4 +23,12 @@
             ng-disabled="registerReceivedKompletteringDisabled()">
         <i class="material-icons">move_to_inbox</i> Registrera mottagen komplettering
     </button>
+    <button ng-if="hasFasId('KOMPLETTERING')"
+            type="button"
+            id="registreraKompletteringSkickadBtn"
+            class="btn btn-primary"
+            ng-click="registerSentKomplettering()"
+            ng-disabled="registerSentKompletteringDisabled()">
+        <i class="material-icons">move_to_inbox</i> Registrera skickad komplettering
+    </button>
 </div>

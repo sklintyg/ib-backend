@@ -65,9 +65,21 @@ angular.module('ibApp').factory('RegistreraStatusProxy',
             );
         }
 
+        function registerSentKomplettering(date, utredningsId) {
+            return registerStatusProxy(
+                '/api/vardadmin/bestallningar/{utredningsId}/komplettering/skickad',
+                {
+                    kompletteringSkickadDatum: date
+                },
+                utredningsId,
+                'registerkompletteringreceived'
+            );
+        }
+
         // Return public API for the service
         return {
             registerReceivedKomplettering: registerReceivedKomplettering,
+            registerSentKomplettering: registerSentKomplettering,
             registerSentUtlatande: registerSentUtlatande,
             registerReceivedHandling: registerReceivedHandling
         };

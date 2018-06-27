@@ -67,7 +67,12 @@ angular.module('ibApp').directive('ibBestallningButtonBar',
                 $scope.registerReceivedKompletteringDisabled = function () {
                     return $scope.bestallning.status.id !== 'KOMPLETTERINGSBEGARAN_MOTTAGEN_VANTAR_PA_FRAGESTALLNING';
                 };
-
+                
+                $scope.registerSentKompletteringDisabled = function () {
+                    return $scope.bestallning.status.id !== 'KOMPLETTERINGSBEGARAN_MOTTAGEN_VANTAR_PA_FRAGESTALLNING'
+                        && $scope.bestallning.status.id !== 'KOMPLETTERANDE_FRAGESTALLNING_MOTTAGEN';
+                };
+                
                 $scope.hasFasId = function (id) {
                     if ($scope.bestallning !== undefined && $scope.bestallning.fas.id === id) {
                         return true;
@@ -82,7 +87,11 @@ angular.module('ibApp').directive('ibBestallningButtonBar',
                 $scope.registerReceivedKomplettering = function () {
                     openModal('registerReceivedKomplettering', 'registrera-mottagen-komplettering');
                 };
-
+                
+                $scope.registerSentKomplettering = function () {
+                    openModal('registerSentKomplettering', 'registrera-skickad-komplettering');
+                };
+                
                 $scope.registerSentUtlatande = function () {
                     openModal('registerSentUtlatande', 'registrera-skickat-utlatande');
                 };
