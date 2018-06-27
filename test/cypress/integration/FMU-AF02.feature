@@ -26,7 +26,7 @@ Scenario: Direkt tilldelning - [Förfrågan till accept]
 	Then ska förfrågans status vara "Direkttilldelad" för "vårdadmin"
 	
 	When "samordnare" accepterar förfrågan
-	Then ska förfrågans status vara "Tilldelad, väntar på beställning" för "samordnare"
-	Then ska förfrågans status vara "Tilldelad, väntar på beställning" för "vårdadmin"
+	Then ska förfrågans status vara "Tilldela utredning" för "samordnare"
+	Then ska förfrågans status vara "Direkttilldelad" för "vårdadmin"
 	Then ska Försäkringskassan notifieras att vårdenheten "WebCert-Enhet1" "ACCEPTERAT" förfrågan
 

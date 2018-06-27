@@ -95,8 +95,11 @@ function goToUtredning(roll, landsting, enhet, utredning) {
     cy.login(getUser(landsting));
     if (roll === 'samordnare') {
         cy.get('#ib-vardenhet-selector-select-active-unit-' + landsting + '-link').click();    
-        cy.get('#samordnare-lista-utredningar-table').should('contain', utredning);
+        //cy.get('#samordnare-lista-utredningar-table').should('contain', utredning);
+        cy.get('#filterFritext-input').type(utredning);
         cy.visit('/#/app/samordnare/listaUtredningar/visaUtredning/' + utredning);
+        cy.visit('/#/app/samordnare/listaUtredningar/visaUtredning/');
+        
     } else if (roll === 'vårdadmin') {
         cy.get('#ib-vardenhet-selector-select-active-unit-' + enhet + '-link').click(); 
         cy.get('#menu-vardadministrator-listaForfragningar').click();
