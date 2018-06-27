@@ -26,7 +26,6 @@ import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.ReportDevia
 import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.RespondToPerformerRequestType;
 import se.riv.intygsbestallning.certificate.order.v1.AddressType;
 import se.riv.intygsbestallning.certificate.order.v1.CareUnitType;
-import se.riv.intygsbestallning.certificate.order.v1.IIType;
 import se.riv.intygsbestallning.certificate.order.v1.PerformerRequestResponseType;
 import se.riv.intygsbestallning.certificate.order.v1.TimePeriodType;
 import java.time.LocalDateTime;
