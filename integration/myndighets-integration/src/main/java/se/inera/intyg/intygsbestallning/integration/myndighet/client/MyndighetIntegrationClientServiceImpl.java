@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto;
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportDeviationRequestDto;
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.RespondToPerformerRequestDto;
+import se.inera.intyg.intygsbestallning.integration.myndighet.service.TjanstekontraktUtils;
 import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.ReportCareContactResponseType;
 import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.rivtabp21.ReportCareContactResponderInterface;
 import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.ReportDeviationResponseType;
@@ -79,10 +80,12 @@ public class MyndighetIntegrationClientServiceImpl implements MyndighetIntegrati
         UpdateAssessmentType request = new UpdateAssessmentType();
         IIType assID = new IIType();
         assID.setExtension(assessmentId.toString());
+        assID.setRoot(sourceSystemHsaId);
         request.setAssessmentId(assID);
 
         CVType certType = new CVType();
         certType.setCode(certificateType);
+        certType.setCodeSystem(TjanstekontraktUtils.KV_INTYGSTYP);
         request.setCertificateType(certType);
 
         return updateAssessmentResponder.updateAssessment(sourceSystemHsaId, request);
