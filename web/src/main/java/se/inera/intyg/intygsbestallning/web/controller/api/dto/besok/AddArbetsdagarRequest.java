@@ -23,6 +23,15 @@ import java.time.LocalDate;
 public class AddArbetsdagarRequest {
     LocalDate datum;
     int arbetsdagar;
+    boolean semesterperiod;
+
+    public boolean isSemesterperiod() {
+        return semesterperiod;
+    }
+
+    public void setSemesterperiod(boolean semesterperiod) {
+        this.semesterperiod = semesterperiod;
+    }
 
     public LocalDate getDatum() {
         return datum;

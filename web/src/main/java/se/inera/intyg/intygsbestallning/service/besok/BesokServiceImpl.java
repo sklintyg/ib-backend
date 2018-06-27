@@ -275,7 +275,7 @@ public class BesokServiceImpl extends BaseBesokService implements BesokService {
 
     @Override
     public LocalDate addArbetsdagar(AddArbetsdagarRequest request) {
-        return businessDaysBean.addBusinessDays(request.getDatum(), request.getArbetsdagar());
+        return businessDaysBean.addBusinessDays(request.getDatum(), request.getArbetsdagar(), request.isSemesterperiod());
     }
 
     private Avvikelse createAvvikelse(final ReportBesokAvvikelseRequest request) {
