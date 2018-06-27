@@ -18,6 +18,10 @@
  */
 package se.inera.intyg.intygsbestallning.jobs;
 
+import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.KOMPLETTERING_MOTTAGEN;
+import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.UTLATANDE_MOTTAGET;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.SLUTDATUM_KOMPLETTERING_PASSERAT;
+
 import com.google.common.collect.ImmutableList;
 import net.javacrumbs.shedlock.core.SchedulerLock;
 import org.slf4j.Logger;
@@ -25,15 +29,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
-import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
-import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
-import se.inera.intyg.intygsbestallning.service.stateresolver.BesokStatus;
-import se.inera.intyg.intygsbestallning.service.stateresolver.BesokStatusResolver;
-import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
-import se.inera.intyg.intygsbestallning.service.utredning.dto.AvslutaUtredningRequest;
-
 import java.lang.invoke.MethodHandles;
 import java.text.MessageFormat;
 import java.time.LocalDate;
@@ -42,10 +37,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-
-import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.KOMPLETTERING_MOTTAGEN;
-import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.UTLATANDE_MOTTAGET;
-import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.PAMINNELSEDATUM_KOMPLETTERING_PASSERAS;
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
+import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
+import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
+import se.inera.intyg.intygsbestallning.service.stateresolver.BesokStatus;
+import se.inera.intyg.intygsbestallning.service.stateresolver.BesokStatusResolver;
+import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.AvslutaUtredningRequest;
 
 @Component
 public class SistaDatumKompletteringsbegaranJob {
@@ -70,7 +69,7 @@ public class SistaDatumKompletteringsbegaranJob {
 
         final LocalDateTime tidpunkt = LocalDate.now().atStartOfDay();
 
-        utredningRepository.findNonNotifiedSistaDatumKompletteringsBegaranBefore(tidpunkt, PAMINNELSEDATUM_KOMPLETTERING_PASSERAS).stream()
+        utredningRepository.findNonNotifiedSistaDatumKompletteringsBegaranBefore(tidpunkt, SLUTDATUM_KOMPLETTERING_PASSERAT).stream()
                 .filter(isKorrektStatus())
                 .forEach(avslutaUtredningOrRedovisaBesok);
     }

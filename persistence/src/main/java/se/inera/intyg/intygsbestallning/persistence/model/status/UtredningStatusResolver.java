@@ -28,6 +28,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -128,7 +129,7 @@ public class UtredningStatusResolver {
 
         LOG.error("Utredning '{}' is in an unhandled or invalid state. This indicates a bug in the state resolver or "
                 + "invalid state in the Utredning. Returning ", utredning.getUtredningId());
-        return UtredningStatus.INVALID;
+        throw new IllegalStateException(MessageFormat.format("Invalid state in Utredning {0}", utredning.getUtredningId()));
     }
 
     private static UtredningStatus resolveAvslutEllerRedovisaBesok(Utredning utredning) {

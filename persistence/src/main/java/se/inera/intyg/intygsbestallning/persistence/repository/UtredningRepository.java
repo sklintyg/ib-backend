@@ -30,6 +30,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp;
 
 //CHECKSTYLE:OFF MethodName
 //CHECKSTYLE:OFF LineLength
+//CHECKSTYLE:OFF OperatorWrap
 public interface UtredningRepository extends UtredningRepositoryCustom, JpaRepository<Utredning, Long> {
 
     /**
@@ -85,13 +86,24 @@ public interface UtredningRepository extends UtredningRepositoryCustom, JpaRepos
     @Query("SELECT u FROM Utredning u JOIN u.intygList i JOIN u.bestallning b WHERE b.tilldeladVardenhetHsaId is not null AND u.arkiverad = false AND i.mottagetDatum is null AND i.komplettering = false AND i.sistaDatum is not null AND i.sistaDatum < :now AND u.utredningId NOT IN (SELECT u.utredningId FROM Utredning u JOIN u.skickadNotifieringList n WHERE n.typ = :typ AND n.mottagare = :mottagare)")
     List<Utredning> findNonNotifiedSlutDatumBefore(@Param("now") LocalDateTime now, @Param("typ") NotifieringTyp typ, @Param("mottagare") NotifieringMottagarTyp mottagare);
 
-    /**
-     * Alla utredningar med intyg med Sista datum för kompletteringsbegäran som passerats och som ej har notifiering av angiven typ.
-     */
-    @Query("SELECT u FROM Utredning u JOIN u.intygList i JOIN u.bestallning b WHERE b.tilldeladVardenhetHsaId is not null AND u.arkiverad = false AND i.mottagetDatum is null AND i.komplettering = false AND i.sistaDatumKompletteringsbegaran is not null AND i.sistaDatumKompletteringsbegaran < :now AND u.utredningId NOT IN (SELECT u.utredningId FROM Utredning u JOIN u.skickadNotifieringList n WHERE n.typ = :typ)")
+    @Query("SELECT DISTINCT u FROM Utredning u " +
+           "JOIN u.intygList i " +
+           "JOIN u.bestallning b " +
+           "WHERE b.tilldeladVardenhetHsaId is not null " +
+           "AND u.arkiverad = false " +
+           "AND i.komplettering = true " +
+           "AND i.mottagetDatum is null " +
+           "AND i.sistaDatumKompletteringsbegaran is not null " +
+           "AND i.sistaDatumKompletteringsbegaran < :now " +
+           "AND i.id NOT IN (" +
+           "SELECT n.intygId FROM SkickadNotifiering n " +
+           "WHERE n.typ = :typ" +
+           ")"
+    )
     List<Utredning> findNonNotifiedSistaDatumKompletteringsBegaranBefore(
             @Param("now") LocalDateTime now,
             @Param("typ") NotifieringTyp typ);
 }
 //CHECKSTYLE:ON MethodName
 //CHECKSTYLE:ON LineLength
+//CHECKSTYLE:ON OperatorWrap

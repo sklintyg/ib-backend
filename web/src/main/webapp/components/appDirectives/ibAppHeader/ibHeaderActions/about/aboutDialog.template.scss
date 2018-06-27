@@ -6,9 +6,10 @@
     overflow-y: scroll;
 
   }
+
   .modal-header {
     h3 {
-      @extend %ib-typo-05;
+      @extend %ib-typo-13;
     }
   }
 
@@ -20,7 +21,7 @@
 
   .panel {
     &.ib-about-panel {
-      @extend %ib-typo-05;
+      @extend %ib-typo-02;
       color: $ib-color-08;
       background-color: $ib-color-28;
       border: none !important;
@@ -28,12 +29,12 @@
       box-shadow: none;
 
       h4 {
-        @extend %ib-typo-14;
+        @extend %ib-typo-13;
         color: $ib-color-07;
       }
 
       > .panel-collapse > .panel-body {
-        @extend %ib-typo-07;
+        @extend %ib-typo-02;
         color: $ib-color-07;
         background-color: $ib-color-00;
         border: none !important;
@@ -52,7 +53,7 @@
           border: none;
         }
         .panel-title {
-          @extend %ib-typo-05;
+          @extend %ib-typo-13;
           a {
             text-decoration: none;
           }
@@ -65,7 +66,7 @@
   }
 
   .category h2 {
-    @extend %ib-typo-14;
+    @extend %ib-typo-12;
     color: $ib-color-17;
   }
 

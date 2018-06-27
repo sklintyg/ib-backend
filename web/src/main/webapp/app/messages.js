@@ -152,6 +152,11 @@ var ibMessages = {
         'registrera-skickat-utlatande.label.title': 'Datum för skickat utlåtande',
         'registrera-skickat-utlatande.label.info': 'Här anges datumet för när utlåtande skickades. Detta datum visas inte för Försäkringskassan utan är till för vården att kunna följa händelser kring utredningen.',
         
+        // Registrera skickad komplettering modal
+        'registrera-skickad-komplettering.label.title': 'Datum för skickad komplettering',
+        'registrera-skickad-komplettering.label.info': 'Här anges datumet för när kompletteringen skickades. Detta datum visas inte för Försäkringskassan utan är till för vården att kunna följa händelser kring utredningen.\n' +
+        '\n' + 'Avser komplettering av utlåtande.',
+        
         // Lägg till anteckning modal
         'skapa-anteckning.modal.info': 'Anteckningar för inte innehålla någon medicinsk information.\n' +
         '\n' + 'Anteckningarna visas endast för vårdadministratörer på samma vårdenhet.',

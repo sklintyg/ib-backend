@@ -42,7 +42,9 @@ angular.module('ibApp').directive('ibDatePickerField',['$timeout', '$parse', 'Da
             templateUrl: '/components/commonDirectives/form/ibDatePickerField/ibDatePickerField.directive.html',
             link: function($scope, element, attr, ctrls) {
                 $scope.form = ctrls;
+
                 //return errors for just this specific form element
+                // HINT: No error shown? set a domId!
                 $scope.componentErrors = function() {
                     return $parse('form.' + $scope.domId + '.$error')($scope);
                 };

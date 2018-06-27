@@ -18,11 +18,32 @@
  */
 package se.inera.intyg.intygsbestallning.service.besok;
 
+import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.collect.MoreCollectors.onlyElement;
+import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportDeviationRequestDto.ReportDeviationRequestDtoBuilder.aReportDeviationRequestDto;
+import static se.inera.intyg.intygsbestallning.persistence.model.Avvikelse.AvvikelseBuilder.anAvvikelse;
+import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
+import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.AVVIKELSE_MOTTAGEN;
+import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR;
+import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.HANDLINGAR_MOTTAGNA_BOKA_BESOK;
+import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR;
+import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.UTREDNING_PAGAR;
+import static se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokRequest.validate;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.lang.invoke.MethodHandles;
+import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Predicate;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
@@ -53,28 +74,6 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RedovisaBes
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokResponse;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
-
-import java.lang.invoke.MethodHandles;
-import java.text.MessageFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Predicate;
-
-import static com.google.common.base.Preconditions.checkState;
-import static com.google.common.collect.MoreCollectors.onlyElement;
-import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportDeviationRequestDto.ReportDeviationRequestDtoBuilder.aReportDeviationRequestDto;
-import static se.inera.intyg.intygsbestallning.persistence.model.Avvikelse.AvvikelseBuilder.anAvvikelse;
-import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
-import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.AVVIKELSE_MOTTAGEN;
-import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR;
-import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.HANDLINGAR_MOTTAGNA_BOKA_BESOK;
-import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR;
-import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.UTREDNING_PAGAR;
-import static se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokRequest.validate;
 
 @Service
 public class BesokServiceImpl extends BaseBesokService implements BesokService {
@@ -276,7 +275,7 @@ public class BesokServiceImpl extends BaseBesokService implements BesokService {
 
     @Override
     public LocalDate addArbetsdagar(AddArbetsdagarRequest request) {
-        return businessDaysBean.addBusinessDays(request.getDatum(), request.getArbetsdagar());
+        return businessDaysBean.addBusinessDays(request.getDatum(), request.getArbetsdagar(), request.isSemesterperiod());
     }
 
     private Avvikelse createAvvikelse(final ReportBesokAvvikelseRequest request) {
@@ -335,7 +334,7 @@ public class BesokServiceImpl extends BaseBesokService implements BesokService {
                 .withAvvikelseId(avvikelseId.toString())
                 .withOrsakatAv(avvikelseRequest.getOrsakatAv().name())
                 .withBeskrivning(avvikelseRequest.getBeskrivning().orElse(null))
-                .withTidpunkt(SchemaDateUtil.toDateStringFromLocalDateTime(avvikelseRequest.getTidpunkt()))
+                .withTidpunkt(SchemaDateUtil.toDateTimeStringFromLocalDateTime(avvikelseRequest.getTidpunkt()))
                 .withInvanareUteblev(avvikelseRequest.getInvanareUteblev())
                 .withSamordnare(avvikelseRequest.getSamordnare())
                 .build();

@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.service.notifiering.send;
 
+import java.util.List;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
@@ -66,7 +67,7 @@ public interface NotifieringSendService {
 
     void notifieraVardenhetKompletteringBegard(Utredning utredning);
 
-    void notifieraVardenhetPaminnelseSlutdatumKomplettering(Utredning utredning);
+    void notifieraVardenhetPaminnelseSlutdatumKomplettering(Utredning utredning, List<Long> intygIds);
 
     void notifieraVardenhetSlutdatumPasseratKomplettering(Utredning utredning);
 

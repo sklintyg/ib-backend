@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="sv" id="ng-app" ng-app="ibSimulatorApp">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="ROBOTS" content="nofollow, noindex"/>
+
+<title>Intygsbeställning myndighetsimulator</title>
+<!-- build:css({build/.tmp,src/main/webapp}) app/app.css -->
+<!-- injector:css -->
+<link rel="stylesheet" href="/app/app.css">
+<!-- endinjector -->
+<!-- endbuild -->
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.js"></script>
+<script type="text/javascript" src="bower_components/moment/moment.js"></script>
+
+<style type="text/css">
+  textarea {
+    font-family: Consolas, Lucida Console, monospace;
+    font-size: 0.7em;
+  }
+  body {
+    overflow: auto;
+  }
+</style>
+
+<script type="text/javascript">
+
+  angular.module('ibSimulatorApp', [
+      'ibSimulatorApp.controllers'
+  ]);
+
+  angular.module('ibSimulatorApp.controllers', []).controller('simulatorController',
+      ['$scope', '$http', '$log', function($scope, $http, $log) {
+
+          $scope.rpfa = {
+              certificateType: 'AFU',
+              lastResponseDate: moment().add(7, 'days').format('YYYY-MM-DD'),
+              coordinatingCountyCouncilId:'IFV1239877878-1041',
+              needForInterpreter: false,
+              authorityAdministrativeOfficial: {
+                  fullName: 'Handläggaren',
+                  phoneNumber: '000111',
+                  officeName: 'Handläggarkontor',
+                  officeCostCenter: 'Handläggarkostnadsställe',
+                  postalAddress: 'Handläggaradress 1',
+                  postalCode: '00000',
+                  postalCity: 'Handläggarstaden',
+              },
+              citizen: {
+                  postalCity: 'Invånarstaden',
+                  specialNeeds: 'Speciella behov',
+                  earlierAssessmentPerformer: []
+              }
+          };
+
+          $scope.coordinatingCountyCouncilIdOptions = [];
+          $scope.vardenhetOptions = [];
+          $http.get('/services/api/hsa-api/medarbetaruppdrag').then(function(response) {
+              angular.forEach(response.data, function(medarbetaruppdrag) {
+                  angular.forEach(medarbetaruppdrag.uppdrag, function(uppdrag) {
+                      angular.forEach(uppdrag.systemRoles, function(systemRole) {
+                          if (systemRole.indexOf('INTYG;FMU-SAMORDNARE-') == 0) {
+                              $scope.coordinatingCountyCouncilIdOptions.push(systemRole.substr(21));
+                          }
+                          if (systemRole.indexOf('INTYG;FMU-VARDADMIN-') == 0) {
+                              $scope.vardenhetOptions.push(systemRole.substr(20));
+                          }
+                      });
+                  });
+              });
+          }, function(response) {
+              $log.error('error ' + response.status);
+          });
+
+          $scope.addEarlierAssessmentPerformer = function() {
+              $scope.rpfa.citizen.earlierAssessmentPerformer.push({});
+          };
+
+          $scope.sendRpfa = function() {
+              var rpfaUrl = '/services/request-performer-for-assessment-responder';
+
+              var earlierAssessmentPerformerRequest = '';
+              angular.forEach($scope.rpfa.citizen.earlierAssessmentPerformer, function(earlierAssessmentPerformer) {
+                  earlierAssessmentPerformerRequest += '<!--Zero or more repetitions:-->' +
+                      '<urn2:earlierAssessmentPerformer>' +
+                          '<urn2:root>1.2.752.129.2.1.4.1</urn2:root>' +
+                          '<urn2:extension>' + earlierAssessmentPerformer.id + '</urn2:extension>' +
+                      '</urn2:earlierAssessmentPerformer>';
+              });
+
+              var comment = '';
+              if ($scope.rpfa.comment) {
+                  comment = '<urn1:comment>' + $scope.rpfa.comment + '</urn1:comment>';
+              }
+
+              var needForInterpreter = '';
+              if ($scope.rpfa.needForInterpreter !== undefined && $scope.rpfa.needForInterpreter !== null) {
+                  needForInterpreter = '<urn1:needForInterpreter>' + $scope.rpfa.needForInterpreter + '</urn1:needForInterpreter>';
+              }
+
+              var interpreterLanguage = '';
+              if ($scope.rpfa.interpreterLanguage) {
+                  interpreterLanguage += '<urn1:interpreterLanguage>' +
+                  '<urn2:code>' + $scope.rpfa.interpreterLanguage + '</urn2:code>' +
+                  '<urn2:codeSystem></urn2:codeSystem>' +
+                  '</urn1:interpreterLanguage>';
+              }
+
+              var msg = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:itintegration:registry:1" xmlns:urn1="urn:riv-application:intygsbestallning:certificate:order:RequestPerformerForAssessmentResponder:1" xmlns:urn2="urn:riv-application:intygsbestallning:certificate:order:1">' +
+                  '<soapenv:Header>' +
+                  '<urn:LogicalAddress>?</urn:LogicalAddress>' +
+                  '</soapenv:Header>' +
+                  '<soapenv:Body>' +
+                      '<urn1:RequestPerformerForAssessment>' +
+                          '<urn1:certificateType>' +
+                            '<urn2:code>' + $scope.rpfa.certificateType + '</urn2:code>' +
+                            '<urn2:codeSystem>b64ea353-e8f6-4832-b563-fc7d46f29548</urn2:codeSystem>' +
+                          '</urn1:certificateType>' +
+                          '<urn1:lastResponseDate>' + moment($scope.rpfa.lastResponseDate, 'YYYY-MM-DD').format('YYYYMMDD') + '</urn1:lastResponseDate>' +
+                          '<urn1:coordinatingCountyCouncilId>' +
+                            '<urn2:root>1.2.752.129.2.1.4.1</urn2:root>' +
+                            '<urn2:extension>' + $scope.rpfa.coordinatingCountyCouncilId + '</urn2:extension>' +
+                          '</urn1:coordinatingCountyCouncilId>' +
+                          comment +
+                          needForInterpreter +
+                          interpreterLanguage +
+                          '<urn1:authorityAdministrativeOfficial>' +
+                              // <!--Optional:-->
+                              '<urn2:fullName>' + $scope.rpfa.authorityAdministrativeOfficial.fullName + '</urn2:fullName>' +
+                              '<urn2:phoneNumber>' + $scope.rpfa.authorityAdministrativeOfficial.phoneNumber + '</urn2:phoneNumber>' +
+                              // <!--Optional:-->
+                              '<urn2:email>' + $scope.rpfa.authorityAdministrativeOfficial.email + '</urn2:email>' +
+                              '<urn2:authority>' +
+                                  '<urn2:code>FKASSA</urn2:code>' +
+                                  '<urn2:codeSystem>769bb12b-bd9f-4203-a5cd-fd14f2eb3b80</urn2:codeSystem>' +
+                                  /*
+                                  // <!--Optional:-->
+                                  '<urn2:codeSystemName>?</urn2:codeSystemName>' +
+                                  // <!--Optional:-->
+                                  '<urn2:codeSystemVersion>?</urn2:codeSystemVersion>' +
+                                  // <!--Optional:-->
+                                  '<urn2:displayName>?</urn2:displayName>' +
+                                  */
+                              '</urn2:authority>' +
+                              // <!--Optional:-->
+                              '<urn2:officeName>' + $scope.rpfa.authorityAdministrativeOfficial.officeName + '</urn2:officeName>' +
+                              // <!--Optional:-->
+                              '<urn2:officeCostCenter>' + $scope.rpfa.authorityAdministrativeOfficial.officeCostCenter + '</urn2:officeCostCenter>' +
+                              // <!--Optional:-->
+                              '<urn2:officeAddress>' +
+                              // <!--Optional:-->
+                              '<urn2:postalAddress>' + $scope.rpfa.authorityAdministrativeOfficial.postalAddress + '</urn2:postalAddress>' +
+                              // <!--Optional:-->
+                              '<urn2:postalCode>' + $scope.rpfa.authorityAdministrativeOfficial.postalCode + '</urn2:postalCode>' +
+                              // <!--Optional:-->
+                              '<urn2:postalCity>' + $scope.rpfa.authorityAdministrativeOfficial.postalCity + '</urn2:postalCity>' +
+                              '</urn2:officeAddress>' +
+                          '</urn1:authorityAdministrativeOfficial>' +
+                          '<urn1:citizen>' +
+                              '<urn2:postalCity>' + $scope.rpfa.citizen.postalCity + '</urn2:postalCity>' +
+                              // <!--Optional:-->
+                              '<urn2:specialNeeds>' + $scope.rpfa.citizen.specialNeeds + '</urn2:specialNeeds>' +
+                              earlierAssessmentPerformerRequest +
+                          '</urn1:citizen>' +
+                      '</urn1:RequestPerformerForAssessment>' +
+                      '</soapenv:Body>' +
+                  '</soapenv:Envelope>';
+
+              $log.info(msg);
+
+              $http({
+                  method: 'POST',
+                  url: rpfaUrl,
+                  data: msg
+              }).then(function successCallback(response) {
+
+                  if (response.status === 200) {
+                      var startIdx = response.data.indexOf('result>');
+                      var endIdx = response.data.substring(startIdx+7, response.data.length).indexOf('result>');
+                      $scope.resultat = response.data.substring(startIdx+7, startIdx+7 + endIdx-2);
+                  } else {
+                      $scope.resultat = '"Servern svarade med HTTP ' + response.status + ' ' + response.statusText + '. Det betyder att någonting gick fel.';
+                  }
+
+              });
+          }
+      }]
+  );
+
+</script>
+</head>
+<body ng-controller="simulatorController">
+  <div class="container">
+    <h2>RequestPerformerForAssessment</h2>
+    <div class="row"><label class="col-sm-3 control-label">lastResponseDate</label><div class="col-sm-9"><input class="form-control" ng-model="rpfa.lastResponseDate"></div></div>
+    <div class="row"><label class="col-sm-3 control-label">coordinatingCountyCouncilId</label>
+      <div class="col-sm-9">
+        <select class="form-control" ng-model="rpfa.coordinatingCountyCouncilId" ng-options="item for item in coordinatingCountyCouncilIdOptions">
+        </select>
+      </div>
+    </div>
+    <div class="row"><label class="col-sm-3 control-label">comment</label><div class="col-sm-9"><input class="form-control" ng-model="rpfa.comment"></div></div>
+    <div class="row"><label class="col-sm-3 control-label">needForInterpreter</label><div class="col-sm-9"><input type="checkbox" ng-model="rpfa.needForInterpreter" ng-true-value="true" ng-false-value="false"></div></div>
+    <div class="row"><label class="col-sm-3 control-label">interpreterLanguage</label><div class="col-sm-9"><input class="form-control" ng-model="rpfa.interpreterLanguage"></div></div>
+    <h4>Handläggare</h4>
+    <div class="row"><label class="col-sm-3 control-label">fullName</label><div class="col-sm-9"><input class="form-control" ng-model="rpfa.authorityAdministrativeOfficial.fullName"></div></div>
+    <div class="row"><label class="col-sm-3 control-label">phoneNumber</label><div class="col-sm-9"><input class="form-control" ng-model="rpfa.authorityAdministrativeOfficial.phoneNumber"></div></div>
+    <div class="row"><label class="col-sm-3 control-label">email</label><div class="col-sm-9"><input class="form-control" ng-model="rpfa.authorityAdministrativeOfficial.email"></div></div>
+    <div class="row"><label class="col-sm-3 control-label">officeName</label><div class="col-sm-9"><input class="form-control" ng-model="rpfa.authorityAdministrativeOfficial.officeName"></div></div>
+    <div class="row"><label class="col-sm-3 control-label">officeCostCenter</label><div class="col-sm-9"><input class="form-control" ng-model="rpfa.authorityAdministrativeOfficial.officeCostCenter"></div></div>
+    <div class="row"><label class="col-sm-3 control-label">postalAddress</label><div class="col-sm-9"><input class="form-control" ng-model="rpfa.authorityAdministrativeOfficial.postalAddress"></div></div>
+    <div class="row"><label class="col-sm-3 control-label">postalCode</label><div class="col-sm-9"><input class="form-control" ng-model="rpfa.authorityAdministrativeOfficial.postalCode"></div></div>
+    <div class="row"><label class="col-sm-3 control-label">postalCity</label><div class="col-sm-9"><input class="form-control" ng-model="rpfa.authorityAdministrativeOfficial.postalCity"></div></div>
+    <h4>Invånare</h4>
+    <div class="row"><label class="col-sm-3 control-label">postalCity</label><div class="col-sm-9"><input class="form-control" ng-model="rpfa.citizen.postalCity"></div></div>
+    <div class="row"><label class="col-sm-3 control-label">specialNeeds</label><div class="col-sm-9"><input class="form-control" ng-model="rpfa.citizen.specialNeeds"></div></div>
+    <h4>Tidigare utredare</h4>
+    <button class="btn btn-default" ng-click="addEarlierAssessmentPerformer()">Lägg till tidigare utredare</button>
+    <div ng-repeat="earlierAssessmentPerformer in rpfa.citizen.earlierAssessmentPerformer track by $index">
+      <div class="row"><label class="col-sm-3 control-label"></label>
+        <div class="col-sm-9">
+          <select class="form-control" ng-model="earlierAssessmentPerformer.id" ng-options="item for item in vardenhetOptions">
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <button class="btn btn-primary" ng-click="sendRpfa()")>Skicka</button>
+    </div>
+
+    <div ng-if="resultat" class="form-group">
+      <label class="col-sm-12">Resultat
+        <div>{{resultat}}</div>
+      </label>
+    </div>
+  </div>
+
+</body>
+</html>

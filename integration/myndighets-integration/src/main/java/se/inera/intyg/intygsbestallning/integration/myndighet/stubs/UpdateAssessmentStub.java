@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.integration.myndighet.stubs;
 
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.riv.intygsbestallning.certificate.order.updateassessment.v1.UpdateAssessmentResponseType;
@@ -37,11 +38,24 @@ public class UpdateAssessmentStub implements UpdateAssessmentResponderInterface 
     public UpdateAssessmentResponseType updateAssessment(String logicalAddress, UpdateAssessmentType updateAssessmentType) {
 
         LOG.info("UpdateAssessmentStub received request");
+
+        ResultType rt = new ResultType();
+
+        if (isInvalidRequest(updateAssessmentType)) {
+            rt.setResultCode(ResultCodeType.ERROR);
+        } else {
+            rt.setResultCode(ResultCodeType.OK);
+        }
         UpdateAssessmentResponseType response = new UpdateAssessmentResponseType();
         response.setLastDateForCertificateReceival(SchemaDateUtil.toDateStringFromLocalDateTime(LocalDateTime.now().plusDays(DAYS)));
-        ResultType rt = new ResultType();
-        rt.setResultCode(ResultCodeType.OK);
         response.setResult(rt);
         return response;
+    }
+
+    private boolean isInvalidRequest(UpdateAssessmentType updateAssessmentType) {
+        return Strings.isNullOrEmpty(updateAssessmentType.getAssessmentId().getRoot())
+                || Strings.isNullOrEmpty(updateAssessmentType.getAssessmentId().getExtension())
+                || Strings.isNullOrEmpty(updateAssessmentType.getCertificateType().getCode())
+                || Strings.isNullOrEmpty(updateAssessmentType.getCertificateType().getCodeSystem());
     }
 }

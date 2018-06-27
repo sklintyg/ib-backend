@@ -18,23 +18,22 @@
  */
 package se.inera.intyg.intygsbestallning.web.responder.dto;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Objects.nonNull;
+import static se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest.ReportBesokAvvikelseRequestBuilder.aReportBesokAvvikelseRequest;
+
 import com.google.common.base.MoreObjects;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
-import se.inera.intyg.intygsbestallning.persistence.model.type.AvvikelseOrsak;
-import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.ReportBesokAvvikelseVardenRequest;
 import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.ReportDeviationType;
-
 import java.time.LocalDateTime;
 import java.util.Optional;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static java.util.Objects.nonNull;
-import static se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest.ReportBesokAvvikelseRequestBuilder.aReportBesokAvvikelseRequest;
+import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
+import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
+import se.inera.intyg.intygsbestallning.persistence.model.type.AvvikelseOrsak;
+import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.ReportBesokAvvikelseVardenRequest;
 
 public final class ReportBesokAvvikelseRequest {
 
@@ -103,17 +102,24 @@ public final class ReportBesokAvvikelseRequest {
     public static ReportBesokAvvikelseRequest from(final ReportDeviationType type) {
 
         checkArgument(nonNull(type));
-        checkArgument(nonNull(type.getAssessmentCareContactId()));
-        checkArgument(nonNull(type.getAssessmentCareContactId().getExtension()));
-        checkArgument(nonNull(type.getCausedBy()));
-        checkArgument(nonNull(type.getCausedBy().getCode()));
-        checkArgument(nonNull(type.getDeviationTime()));
-        checkArgument(nonNull(type.isCitizenFailedToArrive()));
+        checkArgument(nonNull(type.getAssessmentCareContactId()), "AssessmentCareContactId may not be null");
+        checkArgument(nonNull(type.getAssessmentCareContactId().getExtension()), "AssessmentCareContactId Extension may not be null");
+        checkArgument(nonNull(type.getCausedBy()), "CausedBy may not be null");
+        checkArgument(nonNull(type.getCausedBy().getCode()), "CausedBy Code may not be null");
+        checkArgument(nonNull(type.getDeviationTime()), "DeviationTime may not be null");
+        checkArgument(nonNull(type.isCitizenFailedToArrive()), "CitizenFailedToArrive may not be null");
 
         final Long besokId = Long.valueOf(type.getAssessmentCareContactId().getExtension());
         final AvvikelseOrsak orsakatAv = AvvikelseOrsak.valueOf(type.getCausedBy().getCode());
         final String beskrivning = type.getDescription();
-        final LocalDateTime tidpunkt = SchemaDateUtil.toLocalDateTimeFromDateTimeStamp(type.getDeviationTime());
+
+        final LocalDateTime tidpunkt;
+        try {
+            tidpunkt = SchemaDateUtil.toLocalDateTimeFromDateTimeStamp(type.getDeviationTime());
+        } catch (Exception e) {
+            throw new IllegalStateException(e.getCause());
+        }
+
         final Boolean invanareUteblev = BooleanUtils.toBoolean(type.isCitizenFailedToArrive());
         final HandelseTyp handelseTyp = HandelseTyp.AVVIKELSE_MOTTAGEN;
 

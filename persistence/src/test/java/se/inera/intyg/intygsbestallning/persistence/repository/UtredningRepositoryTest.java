@@ -18,7 +18,28 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
+import static se.inera.intyg.intygsbestallning.persistence.model.SkickadNotifiering.SkickadNotifieringBuilder.aSkickadNotifiering;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildAnteckning;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildBesok;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildBestallning;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildBetalning;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildExternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildHandelse;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildHandlaggare;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildHandling;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildIntyg;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildInvanare;
+import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildUtredning;
+
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +49,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigDev;
 import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigTest;
 import se.inera.intyg.intygsbestallning.persistence.model.Anteckning;
@@ -44,10 +69,10 @@ import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
 import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.AvvikelseOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.KallelseFormTyp;
@@ -57,29 +82,6 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static se.inera.intyg.intygsbestallning.persistence.model.SkickadNotifiering.SkickadNotifieringBuilder.aSkickadNotifiering;
-import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildAnteckning;
-import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildBesok;
-import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildBestallning;
-import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildBetalning;
-import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildExternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildHandelse;
-import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildHandlaggare;
-import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildHandling;
-import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildIntyg;
-import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildInvanare;
-import static se.inera.intyg.intygsbestallning.persistence.util.TestDataFactory.buildUtredning;
 
 /**
  * Created by eriklupander on 2015-08-05.
@@ -430,5 +432,48 @@ public class UtredningRepositoryTest {
                 NotifieringTyp.SLUTDATUM_UTREDNING_PASSERAT,
                 NotifieringMottagarTyp.VARDENHET);
         assertEquals(0, utredningList.size());
+    }
+
+    @Test
+    public void findEjNotifieradeIntygPaminnelseSistaDatumKomplettering() {
+
+        final LocalDateTime localDateTime = LocalDateTime.of(2018, 9, 9, 9, 9, 9, 9);
+
+        Utredning utredning = buildUtredning();
+        utredning.setBestallning(buildBestallning());
+
+        utredning.setIntygList(Lists.newArrayList(
+                anIntyg()
+                        .withKomplettering(false)
+                        .withSistaDatumKompletteringsbegaran(localDateTime.minusDays(3))
+                        .build(),
+                anIntyg()
+                        .withKomplettering(true)
+                        .withSistaDatumKompletteringsbegaran(localDateTime.minusDays(2))
+                        .build(),
+                anIntyg()
+                        .withKomplettering(true)
+                        .withSistaDatumKompletteringsbegaran(localDateTime.minusDays(1))
+                        .build(),
+                anIntyg()
+                        .withKomplettering(true)
+                        .withSistaDatumKompletteringsbegaran(localDateTime.plusDays(10))
+                        .build()
+        ));
+
+        utredning.setSkickadNotifieringList(Lists.newArrayList(
+                aSkickadNotifiering()
+                        .withIntygId(2L)
+                        .withMottagare(NotifieringMottagarTyp.VARDENHET)
+                        .withSkickad(localDateTime.minusDays(2))
+                        .withTyp(NotifieringTyp.PAMINNELSEDATUM_KOMPLETTERING_PASSERAS)
+                        .build()
+        ));
+
+        utredningRepository.saveUtredning(utredning);
+
+        final List<Utredning> utredningList = utredningRepository.findNonNotifiedSistaDatumKompletteringsBegaranBefore(localDateTime, NotifieringTyp.PAMINNELSEDATUM_KOMPLETTERING_PASSERAS);String test = "hej";
+        assertThat(utredningList.size()).isEqualTo(1);
+        assertThat(utredningList.get(0)).isEqualTo(utredning);
     }
 }

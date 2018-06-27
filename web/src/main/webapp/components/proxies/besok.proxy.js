@@ -61,7 +61,7 @@ angular.module('ibApp').factory('BesokProxy',
         function _addArbetsdagar(utredningId, datum, arbetsdagar) {
             var restPath = besokRestPath + utredningId + '/besok/addarbetsdagar';
 
-            return ProxyTemplate.postTemplate(restPath, {datum: datum, arbetsdagar: arbetsdagar}, {});
+            return ProxyTemplate.postTemplate(restPath, {datum: datum, arbetsdagar: arbetsdagar, semesterperiod: false}, {});
         }
 
         // Return public API for the service

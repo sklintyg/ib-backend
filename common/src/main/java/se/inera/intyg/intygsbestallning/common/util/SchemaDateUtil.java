@@ -32,7 +32,7 @@ public final class SchemaDateUtil {
     }
 
     public static LocalDateTime toLocalDateTimeFromDateTimeStamp(final String dateTimeStamp) {
-        return LocalDateTime.parse(dateTimeStamp, ISO_DATETIME_FORMATTER);
+        return LocalDateTime.parse(dateTimeStamp, DATE_TIME_FORMATTER);
     }
 
     public static LocalDateTime toLocalDateTimeFromDateType(final String dateType) {

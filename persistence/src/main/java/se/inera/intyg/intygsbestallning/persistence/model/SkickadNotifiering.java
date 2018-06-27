@@ -46,6 +46,9 @@ public final class SkickadNotifiering {
     @Column(name = "ID", nullable = false)
     private Long id;
 
+    @Column(name = "INTYG_ID")
+    private Long intygId;
+
     @Enumerated(value = EnumType.STRING)
     @Column(name = "TYP", nullable = false)
     private NotifieringTyp typ;
@@ -64,6 +67,13 @@ public final class SkickadNotifiering {
 
     public void setId(Long id) {
         this.id = id;
+    }
+    public Long getIntygId() {
+        return intygId;
+    }
+
+    public void setIntygId(Long intygId) {
+        this.intygId = intygId;
     }
 
     public NotifieringTyp getTyp() {
@@ -97,6 +107,7 @@ public final class SkickadNotifiering {
 
         return aSkickadNotifiering()
                 .withId(skickadNotifiering.getId())
+                .withIntygId(skickadNotifiering.getIntygId())
                 .withTyp(skickadNotifiering.getTyp())
                 .withMottagare(skickadNotifiering.getMottagare())
                 .withSkickad(skickadNotifiering.getSkickad())
@@ -118,6 +129,7 @@ public final class SkickadNotifiering {
 
         return new EqualsBuilder()
                 .append(id, that.id)
+                .append(intygId, that.intygId)
                 .append(typ, that.typ)
                 .append(mottagare, that.mottagare)
                 .append(skickad, that.skickad)
@@ -128,6 +140,7 @@ public final class SkickadNotifiering {
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
                 .append(id)
+                .append(intygId)
                 .append(typ)
                 .append(mottagare)
                 .append(skickad)
@@ -138,14 +151,17 @@ public final class SkickadNotifiering {
     public String toString() {
         return new ToStringBuilder(this)
                 .append("id", id)
+                .append("intygId", intygId)
                 .append("typ", typ)
                 .append("mottagare", mottagare)
                 .append("skickad", skickad)
                 .toString();
     }
 
+
     public static final class SkickadNotifieringBuilder {
         private Long id;
+        private Long intygId;
         private NotifieringTyp typ;
         private NotifieringMottagarTyp mottagare;
         private LocalDateTime skickad;
@@ -159,6 +175,11 @@ public final class SkickadNotifiering {
 
         public SkickadNotifieringBuilder withId(Long id) {
             this.id = id;
+            return this;
+        }
+
+        public SkickadNotifieringBuilder withIntygId(Long intygId) {
+            this.intygId = intygId;
             return this;
         }
 
@@ -180,6 +201,7 @@ public final class SkickadNotifiering {
         public SkickadNotifiering build() {
             SkickadNotifiering skickadNotifiering = new SkickadNotifiering();
             skickadNotifiering.setId(id);
+            skickadNotifiering.setIntygId(intygId);
             skickadNotifiering.setTyp(typ);
             skickadNotifiering.setMottagare(mottagare);
             skickadNotifiering.skickad = this.skickad;
