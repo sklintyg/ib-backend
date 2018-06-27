@@ -57,7 +57,7 @@ public final class NotifieringMailMeddelandeUtil {
     public static String landstingSamtligaInternForfraganBesvaradeforfraganMessage(final Utredning utredning) {
         return MessageFormat.format(
                 "Samtliga vårdenheter som har tagit emot förfrågan om ett genomföra en försäkringsmedicinsk "
-                + "utredning (FMU) har svarat i utredning {0}",
+                        + "utredning (FMU) har svarat i utredning {0}",
                 utredning.getUtredningId());
     }
 
@@ -167,9 +167,9 @@ public final class NotifieringMailMeddelandeUtil {
     }
 
     public static String paminnelseSlutDatumKomplettering(final Utredning utredning, final Intyg intyg) {
-        return MessageFormat.format("Slutdatum för {0} för utredning {1} "
-                + "kommer snart att passeras. Om kompletteringen inte är mottagen av "
-                + "Försäkringskassan innan angivet slutdatum så kommer utredningen inte att ersättas.",
+        return MessageFormat.format("Slutdatum {0} för utredning {1} kommer snart att passeras. "
+                        + "Om kompletteringen inte är mottagen av Försäkringskassan innan "
+                        + "angivet slutdatum så kommer utredningen inte att ersättas.",
                 intyg.getSistaDatumKompletteringsbegaran().format(DateTimeFormatter.ISO_DATE),
                 utredning.getUtredningId());
     }
