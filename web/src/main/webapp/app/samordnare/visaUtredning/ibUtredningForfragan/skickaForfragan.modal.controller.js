@@ -19,7 +19,7 @@
 
 angular.module('ibApp')
     .controller('SkickaForfraganModalCtrl',
-        function($scope, $uibModalInstance, $log, utredning, veModel, UtredningarProxy) {
+        function($scope, $state, $uibModalInstance, $log, utredning, veModel, UtredningarProxy) {
             'use strict';
 
             // If an InternForfragan already exists, show as selected and disabled checkboxes
@@ -82,8 +82,8 @@ angular.module('ibApp')
                         'vardenheter': selectedVardenheterArray,
                         'kommentar': $scope.vm.meddelande
                     }).then(function(data) {
-                        angular.copy(data, utredning);
                         $uibModalInstance.close();
+                        $state.reload();
                     }, function(error) {
                         $log.error('failed to create InternForfragan!' + error);
                     }).finally(function() { // jshint ignore:line
