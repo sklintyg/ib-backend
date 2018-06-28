@@ -233,7 +233,7 @@
                 <constraints nullable="true"/>
             </column>
 
-            <column name="POSTKOD" type="varchar(255)">
+            <column name="POSTNUMMER" type="varchar(255)">
                 <constraints nullable="true"/>
             </column>
 
@@ -346,7 +346,6 @@
             <column name="ARKIVERAD"/>
         </createIndex>
 
-
         <createTable tableName="FORFRAGAN_SVAR">
             <column name="ID" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
@@ -357,23 +356,23 @@
             </column>
 
             <column name="UTFORARE_TYP" type="varchar(32)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
 
             <column name="UTFORARE_NAMN" type="varchar(255)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
 
             <column name="UTFORARE_ADRESS" type="varchar(255)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
 
             <column name="UTFORARE_POSTORT" type="varchar(255)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
 
             <column name="UTFORARE_POSTNUMMER" type="varchar(255)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
 
             <column name="UTFORARE_TELEFONNUMMER" type="varchar(255)">
@@ -566,9 +565,16 @@
                                  referencedColumnNames="UTREDNING_ID"/>
 
         <createTable tableName="VARDENHET_PREFERENCE">
+            <column name="ID" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
 
             <column name="VARDENHET_HSA_ID" type="varchar(64)">
-                <constraints primaryKey="true" nullable="false"/>
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="UTFORARE_TYP" type="varchar(32)">
+                <constraints nullable="false"/>
             </column>
 
             <column name="MOTTAGAR_NAMN" type="varchar(255)">
@@ -599,6 +605,17 @@
                 <constraints nullable="true"/>
             </column>
         </createTable>
+
+        <addAutoIncrement columnDataType="bigint"
+            columnName="ID"
+            incrementBy="1"
+            startWith="1"
+            tableName="VARDENHET_PREFERENCE"/>
+
+        <addUniqueConstraint
+            columnNames="VARDENHET_HSA_ID, UTFORARE_TYP"
+            constraintName="VARDENHET_PREFERENCE_VARDENHET_HSA_ID_UTFORARE_TYP_UNIQUE_CONST"
+            tableName="VARDENHET_PREFERENCE"/>
 
         <createTable tableName="AVVIKELSE">
             <column name="AVVIKELSE_ID" type="bigint">
@@ -727,6 +744,12 @@
             <column name="VARDGIVARE_HSA_ID"/>
         </createIndex>
 
+        <comment>Add unique constraint on REGISTRERAD_VARDENHET: An Registered VE should only exist once per VG</comment>
+        <addUniqueConstraint
+            columnNames="VARDGIVARE_HSA_ID, VARDENHET_HSA_ID"
+            constraintName="REGISTRERAD_VARDENHET_VARDGIVARE_VARDENHET_UNIQUE_CONST"
+            tableName="REGISTRERAD_VARDENHET"/>
+
         <createTable tableName="INTYG">
             <column name="ID" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
@@ -832,6 +855,10 @@
             <column name="SKICKAD" type="datetime">
                 <constraints nullable="false"/>
             </column>
+
+            <column name="INTYG_ID" type="bigint">
+                <constraints nullable="true"/>
+            </column>
         </createTable>
 
         <addAutoIncrement columnDataType="bigint"
@@ -849,9 +876,14 @@
                      tableName="SKICKAD_NOTIFIERING" unique="false">
             <column name="TYP"/>
         </createIndex>
-    </changeSet>
 
-    <changeSet id="4" author="mc">
+        <addForeignKeyConstraint
+            baseTableName="SKICKAD_NOTIFIERING"
+            baseColumnNames="INTYG_ID"
+            constraintName="SKICKAD_NOTIFIERING_INTYG_ID_FK"
+            referencedTableName="INTYG"
+            referencedColumnNames="ID"/>
+
         <createTable tableName="NOTIFIERING_PREFERENCE">
 
             <column name="HSA_ID" type="varchar(64)">
@@ -866,130 +898,6 @@
                 <constraints nullable="true"/>
             </column>
         </createTable>
-    </changeSet>
-
-    <changeSet id="5" author="mc">
-        <renameColumn tableName="HANDLAGGARE"
-            oldColumnName="POSTKOD"
-            newColumnName="POSTNUMMER"
-            columnDataType="varchar(255)"/>
-    </changeSet>
-
-
-    <changeSet id="6" author="mc">
-        <comment>Change so that only svarsTyp is mandatory</comment>
-        <dropNotNullConstraint
-            columnDataType="varchar(32)"
-            columnName="UTFORARE_TYP"
-            tableName="FORFRAGAN_SVAR"/>
-        <dropNotNullConstraint
-            columnDataType="varchar(255)"
-            columnName="UTFORARE_NAMN"
-            tableName="FORFRAGAN_SVAR"/>
-        <dropNotNullConstraint
-            columnDataType="varchar(255)"
-            columnName="UTFORARE_ADRESS"
-            tableName="FORFRAGAN_SVAR"/>
-        <dropNotNullConstraint
-            columnDataType="varchar(255)"
-            columnName="UTFORARE_POSTORT"
-            tableName="FORFRAGAN_SVAR"/>
-        <dropNotNullConstraint
-            columnDataType="varchar(255)"
-            columnName="UTFORARE_POSTNUMMER"
-            tableName="FORFRAGAN_SVAR"/>
-    </changeSet>
-
-
-    <changeSet id="7" author="mc">
-        <comment>Add unique constraint on REGISTRERAD_VARDENHET: An Registered VE should only exist once per VG</comment>
-        <addUniqueConstraint
-            columnNames="VARDGIVARE_HSA_ID, VARDENHET_HSA_ID"
-            constraintName="REGISTRERAD_VARDENHET_VARDGIVARE_VARDENHET_UNIQUE_CONST"
-            tableName="REGISTRERAD_VARDENHET"/>
-
-    </changeSet>
-
-    <changeSet id="8" author="mc">
-        <comment>Recreating VARDENHET_PREFERENCE since there are som many breaking changes -gar changing primarykey strategy etc</comment>
-        <dropTable tableName="VARDENHET_PREFERENCE"/>
-
-        <createTable tableName="VARDENHET_PREFERENCE">
-            <column name="ID" type="bigint">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-
-            <column name="VARDENHET_HSA_ID" type="varchar(64)">
-                <constraints nullable="false"/>
-            </column>
-
-            <column name="UTFORARE_TYP" type="varchar(32)">
-                <constraints nullable="false"/>
-            </column>
-
-            <column name="MOTTAGAR_NAMN" type="varchar(255)">
-                <constraints nullable="true"/>
-            </column>
-
-            <column name="ADRESS" type="varchar(255)">
-                <constraints nullable="true"/>
-            </column>
-
-            <column name="POSTNUMMER" type="varchar(32)">
-                <constraints nullable="true"/>
-            </column>
-
-            <column name="POSTORT" type="varchar(255)">
-                <constraints nullable="true"/>
-            </column>
-
-            <column name="TELEFONNUMMER" type="varchar(32)">
-                <constraints nullable="true"/>
-            </column>
-
-            <column name="EPOST" type="varchar(255)">
-                <constraints nullable="true"/>
-            </column>
-
-            <column name="STANDARDSVAR" type="text">
-                <constraints nullable="true"/>
-            </column>
-
-
-        </createTable>
-
-        <addAutoIncrement columnDataType="bigint"
-            columnName="ID"
-            incrementBy="1"
-            startWith="1"
-            tableName="VARDENHET_PREFERENCE"/>
-
-        <addUniqueConstraint
-            columnNames="VARDENHET_HSA_ID, UTFORARE_TYP"
-            constraintName="VARDENHET_PREFERENCE_VARDENHET_HSA_ID_UTFORARE_TYP_UNIQUE_CONST"
-            tableName="VARDENHET_PREFERENCE"/>
-
-    </changeSet>
-
-    <changeSet id="9" author="anell">
-        <comment>
-            Adding an INTYG_ID column on SKICKAD_NOTIFIERING
-            to be able to link a notifiering directly to a kompletteringsintyg.
-        </comment>
-
-        <addColumn tableName="SKICKAD_NOTIFIERING">
-            <column name="INTYG_ID" type="bigint">
-                <constraints nullable="true"/>
-            </column>
-        </addColumn>
-
-        <addForeignKeyConstraint
-            baseTableName="SKICKAD_NOTIFIERING"
-            baseColumnNames="INTYG_ID"
-            constraintName="SKICKAD_NOTIFIERING_INTYG_ID_FK"
-            referencedTableName="INTYG"
-            referencedColumnNames="ID"/>
-
     </changeSet>
 
 </databaseChangeLog>
