@@ -1,70 +1,72 @@
-<div class="modal-header">
-  <button type="button" class="close" data-ng-click="close()">×</button>
-  <h3 id="omIBDialog">Om Intygsbeställning</h3>
-</div>
-
-<div class="modal-body ib-header-about-modal" id="ib-about-modal-body">
-  <div uib-accordion close-others="true"
-       ng-init="open = { om: false, anvandare: false, support: false, faq: false, personuppgifter: false }">
-
-    <div uib-accordion-group panel-class="ib-about-panel" is-open="open.om">
-      <div uib-accordion-heading>
-        <div class="ib-about-panel-header">
-          <span>Om Intygsbeställning</span> <i class="material-icons md-24">{{open.om ? 'expand_less':'expand_more'}}</i>
-        </div>
-      </div>
-      <div ng-include="'/components/appDirectives/ibAppHeader/ibHeaderActions/about/about-partial.html'"></div>
-    </div>
-
-    <div uib-accordion-group panel-class="ib-about-panel" is-open="open.anvandare">
-      <div uib-accordion-heading>
-        <div class="ib-about-panel-header">
-          <span>Användare</span> <i class="material-icons md-24">{{open.anvandare ? 'expand_less':'expand_more'}}</i>
-        </div>
-      </div>
-      <div ng-include="'/components/appDirectives/ibAppHeader/ibHeaderActions/about/anvandare-partial-fmu.html'"></div>
-      <!-- TODO need origin to know if FMU or BP
-      <div ib-authority request-origin="FMU" ng-include="'/components/appDirectives/ibAppHeader/ibHeaderActions/about/anvandare-partial-fmu.html'"></div>
-      <div ib-authority request-origin="BP" ng-include="'/components/appDirectives/ibAppHeader/ibHeaderActions/about/anvandare-partial-bp.html'"></div>
-      -->
-    </div>
-
-    <div uib-accordion-group panel-class="ib-about-panel" is-open="open.support">
-      <div uib-accordion-heading>
-        <div class="ib-about-panel-header">
-          <span>Support och kontaktinformation</span> <i class="material-icons md-24">{{open.support ? 'expand_less':'expand_more'}}</i>
-        </div>
-      </div>
-      <div ng-include="'/components/appDirectives/ibAppHeader/ibHeaderActions/about/support-kontakt-partial-normal.html'"></div>
-    </div>
-
-    <div uib-accordion-group panel-class="ib-about-panel" is-open="open.faq">
-      <div uib-accordion-heading>
-        <div class="ib-about-panel-header">
-          <span>Vanliga frågor</span> <i class="material-icons md-24">{{open.faq ? 'expand_less':'expand_more'}}</i>
-        </div>
-      </div>
-      <ib-faq-toggler>
-        <div ng-if="user.currentRole.name === 'FMU_SAMORDNARE'" ng-include="'/components/appDirectives/ibAppHeader/ibHeaderActions/about/vanliga-fragor/faq-fmu-partial-samordnare.html'"></div>
-        <div ng-if="user.currentRole.name === 'FMU_VARDADMIN'" ng-include="'/components/appDirectives/ibAppHeader/ibHeaderActions/about/vanliga-fragor/faq-fmu-partial-vardadmin.html'"></div>
-        <!-- TODO need origin to know if FMU or BP or same as above if different faq for each role
-        <div ib-authority request-origin="BP" ng-include="'/components/appDirectives/ibAppHeader/ibHeaderActions/about/vanliga-fragor/faq-bp-partial.html'"></div>
-        -->
-      </ib-faq-toggler>
-    </div>
-
-    <div uib-accordion-group panel-class="ib-about-panel" is-open="open.kakor">
-      <div uib-accordion-heading>
-        <div class="ib-about-panel-header">
-          <span>Om behandling av personuppgifter</span> <i class="material-icons md-24">{{open.personuppgifter ? 'expand_less':'expand_more'}}</i>
-        </div>
-      </div>
-      <div ng-include="'/components/appDirectives/ibAppHeader/ibHeaderActions/about/personuppgifter-partial.html'"></div>
-    </div>
-
+<div class="ib-header-about-modal" id="ib-header-about-modal">
+  <div class="modal-header">
+    <button type="button" class="close" data-ng-click="close()">×</button>
+    <h4 class="modal-title">Om Intygsbeställning</h4>
   </div>
-</div>
-
-<div class="modal-footer">
-  <button type="button" class="btn btn-default" id="close-ib-about-btn" ng-click="$close()">Stäng</button>
+  
+  <div class="modal-body" id="ib-about-modal-body">
+    <div uib-accordion close-others="true"
+         ng-init="open = { om: false, anvandare: false, support: false, faq: false, personuppgifter: false }">
+  
+      <div uib-accordion-group panel-class="ib-about-panel" is-open="open.om">
+        <div uib-accordion-heading>
+          <div class="ib-about-panel-header">
+            <span>Om Intygsbeställning</span> <i class="material-icons md-24">{{open.om ? 'expand_less':'expand_more'}}</i>
+          </div>
+        </div>
+        <div ng-include="'/components/appDirectives/ibAppHeader/ibHeaderActions/about/about-partial.html'"></div>
+      </div>
+  
+      <div uib-accordion-group panel-class="ib-about-panel" is-open="open.anvandare">
+        <div uib-accordion-heading>
+          <div class="ib-about-panel-header">
+            <span>Användare</span> <i class="material-icons md-24">{{open.anvandare ? 'expand_less':'expand_more'}}</i>
+          </div>
+        </div>
+        <div ng-include="'/components/appDirectives/ibAppHeader/ibHeaderActions/about/anvandare-partial-fmu.html'"></div>
+        <!-- TODO need origin to know if FMU or BP
+        <div ib-authority request-origin="FMU" ng-include="'/components/appDirectives/ibAppHeader/ibHeaderActions/about/anvandare-partial-fmu.html'"></div>
+        <div ib-authority request-origin="BP" ng-include="'/components/appDirectives/ibAppHeader/ibHeaderActions/about/anvandare-partial-bp.html'"></div>
+        -->
+      </div>
+  
+      <div uib-accordion-group panel-class="ib-about-panel" is-open="open.support">
+        <div uib-accordion-heading>
+          <div class="ib-about-panel-header">
+            <span>Support och kontaktinformation</span> <i class="material-icons md-24">{{open.support ? 'expand_less':'expand_more'}}</i>
+          </div>
+        </div>
+        <div ng-include="'/components/appDirectives/ibAppHeader/ibHeaderActions/about/support-kontakt-partial-normal.html'"></div>
+      </div>
+  
+      <div uib-accordion-group panel-class="ib-about-panel" is-open="open.faq">
+        <div uib-accordion-heading>
+          <div class="ib-about-panel-header">
+            <span>Vanliga frågor</span> <i class="material-icons md-24">{{open.faq ? 'expand_less':'expand_more'}}</i>
+          </div>
+        </div>
+        <ib-faq-toggler>
+          <div ng-if="user.currentRole.name === 'FMU_SAMORDNARE'" ng-include="'/components/appDirectives/ibAppHeader/ibHeaderActions/about/vanliga-fragor/faq-fmu-partial-samordnare.html'"></div>
+          <div ng-if="user.currentRole.name === 'FMU_VARDADMIN'" ng-include="'/components/appDirectives/ibAppHeader/ibHeaderActions/about/vanliga-fragor/faq-fmu-partial-vardadmin.html'"></div>
+          <!-- TODO need origin to know if FMU or BP or same as above if different faq for each role
+          <div ib-authority request-origin="BP" ng-include="'/components/appDirectives/ibAppHeader/ibHeaderActions/about/vanliga-fragor/faq-bp-partial.html'"></div>
+          -->
+        </ib-faq-toggler>
+      </div>
+  
+      <div uib-accordion-group panel-class="ib-about-panel" is-open="open.kakor">
+        <div uib-accordion-heading>
+          <div class="ib-about-panel-header">
+            <span>Om behandling av personuppgifter</span> <i class="material-icons md-24">{{open.personuppgifter ? 'expand_less':'expand_more'}}</i>
+          </div>
+        </div>
+        <div ng-include="'/components/appDirectives/ibAppHeader/ibHeaderActions/about/personuppgifter-partial.html'"></div>
+      </div>
+  
+    </div>
+  </div>
+  
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" id="close-ib-about-btn" ng-click="$close()">Stäng</button>
+  </div>
 </div>

@@ -1,10 +1,9 @@
 //Style the about dialog
 .ib-header-about-modal {
 
-  &.modal-body {
+  .modal-body {
     height: 75vh;
     overflow-y: scroll;
-
   }
 
   .modal-header {
@@ -18,7 +17,7 @@
     align-items: center;
     justify-content: space-between;
   }
-
+  
   .panel {
     &.ib-about-panel {
       @extend %ib-typo-02;
@@ -56,21 +55,32 @@
           @extend %ib-typo-13;
           a {
             text-decoration: none;
+            
+            &:hover {
+              color: $ib-color-21;
+            }
           }
-
         }
-
       }
     }
-
   }
 
-  .category h2 {
-    @extend %ib-typo-12;
-    color: $ib-color-17;
+  .category {
+    clear: both;
+    
+    h2 {
+      @extend %ib-typo-12;
+      color: $ib-color-17;
+    }
   }
-
-
+  
+  ib-faq-question{
+    a{
+      color: $ib-color-07;
+      
+      &:hover {
+        color: $ib-color-21;
+      }
+    }
+  }
 }
-
-
