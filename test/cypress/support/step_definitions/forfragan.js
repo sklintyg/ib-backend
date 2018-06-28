@@ -34,7 +34,7 @@ then('ska förfrågans status vara {string} för {string}', (status, roll) => {
     cy.get("#utredning-header-status").should("contain", status);
 })
 
-when('jag direkttilldelar förfrågan till enhet {string}', (enhetsNamn) => {
+when('samordnare direkttilldelar förfrågan till enhet {string}', (enhetsNamn) => {
     enhetsHsaId = enheter[enhetsNamn];
     
     goToUtredning('samordnare', landstingHsaId, enhetsHsaId, utredningsId)
@@ -44,7 +44,7 @@ when('jag direkttilldelar förfrågan till enhet {string}', (enhetsNamn) => {
     cy.get('#tilldela-direkt-modal-skicka').click();
 })
 
-when('jag tilldelar förfrågan till enhet {string}', (enhetsNamn) => {
+when('samordnare tilldelar förfrågan till enhet {string}', (enhetsNamn) => {
     enhetsHsaId = enheter[enhetsNamn];
     
     goToUtredning('samordnare', landstingHsaId, enhetsHsaId, utredningsId)
@@ -52,16 +52,12 @@ when('jag tilldelar förfrågan till enhet {string}', (enhetsNamn) => {
     cy.get('#skicka-forfragan-modal-vardenheter-eget-landsting-input-IFV1239877878-1042').click();
     cy.get('#skicka-forfragan-modal-meddelande_textarea').type('Skickar förfrågan den långa vägen.');
     cy.get('#skicka-forfragan-modal-skicka > span').click();
-    
+    cy.get("#utredning-header-status").should("contain", "Väntar på svar");
 })
 
 when('{string} accepterar förfrågan', (roll) => {
     goToUtredning(roll, landstingHsaId, enhetsHsaId, utredningsId)
     acceptForfragan(roll)
-    //samordnare
-    //cy.get('#accepteraBtn > span').click();
-    //vårdaadmin
-    //cy.get('#open-accept-internforfragan-dialog-btn')
 })
 
 then('ska förfrågans status vara {string} för {string}', (status, roll) => {
@@ -84,9 +80,12 @@ then('ska Försäkringskassan notifieras att vårdenheten {string} {string} för
 
 function acceptForfragan(roll){
     if (roll === 'vårdadmin') {
-        cy.get('#open-accept-internforfragan-dialog-btn').click();
-    } else if (roll === samordnare) {
+        cy.get('#open-accept-internforfragan-dialog-btn > span').click();
+        cy.get('#accept-internforfragan-btn').click();
+        cy.get("#utredning-header-status").should("contain", "Tilldelad, väntar på beställning");
+    } else if (roll === 'samordnare') {
         cy.get('#accepteraBtn > span').click();
+        cy.get("#utredning-header-status").should("contain", "Tilldelad, väntar på beställning");
     }
 }
 
@@ -98,7 +97,7 @@ function goToUtredning(roll, landsting, enhet, utredning) {
         //cy.get('#samordnare-lista-utredningar-table').should('contain', utredning);
         cy.get('#filterFritext-input').type(utredning);
         cy.visit('/#/app/samordnare/listaUtredningar/visaUtredning/' + utredning);
-        cy.visit('/#/app/samordnare/listaUtredningar/visaUtredning/');
+        
         
     } else if (roll === 'vårdadmin') {
         cy.get('#ib-vardenhet-selector-select-active-unit-' + enhet + '-link').click(); 

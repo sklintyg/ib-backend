@@ -17,7 +17,8 @@ const enviroments = {
 		"env": {
 			"host":"ip30",
 			"requestPerformerForAssessment": "/services/request-performer-for-assessment-responder"
-		}
+		},
+		"defaultCommandTimeout" : 10000
 	},
 	"ip40" : {
 		"baseUrl": "placeholder"
@@ -39,6 +40,8 @@ module.exports = (on, config) => {
 	// modify config values
 	config.baseUrl = enviroments[env].baseUrl
 	config.env = enviroments[env].env
-	//config.defaultCommandTimeout = enviroments[env].defaultCommandTimeout
+	if (enviroments[env].defaultCommandTimeout) {
+		config.defaultCommandTimeout = enviroments[env].defaultCommandTimeout	
+	}
 	return config
 }
