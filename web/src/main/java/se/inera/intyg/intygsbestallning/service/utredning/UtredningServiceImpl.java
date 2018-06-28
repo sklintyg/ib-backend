@@ -657,7 +657,9 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
     private Invanare updateInvanareFromOrder(final Invanare invanare, OrderRequest order) {
         invanare.setPersonId(order.getInvanarePersonnummer());
-        invanare.setFullstandigtNamn(order.getInvanareFullstandigtNamn());
+        invanare.setFornamn(order.getInvanareFornamn());
+        invanare.setMellannamn(order.getInvanareMellannamn());
+        invanare.setEfternamn(order.getInvanareEfternamn());
         invanare.setSarskildaBehov(order.getInvanareBehov());
         invanare.setBakgrundNulage(order.getInvanareBakgrund());
         return invanare;

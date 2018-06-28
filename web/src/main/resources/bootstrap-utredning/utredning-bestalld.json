@@ -29,7 +29,8 @@
   },
   "invanare": {
     "personId": "19121212-1212",
-    "fullstandigtNamn": "Tolvan Tolvansson",
+    "fornamn": "Tolvan",
+    "efternamn": "Tolvansson",
     "postort": "Östersund",
     "sarskildaBehov": "Gillar glass",
     "tidigareUtforare": [

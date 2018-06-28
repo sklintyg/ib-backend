@@ -168,7 +168,15 @@
                 <constraints nullable="true"/>
             </column>
 
-            <column name="FULLSTANDIGT_NAMN" type="varchar(64)">
+            <column name="FORNAMN" type="varchar(64)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="MELLANNAMN" type="varchar(64)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="EFTERNAMN" type="varchar(64)">
                 <constraints nullable="true"/>
             </column>
 

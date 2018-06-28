@@ -43,7 +43,9 @@ public final class OrderRequest {
     private String invanarePersonnummer;
     private String invanareBakgrund;
     private String invanareBehov;
-    private String invanareFullstandigtNamn;
+    private String invanareFornamn;
+    private String invanareMellannamn;
+    private String invanareEfternamn;
     private String syfte;
     private boolean tolkBehov;
     private String tolkSprak;
@@ -82,8 +84,9 @@ public final class OrderRequest {
                 .withInvanareBakgrund(invanareSource.getSituationBackground())
                 .withInvanareBehov(invanareSource.getSpecialNeeds())
                 .withInvanarePersonnummer(invanareSource.getPersonalIdentity().getExtension())
-                .withInvanareFullstandigtNamn(Joiner.on(' ').skipNulls()
-                        .join(invanareSource.getFirstName(), invanareSource.getMiddleName(), invanareSource.getLastName()))
+                .withInvanareFornamn(invanareSource.getFirstName())
+                .withInvanareMellannamn(invanareSource.getMiddleName())
+                .withInvanareEfternamn(invanareSource.getLastName())
                 .withKommentar(source.getComment())
                 .withLastDateIntyg(!isNull(source.getLastDateForCertificateReceival())
                         ? SchemaDateUtil.toLocalDateFromDateType(source.getLastDateForCertificateReceival()) : null)
@@ -237,13 +240,30 @@ public final class OrderRequest {
         this.atgarder = atgarder;
     }
 
-    public String getInvanareFullstandigtNamn() {
-        return invanareFullstandigtNamn;
+    public String getInvanareFornamn() {
+        return invanareFornamn;
     }
 
-    public void setInvanareFullstandigtNamn(String invanareFullstandigtNamn) {
-        this.invanareFullstandigtNamn = invanareFullstandigtNamn;
+    public void setInvanareFornamn(String invanareFornamn) {
+        this.invanareFornamn = invanareFornamn;
     }
+
+    public String getInvanareMellannamn() {
+        return invanareMellannamn;
+    }
+
+    public void setInvanareMellannamn(String invanareMellannamn) {
+        this.invanareMellannamn = invanareMellannamn;
+    }
+
+    public String getInvanareEfternamn() {
+        return invanareEfternamn;
+    }
+
+    public void setInvanareEfternamn(String invanareEfternamn) {
+        this.invanareEfternamn = invanareEfternamn;
+    }
+
 
     public static final class OrderRequestBuilder {
         private Long utredningId;
@@ -253,7 +273,9 @@ public final class OrderRequest {
         private String invanarePersonnummer;
         private String invanareBakgrund;
         private String invanareBehov;
-        private String invanareFullstandigtNamn;
+        private String invanareFornamn;
+        private String invanareMellannamn;
+        private String invanareEfternamn;
         private String syfte;
         private boolean tolkBehov;
         private String tolkSprak;
@@ -304,8 +326,18 @@ public final class OrderRequest {
             return this;
         }
 
-        public OrderRequestBuilder withInvanareFullstandigtNamn(String invanareFullstandigtNamn) {
-            this.invanareFullstandigtNamn = invanareFullstandigtNamn;
+        public OrderRequestBuilder withInvanareFornamn(String invanareFornamn) {
+            this.invanareFornamn = invanareFornamn;
+            return this;
+        }
+
+        public OrderRequestBuilder withInvanareMellannamn(String invanareMellannamn) {
+            this.invanareMellannamn = invanareMellannamn;
+            return this;
+        }
+
+        public OrderRequestBuilder withInvanareEfternamn(String invanareEfternamn) {
+            this.invanareEfternamn = invanareEfternamn;
             return this;
         }
 
@@ -353,7 +385,9 @@ public final class OrderRequest {
             orderRequest.setInvanarePersonnummer(invanarePersonnummer);
             orderRequest.setInvanareBakgrund(invanareBakgrund);
             orderRequest.setInvanareBehov(invanareBehov);
-            orderRequest.setInvanareFullstandigtNamn(invanareFullstandigtNamn);
+            orderRequest.setInvanareFornamn(invanareFornamn);
+            orderRequest.setInvanareMellannamn(invanareMellannamn);
+            orderRequest.setInvanareEfternamn(invanareEfternamn);
             orderRequest.setSyfte(syfte);
             orderRequest.setTolkBehov(tolkBehov);
             orderRequest.setTolkSprak(tolkSprak);

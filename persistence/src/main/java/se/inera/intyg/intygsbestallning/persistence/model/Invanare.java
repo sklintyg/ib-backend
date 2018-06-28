@@ -50,8 +50,14 @@ public final class Invanare {
     @Column(name = "PERSON_ID", length = 64)
     private String personId;
 
-    @Column(name = "FULLSTANDIGT_NAMN", length = 64)
-    private String fullstandigtNamn;
+    @Column(name = "FORNAMN", length = 64)
+    private String fornamn;
+
+    @Column(name = "MELLANNAMN", length = 64)
+    private String mellannamn;
+
+    @Column(name = "EFTERNAMN", length = 64)
+    private String efternamn;
 
     @Column(name = "SARSKILDA_BEHOV")
     private String sarskildaBehov;
@@ -78,6 +84,9 @@ public final class Invanare {
         return anInvanare()
                 .withId(invanare.getId())
                 .withPersonId(invanare.getPersonId())
+                .withFornamn(invanare.getFornamn())
+                .withMellannamn(invanare.getMellannamn())
+                .withEfternamn(invanare.getEfternamn())
                 .withSarskildaBehov(invanare.getSarskildaBehov())
                 .withBakgrundNulage(invanare.getBakgrundNulage())
                 .withPostort(invanare.getPostort())
@@ -96,12 +105,28 @@ public final class Invanare {
         this.personId = personId;
     }
 
-    public String getFullstandigtNamn() {
-        return fullstandigtNamn;
+    public String getFornamn() {
+        return fornamn;
     }
 
-    public void setFullstandigtNamn(String fullstandigtNamn) {
-        this.fullstandigtNamn = fullstandigtNamn;
+    public void setFornamn(String fornamn) {
+        this.fornamn = fornamn;
+    }
+
+    public String getMellannamn() {
+        return mellannamn;
+    }
+
+    public void setMellannamn(String mellannamn) {
+        this.mellannamn = mellannamn;
+    }
+
+    public String getEfternamn() {
+        return efternamn;
+    }
+
+    public void setEfternamn(String efternamn) {
+        this.efternamn = efternamn;
     }
 
     public String getSarskildaBehov() {
@@ -161,7 +186,13 @@ public final class Invanare {
         if (personId != null ? !personId.equals(invanare.personId) : invanare.personId != null) {
             return false;
         }
-        if (fullstandigtNamn != null ? !fullstandigtNamn.equals(invanare.fullstandigtNamn) : invanare.fullstandigtNamn != null) {
+        if (fornamn != null ? !fornamn.equals(invanare.fornamn) : invanare.fornamn != null) {
+            return false;
+        }
+        if (mellannamn != null ? !mellannamn.equals(invanare.mellannamn) : invanare.mellannamn != null) {
+            return false;
+        }
+        if (efternamn != null ? !efternamn.equals(invanare.efternamn) : invanare.efternamn != null) {
             return false;
         }
         if (sarskildaBehov != null ? !sarskildaBehov.equals(invanare.sarskildaBehov) : invanare.sarskildaBehov != null) {
@@ -179,7 +210,7 @@ public final class Invanare {
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, personId, fullstandigtNamn, sarskildaBehov, bakgrundNulage, postort, tidigareUtforare);
+        return Objects.hash(id, personId, fornamn, mellannamn, efternamn, sarskildaBehov, bakgrundNulage, postort, tidigareUtforare);
     }
 
     @Override
@@ -187,7 +218,9 @@ public final class Invanare {
         return MoreObjects.toStringHelper(this)
                 .add("id", id)
                 .add("personId", personId)
-                .add("fullstandigtNamn", fullstandigtNamn)
+                .add("fornamn", fornamn)
+                .add("mellannamn", mellannamn)
+                .add("efternamn", efternamn)
                 .add("sarskildaBehov", sarskildaBehov)
                 .add("bakgrundNulage", bakgrundNulage)
                 .add("postort", postort)
@@ -198,7 +231,9 @@ public final class Invanare {
     public static final class InvanareBuilder {
         private Long id;
         private String personId;
-        private String fullstandigtNamn;
+        private String fornamn;
+        private String mellannamn;
+        private String efternamn;
         private String sarskildaBehov;
         private String bakgrundNulage;
         private String postort;
@@ -221,8 +256,18 @@ public final class Invanare {
             return this;
         }
 
-        public InvanareBuilder withFullstandigtNamn(String fullstandigtNamn) {
-            this.fullstandigtNamn = fullstandigtNamn;
+        public InvanareBuilder withFornamn(String fornamn) {
+            this.fornamn = fornamn;
+            return this;
+        }
+
+        public InvanareBuilder withMellannamn(String mellannamn) {
+            this.mellannamn = mellannamn;
+            return this;
+        }
+
+        public InvanareBuilder withEfternamn(String efternamn) {
+            this.efternamn = efternamn;
             return this;
         }
 
@@ -250,7 +295,9 @@ public final class Invanare {
             Invanare invanare = new Invanare();
             invanare.setId(id);
             invanare.setPersonId(personId);
-            invanare.setFullstandigtNamn(fullstandigtNamn);
+            invanare.setFornamn(fornamn);
+            invanare.setMellannamn(mellannamn);
+            invanare.setEfternamn(efternamn);
             invanare.setSarskildaBehov(sarskildaBehov);
             invanare.setBakgrundNulage(bakgrundNulage);
             invanare.setPostort(postort);

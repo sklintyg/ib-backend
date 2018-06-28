@@ -26,6 +26,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import com.google.common.base.Joiner;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
@@ -514,7 +516,7 @@ public class GetBestallningResponse implements PDLLoggable {
         public InvanareResponse(Invanare invanare) {
             personId = invanare.getPersonId();
             sarskildaBehov = invanare.getSarskildaBehov();
-            name = invanare.getFullstandigtNamn();
+            name = Joiner.on(' ').skipNulls().join(invanare.getFornamn(), invanare.getMellannamn(), invanare.getEfternamn());
             gender = Optional.ofNullable(invanare.getPersonId())
                     .flatMap(Personnummer::createPersonnummer)
                     .map(Gender::getGenderFromPersonnummer)

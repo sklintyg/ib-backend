@@ -64,7 +64,9 @@ public class OrderRequestTest {
         assertEquals("12345", result.getBestallare().getPostnummer());
         assertEquals("stad", result.getBestallare().getStad());
         assertEquals("telefonnummer", result.getBestallare().getTelefonnummer());
-        assertEquals("firstname middlename lastname", result.getInvanareFullstandigtNamn());
+        assertEquals("firstname", result.getInvanareFornamn());
+        assertEquals("middlename", result.getInvanareMellannamn());
+        assertEquals("lastname", result.getInvanareEfternamn());
     }
 
     @Test
