@@ -49,6 +49,11 @@ public class ErsattsResolverTest {
     private BusinessDaysBean businessDays = new BusinessDaysStub();
 
     @Test
+    public void testErsattsWithoutUtredningDoesNotCauseNullpointer() {
+        assertFalse(ErsattsResolver.resolveUtredningErsatts(null, businessDays));
+    }
+
+    @Test
     public void testErsattsEjVidJav() {
         Utredning utr = Utredning.UtredningBuilder.anUtredning()
                 .withAvbrutenDatum(LocalDateTime.now())

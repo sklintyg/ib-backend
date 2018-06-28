@@ -45,6 +45,9 @@ public final class ErsattsResolver {
     }
 
     public static boolean resolveUtredningErsatts(Utredning utredning, BusinessDaysBean businessDays) {
+        if (utredning == null) {
+            return false;
+        }
 
         // Utredningen avslutad med orsak ”Jäv” eller ”Ingen beställning"
         if (utredning.getAvbrutenDatum() != null) {
