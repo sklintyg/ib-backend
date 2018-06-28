@@ -27,6 +27,7 @@ import static se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare.
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.BooleanUtils;
 import se.riv.intygsbestallning.certificate.order.requestperformerforassessment.v1.RequestPerformerForAssessmentType;
 import se.riv.intygsbestallning.certificate.order.v1.AddressType;
 import se.riv.intygsbestallning.certificate.order.v1.AuthorityAdministrativeOfficialType;
@@ -113,6 +114,7 @@ public class AssessmentRequest {
                 .withLandstingHsaId(Optional.ofNullable(request.getCoordinatingCountyCouncilId())
                         .map(IIType::getExtension)
                         .orElse(null))
+                .withTolkBehov(BooleanUtils.toBoolean(request.isNeedForInterpreter()))
                 .withTolkSprak(Optional.ofNullable(request.getInterpreterLanguage())
                         .map(CVType::getCode)
                         .orElse(null))
