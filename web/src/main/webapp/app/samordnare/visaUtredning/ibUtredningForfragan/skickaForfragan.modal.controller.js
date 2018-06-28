@@ -41,6 +41,26 @@ angular.module('ibApp')
                 $scope.vm.vardenheterValidationError = false;
             };
 
+            function toTrueValueArray(obj) {
+                var arr = [];
+                for (var key in obj) {
+                    if (obj.hasOwnProperty(key) && obj[key]) {
+                        arr.push(obj[key]);
+                    }
+                }
+
+                return arr;
+            }
+
+            $scope.skickaEnabled = function() {
+
+                var selectedArray = toTrueValueArray($scope.vm.selectedVardenheter);
+                var disabledArray = toTrueValueArray($scope.vm.disabledVardenheter); // these can never be false so same function can be used
+
+                // the disabled are those which are already sent so if more are selected we should enable the button to send the newly selected ones
+                return selectedArray.length > disabledArray.length;
+            };
+
             $scope.skicka = function() {
                 $scope.vm.inProgress = true;
 
