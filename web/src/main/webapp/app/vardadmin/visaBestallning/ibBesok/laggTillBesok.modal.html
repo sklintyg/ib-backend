@@ -53,9 +53,14 @@
             <ib-help-text-label required="true" required-expr="!besok.profession"
                                 label-key="lagg-till-besok.label.profession"></ib-help-text-label>
           </span>
-          <ib-dropdown id="profession" ng-model="besok.profession" ng-change="onChange()"
+          <ib-dropdown id="profession" ng-model="besok.profession" on-select="professionSelected = true"
                        items="professionList"></ib-dropdown>
         </div>
+        <div class="flex-column">
+          <ib-field-error-list errors="{customMessage: 'En profession måste väljas'}"
+                               ng-if="professionSelected && !besok.profession"></ib-field-error-list>
+        </div>
+        
         <div class="flex-row">
           <span><ib-help-text-label label-key="lagg-till-besok.label.name"></ib-help-text-label></span>
           <span id="interpreter-input-field">

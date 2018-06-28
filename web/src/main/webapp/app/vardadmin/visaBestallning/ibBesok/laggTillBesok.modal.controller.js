@@ -31,6 +31,7 @@ angular.module('ibApp')
             $scope.showReportErrorMessage = false;
             $scope.showUpdateAssessmentErrorMessage = false;
             $scope.professionList = [chooseOption];
+            $scope.professionSelected = false;
 
             BesokProxy.getProffessionsTyper(dialogModel.utredningsId).then(function(result) {
                 $scope.professionList = $scope.professionList.concat(result);
