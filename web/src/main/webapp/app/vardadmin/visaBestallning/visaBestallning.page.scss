@@ -21,10 +21,10 @@
       flex-direction: column;
       flex: 1 1 auto;
       min-height: 1%;
-    }
 
-    > .bottom-fadeout-gradient {
-      max-width: 90%;
+      .bottom-fadeout-gradient {
+        @extend %bottom-gradient;
+      }
     }
 
   }

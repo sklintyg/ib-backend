@@ -8,6 +8,9 @@
     <uib-tabset active="active" class="flex-column">
       <uib-tab index="0" heading="Beställning" ng-click="setActive(0)">
         <div class="whitebox"></div>
+        <div class="bottom-fadeout-gradient ib-color-27">
+          <div></div>
+        </div>
         <div id="ib-content-container" class="ib-workarea-utredning container-fluid edit-form top-corner">
           <div ng-hide="viewState.error.key">
             <ib-spinner label="info.loadingintyg" show-spinner="vm.loading">
@@ -113,7 +116,6 @@
             </ib-spinner>
           </div>
         </div>
-
       </uib-tab>
 
       <uib-tab index="1" heading="Besök och avvikelser" ng-click="setActive(1)">
@@ -130,9 +132,6 @@
 
     </uib-tabset>
 
-    <div class="bottom-fadeout-gradient ib-color-27">
-      <div></div>
-    </div>
   </div>
 
 </div>
