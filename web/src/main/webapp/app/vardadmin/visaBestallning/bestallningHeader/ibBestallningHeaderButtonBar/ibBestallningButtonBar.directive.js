@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 angular.module('ibApp').directive('ibBestallningButtonBar',
-    function ($uibModal) {
+    function ($uibModal, $log, RegistreraStatusProxy, $stateParams, $state) {
         'use strict';
 
         return {
@@ -73,6 +73,13 @@ angular.module('ibApp').directive('ibBestallningButtonBar',
                         $scope.bestallning.status.id !== 'KOMPLETTERANDE_FRAGESTALLNING_MOTTAGEN';
                 };
                 
+                $scope.abortUtredningDisabled = function () {
+                    var besokWithDisablingStatus = $scope.bestallning.besokList.filter(function(besok) {
+                        return (besok.besokStatus.id === 'BOKAT' || besok.besokStatus.id === 'OMBOKAT');
+                    });
+                    return $scope.bestallning.status.id !== 'REDOVISA_BESOK' || besokWithDisablingStatus.length > 0;
+                };
+                
                 $scope.hasFasId = function (id) {
                     if ($scope.bestallning !== undefined && $scope.bestallning.fas.id === id) {
                         return true;
@@ -94,6 +101,27 @@ angular.module('ibApp').directive('ibBestallningButtonBar',
                 
                 $scope.registerSentUtlatande = function () {
                     openModal('registerSentUtlatande', 'registrera-skickat-utlatande');
+                };
+                
+                $scope.abortUtredning = function () {
+                    
+                    $scope.vm.busySaving = true;
+                    
+                    RegistreraStatusProxy.abortUtredning($stateParams.utredningsId)
+                        .then(function () {
+                            
+                            var modalInstance = $uibModal.open({
+                                templateUrl: '/app/vardadmin/visaBestallning/bestallningHeader/' +
+                                    'ibBestallningHeaderButtonBar/avslutaUtredning/avslutaUtredning.modal.html',
+                                size: 'sm'
+                            });
+                            
+                            //angular > 1.5 warns if promise rejection is not handled (e.g backdrop-click == rejection)
+                            modalInstance.result.catch(function () {}); //jshint ignore:line
+                            $state.reload();
+                        }).finally(function () { // jshint ignore:line
+                            $scope.vm.busySaving = false;
+                        });
                 };
             }
         };

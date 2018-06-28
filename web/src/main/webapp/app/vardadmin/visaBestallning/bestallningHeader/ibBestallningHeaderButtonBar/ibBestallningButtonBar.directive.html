@@ -31,4 +31,13 @@
             ng-disabled="registerSentKompletteringDisabled()">
         <i class="material-icons">move_to_inbox</i> Registrera skickad komplettering
     </button>
+    <ib-button ng-if="hasFasId('REDOVISA_BESOK')"
+        btn-id="abort-utredning"
+        btn-class="btn btn-primary"
+        btn-click="abortUtredning()"
+        btn-disabled="abortUtredningDisabled()"
+       busy="vm.busySaving"
+    >
+        <i class="material-icons">move_to_inbox</i> Avsluta utredning
+    </ib-button>
 </div>

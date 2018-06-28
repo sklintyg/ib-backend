@@ -393,8 +393,10 @@ var ibMessages = {
         'server.error.savebetald.text': 'Försök igen eller kontakta support',
         'server.error.saveutbetald.title': 'Kunde inte spara utbetalning',
         'server.error.saveutbetald.text': 'Försök igen eller kontakta support',
-        'server.error.saveAnteckning.title': 'Kunde inte spara anteckning',
-        'server.error.saveAnteckning.text': 'Försök igen eller kontakta support',
+        'server.error.saveanteckning.title': 'Kunde inte spara anteckning',
+        'server.error.saveanteckning.text': 'Försök igen eller kontakta support',
+        'server.error.abortutredning.title': 'Kunde inte avsluta utredningen',
+        'server.error.abortutredning.text': 'Försök igen eller kontakta support',
         'common.error.spi.fel01': 'Ett tekniskt fel uppstod när vårdenheten skulle hämtas. Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraNationellKundservice>'
     },
     'en': {

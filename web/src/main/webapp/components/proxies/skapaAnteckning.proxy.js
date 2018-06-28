@@ -27,8 +27,8 @@ angular.module('ibApp').factory('SkapaAnteckningProxy',
             var url = restPath.replace('{utredningId}', utredningId);
             return ProxyTemplate.postTemplate(url, data, {
                 errorMessageConfig: {
-                    errorTitleKey: 'server.error.saveAnteckning.title',
-                    errorTextKey: 'server.error.saveAnteckning.text'
+                    errorTitleKey: 'server.error.saveanteckning.title',
+                    errorTextKey: 'server.error.saveanteckning.text'
                 }
             });
         }

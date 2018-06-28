@@ -76,8 +76,18 @@ angular.module('ibApp').factory('RegistreraStatusProxy',
             );
         }
 
+        function abortUtredning(utredningsId) {
+            return registerStatusProxy(
+                '/api/vardadmin/bestallningar/{utredningsId}/avsluta',
+                {},
+                utredningsId,
+                'abortutredning'
+            );
+        }
+
         // Return public API for the service
         return {
+            abortUtredning: abortUtredning,
             registerReceivedKomplettering: registerReceivedKomplettering,
             registerSentKomplettering: registerSentKomplettering,
             registerSentUtlatande: registerSentUtlatande,

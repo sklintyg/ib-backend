@@ -535,7 +535,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
         checkState(utredning.getBesokList().stream()
                         .map(BesokStatusResolver::resolveStaticStatus)
-                        .noneMatch(besokStatus -> (besokStatus == BesokStatus.BOKAT) || (besokStatus == BesokStatus.AVBOKAT)),
+                        .noneMatch(besokStatus -> (besokStatus == BesokStatus.BOKAT) || (besokStatus == BesokStatus.OMBOKAT)),
                 MessageFormat.format("Utredning with id {0} is in an incorrect state", utredning.getUtredningId()));
     }
 
