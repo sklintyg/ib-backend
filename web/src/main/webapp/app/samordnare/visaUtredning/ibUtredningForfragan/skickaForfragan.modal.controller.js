@@ -81,7 +81,7 @@ angular.module('ibApp')
                     UtredningarProxy.createInternForfragan(utredning.utredningsId, {
                         'vardenheter': selectedVardenheterArray,
                         'kommentar': $scope.vm.meddelande
-                    }).then(function(data) {
+                    }).then(function() {
                         $uibModalInstance.close();
                         $state.reload();
                     }, function(error) {
