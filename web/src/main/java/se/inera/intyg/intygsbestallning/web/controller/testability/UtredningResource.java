@@ -31,9 +31,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/test/utredningar")
@@ -48,6 +50,11 @@ public class UtredningResource {
         Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
                 () -> new IbNotFoundException("Utredning with assessmentId '" + utredningId + "' does not exist."));
         return ResponseEntity.ok(utredning);
+    }
+
+    @GetMapping(path = "/withstatus/{status}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Utredning>> getUtredningWithStatus(@PathVariable("status") String status) {
+        return ResponseEntity.ok(utredningRepository.findByStatus(UtredningStatus.valueOf(status)));
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)

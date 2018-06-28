@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp;
 
@@ -103,6 +104,8 @@ public interface UtredningRepository extends UtredningRepositoryCustom, JpaRepos
     List<Utredning> findNonNotifiedSistaDatumKompletteringsBegaranBefore(
             @Param("now") LocalDateTime now,
             @Param("typ") NotifieringTyp typ);
+
+    List<Utredning> findByStatus(UtredningStatus status);
 }
 //CHECKSTYLE:ON MethodName
 //CHECKSTYLE:ON LineLength
