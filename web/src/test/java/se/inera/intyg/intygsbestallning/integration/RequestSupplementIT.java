@@ -64,7 +64,7 @@ public class RequestSupplementIT extends BaseRestIntegrationTest {
         Integer utredningId = body.jsonPath().get("entity.utredningId");
 
         requestTemplate.add("data",
-                new RequestSupplement("" + utredningId, LocalDate.now().format(DateTimeFormatter.ISO_DATE)));
+                new RequestSupplement("" + utredningId, LocalDate.now().plusDays(7).format(DateTimeFormatter.ISO_DATE)));
 
         given().body(requestTemplate.render()).when().post("/services/request-supplement-responder").then()
                 .statusCode(200).rootPath(BASE)

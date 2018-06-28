@@ -74,6 +74,7 @@ public class RequestSupplementResponderImpl implements RequestSupplementResponde
             response.setSupplementRequestId(anII(sourceSystemHsaId, String.valueOf(kompletteringsId)));
             return response;
         } catch (Exception e) {
+            response.setSupplementRequestId(anII(sourceSystemHsaId, ""));
             response.setResult(toResultTypeError(e));
             return response;
         }
