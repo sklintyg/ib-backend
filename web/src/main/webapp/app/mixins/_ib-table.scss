@@ -27,7 +27,9 @@
     background-color: $ib-color-15;
     @extend %ib-typo-06;
     color: $ib-color-19;
-    border: none;
+    // IE fix. Rounding error causes a pixel space between cells sometimes, but apparantly not if we're using a border. So, let's add a border 🐇
+    border: 1px solid $ib-color-15;
+    border-width: 0 1px; 
 
     &:first-child {
       padding-left: 21px;
