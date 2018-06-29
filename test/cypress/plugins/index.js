@@ -16,7 +16,8 @@ const enviroments = {
 		"baseUrl": "https://ib-backend-route-test-intyg.app-ocpsbx1-ind.ocp.osl.basefarm.net",
 		"env": {
 			"host":"ip30",
-			"requestPerformerForAssessment": "/services/request-performer-for-assessment-responder"
+			"requestPerformerForAssessment": "/services/request-performer-for-assessment-responder",
+			"endAssessment" : "/services/end-assessment-responder"
 		},
 		"defaultCommandTimeout" : 10000
 	},
@@ -25,7 +26,8 @@ const enviroments = {
 	},
 	"dev" : {
 		"baseUrl": "http://localhost:8991",
-		"requestPerformerForAssessment": "/services/request-performer-for-assessment-responder"
+		"requestPerformerForAssessment": "/services/request-performer-for-assessment-responder",
+		"endAssessment" : "/services/end-assessment-responder"
 	},
 	"demo" : {
 		"baseUrl": "placeholder"

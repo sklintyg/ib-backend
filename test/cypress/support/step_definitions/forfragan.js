@@ -2,7 +2,7 @@
 let moment = require('moment');
 let utredningsId;
 let landstingHsaId = 'IFV1239877878-1041';
-let enhetsHsaId = ''
+let enhetsHsaId;
 
 const enheter = {
     "WebCert-Enhet1" : "IFV1239877878-1042",
@@ -27,7 +27,17 @@ given('att Försäkringskassan har skickat en förfrågan AFU till samordnare', 
             utredningsId = data.assessmentId
         });
 })
- 
+
+when('Försäkringskassan avbryter förfrågan med anledning {string}', (anledning) => {
+    cy.endAssessment({
+        assessmentIdRoot : 'Tompa Testar',
+        assessmentId : utredningsId,
+        endingCondition : anledning
+        }).then((data) => {
+            console.log(data);
+        });
+})
+
 
 then('ska förfrågans status vara {string} för {string}', (status, roll) => {
     goToUtredning(roll, landstingHsaId, enhetsHsaId, utredningsId)
@@ -61,21 +71,29 @@ when('{string} accepterar förfrågan', (roll) => {
 })
 
 then('ska förfrågans status vara {string} för {string}', (status, roll) => {
-    goToUtredning(roll, landstingHsaId, utredningsId)
+    goToUtredning(roll, landstingHsaId, enhetsHsaId, utredningsId)
     cy.get("#utredning-header-status").should("contain", status);
 })
 
-then('ska Försäkringskassan notifieras att vårdenheten {string} {string} förfrågan', (vardEnhet, responseCode) => {
+then('ska Försäkringskassan notifieras att (vårdenheten ){string} {string} förfrågan', (vardEnhet, responseCode) => {
 	let url = 'http://mocks.sm.nordicmedtest.se:43000/validate/respondToPerformerRequest/' + utredningsId;
 	cy.request('POST', url).then((res) => { 
 		console.log(res);
         assert.equal(false, false, 'falskt är falskt');
 		assert.equal(res.body.assessmentId, utredningsId, 'Hittas assessmentId i FK-simulator? (Mocks-SM)');
 		assert.equal(res.body.responseCode, responseCode, 'Hittas responseCode i FK-simulator? (Mocks-SM)');
-		assert.equal(res.body.performerCareUnitId, enhetsHsaId, 'Hittas performerCareUnitId i FK-simulator? (Mocks-SM)');
-		assert.equal(res.body.performerCareUnitName, vardEnhet, 'Hittas performerCareUnitName i FK-simulator? (Mocks-SM)');
+		if (vardEnhet !== 'vården') {
+            assert.equal(res.body.performerCareUnitId, enhetsHsaId, 'Hittas performerCareUnitId i FK-simulator? (Mocks-SM)'); 
+            assert.equal(res.body.performerCareUnitName, vardEnhet, 'Hittas performerCareUnitName i FK-simulator? (Mocks-SM)');    
+        }
+		
 
 	});
+})
+
+when('{string} avvisar förfrågan', (roll) =>{
+    goToUtredning(roll, landstingHsaId, enhetsHsaId, utredningsId)
+    avvisaForfragan(roll)
 })
 
 function acceptForfragan(roll){
@@ -86,6 +104,20 @@ function acceptForfragan(roll){
     } else if (roll === 'samordnare') {
         cy.get('#accepteraBtn > span').click();
         cy.get("#utredning-header-status").should("contain", "Tilldelad, väntar på beställning");
+    }
+}
+
+function avvisaForfragan(roll){
+    if (roll === 'samordnare') {
+        cy.get("#avvisaBtn").click();
+        cy.get('#avvisa-forfragan-modal-kommentar_textarea').type('Detta duger inte.');
+        cy.get("#skicka-forfragan-modal-skicka > span").click();
+        cy.get("#utredning-header-status").should("contain", "Avvisad");
+    } else if (roll === 'vårdadmin') {
+        cy.get("#open-reject-internforfragan-dialog-btn").click();
+        cy.get("#kommentar_textarea").type('Detta är under all kritik.');
+        cy.get("#reject-internforfragan-btn").click();
+        cy.get("#utredning-header-status").should("contain", "Avvisad");
     }
 }
 
