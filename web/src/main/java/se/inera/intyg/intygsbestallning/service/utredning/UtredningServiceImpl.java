@@ -259,7 +259,8 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     @Override
     public Utredning registerOrder(OrderRequest order) {
         Utredning utredning = utredningRepository.findById(order.getUtredningId()).orElseThrow(
-                () -> new IbNotFoundException("Could not find the assessment with id " + order.getUtredningId()));
+                () -> new IbNotFoundException(
+                    MessageFormat.format("Felaktig utredningsid: {0}. Utredningen existerar inte.", order.getUtredningId())));
 
         // Validate the state
         if (utredning.getBestallning().isPresent()) {
@@ -441,7 +442,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     public void avslutaUtredning(final AvslutaUtredningRequest request) {
         final Utredning utredning = utredningRepository.findById(request.getUtredningId())
                 .orElseThrow(() -> new IbNotFoundException(MessageFormat.format(
-                        "Could not find the assessment with id {0}", request.getUtredningId())));
+                        "Felaktig utredningsid: {0}. Utredningen existerar inte.", request.getUtredningId())));
 
         if (nonNull(utredning.getAvbrutenDatum()) || nonNull(utredning.getAvbrutenOrsak())) {
             throw new IbServiceException(IbErrorCodeEnum.ALREADY_EXISTS,

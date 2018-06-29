@@ -789,7 +789,7 @@ public class UtredningServiceImplTest {
 
         assertThatThrownBy(() -> utredningService.avslutaUtredning(request))
                 .isExactlyInstanceOf(IbNotFoundException.class)
-                .hasMessage(MessageFormat.format("Could not find the assessment with id {0}", utredningId))
+                .hasMessage(MessageFormat.format("Felaktig utredningsid: {0}. Utredningen existerar inte.", utredningId))
                 .hasFieldOrPropertyWithValue("errorCode", IbErrorCodeEnum.NOT_FOUND);
     }
 
