@@ -47,7 +47,6 @@
                                   append-to-body="true"
                                   add-date-parser="strict"
                                   format="yyyy-MM-dd"
-                                  date-format-error="Ogiltigt datumformat, ange ett datum som ÅÅÅÅ-MM-DD"
                                   min-date-error="Möjligt startdatum får tidigast vara dagens datum"
                                   max-date-error="Möjligt kallelsedatum får inte vara efter besöksdatum"
                                   max-date="{{ maxDate }}"
@@ -59,8 +58,8 @@
         </tr>
         <tr>
           <td>
-            <ib-field-error-list errors="avvikelseForm.avvikelseDatum.$error"></ib-field-error-list>
-            <ib-field-error-list errors="avvikelseForm.avvikelseTid.$error"></ib-field-error-list>
+            <ib-field-error-list errors="avvikelseForm.avvikelseDatum.$error" date-format-error="Ett korrekt datum måste anges"></ib-field-error-list>
+            <ib-field-error-list errors="avvikelseForm.avvikelseTid.$error" pattern-error="Ett korrekt klockslag måste anges"></ib-field-error-list>
           </td>
         <tr>
           <td class="top-align">

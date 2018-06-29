@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.service.stateresolver;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -28,6 +29,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
@@ -38,6 +40,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessio
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 
 import java.time.LocalDateTime;
 
@@ -229,6 +232,9 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
                         .withOrsakatAv(AvvikelseOrsak.PATIENT)
                         .withTidpunkt(LocalDateTime.now())
                         .build())
+                .withHandelseList(ImmutableList.of(Handelse.HandelseBuilder.aHandelse()
+                        .withHandelseTyp(HandelseTyp.AVVIKELSE_MOTTAGEN)
+                        .build()))
                 .build());
 
         UtredningStatus status = testee.resolveStatus(utr);

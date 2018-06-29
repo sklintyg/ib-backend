@@ -25,6 +25,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 
@@ -146,8 +147,9 @@ public class UtredningStatusResolver {
     }
 
     private static Optional<UtredningStatus> handleUtredningFas(Utredning utredning) {
-        // UTREDNING_PAGAR_AVVIKELSE
-        if (utredning.getBesokList().stream().anyMatch(bl -> bl.getAvvikelse() != null)) {
+        // UTREDNING_PAGAR_AVVIKELSE, endast sätta status då avvikelsen kommer från FK.
+        if (utredning.getBesokList().stream().anyMatch(bl -> bl.getAvvikelse() != null
+                && bl.getHandelseList().stream().anyMatch(hl -> hl.getHandelseTyp().equals(HandelseTyp.AVVIKELSE_MOTTAGEN)))) {
             return Optional.of(UtredningStatus.AVVIKELSE_MOTTAGEN);
         }
 
