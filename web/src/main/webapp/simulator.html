@@ -44,12 +44,12 @@
 
           var rpfaUrl = '/services/request-performer-for-assessment-responder';
           var oaUrl = '/services/order-assessment-responder';
+          var rdUrl = '/services/report-deviation-interaction-responder';
 
           $scope.rpfa = {
               certificateType: 'AFU',
               lastResponseDate: moment().add(7, 'days').format('YYYY-MM-DD'),
               coordinatingCountyCouncilId:'IFV1239877878-1041',
-              needForInterpreter: false,
               authorityAdministrativeOfficial: {
                   fullName: 'Handläggaren',
                   phoneNumber: '000111',
@@ -278,7 +278,6 @@
               var purpose = '';
               if ($scope.oa.purpose) {
                   purpose = '<urn1:purpose>' + $scope.oa.purpose + '</urn1:purpose>';
-
               }
 
               var plannedActions = '';
@@ -362,6 +361,59 @@
               sendSoap(oaUrl, msg);
           };
 
+          $scope.rd = {
+              causedBy: 'VARDEN',
+              deviationTime: moment().format('YYYYMMDDHHMMSS'),
+              citizenFailedToArrive: false
+          };
+
+          $scope.causedByOptions = ['VARDEN','PATIENT'];
+
+          $scope.sendRd = function() {
+
+              var deviationId = '';
+              if ($scope.rd.deviationId) {
+                  deviationId = '<urn1:deviationId>' +
+                      '<urn2:root>' + $scope.rd.deviationId + '</urn2:root>' +
+                      '<urn2:extension>?</urn2:extension>' +
+                      '</urn1:deviationId>';
+              }
+
+              var description = '';
+              if ($scope.rd.description) {
+                  description = '<urn1:description>' + $scope.rd.description + '</urn1:description>';
+              }
+
+              var citizenFailedToArrive = '';
+              if ($scope.rd.citizenFailedToArrive !== null && $scope.rd.citizenFailedToArrive !== undefined) {
+                  citizenFailedToArrive = '<urn1:citizenFailedToArrive>' + $scope.rd.citizenFailedToArrive + '</urn1:citizenFailedToArrive>';
+              }
+
+              var msg = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:itintegration:registry:1" xmlns:urn1="urn:riv-application:intygsbestallning:certificate:order:ReportDeviationResponder:1" xmlns:urn2="urn:riv-application:intygsbestallning:certificate:order:1">' +
+                  '<soapenv:Header>' +
+                      '<urn:LogicalAddress>?</urn:LogicalAddress>' +
+                  '</soapenv:Header>' +
+                  '<soapenv:Body>' +
+                      '<urn1:ReportDeviation>' +
+                          '<urn1:assessmentCareContactId>' +
+                              '<urn2:root>ib-hsa-id</urn2:root>' +
+                              '<urn2:extension>' + $scope.rd.assessmentCareContactId + '</urn2:extension>' +
+                          '</urn1:assessmentCareContactId>' +
+                          deviationId +
+                          '<urn1:causedBy>' +
+                              '<urn2:code>' + $scope.rd.causedBy + '</urn2:code>' +
+                              '<urn2:codeSystem></urn2:codeSystem>' +
+                          '</urn1:causedBy>' +
+                          description +
+                          '<urn1:deviationTime>' + $scope.rd.deviationTime +  '</urn1:deviationTime>' +
+                          citizenFailedToArrive +
+                      '</urn1:ReportDeviation>' +
+                  '</soapenv:Body>' +
+                  '</soapenv:Envelope>';
+
+              sendSoap(rdUrl, msg);
+          };
+          
           function sendSoap(url, msg) {
 
               $log.info(msg);
@@ -478,6 +530,28 @@
         </div>
 
       </uib-tab>
+      
+      <uib-tab heading="Avvikelse">
+        <h2>ReportDeviation</h2>
+
+        <div class="row"><label class="col-sm-3 control-label">assessmentCareContactId</label><div class="col-sm-9"><input class="form-control" ng-model="rd.assessmentCareContactId"></div></div>
+        <div class="row"><label class="col-sm-3 control-label">deviationId</label><div class="col-sm-9"><input class="form-control" ng-model="rd.deviationId"></div></div>
+        <div class="row"><label class="col-sm-3 control-label">causedBy</label>
+          <div class="col-sm-9">
+            <select class="form-control" ng-model="rd.causedBy" ng-options="item for item in causedByOptions">
+            </select>
+          </div>
+        </div>
+        <div class="row"><label class="col-sm-3 control-label">description</label><div class="col-sm-9"><input class="form-control" ng-model="rd.description"></div></div>
+        <div class="row"><label class="col-sm-3 control-label">deviationTime</label><div class="col-sm-9"><input class="form-control" ng-model="rd.deviationTime"></div></div>
+        <div class="row"><label class="col-sm-3 control-label">citizenFailedToArrive</label><div class="col-sm-9"><input type="checkbox" ng-model="rd.citizenFailedToArrive" ng-true-value="true" ng-false-value="false"></div></div>
+
+        <div>
+          <button class="btn btn-primary" ng-click="sendRd()")>Skicka</button>
+        </div>
+
+      </uib-tab>
+      
     </uib-tabset>
 
     <div ng-if="resultat" class="form-group">
