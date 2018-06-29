@@ -65,3 +65,7 @@ Anslut nu remote debugging i IDEA.
 För att logga från testet till stdout:
 
     $ ./gradlew restassured -info
+
+### H2
+Du hittar databasen lokalt på `http://localhost:8096`.
+Ange URL: `jdbc:h2:mem:dataSource;`
