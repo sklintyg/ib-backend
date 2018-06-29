@@ -33,7 +33,9 @@ import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
 import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.KallelseFormTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RegisterBesokRequest;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
 
 public final class HandelseUtil {
@@ -243,9 +245,13 @@ public final class HandelseUtil {
                 .build();
     }
 
-    public static Handelse createOmbokatBesok(final Besok besok, final LocalDateTime newStartTid, final LocalDateTime newSlutTid,
-                                              final DeltagarProfessionTyp newProfession, final String newDeltagareFullstandigtNamn,
-                                              final String vardadministrator) {
+    public static Handelse createOmbokatBesok(final Besok besok, final RegisterBesokRequest request, final String vardadministrator) {
+        final LocalDateTime newStartTid = LocalDateTime.of(request.getBesokDatum(), request.getBesokStartTid());
+        final LocalDateTime newSlutTid =  LocalDateTime.of(request.getBesokDatum(), request.getBesokSlutTid());
+        final DeltagarProfessionTyp newProfession = request.getProfession();
+        final String newDeltagareFullstandigtNamn = request.getUtredandeVardPersonalNamn().orElse("");
+        final LocalDateTime newKallelseDatum = request.getKallelseDatum();
+        final KallelseFormTyp newKallelseForm = request.getKallelseForm();
 
         StringBuilder text = new StringBuilder();
         text.append(MessageFormat.format("Besök {0} {1} - {2}",
@@ -267,8 +273,8 @@ public final class HandelseUtil {
         }
 
         text.append(MessageFormat.format(" Invånaren kallades {0} per {1}.",
-                besok.getKallelseDatum().format(DateTimeFormatter.ISO_DATE),
-                Strings.toLowerCase(besok.getKallelseForm().name())));
+                newKallelseDatum.format(DateTimeFormatter.ISO_DATE),
+                Strings.toLowerCase(newKallelseForm.name())));
 
         if (besok.getTolkStatus() != null) {
             text.append(MessageFormat.format("Tolk bokad: {0} ",

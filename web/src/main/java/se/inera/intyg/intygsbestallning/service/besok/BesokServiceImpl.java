@@ -135,9 +135,7 @@ public class BesokServiceImpl extends BaseBesokService implements BesokService {
                             "Could not find besok \'{0}\' in utredning \'{0}\'", besokId, utredningId)));
 
             if (isBesokOmbokat(besok, request)) {
-                besokHandelse = HandelseUtil.createOmbokatBesok(besok, LocalDateTime.of(request.getBesokDatum(),
-                        request.getBesokStartTid()), LocalDateTime.of(request.getBesokDatum(), request.getBesokSlutTid()),
-                        request.getProfession(), request.getUtredandeVardPersonalNamn().orElse(""), userService.getUser().getNamn());
+                besokHandelse = HandelseUtil.createOmbokatBesok(besok, request, userService.getUser().getNamn());
             } else {
                 besokHandelse = HandelseUtil.createUppdateraBesok(besok, request.getProfession(), request.getUtredandeVardPersonalNamn()
                         .orElse(""), request.getTolkStatus(), userService.getUser().getNamn());
