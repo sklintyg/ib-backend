@@ -70,6 +70,7 @@ public class RequestPerformerForAssessmentResponderImpl implements RequestPerfor
             return response;
         } catch (final Exception e) {
             RequestPerformerForAssessmentResponseType response = new RequestPerformerForAssessmentResponseType();
+            response.setAssessmentId(anII(sourceSystemHsaId, ""));
             response.setResult(toResultTypeError(e));
             return response;
         }
