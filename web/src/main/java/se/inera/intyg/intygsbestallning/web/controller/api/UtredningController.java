@@ -31,11 +31,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
-import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.service.export.XlsxExportService;
 import se.inera.intyg.intygsbestallning.service.forfragan.InternForfraganService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
@@ -73,7 +73,7 @@ public class UtredningController {
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
-    @PrometheusTimeMethod(name = "list_utredningar_for_user_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetUtredningListResponse> getUtredningarForUser(@RequestBody ListUtredningRequest req) {
         IbUser user = userService.getUser();
@@ -87,7 +87,7 @@ public class UtredningController {
         return ResponseEntity.ok(response);
     }
 
-    @PrometheusTimeMethod(name = "list_avslutade_utredningar_for_user_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @PostMapping(path = "/avslutade", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetUtredningListResponse> getAvslutadeUtredningarForUser(@RequestBody ListAvslutadeUtredningarRequest req) {
         IbUser user = userService.getUser();
@@ -101,7 +101,7 @@ public class UtredningController {
         return ResponseEntity.ok(response);
     }
 
-    @PrometheusTimeMethod(name = "get_utredning_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @GetMapping(path = "/{utredningsId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetUtredningResponse> getUtredning(@PathVariable("utredningsId") Long utredningsId) {
         IbUser user = userService.getUser();
@@ -110,7 +110,7 @@ public class UtredningController {
         return ResponseEntity.ok(utredningService.getExternForfragan(utredningsId, user.getCurrentlyLoggedInAt().getId()));
     }
 
-    @PrometheusTimeMethod(name = "create_internforfragan_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @PostMapping(path = "/{utredningsId}/createinternforfragan",
             produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetUtredningResponse> createInternForfragan(@PathVariable("utredningsId") Long utredningsId,
@@ -121,7 +121,7 @@ public class UtredningController {
         return ResponseEntity.ok(internForfraganService.createInternForfragan(utredningsId, user.getCurrentlyLoggedInAt().getId(), req));
     }
 
-    @PrometheusTimeMethod(name = "tilldela_direkt_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @PostMapping(path = "/{utredningsId}/tilldeladirekt",
             produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetUtredningResponse> createInternForfragan(@PathVariable("utredningsId") Long utredningsId,
@@ -132,7 +132,7 @@ public class UtredningController {
         return ResponseEntity.ok(internForfraganService.tilldelaDirekt(utredningsId, user.getCurrentlyLoggedInAt().getId(), req));
     }
 
-    @PrometheusTimeMethod(name = "save_betalningsid_for_utredning_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @PostMapping(path = "/{utredningsId}/betald", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> saveBetalningsIdForUtredning(@PathVariable("utredningsId") Long utredningsId,
                                                          @RequestBody SaveBetalningForUtredningRequest request) {
@@ -144,7 +144,7 @@ public class UtredningController {
         return ResponseEntity.ok().build();
     }
 
-    @PrometheusTimeMethod(name = "save_utbetalningsid_for_utredning_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @PostMapping(path = "/{utredningsId}/utbetald", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> saveUtbetalningsIdForUtredning(@PathVariable("utredningsId") Long utredningsId,
                                                                @RequestBody SaveUtbetalningForUtredningRequest request) {
@@ -156,7 +156,7 @@ public class UtredningController {
         return ResponseEntity.ok().build();
     }
 
-    @PrometheusTimeMethod(name = "excel_report_utredningar_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @PostMapping(path = "/xlsx", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<ByteArrayResource> excelReportUtredningar(@ModelAttribute ListUtredningRequest req) {
         IbUser user = userService.getUser();
@@ -171,7 +171,7 @@ public class UtredningController {
         return new ResponseEntity<>(new ByteArrayResource(data), respHeaders, HttpStatus.OK);
     }
 
-    @PrometheusTimeMethod(name = "excel_report_utredningar_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @PostMapping(path = "/avslutade/xlsx", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<ByteArrayResource> excelReportAvslutadeUtredningar(@ModelAttribute ListAvslutadeUtredningarRequest req) {
         IbUser user = userService.getUser();

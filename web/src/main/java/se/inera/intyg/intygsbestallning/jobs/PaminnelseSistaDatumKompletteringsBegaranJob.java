@@ -34,6 +34,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.Predicate;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.SkickadNotifiering;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
@@ -65,6 +66,7 @@ public class PaminnelseSistaDatumKompletteringsBegaranJob {
 
     @Scheduled(cron = "${job.paminnelse.sista.datum.kompletteringsbegaran.cron}")
     @SchedulerLock(name = JOB_NAME, lockAtLeastFor = LOCK_AT_LEAST, lockAtMostFor = LOCK_AT_MOST)
+    @PrometheusTimeMethod
     public void executeJob() {
         LOG.info(MessageFormat.format("Starting: {0} from Scheduled Cron Expression", JOB_NAME));
 

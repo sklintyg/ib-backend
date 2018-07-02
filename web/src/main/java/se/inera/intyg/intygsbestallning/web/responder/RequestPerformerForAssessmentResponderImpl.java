@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.riv.intygsbestallning.certificate.order.requestperformerforassessment.v1.RequestPerformerForAssessmentResponseType;
 import se.riv.intygsbestallning.certificate.order.requestperformerforassessment.v1.RequestPerformerForAssessmentType;
 import se.riv.intygsbestallning.certificate.order.requestperformerforassessment.v1.rivtabp21.RequestPerformerForAssessmentResponderInterface;
@@ -53,6 +54,7 @@ public class RequestPerformerForAssessmentResponderImpl implements RequestPerfor
     }
 
     @Override
+    @PrometheusTimeMethod
     public RequestPerformerForAssessmentResponseType requestPerformerForAssessment(
             final String logicalAddress, final RequestPerformerForAssessmentType request) {
 

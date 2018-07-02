@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.riv.intygsbestallning.certificate.order.requestsupplement.v1.RequestSupplementResponseType;
 import se.riv.intygsbestallning.certificate.order.requestsupplement.v1.RequestSupplementType;
 import se.riv.intygsbestallning.certificate.order.requestsupplement.v1.rivtabp21.RequestSupplementResponderInterface;
@@ -53,6 +54,7 @@ public class RequestSupplementResponderImpl implements RequestSupplementResponde
     }
 
     @Override
+    @PrometheusTimeMethod
     public RequestSupplementResponseType requestSupplement(
             final String logicalAddress, final RequestSupplementType request) {
         RequestSupplementResponseType response = new RequestSupplementResponseType();

@@ -18,21 +18,23 @@
  */
 package se.inera.intyg.intygsbestallning.web.responder;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static java.lang.invoke.MethodHandles.lookup;
-import static java.util.Objects.nonNull;
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
-
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderResponseType;
-import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
-import se.riv.intygsbestallning.certificate.order.updateorder.v1.rivtabp21.UpdateOrderResponderInterface;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
 import se.inera.intyg.intygsbestallning.web.responder.resulthandler.ResultFactory;
+import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderResponseType;
+import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
+import se.riv.intygsbestallning.certificate.order.updateorder.v1.rivtabp21.UpdateOrderResponderInterface;
+
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.lang.invoke.MethodHandles.lookup;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 @Service
 @SchemaValidation
@@ -47,6 +49,7 @@ public class UpdateOrderResponderImpl implements UpdateOrderResponderInterface, 
     }
 
     @Override
+    @PrometheusTimeMethod
     public UpdateOrderResponseType updateOrder(final String logicalAddress, final UpdateOrderType request) {
 
         log.info("ReportDeviationInteraction received request");

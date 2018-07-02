@@ -32,12 +32,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
-import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.vardgivare.VardgivareService;
 import se.inera.intyg.intygsbestallning.service.vardgivare.dto.VardgivarVardenhetListItem;
@@ -59,7 +59,7 @@ public class VardgivareController {
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
-    @PrometheusTimeMethod(name = "get_registrerade_vardenheter_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @GetMapping(path = "/vardenheter", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<GetVardenheterForVardgivareResponse> getRegistreradeVardenheter() {
         IbUser user = userService.getUser();
@@ -70,7 +70,7 @@ public class VardgivareController {
         return ResponseEntity.ok(vardgivareService.listVardenheterForVardgivare(user.getCurrentlyLoggedInAt().getId()));
     }
 
-    @PrometheusTimeMethod(name = "list_vardenheter_for_vardgivare_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @PostMapping(path = "/vardenheter", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ListVardenheterForVardgivareResponse> findVardenheterForVardgivareWithFilter(
             @RequestBody ListVardenheterForVardgivareRequest request) {
@@ -80,7 +80,7 @@ public class VardgivareController {
         return ResponseEntity.ok(vardgivareService.findVardenheterForVardgivareWithFilter(user.getCurrentlyLoggedInAt().getId(), request));
     }
 
-    @PrometheusTimeMethod(name = "update_regiform_for_registered_vardenhet_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @PutMapping(path = "/vardenheter/{vardenhetHsaId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VardgivarVardenhetListItem> updateRegiform(
@@ -92,7 +92,7 @@ public class VardgivareController {
                 .ok(vardgivareService.updateRegiForm(user.getCurrentlyLoggedInAt().getId(), vardenhetHsaId, request.getRegiForm()));
     }
 
-    @PrometheusTimeMethod(name = "add_registered_vardenhet_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @PostMapping(path = "/vardenheter/{vardenhetHsaId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VardgivarVardenhetListItem> addVardenhet(
@@ -104,7 +104,7 @@ public class VardgivareController {
                 .ok(vardgivareService.addVardenhet(user.getCurrentlyLoggedInAt().getId(), vardenhetHsaId, request.getRegiForm()));
     }
 
-    @PrometheusTimeMethod(name = "delete_registered_vardenhet_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @DeleteMapping(path = "/vardenheter/{vardenhetHsaId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Response deleteRegistreradVardenhet(
             @PathVariable("vardenhetHsaId") String vardenhetHsaId) {
@@ -115,7 +115,7 @@ public class VardgivareController {
         return Response.ok().build();
     }
 
-    @PrometheusTimeMethod(name = "search_vardenhetbyhsaid__duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @GetMapping(path = "/vardenheter/{vardenhetHsaId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<SearchForVardenhetResponse> searchVardenhetByHsaId(@PathVariable("vardenhetHsaId") String vardenhetHsaId) {
         IbUser user = userService.getUser();

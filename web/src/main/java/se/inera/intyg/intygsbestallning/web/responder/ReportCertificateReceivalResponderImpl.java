@@ -27,6 +27,7 @@ import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.riv.intygsbestallning.certificate.order.reportcertificatereceival.v1.ReportCertificateReceivalResponseType;
 import se.riv.intygsbestallning.certificate.order.reportcertificatereceival.v1.ReportCertificateReceivalType;
 import se.riv.intygsbestallning.certificate.order.reportcertificatereceival.v1.rivtabp21.ReportCertificateReceivalResponderInterface;
@@ -47,6 +48,7 @@ public class ReportCertificateReceivalResponderImpl implements ReportCertificate
     }
 
     @Override
+    @PrometheusTimeMethod
     public ReportCertificateReceivalResponseType reportCertificateReceival(
             final String logicalAddress, final ReportCertificateReceivalType request) {
 
