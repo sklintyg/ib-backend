@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesValidator;
@@ -36,7 +37,6 @@ import se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
-import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.service.forfragan.ExternForfraganService;
 import se.inera.intyg.intygsbestallning.service.forfragan.InternForfraganService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
@@ -62,7 +62,7 @@ public class InternForfraganController {
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
-    @PrometheusTimeMethod(name = "list_all_forfragningar_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetForfraganListResponse> getFilteredForfragningarForUser(@RequestBody ListForfraganRequest request) {
         IbUser user = userService.getUser();
@@ -79,7 +79,7 @@ public class InternForfraganController {
     /**
      * Returns an object containing all possible filter values for the getAllForfragningarForUser query.
      */
-    @PrometheusTimeMethod(name = "get_forfragningar_list_filter_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/list/filter")
     public ResponseEntity<ListForfraganFilter> getListForfragningarFilter() {
         IbUser user = userService.getUser();
@@ -90,7 +90,7 @@ public class InternForfraganController {
         return ResponseEntity.ok(listBestallningFilter);
     }
 
-    @PrometheusTimeMethod(name = "get_forfragan_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @GetMapping(path = "/{utredningsId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetInternForfraganResponse> getForfragan(@PathVariable("utredningsId") Long utredningsId) {
         IbUser user = userService.getUser();
@@ -101,7 +101,7 @@ public class InternForfraganController {
         return ResponseEntity.ok(forfragan);
     }
 
-    @PrometheusTimeMethod(name = "besvara_forfragan_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @PostMapping(path = "/{utredningsId}/besvara", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<InternForfraganSvarItem> besvaraForfragan(@PathVariable("utredningsId") Long utredningsId,
             @RequestBody ForfraganSvarRequest request) {

@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.riv.intygsbestallning.certificate.order.orderassessment.v1.OrderAssessmentResponseType;
 import se.riv.intygsbestallning.certificate.order.orderassessment.v1.OrderAssessmentType;
 import se.riv.intygsbestallning.certificate.order.orderassessment.v1.rivtabp21.OrderAssessmentResponderInterface;
@@ -54,6 +55,7 @@ public class OrderAssessmentResponderImpl implements OrderAssessmentResponderInt
     }
 
     @Override
+    @PrometheusTimeMethod
     public OrderAssessmentResponseType orderAssessment(
             final String logicalAddress, final OrderAssessmentType request) {
 

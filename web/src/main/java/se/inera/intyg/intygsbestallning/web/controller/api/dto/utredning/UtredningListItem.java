@@ -18,62 +18,20 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning;
 
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FreeTextSearchable;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardenhetEnrichable;
 
-public class UtredningListItem extends BaseUtredningListItem implements FreeTextSearchable, FilterableListItem, VardenhetEnrichable {
+public class UtredningListItem extends BaseUtredningListItem implements FreeTextSearchable, FilterableListItem {
 
-    private Long utredningsId;
-    private String utredningsTyp;
-    private String vardenhetHsaId;
-    private String vardenhetNamn;
     private UtredningFas fas;
     private String slutdatumFas;
     private boolean slutdatumFasPaVagPasseras;
     private boolean slutdatumFasPasserat;
     private UtredningStatus status;
     private boolean kraverAtgard;
-
-    public Long getUtredningsId() {
-        return utredningsId;
-    }
-
-    public void setUtredningsId(Long utredningsId) {
-        this.utredningsId = utredningsId;
-    }
-
-    public String getUtredningsTyp() {
-        return utredningsTyp;
-    }
-
-    public void setUtredningsTyp(String utredningsTyp) {
-        this.utredningsTyp = utredningsTyp;
-    }
-
-    @Override
-    public String getVardenhetHsaId() {
-        return vardenhetHsaId;
-    }
-
-    public void setVardenhetHsaId(String vardenhetHsaId) {
-        this.vardenhetHsaId = vardenhetHsaId;
-    }
-
-    public String getVardenhetNamn() {
-        return vardenhetNamn;
-    }
-
-    @Override
-    public void setVardenhetNamn(String vardenhetNamn) {
-        this.vardenhetNamn = vardenhetNamn;
-    }
-
-    @Override
-    public void setVardenhetFelmeddelande(String vardenhetFelmeddelande) {
-    }
 
     public UtredningFas getFas() {
         return fas;
@@ -136,6 +94,7 @@ public class UtredningListItem extends BaseUtredningListItem implements FreeText
     }
 
     public static final class UtredningListItemBuilder {
+        private Utredning utredning;
         private Long utredningsId;
         private String utredningsTyp;
         private String vardenhetHsaId;
@@ -204,6 +163,11 @@ public class UtredningListItem extends BaseUtredningListItem implements FreeText
             return this;
         }
 
+        public UtredningListItemBuilder withUtredning(Utredning utredning) {
+            this.utredning = utredning;
+            return this;
+        }
+
         public UtredningListItem build() {
             UtredningListItem utredningListItem = new UtredningListItem();
             utredningListItem.setUtredningsId(utredningsId);
@@ -216,6 +180,7 @@ public class UtredningListItem extends BaseUtredningListItem implements FreeText
             utredningListItem.setSlutdatumFasPaVagPasseras(slutdatumFasPaVagPasseras);
             utredningListItem.setStatus(status);
             utredningListItem.setKraverAtgard(kraverAtgard);
+            utredningListItem.setUtredning(utredning);
             return utredningListItem;
         }
     }

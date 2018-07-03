@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesValidator;
@@ -35,7 +36,6 @@ import se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
-import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.vardenhet.VardenhetService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.VardenhetPreferenceRequest;
@@ -57,7 +57,7 @@ public class VardenhetController {
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
-    @PrometheusTimeMethod(name = "get_preference_for_vardenhet_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @GetMapping(path = "/preference/ENHET", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<VardenhetPreferenceResponse> getPreferenceForVardenhet() {
         IbUser user = userService.getUser();
@@ -65,7 +65,7 @@ public class VardenhetController {
         return ResponseEntity.ok(vardenhetService.getVardEnhetPreference(user.getCurrentlyLoggedInAt().getId()));
     }
 
-    @PrometheusTimeMethod(name = "get_preference_for_vardenhet_underleverantor_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @GetMapping(path = "/preference/UNDERLEVERANTOR", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<VardenhetPreferenceResponse> getPreferenceForUnderleverantor() {
         IbUser user = userService.getUser();
@@ -73,7 +73,7 @@ public class VardenhetController {
         return ResponseEntity.ok(vardenhetService.getVardEnhetUnderleverantorPreference(user.getCurrentlyLoggedInAt().getId()));
     }
 
-    @PrometheusTimeMethod(name = "get_hsaAdressInfo_for_vardenhet_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @GetMapping(path = "/fromhsa", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<VardenhetPreferenceResponse> getHsaAdressInfo() {
         IbUser user = userService.getUser();
@@ -81,7 +81,7 @@ public class VardenhetController {
         return ResponseEntity.ok(vardenhetService.getVardenhetPreferenceFromHsaAdressInfo(user.getCurrentlyLoggedInAt().getId()));
     }
 
-    @PrometheusTimeMethod(name = "set_preference_for_vardenhet_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @PutMapping(path = "/preference", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<VardenhetPreferenceResponse> setPreferenceForVardenhet(
             @RequestBody final VardenhetPreferenceRequest vardenhetPreferenceRequest) {
@@ -92,7 +92,7 @@ public class VardenhetController {
                 .ok(vardenhetService.setVardEnhetPreference(user.getCurrentlyLoggedInAt().getId(), vardenhetPreferenceRequest));
     }
 
-    @PrometheusTimeMethod(name = "get_svarpreference_for_vardenhet_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @GetMapping(path = "/preference/svar", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<VardenhetPreferenceResponse> getSvarPreferenceForVardenhet() {
         IbUser user = userService.getUser();
@@ -101,7 +101,7 @@ public class VardenhetController {
         return ResponseEntity.ok(vardenhetService.getVardEnhetPreference(user.getCurrentlyLoggedInAt().getId()));
     }
 
-    @PrometheusTimeMethod(name = "set_svarpreference_for_vardenhet_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @PutMapping(path = "/preference/svar", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<VardenhetPreferenceResponse> setSvarPreferenceForVardenhet(

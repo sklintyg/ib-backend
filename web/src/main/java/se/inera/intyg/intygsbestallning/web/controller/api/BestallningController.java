@@ -28,12 +28,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
-import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utlatande.UtlatandeService;
@@ -72,7 +72,7 @@ public class BestallningController {
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
-    @PrometheusTimeMethod(name = "list_bestallningar_for_vardenhet_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetBestallningListResponse> getBestallningarForVardenhet(@RequestBody ListBestallningRequest requestFilter) {
         IbUser user = userService.getUser();
@@ -92,7 +92,7 @@ public class BestallningController {
     /**
      * Returns an object containing all possible filter values for the getBestallningarForVardenhet query.
      */
-    @PrometheusTimeMethod(name = "get_bestallning_list_filter_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/list/filter")
     public ResponseEntity<ListBestallningFilter> getListBestallningFilter() {
         IbUser user = userService.getUser();
@@ -103,7 +103,7 @@ public class BestallningController {
         return ResponseEntity.ok(listBestallningFilter);
     }
 
-    @PrometheusTimeMethod(name = "list_avslutade_bestallningar_for_vardenhet_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/avslutade")
     public ResponseEntity<GetAvslutadeBestallningarListResponse> getAvslutadeBestallningarForVardenhet(
             @RequestBody ListAvslutadeBestallningarRequest request) {
@@ -124,7 +124,7 @@ public class BestallningController {
     /**
      * Returns an object containing all possible filter values for the getBestallningarForVardenhet query.
      */
-    @PrometheusTimeMethod(name = "get_bestallning_list_filter_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/avslutade/list/filter")
     public ResponseEntity<ListAvslutadeBestallningarFilter> getListAvslutadeBestallningarFilter() {
         IbUser user = userService.getUser();
@@ -136,7 +136,7 @@ public class BestallningController {
         return ResponseEntity.ok(listAvslutadeBestallningarFilter);
     }
 
-    @PrometheusTimeMethod(name = "get_utredning_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @GetMapping(path = "/{utredningsId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetBestallningResponse> getUtredning(@PathVariable("utredningsId") Long utredningsId) {
         IbUser user = userService.getUser();
@@ -145,7 +145,7 @@ public class BestallningController {
         return ResponseEntity.ok(bestallningService.getBestallning(utredningsId, user.getCurrentlyLoggedInAt().getId()));
     }
 
-    @PrometheusTimeMethod(name = "post_save_faktura_for_utredning_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @PostMapping(path = "/{utredningsId}/faktura", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> saveFakturaIdForUtredning(@PathVariable("utredningsId") Long utredningsId,
             @RequestBody SaveFakturaForUtredningRequest request) {
@@ -157,7 +157,7 @@ public class BestallningController {
         return ResponseEntity.ok().build();
     }
 
-    @PrometheusTimeMethod(name = "send_utlatande_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @PutMapping(path = "/{utredningsId}/sendutlatande", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UtredningStatus> sendUtlatande(@PathVariable("utredningsId") Long utredningId,
                                                          @RequestBody SendUtlatandeRequest request) {

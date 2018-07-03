@@ -27,8 +27,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
-import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.service.notifiering.preferens.NotifieringPreferenceService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.notification.GetNotificationPreferenceResponse;
@@ -47,7 +47,7 @@ public class NotifieringPreferenceController {
     @Autowired
     private NotifieringPreferenceService notifieringPreferenceService;
 
-    @PrometheusTimeMethod(name = "get_notifiering_preference_filter_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetNotificationPreferenceResponse> getNotificationPreferences() {
         IbUser user = userService.getUser();
@@ -57,7 +57,7 @@ public class NotifieringPreferenceController {
         return ResponseEntity.ok(notificationPreference);
     }
 
-    @PrometheusTimeMethod(name = "set_notifiering_preference_filter_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @PutMapping(consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<GetNotificationPreferenceResponse> setNotificationPreferences(
             @RequestBody final SetNotificationPreferenceRequest setNotificationPreferenceRequest) {

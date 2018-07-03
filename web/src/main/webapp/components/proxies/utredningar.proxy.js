@@ -18,7 +18,7 @@
  */
 
 angular.module('ibApp').factory('UtredningarProxy',
-    function(ProxyTemplate) {
+    function($window, ProxyTemplate) {
         'use strict';
 
         var basePath = '/api/samordnare/utredningar';
@@ -113,6 +113,40 @@ angular.module('ibApp').factory('UtredningarProxy',
                 }});
         }
 
+        function _excelReport(query) {
+            var restPath = basePath + '/xlsx';
+
+            var inputs = '';
+            angular.forEach(query, function(value, key) {
+                if (value !== null && value !== undefined) {
+                    inputs += _addInput(key, value);
+                }
+            });
+
+            //send request
+            $window.jQuery('<form action="' + restPath + '" target="_blank" method="post">' + inputs + '</form>')
+                .appendTo('body').submit().remove();
+        }
+
+        function _excelReportAvslutade(query) {
+            var restPath = basePath + '/avslutade/xlsx';
+
+            var inputs = '';
+            angular.forEach(query, function(value, key) {
+                if (value !== null && value !== undefined) {
+                    inputs += _addInput(key, value);
+                }
+            });
+
+            //send request
+            $window.jQuery('<form action="' + restPath + '" target="_blank" method="post">' + inputs + '</form>')
+                .appendTo('body').submit().remove();
+        }
+
+        function _addInput(name, item) {
+            return '<input type="hidden" name="' + name + '" value="' + item + '" />';
+        }
+
         // Return public API for the service
         return {
             getUtredning: _getUtredning,
@@ -122,6 +156,8 @@ angular.module('ibApp').factory('UtredningarProxy',
             createInternForfragan: _createInternForfragan,
             tilldelaDirekt: _tillDelaDirekt,
             saveBetald: _saveBetald,
-            saveUtbetald: _saveUtbetald
+            saveUtbetald: _saveUtbetald,
+            excelReport: _excelReport,
+            excelReportAvslutade: _excelReportAvslutade
         };
     });

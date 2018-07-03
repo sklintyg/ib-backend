@@ -18,11 +18,11 @@
  */
 package se.inera.intyg.intygsbestallning.config;
 
+import java.util.List;
+import java.util.Properties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.context.annotation.Scope;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.ViewResolver;
@@ -36,35 +36,22 @@ import org.springframework.web.servlet.view.InternalResourceView;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 import se.inera.intyg.intygsbestallning.common.integration.json.CustomObjectMapper;
-import se.inera.intyg.intygsbestallning.monitoring.EnablePrometheusTiming;
-import se.inera.intyg.intygsbestallning.monitoring.MethodTimer;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-import java.util.List;
-import java.util.Properties;
-
-@EnableAspectJAutoProxy
 @EnableSwagger2
 @EnableWebMvc
 @Configuration
-@EnablePrometheusTiming
 @ComponentScan({
-        "se.inera.intyg.intygsbestallning.web" }) // , "se.inera.intyg.intygsbestallning.monitoring"
+        "se.inera.intyg.intygsbestallning.web", "se.inera.intyg.infra.monitoring" })
 public class WebConfig extends WebMvcConfigurerAdapter {
 
     private static final int SECONDS_IN_HOUR = 3600;
     private static final int HOURS_IN_DAY = 24;
     private static final int DAYS_TO_CACHE = 15;
-
-    @Bean // the Aspect itself must also be a Bean
-    @Scope(value = "prototype")
-    public MethodTimer methodTimer() {
-        return new MethodTimer();
-    }
 
     @Bean
     public ViewResolver viewResolver() {

@@ -19,6 +19,9 @@
 package se.inera.intyg.intygsbestallning.config;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import java.util.ArrayList;
+import java.util.Arrays;
+import javax.annotation.PostConstruct;
 import org.apache.cxf.Bus;
 import org.apache.cxf.feature.LoggingFeature;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,15 +35,9 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.TransactionManagementConfigurer;
-import se.inera.intyg.intygsbestallning.monitoring.EnablePrometheusTiming;
 import se.inera.intyg.intygsbestallning.web.filters.UnitSelectedAssuranceFilter;
 
-import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.Arrays;
-
 @Configuration
-@EnablePrometheusTiming
 @EnableTransactionManagement
 @DependsOn("transactionManager")
 @PropertySource({"classpath:default.properties",

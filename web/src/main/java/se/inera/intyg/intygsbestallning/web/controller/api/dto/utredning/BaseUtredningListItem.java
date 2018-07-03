@@ -18,5 +18,61 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning;
 
-public class BaseUtredningListItem {
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardenhetEnrichable;
+
+public class BaseUtredningListItem implements VardenhetEnrichable {
+    protected Utredning utredning;
+    protected Long utredningsId;
+    protected String utredningsTyp;
+    protected String vardenhetHsaId;
+    protected String vardenhetNamn;
+
+    @JsonIgnore
+    public Utredning getUtredning() {
+        return utredning;
+    }
+
+    public void setUtredning(Utredning utredning) {
+        this.utredning = utredning;
+    }
+
+    public Long getUtredningsId() {
+        return utredningsId;
+    }
+
+    public void setUtredningsId(Long utredningsId) {
+        this.utredningsId = utredningsId;
+    }
+
+    public String getUtredningsTyp() {
+        return utredningsTyp;
+    }
+
+    public void setUtredningsTyp(String utredningsTyp) {
+        this.utredningsTyp = utredningsTyp;
+    }
+
+    @Override
+    public String getVardenhetHsaId() {
+        return vardenhetHsaId;
+    }
+
+    public void setVardenhetHsaId(String vardenhetHsaId) {
+        this.vardenhetHsaId = vardenhetHsaId;
+    }
+
+    public String getVardenhetNamn() {
+        return vardenhetNamn;
+    }
+
+    @Override
+    public void setVardenhetNamn(String vardenhetNamn) {
+        this.vardenhetNamn = vardenhetNamn;
+    }
+
+    @Override
+    public void setVardenhetFelmeddelande(String vardenhetFelmeddelande) {
+    }
 }

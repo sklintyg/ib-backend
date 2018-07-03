@@ -432,7 +432,7 @@ public final class Utredning {
                 .add("tolkBehov", tolkBehov)
                 .add("tolkSprak", tolkSprak)
                 .add("avbrutenDatum", avbrutenDatum)
-                .add("avbrutenAnledning", avbrutenOrsak)
+                .add("avbrutenOrsak", avbrutenOrsak)
                 .add("arkiverad", arkiverad)
                 .add("externForfragan", externForfragan)
                 .add("handelseList", handelseList)

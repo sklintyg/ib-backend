@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.intygsbestallning.jobs;
 
+import java.time.LocalDate;
+import java.util.List;
 import net.javacrumbs.shedlock.core.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
@@ -34,8 +37,6 @@ import se.inera.intyg.intygsbestallning.persistence.repository.UtredningReposito
 import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 
-import java.time.LocalDate;
-import java.util.List;
 
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS;
 
@@ -64,6 +65,7 @@ public class PaminnelseSlutdatumForUtredningPasserasJob {
 
     @Scheduled(cron = "${job.paminnelse.slutdatum.utredning.passeras.cron}")
     @SchedulerLock(name = JOB_NAME, lockAtLeastFor = LOCK_AT_LEAST, lockAtMostFor = LOCK_AT_MOST)
+    @PrometheusTimeMethod
     public void executeJob() {
 
         // Calculate last date

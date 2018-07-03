@@ -26,11 +26,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
-import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.service.forfragan.ExternForfraganService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
@@ -50,7 +50,7 @@ public class ExternForfraganController {
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
-    @PrometheusTimeMethod(name = "accept_externforfragan_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @PostMapping(path = "/{utredningsId}/accept",
             produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetUtredningResponse> acceptExternForfragan(@PathVariable("utredningsId") Long utredningsId,
@@ -62,7 +62,7 @@ public class ExternForfraganController {
                 vardenhetHsaId));
     }
 
-    @PrometheusTimeMethod(name = "avvisa_externforfragan_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @PostMapping(path = "/{utredningsId}/avvisa",
             produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetUtredningResponse> avvisaExternForfragan(@PathVariable("utredningsId") Long utredningsId,

@@ -25,10 +25,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
-import se.inera.intyg.intygsbestallning.monitoring.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.service.statistics.StatisticsService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.statistics.SamordnarStatisticsResponse;
@@ -47,7 +47,7 @@ public class StatisticsController {
     @Autowired
     private StatisticsService statisticsService;
 
-    @PrometheusTimeMethod(name = "get_samordnare_stats_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @GetMapping(path = "/samordnare", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<SamordnarStatisticsResponse> getStatsForSamordnare() {
         IbUser user = userService.getUser();
@@ -57,7 +57,7 @@ public class StatisticsController {
         return ResponseEntity.ok(statisticsService.getStatsForSamordnare(user.getCurrentlyLoggedInAt().getId()));
     }
 
-    @PrometheusTimeMethod(name = "get_vardadmin_stats_duration_seconds", help = "Some helpful info here")
+    @PrometheusTimeMethod
     @GetMapping(path = "/vardadmin", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<VardadminStatisticsResponse> getStatsForVardadministrator() {
         IbUser user = userService.getUser();

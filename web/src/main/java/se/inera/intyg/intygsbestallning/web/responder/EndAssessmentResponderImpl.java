@@ -18,21 +18,23 @@
  */
 package se.inera.intyg.intygsbestallning.web.responder;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static java.lang.invoke.MethodHandles.lookup;
-import static java.util.Objects.nonNull;
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
-
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import se.riv.intygsbestallning.certificate.order.endassessment.v1.EndAssessmentResponseType;
-import se.riv.intygsbestallning.certificate.order.endassessment.v1.EndAssessmentType;
-import se.riv.intygsbestallning.certificate.order.endassessment.v1.rivtabp21.EndAssessmentResponderInterface;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AvslutaUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.responder.resulthandler.ResultFactory;
+import se.riv.intygsbestallning.certificate.order.endassessment.v1.EndAssessmentResponseType;
+import se.riv.intygsbestallning.certificate.order.endassessment.v1.EndAssessmentType;
+import se.riv.intygsbestallning.certificate.order.endassessment.v1.rivtabp21.EndAssessmentResponderInterface;
+
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.lang.invoke.MethodHandles.lookup;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 @Service
 @SchemaValidation
@@ -47,6 +49,7 @@ public class EndAssessmentResponderImpl implements EndAssessmentResponderInterfa
     }
 
     @Override
+    @PrometheusTimeMethod
     public EndAssessmentResponseType endAssessment(
             final String logicalAddress, final EndAssessmentType request) {
 

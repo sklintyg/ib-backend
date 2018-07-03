@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.ReportDeviationResponseType;
 import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.ReportDeviationType;
 import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.rivtabp21.ReportDeviationResponderInterface;
@@ -53,6 +54,7 @@ public class ReportDeviationInteractionResponderImpl implements ReportDeviationR
     }
 
     @Override
+    @PrometheusTimeMethod
     public ReportDeviationResponseType reportDeviation(
             final String logicalAddress, final ReportDeviationType request) {
 
