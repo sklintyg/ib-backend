@@ -42,11 +42,11 @@ Scenario: Samordnare avvisar direkttilldelad förfrågan - [Förfrågan till rej
 
 Scenario: Vårdadmin och samordnare avvisar en tilldelad förfrågan - [Förfrågan till reject]
 	#Förfrågan
-	#Given att Försäkringskassan har skickat en förfrågan AFU till samordnare 
-	#When samordnare tilldelar förfrågan till enhet "WebCert-Enhet1"
-	#When "vårdadmin" avvisar förfrågan
-	#When "samordnare" avvisar förfrågan
-	#Then ska Försäkringskassan notifieras att "vården" "AVVISAT" förfrågan
+	Given att Försäkringskassan har skickat en förfrågan AFU till samordnare 
+	When samordnare tilldelar förfrågan till enhet "WebCert-Enhet1"
+	When "vårdadmin" avvisar förfrågan
+	When "samordnare" avvisar förfrågan
+	Then ska Försäkringskassan notifieras att "vården" "AVVISAT" förfrågan
 
 Scenario: Försäkringskassan avbryter tilldelad utredning
 	Given att Försäkringskassan har skickat en förfrågan AFU till samordnare
