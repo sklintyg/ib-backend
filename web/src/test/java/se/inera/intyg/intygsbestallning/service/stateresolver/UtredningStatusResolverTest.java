@@ -427,6 +427,35 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
         assertEquals(Actor.FK, status.getNextActor());
     }
 
+    @Test
+    public void bugRegistreraSkickatUtlatandeWithoutRegistreraMottagenHandling() {
+        /* Återskapandet av bugg: om användare klickar på "Registera skickat utlåtande" utan att ha klickat på
+           "Registrera mottagen handling" först så ändras status som följande:
+           BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR --> BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR
+
+           Statusändringen borde istället vara
+           BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR --> UTLATANDE_SKICKAT
+         */
+        Utredning utr = buildBaseUtredning();
+        utr.getExternForfragan()
+                .map(ExternForfragan::getInternForfraganList)
+                .map(iff -> iff.add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now())));
+        utr.setBestallning(buildBestallning(null));
+        Intyg intyg = buildBestalltIntyg();
+        intyg.setSkickatDatum(LocalDateTime.now()); // Sätts när vårdadmin klickar på "Registrera mottagen handling"
+        utr.getIntygList().add(intyg);
+
+        Handling h = buildHandling(null, LocalDateTime.now());
+        h.setSkickatDatum(LocalDateTime.now());
+        h.setUrsprung(HandlingUrsprungTyp.BESTALLNING);
+        utr.getHandlingList().add(h);
+
+        UtredningStatus status = testee.resolveStatus(utr);
+        assertEquals(UtredningStatus.UTLATANDE_SKICKAT, status);
+        assertEquals(UtredningFas.UTREDNING, status.getUtredningFas());
+        assertEquals(Actor.FK, status.getNextActor());
+    }
+
     private Utredning buildBasicUtredningForKompletteringTest() {
         Utredning utr = buildBaseUtredning();
         utr.getExternForfragan().map(ExternForfragan::getInternForfraganList)

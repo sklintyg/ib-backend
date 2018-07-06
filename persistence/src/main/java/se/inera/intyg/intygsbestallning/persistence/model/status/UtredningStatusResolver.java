@@ -153,6 +153,23 @@ public class UtredningStatusResolver {
             return Optional.of(UtredningStatus.AVVIKELSE_MOTTAGEN);
         }
 
+        // Skickat - ursprungsintyget är skickat.
+        if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getSkickatDatum() != null
+                && intyg.getMottagetDatum() == null
+                && !intyg.isKomplettering()
+                && (intyg.getSistaDatum() == null || intyg.getSistaDatum().isAfter(LocalDateTime.now())))) {
+            return Optional.of(UtredningStatus.UTLATANDE_SKICKAT);
+        }
+
+        // Skickat - ursprungsintyget är mottaget.
+        if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getSkickatDatum() != null
+                && intyg.getMottagetDatum() != null
+                && !intyg.isKomplettering()
+                && (intyg.getSistaDatumKompletteringsbegaran() != null
+                && intyg.getSistaDatumKompletteringsbegaran().isAfter(LocalDateTime.now())))) {
+            return Optional.of(UtredningStatus.UTLATANDE_MOTTAGET);
+        }
+
         // Om det INTE finns några besök bokade...
         if (utredning.getBesokList().size() == 0) {
             // BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR
@@ -209,23 +226,6 @@ public class UtredningStatusResolver {
         if (utredning.getBesokList().size() > 0
                 && utredning.getIntygList().stream().noneMatch(intyg -> intyg.getSkickatDatum() != null)) {
             return Optional.of(UtredningStatus.UTREDNING_PAGAR);
-        }
-
-        // Skickat - ursprungsintyget är skickat.
-        if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getSkickatDatum() != null
-                && intyg.getMottagetDatum() == null
-                && !intyg.isKomplettering()
-                && (intyg.getSistaDatum() == null || intyg.getSistaDatum().isAfter(LocalDateTime.now())))) {
-            return Optional.of(UtredningStatus.UTLATANDE_SKICKAT);
-        }
-
-        // Skickat - ursprungsintyget är mottaget.
-        if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getSkickatDatum() != null
-                && intyg.getMottagetDatum() != null
-                && !intyg.isKomplettering()
-                && (intyg.getSistaDatumKompletteringsbegaran() != null
-                && intyg.getSistaDatumKompletteringsbegaran().isAfter(LocalDateTime.now())))) {
-            return Optional.of(UtredningStatus.UTLATANDE_MOTTAGET);
         }
 
         // Om vi har enbart 1 intyg så finns ej någon komplettering.
