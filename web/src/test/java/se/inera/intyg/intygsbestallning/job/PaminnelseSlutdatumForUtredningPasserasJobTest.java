@@ -75,7 +75,7 @@ public class PaminnelseSlutdatumForUtredningPasserasJobTest {
 
     @Test
     public void testJobNotifiesWhenNotNotified() {
-        Utredning utredning = TestDataGen.createUtredning();
+        Utredning utredning = TestDataGen.createUtredningWithSkickatOchMottagetIntyg();
         utredning.getIntygList().get(0).setSistaDatum(LocalDateTime.now().plusDays(3L));
         when(utredningRepository.findNonNotifiedIntygSlutDatumBetween(any(LocalDateTime.class), any(LocalDateTime.class),
                 any(NotifieringTyp.class), any(NotifieringMottagarTyp.class)))
@@ -87,7 +87,7 @@ public class PaminnelseSlutdatumForUtredningPasserasJobTest {
 
     @Test
     public void testJobDoesNotNotifyWhenAlreadyNotified() {
-        Utredning utredning = TestDataGen.createUtredning();
+        Utredning utredning = TestDataGen.createUtredningWithSkickatOchMottagetIntyg();
         utredning.getIntygList().get(0).setSistaDatum(LocalDateTime.now().plusDays(3L));
         when(utredningRepository.findNonNotifiedIntygSlutDatumBetween(any(LocalDateTime.class), any(LocalDateTime.class),
                 any(NotifieringTyp.class), any(NotifieringMottagarTyp.class)))
@@ -99,7 +99,7 @@ public class PaminnelseSlutdatumForUtredningPasserasJobTest {
 
     @Test
     public void testJobDoesNotNotifyWhenInRedovisaTolk() {
-        Utredning utredning = TestDataGen.createUtredning();
+        Utredning utredning = TestDataGen.createUtredningWithSkickatOchMottagetIntyg();
         utredning.getHandlingList().add(Handling.HandlingBuilder.aHandling()
                 .withInkomDatum(LocalDateTime.now())
                 .withSkickatDatum(LocalDateTime.now())

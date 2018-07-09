@@ -170,8 +170,12 @@ public class UtredningStatusResolver {
             return Optional.of(UtredningStatus.UTLATANDE_MOTTAGET);
         }
 
-        // Om det INTE finns några besök bokade...
-        if (utredning.getBesokList().size() == 0) {
+        // Om det INTE finns några besök bokade... (och sista datum inte har passerats för samtliga intyg)
+        if (utredning.getBesokList().size() == 0 && !(utredning.getIntygList().stream()
+                .allMatch(intyg ->
+                        ((intyg.getSistaDatum() != null && LocalDateTime.now().isAfter(intyg.getSistaDatum())
+                                || (intyg.getSistaDatumKompletteringsbegaran() != null
+                                && LocalDateTime.now().isAfter(intyg.getSistaDatumKompletteringsbegaran()))))))) {
             // BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR
             Bestallning bestallning = utredning.getBestallning().get();
             if (utredning.getHandlingList().size() == 0 && bestallning.getUppdateradDatum() == null) {

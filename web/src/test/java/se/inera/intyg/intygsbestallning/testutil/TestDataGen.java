@@ -214,6 +214,26 @@ public final class TestDataGen {
                 .withExternForfragan(createExternForfragan())
                 .withHandlaggare(createHandlaggare())
                 .withBestallning(createBestallning())
+                .withIntygList(Lists.newArrayList(
+                        anIntyg().withId(1L)
+                        .withKomplettering(false)
+                        .withSistaDatum(LocalDateTime.now().plusDays(7))
+                        .build()
+                ))
+                .withHandelseList(Lists.newArrayList())
+                .withInvanare(createInvanare())
+                .build();
+        utredning.setStatus(UtredningStatusResolver.resolveStaticStatus(utredning));
+        return utredning;
+    }
+
+    public static Utredning createUtredningWithSkickatOchMottagetIntyg() {
+        final Utredning utredning = anUtredning()
+                .withUtredningId(UTREDNING_ID)
+                .withUtredningsTyp(AFU_UTVIDGAD)
+                .withExternForfragan(createExternForfragan())
+                .withHandlaggare(createHandlaggare())
+                .withBestallning(createBestallning())
                 .withIntygList(createIntyg())
                 .withHandelseList(Lists.newArrayList())
                 .withInvanare(createInvanare())
