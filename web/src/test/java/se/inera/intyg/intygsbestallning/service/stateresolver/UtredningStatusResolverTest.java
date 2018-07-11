@@ -24,9 +24,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.intygsbestallning.persistence.model.Avvikelse;
-import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
-import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
@@ -45,6 +43,8 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
 import java.time.LocalDateTime;
 
 import static org.junit.Assert.assertEquals;
+import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handelse.HandelseBuilder.aHandelse;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtredningStatusResolverTest extends BaseResolverTest {
@@ -225,14 +225,14 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
         utr.setBestallning(buildBestallning(null));
         utr.getIntygList().add(buildBestalltIntyg());
         utr.getHandlingList().add(buildHandling(LocalDateTime.now(), null));
-        utr.getBesokList().add(Besok.BesokBuilder.aBesok()
+        utr.getBesokList().add(aBesok()
                 .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
                 .withDeltagareProfession(DeltagarProfessionTyp.FT)
                 .withAvvikelse(Avvikelse.AvvikelseBuilder.anAvvikelse()
                         .withOrsakatAv(AvvikelseOrsak.PATIENT)
                         .withTidpunkt(LocalDateTime.now())
                         .build())
-                .withHandelseList(ImmutableList.of(Handelse.HandelseBuilder.aHandelse()
+                .withHandelseList(ImmutableList.of(aHandelse()
                         .withHandelseTyp(HandelseTyp.AVVIKELSE_MOTTAGEN)
                         .build()))
                 .build());
@@ -252,7 +252,7 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
         utr.setBestallning(buildBestallning(null));
         utr.getIntygList().add(buildBestalltIntyg());
         utr.getHandlingList().add(buildHandling(LocalDateTime.now(), null));
-        utr.getBesokList().add(Besok.BesokBuilder.aBesok()
+        utr.getBesokList().add(aBesok()
                 .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
                 .withDeltagareProfession(DeltagarProfessionTyp.FT)
                 .build());
@@ -274,7 +274,7 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
         intyg.setSkickatDatum(LocalDateTime.now());
         utr.getIntygList().add(intyg);
         utr.getHandlingList().add(buildHandling(LocalDateTime.now(), null));
-        utr.getBesokList().add(Besok.BesokBuilder.aBesok()
+        utr.getBesokList().add(aBesok()
                 .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
                 .withDeltagareProfession(DeltagarProfessionTyp.FT)
                 .build());
@@ -298,7 +298,7 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
         intyg.setSistaDatumKompletteringsbegaran(LocalDateTime.now().plusDays(1));
         utr.getIntygList().add(intyg);
         utr.getHandlingList().add(buildHandling(LocalDateTime.now(), null));
-        utr.getBesokList().add(Besok.BesokBuilder.aBesok()
+        utr.getBesokList().add(aBesok()
                 .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
                 .withDeltagareProfession(DeltagarProfessionTyp.FT)
                 .build());
@@ -322,7 +322,7 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
         intyg.setSistaDatumKompletteringsbegaran(LocalDateTime.now().minusDays(1));
         utr.getIntygList().add(intyg);
         utr.getHandlingList().add(buildHandling(LocalDateTime.now(), null));
-        utr.getBesokList().add(Besok.BesokBuilder.aBesok()
+        utr.getBesokList().add(aBesok()
                 .withBesokStatus(BesokStatusTyp.AVSLUTAD_VARDKONTAKT)
                 .withDeltagareProfession(DeltagarProfessionTyp.FT)
                 .withTolkStatus(null)
@@ -346,7 +346,7 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
         intyg.setSistaDatumKompletteringsbegaran(LocalDateTime.now().minusDays(1));
         utr.getIntygList().add(intyg);
         utr.getHandlingList().add(buildHandling(LocalDateTime.now(), null));
-        utr.getBesokList().add(Besok.BesokBuilder.aBesok()
+        utr.getBesokList().add(aBesok()
                 .withBesokStatus(BesokStatusTyp.AVSLUTAD_VARDKONTAKT)
                 .withDeltagareProfession(DeltagarProfessionTyp.FT)
                 .withTolkStatus(TolkStatusTyp.DELTAGIT)
@@ -485,6 +485,59 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
 
     }
 
+    @Test
+    public void bugSkickaUtlatandeStatusAfterAvvikelse() {
+        /* Om vårdadmin i en utredning med 1 besök får en avvikelse, och sedan skickar utlåtande, så misslyckas state att gå
+           AVVIKELSE_MOTTAGEN --> UTLATANDE_SKICKAT, och fastnar på AVVIKELSE_MOTTAGEN
+        */
+        Utredning utr = buildBaseUtredning();
+        utr.getExternForfragan()
+                .map(ExternForfragan::getInternForfraganList)
+                .map(iff -> iff.add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now())));
+        utr.setBestallning(buildBestallning(null));
+        Intyg intyg = buildBestalltIntyg();
+        intyg.setKomplettering(false);
+        intyg.setSistaDatum(LocalDateTime.parse("2018-08-25T00:00"));
+        intyg.setSkickatDatum(LocalDateTime.parse("2018-07-08T00:00")); // Sätts när vårdadmin klickar på "Registrera mottagen handling"
+        utr.getIntygList().add(intyg);
+
+        Handling h = buildHandling(null, LocalDateTime.now());
+        h.setSkickatDatum(LocalDateTime.now());
+        h.setUrsprung(HandlingUrsprungTyp.BESTALLNING);
+        utr.getHandlingList().add(h);
+        // 1 besök som har status avvikelse, med tillhörande händelse
+        utr.getBesokList().add(aBesok()
+                .withBesokStartTid(LocalDateTime.parse("2018-07-09T16:02"))
+                .withBesokSlutTid(LocalDateTime.parse("2018-08-09T17:02"))
+                .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
+                .withTolkStatus(TolkStatusTyp.EJ_BOKAT)
+                .withDeltagareProfession(DeltagarProfessionTyp.LK)
+                .withErsatts(null)
+                .withAvvikelse(Avvikelse.AvvikelseBuilder.anAvvikelse()
+                        .withAvvikelseId(1L)
+                        .withOrsakatAv(AvvikelseOrsak.VARDEN)
+                        .withTidpunkt(LocalDateTime.parse("2018-07-11T16:02:28"))
+                        .withInvanareUteblev(false)
+                        .build())
+                .withHandelseList(ImmutableList.of(
+                        aHandelse()
+                                .withId(15L)
+                                .withSkapad(LocalDateTime.parse("2018-07-11T16:00:00"))
+                                .withHandelseTyp(HandelseTyp.NYTT_BESOK)
+                                .build(),
+                        aHandelse()
+                                .withId(16L)
+                                .withSkapad(LocalDateTime.parse("2018-07-11T16:04:40"))
+                                .withHandelseTyp(HandelseTyp.AVVIKELSE_MOTTAGEN)
+                                .build()))
+                .build());
+
+        UtredningStatus status = testee.resolveStatus(utr);
+        assertEquals(UtredningStatus.UTLATANDE_SKICKAT, status);
+        assertEquals(UtredningFas.UTREDNING, status.getUtredningFas());
+        assertEquals(Actor.FK, status.getNextActor());
+    }
+
     private Utredning buildBasicUtredningForKompletteringTest() {
         Utredning utr = buildBaseUtredning();
         utr.getExternForfragan().map(ExternForfragan::getInternForfraganList)
@@ -496,7 +549,7 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
         intyg.setSistaDatumKompletteringsbegaran(LocalDateTime.now().minusDays(1));
         utr.getIntygList().add(intyg);
         utr.getHandlingList().add(buildHandling(LocalDateTime.now(), null));
-        utr.getBesokList().add(Besok.BesokBuilder.aBesok()
+        utr.getBesokList().add(aBesok()
                 .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
                 .withDeltagareProfession(DeltagarProfessionTyp.FT)
                 .withTolkStatus(TolkStatusTyp.BOKAT)

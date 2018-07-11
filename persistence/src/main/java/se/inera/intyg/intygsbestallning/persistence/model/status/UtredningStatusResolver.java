@@ -147,12 +147,6 @@ public class UtredningStatusResolver {
     }
 
     private static Optional<UtredningStatus> handleUtredningFas(Utredning utredning) {
-        // UTREDNING_PAGAR_AVVIKELSE, endast sätta status då avvikelsen kommer från FK.
-        if (utredning.getBesokList().stream().anyMatch(bl -> bl.getAvvikelse() != null
-                && bl.getHandelseList().stream().anyMatch(hl -> hl.getHandelseTyp().equals(HandelseTyp.AVVIKELSE_MOTTAGEN)))) {
-            return Optional.of(UtredningStatus.AVVIKELSE_MOTTAGEN);
-        }
-
         // Skickat - ursprungsintyget är skickat.
         if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getSkickatDatum() != null
                 && intyg.getMottagetDatum() == null
@@ -168,6 +162,12 @@ public class UtredningStatusResolver {
                 && (intyg.getSistaDatumKompletteringsbegaran() != null
                 && intyg.getSistaDatumKompletteringsbegaran().isAfter(LocalDateTime.now())))) {
             return Optional.of(UtredningStatus.UTLATANDE_MOTTAGET);
+        }
+
+        // UTREDNING_PAGAR_AVVIKELSE, endast sätta status då avvikelsen kommer från FK.
+        if (utredning.getBesokList().stream().anyMatch(bl -> bl.getAvvikelse() != null
+                && bl.getHandelseList().stream().anyMatch(hl -> hl.getHandelseTyp().equals(HandelseTyp.AVVIKELSE_MOTTAGEN)))) {
+            return Optional.of(UtredningStatus.AVVIKELSE_MOTTAGEN);
         }
 
         // Om det INTE finns några besök bokade... (och sista datum inte har passerats för samtliga intyg)
