@@ -45,6 +45,7 @@
           var rpfaUrl = '/services/request-performer-for-assessment-responder';
           var oaUrl = '/services/order-assessment-responder';
           var rdUrl = '/services/report-deviation-interaction-responder';
+          var rcrUrl = '/services/report-certificate-receival-responder';
 
           $scope.rpfa = {
               certificateType: 'AFU',
@@ -413,6 +414,50 @@
 
               sendSoap(rdUrl, msg);
           };
+
+          $scope.rcr = {
+              assessmentId: null,
+              assessmentIdOptions: [],
+              receivedDate: moment().format('YYYYMMDD'),
+              lastDateForSupplementRequest: moment().add(14, 'days').format('YYYYMMDD')
+          };
+
+          $scope.refreshRcrAssessmentIdOptions = function() {
+              $scope.rcr.assessmentIdOptions = [];
+              $http.get('/api/test/utredningar/withstatus/UTLATANDE_SKICKAT').then(function(response){
+                  $scope.rcr.assessmentId = null;
+                  angular.forEach(response.data, function(utredning){
+                      $scope.rcr.assessmentIdOptions.push(utredning.utredningId);
+                  });
+                  if (response.data && response.data.length > 0) {
+                      $scope.rcr.assessmentId = response.data[0].utredningId;
+                  }
+              });
+          };
+
+          $scope.refreshRcrAssessmentIdOptions();
+
+          $scope.sendRcr = function() {
+              var msg = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:itintegration:registry:1" xmlns:urn1="urn:riv-application:intygsbestallning:certificate:order:ReportCertificateReceivalResponder:1" xmlns:urn2="urn:riv-application:intygsbestallning:certificate:order:1">' +
+                  '<soapenv:Header>' +
+                      '<urn:LogicalAddress>?</urn:LogicalAddress>' +
+                  '</soapenv:Header>' +
+                  '<soapenv:Body>' +
+                      '<urn1:ReportCertificateReceival>' +
+                          '<urn1:assessmentId>' +
+                              '<urn2:root>utredningsId</urn2:root>' +
+                              '<urn2:extension>' + $scope.rcr.assessmentId + '</urn2:extension>' +
+                              '<!--You may enter ANY elements at this point-->' +
+                          '</urn1:assessmentId>' +
+                          '<urn1:receivedDate>' + $scope.rcr.receivedDate + '</urn1:receivedDate>' +
+                          '<urn1:lastDateForSupplementRequest>' + $scope.rcr.lastDateForSupplementRequest + '</urn1:lastDateForSupplementRequest>' +
+                      '<!--You may enter ANY elements at this point-->' +
+                      '</urn1:ReportCertificateReceival>' +
+                  '</soapenv:Body>' +
+                  '</soapenv:Envelope>';
+
+              sendSoap(rcrUrl, msg);
+          };
           
           function sendSoap(url, msg) {
 
@@ -548,6 +593,27 @@
 
         <div>
           <button class="btn btn-primary" ng-click="sendRd()")>Skicka</button>
+        </div>
+
+      </uib-tab>
+
+      <uib-tab heading="Mottaget intyg">
+        <h2>ReportCertificateReceival</h2>
+        <div class="row">
+          <label class="col-sm-3 control-label">assessmentId</label>
+          <div class="col-sm-6">
+            <select class="form-control" ng-model="rcr.assessmentId" ng-options="item for item in rcr.assessmentIdOptions"></select>
+          </div>
+          <div class="col-sm-3">
+            <button class="btn btn-default" ng-click="refreshRcrAssessmentIdOptions()">Uppdatera listan</button>
+          </div>
+        </div>
+
+        <div class="row"><label class="col-sm-3 control-label">receivedDate</label><div class="col-sm-9"><input class="form-control" ng-model="rcr.receivedDate"></div></div>
+        <div class="row"><label class="col-sm-3 control-label">lastDateForSupplementRequest</label><div class="col-sm-9"><input class="form-control" ng-model="rcr.lastDateForSupplementRequest"></div></div>
+
+        <div>
+          <button class="btn btn-primary" ng-click="sendRcr()")>Skicka</button>
         </div>
 
       </uib-tab>
