@@ -166,16 +166,16 @@ public class UtredningStatusResolver {
 
         // UTREDNING_PAGAR_AVVIKELSE, endast sätta status då avvikelsen kommer från FK.
         if (utredning.getBesokList().stream().anyMatch(bl -> bl.getAvvikelse() != null
-                && bl.getHandelseList().stream().anyMatch(hl -> hl.getHandelseTyp().equals(HandelseTyp.AVVIKELSE_MOTTAGEN)))) {
+                && bl.getHandelseList().stream().anyMatch(hl -> hl.getHandelseTyp().equals(HandelseTyp.AVVIKELSE_MOTTAGEN))
+                && bl.getHandelseList().stream().noneMatch(hl -> hl.getHandelseTyp().equals(HandelseTyp.AVBOKAT_BESOK)))) {
             return Optional.of(UtredningStatus.AVVIKELSE_MOTTAGEN);
         }
 
         // Om det INTE finns några besök bokade... (och sista datum inte har passerats för samtliga intyg)
-        if (utredning.getBesokList().size() == 0 && !(utredning.getIntygList().stream()
-                .allMatch(intyg ->
-                        ((intyg.getSistaDatum() != null && LocalDateTime.now().isAfter(intyg.getSistaDatum())
-                                || (intyg.getSistaDatumKompletteringsbegaran() != null
-                                && LocalDateTime.now().isAfter(intyg.getSistaDatumKompletteringsbegaran()))))))) {
+        if (utredning.getBesokList().size() == 0 && !(utredning.getIntygList().stream().allMatch(intyg ->
+                ((intyg.getSistaDatum() != null && LocalDateTime.now().isAfter(intyg.getSistaDatum())
+                        || (intyg.getSistaDatumKompletteringsbegaran() != null
+                        && LocalDateTime.now().isAfter(intyg.getSistaDatumKompletteringsbegaran()))))))) {
             // BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR
             Bestallning bestallning = utredning.getBestallning().get();
             if (utredning.getHandlingList().size() == 0 && bestallning.getUppdateradDatum() == null) {

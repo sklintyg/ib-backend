@@ -43,6 +43,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
 import java.time.LocalDateTime;
 
 import static org.junit.Assert.assertEquals;
+import static se.inera.intyg.intygsbestallning.persistence.model.Avvikelse.AvvikelseBuilder.anAvvikelse;
 import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
 import static se.inera.intyg.intygsbestallning.persistence.model.Handelse.HandelseBuilder.aHandelse;
 
@@ -442,7 +443,7 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
                 .map(iff -> iff.add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now())));
         utr.setBestallning(buildBestallning(null));
         Intyg intyg = buildBestalltIntyg();
-        intyg.setSkickatDatum(LocalDateTime.now()); // Sätts när vårdadmin klickar på "Registrera mottagen handling"
+        intyg.setSkickatDatum(LocalDateTime.now()); // Sätts när vårdadmin klickar på "Registrera skickat utlåtande"
         utr.getIntygList().add(intyg);
 
         Handling h = buildHandling(null, LocalDateTime.now());
@@ -470,7 +471,7 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
         Intyg intyg = buildBestalltIntyg();
         intyg.setKomplettering(false);
         intyg.setSistaDatum(LocalDateTime.parse("2018-06-25T00:00"));
-        intyg.setSkickatDatum(LocalDateTime.parse("2018-07-06T00:00")); // Sätts när vårdadmin klickar på "Registrera mottagen handling"
+        intyg.setSkickatDatum(LocalDateTime.parse("2018-07-06T00:00")); // Sätts när vårdadmin klickar på "Registrera skickat utlåtande"
         utr.getIntygList().add(intyg);
 
         Handling h = buildHandling(null, LocalDateTime.now());
@@ -486,7 +487,7 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
     }
 
     @Test
-    public void bugSkickaUtlatandeStatusAfterAvvikelse() {
+    public void bugGetStuckInAvvikelseMottagenInsteadOfGoingToSkickaUtlatande() {
         /* Om vårdadmin i en utredning med 1 besök får en avvikelse, och sedan skickar utlåtande, så misslyckas state att gå
            AVVIKELSE_MOTTAGEN --> UTLATANDE_SKICKAT, och fastnar på AVVIKELSE_MOTTAGEN
         */
@@ -498,7 +499,7 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
         Intyg intyg = buildBestalltIntyg();
         intyg.setKomplettering(false);
         intyg.setSistaDatum(LocalDateTime.parse("2018-08-25T00:00"));
-        intyg.setSkickatDatum(LocalDateTime.parse("2018-07-08T00:00")); // Sätts när vårdadmin klickar på "Registrera mottagen handling"
+        intyg.setSkickatDatum(LocalDateTime.parse("2018-07-08T00:00")); // Sätts när vårdadmin klickar på "Registrera skickat utlåtande"
         utr.getIntygList().add(intyg);
 
         Handling h = buildHandling(null, LocalDateTime.now());
@@ -536,6 +537,63 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
         assertEquals(UtredningStatus.UTLATANDE_SKICKAT, status);
         assertEquals(UtredningFas.UTREDNING, status.getUtredningFas());
         assertEquals(Actor.FK, status.getNextActor());
+    }
+
+    @Test
+    public void bugGetStuckInAvvikelseMottagenInsteadOfGoingToUtredningPagar() {
+        /* Om FK rapporterar in en avvikelse (för patient) för ett inbokat möte, och vårdadmin sedan avbokar mötet,
+           så är utredningen fortfarande kvar i state AVVIKELSE_MOTTAGEN istället för att gå till UTREDNING_PAGAR.
+         */
+        Utredning utr = buildBaseUtredning();
+        utr.getExternForfragan()
+                .map(ExternForfragan::getInternForfraganList)
+                .map(iff -> iff.add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now())));
+        utr.setBestallning(buildBestallning(null));
+        Intyg intyg = buildBestalltIntyg();
+        intyg.setKomplettering(false);
+        intyg.setSistaDatum(LocalDateTime.parse("2018-08-25T00:00"));
+        utr.getIntygList().add(intyg);
+
+        Handling h = buildHandling(null, LocalDateTime.now());
+        h.setSkickatDatum(LocalDateTime.now());
+        h.setUrsprung(HandlingUrsprungTyp.BESTALLNING);
+        utr.getHandlingList().add(h);
+        // 1 avvikelse, 1 händelse samt 1 avbokning av ett besök.
+        utr.getBesokList().add(aBesok()
+                .withBesokStartTid(LocalDateTime.parse("2018-07-09T16:02"))
+                .withBesokSlutTid(LocalDateTime.parse("2018-08-09T17:02"))
+                .withBesokStatus(BesokStatusTyp.INSTALLD_VARDKONTAKT)
+                .withTolkStatus(TolkStatusTyp.EJ_BOKAT)
+                .withDeltagareProfession(DeltagarProfessionTyp.LK)
+                .withErsatts(null)
+                .withAvvikelse(anAvvikelse()
+                        .withAvvikelseId(1L)
+                        .withOrsakatAv(AvvikelseOrsak.VARDEN)
+                        .withTidpunkt(LocalDateTime.parse("2018-07-11T16:02:28"))
+                        .withInvanareUteblev(false)
+                        .build())
+                .withHandelseList(ImmutableList.of(
+                        aHandelse()
+                                .withId(15L)
+                                .withSkapad(LocalDateTime.parse("2018-07-11T16:00:00"))
+                                .withHandelseTyp(HandelseTyp.NYTT_BESOK)
+                                .build(),
+                        aHandelse()
+                                .withId(16L)
+                                .withSkapad(LocalDateTime.parse("2018-07-11T16:04:40"))
+                                .withHandelseTyp(HandelseTyp.AVVIKELSE_MOTTAGEN)
+                                .build(),
+                        aHandelse()
+                                .withId(17L)
+                                .withHandelseTyp(HandelseTyp.AVBOKAT_BESOK)
+                                .withSkapad(LocalDateTime.parse("2018-07-11T16:10:40"))
+                                .build()))
+                .build());
+
+        UtredningStatus status = testee.resolveStatus(utr);
+        assertEquals(UtredningStatus.UTREDNING_PAGAR, status);
+        assertEquals(UtredningFas.UTREDNING, status.getUtredningFas());
+        assertEquals(Actor.UTREDARE, status.getNextActor());
     }
 
     private Utredning buildBasicUtredningForKompletteringTest() {
