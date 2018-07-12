@@ -19,7 +19,7 @@
 
 angular.module('ibApp')
     .controller('TilldelaDirektModalCtrl',
-        function($scope, $uibModalInstance, $log, utredning, veModel, UtredningarProxy) {
+        function($scope, $uibModalInstance, $log, $state, utredning, veModel, UtredningarProxy) {
             'use strict';
 
             // If an InternForfragan already exists, show as selected and disabled checkboxes
@@ -58,6 +58,7 @@ angular.module('ibApp')
                         $log.error('failed to tilldelda direkt!' + error);
                     }).finally(function() { // jshint ignore:line
                         $scope.vm.inProgress = false;
+                        $state.reload();
                     });
                 }
             };
