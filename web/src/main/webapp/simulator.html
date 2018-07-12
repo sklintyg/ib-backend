@@ -363,10 +363,31 @@
           };
 
           $scope.rd = {
+              assessmentCareContactId: null,
+              assessmentCareContactIdOptions: [],
               causedBy: 'VARDEN',
               deviationTime: moment().format('YYYYMMDDHHmmss'),
               citizenFailedToArrive: false
           };
+
+          $scope.refreshRdAssessmentCareContactIdOptions = function() {
+              // Finds all possible besok ids that FK may call ReportDeviation on.
+              $scope.rd.assessmentCareContactIdOptions = [];
+              $http.get('/api/test/utredningar/withstatus/UTREDNING_PAGAR').then(function(response){
+                  $scope.rd.assessmentCareContactId = null;
+                  angular.forEach(response.data, function(utredning) {
+                      angular.forEach(utredning.besokList, function(besok) {
+                          if(besok.besokStatus === 'TIDBOKAD_VARDKONTAKT') {
+                              $scope.rd.assessmentCareContactIdOptions.push(besok.id);
+                          }
+                      });
+                  });
+                  $scope.rd.assessmentCareContactId =
+                      ($scope.rd.assessmentCareContactIdOptions[0] || $scope.rd.assessmentCareContactId);
+              });
+          };
+
+          $scope.refreshRdAssessmentCareContactIdOptions();
 
           $scope.causedByOptions = ['VARDEN','PATIENT'];
 
@@ -458,7 +479,7 @@
 
               sendSoap(rcrUrl, msg);
           };
-          
+
           function sendSoap(url, msg) {
 
               $log.info(msg);
@@ -575,11 +596,17 @@
         </div>
 
       </uib-tab>
-      
+
       <uib-tab heading="Avvikelse">
         <h2>ReportDeviation</h2>
 
-        <div class="row"><label class="col-sm-3 control-label">assessmentCareContactId</label><div class="col-sm-9"><input class="form-control" ng-model="rd.assessmentCareContactId"></div></div>
+        <div class="row">
+          <label class="col-sm-3 control-label">assessmentCareContactId</label>
+          <div class="col-sm-6"><select class="form-control" ng-model="rd.assessmentCareContactId" ng-options="item for item in rd.assessmentCareContactIdOptions"></select></div>
+          <div class="col-sm-3">
+            <button class="btn btn-default" ng-click="refreshRdAssessmentCareContactIdOptions()">Uppdatera listan</button>
+          </div>
+        </div>
         <div class="row"><label class="col-sm-3 control-label">deviationId</label><div class="col-sm-9"><input class="form-control" ng-model="rd.deviationId"></div></div>
         <div class="row"><label class="col-sm-3 control-label">causedBy</label>
           <div class="col-sm-9">
@@ -617,7 +644,7 @@
         </div>
 
       </uib-tab>
-      
+
     </uib-tabset>
 
     <div ng-if="resultat" class="form-group">
