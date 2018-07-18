@@ -256,8 +256,7 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
         }
         // Utredning must exist...
         Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
-                () -> new IbNotFoundException(
-                    MessageFormat.format("Felaktig utredningsid: {0}. Utredningen existerar inte.", utredningId)));
+                () -> new IbNotFoundException("Angivet utredningsid existerar inte"));
 
         // ..and have a internforfragan in answerable state
         InternForfragan internForfragan = getAnswerableInternForfragan(utredning, svar);

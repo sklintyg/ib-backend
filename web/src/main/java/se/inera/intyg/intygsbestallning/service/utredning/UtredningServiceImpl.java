@@ -448,8 +448,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     @Override
     public void avslutaUtredning(final AvslutaUtredningRequest request) {
         final Utredning utredning = utredningRepository.findById(request.getUtredningId())
-                .orElseThrow(() -> new IbNotFoundException(MessageFormat.format(
-                        "Felaktig utredningsid: {0}. Utredningen existerar inte.", request.getUtredningId())));
+                .orElseThrow(() -> new IbNotFoundException("Angivet utredningsid existerar inte"));
 
         if (nonNull(utredning.getAvbrutenDatum()) || nonNull(utredning.getAvbrutenOrsak())) {
             throw new IbServiceException(IbErrorCodeEnum.ALREADY_EXISTS,

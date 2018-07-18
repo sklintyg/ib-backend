@@ -70,8 +70,7 @@ public abstract class BaseUtredningService {
     @NotNull
     protected Utredning getUtredningForLandsting(Long utredningId, String landstingHsaId, List<UtredningStatus> allowedStatuses) {
         Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
-                () -> new IbNotFoundException(
-                    MessageFormat.format("Felaktig utredningsid: {0}. Utredningen existerar inte.", utredningId)));
+                () -> new IbNotFoundException("Angivet utredningsid existerar inte"));
 
         if (!Objects.equals(utredning.getExternForfragan().map(ExternForfragan::getLandstingHsaId).orElse(null), landstingHsaId)) {
             throw new IbAuthorizationException(
