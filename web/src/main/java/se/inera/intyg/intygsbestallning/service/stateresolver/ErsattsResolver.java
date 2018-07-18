@@ -18,14 +18,17 @@
  */
 package se.inera.intyg.intygsbestallning.service.stateresolver;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.persistence.model.type.AvvikelseOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
+import se.inera.intyg.intygsbestallning.persistence.model.type.AvvikelseOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.KallelseFormTyp;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 
+import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -35,6 +38,8 @@ import java.util.Optional;
  * Encapsulates business logic regarding when a Utredning is eligible for ersattning.
  */
 public final class ErsattsResolver {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private static final int MAX_AVBOKNING_TIMMAR = 24;
     private static final int KALLELSE_ARBETSDAGAR = 5;
@@ -70,7 +75,9 @@ public final class ErsattsResolver {
         // Det finns Inget besök i utredning som är ersättningsberättigat.
         boolean minstEttBesokErsatts = false;
         for (Besok besok : utredning.getBesokList()) {
-            if (besok.getErsatts() && resolveBesokErsatts(utredning, besok, businessDays)) {
+            if (besok == null) {
+                LOG.warn("Warning: ignoring unexpected null, besok == null");
+            } else if (besok.getErsatts() && resolveBesokErsatts(utredning, besok, businessDays)) {
                 minstEttBesokErsatts = true;
                 break;
             }
@@ -111,7 +118,7 @@ public final class ErsattsResolver {
         // för den valda kallelseformen.
         if (besok.getAvvikelse() != null && besok.getAvvikelse().getInvanareUteblev() && besok.getKallelseDatum() != null
                 && besok.getKallelseDatum().toLocalDate()
-                        .isAfter(resolveSenasteKallelseDatum(besok.getBesokStartTid(), besok.getKallelseForm(), businessDays))) {
+                .isAfter(resolveSenasteKallelseDatum(besok.getBesokStartTid(), besok.getKallelseForm(), businessDays))) {
             return false;
         }
 
@@ -119,7 +126,7 @@ public final class ErsattsResolver {
         // (se FMU-G005 Ersättningsberäkning), oavsett när avvikelsetidpunkten inträffade.
         if (besok.getAvvikelse() != null && besok.getKallelseDatum() != null
                 && besok.getKallelseDatum().toLocalDate()
-                        .isAfter(resolveSenasteKallelseDatum(besok.getBesokStartTid(), besok.getKallelseForm(), businessDays))) {
+                .isAfter(resolveSenasteKallelseDatum(besok.getBesokStartTid(), besok.getKallelseForm(), businessDays))) {
             return false;
         }
 
