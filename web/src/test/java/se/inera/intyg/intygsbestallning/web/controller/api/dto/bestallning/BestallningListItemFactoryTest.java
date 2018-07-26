@@ -22,10 +22,13 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Spy;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
+import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
+import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -51,12 +54,22 @@ public class BestallningListItemFactoryTest {
 
     private UtredningStatusResolver utredningStatusResolver = new UtredningStatusResolver();
 
+    @Spy
+    private BusinessDaysBean businessDays = new BusinessDaysStub();
+
     @InjectMocks
-    BestallningListItemFactory testee = new BestallningListItemFactory();
+    private BestallningListItemFactory testee = new BestallningListItemFactory();
 
     @Before
     public void setup() {
+    }
+
+    @Before
+    public void injectSpringBeans() {
         ReflectionTestUtils.setField(testee, "paminnelseDagar", UTREDNING_PAMINNELSE_DAGAR);
+        // Since we are not using a Spring context, and, injectmocks doesnt seem to work on subclasses (?),
+        // DP inject/Autowire manually.
+        ReflectionTestUtils.setField(testee, "businessDays", new BusinessDaysStub());
     }
 
     @Test

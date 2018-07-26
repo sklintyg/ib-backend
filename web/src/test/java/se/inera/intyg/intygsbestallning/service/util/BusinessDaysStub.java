@@ -50,5 +50,10 @@ public class BusinessDaysStub extends BusinessDaysBean {
         return Holidays.SWE.isBusinessDay(date);
     }
 
+    @Override
+    public LocalDate minusBusinessDays(LocalDate date, int businessDays) {
+        return addBusinessDays(date, -businessDays, false);
+    }
+
 
 }

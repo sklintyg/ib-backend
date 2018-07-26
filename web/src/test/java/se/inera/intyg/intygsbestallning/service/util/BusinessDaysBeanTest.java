@@ -35,15 +35,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.time.DayOfWeek.MONDAY;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
  * @author Magnus Ekstrand on 2018-05-09.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class BusinessDaysTest {
+public class BusinessDaysBeanTest {
 
     private static final String VACATIONPERIODS = "29-31,51-52";
 
@@ -82,9 +84,37 @@ public class BusinessDaysTest {
 
     @Test
     public void daysBetween() {
-        LocalDate start = easter.goodFriday().minusDays(2);
-        LocalDate end = easter.easterMonday().plusDays(3);
-        assertEquals(5, testee.daysBetween(start, end.plusDays(1)));
+        LocalDate wednesdayBeforeGoodFriday = easter.goodFriday().minusDays(2);
+        LocalDate fridayAfterEasterMonday = easter.easterMonday().plusDays(4);
+        // Business days are: wednesday -> thursday -> tuesday -> wednesday -> thursday -> friday
+        assertEquals(5, testee.daysBetween(wednesdayBeforeGoodFriday, fridayAfterEasterMonday));
+    }
+
+    @Test
+    public void daysBetweenGivesZeroDistanceFromHolidayToWorkday() {
+        // Given
+        LocalDate sunday = week(2018, 5).get(6);
+        LocalDate followingBusinessMonday = sunday.plusDays(1);
+        assertTrue(testee.isBusinessDay(followingBusinessMonday));
+
+        // When
+        int daysBetween = testee.daysBetween(sunday, followingBusinessMonday);
+
+        // Then
+        assertThat(daysBetween, is(0));
+    }
+
+    @Test
+    public void addBusinessDaysWithNoIrregularHolidays() {
+        LocalDate sunday = week(2018, 5).get(6);
+        LocalDate monday = sunday.plusDays(1);
+
+        assertEquals(monday.plusDays(7), testee.addBusinessDays(monday, 5));   // Next Monday
+        assertEquals(monday.plusDays(4), testee.addBusinessDays(monday, 4));   // Next Friday
+        assertEquals(monday.minusDays(4), testee.addBusinessDays(monday, -2)); // Thursday before
+        assertEquals(sunday.plusDays(1), testee.addBusinessDays(sunday, 1));   // Next Monday
+        assertEquals(sunday.minusDays(2), testee.addBusinessDays(sunday, -1)); // Friday before
+
     }
 
     private static LocalDate getMaxDate(List<LocalDate> dates) {

@@ -18,8 +18,11 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
@@ -28,12 +31,16 @@ import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.stateresolver.SlutDatumFasResolver;
+import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 
 @Component
 public class BestallningListItemFactory {
 
     @Value("${ib.utredning.paminnelse.arbetsdagar}")
-    private long paminnelseDagar;
+    private int paminnelseDagar;
+
+    @Autowired
+    private BusinessDaysBean businessDays;
 
     public BestallningListItem from(Utredning utredning, Actor actorInThisContext) {
 
@@ -95,7 +102,7 @@ public class BestallningListItemFactory {
             default:
                 return false;
         }
-        return LocalDateTime.now().isBefore(timestamp)
-                && LocalDateTime.now().isAfter(timestamp.minusDays(paminnelseDagar));
+        return LocalDate.now().isBefore(timestamp.toLocalDate())
+                && LocalDate.now().isAfter(businessDays.minusBusinessDays(timestamp.toLocalDate(), paminnelseDagar));
     }
 }

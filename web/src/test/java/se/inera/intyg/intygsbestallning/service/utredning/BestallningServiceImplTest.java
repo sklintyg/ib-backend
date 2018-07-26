@@ -25,6 +25,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.patient.PatientNameEnricher;
@@ -74,7 +75,14 @@ public class BestallningServiceImplTest {
     private BestallningServiceImpl bestallningService;
 
     @Before
-    public void setup() {
+    public void injectSpringBeans() {
+        // Since we are not using a Spring context, and, injectmocks doesnt seem to work on subclasses (?),
+        // DP inject/Autowire manually.
+        ReflectionTestUtils.setField(bestallningListItemFactory, "businessDays", new BusinessDaysStub());
+    }
+
+    @Before
+    public void setupMocks() {
         doNothing().when(logService).logList(anyList(), any());
         doNothing().when(patientNameEnricher).enrichWithPatientNames(anyList());
     }

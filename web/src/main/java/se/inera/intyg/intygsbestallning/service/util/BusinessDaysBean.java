@@ -58,16 +58,16 @@ public class BusinessDaysBean {
      * <p>
      * Examples:
      * <ul>
-     *     <li>29-30,51-52</li>
-     *     <li>29,30,31,51,52</li>
-     *     <li>20180716-20180805,20181217-20181230</li>
-     *     <li>29-31,20181001,51,20181224-20181230</li>
+     * <li>29-30,51-52</li>
+     * <li>29,30,31,51,52</li>
+     * <li>20180716-20180805,20181217-20181230</li>
+     * <li>29-31,20181001,51,20181224-20181230</li>
      * </ul>
-     *
+     * <p>
      * When using ranges, the start and end values must be of the same type.
      * You cannot use a week as start value and a date as an end value.
      *
-     * @param vacationPeriods  the current year's vacation period, can be null or empty string
+     * @param vacationPeriods the current year's vacation period, can be null or empty string
      */
     public BusinessDaysBean(@Value("${vacation.periods}") String vacationPeriods) {
         this.vacationPeriods = vacationPeriods;
@@ -85,7 +85,7 @@ public class BusinessDaysBean {
      * <p>
      * A weekend is treated as a holiday.
      *
-     * @param date  the date to check
+     * @param date the date to check
      * @return true if the specified date is a business day
      * @throws IllegalArgumentException if the date is outside the supported range
      */
@@ -100,8 +100,8 @@ public class BusinessDaysBean {
      * <p>
      * A weekend is treated as a holiday.
      *
-     * @param date  the date to check
-     * @param accountForVacationPeriods  takes into account the vacation periods
+     * @param date                      the date to check
+     * @param accountForVacationPeriods takes into account the vacation periods
      * @return true if the specified date is a business day
      * @throws IllegalArgumentException if the date is outside the supported range
      */
@@ -122,8 +122,8 @@ public class BusinessDaysBean {
      * If the dates are equal, zero is returned.
      * If the end is before the start, an exception is thrown.
      *
-     * @param startInclusive  the start date
-     * @param endExclusive  the end date
+     * @param startInclusive the start date
+     * @param endExclusive   the end date
      * @return the total number of business days between the start and end date
      * @throws IllegalArgumentException if the calculation is outside the supported range
      */
@@ -139,9 +139,9 @@ public class BusinessDaysBean {
      * If the dates are equal, zero is returned.
      * If the end is before the start, an exception is thrown.
      *
-     * @param startInclusive  the start date
-     * @param endExclusive  the end date
-     * @param accountForVacationPeriods  takes into account the vacation periods
+     * @param startInclusive            the start date
+     * @param endExclusive              the end date
+     * @param accountForVacationPeriods takes into account the vacation periods
      * @return the total number of business days between the start and end date
      * @throws IllegalArgumentException if the calculation is outside the supported range
      */
@@ -151,23 +151,28 @@ public class BusinessDaysBean {
                 .count());
     }
 
+    public LocalDate minusBusinessDays(LocalDate date, int businessDays) {
+        return addBusinessDays(date, -businessDays, true);
+    }
+
     public LocalDate addBusinessDays(LocalDate date, int businessDays) {
-        return addBusinessDays(date, businessDays,  true);
+        return addBusinessDays(date, businessDays, true);
     }
 
     /**
      * Adds a number of business days to the incoming start date.
      *
-     * @param date the start date
+     * @param date         the start date
      * @param businessDays the number of business days to add
      * @return the new date
      */
     public LocalDate addBusinessDays(LocalDate date, int businessDays, boolean accountForVacationPeriods) {
         LocalDate addedDate = date;
-        int businessDaysLeft = businessDays;
+        boolean removeDays = businessDays < 0;
+        int businessDaysLeft = Math.abs(businessDays);
 
-        while (businessDaysLeft > 0) {
-            addedDate = addedDate.plusDays(1);
+        while (businessDaysLeft != 0) {
+            addedDate = removeDays ? addedDate.minusDays(1) : addedDate.plusDays(1);
             if (isBusinessDay(addedDate, accountForVacationPeriods)) {
                 businessDaysLeft--;
             }

@@ -19,12 +19,14 @@
 package se.inera.intyg.intygsbestallning.service.statistics;
 
 import com.google.common.collect.ImmutableList;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
@@ -68,7 +70,7 @@ public class StatisticsServiceImplTest {
     private UtredningRepository utredningRepository;
 
     @Spy
-    private BestallningListItemFactory bestallningListItemFactory;
+    private BestallningListItemFactory bestallningListItemFactory = new BestallningListItemFactory();
 
     @Spy
     private UtredningListItemFactory utredningListItemFactory = new UtredningListItemFactory(new BusinessDaysStub());
@@ -81,6 +83,13 @@ public class StatisticsServiceImplTest {
 
     @InjectMocks
     private StatisticsServiceImpl testee;
+
+    @Before
+    public void injectSpringBeans() {
+        // Since we are not using a Spring context, and, injectmocks doesnt seem to work on subclasses (?),
+        // DP inject/Autowire manually.
+        ReflectionTestUtils.setField(bestallningListItemFactory, "businessDays", businessDays);
+    }
 
     private static List<Utredning> buildUtredningarWithExternforfragningar(int num, boolean addInternForfragning) {
         List<Utredning> utredningList = new ArrayList<>();
