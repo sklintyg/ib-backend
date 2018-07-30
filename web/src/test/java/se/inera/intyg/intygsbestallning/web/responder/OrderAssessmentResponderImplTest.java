@@ -68,7 +68,7 @@ public class OrderAssessmentResponderImplTest {
         request.setAuthorityAdministrativeOfficial(new AuthorityAdministrativeOfficialType());
         request.setCareUnitId(anII(null, "enhet"));
         CitizenType citizen = new CitizenType();
-        citizen.setPersonalIdentity(anII(null, "personnummer"));
+        citizen.setPersonalIdentity(anII(null, "191212121212"));
         citizen.setFirstName("firstname");
         citizen.setMiddleName("middlename");
         citizen.setLastName("lastname");
@@ -98,7 +98,7 @@ public class OrderAssessmentResponderImplTest {
         request.setAuthorityAdministrativeOfficial(new AuthorityAdministrativeOfficialType());
         request.setCareUnitId(anII(null, "enhet"));
         CitizenType citizen = new CitizenType();
-        citizen.setPersonalIdentity(anII(null, "personnummer"));
+        citizen.setPersonalIdentity(anII(null, "191212121212"));
         request.setCitizen(citizen);
         OrderAssessmentResponseType response = responder.orderAssessment("address", request);
 
@@ -109,10 +109,41 @@ public class OrderAssessmentResponderImplTest {
     }
 
     @Test
-    public void orderAssessmentFail() {
+    public void orderAssessmentFailMissingCitizenPersonalIdentity() {
+
+        OrderAssessmentType request = new OrderAssessmentType();
+        request.setCertificateType(aCv(LIAG.name(), null, null));
+        final OrderAssessmentResponseType response = responder.orderAssessment("address", request);
+
+        assertThat(response.getResult().getResultCode()).isEqualTo(ResultCodeType.ERROR);
+        assertThat(response.getResult().getResultText()).isEqualTo("Invalid Personal Identity Format for Citizen");
+    }
+
+    @Test
+    public void orderAssessmentFailIncorrectFormatCitizenPersonalIdentity() {
+
+        OrderAssessmentType request = new OrderAssessmentType();
+        request.setCertificateType(aCv(LIAG.name(), null, null));
+
+        CitizenType citizen = new CitizenType();
+        citizen.setPersonalIdentity(anII(null, "Very Bad Format"));
+        request.setCitizen(citizen);
+
+        final OrderAssessmentResponseType response = responder.orderAssessment("address", request);
+
+        assertThat(response.getResult().getResultCode()).isEqualTo(ResultCodeType.ERROR);
+        assertThat(response.getResult().getResultText()).isEqualTo("Invalid Personal Identity Format for Citizen");
+    }
+
+    @Test
+    public void orderAssessmentFailIncorrectCertificateType() {
 
         OrderAssessmentType request = new OrderAssessmentType();
         request.setCertificateType(aCv("NonExistingCode", null, null));
+
+        CitizenType citizen = new CitizenType();
+        citizen.setPersonalIdentity(anII(null, "191212121212"));
+        request.setCitizen(citizen);
         final OrderAssessmentResponseType response = responder.orderAssessment("address", request);
 
         assertThat(response.getResult().getResultCode()).isEqualTo(ResultCodeType.ERROR);

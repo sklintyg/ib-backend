@@ -65,7 +65,7 @@ public class OrderAssessmentResponderImpl implements OrderAssessmentResponderInt
             checkArgument(StringUtils.isNotEmpty(logicalAddress), LOGICAL_ADDRESS);
             checkArgument(nonNull(request), REQUEST);
 
-            OrderRequest orderRequest = OrderRequest.from(request);
+            final OrderRequest orderRequest = OrderRequest.from(request);
 
             // IF its AF we create new Utredning entity.
             Utredning utredning;
@@ -77,7 +77,9 @@ public class OrderAssessmentResponderImpl implements OrderAssessmentResponderInt
 
             OrderAssessmentResponseType response = new OrderAssessmentResponseType();
             response.setAssessmentId(
-                    anII(isNull(request.getAssessmentId()) ? sourceSystemHsaId : request.getAssessmentId().getRoot(),
+                    anII(isNull(request.getAssessmentId())
+                                    ? sourceSystemHsaId
+                                    : request.getAssessmentId().getRoot(),
                             utredning.getUtredningId().toString()));
             response.setResult(toResultTypeOK());
             return response;

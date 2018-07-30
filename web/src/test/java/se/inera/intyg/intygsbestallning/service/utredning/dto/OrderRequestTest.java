@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning.dto;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -33,7 +34,6 @@ import se.riv.intygsbestallning.certificate.order.v1.AddressType;
 import se.riv.intygsbestallning.certificate.order.v1.AuthorityAdministrativeOfficialType;
 import se.riv.intygsbestallning.certificate.order.v1.CitizenType;
 import java.time.LocalDate;
-import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 
 public class OrderRequestTest {
@@ -48,7 +48,7 @@ public class OrderRequestTest {
         assertEquals("enhet", result.getEnhetId());
         assertEquals("bakgrund", result.getInvanareBakgrund());
         assertEquals("behov", result.getInvanareBehov());
-        assertEquals("personnummer", result.getInvanarePersonnummer());
+        assertEquals("191212121212", result.getInvanarePersonnummer());
         assertEquals("kommentar", result.getKommentar());
         assertEquals("syfte", result.getSyfte());
         assertEquals("sv", result.getTolkSprak());
@@ -82,7 +82,7 @@ public class OrderRequestTest {
         assertEquals("enhet", result.getEnhetId());
         assertEquals("bakgrund", result.getInvanareBakgrund());
         assertEquals("behov", result.getInvanareBehov());
-        assertEquals("personnummer", result.getInvanarePersonnummer());
+        assertEquals("191212121212", result.getInvanarePersonnummer());
         assertEquals("kommentar", result.getKommentar());
         assertEquals("syfte", result.getSyfte());
         assertEquals("sv", result.getTolkSprak());
@@ -100,30 +100,50 @@ public class OrderRequestTest {
         assertEquals("telefonnummer", result.getBestallare().getTelefonnummer());
     }
 
-    @Test(expected = IbServiceException.class)
+    @Test
     public void testConvertFailCertificateType() {
         OrderAssessmentType request = createFullRequest();
         request.setCertificateType(aCv("notExisting", null, null));
 
-        assertErrorCode(request, BAD_REQUEST);
+        assertThatThrownBy(() -> OrderRequest.from(request))
+                .isExactlyInstanceOf(IbServiceException.class)
+                .hasFieldOrPropertyWithValue("errorCode", BAD_REQUEST)
+                .hasMessage("CertificateType is not of a known type");
     }
 
-    @Test(expected = IbServiceException.class)
+    @Test
     public void testConvertFailOrderNameMissing() {
         OrderAssessmentType request = createFullRequest();
         request.getCitizen().setFirstName(null);
         request.getCitizen().setMiddleName(null);
         request.getCitizen().setLastName(null);
 
-        assertErrorCode(request, BAD_REQUEST);
+        assertThatThrownBy(() -> OrderRequest.from(request))
+                .isExactlyInstanceOf(IbServiceException.class)
+                .hasFieldOrPropertyWithValue("errorCode", BAD_REQUEST)
+                .hasMessage("Name is required when assessmentId is present");
     }
 
-    @Test(expected = IbServiceException.class)
+    @Test
     public void testConvertFailIntygSentDate() {
         OrderAssessmentType request = createFullRequest();
         request.setLastDateForCertificateReceival(null);
 
-        assertErrorCode(request, BAD_REQUEST);
+        assertThatThrownBy(() -> OrderRequest.from(request))
+                .isExactlyInstanceOf(IbServiceException.class)
+                .hasFieldOrPropertyWithValue("errorCode", BAD_REQUEST)
+                .hasMessage("LastDateForCertificateReceival is required when assessmentId is present");
+    }
+
+    @Test
+    public void testConvertFailIncorrectCitizenPersonalId() {
+        OrderAssessmentType request = createFullRequest();
+        request.getCitizen().setPersonalIdentity(anII(null, "Very Bad Format"));
+
+        assertThatThrownBy(() -> OrderRequest.from(request))
+                .isExactlyInstanceOf(IbServiceException.class)
+                .hasFieldOrPropertyWithValue("errorCode", BAD_REQUEST)
+                .hasMessage("Invalid Personal Identity Format for Citizen");
     }
 
     @NotNull
@@ -133,7 +153,7 @@ public class OrderRequestTest {
         request.setOrderDate("20180101");
         request.setLastDateForCertificateReceival("20190101");
         CitizenType citizen = new CitizenType();
-        citizen.setPersonalIdentity(anII(null, "personnummer"));
+        citizen.setPersonalIdentity(anII(null, "191212121212"));
         citizen.setFirstName("firstname");
         citizen.setMiddleName("middlename");
         citizen.setLastName("lastname");
@@ -162,16 +182,5 @@ public class OrderRequestTest {
         request.setPurpose("syfte");
         request.setCareUnitId(anII(null, "enhet"));
         return request;
-    }
-
-    private void assertErrorCode(OrderAssessmentType request,
-                                 IbErrorCodeEnum errorCodeEnum) {
-        try {
-            OrderRequest.from(request);
-        } catch (IbServiceException ise) {
-            assertEquals(errorCodeEnum, ise.getErrorCode());
-            assertNotNull(ise.getMessage());
-            throw ise;
-        }
     }
 }
