@@ -18,10 +18,12 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
@@ -43,7 +45,14 @@ import static se.inera.intyg.intygsbestallning.persistence.model.type.Utrednings
 public class UtredningListItemFactoryTest {
 
     @InjectMocks
-    private UtredningListItemFactory testee = new UtredningListItemFactory(new BusinessDaysStub());
+    private UtredningListItemFactory testee = new UtredningListItemFactory();
+
+    @Before
+    public void injectSpringBeans() {
+        // Since we are not using a Spring context, and, injectmocks doesnt seem to work on subclasses (?),
+        // DP inject/Autowire manually.
+        ReflectionTestUtils.setField(testee, "businessDays", new BusinessDaysStub());
+    }
 
     @Test
     public void testFrom() {

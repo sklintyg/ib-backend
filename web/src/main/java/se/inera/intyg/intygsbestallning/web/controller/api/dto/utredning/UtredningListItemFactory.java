@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
@@ -44,11 +45,8 @@ public class UtredningListItemFactory {
     @Value("${ib.utredning.paminnelse.arbetsdagar}")
     private int utredningPaminnelseArbetsdagar;
 
+    @Autowired
     private BusinessDaysBean businessDays;
-
-    public UtredningListItemFactory(final BusinessDaysBean businessDays) {
-        this.businessDays = businessDays;
-    }
 
     public UtredningListItem from(Utredning utredning) {
 

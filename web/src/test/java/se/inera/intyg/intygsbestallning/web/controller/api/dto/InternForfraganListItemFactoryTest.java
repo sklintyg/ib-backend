@@ -56,7 +56,14 @@ public class InternForfraganListItemFactoryTest {
     private static final String LANDSTING_KOMMENTAR = "Gör detta nu!";
 
     @InjectMocks
-    private InternForfraganListItemFactory testee = new InternForfraganListItemFactory(new BusinessDaysStub());
+    private InternForfraganListItemFactory testee = new InternForfraganListItemFactory();
+
+    @Before
+    public void injectSpringBeans() {
+        // Since we are not using a Spring context, and, injectmocks doesnt seem to work on subclasses (?),
+        // DP inject/Autowire manually.
+        ReflectionTestUtils.setField(testee, "businessDays", new BusinessDaysStub());
+    }
 
     @Before
     public void setUp() {

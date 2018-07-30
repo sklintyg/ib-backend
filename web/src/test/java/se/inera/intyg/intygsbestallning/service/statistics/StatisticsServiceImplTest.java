@@ -73,10 +73,10 @@ public class StatisticsServiceImplTest {
     private BestallningListItemFactory bestallningListItemFactory = new BestallningListItemFactory();
 
     @Spy
-    private UtredningListItemFactory utredningListItemFactory = new UtredningListItemFactory(new BusinessDaysStub());
+    private UtredningListItemFactory utredningListItemFactory = new UtredningListItemFactory();
 
     @Spy
-    private InternForfraganListItemFactory internForfraganListItemFactory = new InternForfraganListItemFactory(new BusinessDaysStub());
+    private InternForfraganListItemFactory internForfraganListItemFactory = new InternForfraganListItemFactory();
 
     @Spy
     private BusinessDaysBean businessDays = new BusinessDaysStub();
@@ -89,6 +89,8 @@ public class StatisticsServiceImplTest {
         // Since we are not using a Spring context, and, injectmocks doesnt seem to work on subclasses (?),
         // DP inject/Autowire manually.
         ReflectionTestUtils.setField(bestallningListItemFactory, "businessDays", businessDays);
+        ReflectionTestUtils.setField(utredningListItemFactory, "businessDays", businessDays);
+        ReflectionTestUtils.setField(internForfraganListItemFactory, "businessDays", businessDays);
     }
 
     private static List<Utredning> buildUtredningarWithExternforfragningar(int num, boolean addInternForfragning) {

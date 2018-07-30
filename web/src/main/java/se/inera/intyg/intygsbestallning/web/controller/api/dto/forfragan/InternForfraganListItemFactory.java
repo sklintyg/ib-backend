@@ -21,6 +21,7 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan;
 import static java.util.Objects.nonNull;
 
 import com.google.common.collect.Lists;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import java.time.LocalDate;
@@ -49,11 +50,8 @@ public class InternForfraganListItemFactory {
     @Value("${ib.postgang.arbetsdagar}")
     private int postgangArbetsdagar;
 
+    @Autowired
     private BusinessDaysBean businessDays;
-
-    public InternForfraganListItemFactory(final BusinessDaysBean businessDays) {
-        this.businessDays = businessDays;
-    }
 
     public InternForfraganListItem from(Utredning utredning, String vardenhetId) {
 

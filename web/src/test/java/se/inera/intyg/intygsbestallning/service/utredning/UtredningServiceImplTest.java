@@ -59,6 +59,7 @@ import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createUtredn
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -68,6 +69,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
+import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveBetalningForUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveUtbetalningForUtredningRequest;
@@ -130,10 +133,13 @@ public class UtredningServiceImplTest {
     private RegistreradVardenhetRepository registreradVardenhetRepository;
 
     @Spy
-    private InternForfraganListItemFactory internForfraganListItemFactory = new InternForfraganListItemFactory(new BusinessDaysStub());
+    private BusinessDaysBean businessDays = new BusinessDaysStub();
 
     @Spy
-    private UtredningListItemFactory utredningListItemFactory = new UtredningListItemFactory(new BusinessDaysStub());
+    private InternForfraganListItemFactory internForfraganListItemFactory = new InternForfraganListItemFactory();
+
+    @Spy
+    private UtredningListItemFactory utredningListItemFactory = new UtredningListItemFactory();
 
     @InjectMocks
     private UtredningServiceImpl utredningService;
@@ -141,6 +147,13 @@ public class UtredningServiceImplTest {
     @Captor
     private ArgumentCaptor<Utredning> argumentCaptor;
 
+    @Before
+    public void injectSpringBeans() {
+        // Since we are not using a Spring context, and, injectmocks doesnt seem to work on subclasses (?),
+        // DP inject/Autowire manually.
+        ReflectionTestUtils.setField(utredningListItemFactory, "businessDays", businessDays);
+        ReflectionTestUtils.setField(internForfraganListItemFactory, "businessDays", businessDays);
+    }
 
 //    @Test
 //    public void findForfragningarForVardenhetHsaId() {

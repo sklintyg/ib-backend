@@ -61,10 +61,6 @@ public class BestallningListItemFactoryTest {
     private BestallningListItemFactory testee = new BestallningListItemFactory();
 
     @Before
-    public void setup() {
-    }
-
-    @Before
     public void injectSpringBeans() {
         ReflectionTestUtils.setField(testee, "paminnelseDagar", UTREDNING_PAMINNELSE_DAGAR);
         // Since we are not using a Spring context, and, injectmocks doesnt seem to work on subclasses (?),

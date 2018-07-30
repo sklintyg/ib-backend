@@ -36,6 +36,7 @@ import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.Utred
 import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU;
 
 import com.google.common.collect.ImmutableList;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -51,6 +52,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
@@ -107,7 +110,7 @@ public class ExternForfraganServiceImplTest {
     private NotifieringSendService notifieringSendService;
 
     @Spy
-    private InternForfraganListItemFactory internForfraganListItemFactory = new InternForfraganListItemFactory(new BusinessDaysStub());
+    private InternForfraganListItemFactory internForfraganListItemFactory = new InternForfraganListItemFactory();
 
     @InjectMocks
     private ExternForfraganServiceImpl testee;
@@ -115,11 +118,12 @@ public class ExternForfraganServiceImplTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-//    @Before
-//    public void initMocks() {
-//        internForfraganListItemFactory = spy(InternForfraganListItemFactory.class);
-//        internForfraganListItemFactory.setBusinessDays(new BusinessDaysStub());
-//    }
+    @Before
+    public void injectSpringBeans() {
+        // Since we are not using a Spring context, and, injectmocks doesnt seem to work on subclasses (?),
+        // DP inject/Autowire manually.
+        ReflectionTestUtils.setField(internForfraganListItemFactory, "businessDays", new BusinessDaysStub());
+    }
 
     @Test
     public void testListForfragningar() {

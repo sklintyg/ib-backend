@@ -42,6 +42,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Optional;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -53,6 +54,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
+import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.infra.security.common.model.Feature;
@@ -118,10 +120,17 @@ public class InternForfraganServiceImplTest {
     private BusinessDaysBean businessDays = new BusinessDaysStub();
 
     @Spy
-    private InternForfraganListItemFactory internForfraganListItemFactory = new InternForfraganListItemFactory(new BusinessDaysStub());
+    private InternForfraganListItemFactory internForfraganListItemFactory = new InternForfraganListItemFactory();
 
     @InjectMocks
     private InternForfraganServiceImpl internForfraganService;
+
+    @Before
+    public void injectSpringBeans() {
+        // Since we are not using a Spring context, and, injectmocks doesnt seem to work on subclasses (?),
+        // DP inject/Autowire manually.
+        ReflectionTestUtils.setField(internForfraganListItemFactory, "businessDays", new BusinessDaysStub());
+    }
 
     @Test
     public void testCreateInternForfraganSuccess() {
