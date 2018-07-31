@@ -19,11 +19,14 @@
 package se.inera.intyg.intygsbestallning.web.responder.resulthandler;
 
 import se.riv.intygsbestallning.certificate.order.v1.ResultType;
+import java.util.Objects;
+import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
+import se.inera.intyg.intygsbestallning.common.exception.NotFoundType;
 import se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil;
 
 public interface ResultFactory {
 
-    String LOGICAL_ADDRESS = "LogicalAddress needs to be defined";
+    String LOGICAL_ADDRESS = "LogicalAddress need to be defined";
     String REQUEST = "Request need to be defined";
 
     default ResultType toResultTypeOK() {
@@ -31,6 +34,19 @@ public interface ResultFactory {
     }
 
     default ResultType toResultTypeError(final Exception exception) {
-        return ResultTypeUtil.error(exception.getMessage());
+
+        String resultText;
+
+        if (exception instanceof IbNotFoundException) {
+            final NotFoundType notFoundType = ((IbNotFoundException) exception).getNotFoundType();
+            final Long entityId = ((IbNotFoundException) exception).getErrorEntityId();
+            resultText = notFoundType != null
+                    ? String.format(notFoundType.getErrorText(), Objects.toString(entityId))
+                    : exception.getMessage();
+        } else {
+            resultText = exception.getMessage();
+        }
+
+        return ResultTypeUtil.error(resultText);
     }
 }

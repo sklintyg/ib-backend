@@ -18,25 +18,16 @@
  */
 package se.inera.intyg.intygsbestallning.common.exception;
 
-public class IbNotFoundException extends IbServiceException {
+public enum NotFoundType {
+    UTREDNING("Felaktig utredningsid: %s. Utredningen existerar inte.");
 
-    private NotFoundType notFoundType;
+    private final String errorText;
 
-    public IbNotFoundException(String message) {
-        super(IbErrorCodeEnum.NOT_FOUND, message);
+    NotFoundType(String errorText) {
+        this.errorText = errorText;
     }
 
-    public IbNotFoundException(String message, Long errorEntityId) {
-        super(IbErrorCodeEnum.NOT_FOUND, message, errorEntityId);
-    }
-
-    public IbNotFoundException(String message, Long errorEntityId, NotFoundType notFoundType) {
-        super(IbErrorCodeEnum.NOT_FOUND, message, errorEntityId);
-        this.notFoundType = notFoundType;
-    }
-
-    public NotFoundType getNotFoundType() {
-        return notFoundType;
+    public String getErrorText() {
+        return errorText;
     }
 }
-

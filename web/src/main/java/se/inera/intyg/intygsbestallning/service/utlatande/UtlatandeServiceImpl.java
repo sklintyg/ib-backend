@@ -18,36 +18,36 @@
  */
 package se.inera.intyg.intygsbestallning.service.utlatande;
 
+import static com.google.common.collect.MoreCollectors.onlyElement;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import se.inera.intyg.intygsbestallning.auth.IbUser;
-import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
-import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
-import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
-import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
-import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
-import se.inera.intyg.intygsbestallning.service.pdl.LogService;
-import se.inera.intyg.intygsbestallning.service.pdl.dto.PdlLogType;
-import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
-import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
-import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
-import se.inera.intyg.intygsbestallning.service.pdl.dto.UtredningPdlLoggable;
-import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utlatande.SendUtlatandeRequest;
-import se.inera.intyg.intygsbestallning.web.responder.dto.ReportUtlatandeMottagetRequest;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Optional;
 import java.util.function.Predicate;
-
-import static com.google.common.collect.MoreCollectors.onlyElement;
+import se.inera.intyg.intygsbestallning.auth.IbUser;
+import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
+import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
+import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.common.exception.NotFoundType;
+import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
+import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
+import se.inera.intyg.intygsbestallning.service.pdl.LogService;
+import se.inera.intyg.intygsbestallning.service.pdl.dto.PdlLogType;
+import se.inera.intyg.intygsbestallning.service.pdl.dto.UtredningPdlLoggable;
+import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utlatande.SendUtlatandeRequest;
+import se.inera.intyg.intygsbestallning.web.responder.dto.ReportUtlatandeMottagetRequest;
 
 @Service
 @Transactional
@@ -107,7 +107,10 @@ public class UtlatandeServiceImpl extends BaseUtredningService implements Utlata
         Optional<Utredning> optionalUtredning = utredningRepository.findById(request.getUtredningId());
 
         optionalUtredning
-                .orElseThrow(() -> new IbNotFoundException("Utredning with id '" + request.getUtredningId() + "' does not exist."));
+                .orElseThrow(() -> new IbNotFoundException(
+                        "Utredning with id '" + request.getUtredningId() + "' does not exist.",
+                        request.getUtredningId(),
+                        NotFoundType.UTREDNING));
 
         optionalUtredning.filter(isKorrektStatus())
                 .orElseThrow(() -> new IbServiceException(
