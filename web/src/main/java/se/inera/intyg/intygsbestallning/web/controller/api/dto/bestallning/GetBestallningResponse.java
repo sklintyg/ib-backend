@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Joiner;
+import org.apache.commons.lang3.BooleanUtils;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
@@ -116,7 +117,7 @@ public class GetBestallningResponse implements PDLLoggable {
                 .withHandlaggareEpost(nonNull(utredning.getHandlaggare())
                         ? utredning.getHandlaggare().getEmail()
                         : null)
-                .withBehovTolk(utredning.getTolkBehov() != null)
+                .withBehovTolk(BooleanUtils.toBoolean(utredning.getTolkBehov()))
                 .withTolkSprak(utredning.getTolkSprak())
                 .withStatus(utredningStatus)
                 .withFas(utredningStatus.getUtredningFas())

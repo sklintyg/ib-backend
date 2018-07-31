@@ -21,6 +21,7 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning;
 import static java.util.Objects.nonNull;
 
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.BooleanUtils;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -82,7 +83,7 @@ public class GetUtredningResponse {
                         ? utredning.getInvanare().getPostort() : null)
                 .withTidigareUtredd(!utredning.getInvanare().getTidigareUtforare().isEmpty())
                 .withTidigareEnheter(utredning.getInvanare().getTidigareUtforare())
-                .withBehovTolk(utredning.getTolkBehov() != null)
+                .withBehovTolk(BooleanUtils.toBoolean(utredning.getTolkBehov()))
                 .withTolkSprak(utredning.getTolkSprak())
                 .withSarskildaBehov(utredning.getInvanare().getSarskildaBehov())
                 .withKommentar(utredning.getExternForfragan().map(ExternForfragan::getKommentar).orElse(null))
