@@ -18,12 +18,23 @@
  */
 package se.inera.intyg.intygsbestallning.integration.myndighet.service;
 
+import static java.util.Objects.isNull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.intygsbestallning.common.exception.IbExternalServiceException;
+import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.ReportCareContactResponseType;
+import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.ReportDeviationResponseType;
+import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.RespondToPerformerRequestResponseType;
+import se.riv.intygsbestallning.certificate.order.updateassessment.v1.UpdateAssessmentResponseType;
+import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
+import se.riv.intygsbestallning.certificate.order.v1.ResultType;
+import java.lang.invoke.MethodHandles;
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
+import se.inera.intyg.intygsbestallning.common.exception.IbExternalServiceException;
 import se.inera.intyg.intygsbestallning.common.exception.IbExternalSystemEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbFailingServiceMethodEnum;
 import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
@@ -31,15 +42,6 @@ import se.inera.intyg.intygsbestallning.integration.myndighet.client.MyndighetIn
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto;
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportDeviationRequestDto;
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.RespondToPerformerRequestDto;
-import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.ReportCareContactResponseType;
-import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.ReportDeviationResponseType;
-import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.RespondToPerformerRequestResponseType;
-import se.riv.intygsbestallning.certificate.order.updateassessment.v1.UpdateAssessmentResponseType;
-import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
-import se.riv.intygsbestallning.certificate.order.v1.ResultType;
-
-import java.lang.invoke.MethodHandles;
-import java.time.LocalDateTime;
 
 @Service
 public class MyndighetIntegrationServiceImpl implements MyndighetIntegrationService {
@@ -101,6 +103,14 @@ public class MyndighetIntegrationServiceImpl implements MyndighetIntegrationServ
     private void handleResponse(final ResultType resultType, final IbFailingServiceMethodEnum failingServiceMethod) {
         final ResultCodeType resultCode = resultType.getResultCode();
         final String resultText = resultType.getResultText();
+
+        if (isNull(resultCode) && isNull(resultText)) {
+            log.error(MessageFormat.format("Unknown error occurred from method: {0}", failingServiceMethod));
+            throw new IbExternalServiceException(
+                    IbErrorCodeEnum.EXTERNAL_ERROR,
+                    IbExternalSystemEnum.MYNDIGHET,
+                    failingServiceMethod);
+        }
 
         if (resultCode.equals(ResultCodeType.ERROR)) {
             log.error(resultText);
