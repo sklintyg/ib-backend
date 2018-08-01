@@ -653,9 +653,9 @@ public class BesokServiceImplTest {
         request.setRedovisaBesokList(ImmutableList.of(besokRequest1, besokRequest2, besokRequest3));
         besokService.redovisaBesok(UTREDNING_ID, request);
 
-        besokReportService.redovisaBesokInNewTransaction(eq(utredning), eq(besokRequest1));
-        besokReportService.redovisaBesokInNewTransaction(eq(utredning), eq(besokRequest2));
-        besokReportService.redovisaBesokInNewTransaction(eq(utredning), eq(besokRequest3));
+        besokReportService.redovisaBesok(eq(utredning), eq(besokRequest1));
+        besokReportService.redovisaBesok(eq(utredning), eq(besokRequest2));
+        besokReportService.redovisaBesok(eq(utredning), eq(besokRequest3));
     }
 
     @Test

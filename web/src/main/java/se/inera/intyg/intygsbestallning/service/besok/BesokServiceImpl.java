@@ -271,7 +271,7 @@ public class BesokServiceImpl extends BaseBesokService implements BesokService {
                             utredning.getStatus().getId()));
         }
 
-        request.getRedovisaBesokList().forEach(b -> besokReportService.redovisaBesokInNewTransaction(utredning, b));
+        request.getRedovisaBesokList().forEach(b -> besokReportService.redovisaBesok(utredning, b));
     }
 
     @Override

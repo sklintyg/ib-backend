@@ -22,8 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import java.lang.invoke.MethodHandles;
+import java.text.MessageFormat;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbExternalServiceException;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
@@ -39,9 +40,6 @@ import se.inera.intyg.intygsbestallning.service.pdl.dto.PdlLogType;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.UtredningPdlLoggable;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RedovisaBesokRequest;
 
-import java.lang.invoke.MethodHandles;
-import java.text.MessageFormat;
-
 @Service
 public class BesokReportServiceImpl extends BaseBesokService implements BesokReportService {
 
@@ -51,8 +49,8 @@ public class BesokReportServiceImpl extends BaseBesokService implements BesokRep
     private LogService logService;
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void redovisaBesokInNewTransaction(Utredning utredning, RedovisaBesokRequest.RedovisaBesokListItem besokRequest) {
+    @Transactional
+    public void redovisaBesok(Utredning utredning, RedovisaBesokRequest.RedovisaBesokListItem besokRequest) {
         try {
             Besok besok = utredning.getBesokList().stream()
                     .filter(b -> b.getId().equals(besokRequest.getBesokId()))
@@ -81,6 +79,7 @@ public class BesokReportServiceImpl extends BaseBesokService implements BesokRep
                 besok.setBesokStatus(BesokStatusTyp.AVSLUTAD_VARDKONTAKT);
 
                 Handelse besokHandelse = HandelseUtil.createBesokRedovisat(besok, userService.getUser().getNamn());
+
                 utredning.getHandelseList().add(besokHandelse);
                 besok.getHandelseList().add(besokHandelse);
 

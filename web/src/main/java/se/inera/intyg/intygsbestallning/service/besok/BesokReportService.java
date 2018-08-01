@@ -22,5 +22,5 @@ import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.besok.RedovisaBesokRequest;
 
 public interface BesokReportService {
-    void redovisaBesokInNewTransaction(Utredning utredning, RedovisaBesokRequest.RedovisaBesokListItem besokRequest);
+    void redovisaBesok(Utredning utredning, RedovisaBesokRequest.RedovisaBesokListItem besokRequest);
 }

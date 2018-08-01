@@ -100,7 +100,7 @@ public class BesokReportServiceImplTest {
 
         RedovisaBesokRequest.RedovisaBesokListItem besokRequest = new RedovisaBesokRequest.RedovisaBesokListItem(1L, TolkStatusTyp.DELTAGIT, true);
 
-        besokReportService.redovisaBesokInNewTransaction(utredning, besokRequest);
+        besokReportService.redovisaBesok(utredning, besokRequest);
 
         verify(myndighetIntegrationService, times(1)).reportCareContactInteraction(eq(dto));
 
@@ -118,7 +118,7 @@ public class BesokReportServiceImplTest {
 
         RedovisaBesokRequest.RedovisaBesokListItem besokRequest = new RedovisaBesokRequest.RedovisaBesokListItem(1L, TolkStatusTyp.DELTAGIT, false);
 
-        besokReportService.redovisaBesokInNewTransaction(utredning, besokRequest);
+        besokReportService.redovisaBesok(utredning, besokRequest);
 
         ArgumentCaptor<Utredning> savedUtredningCaptor = ArgumentCaptor.forClass(Utredning.class);
         verify(utredningRepository, times(1)).saveUtredning(savedUtredningCaptor.capture());
@@ -139,7 +139,7 @@ public class BesokReportServiceImplTest {
 
         RedovisaBesokRequest.RedovisaBesokListItem besokRequest = new RedovisaBesokRequest.RedovisaBesokListItem(4L, TolkStatusTyp.DELTAGIT, false);
 
-        assertThatThrownBy(() -> besokReportService.redovisaBesokInNewTransaction(utredning, besokRequest))
+        assertThatThrownBy(() -> besokReportService.redovisaBesok(utredning, besokRequest))
                 .isExactlyInstanceOf(IbNotFoundException.class)
                 .hasFieldOrPropertyWithValue("errorEntityId", 4L);
     }
@@ -159,7 +159,7 @@ public class BesokReportServiceImplTest {
 
         RedovisaBesokRequest.RedovisaBesokListItem besokRequest = new RedovisaBesokRequest.RedovisaBesokListItem(1L, TolkStatusTyp.DELTAGIT, true);
 
-        assertThatThrownBy(() -> besokReportService.redovisaBesokInNewTransaction(utredning, besokRequest))
+        assertThatThrownBy(() -> besokReportService.redovisaBesok(utredning, besokRequest))
                 .isExactlyInstanceOf(IbExternalServiceException.class)
                 .hasFieldOrPropertyWithValue("errorEntityId", 1L);
     }
@@ -174,7 +174,7 @@ public class BesokReportServiceImplTest {
 
         RedovisaBesokRequest.RedovisaBesokListItem besokRequest = new RedovisaBesokRequest.RedovisaBesokListItem(1L, TolkStatusTyp.BOKAT, true);
 
-        assertThatThrownBy(() -> besokReportService.redovisaBesokInNewTransaction(utredning, besokRequest))
+        assertThatThrownBy(() -> besokReportService.redovisaBesok(utredning, besokRequest))
                 .isExactlyInstanceOf(IbServiceException.class)
                 .hasFieldOrPropertyWithValue("errorEntityId", 1L);
     }
