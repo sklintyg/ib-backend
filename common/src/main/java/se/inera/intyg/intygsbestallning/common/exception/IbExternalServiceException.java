@@ -22,6 +22,15 @@ public class IbExternalServiceException extends IbServiceException {
     private final IbExternalSystemEnum externalSystem;
     private final IbFailingServiceMethodEnum failingServiceMethod;
 
+    public IbExternalServiceException(
+            final IbErrorCodeEnum errorCode,
+            final IbExternalSystemEnum externalSystem,
+            final IbFailingServiceMethodEnum failingServiceMethod) {
+        super(errorCode, null, null);
+        this.externalSystem = externalSystem;
+        this.failingServiceMethod = failingServiceMethod;
+    }
+
     public IbExternalServiceException(final IbErrorCodeEnum errorCode, final IbExternalSystemEnum externalSystem,
                                       final String message, final IbFailingServiceMethodEnum failingServiceMethod, Long errorEntityId) {
         super(errorCode, message, errorEntityId);
