@@ -117,7 +117,7 @@ public final class ReportBesokAvvikelseRequest {
         try {
             tidpunkt = SchemaDateUtil.toLocalDateTimeFromDateTimeStamp(type.getDeviationTime());
         } catch (Exception e) {
-            throw new IllegalStateException(e.getCause());
+            throw new IllegalArgumentException("Could not parse deviationTime, incorrect format");
         }
 
         final Boolean invanareUteblev = BooleanUtils.toBoolean(type.isCitizenFailedToArrive());

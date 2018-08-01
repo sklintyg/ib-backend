@@ -47,6 +47,7 @@ import java.util.function.Predicate;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.common.exception.NotFoundType;
 import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportDeviationRequestDto;
 import se.inera.intyg.intygsbestallning.integration.myndighet.service.MyndighetIntegrationService;
@@ -178,7 +179,9 @@ public class BesokServiceImpl extends BaseBesokService implements BesokService {
 
         Optional<Utredning> optionalUtredning = utredningRepository.findByBesokList_Id(request.getBesokId());
         optionalUtredning.orElseThrow(() -> new IbNotFoundException(
-                MessageFormat.format("Besok with id {0} was not found.", request.getBesokId())));
+                MessageFormat.format("Besok with id {0} was not found.", request.getBesokId()),
+                request.getBesokId(),
+                NotFoundType.BESOK));
 
         optionalUtredning.filter(isKorrektStatusForBesokAvvikelseMottagen())
                 .orElseThrow(() -> new IbServiceException(

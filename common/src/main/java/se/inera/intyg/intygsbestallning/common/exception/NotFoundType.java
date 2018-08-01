@@ -19,7 +19,8 @@
 package se.inera.intyg.intygsbestallning.common.exception;
 
 public enum NotFoundType {
-    UTREDNING("Felaktig utredningsid: %s. Utredningen existerar inte.");
+    UTREDNING("Felaktig utredningsid: %s. Utredningen existerar inte."),
+    BESOK("Felaktig beöksid: %s. Besöket existerar inte.");
 
     private final String errorText;
 
