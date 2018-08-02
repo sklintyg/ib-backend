@@ -413,7 +413,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
         final String id = bestallning.getTilldeladVardenhetHsaId();
         final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VE);
 
-        if (preferens.isEnabled(SLUTDATUM_UTREDNING_PASSERAT, NotifieringMottagarTyp.VARDENHET)) {
+        if (preferens.isEnabled(PAMINNELSEDATUM_KOMPLETTERING_PASSERAS, NotifieringMottagarTyp.VARDENHET)) {
             epostResolver.resolveVardenhetNotifieringEpost(id, utredning).ifPresent(email -> {
                 String body = notifieringMailBodyFactory.buildBodyForUtredning(
                         paminnelseSlutdatumUtredningMessage(utredning),
