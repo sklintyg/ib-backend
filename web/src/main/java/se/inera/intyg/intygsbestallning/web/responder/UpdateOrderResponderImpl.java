@@ -52,7 +52,7 @@ public class UpdateOrderResponderImpl implements UpdateOrderResponderInterface, 
     @PrometheusTimeMethod
     public UpdateOrderResponseType updateOrder(final String logicalAddress, final UpdateOrderType request) {
 
-        log.info("ReportDeviationInteraction received request");
+        log.info("UpdateOrder received request");
 
         try {
             checkArgument(isNotEmpty(logicalAddress), LOGICAL_ADDRESS);
