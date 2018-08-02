@@ -217,7 +217,9 @@ public class BesokServiceImpl extends BaseBesokService implements BesokService {
                     uppdateratBesok.getAvvikelse().getAvvikelseId()));
             notifieringSendService.notifieraLandstingAvvikelseRapporteradAvVarden(uppdateradUtredning, besokToUpdate);
         } else {
-            checkState(Objects.equals(BesokStatus.AVVIKELSE_MOTTAGEN, BesokStatusResolver.resolveStaticStatus(uppdateratBesok)),
+            BesokStatus besokStatus = BesokStatusResolver.resolveStaticStatus(uppdateratBesok);
+            checkState(Objects.equals(BesokStatus.AVVIKELSE_MOTTAGEN, besokStatus)
+                            || Objects.equals(BesokStatus.INVANARE_UTEBLEV, besokStatus),
                     MessageFormat.format("Utredning with id {0} is in an incorrect state", uppdateradUtredning.getUtredningId()));
             notifieringSendService.notifieraLandstingAvvikelseMottagenFranFK(uppdateradUtredning, besokToUpdate);
             notifieringSendService.notifieraVardenhetAvvikelseMottagenFranFK(uppdateradUtredning, besokToUpdate);
