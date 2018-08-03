@@ -64,7 +64,8 @@ public class BesokController {
     }
 
     @PostMapping
-    public RegisterBesokResponse registerBesok(@PathVariable Long utredningId, @RequestBody  final RegisterBesokRequest request) {
+    public RegisterBesokResponse registerBesok(@PathVariable final Long utredningId,
+                                               @RequestBody final RegisterBesokRequest request) {
 
         final IbUser user = userService.getUser();
         authoritiesValidator.given(user)
@@ -75,7 +76,8 @@ public class BesokController {
     }
 
     @PutMapping("/{besokId}")
-    public RegisterBesokResponse updateBesok(@PathVariable Long utredningId, @PathVariable Long besokId,
+    public RegisterBesokResponse updateBesok(@PathVariable final Long utredningId,
+                                             @PathVariable final Long besokId,
                                              @RequestBody final RegisterBesokRequest request) {
 
         final IbUser user = userService.getUser();
