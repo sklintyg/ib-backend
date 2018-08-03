@@ -30,7 +30,8 @@ angular.module('ibApp').directive('ibTimePicker',
                 date: '=',
                 required: '=',
                 domId: '@',
-                showFieldErrors: '=?'
+                showFieldErrors: '=?',
+                minuteOffset: '='
             },
             templateUrl: '/components/commonDirectives/ibTimePicker/ibTimePicker.directive.html',
             link: function(scope, element, attr, formCtrl) {
@@ -57,7 +58,12 @@ angular.module('ibApp').directive('ibTimePicker',
 
                 function open() {
                     if (!DateUtilsService.isDate(scope.date)) {
-                        scope.date = new Date();
+                        var newDate = new Date();
+                        var withOffset = scope.minuteOffset;
+                        if (withOffset && parseInt(withOffset, 10) === withOffset) {
+                            newDate = moment(newDate).add(withOffset, 'm').toDate();
+                        }
+                        scope.date = newDate;
                         setTimeStringFromDate(scope.date);
                     }
                     $window.document.addEventListener('click', onDocumentClick, true);
