@@ -145,4 +145,18 @@ angular.module('ibApp')
                     return true;
                 }
             };
+
+            $scope.showKorrektTidsIntervall = function () {
+
+                var start = $scope.besokStartTid;
+                var slut = $scope.besokSlutTid;
+
+                if (start && slut && slut.setSeconds(0) <= start.setSeconds(0)) {
+                    return true;
+                }
+            };
+
+            $scope.getKorrektTidsIntervallMessage = function () {
+                return messageService.getProperty('lagg-till-besok.info.besokTidIntervall');
+            };
         });

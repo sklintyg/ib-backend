@@ -4,10 +4,20 @@
     <h4 class="modal-title">{{besokId ? 'Ändra besök':'Lägg till besök'}}</h4>
   </div>
   <div class="modal-body">
-    <ib-alert-message ng-if="besok.profession && besok.profession !== 'LK'" alert-id="lagg-till-besok.info.profession"
-                      alert-message-id="lagg-till-besok.info.profession" alert-severity="info"></ib-alert-message>
-    <ib-alert-message ng-if="showMessageForKallelse()" alert-id="lagg-till-besok.info.profession" alert-severity="info">
+    <ib-alert-message ng-if="besok.profession && besok.profession !== 'LK'"
+                      alert-id="lagg-till-besok.info.profession"
+                      alert-message-id="lagg-till-besok.info.profession"
+                      alert-severity="info">
+    </ib-alert-message>
+    <ib-alert-message ng-if="showMessageForKallelse()"
+                      alert-id="lagg-till-besok.info.profession"
+                      alert-severity="info">
       {{ getMessageForKallelsedatum() }}
+    </ib-alert-message>
+    <ib-alert-message ng-if="showKorrektTidsIntervall()"
+                      alert-id="lagg-till-besok.info.besokTidIntervall"
+                      alert-severity="info">
+      {{ getKorrektTidsIntervallMessage() }}
     </ib-alert-message>
 
     <form name="laggTillBesokForm" novalidate autocomplete="off">
@@ -23,16 +33,27 @@
             </ib-date-picker-field>
           </span>
           <span class="time">
-            <ib-help-text-label required="true" required-expr="!besokStartTid"
-                                label-key="lagg-till-besok.label.from"></ib-help-text-label>
-            <ib-time-picker data-date="besokStartTid" dom-id="dateBesokStart" required="false"
-                            show-field-errors="false"></ib-time-picker>
+            <ib-help-text-label required="true"
+                                required-expr="!besokStartTid"
+                                label-key="lagg-till-besok.label.from">
+            </ib-help-text-label>
+            <ib-time-picker data-date="besokStartTid"
+                            dom-id="dateBesokStart"
+                            required="false"
+                            show-field-errors="false">
+            </ib-time-picker>
           </span>
           <span class="time">
-            <ib-help-text-label required="true" required-expr="!besokSlutTid"
-                                label-key="lagg-till-besok.label.to"></ib-help-text-label>
-            <ib-time-picker data-date="besokSlutTid" dom-id="dateBesokSlut" required="false"
-                            show-field-errors="false"></ib-time-picker>
+            <ib-help-text-label required="true"
+                                required-expr="!besokSlutTid"
+                                label-key="lagg-till-besok.label.to">
+            </ib-help-text-label>
+            <ib-time-picker data-date="besokSlutTid"
+                            dom-id="dateBesokSlut"
+                            required="false"
+                            show-field-errors="false"
+                            minute-offset="1">
+            </ib-time-picker>
           </span>
         </div>
         <div class="flex-column">
@@ -47,6 +68,7 @@
           <ib-field-error-list errors="laggTillBesokForm.dateBesokSlut.$error"
                                pattern-error="Korrekt klockslag måste anges"
                                ng-if="laggTillBesokForm.dateBesokSlut.$error.pattern || laggTillBesokForm.dateBesokSlut.$error.date"></ib-field-error-list>
+
         </div>
         <div class="flex-row">
           <span>

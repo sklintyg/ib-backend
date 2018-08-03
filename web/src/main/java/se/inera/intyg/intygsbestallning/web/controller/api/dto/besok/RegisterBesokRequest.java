@@ -137,6 +137,7 @@ public class RegisterBesokRequest {
     }
 
 
+
     public static final class RegisterBesokRequestBuilder {
         private String utredandeVardPersonalNamn;
         private DeltagarProfessionTyp profession;
