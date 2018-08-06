@@ -2,10 +2,11 @@
   overflow: auto;
 
   .exit-body {
-    flex:1 0 auto;
+    flex: 1 0 auto;
+    padding-top: 25px;
 
     h2 {
-      @extend %ib-typo-02;
+      @extend %ib-typo-05;
     }
   }
 }

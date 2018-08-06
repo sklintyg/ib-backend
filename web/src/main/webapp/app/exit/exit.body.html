@@ -1,79 +1,66 @@
 <div class="ib-workarea-vflex-container exit-page">
-  <div class="centered-constrained-content exit-body">
+  <div class="centered-constrained-content text-center exit-body">
+    <img src="/assets/images/feltyp-a.png" width="130" alt="Ikon för felsida">
 
     <div ng-switch="reason">
 
 
       <div ng-switch-when="login.failed">
-        <h2 class="page-header">Intygsbeställning - Inlogging misslyckades</h2>
-        <ib-alert-message alert-severity="danger">
-          Inloggningen misslyckades. Gå tillbaka till <a href="/">startsidan</a>
-        </ib-alert-message>
+        <h2>Inlogging misslyckades</h2>
+        <p>Gå tillbaka till <a href="/">startsidan</a></p>
       </div>
 
 
       <div ng-switch-when="inactivity-timeout">
-        <h2 class="page-header">Intygsbeställning</h2>
-        <ib-alert-message alert-severity="warning">
-          Du har blivit utloggad från Intygsbeställning på grund av inaktivitet. <br>
-          Om du vill fortsätta använda Intygsbeställning behöver du logga in igen: <a href="/">Logga in</a>
-          </ib-alert-message>
+        <h2>Du är utloggad</h2>
+        <p>Du har blivit utloggad från Intygsbeställning på grund av inaktivitet.<br>
+          Om du vill fortsätta använda Intygsbeställning behöver du logga in igen:</p>
+        <p><a href="/">Logga in</a></p>
       </div>
 
 
       <div ng-switch-when="denied">
-        <h2 class="page-header">Intygsbeställning</h2>
-        <ib-alert-message alert-severity="danger">
-          Åtkomst nekad. Gå tillbaka till <a href="/">startsidan</a>.
-        </ib-alert-message>
+        <h2>Åtkomst nekad</h2>
+        <p>Gå tillbaka till <a href="/">startsidan</a></p>
       </div>
 
 
       <div ng-switch-when="notfound">
-        <h2 class="page-header">Intygsbeställning</h2>
-        <ib-alert-message alert-severity="danger">
-          Sidan finns inte. Gå tillbaka till <a href="/">startsidan</a>.
-        </ib-alert-message>
+        <h2>Sidan finns inte</h2>
+        <p>Gå tillbaka till <a href="/">startsidan</a></p>
       </div>
 
 
       <div ng-switch-when="login.medarbetaruppdrag">
-        <h2 class="page-header">Intygsbeställning - Medarbetaruppdrag saknas</h2>
-        <ib-alert-message alert-severity="danger">
-          Det krävs minst ett giltigt medarbetaruppdrag med ändamål 'Vård och behandling' för att använda
-          Intygsbeställning.
-        </ib-alert-message>
+        <h2>Medarbetaruppdrag saknas</h2>
+        <p>Det krävs minst ett giltigt medarbetaruppdrag med ändamål <br>
+          'Vård och behandling' för att använda Intygsbeställning.</p>
       </div>
 
 
       <div ng-switch-when="login.hsaerror">
-        <h2 class="page-header">Intygsbeställning - Tekniskt fel</h2>
-        <ib-alert-message alert-severity="danger">
-          Det uppstod ett tekniskt fel när din behörighet skulle kontrolleras. Prova att gå till startsidan och logga in igen.<br>
-          Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <span dynamiclink key="ineraNationellKundservice"></span>
-
-        </ib-alert-message>
+        <h2>Tekniskt fel</h2>
+        <p>Det uppstod ett tekniskt fel när din behörighet skulle kontrolleras.<br>
+          Prova att gå till <a href="/">startsidan</a> och logga in igen. Om problemet <br>
+          kvarstår, kontakta i första hand din lokala IT-avdelning och i andra <br>
+          hand <span dynamiclink key="ineraNationellKundservice"></span></p>
       </div>
 
 
       <div ng-switch-when="login.no-hsa-ib-systemrole">
-        <h2 class="page-header">Intygsbeställning - Inloggning misslyckades</h2>
-        <ib-alert-message alert-severity="danger">
-          Du saknar behörighet. <br>
-          För att få åtkomst till Försäkringsmedicinska utredningar krävs att du har har minst en giltig individuell
-          egenskap för it-tjänster i HSA (hsaSystemRole).<br>För åtkomst till utredningar som tillhör en vårdenhet krävs dessutom ett giltigt medarbetaruppdrag.
-        </ib-alert-message>
+        <h2>Inloggning misslyckades</h2>
+        <p>Du saknar behörighet. För att få åtkomst till Försäkringsmedicinska utredningar krävs<br>
+          att du har har minst en giltig individuell egenskap för it-tjänster i HSA (hsaSystemRole).<br>
+          För åtkomst till utredningar som tillhör en vårdenhet krävs dessutom ett giltigt medarbetaruppdrag.</p>
       </div>
 
 
       <!-- catch all other / undefined reasons-->
       <div ng-switch-default>
-        <h2 class="page-header">Intygsbeställning - Tekniskt fel</h2>
-        <ib-alert-message alert-severity="danger">
-          Tyvärr har ett tekniskt problem uppstått i Intygsbeställning.<br>
-          Gå till <a href="/">startsidan</a> och försök igen för att se om felet är tillfälligt.<br>
-          Kontakta annars i första hand din lokala IT-avdelning och i andra hand <span dynamiclink key="ineraNationellKundservice"></span>
-        </ib-alert-message>
+        <h2>Tekniskt fel</h2>
+        <p>Tyvärr har ett tekniskt problem uppstått i Intygsbeställning. Gå till <a href="/">startsidan</a> och <br>
+          försök igen för att se om felet är tillfälligt. Kontakta annars i första hand din lokala <br>
+          IT-avdelning och i andra hand <span dynamiclink key="ineraNationellKundservice"></span></p>
       </div>
     </div>
   </div>
