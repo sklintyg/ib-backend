@@ -119,7 +119,6 @@ public class UtlatandeServiceImpl extends BaseUtredningService implements Utlata
         Intyg intyg = optionalUtredning.get().getIntygList().stream()
                 .filter(isNotKomplettering())
                 .collect(onlyElement());
-
         intyg.setMottagetDatum(request.getMottagetDatum());
         intyg.setSistaDatumKompletteringsbegaran(request.getSistaKompletteringsDatum());
 

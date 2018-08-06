@@ -478,7 +478,12 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
             epostResolver.resolveVardenhetNotifieringEpost(id, utredning).ifPresent(email -> utredning.getIntygList().stream()
                     .filter(intyg -> intygIds.contains(intyg.getId()))
                     .forEach(intyg -> {
-                        String body = notifieringMailBodyFactory.buildBodyForUtredning(
+                        LOG.debug(MessageFormat.format(
+                                "Sending notification: {0} for intyg: {1}",
+                                PAMINNELSEDATUM_KOMPLETTERING_PASSERAS,
+                                intyg.getId()));
+
+                        final String body = notifieringMailBodyFactory.buildBodyForUtredning(
                                 paminnelseSlutDatumKomplettering(utredning, intyg),
                                 utredningUrl(utredning));
                         sendNotifiering(email, SUBJECT_PAMINNELSE_SLUTDATUM_KOMPLETTERING, body, utredning.getUtredningId());

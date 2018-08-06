@@ -21,16 +21,16 @@ package se.inera.intyg.intygsbestallning.web.responder;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.lang.invoke.MethodHandles.lookup;
 import static java.util.Objects.nonNull;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.riv.intygsbestallning.certificate.order.reportcertificatereceival.v1.ReportCertificateReceivalResponseType;
 import se.riv.intygsbestallning.certificate.order.reportcertificatereceival.v1.ReportCertificateReceivalType;
 import se.riv.intygsbestallning.certificate.order.reportcertificatereceival.v1.rivtabp21.ReportCertificateReceivalResponderInterface;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.service.utlatande.UtlatandeService;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportUtlatandeMottagetRequest;
 import se.inera.intyg.intygsbestallning.web.responder.resulthandler.ResultFactory;
@@ -55,7 +55,7 @@ public class ReportCertificateReceivalResponderImpl implements ReportCertificate
         log.info("Received ReportCertificateReceival request");
 
         try {
-            checkArgument(StringUtils.isNotEmpty(logicalAddress), LOGICAL_ADDRESS);
+            checkArgument(isNotEmpty(logicalAddress), LOGICAL_ADDRESS);
             checkArgument(nonNull(request), REQUEST);
 
             utlatandeService.reportUtlatandeMottaget(ReportUtlatandeMottagetRequest.from(request));

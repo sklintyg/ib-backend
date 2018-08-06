@@ -101,8 +101,7 @@ public interface UtredningRepository extends UtredningRepositoryCustom, JpaRepos
            "JOIN u.bestallning b " +
            "WHERE b.tilldeladVardenhetHsaId is not null " +
            "AND u.arkiverad = false " +
-           "AND i.komplettering = true " +
-           "AND i.mottagetDatum is null " +
+           "AND ((i.komplettering = true AND i.mottagetDatum is null) OR (i.komplettering = false AND i.mottagetDatum is not null))" +
            "AND i.sistaDatumKompletteringsbegaran is not null " +
            "AND i.sistaDatumKompletteringsbegaran < :now " +
            "AND i.id NOT IN (" +

@@ -18,7 +18,10 @@
  */
 package se.inera.intyg.intygsbestallning.jobs;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.PAMINNELSEDATUM_KOMPLETTERING_PASSERAS;
 
 import net.javacrumbs.shedlock.core.SchedulerLock;
@@ -75,6 +78,7 @@ public class PaminnelseSistaDatumKompletteringsBegaranJob {
                 paminnelseDatum, PAMINNELSEDATUM_KOMPLETTERING_PASSERAS);
 
         utredningList.forEach(utredning -> {
+            LOG.debug(MessageFormat.format("Starting {0} for utredning with id {1}", JOB_NAME, utredning.getUtredningId()));
 
             final List<Long> skickadeIntyg = utredning.getSkickadNotifieringList().stream()
                     .filter(notifiering -> notifiering.getTyp() == NotifieringTyp.PAMINNELSEDATUM_KOMPLETTERING_PASSERAS)
@@ -96,8 +100,10 @@ public class PaminnelseSistaDatumKompletteringsBegaranJob {
     }
 
     private Predicate<Intyg> hasCorrectConditions(final LocalDateTime paminnelseDatum) {
-        return intyg -> intyg.isKomplettering()
-                && intyg.getMottagetDatum() == null
-                && intyg.getSistaDatumKompletteringsbegaran().isBefore(paminnelseDatum);
+        return intyg ->
+                ((toBoolean(intyg.isKomplettering()) && isNull(intyg.getMottagetDatum()))
+                        || (!toBoolean(intyg.isKomplettering()) && nonNull(intyg.getMottagetDatum())))
+                        && (nonNull(intyg.getSistaDatumKompletteringsbegaran())
+                        && intyg.getSistaDatumKompletteringsbegaran().isBefore(paminnelseDatum));
     }
 }
