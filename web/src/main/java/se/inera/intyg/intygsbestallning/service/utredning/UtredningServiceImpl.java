@@ -91,6 +91,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.google.common.collect.MoreCollectors.toOptional;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
@@ -548,7 +549,6 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
     private Optional<InternForfragan> verifyAvslutaUtredningStatusar(final AvslutOrsak orsak, final Utredning utredning) {
 
-        checkArgument(nonNull(orsak), "AvslutOrsak must be defined");
         checkState(UtredningStatus.AVBRUTEN == UtredningStatusResolver.resolveStaticStatus(utredning),
                 MessageFormat.format("Utredning with id {0} is in an incorrect state", utredning.getUtredningId()));
 
@@ -577,13 +577,11 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
     private Handelse createHandelseUtredningAvslutad(final AvslutOrsak orsak, final String vardAdministrator) {
 
-        checkArgument(nonNull(orsak), "AvslutOrsak must be defined");
-
         if (orsak == AvslutOrsak.INGEN_BESTALLNING) {
             return HandelseUtil.createIngenBestallning();
         } else if (orsak == AvslutOrsak.JAV) {
             return HandelseUtil.createJav();
-        } else if (orsak == AvslutOrsak.UTREDNING_AVBRUTEN) {
+        } else if (isNull(orsak) || orsak == AvslutOrsak.UTREDNING_AVBRUTEN) {
             return HandelseUtil.createUtredningAvbruten();
         } else {
             return HandelseUtil.createAvslutadUtredning(vardAdministrator);
@@ -592,15 +590,13 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
     private void notifieraUtredningAvslutad(final AvslutOrsak orsak, final Utredning utredning, final InternForfragan internForfragan) {
 
-        checkArgument(nonNull(orsak), "AvslutOrsak must be defined");
-
         if (orsak == AvslutOrsak.INGEN_BESTALLNING) {
             notifieringSendService.notifieraVardenhetIngenBestallning(utredning, internForfragan);
             notifieringSendService.notifieraLandstingIngenBestallning(utredning, internForfragan);
         } else if (orsak == AvslutOrsak.JAV) {
             notifieringSendService.notifieraLandstingAvslutadPgaJav(utredning);
             notifieringSendService.notifieraVardenhetAvslutadPgaJav(utredning);
-        } else if (orsak == AvslutOrsak.UTREDNING_AVBRUTEN) {
+        } else if (isNull(orsak) || orsak == AvslutOrsak.UTREDNING_AVBRUTEN) {
             notifieringSendService.notifieraLandstingAvslutadUtredning(utredning);
             notifieringSendService.notifieraVardenhetAvslutadUtredning(utredning);
         } else {
