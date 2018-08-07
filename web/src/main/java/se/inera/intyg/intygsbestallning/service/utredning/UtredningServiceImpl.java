@@ -327,6 +327,12 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .orElseThrow(() -> new IbServiceException(
                         IbErrorCodeEnum.NOT_FOUND, MessageFormat.format("Assessment with id: {0} was not found", update.getUtredningId())));
 
+        if (utredning.getStatus().getUtredningFas() == UtredningFas.AVSLUTAD) {
+            throw new IbServiceException(
+                    IbErrorCodeEnum.BAD_STATE,
+                    MessageFormat.format("Utredning with id {0} is in an incorrect state", utredning.getUtredningId()));
+        }
+
         if (!utredning.getBestallning().isPresent()) {
             throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, "Assessment does not have a Bestallning");
         }

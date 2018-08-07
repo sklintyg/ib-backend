@@ -47,8 +47,8 @@ import static se.inera.intyg.intygsbestallning.persistence.model.type.Utrednings
 import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU_UTVIDGAD;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.LIAG;
 import static se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest.AssessmentRequestBuilder.anAssessmentRequest;
-import static se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare.BestallareBuilder.aBestallare;
 import static se.inera.intyg.intygsbestallning.service.utredning.dto.AvslutaUtredningRequest.EndUtredningRequestBuilder.anEndUtredningRequest;
+import static se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare.BestallareBuilder.aBestallare;
 import static se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest.OrderRequestBuilder.anOrderRequest;
 import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.DATE_TIME;
 import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createBestallning;
@@ -70,10 +70,6 @@ import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
-import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
-import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveBetalningForUtredningRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveUtbetalningForUtredningRequest;
 import se.riv.infrastructure.directory.organization.getunitresponder.v1.UnitType;
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
 import javax.xml.ws.WebServiceException;
@@ -92,6 +88,7 @@ import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
@@ -102,13 +99,17 @@ import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVarden
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
+import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AvslutaUtredningRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
+import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItemFactory;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveBetalningForUtredningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveUtbetalningForUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItemFactory;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -154,31 +155,6 @@ public class UtredningServiceImplTest {
         ReflectionTestUtils.setField(utredningListItemFactory, "businessDays", businessDays);
         ReflectionTestUtils.setField(internForfraganListItemFactory, "businessDays", businessDays);
     }
-
-//    @Test
-//    public void findForfragningarForVardenhetHsaId() {
-//        final String enhetId = "enhet";
-//        final Long utredningId = 1L;
-//        // Almost bare minimum, converting is not in the scope of utredningService
-//        Utredning utr = anUtredning()
-//                .withUtredningsTyp(AFU)
-//                .withUtredningId(utredningId)
-//                .withExternForfragan(anExternForfragan()
-//                        .withInternForfraganList(ImmutableList.of(
-//                                anInternForfragan()
-//                                        .withVardenhetHsaId(enhetId)
-//                                        .build()))
-//                        .build())
-//                .build();
-//        when(utredningRepository.findAllByExternForfragan_InternForfraganList_VardenhetHsaId(enhetId)).thenReturn(ImmutableList.of(utr));
-//
-//        List<InternForfraganListItem> response = utredningService.findForfragningarForVardenhetHsaId(enhetId);
-//
-//        assertNotNull(response);
-//        assertEquals(1, response.size());
-//        assertEquals(AFU.name(), response.get(0).getUtredningsTyp());
-//        assertEquals(utredningId, response.get(0).getUtredningsId());
-//    }
 
     @Test
     public void registerOrder() {
@@ -457,6 +433,25 @@ public class UtredningServiceImplTest {
         assertThatThrownBy(() -> utredningService.updateOrder(UpdateOrderRequest.from(update)))
                 .isExactlyInstanceOf(IbServiceException.class)
                 .hasMessage("No info to update");
+    }
+
+    @Test
+    public void uppdateraOrderWithFasAvslutadNok() {
+
+        Utredning utredning = createUtredning();
+        utredning.setStatus(UtredningStatus.AVSLUTAD);
+
+        final UpdateOrderRequest updateOrderRequest = UpdateOrderRequest.from(createUpdateOrderType(true, "sv", false));
+
+        doReturn(Optional.of(utredning))
+                .when(utredningRepository)
+                .findById(anyLong());
+
+        assertThatThrownBy(() -> utredningService.updateOrder(updateOrderRequest))
+                .isExactlyInstanceOf(IbServiceException.class)
+                .hasFieldOrPropertyWithValue("errorCode", IbErrorCodeEnum.BAD_STATE);
+
+        verify(notifieringSendService, times(0)).notifieraVardenhetUppdateradBestallning(any(Utredning.class));
     }
 
     @Test
