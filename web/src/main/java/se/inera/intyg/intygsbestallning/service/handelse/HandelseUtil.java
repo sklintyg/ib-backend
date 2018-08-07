@@ -201,12 +201,12 @@ public final class HandelseUtil {
     }
 
     public static Handelse createOrderUpdated(final LocalDate nyttSlutDatum, final String nyHandlaggare, final boolean documentsSent) {
-        StringBuilder text = new StringBuilder().append("Beställning uppdaterad av Försäkringskassan.");
+        StringBuilder text = new StringBuilder().append("Beställning uppdaterad av Försäkringskassan. ");
         if (nyttSlutDatum != null) {
-            text.append("Nytt slutdatum: ").append(nyttSlutDatum.format(DateTimeFormatter.ISO_DATE));
+            text.append(MessageFormat.format("Nytt slutdatum: {0}. ", nyttSlutDatum.format(formatter)));
         }
         if (nyHandlaggare != null) {
-            text.append("Ny handläggare: ").append(nyHandlaggare);
+            text.append((MessageFormat.format("Ny handläggare: {0}.", nyHandlaggare)));
         }
         String kommentar = documentsSent ? "Handlingar skickade" : null;
         return aHandelse()
@@ -227,7 +227,7 @@ public final class HandelseUtil {
                 besok.getBesokSlutTid().format(TIME_FORMATTER),
                 besok.getDeltagareProfession().getLabel()));
 
-        text.append(MessageFormat.format("Invånaren kallades {0} per {1}",
+        text.append(MessageFormat.format("Invånaren kallades {0} per {1}. ",
                 besok.getKallelseDatum().format(DateTimeFormatter.ISO_DATE),
                 Strings.toLowerCase(besok.getKallelseForm().name())));
 
@@ -277,7 +277,7 @@ public final class HandelseUtil {
                 Strings.toLowerCase(newKallelseForm.name())));
 
         if (besok.getTolkStatus() != null) {
-            text.append(MessageFormat.format("Tolk bokad: {0} ",
+            text.append(MessageFormat.format(" Tolk bokad: {0} ",
                     besok.getTolkStatus().getLabel()));
         }
 
@@ -308,11 +308,11 @@ public final class HandelseUtil {
                 besok.getBesokSlutTid().format(TIME_FORMATTER)));
 
         if (besok.getDeltagareProfession() != newProfession) {
-            text.append(MessageFormat.format(" hos {0} till {1} ", besok.getDeltagareProfession().getLabel(), newProfession.getLabel()));
+            text.append(MessageFormat.format(" hos {0} till {1}. ", besok.getDeltagareProfession().getLabel(), newProfession.getLabel()));
         }
 
         if (besok.getTolkStatus() != null) {
-            text.append(MessageFormat.format(". Tolk bokad: {0}",
+            text.append(MessageFormat.format("Tolk bokad: {0}",
                     newTolkStatus.getLabel()));
         }
 
@@ -396,7 +396,7 @@ public final class HandelseUtil {
     }
 
     public static Handelse createAvslutadUtredning(final String vardAdministrator) {
-        final String handelseText = "Utredningen avslutad.";
+        final String handelseText = "Utredningen avslutad";
         return aHandelse()
                 .withSkapad(LocalDateTime.now())
                 .withAnvandare(vardAdministrator)
