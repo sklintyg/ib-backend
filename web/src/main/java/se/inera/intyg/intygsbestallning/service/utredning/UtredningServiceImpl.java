@@ -18,7 +18,27 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static com.google.common.collect.MoreCollectors.toOptional;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toList;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
+import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder;
+import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
+import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
+import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
+import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
+
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
@@ -27,6 +47,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
@@ -77,34 +105,6 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveUtb
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItemFactory;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
-
-import java.text.MessageFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkState;
-import static com.google.common.base.Strings.isNullOrEmpty;
-import static com.google.common.collect.MoreCollectors.toOptional;
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toList;
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
-import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
-import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder;
-import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
-import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
-import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
-import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
-import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 
 @Service
 @Transactional
@@ -539,10 +539,18 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     private void qualifyForAvslutaUtredning(final AvslutOrsak orsak, final Utredning utredning) {
         if (orsak == AvslutOrsak.INGEN_KOMPLETTERING_BEGARD) {
             isKorrektStatusForIngenKompletteringBegard(utredning);
+        } else if (orsak == AvslutOrsak.INGEN_BESTALLNING) {
+            isKorrektStatusForIngenBestallning(utredning);
+        } else if (orsak == AvslutOrsak.JAV) {
+            isKorrektStatusForJav(utredning);
+        } else if (isNull(orsak) || orsak == AvslutOrsak.UTREDNING_AVBRUTEN) {
+            isKorrektStatusForUtredningAvbruten(utredning);
+        } else {
+            throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, MessageFormat.format("EndReason {0} is not supported", orsak));
         }
     }
 
-    private void isKorrektStatusForIngenKompletteringBegard(Utredning utredning) {
+    private void isKorrektStatusForIngenKompletteringBegard(final Utredning utredning) {
 
         checkState(UtredningStatusResolver.resolveStaticStatus(utredning) == UtredningStatus.REDOVISA_BESOK,
                 MessageFormat.format("Utredning with id {0} is in an incorrect state", utredning.getUtredningId()));
@@ -550,6 +558,28 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         checkState(utredning.getBesokList().stream()
                         .map(BesokStatusResolver::resolveStaticStatus)
                         .noneMatch(besokStatus -> (besokStatus == BesokStatus.BOKAT) || (besokStatus == BesokStatus.OMBOKAT)),
+                MessageFormat.format("Utredning with id {0} is in an incorrect state", utredning.getUtredningId()));
+    }
+
+    private void isKorrektStatusForIngenBestallning(final Utredning utredning) {
+        checkState(utredning.getStatus() == UtredningStatus.TILLDELAD_VANTAR_PA_BESTALLNING,
+                MessageFormat.format("Utredning with id {0} is in an incorrect state", utredning.getUtredningId()));
+    }
+
+    private void isKorrektStatusForJav(final Utredning utredning) {
+        final List<UtredningStatus> godkandaStatusar = ImmutableList.of(
+                UtredningStatus.BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR,
+                UtredningStatus.HANDLINGAR_MOTTAGNA_BOKA_BESOK,
+                UtredningStatus.UTREDNING_PAGAR);
+        checkState(godkandaStatusar.contains(utredning.getStatus()),
+                MessageFormat.format("Utredning with id {0} is in an incorrect state", utredning.getUtredningId()));
+    }
+
+    private void isKorrektStatusForUtredningAvbruten(Utredning utredning) {
+        final List<UtredningStatus> godkandaStatusar = ImmutableList.of(
+                UtredningStatus.UTREDNING_PAGAR,
+                UtredningStatus.AVVIKELSE_MOTTAGEN);
+        checkState(godkandaStatusar.contains(utredning.getStatus()),
                 MessageFormat.format("Utredning with id {0} is in an incorrect state", utredning.getUtredningId()));
     }
 

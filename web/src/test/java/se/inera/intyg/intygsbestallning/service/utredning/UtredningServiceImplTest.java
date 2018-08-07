@@ -581,6 +581,7 @@ public class UtredningServiceImplTest {
 
         doReturn(Optional.of(anUtredning()
                 .withUtredningId(utredningId)
+                .withStatus(UtredningStatus.BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR)
                 .build()))
                 .when(utredningRepository)
                 .findById(utredningId);
@@ -611,11 +612,31 @@ public class UtredningServiceImplTest {
     }
 
     @Test
+    public void testAvslutaUtredningJavIncorrectStateNok() {
+        final Utredning utredning = createUtredning();
+        utredning.setStatus(UtredningStatus.KOMPLETTERING_MOTTAGEN); //Felaktig status -> Ska generera exception
+
+        final AvslutaUtredningRequest request = anEndUtredningRequest()
+                .withUtredningId(utredning.getUtredningId())
+                .withEndReason(AvslutOrsak.JAV)
+                .build();
+
+        doReturn(Optional.of(utredning))
+                .when(utredningRepository)
+                .findById(utredning.getUtredningId());
+
+        assertThatThrownBy(() -> utredningService.avslutaUtredning(request))
+                .isExactlyInstanceOf(IllegalStateException.class)
+                .hasMessage(MessageFormat.format("Utredning with id {0} is in an incorrect state", utredning.getUtredningId()));
+    }
+
+    @Test
     public void testAvslutaUtredningIngenBestallningSuccess() {
         final Long utredningId = 1L;
 
         final Utredning utredning = anUtredning()
                 .withUtredningId(utredningId)
+                .withStatus(UtredningStatus.TILLDELAD_VANTAR_PA_BESTALLNING)
                 .withExternForfragan(anExternForfragan()
                         .withInternForfraganList(Lists.newArrayList(
                                 anInternForfragan()
@@ -662,11 +683,31 @@ public class UtredningServiceImplTest {
     }
 
     @Test
+    public void testAvslutaUtredningIngenBestallningIncorrectStateNok() {
+        final Utredning utredning = createUtredning();
+        utredning.setStatus(UtredningStatus.KOMPLETTERING_MOTTAGEN); //Felaktig status -> Ska generera exception
+
+        final AvslutaUtredningRequest request = anEndUtredningRequest()
+                .withUtredningId(utredning.getUtredningId())
+                .withEndReason(AvslutOrsak.INGEN_BESTALLNING)
+                .build();
+
+        doReturn(Optional.of(utredning))
+                .when(utredningRepository)
+                .findById(utredning.getUtredningId());
+
+        assertThatThrownBy(() -> utredningService.avslutaUtredning(request))
+                .isExactlyInstanceOf(IllegalStateException.class)
+                .hasMessage(MessageFormat.format("Utredning with id {0} is in an incorrect state", utredning.getUtredningId()));
+    }
+
+    @Test
     public void testAvslutaUtredningUtredningAvbrutenSuccess() {
         final Long utredningId = 1L;
 
         final Utredning utredning = anUtredning()
                 .withUtredningId(utredningId)
+                .withStatus(UtredningStatus.UTREDNING_PAGAR)
                 .withExternForfragan(anExternForfragan()
                         .withInternForfraganList(Lists.newArrayList(
                                 anInternForfragan()
@@ -710,6 +751,25 @@ public class UtredningServiceImplTest {
 
         verify(notifieringSendService, times(1)).notifieraLandstingAvslutadUtredning(any(Utredning.class));
         verify(notifieringSendService, times(1)).notifieraVardenhetAvslutadUtredning(any(Utredning.class));
+    }
+
+    @Test
+    public void testAvslutaUtredningUtredningAvbrutenIncorrectStateNok() {
+        final Utredning utredning = createUtredning();
+        utredning.setStatus(UtredningStatus.KOMPLETTERING_MOTTAGEN); //Felaktig status -> Ska generera exception
+
+        final AvslutaUtredningRequest request = anEndUtredningRequest()
+                .withUtredningId(utredning.getUtredningId())
+                .withEndReason(AvslutOrsak.UTREDNING_AVBRUTEN)
+                .build();
+
+        doReturn(Optional.of(utredning))
+                .when(utredningRepository)
+                .findById(utredning.getUtredningId());
+
+        assertThatThrownBy(() -> utredningService.avslutaUtredning(request))
+                .isExactlyInstanceOf(IllegalStateException.class)
+                .hasMessage(MessageFormat.format("Utredning with id {0} is in an incorrect state", utredning.getUtredningId()));
     }
 
     @Test
