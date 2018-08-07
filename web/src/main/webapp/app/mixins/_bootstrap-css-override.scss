@@ -167,7 +167,7 @@
 
 .modal-header {
   h3 {
-    @extend %ib-typo-02;
+    @extend %ib-typo-15; //equivalent of wc-typo-02
     color: $ib-color-07;
     padding: 0;
     line-height: 1.78;
