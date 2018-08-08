@@ -32,7 +32,7 @@ angular.module('ibApp')
                 hasVardenheter: veModel.hasVardenheter,
                 vardenheter: veModel.vardenheter,
                 disabledVardenheter: internForfraganCreatedVardenheter,
-                selectedVardenhet: {},
+                selectedVardenhet: {selected: null},
                 vardenheterValidationError: false,
                 inProgress: false
             };

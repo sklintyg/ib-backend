@@ -15,10 +15,12 @@
 
           <p><span message key="tilldela.direkt.vardenheter.heading"></span></p>
 
+          <ib-help-text-label required="true" required-expr="!registerValue"
+                              label-key="skicka.forfragan.egna.label"></ib-help-text-label>
+
           <ib-radiogroup id="tilldela-direkt-modal-vardenheter-eget-landsting"
                          ng-if="vm.vardenheter.egetLandsting.length > 0"
                          class="form-group"
-                         label-key="skicka.forfragan.egna.label"
                          model="vm.selectedVardenhet"
                          on-change="vardenheterChanged()"
                          items="vm.vardenheter.egetLandsting"
@@ -36,7 +38,7 @@
 
     </div>
 
-    <div class="validation-erorr-message" id="tilldela-direkt-validation" ng-if="vm.vardenheterValidationError">
+    <div class="validation-error-message" id="tilldela-direkt-validation" ng-if="vm.vardenheterValidationError">
       <message key="skicka.forfragan.vardenheter.validation"></message>
     </div>
 
@@ -45,6 +47,7 @@
     <ib-button btn-id="tilldela-direkt-modal-skicka"
                btn-class="btn btn-primary"
                busy="vm.inProgress"
+               btn-disabled="!vm.selectedVardenhet.selected"
                btn-click="skicka()">
       Tilldela förfrågan
     </ib-button>

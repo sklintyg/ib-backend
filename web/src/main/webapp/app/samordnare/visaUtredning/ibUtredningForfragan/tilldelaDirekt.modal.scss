@@ -1,8 +1,9 @@
 #tilldela-direkt-modal {
 
-  ib-radiogroup .control-label {
+  h4 {
     @extend %ib-typo-05;
     color: $ib-color-09;
+    font-size: 14px;
   }
 
   .control-label {
@@ -14,7 +15,7 @@
     border: 1px solid $ib-color-11;
   }
 
-  .validation-erorr-message {
+  .validation-error-message {
     margin-top: 10px;
     color: $ib-color-11;
   }
