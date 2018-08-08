@@ -21,6 +21,7 @@
 var ibMessages = {
     'sv': {
 
+        'common.empty': '',
         'common.logout': 'Logga ut',
         'common.yes': 'Ja',
         'common.no': 'Nej',

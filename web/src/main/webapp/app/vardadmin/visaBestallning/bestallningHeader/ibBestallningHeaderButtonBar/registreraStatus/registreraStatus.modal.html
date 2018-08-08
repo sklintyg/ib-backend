@@ -1,37 +1,28 @@
 <div id="registrera-status-modal" class="bestallning-common-modal">
-    <div class="modal-header">
-        <button class="close" data-dismiss="modal" data-ng-click="$dismiss()"><i class="material-icons">close</i>
-        </button>
-        <h4 class="modal-title">{{ titleKey | message }}</h4>
-    </div>
-    <div class="modal-body">
-        <span class="label-margin">
-            <p class="nl2br">{{ infoKey | message }}</p>
-        </span>
-        <form name="statusModalForm">
-            <ib-date-picker-field
-                dom-id="statusModal"
-                target-model="registerValue"
-                format="yyyy-MM-dd"
-                show-field-errors="false"
-                ib-date-picker-field
-                append-to-body="true"
-                add-date-parser="strict">
-            </ib-date-picker-field>
-            <ib-field-error-list errors="statusModalForm.statusModal.$error" date-format-error="Korrekt datum måste anges."></ib-field-error-list>
-        </form>
-    </div>
-    <div class="modal-footer button-flex-wrapper">
-        <ib-button btn-id="register-status-modal-sent-btn"
-                   btn-class="btn btn-primary button-margin"
-                   btn-click="save()"
-                   btn-disabled="correctDate()"
-                   busy="vm.busySaving"
-        >
-            <span message key="common.save"></span>
-        </ib-button>
-        <button type="button" id="register-status-modal-cancel" class="btn btn-default" ng-click="$dismiss()">
-            <span message key="common.cancel"></span>
-        </button>
-    </div>
+  <div class="modal-header">
+    <button class="close" data-dismiss="modal" data-ng-click="$dismiss()"><i class="material-icons">close</i></button>
+    <h4 class="modal-title">{{ titleKey | message }}</h4>
+  </div>
+  <div class="modal-body">
+    <span class="label-margin">
+      <p class="nl2br">{{ infoKey | message }}</p>
+    </span>
+    <form name="statusModalForm">
+      <ib-help-text-label class="position-absolute" required="true" required-expr="!registerValue" label-key="common.empty"></ib-help-text-label>
+      <ib-date-picker-field dom-id="statusModal" target-model="registerValue" format="yyyy-MM-dd"
+                            show-field-errors="false" ib-date-picker-field append-to-body="true"
+                            add-date-parser="strict"></ib-date-picker-field>
+      <ib-field-error-list errors="statusModalForm.statusModal.$error"
+                           date-format-error="Korrekt datum måste anges."></ib-field-error-list>
+    </form>
+  </div>
+  <div class="modal-footer button-flex-wrapper">
+    <ib-button btn-id="register-status-modal-sent-btn" btn-class="btn btn-primary button-margin" btn-click="save()"
+               btn-disabled="correctDate()" busy="vm.busySaving">
+      <span message key="common.save"></span>
+    </ib-button>
+    <button type="button" id="register-status-modal-cancel" class="btn btn-default" ng-click="$dismiss()">
+      <span message key="common.cancel"></span>
+    </button>
+  </div>
 </div>
