@@ -47,7 +47,7 @@
         </button>
       </td>
       <td>
-        <div class="btn-group" uib-dropdown is-open="status.isopen">
+        <div class="btn-group" uib-dropdown dropdown-append-to-body is-open="status.isopen">
           <button id="hantera-button" type="button" class="btn btn-default" uib-dropdown-toggle ng-disabled="hanteraBesokDisabled(row)">
             Hantera
             <i class="material-icons md-18">{{status.isopen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}</i>
