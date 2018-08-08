@@ -98,6 +98,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp;
+import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.mail.MailService;
 import se.inera.intyg.intygsbestallning.service.notifiering.preferens.NotifieringPreferenceService;
@@ -126,6 +127,9 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
     @Autowired
     private UtredningRepository utredningRepository;
+
+    @Autowired
+    private RegistreradVardenhetRepository registreradVardenhetRepository;
 
     @Autowired
     private NotifieringEpostResolver epostResolver;
@@ -195,7 +199,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
     @Override
     public void notifieraVardenhetTilldeladUtredning(Utredning utredning, InternForfragan tillDeladInternForfragan, String landstingNamn) {
         final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(
-                tillDeladInternForfragan.getVardenhetHsaId(), VG);
+                tillDeladInternForfragan.getVardenhetHsaId(), VE);
 
         if (preferens.isEnabled(UTREDNING_TILLDELAD, NotifieringMottagarTyp.VARDENHET)) {
             epostResolver.resolveVardenhetNotifieringEpost(tillDeladInternForfragan.getVardenhetHsaId(), utredning).ifPresent(email -> {
@@ -221,8 +225,12 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
     @Override
     public void notifieraLandstingIngenBestallning(final Utredning utredning, final InternForfragan internForfragan) {
+
+        final String vardgivareHsaId = registreradVardenhetRepository
+                .findVardgivareHsaIdRegisteredForVardenhet(internForfragan.getVardenhetHsaId()).stream().findFirst().orElse(null);
+
         final GetNotificationPreferenceResponse preferens =
-                notifieringPreferenceService.getNotificationPreference(internForfragan.getVardenhetHsaId(), VE);
+                notifieringPreferenceService.getNotificationPreference(vardgivareHsaId, VG);
 
         if (preferens.isEnabled(INGEN_BESTALLNING, LANDSTING)) {
             String email = preferens.getLandstingEpost();
@@ -272,8 +280,10 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
     @Override
     public void notifieraLandstingAvslutadPgaJav(final Utredning utredning) {
         final Bestallning bestallning = verifyHasBestallningAndGet(utredning, UTREDNING_AVSLUTAD_PGA_JAV);
-        final String id = bestallning.getTilldeladVardenhetHsaId();
-        final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VG);
+        final String vardgivareHsaId = registreradVardenhetRepository
+                .findVardgivareHsaIdRegisteredForVardenhet(bestallning.getTilldeladVardenhetHsaId()).stream().findFirst().orElse(null);
+
+        final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(vardgivareHsaId, VG);
 
         if (preferens.isEnabled(UTREDNING_AVSLUTAD_PGA_JAV, LANDSTING)) {
             String email = preferens.getLandstingEpost();
@@ -323,8 +333,9 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
     @Override
     public void notifieraLandstingAvvikelseRapporteradAvVarden(Utredning utredning, Besok besok) {
         final Bestallning bestallning = verifyHasBestallningAndGet(utredning, AVVIKELSE_RAPPORTERAD_AV_VARDEN);
-        final String id = bestallning.getTilldeladVardenhetHsaId();
-        final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VE);
+        final String vardgivareHsaId = registreradVardenhetRepository
+                .findVardgivareHsaIdRegisteredForVardenhet(bestallning.getTilldeladVardenhetHsaId()).stream().findFirst().orElse(null);
+        final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(vardgivareHsaId, VG);
 
         if (preferens.isEnabled(AVVIKELSE_RAPPORTERAD_AV_VARDEN, LANDSTING)) {
             final String email = preferens.getLandstingEpost();
@@ -358,8 +369,9 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
     @Override
     public void notifieraLandstingAvvikelseMottagenFranFK(Utredning utredning, Besok besok) {
         final Bestallning bestallning = verifyHasBestallningAndGet(utredning, AVVIKELSE_MOTTAGEN_AV_FK);
-        final String id = bestallning.getTilldeladVardenhetHsaId();
-        final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VE);
+        final String vardgivareHsaId = registreradVardenhetRepository
+                .findVardgivareHsaIdRegisteredForVardenhet(bestallning.getTilldeladVardenhetHsaId()).stream().findFirst().orElse(null);
+        final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(vardgivareHsaId, VG);
 
         if (preferens.isEnabled(AVVIKELSE_MOTTAGEN_AV_FK, LANDSTING)) {
             final String email = preferens.getLandstingEpost();
@@ -393,8 +405,9 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
     @Override
     public void notifieraLandstingAvslutadUtredning(Utredning utredning) {
         final Bestallning bestallning = verifyHasBestallningAndGet(utredning, UTREDNING_AVSLUTAD_PGA_AVBRUTEN);
-        final String id = bestallning.getTilldeladVardenhetHsaId();
-        final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VE);
+        final String vardgivareHsaId = registreradVardenhetRepository
+                .findVardgivareHsaIdRegisteredForVardenhet(bestallning.getTilldeladVardenhetHsaId()).stream().findFirst().orElse(null);
+        final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(vardgivareHsaId, VG);
 
         if (preferens.isEnabled(UTREDNING_AVSLUTAD_PGA_AVBRUTEN, LANDSTING)) {
             final String email = preferens.getLandstingEpost();
