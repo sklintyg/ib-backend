@@ -91,7 +91,7 @@ public final class ExternForfragan {
                 .withAvvisatDatum(externForfragan.getAvvisatDatum())
                 .withInkomDatum(externForfragan.getInkomDatum())
                 .withInternForfraganList(externForfragan.getInternForfraganList().stream()
-                        .map(InternForfragan::from)
+                        .map(InternForfragan::copyFrom)
                         .collect(Collectors.toList()))
                 .build();
     }

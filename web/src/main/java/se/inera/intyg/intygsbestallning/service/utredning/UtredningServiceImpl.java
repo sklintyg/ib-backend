@@ -26,6 +26,7 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.apache.commons.lang3.BooleanUtils.*;
 import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
@@ -41,6 +42,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +69,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
+import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
 import se.inera.intyg.intygsbestallning.persistence.model.RegistreradVardenhet;
 import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
@@ -268,7 +271,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     public Utredning registerOrder(OrderRequest order) {
         Utredning utredning = utredningRepository.findById(order.getUtredningId()).orElseThrow(
                 () -> new IbNotFoundException(
-                    MessageFormat.format("Felaktig utredningsid: {0}. Utredningen existerar inte.", order.getUtredningId())));
+                        MessageFormat.format("Felaktig utredningsid: {0}. Utredningen existerar inte.", order.getUtredningId())));
 
         // Validate the state
         if (utredning.getBestallning().isPresent()) {
@@ -640,21 +643,32 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         }
     }
 
-    private Utredning qualifyForUpdatering(final UpdateOrderRequest update, final Utredning original) {
+    private Utredning qualifyForUpdatering(final UpdateOrderRequest update, final Utredning utredning) {
 
         checkArgument(nonNull(update));
-        checkArgument(nonNull(original));
-        checkArgument(original.getBestallning().isPresent());
+        checkArgument(nonNull(utredning));
+        checkArgument(utredning.getBestallning().isPresent());
 
-        Utredning toUpdate = Utredning.copyFrom(original);
+        final Boolean tolkBehovOriginal = utredning.getTolkBehov();
+        update.getTolkBehov().ifPresent(utredning::setTolkBehov);
 
-        update.getTolkBehov().ifPresent(toUpdate::setTolkBehov);
-        update.getTolkSprak().ifPresent(toUpdate::setTolkSprak);
-        update.getLastDateIntyg().ifPresent(date -> toUpdate.getIntygList().stream()
+        final String tolkSprakOriginal = utredning.getTolkSprak();
+        update.getTolkSprak().ifPresent(utredning::setTolkSprak);
+
+        final LocalDateTime sistaDatumOriginal = utredning.getIntygList().stream()
                 .filter(i -> !i.isKomplettering())
                 .findFirst()
-                .ifPresent(i -> i.setSistaDatum(date)));
-        update.getBestallare().ifPresent(bestallare -> toUpdate.setHandlaggare(aHandlaggare()
+                .map(Intyg::getSistaDatum)
+                .orElse(null);
+
+        update.getLastDateIntyg().ifPresent(sistaDatum ->
+                utredning.getIntygList().stream()
+                        .filter(i -> !i.isKomplettering())
+                        .findFirst()
+                        .ifPresent(i -> i.setSistaDatum(sistaDatum)));
+
+        final Handlaggare handlaggareOriginal = utredning.getHandlaggare();
+        update.getBestallare().ifPresent(bestallare -> utredning.setHandlaggare(aHandlaggare()
                 .withEmail(bestallare.getEmail())
                 .withFullstandigtNamn(bestallare.getFullstandigtNamn())
                 .withKontor(bestallare.getKontor())
@@ -665,33 +679,50 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .withTelefonnummer(bestallare.getTelefonnummer())
                 .build()));
 
-        if (Objects.equals(original, toUpdate)) {
+        final String kommentarOriginal = utredning.getBestallning().get().getKommentar();
+        update.getKommentar().ifPresent(kommentar -> utredning.getBestallning().get().setKommentar(kommentar));
+
+        final ImmutableList<ImmutablePair> fields = ImmutableList.of(
+                ImmutablePair.of(tolkBehovOriginal, utredning.getTolkBehov()),
+                ImmutablePair.of(tolkSprakOriginal, utredning.getTolkSprak()),
+                ImmutablePair.of(handlaggareOriginal, utredning.getHandlaggare()),
+                ImmutablePair.of(kommentarOriginal, utredning.getBestallning().get().getKommentar()),
+                ImmutablePair.of(
+                        sistaDatumOriginal,
+                        utredning.getIntygList().stream()
+                                .filter(i -> !i.isKomplettering())
+                                .findFirst()
+                                .map(Intyg::getSistaDatum)
+                                .orElse(null))
+        );
+
+        if (fields.stream().allMatch(pair -> Objects.equals(pair.left, pair.right))) {
             throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, "No info to update");
         }
 
         final LocalDateTime now = LocalDateTime.now();
         update.getHandling()
                 .filter(BooleanUtils::isTrue)
-                .ifPresent(isHandling -> toUpdate.getHandlingList().add(aHandling()
+                .ifPresent(isHandling -> utredning.getHandlingList().add(aHandling()
                         .withInkomDatum(null)
                         .withSkickatDatum(now)
                         .withUrsprung(HandlingUrsprungTyp.UPPDATERING)
                         .build()));
 
-        if (!BooleanUtils.toBoolean(toUpdate.getTolkBehov()) && !isNullOrEmpty(toUpdate.getTolkSprak())) {
+        if (isFalse(utredning.getTolkBehov()) && !isNullOrEmpty(utredning.getTolkSprak())) {
             throw new IbServiceException(
                     IbErrorCodeEnum.BAD_REQUEST, INTERPRETER_ERROR_TEXT);
-        } else if (nonNull(toUpdate.getTolkSprak()) && !toUpdate.getTolkBehov() && !update.getTolkSprak().isPresent()) {
-            toUpdate.setTolkSprak(null);
+        } else if (nonNull(utredning.getTolkSprak()) && isFalse(utredning.getTolkBehov())) {
+            utredning.setTolkSprak(null);
         }
 
         // Lägg till händelse, handläggare, sistadatum och markera beställningen som uppdaterad.
-        LocalDate nyttSistaDatum = update.getLastDateIntyg().isPresent() ? update.getLastDateIntyg().get().toLocalDate() : null;
-        String nyHandlaggare = update.getBestallare().isPresent() ? update.getBestallare().get().getFullstandigtNamn() : null;
-        toUpdate.getHandelseList().add(HandelseUtil.createOrderUpdated(nyttSistaDatum, nyHandlaggare, update.getHandling().isPresent()));
-        toUpdate.getBestallning().ifPresent(bestallning -> bestallning.setUppdateradDatum(LocalDateTime.now()));
+        final LocalDate nyttSistaDatum = update.getLastDateIntyg().isPresent() ? update.getLastDateIntyg().get().toLocalDate() : null;
+        final String nyHandlaggare = update.getBestallare().isPresent() ? update.getBestallare().get().getFullstandigtNamn() : null;
+        utredning.getHandelseList().add(HandelseUtil.createOrderUpdated(nyttSistaDatum, nyHandlaggare, update.getHandling().isPresent()));
+        utredning.getBestallning().ifPresent(bestallning -> bestallning.setUppdateradDatum(LocalDateTime.now()));
 
-        return toUpdate;
+        return utredning;
     }
 
     private Invanare updateInvanareFromOrder(final Invanare invanare, OrderRequest order) {

@@ -78,7 +78,7 @@ public final class InternForfragan {
     public InternForfragan() {
     }
 
-    public static InternForfragan from(final InternForfragan internForfragan) {
+    public static InternForfragan copyFrom(final InternForfragan internForfragan) {
 
         if (isNull(internForfragan)) {
             return null;
