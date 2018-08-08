@@ -84,6 +84,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus
 import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.MyndighetTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.RegiFormTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
 import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
@@ -425,7 +426,9 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         final Handelse handelse;
         final Utredning utredning;
         final Utredning sparadUtredning;
-        if (byVardgivareHsaId.size() == 1) {
+
+        //FMU-004: Alternativflöde 1 - Internförfrågan skickas direkt till (enda) vårdenhet i egen regi
+        if (byVardgivareHsaId.size() == 1 && RegiFormTyp.EGET_LANDSTING.equals(byVardgivareHsaId.get(0).getVardenhetRegiForm())) {
             final String vardenhetHsaId = byVardgivareHsaId.iterator().next().getVardenhetHsaId();
             externForfragan.withInternForfraganList(Collections.singletonList(anInternForfragan()
                     .withVardenhetHsaId(vardenhetHsaId)
@@ -443,6 +446,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
             sparadUtredning = utredningRepository.saveUtredning(utredning);
             notifieringSendService.notifieraVardenhetNyInternforfragan(utredning);
         } else {
+            //FMU-004: Normalflöde 1 - Landstinget tar emot externförfrågan
             handelse = HandelseUtil.createExternForfraganMottagen(request.getLandstingHsaId());
             utredningBuilder
                     .withExternForfragan(externForfragan.build())
