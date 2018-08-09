@@ -196,7 +196,7 @@ var ibMessages = {
         'utredningar.filter.fritext.label': 'Fritextsökning',
         'utredningar.filter.fritext.placeholder': 'Skriv sökord',
         'utredningar.filter.fas.label': 'Fas',
-        'utredningar.filter.slutdatumfas.label': 'Slutdatum',
+        'utredningar.filter.slutdatumfas.label': 'Slutdatum fas',
         'utredningar.filter.slutdatumfas.placeholder': 'Visa alla',
         'utredningar.filter.status.label': 'Status',
         'utredningar.filter.resetfilter.label': 'Återställ sökfilter',
