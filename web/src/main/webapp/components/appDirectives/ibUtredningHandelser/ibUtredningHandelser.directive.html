@@ -10,11 +10,11 @@
       <thead>
       <tr>
         <th ib-table-head filter="filter" order-by-key="handelseDatum"
-            label-key="label.table.utredning.handelser.column.handelseDatum"></th>
+            label-key="label.table.utredning.handelser.column.handelseDatum" class="th--minimize"></th>
         <th ib-table-head filter="filter" order-by-key="typ"
-            label-key="label.table.utredning.handelser.column.typ"></th>
+            label-key="label.table.utredning.handelser.column.typ" class="th--minimize"></th>
         <th ib-table-head filter="filter" order-by-key="anvandare"
-            label-key="label.table.utredning.handelser.column.anvandare"></th>
+            label-key="label.table.utredning.handelser.column.anvandare" class="th--minimize"></th>
         <th ib-table-head filter="filter" order-by-key="skapad"
             label-key="label.table.utredning.handelser.column.handelse"></th>
         <th ng-if="columnSet === 'VARDADMIN'" ib-table-head filter="filter" order-by-key="kommentar"
@@ -32,7 +32,7 @@
       <tr ng-repeat="row in utredning.handelseList | filter: filter.handelse | orderBy: filter.orderBy:filter.orderByAsc as handelser">
         <td>{{::row.skapad}}</td>
         <td>{{::row.typ.label}}</td>
-        <td>{{::row.anvandare}}</td>
+        <td class="unbreakable">{{::row.anvandare}}</td>
         <td>{{::row.handelseText}}</td>
         <td ng-if="columnSet === 'VARDADMIN'">{{::row.kommentar}}</td>
       </tr>
