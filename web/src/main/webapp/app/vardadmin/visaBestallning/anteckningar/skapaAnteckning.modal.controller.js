@@ -29,7 +29,8 @@ angular.module('ibApp')
             };
             
             $scope.anteckningIsEmpty = function() {
-                return ($scope.note.replace(/\s/g,'') === '');
+                var noteText = $scope.note;
+                return noteText === undefined || noteText.trim().length === 0;
             };
             
             $scope.save = function () {
