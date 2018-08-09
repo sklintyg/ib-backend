@@ -61,13 +61,15 @@ public class InternForfraganListItemFactory {
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
 
+        final boolean pavagPasseras = resolveBesvarasSenastPaVagPasseras(internForfragan.getBesvarasSenastDatum(), businessDays);
+        final boolean passerat = resolveBesvaraSenastPasserat(internForfragan);
+
         return InternForfraganListItem.ForfraganListItemBuilder.aForfraganListItem()
                 .withBesvarasSenastDatum(nonNull(internForfragan.getBesvarasSenastDatum())
                         ? internForfragan.getBesvarasSenastDatum().format(FORMATTER)
                         : null)
-                .withBesvarasSenastDatumPaVagPasseras(
-                        resolveBesvarasSenastPaVagPasseras(internForfragan.getBesvarasSenastDatum(), businessDays))
-                .withBesvarasSenastDatumPasserat(resolveBesvaraSenastPasserat(internForfragan))
+                .withBesvarasSenastDatumPaVagPasseras(pavagPasseras && !passerat)
+                .withBesvarasSenastDatumPasserat(passerat)
                 .withInkomDatum(nonNull(internForfragan.getSkapadDatum())
                         ? internForfragan.getSkapadDatum().format(FORMATTER)
                         : null)
