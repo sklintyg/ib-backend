@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto.notification;
 
+import static com.google.common.collect.MoreCollectors.toOptional;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp.ALL;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp.LANDSTING;
@@ -50,9 +51,13 @@ public class GetNotificationPreferenceResponse {
     }
 
     public boolean isEnabled(final NotifieringTyp notifieringTyp, NotifieringMottagarTyp mottagarTyp) {
-        return mottagarTyp.equals(VARDENHET)
-                ? items.stream().anyMatch(item -> item.getId().equals(notifieringTyp.getId()))
-                : isNotEmpty(landstingEpost) && items.stream().anyMatch(item -> item.getId().equals(notifieringTyp.getId()));
+        return items.stream()
+                .filter(item -> item.getId().equals(notifieringTyp.getId()))
+                .filter(item -> mottagarTyp.equals(VARDENHET)
+                        ? item.isEnabled()
+                        : isNotEmpty(landstingEpost) && item.isEnabled())
+                .collect(toOptional())
+                .isPresent();
     }
 
     public static GetNotificationPreferenceResponse from(
