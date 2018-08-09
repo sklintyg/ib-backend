@@ -1,6 +1,5 @@
 <label ng-attr-for="{{::inputId}}" class="control-label">
- <span ng-if="required" class="required">*</span>
- <span message key="{{::labelKey}}"></span>
+ <ib-help-text-label required="required" required-expr="!model" label-key="{{::labelKey}}"></ib-help-text-label>
 </label>
 <div>
 <input ng-attr-id="{{::inputId}}"
