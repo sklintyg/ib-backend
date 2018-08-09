@@ -40,8 +40,8 @@ angular.module('ibApp').directive('ibHorisontalTextfield', [ '$parse', function(
 
             attr.$observe('id', function(id) {
                 $scope.inputId = id + '_input';
-
             });
+
             //return errors for just this specific form element
             $scope.componentErrors = function() {
                 return $parse('form.' + $scope.inputId + '.$error')($scope);

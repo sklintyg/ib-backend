@@ -30,19 +30,13 @@ angular.module('ibApp').directive('ibTextarea', [ '$parse', function($parse) {
             maxLength: '=',
             required: '=',
             requiredError: '@',
-            colSize: '@',
-            requiredExpr: '=?'
+            colSize: '@'
         },
         templateUrl: '/components/commonDirectives/form/ibTextarea/ibTextarea.directive.html',
         link: function($scope, element, attr) {
 
-            if ($scope.requiredExpr === undefined) {
-                $scope.requiredExpr = true;
-            }
-
             attr.$observe('id', function(id) {
                 $scope.inputId = id + '_textarea';
-
             });
 
             //return errors for just this specific form element

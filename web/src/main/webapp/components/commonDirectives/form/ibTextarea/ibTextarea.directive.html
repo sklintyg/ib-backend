@@ -1,23 +1,23 @@
 <div class="row">
   <div class="col-xs-{{::colSize}}">
-    <label ng-attr-for="{{::inputId}}" class="control-label" ng-if="labelKey">
-      <span ng-if="required && requiredExpr" class="asterisk">*</span>
-      <span message key="{{::labelKey}}"></span>
-      <span ng-if="helpKey">
-        <ib-help-chevron help-text-key="{{helpKey}}"></ib-help-chevron>
-        <ib-help-chevron-text help-text-key="{{helpKey}}"></ib-help-chevron-text>
-      </span>
-    </label>
-    <textarea ng-attr-id="{{::inputId}}"
-              ng-attr-name="{{::inputId}}"
-              ng-attr-rows="{{rows || 4 }}"
-              type="text"
-              class="form-control"
-              ng-model="model"
-              ng-disabled="isDisabled"
-              ng-required="required && requiredExpr"
-              ng-attr-placeholder="{{::placeholderText}}"
-              maxlength="{{:: maxLength || 255}}"></textarea>
-    <ib-field-error-list errors="componentErrors()" required-error="{{requiredError}}"></ib-field-error-list>
+    <form ng-attr-name="{{::inputId}}">
+      <label ng-attr-for="{{::inputId}}" class="control-label" ng-if="labelKey">
+        <ib-help-text-label required="required"
+                            required-expr="!model"
+                            label-key="{{::labelKey}}"
+                            help-key="{{::helpKey}}"></ib-help-text-label>
+      </label>
+      <textarea ng-attr-id="{{::inputId}}"
+                ng-attr-name="{{::inputId}}"
+                ng-attr-rows="{{rows || 4 }}"
+                type="text"
+                class="form-control"
+                ng-model="model"
+                ng-disabled="isDisabled"
+                ng-required="required && !model && form[inputId].$dirty"
+                ng-attr-placeholder="{{::placeholderText}}"
+                maxlength="{{:: maxLength || 255}}"></textarea>
+      <ib-field-error-list errors="componentErrors()" required-error="{{requiredError}}"></ib-field-error-list>
+    </form>
   </div>
 </div>
