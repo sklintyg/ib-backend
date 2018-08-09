@@ -1,6 +1,6 @@
 <div class="ib-help-chevron" ng-class="{ 'ib-help-chevron-open' : !isCollapsed }">
   <button type="button" class="ib-help-chevron__button" ng-click="toggleHelp()">
-    <i ng-if="isCollapsed" class="material-icons">expand_more</i>
-    <i ng-if="!isCollapsed" class="material-icons">expand_less</i>
+    <i class="material-icons" ng-class="{'hide' : isCollapsed}">expand_more</i> <!-- using ng-show to prevent flickering in IE -->
+    <i class="material-icons" ng-class="{'hide' : !isCollapsed}">expand_less</i>
   </button>
 </div>

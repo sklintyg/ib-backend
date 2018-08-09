@@ -35,4 +35,8 @@
     color: $ib-color-06;
     outline: none;
   }
+
+  .hide { /* fix for IE. ng-show/if didnt work for some reason */
+    display: none;
+  }
 }
