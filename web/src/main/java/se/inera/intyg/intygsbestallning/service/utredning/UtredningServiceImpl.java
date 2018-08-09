@@ -22,11 +22,10 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.google.common.collect.MoreCollectors.toOptional;
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
-import static org.apache.commons.lang3.BooleanUtils.*;
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
@@ -469,7 +468,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                     MessageFormat.format("EndAssessment has already been performed for Utredning {0}", utredning.getUtredningId()));
         }
 
-        final AvslutOrsak orsak = request.getAvslutOrsak();
+        final AvslutOrsak orsak = Optional.ofNullable(request.getAvslutOrsak()).orElse(AvslutOrsak.UTREDNING_AVBRUTEN);
 
         qualifyForAvslutaUtredning(orsak, utredning);
 
@@ -550,7 +549,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
             isKorrektStatusForIngenBestallning(utredning);
         } else if (orsak == AvslutOrsak.JAV) {
             isKorrektStatusForJav(utredning);
-        } else if (isNull(orsak) || orsak == AvslutOrsak.UTREDNING_AVBRUTEN) {
+        } else if (orsak == AvslutOrsak.UTREDNING_AVBRUTEN) {
             isKorrektStatusForUtredningAvbruten(utredning);
         } else {
             throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, MessageFormat.format("EndReason {0} is not supported", orsak));
@@ -624,7 +623,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
             return HandelseUtil.createIngenBestallning();
         } else if (orsak == AvslutOrsak.JAV) {
             return HandelseUtil.createJav();
-        } else if (isNull(orsak) || orsak == AvslutOrsak.UTREDNING_AVBRUTEN) {
+        } else if (orsak == AvslutOrsak.UTREDNING_AVBRUTEN) {
             return HandelseUtil.createUtredningAvbruten();
         } else {
             return HandelseUtil.createAvslutadUtredning(vardAdministrator);
@@ -639,7 +638,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         } else if (orsak == AvslutOrsak.JAV) {
             notifieringSendService.notifieraLandstingAvslutadPgaJav(utredning);
             notifieringSendService.notifieraVardenhetAvslutadPgaJav(utredning);
-        } else if (isNull(orsak) || orsak == AvslutOrsak.UTREDNING_AVBRUTEN) {
+        } else if (orsak == AvslutOrsak.UTREDNING_AVBRUTEN) {
             notifieringSendService.notifieraLandstingAvslutadUtredning(utredning);
             notifieringSendService.notifieraVardenhetAvslutadUtredning(utredning);
         } else {
