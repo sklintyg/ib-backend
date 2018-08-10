@@ -18,6 +18,12 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.testability;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.ws.rs.core.Response;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
@@ -29,13 +35,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
-
-import javax.ws.rs.core.Response;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/test/utredningar")
@@ -55,6 +60,15 @@ public class UtredningResource {
     @GetMapping(path = "/withstatus/{status}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Utredning>> getUtredningWithStatus(@PathVariable("status") String status) {
         return ResponseEntity.ok(utredningRepository.findByStatus(UtredningStatus.valueOf(status)));
+    }
+
+    @GetMapping(path = "/withfas/{fas}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Utredning>> getUtredningInUtredningFas(@PathVariable("fas") String fas) {
+        UtredningFas utredningFas = UtredningFas.valueOf(fas);
+        final List<UtredningStatus> statuses = Stream.of(UtredningStatus.values())
+                .filter(us -> us.getUtredningFas().equals(utredningFas))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(utredningRepository.findByStatusIn(statuses));
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)

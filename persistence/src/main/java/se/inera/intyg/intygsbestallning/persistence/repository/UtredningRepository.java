@@ -114,6 +114,7 @@ public interface UtredningRepository extends UtredningRepositoryCustom, JpaRepos
             @Param("typ") NotifieringTyp typ);
 
     List<Utredning> findByStatus(UtredningStatus status);
+    List<Utredning> findByStatusIn(List<UtredningStatus> status);
 }
 //CHECKSTYLE:ON MethodName
 //CHECKSTYLE:ON LineLength

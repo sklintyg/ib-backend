@@ -46,6 +46,7 @@
           var oaUrl = '/services/order-assessment-responder';
           var rdUrl = '/services/report-deviation-interaction-responder';
           var rcrUrl = '/services/report-certificate-receival-responder';
+          var uoUrl = '/services/update-order-responder';
 
           $scope.rpfa = {
               certificateType: 'AFU',
@@ -362,6 +363,129 @@
               sendSoap(oaUrl, msg);
           };
 
+
+          //--------------- Update Order -------------------------------------------------------------------------------
+
+          $scope.uo = {
+              assessmentId: null,
+              assessmentIdOptions: [],
+              needForInterpreter: false,
+              lastDateForCertificateReceival: moment().add(7, 'days').format('YYYY-MM-DD'),
+              documentsByPost: true,
+              authorityAdministrativeOfficial: {
+                  fullName: 'Uppdaterade Handläggaren',
+                  phoneNumber: '000111',
+                  email: '',
+                  officeName: 'Uppdaterat Handläggarkontor',
+                  officeCostCenter: 'Uppdaterat Handläggarkostnadsställe',
+                  postalAddress: 'Uppdaterat Handläggaradress 1',
+                  postalCode: '00000',
+                  postalCity: 'Uppdaterat Handläggarstaden'
+              }
+          };
+
+          $scope.refreshUoAssestmentIdOptions = function() {
+              $scope.uo.assessmentIdOptions = [];
+              $http.get('/api/test/utredningar/withfas/UTREDNING').then(function(response){
+                  $log.info(response.data);
+                  $scope.uo.assessmentId = null;
+                  angular.forEach(response.data, function(utredning){
+                      $scope.uo.assessmentIdOptions.push(utredning.utredningId);
+
+                  });
+                  if (response.data && response.data.length > 0) {
+                      $scope.uo.assessmentId = response.data[0].utredningId;
+                  }
+
+              });
+          };
+
+          $scope.refreshUoAssestmentIdOptions();
+
+          $scope.sendUpdateOrder = function() {
+
+              var needForInterpreter = '';
+              if ($scope.uo.needForInterpreter !== undefined && $scope.uo.needForInterpreter !== null) {
+                  needForInterpreter = '<urn1:needForInterpreter>' + $scope.uo.needForInterpreter + '</urn1:needForInterpreter>';
+              }
+
+              var interpreterLanguage = '';
+              if ($scope.uo.interpreterLanguage) {
+                  interpreterLanguage += '<urn1:interpreterLanguage>' +
+                      '<urn2:code>' + $scope.uo.interpreterLanguage + '</urn2:code>' +
+                      '<urn2:codeSystem></urn2:codeSystem>' +
+                      '</urn1:interpreterLanguage>';
+              }
+
+              var comment = '';
+              if ($scope.uo.comment) {
+                  comment = '<urn1:comment>' + $scope.uo.comment + '</urn1:comment>';
+              }
+
+              var lastDateForCertificateReceival = '';
+              if ($scope.uo.lastDateForCertificateReceival) {
+                  lastDateForCertificateReceival = '<urn1:lastDateForCertificateReceival>' +
+                      moment($scope.uo.lastDateForCertificateReceival, 'YYYY-MM-DD').format('YYYYMMDD')  +
+                      '</urn1:lastDateForCertificateReceival>';
+              }
+
+              var documentsByPost = '';
+              if ($scope.uo.documentsByPost) {
+                  documentsByPost = '<urn1:documentsByPost>' + $scope.uo.documentsByPost + '</urn1:documentsByPost>';
+
+              }
+
+
+              var msg = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" ' +
+                  'xmlns:urn="urn:riv:itintegration:registry:1" ' +
+                  'xmlns:urn1="urn:riv-application:intygsbestallning:certificate:order:UpdateOrderResponder:1" ' +
+                  'xmlns:urn2="urn:riv-application:intygsbestallning:certificate:order:1">' +
+                  '<soapenv:Header><urn:LogicalAddress>ib-hsa-id</urn:LogicalAddress></soapenv:Header>' +
+                  '<soapenv:Body>' +
+                    '<urn1:UpdateOrder>' +
+                      '<urn1:assessmentId>' +
+                      '<urn2:root></urn2:root>' +
+                      '<urn2:extension>' + $scope.uo.assessmentId + '</urn2:extension>' +
+                      '</urn1:assessmentId>' +
+                      comment +
+                      lastDateForCertificateReceival +
+                      needForInterpreter +
+                      interpreterLanguage +
+                      documentsByPost +
+                      '<urn1:updatedAuthorityAdministrativeOfficial>' +
+                        // <!--Optional:-->
+                        '<urn2:fullName>' + $scope.uo.authorityAdministrativeOfficial.fullName + '</urn2:fullName>' +
+                        '<urn2:phoneNumber>' + $scope.uo.authorityAdministrativeOfficial.phoneNumber + '</urn2:phoneNumber>' +
+                        // <!--Optional:-->
+                        '<urn2:email>' + $scope.uo.authorityAdministrativeOfficial.email + '</urn2:email>' +
+                        '<urn2:authority>' +
+                        '<urn2:code>FKASSA</urn2:code>' +
+                        '<urn2:codeSystem>769bb12b-bd9f-4203-a5cd-fd14f2eb3b80</urn2:codeSystem>' +
+                        '</urn2:authority>' +
+                        // <!--Optional:-->
+                        '<urn2:officeName>' + $scope.uo.authorityAdministrativeOfficial.officeName + '</urn2:officeName>' +
+                        // <!--Optional:-->
+                        '<urn2:officeCostCenter>' + $scope.uo.authorityAdministrativeOfficial.officeCostCenter +
+                        '</urn2:officeCostCenter>' +
+                        // <!--Optional:-->
+                        '<urn2:officeAddress>' +
+                        // <!--Optional:-->
+                        '<urn2:postalAddress>' + $scope.uo.authorityAdministrativeOfficial.postalAddress +
+                        '</urn2:postalAddress>' +
+                        // <!--Optional:-->
+                        '<urn2:postalCode>' + $scope.uo.authorityAdministrativeOfficial.postalCode + '</urn2:postalCode>' +
+                        // <!--Optional:-->
+                        '<urn2:postalCity>' + $scope.uo.authorityAdministrativeOfficial.postalCity + '</urn2:postalCity>' +
+                        '</urn2:officeAddress>' +
+                      '</urn1:updatedAuthorityAdministrativeOfficial>' +
+                    '</urn1:UpdateOrder>' +
+                  '</soapenv:Body>' +
+                  '</soapenv:Envelope>';
+
+              sendSoap(uoUrl, msg);
+          };
+
+          //---------- Report Deviation ------------------------------------------
           $scope.rd = {
               assessmentCareContactId: null,
               assessmentCareContactIdOptions: [],
@@ -546,7 +670,7 @@
         </div>
 
         <div>
-          <button class="btn btn-primary" ng-click="sendRpfa()")>Skicka</button>
+          <button class="btn btn-primary" ng-click="sendRpfa()">Skicka</button>
         </div>
 
       </uib-tab>
@@ -592,7 +716,40 @@
         <div class="row"><label class="col-sm-3 control-label">situationBackground</label><div class="col-sm-9"><input class="form-control" ng-model="oa.citizen.situationBackground"></div></div>
 
         <div>
-          <button class="btn btn-primary" ng-click="sendOa()")>Skicka</button>
+          <button class="btn btn-primary" ng-click="sendOa()">Skicka</button>
+        </div>
+
+      </uib-tab>
+
+      <uib-tab heading="UpdateOrder">
+        <h2>UpdateOrder</h2>
+        <div class="row">
+          <label class="col-sm-3 control-label">assessmentId</label>
+          <div class="col-sm-6">
+            <select class="form-control" ng-model="uo.assessmentId" ng-options="item for item in uo.assessmentIdOptions"></select>
+          </div>
+          <div class="col-sm-3">
+            <button class="btn btn-default" ng-click="refreshUoAssestmentIdOptions()">Uppdatera listan</button>
+          </div>
+        </div>
+
+        <div class="row"><label class="col-sm-3 control-label">needForInterpreter</label><div class="col-sm-9"><input type="checkbox" ng-model="uo.needForInterpreter" ng-true-value="true" ng-false-value="false"></div></div>
+        <div class="row"><label class="col-sm-3 control-label">interpreterLanguage</label><div class="col-sm-9"><input class="form-control" ng-model="uo.interpreterLanguage"></div></div>
+        <div class="row"><label class="col-sm-3 control-label">comment</label><div class="col-sm-9"><input class="form-control" ng-model="uo.comment"></div></div>
+        <div class="row"><label class="col-sm-3 control-label">lastDateForCertificateReceival</label><div class="col-sm-9"><input class="form-control" ng-model="uo.lastDateForCertificateReceival"></div></div>
+        <div class="row"><label class="col-sm-3 control-label">documentsByPost</label><div class="col-sm-9"><input type="checkbox" ng-model="uo.documentsByPost" ng-true-value="true" ng-false-value="false"></div></div>
+
+        <h4>Handläggare</h4>
+        <div class="row"><label class="col-sm-3 control-label">fullName</label><div class="col-sm-9"><input class="form-control" ng-model="uo.authorityAdministrativeOfficial.fullName"></div></div>
+        <div class="row"><label class="col-sm-3 control-label">phoneNumber</label><div class="col-sm-9"><input class="form-control" ng-model="uo.authorityAdministrativeOfficial.phoneNumber"></div></div>
+        <div class="row"><label class="col-sm-3 control-label">email</label><div class="col-sm-9"><input class="form-control" ng-model="uo.authorityAdministrativeOfficial.email"></div></div>
+        <div class="row"><label class="col-sm-3 control-label">officeName</label><div class="col-sm-9"><input class="form-control" ng-model="uo.authorityAdministrativeOfficial.officeName"></div></div>
+        <div class="row"><label class="col-sm-3 control-label">officeCostCenter</label><div class="col-sm-9"><input class="form-control" ng-model="uo.authorityAdministrativeOfficial.officeCostCenter"></div></div>
+        <div class="row"><label class="col-sm-3 control-label">postalAddress</label><div class="col-sm-9"><input class="form-control" ng-model="uo.authorityAdministrativeOfficial.postalAddress"></div></div>
+        <div class="row"><label class="col-sm-3 control-label">postalCode</label><div class="col-sm-9"><input class="form-control" ng-model="uo.authorityAdministrativeOfficial.postalCode"></div></div>
+        <div class="row"><label class="col-sm-3 control-label">postalCity</label><div class="col-sm-9"><input class="form-control" ng-model="uo.authorityAdministrativeOfficial.postalCity"></div></div>
+        <div>
+          <button class="btn btn-primary" ng-click="sendUpdateOrder()">Skicka</button>
         </div>
 
       </uib-tab>
@@ -619,7 +776,7 @@
         <div class="row"><label class="col-sm-3 control-label">citizenFailedToArrive</label><div class="col-sm-9"><input type="checkbox" ng-model="rd.citizenFailedToArrive" ng-true-value="true" ng-false-value="false"></div></div>
 
         <div>
-          <button class="btn btn-primary" ng-click="sendRd()")>Skicka</button>
+          <button class="btn btn-primary" ng-click="sendRd()">Skicka</button>
         </div>
 
       </uib-tab>
@@ -640,7 +797,7 @@
         <div class="row"><label class="col-sm-3 control-label">lastDateForSupplementRequest</label><div class="col-sm-9"><input class="form-control" ng-model="rcr.lastDateForSupplementRequest"></div></div>
 
         <div>
-          <button class="btn btn-primary" ng-click="sendRcr()")>Skicka</button>
+          <button class="btn btn-primary" ng-click="sendRcr()">Skicka</button>
         </div>
 
       </uib-tab>
