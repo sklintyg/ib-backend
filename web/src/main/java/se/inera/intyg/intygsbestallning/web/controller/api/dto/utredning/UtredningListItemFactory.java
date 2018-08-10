@@ -62,7 +62,7 @@ public class UtredningListItemFactory {
                 .withStatus(utredningStatus)
                 .withKraverAtgard(utredningStatus.getNextActor() == Actor.SAMORDNARE)
                 .withUtredningsId(utredning.getUtredningId())
-                .withUtredningsTyp(utredning.getUtredningsTyp().name())
+                .withUtredningsTyp(utredning.getUtredningsTyp())
                 .withVardenhetHsaId(resolveTilldeladVardenhetHsaId(utredning))
 
                 // Is set later after HSA lookup.

@@ -24,7 +24,7 @@
       <tbody>
       <tr ng-repeat="row in utredningar">
         <td>{{::row.utredningsId}}</td>
-        <td>{{::row.utredningsTyp}}</td>
+        <td>{{::row.utredningsTyp.label}}</td>
         <td>{{::row.vardenhetNamn}}</td>
         <td>{{::row.status.label}}</td>
         <td>{{::row.avslutsDatum}}</td>

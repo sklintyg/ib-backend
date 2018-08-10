@@ -19,13 +19,14 @@
 package se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning;
 
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
+import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FreeTextSearchable;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardgivareEnrichable;
 
 public class AvslutadBestallningListItem implements FreeTextSearchable, VardgivareEnrichable {
 
     private Long utredningsId;
-    private String utredningsTyp;
+    private UtredningsTyp utredningsTyp;
     private String vardgivareHsaId;
     private String vardgivareNamn;
 
@@ -44,11 +45,11 @@ public class AvslutadBestallningListItem implements FreeTextSearchable, Vardgiva
         this.utredningsId = utredningsId;
     }
 
-    public String getUtredningsTyp() {
+    public UtredningsTyp getUtredningsTyp() {
         return utredningsTyp;
     }
 
-    public void setUtredningsTyp(String utredningsTyp) {
+    public void setUtredningsTyp(UtredningsTyp utredningsTyp) {
         this.utredningsTyp = utredningsTyp;
     }
 
@@ -113,7 +114,7 @@ public class AvslutadBestallningListItem implements FreeTextSearchable, Vardgiva
     @Override
     public String toSearchString() {
         return utredningsId + " "
-                + utredningsTyp + " "
+                + utredningsTyp.getLabel() + " "
                 + vardgivareHsaId + " "
                 + vardgivareNamn + " "
                 + status.getLabel() + " "
@@ -125,7 +126,7 @@ public class AvslutadBestallningListItem implements FreeTextSearchable, Vardgiva
 
     public static final class AvslutadBestallningListItemBuilder {
         private Long utredningsId;
-        private String utredningsTyp;
+        private UtredningsTyp utredningsTyp;
         private String vardgivareHsaId;
         private String vardgivareNamn;
         private UtredningStatus status;
@@ -146,7 +147,7 @@ public class AvslutadBestallningListItem implements FreeTextSearchable, Vardgiva
             return this;
         }
 
-        public AvslutadBestallningListItemBuilder withUtredningsTyp(String utredningsTyp) {
+        public AvslutadBestallningListItemBuilder withUtredningsTyp(UtredningsTyp utredningsTyp) {
             this.utredningsTyp = utredningsTyp;
             return this;
         }

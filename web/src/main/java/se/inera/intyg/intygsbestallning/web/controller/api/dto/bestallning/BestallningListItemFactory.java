@@ -62,7 +62,7 @@ public class BestallningListItemFactory {
                 .withNextActor(utredningStatus.getNextActor().name())
                 .withKraverAtgard(actorInThisContext == utredningStatus.getNextActor())
                 .withUtredningsId(utredning.getUtredningId())
-                .withUtredningsTyp(utredning.getUtredningsTyp().name())
+                .withUtredningsTyp(utredning.getUtredningsTyp())
                 .withVardgivareHsaId(utredning.getExternForfragan().map(ExternForfragan::getLandstingHsaId).orElse(null))
                 .withVardgivareNamn(null)
                 .build();

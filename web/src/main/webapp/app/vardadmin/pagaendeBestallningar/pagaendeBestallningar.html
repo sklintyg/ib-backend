@@ -19,7 +19,7 @@
     <tbody>
     <tr ng-repeat="row in bestallningar">
       <td>{{::row.utredningsId}}</td>
-      <td>{{::row.utredningsTyp}}</td>
+      <td>{{::row.utredningsTyp.label}}</td>
       <td ng-if="filter.vardgivareNamnOptions.length > 2">{{::row.vardgivareNamn}}</td>
       <td>{{::row.patientId}}</td>
       <td>{{::row.patientNamn}}</td>

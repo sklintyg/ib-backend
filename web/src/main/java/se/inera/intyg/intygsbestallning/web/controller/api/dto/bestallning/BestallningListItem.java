@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning;
 
+import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.service.patient.PatientNamable;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
@@ -29,7 +30,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardgivareEnricha
 public class BestallningListItem implements PDLLoggable, PatientNamable, FreeTextSearchable, FilterableListItem, VardgivareEnrichable {
 
     private Long utredningsId;
-    private String utredningsTyp;
+    private UtredningsTyp utredningsTyp;
     private String vardgivareHsaId;
     private String vardgivareNamn;
     private UtredningFas fas;
@@ -50,11 +51,11 @@ public class BestallningListItem implements PDLLoggable, PatientNamable, FreeTex
         this.utredningsId = utredningsId;
     }
 
-    public String getUtredningsTyp() {
+    public UtredningsTyp getUtredningsTyp() {
         return utredningsTyp;
     }
 
-    public void setUtredningsTyp(String utredningsTyp) {
+    public void setUtredningsTyp(UtredningsTyp utredningsTyp) {
         this.utredningsTyp = utredningsTyp;
     }
 
@@ -163,7 +164,7 @@ public class BestallningListItem implements PDLLoggable, PatientNamable, FreeTex
     @Override
     public String toSearchString() {
         return utredningsId + " "
-                + utredningsTyp + " "
+                + utredningsTyp.getLabel() + " "
                 + vardgivareNamn + " "
                 + fas + " "
                 + slutdatumFas + " "
@@ -174,7 +175,7 @@ public class BestallningListItem implements PDLLoggable, PatientNamable, FreeTex
 
     public static final class BestallningListItemBuilder {
         private Long utredningsId;
-        private String utredningsTyp;
+        private UtredningsTyp utredningsTyp;
         private String vardgivareHsaId;
         private String vardgivareNamn;
         private UtredningFas fas;
@@ -199,7 +200,7 @@ public class BestallningListItem implements PDLLoggable, PatientNamable, FreeTex
             return this;
         }
 
-        public BestallningListItemBuilder withUtredningsTyp(String utredningsTyp) {
+        public BestallningListItemBuilder withUtredningsTyp(UtredningsTyp utredningsTyp) {
             this.utredningsTyp = utredningsTyp;
             return this;
         }

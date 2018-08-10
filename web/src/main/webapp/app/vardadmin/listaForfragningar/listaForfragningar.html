@@ -20,7 +20,7 @@
     <tbody>
       <tr ng-repeat="row in forfragningar">
         <td>{{::row.utredningsId}}</td>
-        <td>{{::row.utredningsTyp}}</td>
+        <td>{{::row.utredningsTyp.label}}</td>
         <td ng-if="filter.vardgivareNamnOptions.length > 2">{{::row.vardgivareNamn}}</td>
         <td>{{::row.inkomDatum}}</td>
         <td><ib-forfragan-svarsdatum svarsdatum-passerat="::row.besvarasSenastDatumPasserat" svarsdatum-pa-vag-passeras="::row.besvarasSenastDatumPaVagPasseras" svarsdatum="::row.besvarasSenastDatum"></ib-forfragan-svarsdatum></td>

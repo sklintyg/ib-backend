@@ -19,6 +19,7 @@
 package se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan;
 
 import se.inera.intyg.intygsbestallning.persistence.model.status.InternForfraganStatus;
+import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FreeTextSearchable;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListForfraganFilterStatus;
 
@@ -27,7 +28,7 @@ import java.util.List;
 public class InternForfraganListItem implements FreeTextSearchable {
 
     private Long utredningsId;
-    private String utredningsTyp;
+    private UtredningsTyp utredningsTyp;
     private String vardgivareHsaId;
     private String vardgivareNamn;
     private String inkomDatum;
@@ -50,11 +51,11 @@ public class InternForfraganListItem implements FreeTextSearchable {
         this.utredningsId = utredningsId;
     }
 
-    public String getUtredningsTyp() {
+    public UtredningsTyp getUtredningsTyp() {
         return utredningsTyp;
     }
 
-    public void setUtredningsTyp(String utredningsTyp) {
+    public void setUtredningsTyp(UtredningsTyp utredningsTyp) {
         this.utredningsTyp = utredningsTyp;
     }
 
@@ -165,7 +166,7 @@ public class InternForfraganListItem implements FreeTextSearchable {
     @Override
     public String toSearchString() {
         return utredningsId
-                + utredningsTyp + " "
+                + utredningsTyp.getLabel() + " "
                 + vardgivareHsaId + " "
                 + vardgivareNamn + " "
                 + inkomDatum + " "
@@ -176,7 +177,7 @@ public class InternForfraganListItem implements FreeTextSearchable {
 
     public static final class ForfraganListItemBuilder {
         private Long utredningsId;
-        private String utredningsTyp;
+        private UtredningsTyp utredningsTyp;
         private String vardgivareHsaId;
         private String vardgivareNamn;
         private String inkomDatum;
@@ -202,7 +203,7 @@ public class InternForfraganListItem implements FreeTextSearchable {
             return this;
         }
 
-        public ForfraganListItemBuilder withUtredningsTyp(String utredningsTyp) {
+        public ForfraganListItemBuilder withUtredningsTyp(UtredningsTyp utredningsTyp) {
             this.utredningsTyp = utredningsTyp;
             return this;
         }

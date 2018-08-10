@@ -77,7 +77,7 @@ public class InternForfraganListItemFactory {
                 .withForfraganId(internForfragan.getId())
                 .withStatus(internForfragan.getStatus())
                 .withUtredningsId(utredning.getUtredningId())
-                .withUtredningsTyp(utredning.getUtredningsTyp().name())
+                .withUtredningsTyp(utredning.getUtredningsTyp())
                 .withVardgivareHsaId(utredning.getExternForfragan().map(ExternForfragan::getLandstingHsaId).orElse(null))
                 .withVardgivareNamn(utredning.getExternForfragan().map(ExternForfragan::getLandstingHsaId).orElse(null))
                 .withStatus(internForfragan.getStatus())

@@ -20,12 +20,13 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardenhetEnrichable;
 
 public class BaseUtredningListItem implements VardenhetEnrichable {
     protected Utredning utredning;
     protected Long utredningsId;
-    protected String utredningsTyp;
+    protected UtredningsTyp utredningsTyp;
     protected String vardenhetHsaId;
     protected String vardenhetNamn;
 
@@ -46,11 +47,11 @@ public class BaseUtredningListItem implements VardenhetEnrichable {
         this.utredningsId = utredningsId;
     }
 
-    public String getUtredningsTyp() {
+    public UtredningsTyp getUtredningsTyp() {
         return utredningsTyp;
     }
 
-    public void setUtredningsTyp(String utredningsTyp) {
+    public void setUtredningsTyp(UtredningsTyp utredningsTyp) {
         this.utredningsTyp = utredningsTyp;
     }
 

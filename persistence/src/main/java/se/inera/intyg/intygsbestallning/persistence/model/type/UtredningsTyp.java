@@ -19,9 +19,10 @@
 package se.inera.intyg.intygsbestallning.persistence.model.type;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import se.inera.intyg.intygsbestallning.persistence.model.status.SortableLabel;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-public enum UtredningsTyp {
+public enum UtredningsTyp implements SortableLabel {
     AFU("AFU"),
     AFU_UTVIDGAD("AFU utvidgad"),
     LIAG("Läkarintyg till arbetsgivaren");
@@ -38,6 +39,7 @@ public enum UtredningsTyp {
         return id;
     }
 
+    @Override
     public String getLabel() {
         return label;
     }

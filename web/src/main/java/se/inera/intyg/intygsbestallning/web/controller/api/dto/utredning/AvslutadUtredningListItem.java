@@ -20,6 +20,7 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning;
 
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
+import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FreeTextSearchable;
 
 public class AvslutadUtredningListItem extends BaseUtredningListItem implements FreeTextSearchable {
@@ -83,7 +84,7 @@ public class AvslutadUtredningListItem extends BaseUtredningListItem implements 
     @Override
     public String toSearchString() {
         return utredningsId + " "
-                + utredningsTyp + " "
+                + utredningsTyp.getLabel() + " "
                 + vardenhetHsaId + " "
                 + vardenhetNamn + " "
                 + status.getLabel() + " "
@@ -96,7 +97,7 @@ public class AvslutadUtredningListItem extends BaseUtredningListItem implements 
 
     public static final class AvslutadUtredningListItemBuilder {
         private Long utredningsId;
-        private String utredningsTyp;
+        private UtredningsTyp utredningsTyp;
         private String vardenhetHsaId;
         private String vardenhetNamn;
         private UtredningStatus status;
@@ -119,7 +120,7 @@ public class AvslutadUtredningListItem extends BaseUtredningListItem implements 
             return this;
         }
 
-        public AvslutadUtredningListItemBuilder withUtredningsTyp(String utredningsTyp) {
+        public AvslutadUtredningListItemBuilder withUtredningsTyp(UtredningsTyp utredningsTyp) {
             this.utredningsTyp = utredningsTyp;
             return this;
         }

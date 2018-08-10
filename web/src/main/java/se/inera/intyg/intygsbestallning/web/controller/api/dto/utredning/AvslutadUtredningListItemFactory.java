@@ -43,7 +43,7 @@ public class AvslutadUtredningListItemFactory {
 
         return anAvslutadUtredningListItem()
                 .withUtredningsId(utredning.getUtredningId())
-                .withUtredningsTyp(utredning.getUtredningsTyp().name())
+                .withUtredningsTyp(utredning.getUtredningsTyp())
                 .withStatus(utredning.getStatus())
                 .withVardenhetHsaId(utredning.getBestallning().map(Bestallning::getTilldeladVardenhetHsaId).orElse(null))
                 .withVardenhetNamn("") // Enriched later

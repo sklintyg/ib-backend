@@ -43,7 +43,7 @@ public class AvslutadBestallningListItemFactory {
 
         return AvslutadBestallningListItem.AvslutadBestallningListItemBuilder.anAvslutadBestallningListItem()
                 .withUtredningsId(utredning.getUtredningId())
-                .withUtredningsTyp(utredning.getUtredningsTyp().name())
+                .withUtredningsTyp(utredning.getUtredningsTyp())
                 .withStatus(utredning.getStatus())
                 .withVardgivareHsaId(utredning.getExternForfragan().map(ExternForfragan::getLandstingHsaId).orElse(null))
                 .withVardgivareNamn("Enriched later")

@@ -21,6 +21,7 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
+import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FreeTextSearchable;
 
@@ -84,7 +85,7 @@ public class UtredningListItem extends BaseUtredningListItem implements FreeText
     }
 
     @Override
-    public String getUtredningsTyp() {
+    public UtredningsTyp getUtredningsTyp() {
         return utredningsTyp;
     }
 
@@ -101,7 +102,7 @@ public class UtredningListItem extends BaseUtredningListItem implements FreeText
     @Override
     public String toSearchString() {
         return utredningsId + " "
-                + utredningsTyp + " "
+                + utredningsTyp.getLabel() + " "
                 + vardenhetNamn + " "
                 + fas.getLabel() + " "
                 + slutdatumFas + " "
@@ -111,7 +112,7 @@ public class UtredningListItem extends BaseUtredningListItem implements FreeText
     public static final class UtredningListItemBuilder {
         private Utredning utredning;
         private Long utredningsId;
-        private String utredningsTyp;
+        private UtredningsTyp utredningsTyp;
         private String vardenhetHsaId;
         private String vardenhetNamn;
         private UtredningFas fas;
@@ -133,7 +134,7 @@ public class UtredningListItem extends BaseUtredningListItem implements FreeText
             return this;
         }
 
-        public UtredningListItemBuilder withUtredningsTyp(String utredningsTyp) {
+        public UtredningListItemBuilder withUtredningsTyp(UtredningsTyp utredningsTyp) {
             this.utredningsTyp = utredningsTyp;
             return this;
         }

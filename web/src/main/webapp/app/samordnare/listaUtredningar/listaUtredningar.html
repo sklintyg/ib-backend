@@ -21,7 +21,7 @@
       <tbody>
         <tr ng-repeat="row in utredningar">
           <td>{{::row.utredningsId}}</td>
-          <td>{{::row.utredningsTyp}}</td>
+          <td>{{::row.utredningsTyp.label}}</td>
           <td>{{::row.vardenhetNamn}}</td>
           <td>{{::row.fas.label}}</td>
           <td><ib-utredning-slutdatum-fas fas="::row.fas" slutdatum="::row.slutdatumFas" slutdatum-passerat="::row.slutdatumFasPasserat" slutdatum-pa-vag-passeras="::row.slutdatumFasPaVagPasseras"></ib-utredning-slutdatum-fas></td>
