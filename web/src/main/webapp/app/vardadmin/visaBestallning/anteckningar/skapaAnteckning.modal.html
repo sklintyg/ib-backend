@@ -8,6 +8,7 @@
         <p>
             <message key="skapa-anteckning.modal.info" class="nl2br"></message>
         </p>
+
         <ib-textarea
             id="note"
             model="note"
@@ -15,6 +16,13 @@
             placeholder-text="Skriv anteckning här"
             col-size="12">
         </ib-textarea>
+
+        <div class="validation-error-message"
+             id="anteckning-validation"
+             ng-if="anteckningIsEmpty()">
+            <message key="skapa.anteckning.validation"></message>
+        </div>
+
     </div>
     <div class="modal-footer button-flex-wrapper">
         <ib-button btn-id="create-anteckning-modal-save-btn"

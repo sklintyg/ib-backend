@@ -160,8 +160,9 @@ var ibMessages = {
         '\n' + 'Avser komplettering av utlåtande.',
         
         // Lägg till anteckning modal
-        'skapa-anteckning.modal.info': 'Anteckningar för inte innehålla någon medicinsk information.\n' +
+        'skapa-anteckning.modal.info': 'Anteckningar får inte innehålla någon medicinsk information.\n' +
         '\n' + 'Anteckningarna visas endast för vårdadministratörer på samma vårdenhet.',
+        'skapa.anteckning.validation': 'Anteckningen får inte vara tom',
         
         //Registrerade vårdenheter
         'hantera-enheter.label.table.vardenheter.column.namn': 'Namn',
