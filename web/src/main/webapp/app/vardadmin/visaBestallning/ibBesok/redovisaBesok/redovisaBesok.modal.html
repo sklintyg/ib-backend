@@ -65,7 +65,7 @@
                btn-class="btn btn-primary"
                busy="vm.inProgress"
                btn-click="send()"
-               ng-disabled="redovisaBesokForm.$invalid">
+               btn-disabled="redovisaBesokForm.$invalid || shouldDisableConfirmButton()">
       <span message key="common.confirm"></span>
     </ib-button>
 

@@ -77,6 +77,16 @@ angular.module('ibApp')
                 });
             };
 
+            $scope.shouldDisableConfirmButton = function() {
+                var shouldDisable = true;
+                $scope.vm.besokList.forEach(function(besok) {
+                    if(besok.genomfort && !besok.originalGenomfort) {
+                        shouldDisable = false;
+                    }
+                });
+                return shouldDisable;
+            };
+
             $scope.send = function () {
 
                 // Create DTO
