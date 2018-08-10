@@ -77,7 +77,7 @@ public class UtredningListItemFactoryTest {
         assertEquals(LocalDate.now().format(DateTimeFormatter.ISO_DATE), response.getSlutdatumFas());
         assertEquals("Förfrågan inkommen", response.getStatus().getLabel());
         assertEquals(Long.valueOf(21L), response.getUtredningsId());
-        assertEquals(AFU.name(), response.getUtredningsTyp());
+        assertEquals(AFU, response.getUtredningsTyp());
         // assertEquals("landstingHsaId", response.getVardenhetNamn());
     }
 }

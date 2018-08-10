@@ -98,7 +98,7 @@ public class InternForfraganListItemFactoryTest {
 
         assertNotNull(response);
         assertEquals(Long.valueOf(31L), response.getUtredningsId());
-        assertEquals(AFU.name(), response.getUtredningsTyp());
+        assertEquals(AFU, response.getUtredningsTyp());
         assertEquals("2019-01-01", response.getBesvarasSenastDatum());
         assertEquals("2018-01-01", response.getInkomDatum());
         // assertEquals("2020-01-01", response.getPlaneringsDatum());
