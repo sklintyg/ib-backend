@@ -32,6 +32,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
+import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.service.stateresolver.SlutDatumFasResolver;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.HandelseListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.VardenhetListItem;
@@ -42,6 +43,7 @@ public class GetUtredningResponse {
     private Long utredningsId;
     private UtredningStatus status;
     private UtredningFas fas;
+    private UtredningsTyp utredningsTyp;
     private String slutdatumFas;
     private String inkomDatum;
     private String besvarasSenastDatum;
@@ -71,6 +73,7 @@ public class GetUtredningResponse {
         return GetUtredningResponseBuilder.aGetUtredningResponse()
                 .withUtredningsId(utredning.getUtredningId())
                 .withStatusAndFas(status)
+                .withUtredningsTyp(utredning.getUtredningsTyp())
                 .withSlutdatumFas(
                         SlutDatumFasResolver.resolveSlutDatumFas(utredning, status).map(DateTimeFormatter.ISO_DATE::format).orElse(null))
                 .withInkomDatum(utredning.getExternForfragan()
@@ -242,10 +245,19 @@ public class GetUtredningResponse {
         this.handelseList = handelseList;
     }
 
+    public UtredningsTyp getUtredningsTyp() {
+        return utredningsTyp;
+    }
+
+    public void setUtredningsTyp(UtredningsTyp utredningsTyp) {
+        this.utredningsTyp = utredningsTyp;
+    }
+
     public static final class GetUtredningResponseBuilder {
         private Long utredningsId;
         private UtredningStatus status;
         private UtredningFas fas;
+        private UtredningsTyp utredningsTyp;
         private String slutdatumFas;
         private String inkomDatum;
         private String besvarasSenastDatum;
@@ -277,6 +289,11 @@ public class GetUtredningResponse {
         public GetUtredningResponseBuilder withStatusAndFas(UtredningStatus status) {
             this.status = status;
             this.fas = status.getUtredningFas();
+            return this;
+        }
+
+        public GetUtredningResponseBuilder withUtredningsTyp(UtredningsTyp utredningsTyp) {
+            this.utredningsTyp = utredningsTyp;
             return this;
         }
 
@@ -366,6 +383,7 @@ public class GetUtredningResponse {
             getUtredningResponse.setUtredningsId(utredningsId);
             getUtredningResponse.setStatus(status);
             getUtredningResponse.setFas(fas);
+            getUtredningResponse.setUtredningsTyp(utredningsTyp);
             getUtredningResponse.setSlutdatumFas(slutdatumFas);
             getUtredningResponse.setInkomDatum(inkomDatum);
             getUtredningResponse.setBesvarasSenastDatum(besvarasSenastDatum);
