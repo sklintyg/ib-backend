@@ -147,16 +147,12 @@ angular.module('ibApp')
             };
 
             $scope.showKorrektTidsIntervall = function () {
-
                 var start = $scope.besokStartTid;
                 var slut = $scope.besokSlutTid;
-
-                if (start && slut && slut.setSeconds(0) <= start.setSeconds(0)) {
-                    return true;
-                }
+                return start && slut && slut.setSeconds(0) <= start.setSeconds(0);
             };
 
             $scope.getKorrektTidsIntervallMessage = function () {
-                return messageService.getProperty('lagg-till-besok.info.besokTidIntervall');
+                return messageService.getProperty('lagg-till-besok.info.besoktidintervall');
             };
         });

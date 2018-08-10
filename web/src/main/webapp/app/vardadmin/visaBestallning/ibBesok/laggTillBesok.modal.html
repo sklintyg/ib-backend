@@ -14,11 +14,6 @@
                       alert-severity="info">
       {{ getMessageForKallelsedatum() }}
     </ib-alert-message>
-    <ib-alert-message ng-if="showKorrektTidsIntervall()"
-                      alert-id="lagg-till-besok.info.besokTidIntervall"
-                      alert-severity="info">
-      {{ getKorrektTidsIntervallMessage() }}
-    </ib-alert-message>
 
     <form name="laggTillBesokForm" novalidate autocomplete="off">
       <div class="flex-column">
@@ -55,6 +50,11 @@
                             minute-offset="1">
             </ib-time-picker>
           </span>
+        </div>
+        <div class="validation-error-message"
+             id="besokTid-validation"
+             ng-if="showKorrektTidsIntervall()">
+          <message key='lagg-till-besok.info.besoktidintervall'></message>
         </div>
         <div class="flex-column">
           <ib-field-error-list errors="laggTillBesokForm.dateBesokDatum.$error"

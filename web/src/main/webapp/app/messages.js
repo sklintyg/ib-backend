@@ -116,7 +116,7 @@ var ibMessages = {
         'lagg-till-besok.label.viaphone': 'Per telefon',
         'lagg-till-besok.info.profession': 'Om annan profession än läkare har valts så kommer utredningstypen att ändras till "AFU utvidgad".',
         'lagg-till-besok.info.kallelsedatum': 'Kallelsedatum är mindre än ${0} arbetsdagar innan besöksdatum. Om invånaren gör en sen avbokning eller uteblir kommer besöket inte att ersättas.',
-        'lagg-till-besok.info.besokTidIntervall': 'Besökets sluttid måste vara efter besökets starttid',
+        'lagg-till-besok.info.besoktidintervall': 'Besökets sluttid måste vara efter besökets starttid',
         'lagg-till-besok.error.teknisktfel': 'Besöket kunde inte sparas på grund av tekniskt fel. Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraNationellKundservice>',
         'lagg-till-besok.error.teknisktfelafu': 'Utredningstypen kunde inte uppdateras på grund av tekniskt fel. Utredningen är fortsatt AFU.\n Rapportera en avvikelse orsakad av vården för besöket och lägg till det igen vid ett senare tillfälle.\n Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraNationellKundservice>',
 
