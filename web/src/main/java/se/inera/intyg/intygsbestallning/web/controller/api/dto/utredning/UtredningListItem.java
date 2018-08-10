@@ -83,14 +83,17 @@ public class UtredningListItem extends BaseUtredningListItem implements FreeText
         this.kraverAtgard = kraverAtgard;
     }
 
+    @Override
     public String getUtredningsTyp() {
         return utredningsTyp;
     }
 
+    @Override
     public String getVardenhetNamn() {
         return vardenhetNamn;
     }
 
+    @Override
     public Long getUtredningsId() {
         return utredningsId;
     }
