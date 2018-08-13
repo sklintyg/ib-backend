@@ -42,7 +42,8 @@ angular.module('ibApp').controller('ibAccepteraInternForfraganDlgController',
                 InternForfraganSvarViewState.clearUtforare();
                 $scope.vm.model.utforareNamn = pref.mottagarNamn;
                 $scope.vm.model.utforareAdress = pref.adress;
-                $scope.vm.model.utforarePostnr = pref.postnummer;
+                // Lägger till mellanslag till postnumret
+                $scope.vm.model.utforarePostnr = pref.postnummer.slice(0, 3) + ' ' + pref.postnummer.slice(3);;
                 $scope.vm.model.utforarePostort = pref.postort;
                 $scope.vm.model.utforareTelefon = pref.telefonnummer;
                 $scope.vm.model.utforareEpost = pref.epost;
@@ -65,7 +66,8 @@ angular.module('ibApp').controller('ibAccepteraInternForfraganDlgController',
             $log.debug('onConfirmAccept()');
             var model = angular.copy(InternForfraganSvarViewState.getModel());
             model.svarTyp='ACCEPTERA';
-
+            // Tar bort mellanrummet i postnumret innan det sparas
+            model.utforarePostnr = model.utforarePostnr.replace(/\s/g, '');
             $scope.vm.busy = true;
             InternForfraganProxy.accepteraInternForfragan($stateParams.utredningsId, model).then(function() {
                 //Things in related utredningsstate could have changed - reload state to make sure we show correct state of everything

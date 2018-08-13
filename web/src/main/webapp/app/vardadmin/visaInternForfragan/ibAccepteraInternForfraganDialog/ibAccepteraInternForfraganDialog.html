@@ -61,11 +61,11 @@
           <!-- combined postnr/ort -->
           <div class="flex-grid">
             <div class="col">
-              <ib-horisontal-textfield id="postnummer" model="vm.model.utforarePostnr" required="true"
-                                       required-error="Fyll i postnummer, 5 siffror"
-                                       label-key="internforfragan.besvara.form.utforarepostnr.label" pattern="'\\d{5}'"
-                                       pattern-error="Fyll i postnummer, 5 siffror"
-                                       max-length="5"></ib-horisontal-textfield>
+              <ib-zipcode id="postnummer" model="vm.model.utforarePostnr"
+                          label-key="internforfragan.besvara.form.utforarepostnr.label"
+                          required="true" pattern-error="Fyll i postnummer, 5 siffror"
+                          required-error="Fyll i postnummer, 5 siffror"></ib-zipcode>
+
             </div>
             <div class="col col-2">
               <ib-horisontal-textfield id="postort" model="vm.model.utforarePostort" required="true"
