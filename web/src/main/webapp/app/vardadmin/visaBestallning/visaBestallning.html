@@ -73,13 +73,10 @@
                       </card-value>
                       <h4>Behov av tolk</h4>
                       <card-value>
-                        {{bestallning.behovTolk}}<br>
-                        {{bestallning.tolkSprak}}
+                        {{bestallning.behovTolk | ibBoolFilter}}<span ng-if="bestallning.behovTolk">, {{bestallning.tolkSprak}}</span>
                       </card-value>
                       <h4>Särskilda behov</h4>
-                      <card-value>
-                        {{bestallning.invanare.sarskildaBehov}}
-                      </card-value>
+                      <ib-card-value value="bestallning.invanare.sarskildaBehov"/>
                     </card-body>
                   </card>
                   <card>
@@ -94,8 +91,10 @@
                           </tr>
                           <tr>
                             <td>{{bestallning.inkomDatum}}</td>
-                            <td>{{bestallning.meddelandeFromHandlaggare}}</td>
+                            <td ng-if="bestallning.meddelandeFromHandlaggare">{{bestallning.meddelandeFromHandlaggare}}</td>
+                            <td ng-if="!bestallning.meddelandeFromHandlaggare"><i>Inga kommentarer från handläggaren</i></td>
                           </tr>
+                          <!-- TODO: rows for history of comments originating from updateorder -->
                         </table>
                       </card-table>
                     </card-body>
@@ -104,11 +103,7 @@
                     <h3>Handläggare</h3>
                     <card-body>
                       <h4>Kontaktuppgifter</h4>
-                      <card-value>
-                        {{bestallning.handlaggareNamn}}<br>
-                        {{bestallning.handlaggareTelefonnummer}}<br>
-                        {{bestallning.handlaggareEpost}}
-                      </card-value>
+                      <ib-card-value value="bestallning.handlaggarKontaktUppgifter"/>
                     </card-body>
                   </card>
                 </div>

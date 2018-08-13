@@ -36,6 +36,30 @@ angular.module('ibApp').factory('ObjectHelper',
             },
             stringBoolToBool: function(value){
                 return value === true || value === 'true';
+            },
+            isValidValue: function(value) {
+
+                if (angular.isNumber(value)) {
+                    return true;
+                }
+
+                if (angular.isString(value)) {
+                    return value.length > 0;
+                }
+
+                if (angular.isArray(value)) {
+                    return value.length > 0;
+                }
+
+                if (angular.isDefined(value) && angular.isObject(value)) {
+                    return true;
+                }
+
+                if (value === true || value === false) {
+                    return true;
+                }
+
+                return false;
             }
         };
     }

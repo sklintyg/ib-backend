@@ -43,9 +43,7 @@
                 <h3>Invånare</h3>
                 <card-body>
                   <h4>Bostadsort</h4>
-                  <card-value id="bostadsort">
-                    {{utredning.bostadsort}}
-                  </card-value>
+                  <ib-card-value id="bostadsort" value="utredning.bostadsort"/>
                   <h4>Tidigare utredd</h4>
                   <card-value id="tidigareUtredd">
                     {{utredning.tidigareUtredd | ibBoolFilter}}<span ng-if="utredning.tidigareEnheter">, vid {{utredning.tidigareEnheter}}</span>
@@ -61,28 +59,18 @@
                 <h3>Meddelande</h3>
                 <card-body>
                   <h4>Behov av tolk</h4>
-                  <card-value id="behovAvTolk">
-                    {{utredning.behovAvTolk}}
-                  </card-value>
+                  <ib-card-value id="behovAvTolk" value="utredning.behovAvTolk"/>
                   <h4>Särskilda behov</h4>
-                  <card-value id="sarskildaBehov">
-                    {{utredning.sarskildaBehov}}
-                  </card-value>
+                  <ib-card-value id="sarskildaBehov" value="utredning.sarskildaBehov"/>
                   <h4>Andra kommentarer</h4>
-                  <card-value id="kommentar">
-                    {{utredning.kommentar}}
-                  </card-value>
+                  <ib-card-value id="kommentar" value="utredning.kommentar" empty-text="Inga kommentarer från handläggaren"/>
                 </card-body>
               </card>
               <card>
                 <h3>Handläggare</h3>
                 <card-body>
                   <h4>Kontaktuppgifter</h4>
-                  <card-value>
-                    <span id="handlaggareNamn">{{utredning.handlaggareNamn}}</span><br>
-                    <span id="handlaggareTelefonnummer">{{utredning.handlaggareTelefonnummer}}</span><br>
-                    <span id="handlaggareEpost">{{utredning.handlaggareEpost}}</span>
-                  </card-value>
+                  <ib-card-value id="handlaggarKontaktUppgifter" value="utredning.handlaggarKontaktUppgifter"/>
                 </card-body>
               </card>
             </div>

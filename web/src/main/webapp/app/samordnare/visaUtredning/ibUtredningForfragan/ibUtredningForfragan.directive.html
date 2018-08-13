@@ -41,9 +41,7 @@
           <td><span id="vardenhetNamn-{{$index}}">{{::row.vardenhetNamn}}</span><br>
             <ib-expand label="vårdenhetens detaljer">
               <h3>Meddelande</h3>
-              <card-value>
-                {{::row.meddelande}}
-              </card-value>
+              <ib-card-value value="::row.meddelande"/>
               <h3>Kontaktinformation</h3>
               <card-value>
                 {{::row.vardenhetNamn}}<br>

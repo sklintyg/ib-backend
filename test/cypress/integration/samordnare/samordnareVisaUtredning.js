@@ -40,9 +40,9 @@ describe('Samordnare visa utredning', () => {
         cy.get('#behovAvTolk').should('contain', 'Nej');
         cy.get('#sarskildaBehov').should('contain', 'Massor');
         cy.get('#kommentar').should('contain', 'externForfragan kommentar');
-        cy.get('#handlaggareNamn').should('contain', 'En handläggare');
-        cy.get('#handlaggareTelefonnummer').should('contain', '123465789');
-        cy.get('#handlaggareEpost').should('contain', 'En handläggare email');
+        cy.get('#handlaggarKontaktUppgifter').should('contain', 'En handläggare');
+        cy.get('#handlaggarKontaktUppgifter').should('contain', '123465789');
+        cy.get('#handlaggarKontaktUppgifter').should('contain', 'En handläggare email');
 
         // Internförfrågan lista tom
         cy.get('#internforfragan-no-results').should('be.visible');

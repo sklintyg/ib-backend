@@ -1,0 +1,10 @@
+ib-card-value {
+  .no-value {
+    font-style: italic;
+  }
+  &.wide {
+    card-value {
+      display: block;
+    }
+  }
+}

@@ -1,0 +1,3 @@
+<card-value ng-if="hasValue" ng-bind-html="value"></card-value>
+<card-value class="no-value" ng-if="!hasValue && !emptyText">Ej angivet</card-value>
+<card-value class="no-value" ng-if="!hasValue && emptyText">{{emptyText}}</card-value>

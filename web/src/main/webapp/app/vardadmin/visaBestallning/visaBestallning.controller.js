@@ -41,10 +41,23 @@ angular.module('ibApp')
                     return 1;
                 }
             }
+            function buildHandlaggarKontaktUppgifter(bestallning) {
+                var result = [];
+                if (bestallning.handlaggareNamn) {
+                    result.push(bestallning.handlaggareNamn);
+                }
+                if (bestallning.handlaggareTelefonnummer) {
+                    result.push(bestallning.handlaggareTelefonnummer);
+                }
+                if (bestallning.handlaggareEpost) {
+                    result.push(bestallning.handlaggareEpost);
+                }
+                return result.join('<br>');
 
+            }
             BestallningarProxy.getBestallning($stateParams.utredningsId).then(function(bestallning) {
                 $scope.bestallning = bestallning;
-
+                $scope.bestallning.handlaggarKontaktUppgifter = buildHandlaggarKontaktUppgifter(bestallning);
                 $scope.active = getStartTab();
 
             }, function(error) {

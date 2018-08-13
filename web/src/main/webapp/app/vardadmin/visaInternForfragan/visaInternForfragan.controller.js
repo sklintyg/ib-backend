@@ -53,7 +53,24 @@ angular.module('ibApp')
                     })
                     .join(', ');
 
+                utredningViewModel.handlaggarKontaktUppgifter = buildHandlaggarKontaktUppgifter(utredning);
+
                 return utredningViewModel;
+            }
+
+            function buildHandlaggarKontaktUppgifter(utredning) {
+                var result = [];
+                if (utredning.handlaggareNamn) {
+                    result.push(utredning.handlaggareNamn);
+                }
+                if (utredning.handlaggareTelefonnummer) {
+                    result.push(utredning.handlaggareTelefonnummer);
+                }
+                if (utredning.handlaggareEpost) {
+                    result.push(utredning.handlaggareEpost);
+                }
+                return result.join('<br>');
+
             }
 
             InternForfraganProxy.getInternForfragning($stateParams.utredningsId).then(function(response) {

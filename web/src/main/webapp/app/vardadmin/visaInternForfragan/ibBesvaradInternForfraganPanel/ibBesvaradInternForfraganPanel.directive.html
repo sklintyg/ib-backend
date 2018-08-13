@@ -17,9 +17,7 @@
 
       <div ng-if="vm.model.svarTyp === 'ACCEPTERA'">
         <ib-help-text-label label-key="internforfragan.besvara.form.borjadatum.label"></ib-help-text-label>
-        <card-value>
-          {{vm.model.borjaDatum}}
-        </card-value>
+        <ib-card-value value="vm.model.borjaDatum"/>
         <ib-help-text-label label-key="internforfragan.besvara.form.utforaretyp.view.label"></ib-help-text-label>
         <card-value>
           <span ng-switch="vm.model.utforareTyp">
@@ -39,10 +37,7 @@
       </div>
 
       <ib-help-text-label label-key="internforfragan.besvara.form.kommentar.label"></ib-help-text-label>
-      <card-value class="wide">
-        {{vm.model.kommentar}}<br>
-
-      </card-value>
+      <ib-card-value class="wide" value="vm.model.kommentar"/>
 
     </card-modal>
   </div>

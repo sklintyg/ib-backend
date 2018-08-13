@@ -47,9 +47,7 @@
                 <h3>Invånare</h3>
                 <card-body>
                   <h4>Bostadsort</h4>
-                  <card-value>
-                    {{vm.data.utredning.bostadsort}}
-                  </card-value>
+                  <ib-card-value value="vm.data.utredning.bostadsort"/>
                   <h4>Tidigare utredd</h4>
                   <card-value>
                     {{vm.data.utredning.tidigareUtredd | ibBoolFilter}}<span ng-if="vm.data.utredning.tidigareEnheter">, vid {{vm.data.utredning.tidigareEnheter}}</span>
@@ -67,33 +65,23 @@
                     {{vm.data.utredning.behovAvTolk}}
                   </card-value>
                   <h4>Särskilda behov</h4>
-                  <card-value>
-                    {{vm.data.utredning.sarskildaBehov}}
-                  </card-value>
+                  <ib-card-value value="vm.data.utredning.sarskildaBehov"/>
                   <h4>Andra kommentarer</h4>
-                  <card-value>
-                    {{vm.data.utredning.kommentar}}
-                  </card-value>
+                  <ib-card-value value="vm.data.utredning.kommentar"/>
                 </card-body>
               </card>
               <card>
                 <h3>Handläggare</h3>
                 <card-body>
                   <h4>Kontaktuppgifter</h4>
-                  <card-value>
-                    {{vm.data.utredning.handlaggareNamn}}<br>
-                    {{vm.data.utredning.handlaggareTelefonnummer}}<br>
-                    {{vm.data.utredning.handlaggareEpost}}
-                  </card-value>
+                  <ib-card-value id="handlaggarKontaktUppgifter" value="utredning.handlaggarKontaktUppgifter"/>
                 </card-body>
               </card>
               <card>
                 <h3>Meddelande från Landsting</h3>
                 <card-body>
                   <h4>Meddelande</h4>
-                  <card-value>
-                    {{vm.data.internForfragan.kommentar}}<br>
-                  </card-value>
+                  <ib-card-value id="kommentar" value="vm.data.internForfragan.kommentar" empty-text="Inga kommentarer från handläggaren"/>
                 </card-body>
               </card>
             </div>
