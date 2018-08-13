@@ -40,8 +40,8 @@ angular.module('ibApp').factory('ibAvslutadeBestallningarFilterModel',
             freetext: '',
             vardgivareHsaId: undefined,
             avslutsDatum: {
-                from: moment().subtract(3, 'month'),
-                to: moment()
+                from: moment().subtract(3, 'month').format('YYYY-MM-DD'),
+                to: moment().format('YYYY-MM-DD')
             },
             ersatts: 'ALL',
             fakturerad: 'ALL',

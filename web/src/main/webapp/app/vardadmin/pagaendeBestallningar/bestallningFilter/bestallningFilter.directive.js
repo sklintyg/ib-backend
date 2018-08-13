@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 angular.module('ibApp').directive('bestallningFilter',
-    function($timeout) {
+    function($timeout, BestallningarProxy) {
         'use strict';
 
         return {
@@ -38,6 +38,10 @@ angular.module('ibApp').directive('bestallningFilter',
                 $scope.resetFilter = function() {
                     $scope.filter.reset();
                     $scope.filterChanged();
+                };
+
+                $scope.excelReport = function() {
+                    BestallningarProxy.excelReport($scope.filter.convertToPayload());
                 };
             }
         };

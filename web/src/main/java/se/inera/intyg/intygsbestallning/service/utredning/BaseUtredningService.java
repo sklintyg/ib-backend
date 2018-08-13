@@ -111,7 +111,6 @@ public abstract class BaseUtredningService {
         });
     }
 
-
     protected Map<UtredningStatus, ListFilterStatus> buildStatusToListBestallningFilterStatusMap(Actor actor) {
         Map<UtredningStatus, ListFilterStatus> statusMap = new HashMap<>();
         for (UtredningStatus us : UtredningStatus.values()) {

@@ -18,40 +18,23 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning;
 
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.BaseUtredningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FreeTextSearchable;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardgivareEnrichable;
 
-public class AvslutadBestallningListItem implements FreeTextSearchable, VardgivareEnrichable {
+public class AvslutadBestallningListItem extends BaseUtredningListItem implements FreeTextSearchable, VardgivareEnrichable {
 
-    private Long utredningsId;
-    private UtredningsTyp utredningsTyp;
     private String vardgivareHsaId;
     private String vardgivareNamn;
-
     private UtredningStatus status;
 
     private String avslutsDatum;
     private boolean ersatts;
     private String fakturerad;
     private String utbetald;
-
-    public Long getUtredningsId() {
-        return utredningsId;
-    }
-
-    public void setUtredningsId(Long utredningsId) {
-        this.utredningsId = utredningsId;
-    }
-
-    public UtredningsTyp getUtredningsTyp() {
-        return utredningsTyp;
-    }
-
-    public void setUtredningsTyp(UtredningsTyp utredningsTyp) {
-        this.utredningsTyp = utredningsTyp;
-    }
 
     @Override
     public String getVardgivareHsaId() {
@@ -125,6 +108,7 @@ public class AvslutadBestallningListItem implements FreeTextSearchable, Vardgiva
     }
 
     public static final class AvslutadBestallningListItemBuilder {
+        private Utredning utredning;
         private Long utredningsId;
         private UtredningsTyp utredningsTyp;
         private String vardgivareHsaId;
@@ -187,6 +171,10 @@ public class AvslutadBestallningListItem implements FreeTextSearchable, Vardgiva
             return this;
         }
 
+        public AvslutadBestallningListItemBuilder withUtredning(Utredning utredning) {
+            this.utredning = utredning;
+            return this;
+        }
 
         public AvslutadBestallningListItem build() {
             AvslutadBestallningListItem avslutadBestallningListItem = new AvslutadBestallningListItem();
@@ -199,6 +187,7 @@ public class AvslutadBestallningListItem implements FreeTextSearchable, Vardgiva
             avslutadBestallningListItem.setErsatts(ersatts);
             avslutadBestallningListItem.setFakturerad(fakturerad);
             avslutadBestallningListItem.setUtbetald(utbetald);
+            avslutadBestallningListItem.setUtredning(utredning);
             return avslutadBestallningListItem;
         }
     }

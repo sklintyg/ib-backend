@@ -35,6 +35,7 @@ import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.AvslutadBestallningListItemFactory;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.BestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.BestallningListItemFactory;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.GetBestallningListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.ListBestallningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
 
@@ -91,22 +92,22 @@ public class BestallningServiceImplTest {
     public void testFilterListBestallningar() {
         when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
         when(utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(anyString())).thenReturn(ServiceTestUtil.buildBestallningar(7));
-        List<BestallningListItem> list = bestallningService.findOngoingBestallningarForVardenhet("enhet",
+        GetBestallningListResponse response = bestallningService.findOngoingBestallningarForVardenhet("enhet",
                 buildFilter(ListFilterStatus.ALL));
-        assertEquals(7, list.size());
+        assertEquals(7, response.getTotalCount());
     }
 
     @Test
     public void testFilterListBestallningarOrderByDesc() {
         when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
         when(utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(anyString())).thenReturn(ServiceTestUtil.buildBestallningar(7));
-        List<BestallningListItem> list = bestallningService.findOngoingBestallningarForVardenhet("enhet",
+        GetBestallningListResponse response = bestallningService.findOngoingBestallningarForVardenhet("enhet",
                 buildFilter(ListFilterStatus.ALL, null, null, "patientId", false));
-        assertEquals(7, list.size());
+        assertEquals(7, response.getTotalCount());
 
         // Check sort by patientId DESC
         int startIndex = 6;
-        for (BestallningListItem bli : list) {
+        for (BestallningListItem bli : response.getBestallningar()) {
             assertEquals("19121212-121" + startIndex, bli.getPatientId());
             startIndex--;
         }
@@ -116,17 +117,17 @@ public class BestallningServiceImplTest {
     public void testFilterListBestallningarWithFreeTextMatchingSingleBestallningInvanarId() {
         when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
         when(utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(anyString())).thenReturn(ServiceTestUtil.buildBestallningar(7));
-        List<BestallningListItem> list = bestallningService.findOngoingBestallningarForVardenhet("enhet",
+        GetBestallningListResponse response = bestallningService.findOngoingBestallningarForVardenhet("enhet",
                 buildFilter(ListFilterStatus.ALL, "19121212-1216"));
-        assertEquals(1, list.size());
+        assertEquals(1, response.getTotalCount());
     }
 
     @Test
     public void testFilterListBestallningarWithUnknownVg() {
         when(utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(anyString())).thenReturn(ServiceTestUtil.buildBestallningar(7));
-        List<BestallningListItem> list = bestallningService.findOngoingBestallningarForVardenhet("enhet",
+        GetBestallningListResponse response = bestallningService.findOngoingBestallningarForVardenhet("enhet",
                 buildFilter(ListFilterStatus.ALL, null, "vg-other"));
-        assertEquals(0, list.size());
+        assertEquals(0, response.getTotalCount());
     }
 
     private ListBestallningRequest buildFilter(ListFilterStatus status, String freeText, String vgId, String orderBy, boolean isAsc) {

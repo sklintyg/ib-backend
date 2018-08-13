@@ -18,16 +18,14 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.AvslutadBestallningListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.BestallningListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.GetAvslutadeBestallningarListResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.GetBestallningListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.GetBestallningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.ListAvslutadeBestallningarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.ListBestallningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.SaveFakturaForUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListAvslutadeBestallningarFilter;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListBestallningFilter;
-
-import java.util.List;
 
 public interface BestallningService {
     /**
@@ -37,7 +35,7 @@ public interface BestallningService {
      * @param requestFilter
      * @return
      */
-    List<BestallningListItem> findOngoingBestallningarForVardenhet(String vardenhetHsaId, ListBestallningRequest requestFilter);
+    GetBestallningListResponse findOngoingBestallningarForVardenhet(String vardenhetHsaId, ListBestallningRequest requestFilter);
 
     /**
      * Ends the utredning with the reason if available.
@@ -47,8 +45,8 @@ public interface BestallningService {
      */
     ListBestallningFilter buildListBestallningFilter(String vardenhetHsaId);
 
-    List<AvslutadBestallningListItem> findAvslutadeBestallningarForVardenhet(String vardenhetHsaId,
-            ListAvslutadeBestallningarRequest request);
+    GetAvslutadeBestallningarListResponse findAvslutadeBestallningarForVardenhet(String vardenhetHsaId,
+                                                                                 ListAvslutadeBestallningarRequest request);
 
     ListAvslutadeBestallningarFilter buildListAvslutadeBestallningarFilter(String vardenhetHsaId);
 

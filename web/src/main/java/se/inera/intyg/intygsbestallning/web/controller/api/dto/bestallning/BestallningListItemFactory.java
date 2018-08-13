@@ -65,6 +65,7 @@ public class BestallningListItemFactory {
                 .withUtredningsTyp(utredning.getUtredningsTyp())
                 .withVardgivareHsaId(utredning.getExternForfragan().map(ExternForfragan::getLandstingHsaId).orElse(null))
                 .withVardgivareNamn(null)
+                .withUtredning(utredning) // Is used in xlsx export
                 .build();
     }
 

@@ -16,12 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning;
+package se.inera.intyg.intygsbestallning.web.controller.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardenhetEnrichable;
 
 public class BaseUtredningListItem implements VardenhetEnrichable {
     protected Utredning utredning;

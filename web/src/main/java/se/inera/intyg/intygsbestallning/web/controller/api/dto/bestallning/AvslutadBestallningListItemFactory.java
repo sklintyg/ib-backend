@@ -51,6 +51,7 @@ public class AvslutadBestallningListItemFactory {
                 .withErsatts(ErsattsResolver.resolveUtredningErsatts(utredning, businessDays))
                 .withFakturerad(nonNull(utredning.getBetalning()) ? utredning.getBetalning().getFakturaId() : null)
                 .withUtbetald(nonNull(utredning.getBetalning()) ? utredning.getBetalning().getBetalningsId() : null)
+                .withUtredning(utredning) // Is used in xlsx export
                 .build();
     }
 

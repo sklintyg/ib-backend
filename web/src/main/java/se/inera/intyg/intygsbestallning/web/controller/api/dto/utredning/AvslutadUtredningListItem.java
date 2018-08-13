@@ -21,6 +21,7 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.BaseUtredningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FreeTextSearchable;
 
 public class AvslutadUtredningListItem extends BaseUtredningListItem implements FreeTextSearchable {

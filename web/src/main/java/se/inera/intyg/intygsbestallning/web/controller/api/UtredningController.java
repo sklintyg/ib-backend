@@ -48,9 +48,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListAvs
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveBetalningForUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveUtbetalningForUtredningRequest;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import se.inera.intyg.intygsbestallning.web.controller.api.helper.ControllerHelper;
 
 @RestController
 @RequestMapping("/api/samordnare/utredningar")
@@ -165,8 +163,8 @@ public class UtredningController {
 
         byte[] data = xlsxExportService.export(user.getCurrentlyLoggedInAt().getId(), req);
 
-        HttpHeaders respHeaders = getHttpHeaders("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                data.length, ".xlsx", user);
+        HttpHeaders respHeaders = ControllerHelper.getHttpHeaders("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                data.length, "utredningar", ".xlsx", user);
 
         return new ResponseEntity<>(new ByteArrayResource(data), respHeaders, HttpStatus.OK);
     }
@@ -180,22 +178,9 @@ public class UtredningController {
 
         byte[] data = xlsxExportService.export(user.getCurrentlyLoggedInAt().getId(), req);
 
-        HttpHeaders respHeaders = getHttpHeaders("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                data.length, ".xlsx", user);
+        HttpHeaders respHeaders = ControllerHelper.getHttpHeaders("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                data.length, "utredningar", ".xlsx", user);
 
         return new ResponseEntity<>(new ByteArrayResource(data), respHeaders, HttpStatus.OK);
-    }
-
-    private HttpHeaders getHttpHeaders(String contentType, long contentLength, String filenameExtension, IbUser user) {
-        HttpHeaders respHeaders = new HttpHeaders();
-        respHeaders.set(HttpHeaders.CONTENT_TYPE, contentType);
-        respHeaders.setContentLength(contentLength);
-        respHeaders.setContentDispositionFormData("attachment", getAttachmentFilename(user, filenameExtension));
-        return respHeaders;
-    }
-
-    private String getAttachmentFilename(IbUser user, String extension) {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH-mm");
-        return "utredningar-" + user.getCurrentlyLoggedInAt().getName() + "-" + LocalDateTime.now().format(dateTimeFormatter) + extension;
     }
 }

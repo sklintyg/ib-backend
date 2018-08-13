@@ -19,9 +19,13 @@
 package se.inera.intyg.intygsbestallning.web.controller.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -35,13 +39,12 @@ import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesV
 import se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
+import se.inera.intyg.intygsbestallning.service.export.XlsxExportService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utlatande.UtlatandeService;
 import se.inera.intyg.intygsbestallning.service.utredning.BestallningService;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AvslutaUtredningRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.AvslutadBestallningListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.BestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.GetAvslutadeBestallningarListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.GetBestallningListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.GetBestallningResponse;
@@ -51,13 +54,13 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.SaveF
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utlatande.SendUtlatandeRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListAvslutadeBestallningarFilter;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListBestallningFilter;
-
-import java.util.List;
+import se.inera.intyg.intygsbestallning.web.controller.api.helper.ControllerHelper;
 
 @RestController
 @RequestMapping("/api/vardadmin/bestallningar")
 public class BestallningController {
 
+    public static final String MISSING_PRIVILEGE_LISTA_BESTALLNINGAR = "User does not have required privilege LISTA_BESTALLNINGAR";
     @Autowired
     private UserService userService;
 
@@ -70,6 +73,9 @@ public class BestallningController {
     @Autowired
     private UtredningService utredningService;
 
+    @Autowired
+    private XlsxExportService xlsxExportService;
+
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     @PrometheusTimeMethod
@@ -77,16 +83,16 @@ public class BestallningController {
     public ResponseEntity<GetBestallningListResponse> getBestallningarForVardenhet(@RequestBody ListBestallningRequest requestFilter) {
         IbUser user = userService.getUser();
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_BESTALLNINGAR)
-                .orThrow(new IbAuthorizationException("User does not have required privilege LISTA_BESTALLNINGAR"));
+                .orThrow(new IbAuthorizationException(MISSING_PRIVILEGE_LISTA_BESTALLNINGAR));
 
         if (user.getCurrentlyLoggedInAt().getType() != SelectableHsaEntityType.VE) {
             throw new IbAuthorizationException("User is not logged in at a Vårdenhet");
         }
 
-        List<BestallningListItem> bestallningar = bestallningService
+        GetBestallningListResponse bestallningar = bestallningService
                 .findOngoingBestallningarForVardenhet(user.getCurrentlyLoggedInAt().getId(), requestFilter);
 
-        return ResponseEntity.ok(new GetBestallningListResponse(bestallningar, bestallningar.size()));
+        return ResponseEntity.ok(bestallningar);
     }
 
     /**
@@ -97,7 +103,7 @@ public class BestallningController {
     public ResponseEntity<ListBestallningFilter> getListBestallningFilter() {
         IbUser user = userService.getUser();
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_BESTALLNINGAR)
-                .orThrow(new IbAuthorizationException("User does not have required privilege LISTA_BESTALLNINGAR"));
+                .orThrow(new IbAuthorizationException(MISSING_PRIVILEGE_LISTA_BESTALLNINGAR));
 
         ListBestallningFilter listBestallningFilter = bestallningService.buildListBestallningFilter(user.getCurrentlyLoggedInAt().getId());
         return ResponseEntity.ok(listBestallningFilter);
@@ -109,16 +115,16 @@ public class BestallningController {
             @RequestBody ListAvslutadeBestallningarRequest request) {
         IbUser user = userService.getUser();
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_BESTALLNINGAR)
-                .orThrow(new IbAuthorizationException("User does not have required privilege LISTA_BESTALLNINGAR"));
+                .orThrow(new IbAuthorizationException(MISSING_PRIVILEGE_LISTA_BESTALLNINGAR));
 
         if (user.getCurrentlyLoggedInAt().getType() != SelectableHsaEntityType.VE) {
             throw new IbAuthorizationException("User is not logged in at a Vårdenhet");
         }
 
-        List<AvslutadBestallningListItem> bestallningar = bestallningService
+        GetAvslutadeBestallningarListResponse bestallningar = bestallningService
                 .findAvslutadeBestallningarForVardenhet(user.getCurrentlyLoggedInAt().getId(), request);
 
-        return ResponseEntity.ok(new GetAvslutadeBestallningarListResponse(bestallningar, bestallningar.size()));
+        return ResponseEntity.ok(bestallningar);
     }
 
     /**
@@ -129,7 +135,7 @@ public class BestallningController {
     public ResponseEntity<ListAvslutadeBestallningarFilter> getListAvslutadeBestallningarFilter() {
         IbUser user = userService.getUser();
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_BESTALLNINGAR)
-                .orThrow(new IbAuthorizationException("User does not have required privilege LISTA_BESTALLNINGAR"));
+                .orThrow(new IbAuthorizationException(MISSING_PRIVILEGE_LISTA_BESTALLNINGAR));
 
         ListAvslutadeBestallningarFilter listAvslutadeBestallningarFilter = bestallningService
                 .buildListAvslutadeBestallningarFilter(user.getCurrentlyLoggedInAt().getId());
@@ -181,5 +187,35 @@ public class BestallningController {
         utredningService.avslutaUtredning(AvslutaUtredningRequest.from(utredningId, user));
 
         return ResponseEntity.ok().build();
+    }
+
+    @PrometheusTimeMethod
+    @PostMapping(path = "/xlsx", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResponseEntity<ByteArrayResource> excelReportUtredningar(@ModelAttribute ListBestallningRequest req) {
+        IbUser user = userService.getUser();
+        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_BESTALLNINGAR)
+                .orThrow(new IbAuthorizationException(MISSING_PRIVILEGE_LISTA_BESTALLNINGAR));
+
+        byte[] data = xlsxExportService.export(user.getCurrentlyLoggedInAt().getId(), req);
+
+        HttpHeaders respHeaders = ControllerHelper.getHttpHeaders("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                data.length, "bestallningar", ".xlsx", user);
+
+        return new ResponseEntity<>(new ByteArrayResource(data), respHeaders, HttpStatus.OK);
+    }
+
+    @PrometheusTimeMethod
+    @PostMapping(path = "/avslutade/xlsx", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResponseEntity<ByteArrayResource> excelReportAvslutadeUtredningar(@ModelAttribute ListAvslutadeBestallningarRequest req) {
+        IbUser user = userService.getUser();
+        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_BESTALLNINGAR)
+                .orThrow(new IbAuthorizationException(MISSING_PRIVILEGE_LISTA_BESTALLNINGAR));
+
+        byte[] data = xlsxExportService.export(user.getCurrentlyLoggedInAt().getId(), req);
+
+        HttpHeaders respHeaders = ControllerHelper.getHttpHeaders("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                data.length, "bestallningar", ".xlsx", user);
+
+        return new ResponseEntity<>(new ByteArrayResource(data), respHeaders, HttpStatus.OK);
     }
 }

@@ -18,7 +18,7 @@
  */
 
 angular.module('ibApp').factory('BestallningarProxy',
-    function(ProxyTemplate) {
+    function($window, ProxyTemplate) {
         'use strict';
 
         var basePath = '/api/vardadmin/bestallningar';
@@ -74,6 +74,40 @@ angular.module('ibApp').factory('BestallningarProxy',
             }});
         }
 
+        function _addInput(name, item) {
+            return '<input type="hidden" name="' + name + '" value="' + item + '" />';
+        }
+
+        function _excelReport(query) {
+            var restPath = basePath + '/xlsx';
+
+            var inputs = '';
+            angular.forEach(query, function(value, key) {
+                if (value !== null && value !== undefined) {
+                    inputs += _addInput(key, value);
+                }
+            });
+
+            //send request
+            $window.jQuery('<form action="' + restPath + '" target="_blank" method="post">' + inputs + '</form>')
+                .appendTo('body').submit().remove();
+        }
+
+        function _excelReportAvslutade(query) {
+            var restPath = basePath + '/avslutade/xlsx';
+
+            var inputs = '';
+            angular.forEach(query, function(value, key) {
+                if (value !== null && value !== undefined) {
+                    inputs += _addInput(key, value);
+                }
+            });
+
+            //send request
+            $window.jQuery('<form action="' + restPath + '" target="_blank" method="post">' + inputs + '</form>')
+                .appendTo('body').submit().remove();
+        }
+
         // Return public API for the service
         return {
             getBestallning: _getBestallning,
@@ -81,6 +115,8 @@ angular.module('ibApp').factory('BestallningarProxy',
             getBestallningarFilterValues : _getBestallningarFilterValues,
             getAvslutadeBestallningarWithFilter: _getAvslutadeBestallningarWithFilter,
             getAvslutadeBestallningarFilterValues : _getAvslutadeBestallningarFilterValues,
-            saveFakturerad: _saveFakturerad
+            saveFakturerad: _saveFakturerad,
+            excelReport: _excelReport,
+            excelReportAvslutade: _excelReportAvslutade
         };
     });

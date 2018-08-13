@@ -44,6 +44,7 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
+import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
@@ -54,8 +55,13 @@ import se.inera.intyg.intygsbestallning.service.stateresolver.BesokStatusResolve
 import se.inera.intyg.intygsbestallning.service.stateresolver.ErsattsResolver;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
+import se.inera.intyg.intygsbestallning.service.utredning.BestallningService;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.BaseUtredningListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.AvslutadBestallningListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.BestallningListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.ListAvslutadeBestallningarRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.ListBestallningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.BaseUtredningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListAvslutadeUtredningarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListUtredningRequest;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -178,6 +184,9 @@ public class XlsxExportServiceImpl extends BaseUtredningService implements XlsxE
     private UtredningService utredningService;
 
     @Autowired
+    private BestallningService bestallningService;
+
+    @Autowired
     private BusinessDaysBean businessDays;
 
     @Override
@@ -190,6 +199,35 @@ public class XlsxExportServiceImpl extends BaseUtredningService implements XlsxE
     public byte[] export(String landstingHsaId, ListAvslutadeUtredningarRequest request) {
         request.setPerformPaging(false);
         return export(utredningService.findAvslutadeExternForfraganByLandstingHsaIdWithFilter(landstingHsaId, request).getUtredningar());
+    }
+
+    @Override
+    public byte[] export(String loggedInAtHsaId, ListBestallningRequest request) {
+        request.setPerformPaging(false);
+        List<BestallningListItem> bestallningar = bestallningService
+                .findOngoingBestallningarForVardenhet(loggedInAtHsaId, request)
+                .getBestallningar();
+        // findOngoingBestallningarForVardenhet doesn't set vardenhet, so we need to do that here
+        setVardenhetOnUtredningList(bestallningar);
+        return export(bestallningar);
+    }
+
+    @Override
+    public byte[] export(String loggedInAtHsaId, ListAvslutadeBestallningarRequest request) {
+        request.setPerformPaging(false);
+        List<AvslutadBestallningListItem> bestallningar = bestallningService
+                .findAvslutadeBestallningarForVardenhet(loggedInAtHsaId, request)
+                .getBestallningar();
+        // findAvslutadeBestallningarForVardenhet doesn't set vardenhet, so we need to do that here
+        setVardenhetOnUtredningList(bestallningar);
+        return export(bestallningar);
+    }
+
+    private void setVardenhetOnUtredningList(List<? extends BaseUtredningListItem> bestallningar) {
+        bestallningar.forEach(b -> {
+            b.setVardenhetHsaId(b.getUtredning().getBestallning().map(Bestallning::getTilldeladVardenhetHsaId).orElse(null));
+        });
+        enrichWithVardenhetNames(bestallningar);
     }
 
     private byte[] export(List<? extends BaseUtredningListItem> utredningList) {
@@ -228,26 +266,28 @@ public class XlsxExportServiceImpl extends BaseUtredningService implements XlsxE
             }
         }
 
-        XSSFTable table = sheet.createTable();
-        table.setDisplayName("Table1");
-        table.setName("Table1");
-        for (TableHeaderDef tableHeaderDef : TABLE_HEADER_DEF_LIST) {
-            for (String header : tableHeaderDef.subHeaderList) {
-                table.addColumn();
+        if (utredningList.size() > 0) {
+            XSSFTable table = sheet.createTable();
+            table.setDisplayName("Table1");
+            table.setName("Table1");
+            for (TableHeaderDef tableHeaderDef : TABLE_HEADER_DEF_LIST) {
+                for (int c = 0; c < tableHeaderDef.subHeaderList.size(); c++) {
+                    table.addColumn();
+                }
             }
+
+            CTTable ctTable = table.getCTTable();
+            CTTableStyleInfo tableStyle = ctTable.addNewTableStyleInfo();
+            tableStyle.setName("TableStyleMedium9");
+            tableStyle.setShowColumnStripes(false);
+            tableStyle.setShowRowStripes(true);
+
+            ctTable.addNewAutoFilter();
+
+            AreaReference reference = wb.getCreationHelper().createAreaReference(
+                    new CellReference(subHeaderRow, 0), new CellReference(rowNumber - 1, lastHeaderCellIndex - 1));
+            table.setCellReferences(reference);
         }
-
-        CTTable ctTable = table.getCTTable();
-        CTTableStyleInfo tableStyle = ctTable.addNewTableStyleInfo();
-        tableStyle.setName("TableStyleMedium9");
-        tableStyle.setShowColumnStripes(false);
-        tableStyle.setShowRowStripes(true);
-
-        ctTable.addNewAutoFilter();
-
-        AreaReference reference = wb.getCreationHelper().createAreaReference(
-                new CellReference(subHeaderRow, 0), new CellReference(rowNumber - 1, lastHeaderCellIndex - 1));
-        table.setCellReferences(reference);
 
         for (int i = 1; i < lastHeaderCellIndex; i++) {
             sheet.autoSizeColumn(i);
@@ -541,7 +581,6 @@ public class XlsxExportServiceImpl extends BaseUtredningService implements XlsxE
     }
 
     private int addBesokValues(XSSFRow row, int cellIndex, Utredning utredning, Besok besok) {
-//        int cellIndex = 26;
         int localCellIndex = cellIndex;
         XSSFCell cell = row.createCell(localCellIndex++);
         cell.setCellValue(besok.getId());

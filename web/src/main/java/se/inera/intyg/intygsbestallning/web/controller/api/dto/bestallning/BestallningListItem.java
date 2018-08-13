@@ -18,19 +18,20 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning;
 
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.service.patient.PatientNamable;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.BaseUtredningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FreeTextSearchable;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardgivareEnrichable;
 
-public class BestallningListItem implements PDLLoggable, PatientNamable, FreeTextSearchable, FilterableListItem, VardgivareEnrichable {
+public class BestallningListItem extends BaseUtredningListItem implements PDLLoggable, PatientNamable, FreeTextSearchable,
+        FilterableListItem, VardgivareEnrichable {
 
-    private Long utredningsId;
-    private UtredningsTyp utredningsTyp;
     private String vardgivareHsaId;
     private String vardgivareNamn;
     private UtredningFas fas;
@@ -42,22 +43,6 @@ public class BestallningListItem implements PDLLoggable, PatientNamable, FreeTex
     private String patientNamn;
     private String nextActor;
     private boolean kraverAtgard;
-
-    public Long getUtredningsId() {
-        return utredningsId;
-    }
-
-    public void setUtredningsId(Long utredningsId) {
-        this.utredningsId = utredningsId;
-    }
-
-    public UtredningsTyp getUtredningsTyp() {
-        return utredningsTyp;
-    }
-
-    public void setUtredningsTyp(UtredningsTyp utredningsTyp) {
-        this.utredningsTyp = utredningsTyp;
-    }
 
     @Override
     public String getVardgivareHsaId() {
@@ -76,7 +61,6 @@ public class BestallningListItem implements PDLLoggable, PatientNamable, FreeTex
     public void setVardgivareNamn(String vardgivareNamn) {
         this.vardgivareNamn = vardgivareNamn;
     }
-
     public UtredningFas getFas() {
         return fas;
     }
@@ -174,6 +158,7 @@ public class BestallningListItem implements PDLLoggable, PatientNamable, FreeTex
     }
 
     public static final class BestallningListItemBuilder {
+        private Utredning utredning;
         private Long utredningsId;
         private UtredningsTyp utredningsTyp;
         private String vardgivareHsaId;
@@ -260,6 +245,11 @@ public class BestallningListItem implements PDLLoggable, PatientNamable, FreeTex
             return this;
         }
 
+        public BestallningListItemBuilder withUtredning(Utredning utredning) {
+            this.utredning = utredning;
+            return this;
+        }
+
         public BestallningListItem build() {
             BestallningListItem bestallningListItem = new BestallningListItem();
             bestallningListItem.setUtredningsId(utredningsId);
@@ -275,6 +265,7 @@ public class BestallningListItem implements PDLLoggable, PatientNamable, FreeTex
             bestallningListItem.setPatientNamn(patientNamn);
             bestallningListItem.setNextActor(nextActor);
             bestallningListItem.setKraverAtgard(kraverAtgard);
+            bestallningListItem.setUtredning(utredning);
             return bestallningListItem;
         }
     }

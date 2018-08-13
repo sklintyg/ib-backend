@@ -46,6 +46,8 @@ import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus
 import se.inera.intyg.intygsbestallning.service.util.GenericComparator;
 import se.inera.intyg.intygsbestallning.service.util.PagingUtil;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.GetAvslutadeBestallningarListResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.GetBestallningListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.SaveFakturaForUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardgivareEnrichable;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.AvslutadBestallningListItem;
@@ -145,8 +147,8 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
     }
 
     @Override
-    public List<AvslutadBestallningListItem> findAvslutadeBestallningarForVardenhet(String vardenhetHsaId,
-            ListAvslutadeBestallningarRequest requestFilter) {
+    public GetAvslutadeBestallningarListResponse findAvslutadeBestallningarForVardenhet(String vardenhetHsaId,
+                                                                                        ListAvslutadeBestallningarRequest requestFilter) {
         List<AvslutadBestallningListItem> avslutadeBestallningar = utredningRepository
                 .findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradTrue(vardenhetHsaId)
                 .stream().map(utr -> avslutadBestallningListItemFactory.from(utr))
@@ -171,20 +173,23 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
                         requestFilter.isOrderByAsc()))
                 .collect(toList());
 
-        // Paging. We need to perform some bounds-checking...
+        List<AvslutadBestallningListItem> paged = filtered;
         int total = filtered.size();
-        if (total == 0) {
-            return filtered;
-        }
+        if (requestFilter.isPerformPaging()) {
+            // Paging. We need to perform some bounds-checking...
+            if (total == 0) {
+                return new GetAvslutadeBestallningarListResponse(filtered, total);
+            }
 
-        Pair<Integer, Integer> bounds = PagingUtil.getBounds(total, requestFilter.getPageSize(), requestFilter.getCurrentPage());
-        List<AvslutadBestallningListItem> paged = filtered.subList(bounds.getFirst(), bounds.getSecond() + 1);
+            Pair<Integer, Integer> bounds = PagingUtil.getBounds(total, requestFilter.getPageSize(), requestFilter.getCurrentPage());
+            paged = filtered.subList(bounds.getFirst(), bounds.getSecond() + 1);
+        }
 
         if (!enrichedWithVardgivareNames) {
             enrichWithVardgivareNames(paged);
         }
 
-        return paged;
+        return new GetAvslutadeBestallningarListResponse(paged, total);
     }
 
     private boolean buildBetaldPredicate(AvslutadBestallningListItem bli, String enumValue) {
@@ -266,7 +271,7 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
     }
 
     @Override
-    public List<BestallningListItem> findOngoingBestallningarForVardenhet(String vardenhetHsaId, ListBestallningRequest requestFilter) {
+    public GetBestallningListResponse findOngoingBestallningarForVardenhet(String vardenhetHsaId, ListBestallningRequest requestFilter) {
         long start = System.currentTimeMillis();
         List<Utredning> jpaList = utredningRepository
                 .findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(vardenhetHsaId);
@@ -309,14 +314,17 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
                 .collect(toList());
         LOG.info("filtering of BestallningListItem took {} ms", (System.currentTimeMillis() - start));
 
-        // Paging. We need to perform some bounds-checking...
+        List<BestallningListItem> paged = filtered;
         int total = filtered.size();
-        if (total == 0) {
-            return filtered;
-        }
+        if (requestFilter.isPerformPaging()) {
+            // Paging. We need to perform some bounds-checking...
+            if (total == 0) {
+                return new GetBestallningListResponse(filtered, total);
+            }
 
-        Pair<Integer, Integer> bounds = PagingUtil.getBounds(total, requestFilter.getPageSize(), requestFilter.getCurrentPage());
-        List<BestallningListItem> paged = filtered.subList(bounds.getFirst(), bounds.getSecond() + 1);
+            Pair<Integer, Integer> bounds = PagingUtil.getBounds(total, requestFilter.getPageSize(), requestFilter.getCurrentPage());
+            paged = filtered.subList(bounds.getFirst(), bounds.getSecond() + 1);
+        }
 
         // Fetch patient names and hsa names only for the selected subset, we want to minimize number of calls per invocation
         // of this API
@@ -337,7 +345,7 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
         start = System.currentTimeMillis();
         pdlLogList(paged, ActivityType.READ, ResourceType.RESOURCE_TYPE_FMU);
         LOG.info("pdlLogList took {} ms", (System.currentTimeMillis() - start));
-        return paged;
+        return new GetBestallningListResponse(paged, total);
     }
 
     // PDL logging. Important to only log after filtering and paging.

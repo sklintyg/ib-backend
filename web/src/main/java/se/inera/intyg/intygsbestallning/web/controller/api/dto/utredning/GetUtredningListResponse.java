@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning;
 
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.BaseUtredningListItem;
+
 import java.util.List;
 
 public class GetUtredningListResponse {
