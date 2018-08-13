@@ -43,7 +43,7 @@ angular.module('ibApp').controller('ibAccepteraInternForfraganDlgController',
                 $scope.vm.model.utforareNamn = pref.mottagarNamn;
                 $scope.vm.model.utforareAdress = pref.adress;
                 // Lägger till mellanslag till postnumret
-                $scope.vm.model.utforarePostnr = pref.postnummer.slice(0, 3) + ' ' + pref.postnummer.slice(3);;
+                $scope.vm.model.utforarePostnr = pref.postnummer.slice(0, 3) + ' ' + pref.postnummer.slice(3);
                 $scope.vm.model.utforarePostort = pref.postort;
                 $scope.vm.model.utforareTelefon = pref.telefonnummer;
                 $scope.vm.model.utforareEpost = pref.epost;
