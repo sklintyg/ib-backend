@@ -34,7 +34,7 @@
 
               <!-- combined postnr/ort -->
               <div class="flex-grid">
-                <div class="col">
+                <div class="col" id="postnr">
                   <ib-zipcode id="postnummer" model="vm.model.postnummer"
                               label-key="unitsettings.kontakt.form.postnummer"
                               required="true" pattern-error="Fyll i postnummer, 5 siffror"
@@ -42,7 +42,7 @@
                 </div>
 
 
-                <div class="col col-2">
+                <div class="col">
                   <ib-horisontal-textfield id="postort" model="vm.model.postort" required="true"
                                            required-error="Fyll i postort" label-key="unitsettings.kontakt.form.postort"
                                            max-length="255"></ib-horisontal-textfield>
