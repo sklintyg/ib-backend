@@ -17,11 +17,10 @@
   }
 
   .validation-error-message {
-    margin-top: 10px;
     color: $ib-color-11;
   }
 
-  .flex-column ib-field-error-list:last-child {
+  .flex-column .besokdatumerror:last-child {
     padding-bottom: 15px;
   }
 

@@ -51,23 +51,24 @@
             </ib-time-picker>
           </span>
         </div>
-        <div class="validation-error-message"
-             id="besokTid-validation"
-             ng-if="showKorrektTidsIntervall()">
-          <message key='lagg-till-besok.info.besoktidintervall'></message>
-        </div>
         <div class="flex-column">
-          <ib-field-error-list errors="laggTillBesokForm.dateBesokDatum.$error"
+          <ib-field-error-list class="besokdatumerror" errors="laggTillBesokForm.dateBesokDatum.$error"
                                date-format-error="Korrekt datum måste anges"
                                ng-if="laggTillBesokForm.dateBesokDatum.$error.pattern || laggTillBesokForm.dateBesokDatum.$error.date"></ib-field-error-list>
 
-          <ib-field-error-list errors="laggTillBesokForm.dateBesokStart.$error"
+          <ib-field-error-list class="besokdatumerror" errors="laggTillBesokForm.dateBesokStart.$error"
                                pattern-error="Korrekt klockslag måste anges"
                                ng-if="laggTillBesokForm.dateBesokStart.$error.pattern || laggTillBesokForm.dateBesokStart.$error.date"></ib-field-error-list>
 
-          <ib-field-error-list errors="laggTillBesokForm.dateBesokSlut.$error"
+          <ib-field-error-list class="besokdatumerror" errors="laggTillBesokForm.dateBesokSlut.$error"
                                pattern-error="Korrekt klockslag måste anges"
                                ng-if="laggTillBesokForm.dateBesokSlut.$error.pattern || laggTillBesokForm.dateBesokSlut.$error.date"></ib-field-error-list>
+
+          <div class="validation-error-message besokdatumerror"
+               id="besokTid-validation"
+               ng-if="showKorrektTidsIntervall()">
+            <message key='lagg-till-besok.info.besoktidintervall'></message>
+          </div>
 
         </div>
         <div class="flex-row">
