@@ -44,14 +44,18 @@ angular.module('ibApp').controller('ibEditVEKontaktDialogCtrl', [ '$scope', '$lo
 
     $scope.saveChanges = function() {
         $scope.vm.saving = true;
+
+        // Ta bort mellanslag innan sparas i db
         $scope.vm.model.postnummer = $scope.vm.model.postnummer.replace(/\s/g, '');
-        VardenhetProxy.setVardenhetKontaktPreference($scope.vm.model).then(function() {
+        $scope.vm.model.telefonnummer = $scope.vm.model.telefonnummer.replace(/\s/g, '');
+
+          VardenhetProxy.setVardenhetKontaktPreference($scope.vm.model).then(function() {
             $scope.$dismiss();
         }, function(error) {
             $log.error('failed to save preference!' + error);
         }).finally(function() { // jshint ignore:line
             $scope.vm.saving = false;
-        });
+        }); 
     };
     $scope.getFromHsa = function() {
         $scope.vm.fetchinghsa = true;
