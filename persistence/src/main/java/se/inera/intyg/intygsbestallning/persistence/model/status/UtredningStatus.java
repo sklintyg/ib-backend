@@ -36,7 +36,7 @@ public enum UtredningStatus implements SortableLabel {
     // Statuses in FORFRAGAN phase
     FORFRAGAN_INKOMMEN("Förfrågan inkommen", FORFRAGAN, SAMORDNARE),
     VANTAR_PA_SVAR("Väntar på svar", FORFRAGAN, VARDADMIN),
-    TILLDELA_UTREDNING("Tilldela utredning", FORFRAGAN, SAMORDNARE),
+    TILLDELA_UTREDNING("Tilldela utredning och acceptera förfrågan", FORFRAGAN, SAMORDNARE),
     TILLDELAD_VANTAR_PA_BESTALLNING("Tilldelad, väntar på beställning", FORFRAGAN, FK),
 
     // Statuses in UTREDNING phase
