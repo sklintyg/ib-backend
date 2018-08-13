@@ -20,6 +20,7 @@ package se.inera.intyg.intygsbestallning.service.statistics;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
@@ -52,6 +53,7 @@ public class StatisticsServiceImpl implements StatisticsService {
     private BusinessDaysBean businessDays;
 
     @Override
+    @Transactional(readOnly = true)
     public SamordnarStatisticsResponse getStatsForSamordnare(String vardgivarHsaId) {
         long requireSamordnarActionCount = utredningRepository
                 .findByExternForfragan_LandstingHsaId_AndArkiverad(vardgivarHsaId, false)
@@ -63,6 +65,7 @@ public class StatisticsServiceImpl implements StatisticsService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public VardadminStatisticsResponse getStatsForVardadmin(String enhetsHsaId) {
 
         // Calculate nr of forfragningar for this vardenhet where next actor is VARDADMIN

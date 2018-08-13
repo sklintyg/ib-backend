@@ -34,7 +34,7 @@ import se.inera.intyg.intygsbestallning.integration.myndighet.config.MyndighetIn
 import se.inera.intyg.intygsbestallning.integration.myndighet.config.MyndighetIntegrationConfiguration;
 import se.inera.intyg.intygsbestallning.integration.myndighet.stubs.MyndighetIntegrationStubConfiguration;
 import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigDev;
-import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfigJndi;
+import se.inera.intyg.intygsbestallning.persistence.config.PersistenceConfig;
 import se.inera.intyg.intygsbestallning.web.filters.SessionTimeoutFilter;
 
 import javax.servlet.FilterRegistration;
@@ -59,7 +59,7 @@ public class ApplicationInitializer implements WebApplicationInitializer {
                 NTjPPingConfig.class,
                 SecurityConfig.class,
                 DynamicLinkConfig.class,
-                PersistenceConfigJndi.class,
+                PersistenceConfig.class,
                 PersistenceConfigDev.class,
                 MyndighetIntegrationConfiguration.class,
                 MyndighetIntegrationClientConfiguration.class,

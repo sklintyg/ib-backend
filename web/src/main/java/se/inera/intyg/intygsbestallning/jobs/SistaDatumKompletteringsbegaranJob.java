@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
@@ -65,6 +66,7 @@ public class SistaDatumKompletteringsbegaranJob {
     @Scheduled(cron = "${job.sista.datum.kompletteringsbegaran.cron}")
     @SchedulerLock(name = JOB_NAME, lockAtLeastFor = LOCK_AT_LEAST, lockAtMostFor = LOCK_AT_MOST)
     @PrometheusTimeMethod
+    @Transactional
     public void executeJob() {
 
         LOG.info(MessageFormat.format("Starting: {0} from Scheduled Cron Expression", JOB_NAME));

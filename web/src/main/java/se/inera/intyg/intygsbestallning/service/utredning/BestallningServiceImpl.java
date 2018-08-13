@@ -89,6 +89,7 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
     private AvslutadBestallningListItemFactory avslutadBestallningListItemFactory;
 
     @Override
+    @Transactional(readOnly = true)
     public GetBestallningResponse getBestallning(Long utredningId, String vardenhetHsaId) {
         Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
                 () -> new IbNotFoundException("Utredning with assessmentId '" + utredningId + "' does not exist."));
