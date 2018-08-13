@@ -1,0 +1,19 @@
+<label ng-attr-for="{{::inputId}}" class="control-label">
+    <ib-help-text-label required="required" required-expr="!model" label-key="{{::labelKey}}"></ib-help-text-label>
+</label>
+<div>
+    <input ng-attr-id="{{::inputId}}"
+           name="{{::inputId}}"
+           id="telefonnummer"
+           type="text"
+           class="form-control"
+           ng-model="model"
+           ng-change="onChange()"
+           ng-required="required"
+           ng-disabled="isDisabled"
+           maxlength="{{:: maxLength || 255}}"
+           placeholder="{{placeholderKey | message}}"
+           label-key="label-key"
+           ib-number="true">
+    <ib-field-error-list errors="componentErrors()" pattern-error="{{patternError}}" required-error="{{requiredError}}"></ib-field-error-list>
+</div>

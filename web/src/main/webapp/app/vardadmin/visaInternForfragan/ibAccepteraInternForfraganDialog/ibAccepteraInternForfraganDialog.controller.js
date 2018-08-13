@@ -66,10 +66,13 @@ angular.module('ibApp').controller('ibAccepteraInternForfraganDlgController',
             $log.debug('onConfirmAccept()');
             var model = angular.copy(InternForfraganSvarViewState.getModel());
             model.svarTyp='ACCEPTERA';
-            // Tar bort mellanrummet i postnumret innan det sparas
+
+            // Tar bort mellanrum innan det sparas
             model.utforarePostnr = model.utforarePostnr.replace(/\s/g, '');
+            model.utforareTelefon = model.utforareTelefon.replace(/\s/g, '');
+
             $scope.vm.busy = true;
-            InternForfraganProxy.accepteraInternForfragan($stateParams.utredningsId, model).then(function() {
+           InternForfraganProxy.accepteraInternForfragan($stateParams.utredningsId, model).then(function() {
                 //Things in related utredningsstate could have changed - reload state to make sure we show correct state of everything
                 $state.reload();
             }, function(error) {}).finally(function() { // jshint ignore:line
