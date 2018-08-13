@@ -31,7 +31,7 @@ angular.module('ibApp').directive('ibBesok', function($log, $state, ibDialog, Be
                 return $scope.bestallning && $scope.bestallning.besokList && $scope.bestallning.besokList.
                             filter(function(besok) {
                                 return redovisaBesokService.shouldBesokBeRedovisat(besok);
-                            }).length > 0;
+                            }).length > 0 && $scope.bestallning.status.id !== 'AVSLUTAD';
             };
 
             $scope.hanteraBesokDisabled = function(besok) {
