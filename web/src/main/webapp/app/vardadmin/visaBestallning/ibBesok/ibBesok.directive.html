@@ -1,7 +1,7 @@
 <div class="table-actionbar">
   <button class="btn btn-success" ng-click="oppnaLaggTillBesok()" ng-disabled="hanteraBesokDisabled()">Lägg till besök
   </button>
-  <ib-popover-wrapper popover-text="Inga besök har genomförts än"
+  <ib-popover-wrapper popover-text="Besök kan inte redovisas innan starttidpunkten för besöket har passerats"
                       popover-enable="!isRedovisaBesokEnabled()">
     <button class="btn btn-primary"
             ng-click="oppnaRedovisaBesok()"
