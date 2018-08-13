@@ -77,6 +77,13 @@
   border-color: $ib-color-17;
   background-color: $ib-color-00;
   color: $ib-color-17;
+
+  &.active:hover {
+    background-color: $btn-common-hover-background-color;
+    border-color: $btn-common-hover-background-color;
+    color: $ib-color-00;
+    box-shadow: 0 0 8px 0 $black_24;
+  }
 }
 
 .btn-secondary {
