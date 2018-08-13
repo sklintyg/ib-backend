@@ -68,7 +68,7 @@ public class UpdateOrderRequest {
             updateOrderRequestBuilder.withBestallare(updateBestallareBuilder.build());
         });
 
-        updateOrderRequestBuilder.withTolkBehov(request.isNeedForInterpreter());
+        Optional.ofNullable(request.isNeedForInterpreter()).ifPresent(updateOrderRequestBuilder::withTolkBehov);
         Optional.ofNullable(request.getInterpreterLanguage()).ifPresent(typ -> updateOrderRequestBuilder.withTolkSprak(typ.getCode()));
 
         return updateOrderRequestBuilder.build();

@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -57,15 +58,8 @@ import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createHandla
 import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createUpdateOrderType;
 import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createUtredning;
 
-import java.text.MessageFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import javax.xml.ws.WebServiceException;
-
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -77,10 +71,16 @@ import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-
+import se.riv.infrastructure.directory.organization.getunitresponder.v1.UnitType;
+import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
+import se.riv.intygsbestallning.certificate.order.v1.AuthorityAdministrativeOfficialType;
+import javax.xml.ws.WebServiceException;
+import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import se.inera.intyg.infra.integration.hsa.client.OrganizationUnitService;
 import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
@@ -117,8 +117,6 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtre
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveBetalningForUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveUtbetalningForUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItemFactory;
-import se.riv.infrastructure.directory.organization.getunitresponder.v1.UnitType;
-import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtredningServiceImplTest {
@@ -469,30 +467,106 @@ public class UtredningServiceImplTest {
     @Test
     public void uppdateraOrderOk() {
 
-        final String tolkSprak = "tolkSprak";
+        final String tolkSprak = "SV";
 
-        Utredning modifieradUtrening = Utredning.copyFrom(createUtredning());
-        modifieradUtrening.setTolkBehov(true);
-        modifieradUtrening.setTolkSprak(tolkSprak);
+        Utredning utredning = createUtredning();
 
-        final UpdateOrderRequest updateOrderRequest = UpdateOrderRequest.from(createUpdateOrderType(true, tolkSprak, false));
+        UpdateOrderType updateOrderType = createUpdateOrderType(true, "SV", null);
 
-        doReturn(Optional.of(createUtredning()))
+        AuthorityAdministrativeOfficialType admin = new AuthorityAdministrativeOfficialType();
+        admin.setEmail("uppdatera");
+        admin.setFullName("uppdatera");
+        admin.setOfficeName("uppdatera");
+
+        updateOrderType.setUpdatedAuthorityAdministrativeOfficial(admin);
+
+        final UpdateOrderRequest updateOrderRequest = UpdateOrderRequest.from(updateOrderType);
+
+        doReturn(Optional.of(utredning))
                 .when(utredningRepository)
                 .findById(anyLong());
-
-        doReturn(modifieradUtrening)
-                .when(utredningRepository)
-                .saveUtredning(any(Utredning.class));
 
         final Utredning uppdateradUtredning = utredningService.updateOrder(updateOrderRequest);
         assertEquals(AFU_UTVIDGAD, uppdateradUtredning.getUtredningsTyp());
 
-        assertEquals(createBestallning(), uppdateradUtredning.getBestallning().orElse(null));
-        assertEquals(createHandlaggare(), uppdateradUtredning.getHandlaggare());
-        assertEquals(createExternForfragan(), uppdateradUtredning.getExternForfragan().orElse(null));
-        assertTrue(uppdateradUtredning.getTolkBehov());
-        assertEquals(tolkSprak, uppdateradUtredning.getTolkSprak());
+        assertThat(uppdateradUtredning.getBestallning()).isNotEqualTo(createBestallning());
+        assertThat(uppdateradUtredning.getHandlaggare()).isNotEqualTo(createHandlaggare());
+        assertThat(uppdateradUtredning.getUtredningsTyp()).isEqualTo(AFU_UTVIDGAD);
+        assertThat(uppdateradUtredning.getExternForfragan()).isPresent().isEqualTo(Optional.of(createExternForfragan()));
+        assertThat(uppdateradUtredning.getTolkBehov()).isTrue();
+        assertThat(uppdateradUtredning.getTolkSprak()).isEqualTo(tolkSprak);
+
+        verify(notifieringSendService, times(1)).notifieraVardenhetUppdateradBestallning(any(Utredning.class));
+    }
+
+    @Test
+    public void uppdateraOrderAndraOptionalHandlaggareFaltOk() {
+
+        final String emptyString = "";
+        final String nullString = null;
+        final String newofficeName = "NewOfficeName";
+
+        Utredning utredning = createUtredning();
+        utredning.setHandlaggare(createHandlaggare());
+
+        final String handlaggareNamn = utredning.getHandlaggare().getFullstandigtNamn();
+
+        UpdateOrderType updateOrderType = createUpdateOrderType(null, null, null);
+
+        AuthorityAdministrativeOfficialType admin = new AuthorityAdministrativeOfficialType();
+        admin.setEmail(emptyString); // should be resolved to a null column
+        admin.setFullName(nullString); //should not be updated
+        admin.setOfficeName(newofficeName); //should be updated
+
+        updateOrderType.setUpdatedAuthorityAdministrativeOfficial(admin);
+
+        doReturn(Optional.of(utredning))
+                .when(utredningRepository)
+                .findById(anyLong());
+
+        assertThat(utredning.getHandlaggare()).isNotNull();
+
+        final Utredning updated = utredningService.updateOrder(UpdateOrderRequest.from(updateOrderType));
+
+        assertThat(updated.getHandlaggare()).isNotNull();
+        assertThat(updated.getHandlaggare().getEmail()).isNull();
+        assertThat(updated.getHandlaggare().getFullstandigtNamn()).isEqualTo(handlaggareNamn);
+        assertThat(updated.getHandlaggare().getKontor()).isEqualTo(newofficeName);
+
+        verify(notifieringSendService, times(1)).notifieraVardenhetUppdateradBestallning(any(Utredning.class));
+    }
+
+    @Test
+    public void uppdateraOrderAndraOptionalHandlaggareFaltUtanTidigareHandlaggareOk() {
+
+        final String emptyString = "";
+        final String nullString = null;
+        final String newofficeName = "NewOfficeName";
+
+        Utredning utredning = createUtredning();
+        utredning.setHandlaggare(null);
+
+        UpdateOrderType updateOrderType = createUpdateOrderType(null, null, null);
+
+        AuthorityAdministrativeOfficialType admin = new AuthorityAdministrativeOfficialType();
+        admin.setEmail(emptyString); // should be resolved to a null column
+        admin.setFullName(nullString); //should not be updated
+        admin.setOfficeName(newofficeName); //should be updated
+
+        updateOrderType.setUpdatedAuthorityAdministrativeOfficial(admin);
+
+        doReturn(Optional.of(utredning))
+                .when(utredningRepository)
+                .findById(anyLong());
+
+        assertThat(utredning.getHandlaggare()).isNull();
+
+        final Utredning updated = utredningService.updateOrder(UpdateOrderRequest.from(updateOrderType));
+
+        assertThat(updated.getHandlaggare()).isNotNull();
+        assertThat(updated.getHandlaggare().getEmail()).isNull();
+        assertThat(updated.getHandlaggare().getFullstandigtNamn()).isNull();
+        assertThat(updated.getHandlaggare().getKontor()).isEqualTo(newofficeName);
 
         verify(notifieringSendService, times(1)).notifieraVardenhetUppdateradBestallning(any(Utredning.class));
     }

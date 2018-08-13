@@ -20,6 +20,7 @@ package se.inera.intyg.intygsbestallning.service.utredning;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.base.Strings.emptyToNull;
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.google.common.collect.MoreCollectors.toOptional;
 import static java.util.Objects.nonNull;
@@ -37,7 +38,6 @@ import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.Invana
 import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.BooleanUtils;
@@ -341,11 +341,11 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
             throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, "Assessment does not have a Bestallning");
         }
 
-        Utredning save = qualifyForUpdatering(update, utredning);
+        qualifyForUppdatering(update, utredning);
 
-        save = utredningRepository.saveUtredning(save);
-        notifieringSendService.notifieraVardenhetUppdateradBestallning(save);
-        return save;
+        utredningRepository.saveUtredning(utredning);
+        notifieringSendService.notifieraVardenhetUppdateradBestallning(utredning);
+        return utredning;
     }
 
     @Override
@@ -645,7 +645,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         }
     }
 
-    private Utredning qualifyForUpdatering(final UpdateOrderRequest update, final Utredning utredning) {
+    private void qualifyForUppdatering(final UpdateOrderRequest update, final Utredning utredning) {
 
         checkArgument(nonNull(update));
         checkArgument(nonNull(utredning));
@@ -669,20 +669,50 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                         .findFirst()
                         .ifPresent(i -> i.setSistaDatum(sistaDatum)));
 
-        final Handlaggare handlaggareOriginal = utredning.getHandlaggare();
-        update.getBestallare().ifPresent(bestallare -> utredning.setHandlaggare(aHandlaggare()
-                .withEmail(bestallare.getEmail())
-                .withFullstandigtNamn(bestallare.getFullstandigtNamn())
-                .withKontor(bestallare.getKontor())
-                .withKostnadsstalle(bestallare.getKostnadsstalle())
-                .withMyndighet(bestallare.getMyndighet())
-                .withPostnummer(bestallare.getPostnummer())
-                .withStad(bestallare.getStad())
-                .withTelefonnummer(bestallare.getTelefonnummer())
-                .build()));
-
         final String kommentarOriginal = utredning.getBestallning().get().getKommentar();
         update.getKommentar().ifPresent(kommentar -> utredning.getBestallning().get().setKommentar(kommentar));
+
+        final Optional<Handlaggare> optionalHandlaggare = Optional.ofNullable(utredning.getHandlaggare());
+
+        final Handlaggare handlaggareOriginal;
+
+        if (optionalHandlaggare.isPresent()) {
+            handlaggareOriginal = Handlaggare.copyFrom(optionalHandlaggare.get());
+            Handlaggare handlaggare = optionalHandlaggare.get();
+
+            update.getBestallare().ifPresent(bestallare -> {
+                Optional.ofNullable(bestallare.getFullstandigtNamn())
+                        .ifPresent(fullstandigtNamn -> handlaggare.setFullstandigtNamn(emptyToNull(fullstandigtNamn)));
+                Optional.ofNullable(bestallare.getEmail())
+                        .ifPresent(email -> handlaggare.setEmail(emptyToNull(email)));
+                Optional.ofNullable(bestallare.getKontor())
+                        .ifPresent(kontor -> handlaggare.setKontor(emptyToNull(kontor)));
+                Optional.ofNullable(bestallare.getKostnadsstalle())
+                        .ifPresent(kostnadsstalle -> handlaggare.setKostnadsstalle(emptyToNull(kostnadsstalle)));
+                Optional.ofNullable(bestallare.getMyndighet())
+                        .ifPresent(myndighet -> handlaggare.setMyndighet(emptyToNull(myndighet)));
+                Optional.ofNullable(bestallare.getPostnummer())
+                        .ifPresent(postnummer -> handlaggare.setPostnummer(emptyToNull(postnummer)));
+                Optional.ofNullable(bestallare.getStad())
+                        .ifPresent(stad -> handlaggare.setStad(emptyToNull(stad)));
+                Optional.ofNullable(bestallare.getTelefonnummer())
+                        .ifPresent(telefonnummer -> handlaggare.setTelefonnummer(emptyToNull(telefonnummer)));
+            });
+
+        } else {
+            handlaggareOriginal = null;
+            update.getBestallare().ifPresent(bestallare ->
+                    utredning.setHandlaggare(aHandlaggare()
+                            .withEmail(emptyToNull(bestallare.getEmail()))
+                            .withFullstandigtNamn(emptyToNull(bestallare.getFullstandigtNamn()))
+                            .withKontor(emptyToNull(bestallare.getKontor()))
+                            .withKostnadsstalle(emptyToNull(bestallare.getKostnadsstalle()))
+                            .withMyndighet(emptyToNull(bestallare.getMyndighet()))
+                            .withPostnummer(emptyToNull(bestallare.getPostnummer()))
+                            .withStad(emptyToNull(bestallare.getStad()))
+                            .withTelefonnummer(emptyToNull(bestallare.getTelefonnummer()))
+                            .build()));
+        }
 
         final ImmutableList<ImmutablePair> fields = ImmutableList.of(
                 ImmutablePair.of(tolkBehovOriginal, utredning.getTolkBehov()),
@@ -712,8 +742,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                         .build()));
 
         if (isFalse(utredning.getTolkBehov()) && !isNullOrEmpty(utredning.getTolkSprak())) {
-            throw new IbServiceException(
-                    IbErrorCodeEnum.BAD_REQUEST, INTERPRETER_ERROR_TEXT);
+            throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, INTERPRETER_ERROR_TEXT);
         } else if (nonNull(utredning.getTolkSprak()) && isFalse(utredning.getTolkBehov())) {
             utredning.setTolkSprak(null);
         }
@@ -723,8 +752,6 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         final String nyHandlaggare = update.getBestallare().isPresent() ? update.getBestallare().get().getFullstandigtNamn() : null;
         utredning.getHandelseList().add(HandelseUtil.createOrderUpdated(nyttSistaDatum, nyHandlaggare, update.getHandling().isPresent()));
         utredning.getBestallning().ifPresent(bestallning -> bestallning.setUppdateradDatum(LocalDateTime.now()));
-
-        return utredning;
     }
 
     private Invanare updateInvanareFromOrder(final Invanare invanare, OrderRequest order) {
@@ -762,7 +789,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     }
 
     private boolean buildToFromPredicateForUtredningar(FilterableListItem bli, String fromDate, String toDate) {
-        if (Strings.isNullOrEmpty(fromDate) || Strings.isNullOrEmpty(toDate)) {
+        if (isNullOrEmpty(fromDate) || isNullOrEmpty(toDate)) {
             return true;
         }
 
@@ -770,7 +797,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
             case AVSLUTAD:
                 return false;
             case REDOVISA_BESOK:
-                return Strings.isNullOrEmpty(fromDate);
+                return isNullOrEmpty(fromDate);
             case UTREDNING:
             case KOMPLETTERING:
             case FORFRAGAN:
@@ -780,7 +807,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     }
 
     private boolean buildFasPredicate(UtredningListItem uli, String fas) {
-        if (Strings.isNullOrEmpty(fas)) {
+        if (isNullOrEmpty(fas)) {
             return true;
         }
         UtredningFas utredningFas = UtredningFas.valueOf(fas);
