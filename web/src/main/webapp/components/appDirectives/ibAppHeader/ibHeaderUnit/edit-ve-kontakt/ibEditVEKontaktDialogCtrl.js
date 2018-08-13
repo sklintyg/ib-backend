@@ -30,6 +30,12 @@ angular.module('ibApp').controller('ibEditVEKontaktDialogCtrl', [ '$scope', '$lo
 
     VardenhetProxy.getVardenhetKontaktPreference(UtforareTyp).then(function(vardenhetPreference) {
         $scope.vm.model = vardenhetPreference;
+
+        // Presentera postnumret i format 3+2 siffror
+        if ($scope.vm.model.postnummer) {
+            $scope.vm.model.postnummer = $scope.vm.model.postnummer.slice(0, 3) + ' ' + $scope.vm.model.postnummer.slice(3);
+        }
+
     }, function(error) {
         $log.error('failed to load ' + UtforareTyp + ' preference!' + error);
     }).finally(function() { // jshint ignore:line
@@ -38,6 +44,7 @@ angular.module('ibApp').controller('ibEditVEKontaktDialogCtrl', [ '$scope', '$lo
 
     $scope.saveChanges = function() {
         $scope.vm.saving = true;
+        $scope.vm.model.postnummer = $scope.vm.model.postnummer.replace(/\s/g, '');
         VardenhetProxy.setVardenhetKontaktPreference($scope.vm.model).then(function() {
             $scope.$dismiss();
         }, function(error) {
@@ -51,7 +58,7 @@ angular.module('ibApp').controller('ibEditVEKontaktDialogCtrl', [ '$scope', '$lo
         VardenhetProxy.getHsaInfo().then(function(hsaResponse) {
             $scope.vm.model.mottagarNamn = hsaResponse.mottagarNamn;
             $scope.vm.model.adress = hsaResponse.adress;
-            $scope.vm.model.postnummer = hsaResponse.postnummer;
+            $scope.vm.model.postnummer = hsaResponse.postnummer.slice(0, 3) + ' ' + hsaResponse.postnummer.slice(3);
             $scope.vm.model.postort = hsaResponse.postort;
             $scope.vm.model.telefonnummer = hsaResponse.telefonnummer;
             $scope.vm.model.epost = hsaResponse.epost;

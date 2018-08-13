@@ -33,6 +33,9 @@ angular.module('ibApp').factory('ObjectHelper',
             },
             valueOrNull: function(value) {
                 return value !== null && value !== undefined ? value : null;
+            },
+            stringBoolToBool: function(value){
+                return value === true || value === 'true';
             }
         };
     }
