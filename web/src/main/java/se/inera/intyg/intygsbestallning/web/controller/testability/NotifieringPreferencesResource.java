@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import se.inera.intyg.intygsbestallning.persistence.model.NotifieringPreference;
 import se.inera.intyg.intygsbestallning.persistence.repository.NotifieringPreferenceRepository;
+import se.inera.intyg.intygsbestallning.service.util.EntityTxMapper;
 
 @RestController
 @RequestMapping("/api/test/notificationpreferences")
@@ -39,15 +40,20 @@ import se.inera.intyg.intygsbestallning.persistence.repository.NotifieringPrefer
 public class NotifieringPreferencesResource {
 
     @Autowired
-    protected NotifieringPreferenceRepository notifieringPreferenceRepository;
+    NotifieringPreferenceRepository notifieringPreferenceRepository;
+
+    @Autowired
+    EntityTxMapper entityTxMapper;
 
     @DeleteMapping(path = "/{hsaId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Response deleteUtredning(@PathVariable("hsaId") String hsaId) {
-        final Optional<NotifieringPreference> notifieringPreference = notifieringPreferenceRepository.findByHsaId(hsaId);
-        if (notifieringPreference.isPresent()) {
-            notifieringPreferenceRepository.delete(notifieringPreference.get());
-        }
-        return Response.ok().build();
+        return entityTxMapper.jsonResponse(() -> {
+            final Optional<NotifieringPreference> notifieringPreference = notifieringPreferenceRepository.findByHsaId(hsaId);
+            if (notifieringPreference.isPresent()) {
+                notifieringPreferenceRepository.delete(notifieringPreference.get());
+            }
+            return EntityTxMapper.OK;
+        });
     }
 
 }

@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.testability;
 
+import javax.ws.rs.core.Response;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
@@ -27,10 +29,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import se.inera.intyg.intygsbestallning.persistence.model.RegistreradVardenhet;
 import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
-
-import javax.ws.rs.core.Response;
+import se.inera.intyg.intygsbestallning.service.util.EntityTxMapper;
 
 @RestController
 @RequestMapping("/api/test/registreradvardenhet")
@@ -40,18 +42,22 @@ public class RegistreradVardenhetResource {
     @Autowired
     protected RegistreradVardenhetRepository registreradVardenhetRepository;
 
+    @Autowired
+    EntityTxMapper entityTxMapper;
+
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public Response createRegistreradVardenhet(@RequestBody RegistreradVardenhet registreradVardenhet) {
-        registreradVardenhetRepository.save(registreradVardenhet);
-        return Response.ok().build();
+        return entityTxMapper.jsonResponse(() ->
+                registreradVardenhetRepository.save(registreradVardenhet));
     }
 
     @DeleteMapping(path = "/vardgivare/{vardgivareHsaId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Response deleteRegistreradeVardenheterForVardgivare(@PathVariable("vardgivareHsaId") String vardgivareHsaId) {
-        registreradVardenhetRepository.findByVardgivareHsaId(vardgivareHsaId)
-                .stream()
-                .forEach(vardenhet -> registreradVardenhetRepository.delete(vardenhet));
-        return Response.ok().build();
+        return entityTxMapper.jsonResponse(() -> {
+            registreradVardenhetRepository.findByVardgivareHsaId(vardgivareHsaId)
+                    .stream()
+                    .forEach(vardenhet -> registreradVardenhetRepository.delete(vardenhet));
+            return EntityTxMapper.OK;
+        });
     }
-
 }

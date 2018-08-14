@@ -41,6 +41,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
+import se.inera.intyg.intygsbestallning.service.util.EntityTxMapper;
 
 @RestController
 @RequestMapping("/api/test/utredningar")
@@ -48,49 +49,57 @@ import se.inera.intyg.intygsbestallning.persistence.repository.UtredningReposito
 public class UtredningResource {
 
     @Autowired
-    protected UtredningRepository utredningRepository;
+    EntityTxMapper entityTxMapper;
+
+    @Autowired
+    UtredningRepository utredningRepository;
 
     @GetMapping(path = "/{utredningId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Utredning> getUtredning(@PathVariable("utredningId") Long utredningId) {
-        Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
-                () -> new IbNotFoundException("Utredning with assessmentId '" + utredningId + "' does not exist."));
-        return ResponseEntity.ok(utredning);
+    public ResponseEntity<String> getUtredning(@PathVariable("utredningId") Long utredningId) {
+        return entityTxMapper.jsonResponseEntity(() ->
+                utredningRepository.findById(utredningId).orElseThrow(
+                        () -> new IbNotFoundException("Utredning with assessmentId '" + utredningId + "' does not exist.")));
     }
 
     @GetMapping(path = "/withstatus/{status}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Utredning>> getUtredningWithStatus(@PathVariable("status") String status) {
-        return ResponseEntity.ok(utredningRepository.findByStatus(UtredningStatus.valueOf(status)));
+    public ResponseEntity<String> getUtredningWithStatus(@PathVariable("status") String status) {
+        return entityTxMapper.jsonResponseEntity(() ->
+                utredningRepository.findByStatus(UtredningStatus.valueOf(status)));
     }
 
     @GetMapping(path = "/withfas/{fas}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Utredning>> getUtredningInUtredningFas(@PathVariable("fas") String fas) {
-        UtredningFas utredningFas = UtredningFas.valueOf(fas);
-        final List<UtredningStatus> statuses = Stream.of(UtredningStatus.values())
-                .filter(us -> us.getUtredningFas().equals(utredningFas))
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(utredningRepository.findByStatusIn(statuses));
+    public ResponseEntity<String> getUtredningInUtredningFas(@PathVariable("fas") String fas) {
+        return entityTxMapper.jsonResponseEntity(() -> {
+            UtredningFas utredningFas = UtredningFas.valueOf(fas);
+            final List<UtredningStatus> statuses = Stream.of(UtredningStatus.values())
+                    .filter(us -> us.getUtredningFas().equals(utredningFas))
+                    .collect(Collectors.toList());
+            return utredningRepository.findByStatusIn(statuses);
+        });
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public Response createUtredning(@RequestBody Utredning utredning) {
-        Utredning savedUtredning = utredningRepository.saveUtredning(utredning);
-        return Response.ok(savedUtredning).build();
+        return entityTxMapper.jsonResponse(() -> utredningRepository.saveUtredning(utredning));
     }
 
     @DeleteMapping(path = "/{utredningId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Response deleteUtredning(@PathVariable("utredningId") Long utredningId) {
-        Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
-                () -> new IbNotFoundException("Utredning with assessmentId '" + utredningId + "' does not exist."));
-        utredningRepository.delete(utredning);
-        return Response.ok().build();
+        return entityTxMapper.jsonResponse(() -> {
+            Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
+                    () -> new IbNotFoundException("Utredning with assessmentId '" + utredningId + "' does not exist."));
+            utredningRepository.delete(utredning);
+            return EntityTxMapper.OK;
+        });
     }
 
     @DeleteMapping(path = "/vardgivare/{landstingHsaId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Response deleteUtredningarForVardgivare(@PathVariable("landstingHsaId") String landstingHsaId) {
-        utredningRepository.findAllByExternForfragan_LandstingHsaId(landstingHsaId)
-                .stream()
-                .forEach(utredning -> utredningRepository.delete(utredning));
-        return Response.ok().build();
+        return entityTxMapper.jsonResponse(() -> {
+            utredningRepository.findAllByExternForfragan_LandstingHsaId(landstingHsaId)
+                    .stream()
+                    .forEach(utredning -> utredningRepository.delete(utredning));
+            return EntityTxMapper.OK;
+        });
     }
-
 }
