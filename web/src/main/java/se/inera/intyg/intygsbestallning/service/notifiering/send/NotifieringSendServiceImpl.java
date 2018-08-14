@@ -29,6 +29,7 @@ import static se.inera.intyg.intygsbestallning.persistence.model.type.Notifierin
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.AVVIKELSE_MOTTAGEN_AV_FK;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.AVVIKELSE_RAPPORTERAD_AV_VARDEN;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.INGEN_BESTALLNING;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.KOMPLETTERING_BEGARD;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.NY_BESTALLNING;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.NY_EXTERNFORFRAGAN;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.NY_INTERNFORFRAGAN;
@@ -46,6 +47,7 @@ import static se.inera.intyg.intygsbestallning.service.notifiering.util.Notifier
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.externForfraganUrl;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.ingenBestallningMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.internForfraganUrl;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.kompletteringBegard;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.landstingAvslutadUtredningMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.landstingAvvikelseRapporteradAvFKMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.landstingNyExternforfraganMessage;
@@ -69,6 +71,7 @@ import static se.inera.intyg.intygsbestallning.service.notifiering.util.Notifier
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_BESTALLNING_UPPDATERAD;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_FMU_UTREDNING_TILLDELAD_VARDENHETEN;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_INGEN_BESTALLNING;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_KOMPLETTERING_BEGARD;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_NY_FMU_EXTERN_FORFRAGAN;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_NY_FMU_INTERN_FORFRAGAN;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_PAMINNELSE_SLUTDATUM_KOMPLETTERING;
@@ -478,7 +481,20 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
     @Override
     public void notifieraVardenhetKompletteringBegard(Utredning utredning) {
-        throw new NotImplementedException();
+        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, KOMPLETTERING_BEGARD);
+        final String id = bestallning.getTilldeladVardenhetHsaId();
+        final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VE);
+
+        if (preferens.isEnabled(KOMPLETTERING_BEGARD, NotifieringMottagarTyp.VARDENHET)) {
+            epostResolver.resolveVardenhetNotifieringEpost(id, utredning).ifPresent(email -> {
+                final String body = notifieringMailBodyFactory.buildBodyForUtredning(
+                        kompletteringBegard(utredning),
+                        utredningUrl(utredning));
+
+                sendNotifiering(email, SUBJECT_KOMPLETTERING_BEGARD, body, utredning.getUtredningId());
+                saveNotifiering(utredning, KOMPLETTERING_BEGARD, VARDENHET);
+            });
+        }
     }
 
     @Override

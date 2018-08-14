@@ -26,6 +26,7 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil.error;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +58,6 @@ public class RequestSupplementResponderImpl implements RequestSupplementResponde
     @PrometheusTimeMethod
     public RequestSupplementResponseType requestSupplement(
             final String logicalAddress, final RequestSupplementType request) {
-        RequestSupplementResponseType response = new RequestSupplementResponseType();
 
         log.info("RequestSupplement received request");
 
@@ -67,18 +67,32 @@ public class RequestSupplementResponderImpl implements RequestSupplementResponde
             checkArgument(nonNull(request), REQUEST);
 
             if (isNull(request.getAssessmentId()) || isNull(request.getAssessmentId().getExtension())) {
-                response.setResult(error("Request is missing required field assessmentId"));
-                return response;
+                return createErrorResponse("Request is missing required field assessmentId");
+            }
+
+            // Not required in schema but required in användningsfall FMU-F011: Huvudflöde 1
+            if (StringUtils.isBlank(request.getLastDateForSupplementReceival())) {
+                return createErrorResponse("Request is missing required field lastDateForSupplementReceival");
             }
 
             long kompletteringsId = kompletteringService.registerNewKomplettering(request);
+            RequestSupplementResponseType response = new RequestSupplementResponseType();
             response.setResult(toResultTypeOK());
             response.setSupplementRequestId(anII(sourceSystemHsaId, String.valueOf(kompletteringsId)));
             return response;
         } catch (Exception e) {
+            RequestSupplementResponseType response = new RequestSupplementResponseType();
             response.setSupplementRequestId(anII(sourceSystemHsaId, ""));
             response.setResult(toResultTypeError(e));
             return response;
         }
+    }
+
+
+    private RequestSupplementResponseType createErrorResponse(String errorMessage) {
+        RequestSupplementResponseType response = new RequestSupplementResponseType();
+        response.setResult(error(errorMessage));
+        response.setSupplementRequestId(anII(sourceSystemHsaId, ""));
+        return response;
     }
 }

@@ -173,4 +173,9 @@ public final class NotifieringMailMeddelandeUtil {
                 intyg.getSistaDatumKompletteringsbegaran().format(DateTimeFormatter.ISO_DATE),
                 utredning.getUtredningId());
     }
+
+    public static String kompletteringBegard(final Utredning utredning) {
+        return MessageFormat.format("Försäkringskassan har begärt komplettering av utlåtandet i utredning {0}.",
+                utredning.getUtredningId());
+    }
 }

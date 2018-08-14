@@ -19,16 +19,14 @@
 package se.inera.intyg.intygsbestallning.service.utredning;
 
 import com.google.common.collect.ImmutableList;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
+import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
 import se.riv.intygsbestallning.certificate.order.requestsupplement.v1.RequestSupplementType;
 import java.text.MessageFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -60,6 +58,14 @@ public class KompletteringServiceImpl extends BaseUtredningService implements Ko
             UtredningStatus.KOMPLETTERANDE_FRAGESTALLNING_MOTTAGEN,
             UtredningStatus.KOMPLETTERING_SKICKAD);
 
+    // RequestSupplement can only be called in UTLATANDE_MOTTAGET or KOMPLETTERING_MOTTAGEN (FMU-G001 Statusflöde för utredning)
+    private static final ImmutableList<UtredningStatus> GODKANDA_STATUSAR_REQUEST_SUPPLEMENT = ImmutableList.of(
+            UtredningStatus.UTLATANDE_MOTTAGET,
+            UtredningStatus.KOMPLETTERING_MOTTAGEN);
+
+    @Autowired
+    private NotifieringSendService notifieringSendService;
+
     private static Predicate<Utredning> isKorrektStatusForKompletteringMottagen() {
         return utr -> GODKANDA_STATUSAR_KOMPLETTERING_MOTTAGEN.contains(UtredningStatusResolver.resolveStaticStatus(utr));
     }
@@ -76,10 +82,9 @@ public class KompletteringServiceImpl extends BaseUtredningService implements Ko
             if (utredningOptional.isPresent()) {
                 Utredning utredning = utredningOptional.get();
 
-                // Verify state. Only utredning that has been bestalld and isn't finished etc can be ordered.
-                UtredningStatus status = utredningStatusResolver.resolveStatus(utredning);
-                if (status.getUtredningFas() == UtredningFas.AVSLUTAD || status.getUtredningFas() == UtredningFas.REDOVISA_BESOK) {
-                    throw new IllegalStateException("Cannot add komplettering, utredning is in phase " + status.getId());
+                // Verify state.
+                if (!GODKANDA_STATUSAR_REQUEST_SUPPLEMENT.contains(utredning.getStatus())) {
+                    throw new IllegalStateException("Cannot request supplement, utredning is in state " + utredning.getStatus().getId());
                 }
 
                 // Verify so there is at least one intyg entry that is eligible for komplettering
@@ -88,13 +93,15 @@ public class KompletteringServiceImpl extends BaseUtredningService implements Ko
 
                     Intyg komplt = Intyg.IntygBuilder.anIntyg()
                             .withKomplettering(true)
-                            .withSistaDatum(getSistaDatum(request.getLastDateForSupplementReceival()))
+                            .withSistaDatum(SchemaDateUtil.toLocalDateTimeFromDateType(request.getLastDateForSupplementReceival()))
                             .build();
 
                     utredning.getIntygList().add(komplt);
                     utredning.getHandelseList().add(HandelseUtil.createKompletteringBegard());
                     utredningRepository.saveUtredning(utredning);
                     utredningRepository.flush();
+
+                    notifieringSendService.notifieraVardenhetKompletteringBegard(utredning);
 
                     // This is a slightly awkward way to get the ID of the newly persisted komplettering.
                     Optional<Long> kompletteringsId = utredningRepository.findNewestKompletteringOnUtredning(assessmentId);
@@ -215,21 +222,6 @@ public class KompletteringServiceImpl extends BaseUtredningService implements Ko
         utredningRepository.saveUtredning(utredning);
 
         logService.log(new UtredningPdlLoggable(utredning), PdlLogType.UTREDNING_UPPDATERAD);
-    }
-
-    /*
-         lastDateForSupplementReceival might be null or empty string and if so,
-         return null, otherwise try to parse the string as a valid date.
-     */
-    private LocalDateTime getSistaDatum(String lastDateForSupplementReceival) {
-        if (StringUtils.isBlank(lastDateForSupplementReceival)) {
-            return null;
-        }
-        try {
-            return LocalDate.parse(lastDateForSupplementReceival, DateTimeFormatter.ISO_DATE).atStartOfDay();
-        } catch (DateTimeParseException e) {
-            throw new IllegalStateException(e.getMessage());
-        }
     }
 
 }

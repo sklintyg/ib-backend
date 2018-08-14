@@ -39,6 +39,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
+import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
+import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendServiceImpl;
 import se.riv.intygsbestallning.certificate.order.reportsupplementreceival.v1.ReportSupplementReceivalType;
 import se.riv.intygsbestallning.certificate.order.requestsupplement.v1.RequestSupplementType;
 import se.riv.intygsbestallning.certificate.order.v1.IIType;
@@ -77,6 +80,9 @@ public class KompletteringServiceImplTest {
     @Mock
     private LogService logService;
 
+    @Mock
+    private NotifieringSendService notifieringSendService;
+
     @InjectMocks
     private KompletteringServiceImpl kompletteringService;
 
@@ -84,8 +90,12 @@ public class KompletteringServiceImplTest {
     public void testCreateOk() {
         Utredning utredning = ServiceTestUtil.buildBestallningar(1).get(0);
         Intyg i = utredning.getIntygList().get(0);
+        i.setSkickatDatum(LocalDateTime.now());
+        i.setMottagetDatum(LocalDateTime.now());
+        i.setSistaDatumKompletteringsbegaran(LocalDateTime.now().plusDays(7));
         utredning.setIntygList(new ArrayList<>());
         utredning.getIntygList().add(i);
+        utredning.setStatus(UtredningStatusResolver.resolveStaticStatus(utredning));
 
         when(utredningRepository.findById(anyLong())).thenReturn(Optional.of(utredning));
         when(utredningRepository.findNewestKompletteringOnUtredning(anyLong())).thenReturn(Optional.of(2L));
@@ -94,6 +104,7 @@ public class KompletteringServiceImplTest {
         assertEquals(new Long(2L), kompletteringsId);
 
         verify(utredningRepository).saveUtredning(any(Utredning.class));
+        verify(notifieringSendService).notifieraVardenhetKompletteringBegard(any(Utredning.class));
     }
 
     @Test(expected = IllegalStateException.class)
@@ -102,13 +113,17 @@ public class KompletteringServiceImplTest {
             Utredning utredning = ServiceTestUtil.buildBestallningar(1).get(0);
             Intyg i = utredning.getIntygList().get(0);
             i.setSistaDatumKompletteringsbegaran(LocalDateTime.now().minusDays(100));
+            i.setSkickatDatum(LocalDateTime.now());
+            i.setMottagetDatum(LocalDateTime.now());
             utredning.setIntygList(new ArrayList<>());
             utredning.getIntygList().add(i);
+            utredning.setStatus(UtredningStatusResolver.resolveStaticStatus(utredning));
 
             when(utredningRepository.findById(anyLong())).thenReturn(Optional.of(utredning));
             kompletteringService.registerNewKomplettering(buildRequest());
         } catch (Exception e) {
             verify(utredningRepository, times(0)).saveUtredning(any(Utredning.class));
+            verify(notifieringSendService, times(0)).notifieraVardenhetKompletteringBegard(any(Utredning.class));
             throw e;
         }
     }
@@ -359,7 +374,7 @@ public class KompletteringServiceImplTest {
         IIType id = new IIType();
         id.setExtension("1");
         req.setAssessmentId(id);
-        req.setLastDateForSupplementReceival(LocalDate.now().format(DateTimeFormatter.ISO_DATE));
+        req.setLastDateForSupplementReceival(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
         return req;
     }
 }

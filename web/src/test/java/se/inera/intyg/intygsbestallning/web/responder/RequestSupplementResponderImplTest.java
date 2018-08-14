@@ -55,13 +55,12 @@ public class RequestSupplementResponderImplTest {
 
     @Test
     public void testWhenLastDateForSupplementReceivalIsNull() {
-        when(kompletteringService.registerNewKomplettering(any(RequestSupplementType.class))).thenReturn(1L);
-
         RequestSupplementType request = buildRequest();
         request.setLastDateForSupplementReceival(null);
 
         RequestSupplementResponseType response = testee.requestSupplement("address", request);
-        assertEquals(ResultCodeType.OK, response.getResult().getResultCode());
+        assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
+        assertEquals("Request is missing required field lastDateForSupplementReceival", response.getResult().getResultText());
     }
 
     @Test
