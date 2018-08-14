@@ -47,13 +47,6 @@ public class EntityTxMapper {
     @Autowired
     ObjectMapper mapper;
 
-    static class Entity<T> {
-        public T entity;
-        Entity(T entity) {
-            this.entity = entity;
-        }
-    }
-
     public <E> ResponseEntity<String> jsonResponseEntity(final Supplier<E> supplier) {
         return ResponseEntity.ok(map(supplier.get()));
     }
