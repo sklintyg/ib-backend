@@ -114,16 +114,11 @@ public final class ErsattsResolver {
             return false;
         }
 
-        // Patient uteblir från ett besök där kallelsen skickades > Senast kallelsedatum (se FMU-G006 Datumberäkning)
-        // för den valda kallelseformen.
-        if (besok.getAvvikelse() != null && besok.getAvvikelse().getInvanareUteblev() && besok.getKallelseDatum() != null
-                && besok.getKallelseDatum().toLocalDate()
-                .isAfter(resolveSenasteKallelseDatum(besok.getBesokStartTid(), besok.getKallelseForm(), businessDays))) {
-            return false;
-        }
-
-        // Avvikelse rapporteras för ett besök där invånaren har kallats > Senast kallelsedatum
-        // (se FMU-G005 Ersättningsberäkning), oavsett när avvikelsetidpunkten inträffade.
+        // Ändringsid 2568
+        // Patient uteblir från ett besök eller avvikelse rapporteras för ett besök där invånaren har kallats > Senast kallelsedatum
+        // (se FMU-G006 Datumberäkning), oavsett när avvikelsetidpunkten inträffade eller vem som har rapporterat avvikelsen.
+        //
+        // Implementation: Eftersom invanareUteblev är en avvikelse räcker det att testa om avvikelse finns
         if (besok.getAvvikelse() != null && besok.getKallelseDatum() != null
                 && besok.getKallelseDatum().toLocalDate()
                 .isAfter(resolveSenasteKallelseDatum(besok.getBesokStartTid(), besok.getKallelseForm(), businessDays))) {
