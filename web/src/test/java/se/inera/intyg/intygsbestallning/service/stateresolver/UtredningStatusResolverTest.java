@@ -23,13 +23,23 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.intygsbestallning.persistence.model.Anteckning;
 import se.inera.intyg.intygsbestallning.persistence.model.Avvikelse;
+import se.inera.intyg.intygsbestallning.persistence.model.Besok;
+import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
+import se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar;
+import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
+import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
+import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
+import se.inera.intyg.intygsbestallning.persistence.model.SkickadNotifiering;
+import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
+import se.inera.intyg.intygsbestallning.persistence.model.status.InternForfraganStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
@@ -37,16 +47,31 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.AvvikelseOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.KallelseFormTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 
 import java.time.LocalDateTime;
 
 import static org.junit.Assert.assertEquals;
 import static se.inera.intyg.intygsbestallning.persistence.model.Avvikelse.AvvikelseBuilder.anAvvikelse;
 import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
+import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
+import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar;
 import static se.inera.intyg.intygsbestallning.persistence.model.Handelse.HandelseBuilder.aHandelse;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
+import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
+import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
+import static se.inera.intyg.intygsbestallning.persistence.model.SkickadNotifiering.SkickadNotifieringBuilder.aSkickadNotifiering;
+import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtredningStatusResolverTest extends BaseResolverTest {
@@ -167,8 +192,8 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
         utr.setBestallning(buildBestallning(LocalDateTime.now()));
         utr.getIntygList().add(buildBestalltIntyg());
         utr.getHandlingList().clear();
-        utr.getHandlingList().add(Handling.HandlingBuilder.aHandling().withUrsprung(HandlingUrsprungTyp.BESTALLNING).build());
-        utr.getHandlingList().add(Handling.HandlingBuilder.aHandling()
+        utr.getHandlingList().add(aHandling().withUrsprung(HandlingUrsprungTyp.BESTALLNING).build());
+        utr.getHandlingList().add(aHandling()
                 .withUrsprung(HandlingUrsprungTyp.UPPDATERING)
                 .withInkomDatum(null)
                 .build());
@@ -188,11 +213,11 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
         utr.getIntygList().add(buildBestalltIntyg());
 
         utr.getHandlingList().clear();
-        utr.getHandlingList().add(Handling.HandlingBuilder.aHandling()
+        utr.getHandlingList().add(aHandling()
                 .withUrsprung(HandlingUrsprungTyp.BESTALLNING)
                 .withInkomDatum(LocalDateTime.now())
                 .build());
-        utr.getHandlingList().add(Handling.HandlingBuilder.aHandling()
+        utr.getHandlingList().add(aHandling()
                 .withUrsprung(HandlingUrsprungTyp.UPPDATERING)
                 .withInkomDatum(LocalDateTime.now())
                 .build());
@@ -568,6 +593,213 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
         assertEquals(Actor.UTREDARE, status.getNextActor());
     }
 
+    @Test
+    public void bugUtredningChangesStatusToAvslutadBeforeCronJob() {
+        /* I slutet av en utredning så går utredningen till status AVSLUTAD trots att cronjobbet inte har
+           processerat utredningen.
+         */
+        Utredning utr = anUtredning()
+                .withUtredningId(1L)
+                .withUtredningsTyp(UtredningsTyp.AFU)
+                .withBestallning(aBestallning()
+                    .withId(1L)
+                    .withTilldeladVardenhetHsaId("IFV1239877878-1042")
+                    .withOrderDatum(LocalDateTime.parse("2018-08-15T14:53:52.074"))
+                    .build()
+                )
+                .withTolkBehov(false)
+                .withArkiverad(false)
+                .withExternForfragan(anExternForfragan()
+                        .withId(1L)
+                        .withLandstingHsaId("IFV1239877878-1041")
+                        .withBesvarasSenastDatum(LocalDateTime.parse("2018-08-22T00:00"))
+                        .withInkomDatum(LocalDateTime.parse("2018-08-15T14:53:17.374"))
+                        .withInternForfraganList(ImmutableList.of(anInternForfragan()
+                            .withId(1L)
+                            .withVardenhetHsaId("IFV1239877878-1042")
+                            .withTilldeladDatum(LocalDateTime.parse("2018-08-15T14:53:29.773"))
+                            .withBesvarasSenastDatum(LocalDateTime.parse("2018-08-17T14:53:28.938"))
+                            .withSkapadDatum(LocalDateTime.parse("2018-08-15T14:53:28.938"))
+                            .withDirekttilldelad(true)
+                            .withForfraganSvar(aForfraganSvar()
+                                .withId(1L)
+                                .withSvarTyp(SvarTyp.ACCEPTERA)
+                                .withUtforareTyp(UtforareTyp.ENHET)
+                                .withUtforareNamn("")
+                                .withUtforareAdress("")
+                                .withUtforarePostnr("")
+                                .withUtforarePostort("")
+                                .withUtforareTelefon(null)
+                                .withUtforareEpost("")
+                                .withKommentar(null)
+                                .withBorjaDatum(null)
+                                .build()
+                            )
+                            .withStatus(InternForfraganStatus.BESTALLD)
+                            .build()
+                        ))
+                        .build()
+                )
+                .withHandelseList(ImmutableList.of(
+                        aHandelse().withId(1L)
+                                .withHandelseTyp(HandelseTyp.EXTERNFORFRAGAN_MOTTAGEN)
+                                .withSkapad(LocalDateTime.parse("2018-08-15T14:53:17.388"))
+                                .withHandelseText("Förfrågan mottagen av IFV1239877878-1041")
+                                .build(),
+                        aHandelse().withId(2L)
+                                .withHandelseTyp(HandelseTyp.EXTERNFORFRAGAN_BESVARAD)
+                                .withSkapad(LocalDateTime.parse("2018-08-15T14:53:29.773"))
+                                .withAnvandare("Harald Alltsson")
+                                .withHandelseText("Förfrågan accepterades av landstinget. Utredningen tilldelad till WebCert-Enhet1")
+                                .build(),
+                        aHandelse().withId(3L)
+                                .withHandelseTyp(HandelseTyp.BESTALLNING_MOTTAGEN)
+                                .withSkapad(LocalDateTime.parse("2018-08-15T14:53:52.076"))
+                                .withAnvandare("FKASSA")
+                                .withHandelseText("Beställning mottagen från FKASSA. Slutdatum: 2018-08-22")
+                                .build(),
+                        aHandelse().withId(4L)
+                                .withHandelseTyp(HandelseTyp.HANDLING_MOTTAGEN)
+                                .withSkapad(LocalDateTime.parse("2018-08-15T14:53:59.836"))
+                                .withAnvandare("Harald Alltsson")
+                                .withHandelseText("Handlingar mottagna 2018-08-15")
+                                .build(),
+                        aHandelse().withId(5L)
+                                .withHandelseTyp(HandelseTyp.NYTT_BESOK)
+                                .withSkapad(LocalDateTime.parse("2018-08-15T14:54:12.914"))
+                                .withAnvandare("Harald Alltsson")
+                                .withHandelseText("Besök bokat 2018-08-15 14:54 - 14:55 hos Läkare. Invånaren kallades 2018-08-01 per brevkontakt. Tolk bokad: Ej bokat ")
+                                .withKommentar("")
+                                .build(),
+                        aHandelse().withId(6L)
+                                .withHandelseTyp(HandelseTyp.REDOVISAT_BESOK)
+                                .withSkapad(LocalDateTime.parse("2018-08-15T14:54:16.331"))
+                                .withAnvandare("Harald Alltsson")
+                                .withHandelseText("Besök 2018-08-15 14:54 redovisades som genomfört")
+                                .build(),
+                        aHandelse().withId(7L)
+                                .withHandelseTyp(HandelseTyp.UTLATANDE_SKICKAT)
+                                .withSkapad(LocalDateTime.parse("2018-08-15T14:54:19.227"))
+                                .withAnvandare("Harald Alltsson")
+                                .withHandelseText("Utlåtandet skickat 2018-08-15")
+                                .build(),
+                        aHandelse().withId(8L)
+                                .withHandelseTyp(HandelseTyp.UTLATANDE_MOTTAGET)
+                                .withSkapad(LocalDateTime.parse("2018-08-15T14:56:19.227"))
+                                .withAnvandare("Försäkringskassan")
+                                .withHandelseText("Utlåtandet mottaget av Försäkringskassan 2018-08-15")
+                                .build()
+                ))
+                .withHandlingList(ImmutableList.of(
+                        aHandling().withId(1L)
+                                .withSkickatDatum(LocalDateTime.parse("2018-08-15T00:00"))
+                                .withUrsprung(HandlingUrsprungTyp.BESTALLNING)
+                                .build(),
+                        aHandling().withId(2L)
+                                .withSkickatDatum(LocalDateTime.parse("2018-08-15T14:53:59.834"))
+                                .withInkomDatum(LocalDateTime.parse("2018-08-15T00:00"))
+                                .withUrsprung(HandlingUrsprungTyp.UPPDATERING)
+                                .build()
+                ))
+                .withBesokList(ImmutableList.of(
+                        aBesok().withId(1L)
+                                .withBesokStartTid(LocalDateTime.parse("2018-08-15T14:54"))
+                                .withBesokSlutTid(LocalDateTime.parse("2018-08-15T14:55"))
+                                .withKallelseDatum(LocalDateTime.parse("2018-08-01T00:00"))
+                                .withBesokStatus(BesokStatusTyp.AVSLUTAD_VARDKONTAKT)
+                                .withTolkStatus(TolkStatusTyp.EJ_BOKAT)
+                                .withKallelseForm(KallelseFormTyp.BREVKONTAKT)
+                                .withDeltagareProfession(DeltagarProfessionTyp.LK)
+                                .withDeltagareFullstandigtNamn("")
+                                .withHandelseList(ImmutableList.of(
+                                        aHandelse().withId(5L)
+                                                .withHandelseTyp(HandelseTyp.NYTT_BESOK)
+                                                .withSkapad(LocalDateTime.parse("2018-08-15T14:54:12.914"))
+                                                .withAnvandare("Harald Alltsson")
+                                                .withHandelseText("Besök bokat 2018-08-15 14:54 - 14:55 hos Läkare. Invånaren kallades 2018-08-01 per brevkontakt. Tolk bokad: Ej bokat ")
+                                                .withKommentar("")
+                                                .build(),
+                                        aHandelse().withId(6L)
+                                                .withHandelseTyp(HandelseTyp.REDOVISAT_BESOK)
+                                                .withSkapad(LocalDateTime.parse("2018-08-15T14:54:16.331"))
+                                                .withAnvandare("Harald Alltsson")
+                                                .withHandelseText("Besök 2018-08-15 14:54 redovisades som genomfört")
+                                                .build()
+                                ))
+                                .build()
+                ))
+                .withIntygList(ImmutableList.of(
+                        anIntyg().withId(1L)
+                                .withKomplettering(false)
+                                .withSistaDatum(LocalDateTime.parse("2018-08-22T00:00"))
+                                .withSkickatDatum(LocalDateTime.parse("2018-08-15T00:00"))
+                                .withMottagetDatum(LocalDateTime.parse("2018-08-15T00:00")) // Sätts vid ReportCertificateReceival av FK
+                                .withSistaDatumKompletteringsbegaran(LocalDateTime.parse("2018-08-15T00:00"))
+                                .withFragestallningMottagenDatum(null)
+                                .build()
+                ))
+                .withAnteckningList(ImmutableList.<Anteckning>of())
+                .withSkickadNotifieringList(ImmutableList.of(
+                        aSkickadNotifiering().withId(1L)
+                                .withIntygId(null)
+                                .withTyp(NotifieringTyp.UTREDNING_TILLDELAD)
+                                .withMottagare(NotifieringMottagarTyp.VARDENHET)
+                                .withSkickad(LocalDateTime.parse("2018-08-15T14:53:29.808"))
+                                .build(),
+                        aSkickadNotifiering().withId(2L)
+                                .withIntygId(null)
+                                .withTyp(NotifieringTyp.NY_BESTALLNING)
+                                .withMottagare(NotifieringMottagarTyp.VARDENHET)
+                                .withSkickad(LocalDateTime.parse("2018-08-15T14:53:52.097"))
+                                .build(),
+                        aSkickadNotifiering().withId(3L)
+                                .withIntygId(null)
+                                .withTyp(NotifieringTyp.NY_BESTALLNING)
+                                .withMottagare(NotifieringMottagarTyp.VARDENHET)
+                                .withSkickad(LocalDateTime.parse("2018-08-15T14:53:59.852"))
+                                .build(),
+                        aSkickadNotifiering().withId(4L)
+                                .withIntygId(null)
+                                .withTyp(NotifieringTyp.PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS)
+                                .withMottagare(NotifieringMottagarTyp.VARDENHET)
+                                .withSkickad(LocalDateTime.parse("2018-08-15T14:54:00.428"))
+                                .build()
+                ))
+                .withHandlaggare(aHandlaggare()
+                        .withId(2L)
+                        .withFullstandigtNamn("Handläggaren")
+                        .withTelefonnummer("000111")
+                        .withEmail("")
+                        .withMyndighet("FKASSA")
+                        .withKontor("Handläggarkontor")
+                        .withKostnadsstalle("Handläggaradress 1")
+                        .withPostnummer("00000")
+                        .withStad("Handläggarstaden")
+                        .build()
+                )
+                .withInvanare(anInvanare()
+                        .withId(1L)
+                        .withPersonId("191212121212")
+                        .withFornamn("Tolvan")
+                        .withMellannamn("")
+                        .withEfternamn("Tolvansson")
+                        .withSarskildaBehov("")
+                        .withBakgrundNulage("")
+                        .withPostort("Invånarstaden")
+                        .withTidigareUtforare(ImmutableList.<TidigareUtforare>of())
+                        .build()
+                )
+                .withStatus(UtredningStatus.UTLATANDE_SKICKAT) //Tidigare status, cachat
+                .build();
+
+        UtredningStatus status = testee.resolveStatus(utr);
+
+        assertEquals(UtredningStatus.UTLATANDE_MOTTAGET, status);
+        assertEquals(UtredningFas.UTREDNING, status.getUtredningFas());
+        assertEquals(Actor.FK, status.getNextActor());
+    }
+
+
     private Utredning buildBasicUtredningForKompletteringTest() {
         Utredning utr = buildBaseUtredning();
         utr.getExternForfragan().map(ExternForfragan::getInternForfraganList)
@@ -597,7 +829,7 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
 
     // Den post som skapas i samband med inkommen beställning. Dvs EJ komplettering.
     private Intyg buildBestalltIntyg() {
-        return Intyg.IntygBuilder.anIntyg()
+        return anIntyg()
                 .withId(1L)
                 .withKomplettering(false)
                 .withSistaDatum(LocalDateTime.now().plusDays(25))
@@ -606,7 +838,7 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
 
     // Den post som skapas i samband med inkommen beställning. Dvs EJ komplettering.
     private Intyg buildKompletteringIntyg() {
-        return Intyg.IntygBuilder.anIntyg()
+        return anIntyg()
                 .withId(2L)
                 .withKomplettering(true)
                 .withSistaDatum(LocalDateTime.now().plusDays(25))

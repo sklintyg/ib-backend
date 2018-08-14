@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model.status;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.MoreCollectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
@@ -49,7 +51,10 @@ public class UtredningStatusResolver {
                 .ifPresent(ex -> ex.getInternForfraganList()
                         .forEach(in -> in.setStatus(InternForfraganStatusResolver.resolveStaticStatus(utredning, in))));
 
-        if (utredning.getAvbrutenDatum() != null) {
+
+        List<AvslutOrsak> possibleAvbrutenReasons = ImmutableList.of(AvslutOrsak.UTREDNING_AVBRUTEN, AvslutOrsak.JAV,
+                AvslutOrsak.INGEN_BESTALLNING);
+        if (utredning.getAvbrutenDatum() != null && possibleAvbrutenReasons.contains(utredning.getAvbrutenOrsak())) {
             return UtredningStatus.AVBRUTEN;
         }
 
@@ -69,25 +74,20 @@ public class UtredningStatusResolver {
 
         // Slutfas. Denna kontroll måste ske före vi tittar detaljerat på kompletteringar.
 
-        // Om alla intyg/kompletteringar står som mottagna är vi klara OCH om sista datum för komplettering passerats.
-        LocalDateTime senasteDatumForKomplettering = utredning.getIntygList().stream()
-                .filter(intyg -> intyg.getSistaDatumKompletteringsbegaran() != null)
-                .map(Intyg::getSistaDatumKompletteringsbegaran)
-                .max(LocalDateTime::compareTo).orElse(null);
-
-        // Om senasteDatumForKomplettering saknas (bör ej inträffa) så
-        // betraktar vi den som att vara i avslutsfas.
-        if (senasteDatumForKomplettering == null) {
-            return resolveAvslutEllerRedovisaBesok(utredning);
-        }
-
         if (utredning.getIntygList().stream().allMatch(intyg -> intyg.getMottagetDatum() != null)
-                && LocalDateTime.now().isAfter(senasteDatumForKomplettering)) {
-
-            // Alla besök måste vara redovisade
-            return resolveAvslutEllerRedovisaBesok(utredning);
-        } else if (utredning.getIntygList().stream().allMatch(intyg -> intyg.getMottagetDatum() != null)
-                && !LocalDateTime.now().isAfter(senasteDatumForKomplettering)) {
+                && utredning.getBesokList().stream()
+                .noneMatch(besok -> besok.getBesokStatus() == BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
+                && isAvslutadByCronJob(utredning)) {
+            // Finns det bokade besök som inte är redovisade? Har cronjobbet avslutat utredningen?
+            return UtredningStatus.AVSLUTAD;
+        } else if (utredning.getIntygList().stream().allMatch(intyg -> intyg.getMottagetDatum() != null
+                && utredning.getBesokList().stream()
+                .anyMatch(besok -> besok.getBesokStatus() == BesokStatusTyp.TIDBOKAD_VARDKONTAKT))) {
+            // Alla besok måste redovisas som genomförda eller vara avbokade.
+            // BesokStatusTyp.TIDBOKAD_VARDKONTAKT blir antingen BesokStatusTyp.AVSLUTAD_VARDKONTAKT eller
+            // BesokStatusTyp.INSTALLD_VARDKONTAKT
+            return UtredningStatus.REDOVISA_BESOK;
+        } else if (utredning.getIntygList().stream().allMatch(intyg -> intyg.getMottagetDatum() != null)) {
 
             // Om det funnits någon komplettering...
             if (utredning.getIntygList().stream().anyMatch(Intyg::isKomplettering)) {
@@ -102,16 +102,14 @@ public class UtredningStatusResolver {
         // Det finns komplettering, men ingen kompletterande frågetällning än samt att sistadatum ej har passerats.
         if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.isKomplettering()
                 && intyg.getFragestallningMottagenDatum() == null
-                && intyg.getSkickatDatum() == null
-                && intyg.getSistaDatum().isAfter(LocalDateTime.now()))) {
+                && intyg.getSkickatDatum() == null)) {
             return UtredningStatus.KOMPLETTERINGSBEGARAN_MOTTAGEN_VANTAR_PA_FRAGESTALLNING;
         }
 
         // Det finns komplettering med kompletterande frågetällning, men sistadatum ej har passerats.
         if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.isKomplettering()
                 && intyg.getFragestallningMottagenDatum() != null
-                && intyg.getSkickatDatum() == null
-                && intyg.getSistaDatum().isAfter(LocalDateTime.now()))) {
+                && intyg.getSkickatDatum() == null)) {
             return UtredningStatus.KOMPLETTERANDE_FRAGESTALLNING_MOTTAGEN;
         }
 
@@ -134,17 +132,8 @@ public class UtredningStatusResolver {
         throw new IllegalStateException(MessageFormat.format("Invalid state in Utredning {0}", utredning.getUtredningId()));
     }
 
-    private static UtredningStatus resolveAvslutEllerRedovisaBesok(Utredning utredning) {
-        // Finns det bokade besök som inte är redovisade?
-        if (utredning.getBesokList().stream()
-                .noneMatch(besok -> besok.getBesokStatus() == BesokStatusTyp.TIDBOKAD_VARDKONTAKT)) {
-            return UtredningStatus.AVSLUTAD;
-        } else {
-            // Alla besok måste redovisas som genomförda eller vara avbokade.
-            // BesokStatusTyp.TIDBOKAD_VARDKONTAKT blir antingen BesokStatusTyp.AVSLUTAD_VARDKONTAKT eller
-            // BesokStatusTyp.INSTALLD_VARDKONTAKT
-            return UtredningStatus.REDOVISA_BESOK;
-        }
+    private static boolean isAvslutadByCronJob(Utredning utredning) {
+        return !(utredning.getAvbrutenDatum() == null && utredning.getAvbrutenOrsak() == null);
     }
 
     private static Optional<UtredningStatus> handleUtredningFas(Utredning utredning) {
@@ -262,7 +251,7 @@ public class UtredningStatusResolver {
                 && isAccepteradAndTilldelad(utredning.getExternForfragan().get().getInternForfraganList())) {
             return UtredningStatus.TILLDELAD_VANTAR_PA_BESTALLNING;
         }
-        throw new IllegalStateException("Invalid sub-state in phase FORFRAGAN!");
+        throw new IllegalStateException(MessageFormat.format("Invalid sub-state in phase FORFRAGAN! {0}", utredning));
     }
 
     private static boolean isAccepteradAndTilldelad(List<InternForfragan> internForfraganList) {
