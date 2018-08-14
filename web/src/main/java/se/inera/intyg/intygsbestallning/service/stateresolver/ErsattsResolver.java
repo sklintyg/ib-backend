@@ -130,6 +130,11 @@ public final class ErsattsResolver {
             return false;
         }
 
+        // Ändringsid 180523: Det finns ingen avvikelse rapporterad för besöket och status för besöket är inte Genomfört
+        if (besok.getAvvikelse() == null && BesokStatusResolver.resolveStaticStatus(besok) != BesokStatus.GENOMFORT) {
+            return false;
+        }
+
         return true;
     }
 

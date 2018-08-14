@@ -25,6 +25,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.AvvikelseOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
+import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.KallelseFormTyp;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
@@ -97,12 +98,21 @@ public class ErsattsResolverTest {
     }
 
     @Test
-    public void testErsattsNarMottagetAvFKForeSlutdatumOchBesokFinns() {
+    public void testErsattsNarMottagetAvFKForeSlutdatumOchGenomfortBesokFinns() {
         Utredning utredning = ServiceTestUtil.buildBestallningar(1).get(0);
         utredning.setBesokList(buildBesokList(true, FEB_20));
         utredning.getIntygList().get(0).setSistaDatum(LocalDateTime.now().minusDays(10L));
         utredning.getIntygList().get(0).setMottagetDatum(LocalDateTime.now().minusDays(20L));
         assertTrue(ErsattsResolver.resolveUtredningErsatts(utredning, businessDays));
+    }
+
+    @Test
+    public void testErsattsNarMottagetAvFKForeSlutdatumOchEjGenomfortBesokFinns() {
+        Utredning utredning = ServiceTestUtil.buildBestallningar(1).get(0);
+        utredning.setBesokList(buildBesokList(true, BesokStatusTyp.TIDBOKAD_VARDKONTAKT, FEB_20));
+        utredning.getIntygList().get(0).setSistaDatum(LocalDateTime.now().minusDays(10L));
+        utredning.getIntygList().get(0).setMottagetDatum(LocalDateTime.now().minusDays(20L));
+        assertFalse(ErsattsResolver.resolveUtredningErsatts(utredning, businessDays));
     }
 
     @Test
@@ -148,7 +158,7 @@ public class ErsattsResolverTest {
     @Test
     public void testResolveBesokErsattsEjPgaPatientUteblevOchKallelseSkickadesITid() {
         Utredning utredning = ServiceTestUtil.buildBestallningar(1).get(0);
-        utredning.setBesokList(buildBesokList(true, FEB_20, FEB_13, KallelseFormTyp.BREVKONTAKT));
+        utredning.setBesokList(buildBesokList(true, BesokStatusTyp.AVSLUTAD_VARDKONTAKT, FEB_20, FEB_13, KallelseFormTyp.BREVKONTAKT));
 
         Avvikelse avvikelse = buildAvvikelse(true, AvvikelseOrsak.PATIENT, FEB_20);
         utredning.getBesokList().get(0).setAvvikelse(avvikelse);
@@ -158,7 +168,7 @@ public class ErsattsResolverTest {
     @Test
     public void testResolveBesokErsattsPgaPatientUteblevMenKallelseSkickadesEjITid() {
         Utredning utredning = ServiceTestUtil.buildBestallningar(1).get(0);
-        utredning.setBesokList(buildBesokList(true, FEB_20, FEB_8, KallelseFormTyp.TELEFONKONTAKT));
+        utredning.setBesokList(buildBesokList(true, BesokStatusTyp.AVSLUTAD_VARDKONTAKT, FEB_20, FEB_8, KallelseFormTyp.TELEFONKONTAKT));
 
         Avvikelse avvikelse = buildAvvikelse(true, AvvikelseOrsak.PATIENT, FEB_20);
         utredning.getBesokList().get(0).setAvvikelse(avvikelse);
@@ -170,7 +180,7 @@ public class ErsattsResolverTest {
     @Test
     public void testResolveBesokErsattsEjPgaAvvikelseDarPatientKalladesITid() {
         Utredning utredning = ServiceTestUtil.buildBestallningar(1).get(0);
-        utredning.setBesokList(buildBesokList(true, FEB_20, FEB_13, KallelseFormTyp.BREVKONTAKT));
+        utredning.setBesokList(buildBesokList(true, BesokStatusTyp.AVSLUTAD_VARDKONTAKT, FEB_20, FEB_13, KallelseFormTyp.BREVKONTAKT));
 
         Avvikelse avvikelse = buildAvvikelse(false, AvvikelseOrsak.PATIENT, FEB_20);
         utredning.getBesokList().get(0).setAvvikelse(avvikelse);
@@ -208,16 +218,21 @@ public class ErsattsResolverTest {
     }
 
     private List<Besok> buildBesokList(boolean ersatts, LocalDateTime besokStartTid) {
-        return buildBesokList(ersatts, besokStartTid, null, null);
+        return buildBesokList(ersatts, BesokStatusTyp.AVSLUTAD_VARDKONTAKT, besokStartTid, null, null);
     }
 
-    private List<Besok> buildBesokList(boolean ersatts, LocalDateTime besokStartTid, LocalDateTime kallelseDatum,
+    private List<Besok> buildBesokList(boolean ersatts, BesokStatusTyp besokStatusTyp, LocalDateTime besokStartTid) {
+        return buildBesokList(ersatts, besokStatusTyp, besokStartTid, null, null);
+    }
+
+    private List<Besok> buildBesokList(boolean ersatts, BesokStatusTyp besokStatusTyp, LocalDateTime besokStartTid, LocalDateTime kallelseDatum,
             KallelseFormTyp kallelseFormTyp) {
         Besok b = Besok.BesokBuilder.aBesok()
                 .withBesokStartTid(besokStartTid)
                 .withKallelseDatum(kallelseDatum)
                 .withKallelseForm(kallelseFormTyp)
                 .withErsatts(ersatts)
+                .withBesokStatus(besokStatusTyp)
                 .build();
         return Arrays.asList(b);
     }
