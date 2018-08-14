@@ -161,7 +161,7 @@ var ibMessages = {
         
         // Lägg till anteckning modal
         'skapa-anteckning.modal.info': 'Anteckningar får inte innehålla någon medicinsk information.\n' +
-        '\n' + 'Anteckningarna visas endast för vårdadministratörer på samma vårdenhet.',
+        '\n' + 'Anteckningar är enbart synliga för vårdadministratörer på vårdenheten.',
         'skapa.anteckning.validation': 'Anteckningen får inte vara tom',
         
         //Registrerade vårdenheter
