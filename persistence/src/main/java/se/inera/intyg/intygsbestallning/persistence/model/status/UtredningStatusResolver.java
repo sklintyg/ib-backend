@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model.status;
 
+import com.google.common.collect.MoreCollectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
@@ -147,20 +148,18 @@ public class UtredningStatusResolver {
     }
 
     private static Optional<UtredningStatus> handleUtredningFas(Utredning utredning) {
+        Intyg intyg = utredning.getIntygList().stream().collect(MoreCollectors.onlyElement());
+
         // Skickat - ursprungsintyget är skickat.
-        if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getSkickatDatum() != null
-                && intyg.getMottagetDatum() == null
-                && !intyg.isKomplettering()
-                && (intyg.getSistaDatum() == null || intyg.getSistaDatum().isAfter(LocalDateTime.now())))) {
+        if (intyg.getSkickatDatum() != null && intyg.getMottagetDatum() == null
+                && (intyg.getSistaDatum() == null || intyg.getSistaDatum().isAfter(LocalDateTime.now()))) {
             return Optional.of(UtredningStatus.UTLATANDE_SKICKAT);
         }
 
         // Skickat - ursprungsintyget är mottaget.
-        if (utredning.getIntygList().stream().anyMatch(intyg -> intyg.getSkickatDatum() != null
-                && intyg.getMottagetDatum() != null
-                && !intyg.isKomplettering()
+        if (intyg.getSkickatDatum() != null && intyg.getMottagetDatum() != null
                 && (intyg.getSistaDatumKompletteringsbegaran() != null
-                && intyg.getSistaDatumKompletteringsbegaran().isAfter(LocalDateTime.now())))) {
+                && intyg.getSistaDatumKompletteringsbegaran().isAfter(LocalDateTime.now()))) {
             return Optional.of(UtredningStatus.UTLATANDE_MOTTAGET);
         }
 
@@ -171,11 +170,8 @@ public class UtredningStatusResolver {
             return Optional.of(UtredningStatus.AVVIKELSE_MOTTAGEN);
         }
 
-        // Om det INTE finns några besök bokade... (och sista datum inte har passerats för samtliga intyg)
-        if (utredning.getBesokList().size() == 0 && !(utredning.getIntygList().stream().allMatch(intyg ->
-                ((intyg.getSistaDatum() != null && LocalDateTime.now().isAfter(intyg.getSistaDatum())
-                        || (intyg.getSistaDatumKompletteringsbegaran() != null
-                        && LocalDateTime.now().isAfter(intyg.getSistaDatumKompletteringsbegaran()))))))) {
+        // Om det INTE finns några besök bokade...
+        if (utredning.getBesokList().size() == 0) {
             // BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR
             Bestallning bestallning = utredning.getBestallning().get();
             if (utredning.getHandlingList().size() == 0 && bestallning.getUppdateradDatum() == null) {
@@ -228,7 +224,7 @@ public class UtredningStatusResolver {
 
         // UTREDNING_PAGAR innan något intyg has skickats.
         if (utredning.getBesokList().size() > 0
-                && utredning.getIntygList().stream().noneMatch(intyg -> intyg.getSkickatDatum() != null)) {
+                && intyg.getSkickatDatum() == null) {
             return Optional.of(UtredningStatus.UTREDNING_PAGAR);
         }
 

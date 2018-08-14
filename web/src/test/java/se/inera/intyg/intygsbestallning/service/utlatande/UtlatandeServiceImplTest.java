@@ -128,7 +128,7 @@ public class UtlatandeServiceImplTest {
     public void sendUtlatandeFailBadState() {
         String testDate = "2018-05-05";
 
-        Utredning utredning = TestDataGen.createUtredningWithSkickatOchMottagetIntyg();
+        Utredning utredning = TestDataGen.createUtredning();
         utredning.setInvanare(TestDataGen.createInvanare());
         utredning.setHandlingList(TestDataGen.createHandling());
         utredning.setBesokList(TestDataGen.createBesok());
@@ -147,7 +147,7 @@ public class UtlatandeServiceImplTest {
 
         when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
 
-        Utredning utredning = TestDataGen.createUtredningWithSkickatOchMottagetIntyg();
+        Utredning utredning = TestDataGen.createUtredning();
         utredning.getIntygList().get(0).setSkickatDatum(null);
         utredning.getIntygList().get(0).setMottagetDatum(null);
         utredning.setInvanare(TestDataGen.createInvanare());
@@ -166,7 +166,7 @@ public class UtlatandeServiceImplTest {
     @Test
     public void registreraUtlatandeMottagetOk() {
 
-        final Utredning utredning = TestDataGen.createUtredningWithSkickatOchMottagetIntyg();
+        final Utredning utredning = TestDataGen.createUtredning();
         utredning.getHandlingList().add(aHandling()
                 .withSkickatDatum(LocalDateTime.now())
                 .withUrsprung(HandlingUrsprungTyp.BESTALLNING)
@@ -195,7 +195,7 @@ public class UtlatandeServiceImplTest {
     @Test
     public void registreraUtlatandeMottagetIncorrectStateNok() {
 
-        final Utredning utredning = TestDataGen.createUtredningWithSkickatOchMottagetIntyg();
+        final Utredning utredning = TestDataGen.createUtredning();
 
         ReportCertificateReceivalType type = new ReportCertificateReceivalType();
         type.setAssessmentId(anII("", utredning.getUtredningId().toString()));

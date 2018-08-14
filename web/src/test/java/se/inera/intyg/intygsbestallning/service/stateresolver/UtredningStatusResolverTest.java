@@ -28,6 +28,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
@@ -35,10 +36,10 @@ import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus
 import se.inera.intyg.intygsbestallning.persistence.model.type.AvvikelseOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 
 import java.time.LocalDateTime;
 
@@ -455,35 +456,6 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
         assertEquals(UtredningStatus.UTLATANDE_SKICKAT, status);
         assertEquals(UtredningFas.UTREDNING, status.getUtredningFas());
         assertEquals(Actor.FK, status.getNextActor());
-    }
-
-    @Test
-    public void bugRegistreraSkickaaUtlatandeWithoutMottagenHandlingWhenExpired() {
-        /* Variant av buggen "bugRegistreraSkickatUtlatandeWithoutRegistreraMottagenHandling" där utredningens slutdatum
-           har passerats. Status fastnar på BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR, istället för att ändras till
-           AVSLUTAD
-         */
-        Utredning utr = buildBaseUtredning();
-        utr.getExternForfragan()
-                .map(ExternForfragan::getInternForfraganList)
-                .map(iff -> iff.add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now())));
-        utr.setBestallning(buildBestallning(null));
-        Intyg intyg = buildBestalltIntyg();
-        intyg.setKomplettering(false);
-        intyg.setSistaDatum(LocalDateTime.parse("2018-06-25T00:00"));
-        intyg.setSkickatDatum(LocalDateTime.parse("2018-07-06T00:00")); // Sätts när vårdadmin klickar på "Registrera skickat utlåtande"
-        utr.getIntygList().add(intyg);
-
-        Handling h = buildHandling(null, LocalDateTime.now());
-        h.setSkickatDatum(LocalDateTime.now());
-        h.setUrsprung(HandlingUrsprungTyp.BESTALLNING);
-        utr.getHandlingList().add(h);
-
-        UtredningStatus status = testee.resolveStatus(utr);
-        assertEquals(UtredningStatus.AVSLUTAD, status);
-        assertEquals(UtredningFas.AVSLUTAD, status.getUtredningFas());
-        assertEquals(Actor.NONE, status.getNextActor());
-
     }
 
     @Test
