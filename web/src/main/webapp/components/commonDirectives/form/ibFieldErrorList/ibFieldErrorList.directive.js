@@ -27,6 +27,7 @@ angular.module('ibApp').directive('ibFieldErrorList', [ function() {
             timeFormatError: '@',
             dateFormatError: '@',
             minDateError: '@',
+            maxDateError: '@',
             requiredError: '@'
         },
         templateUrl: '/components/commonDirectives/form/ibFieldErrorList/ibFieldErrorList.directive.html'

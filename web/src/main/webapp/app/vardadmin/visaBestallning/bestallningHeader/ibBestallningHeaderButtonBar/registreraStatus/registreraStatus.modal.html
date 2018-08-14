@@ -11,7 +11,7 @@
       <ib-help-text-label class="position-absolute" required="true" required-expr="!registerValue" label-key="common.empty"></ib-help-text-label>
       <ib-date-picker-field dom-id="statusModal" target-model="registerValue" format="yyyy-MM-dd"
                             show-field-errors="false" ib-date-picker-field append-to-body="true"
-                            add-date-parser="strict"></ib-date-picker-field>
+                            add-date-parser="strict" max-date="{{maxDate}}"></ib-date-picker-field>
       <ib-field-error-list errors="statusModalForm.statusModal.$error"
                            date-format-error="Korrekt datum måste anges."></ib-field-error-list>
     </form>

@@ -28,6 +28,8 @@ angular.module('ibApp')
             
             $scope.titleKey = modalOptions.title;
             $scope.infoKey = modalOptions.info;
+
+            $scope.maxDate = moment(new Date()).format('YYYY-MM-DD');
             
             $scope.registerValue = new Date();
 

@@ -19,7 +19,12 @@
     <span ng-if="minDateError">{{minDateError}}</span>
     <span ng-if="!minDateError">Datumet ligger för långt bak i tiden, ange ett senare datum.</span>
   </div>
-  
+
+  <div ng-if="errors.maxDate">
+    <span ng-if="maxDateError">{{maxDateError}}</span>
+    <span ng-if="!maxDateError">Datumet ligger för långt fram i tiden, ange ett tidigare datum.</span>
+  </div>
+
   <div ng-if="errors.customMessage">
     <span>{{errors.customMessage}}</span>
   </div>
