@@ -35,6 +35,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.Utredni
  * Created by marced on 2018-05-04.
  */
 @Service
+@Transactional(readOnly = true)
 public class StatisticsServiceImpl implements StatisticsService {
 
     @Autowired
@@ -53,7 +54,6 @@ public class StatisticsServiceImpl implements StatisticsService {
     private BusinessDaysBean businessDays;
 
     @Override
-    @Transactional(readOnly = true)
     public SamordnarStatisticsResponse getStatsForSamordnare(String vardgivarHsaId) {
         long requireSamordnarActionCount = utredningRepository
                 .findByExternForfragan_LandstingHsaId_AndArkiverad(vardgivarHsaId, false)
@@ -65,7 +65,6 @@ public class StatisticsServiceImpl implements StatisticsService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public VardadminStatisticsResponse getStatsForVardadmin(String enhetsHsaId) {
 
         // Calculate nr of forfragningar for this vardenhet where next actor is VARDADMIN

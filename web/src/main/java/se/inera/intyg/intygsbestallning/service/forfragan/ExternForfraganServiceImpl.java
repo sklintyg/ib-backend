@@ -71,6 +71,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListForfraganF
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.SelectItem;
 
 @Service
+@Transactional(readOnly = true)
 public class ExternForfraganServiceImpl extends BaseUtredningService implements ExternForfraganService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExternForfraganServiceImpl.class);

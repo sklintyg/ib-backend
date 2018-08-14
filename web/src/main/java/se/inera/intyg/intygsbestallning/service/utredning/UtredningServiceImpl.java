@@ -129,6 +129,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     private NotifieringSendService notifieringSendService;
 
     @Override
+    @Transactional(readOnly = true)
     public GetUtredningListResponse findExternForfraganByLandstingHsaIdWithFilter(String landstingHsaId, ListUtredningRequest request) {
         long start = System.currentTimeMillis();
         List<Utredning> jpaList = utredningRepository.findByExternForfragan_LandstingHsaId_AndArkiverad(landstingHsaId, false);
@@ -190,6 +191,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     }
 
     @Override
+    @Transactional(readOnly = true)
     public GetUtredningListResponse findAvslutadeExternForfraganByLandstingHsaIdWithFilter(String landstingHsaId,
                                                                                            ListAvslutadeUtredningarRequest request) {
         long start = System.currentTimeMillis();
@@ -323,7 +325,6 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     }
 
     @Override
-    @Transactional
     public Utredning updateOrder(final UpdateOrderRequest update) {
 
         final Utredning utredning = utredningRepository.findById(update.getUtredningId())
@@ -486,7 +487,6 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     }
 
     @Override
-    @Transactional
     public void saveBetalningsIdForUtredning(Long utredningsId, SaveBetalningForUtredningRequest request, String loggedInAtLandstingHsaId) {
         Utredning utredning = utredningRepository.findById(utredningsId).orElseThrow(
                 () -> new IbNotFoundException("Utredning with assessmentId '" + utredningsId + "' does not exist."));
@@ -514,7 +514,6 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     }
 
     @Override
-    @Transactional
     public void saveUtbetalningsIdForUtredning(Long utredningsId, SaveUtbetalningForUtredningRequest request,
                                                String loggedInAtLandstingHsaId) {
         Utredning utredning = utredningRepository.findById(utredningsId).orElseThrow(

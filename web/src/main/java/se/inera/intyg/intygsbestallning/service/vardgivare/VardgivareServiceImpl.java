@@ -48,7 +48,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class VardgivareServiceImpl extends BaseUtredningService implements VardgivareService {
 
     private static final Logger LOG = LoggerFactory.getLogger(VardgivareService.class);
@@ -104,6 +104,7 @@ public class VardgivareServiceImpl extends BaseUtredningService implements Vardg
     }
 
     @Override
+    @Transactional
     public VardgivarVardenhetListItem updateRegiForm(String vardgivareHsaId, String vardenhetHsaId, String regiForm) {
         RegistreradVardenhet rv = registreradVardenhetRepository
                 .findByVardgivareHsaIdAndVardenhetHsaId(vardgivareHsaId, vardenhetHsaId)
@@ -118,6 +119,7 @@ public class VardgivareServiceImpl extends BaseUtredningService implements Vardg
     }
 
     @Override
+    @Transactional
     public void delete(String vardgivareHsaId, String vardenhetHsaId) {
         RegistreradVardenhet rv = registreradVardenhetRepository
                 .findByVardgivareHsaIdAndVardenhetHsaId(vardgivareHsaId, vardenhetHsaId)
@@ -160,6 +162,7 @@ public class VardgivareServiceImpl extends BaseUtredningService implements Vardg
     }
 
     @Override
+    @Transactional
     public VardgivarVardenhetListItem addVardenhet(String vardgivarHsaId, String vardenhetHsaId, String regiForm) {
 
         // retrieve the candidate we should add

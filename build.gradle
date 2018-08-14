@@ -12,7 +12,7 @@ ext {
     schemasContractVersion = "2.1.6"
     intygsbestallningCertificateOrderSchemasVersion = "1.0-RC4"
 
-    activemqVersion = "5.13.4"
+    activemqVersion = "5.13.5"
     aspectjWeaverVersion = "1.8.9"
     camelVersion = "2.16.0"
     commonsCodecVersion = "1.10"
@@ -37,7 +37,7 @@ ext {
     jstlVersion = "1.2"
     liquibaseVersion = "3.3.1"
     logbackVersion = "1.0.13"
-    mysqlVersion = "5.1.40"
+    mysqlVersion = "5.1.46"
     poiVersion = "3.17"
     prometheusClientVersion = "0.3.0"
     restAssuredVersion = "2.9.0"

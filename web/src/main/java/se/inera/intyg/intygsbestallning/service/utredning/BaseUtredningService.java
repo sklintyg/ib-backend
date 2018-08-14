@@ -18,17 +18,22 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
-import com.google.common.base.Strings;
-import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import javax.xml.ws.WebServiceException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import javax.xml.ws.WebServiceException;
+
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.base.Strings;
+
 import se.inera.intyg.infra.integration.hsa.client.OrganizationUnitService;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
@@ -68,6 +73,7 @@ public abstract class BaseUtredningService {
     protected UtredningStatusResolver utredningStatusResolver = new UtredningStatusResolver();
 
     @NotNull
+    @Transactional(readOnly = true)
     protected Utredning getUtredningForLandsting(Long utredningId, String landstingHsaId, List<UtredningStatus> allowedStatuses) {
         Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
                 () -> new IbNotFoundException("Angivet utredningsid existerar inte"));

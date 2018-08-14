@@ -73,7 +73,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtre
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.GetVardenheterForVardgivareResponse;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class InternForfraganServiceImpl extends BaseUtredningService implements InternForfraganService {
 
     private static final Pattern POSTNR_REGEXP = Pattern.compile("\\d{5}");

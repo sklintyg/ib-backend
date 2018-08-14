@@ -72,6 +72,7 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 
 @Service
+@Transactional
 public class BestallningServiceImpl extends BaseUtredningService implements BestallningService {
 
     private static final Logger LOG = LoggerFactory.getLogger(BestallningServiceImpl.class);
@@ -89,7 +90,6 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
     private AvslutadBestallningListItemFactory avslutadBestallningListItemFactory;
 
     @Override
-    @Transactional(readOnly = true)
     public GetBestallningResponse getBestallning(Long utredningId, String vardenhetHsaId) {
         Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
                 () -> new IbNotFoundException("Utredning with assessmentId '" + utredningId + "' does not exist."));
@@ -105,7 +105,6 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
     }
 
     @Override
-    @Transactional
     public void saveFakturaIdForUtredning(Long utredningsId, SaveFakturaForUtredningRequest request, String loggedInAtVardenhetHsaId) {
         Utredning utredning = utredningRepository.findById(utredningsId).orElseThrow(
                 () -> new IbNotFoundException("Utredning with assessmentId '" + utredningsId + "' does not exist."));

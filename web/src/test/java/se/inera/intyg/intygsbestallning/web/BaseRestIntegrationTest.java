@@ -89,7 +89,7 @@ public abstract class BaseRestIntegrationTest {
     public void setup() {
         RestAssured.reset();
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-        RestAssured.baseURI = System.getProperty("integration.tests.baseUrl");
+        RestAssured.baseURI = System.getProperty("integration.tests.baseUrl", "http://localhost:8990");
     }
 
     /**

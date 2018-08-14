@@ -59,6 +59,7 @@ public class VardenhetServiceImpl implements VardenhetService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public VardenhetPreferenceResponse getVardenhetPreferenceFromHsaAdressInfo(String hsaId) {
         return new VardenhetPreferenceResponse(
                 buildVardenhetPreferenceFromHsaVardenhet(hsaId, UtforareTyp.ENHET, hsaOrganizationsService.getVardenhet(hsaId)));
