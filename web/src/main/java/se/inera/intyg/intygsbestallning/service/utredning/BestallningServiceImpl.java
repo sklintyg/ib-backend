@@ -105,7 +105,8 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
     }
 
     @Override
-    public void saveFakturaIdForUtredning(Long utredningsId, SaveFakturaForUtredningRequest request, String loggedInAtVardenhetHsaId) {
+    @Transactional
+    public void saveFakturaVeIdForUtredning(Long utredningsId, SaveFakturaForUtredningRequest request, String loggedInAtVardenhetHsaId) {
         Utredning utredning = utredningRepository.findById(utredningsId).orElseThrow(
                 () -> new IbNotFoundException("Utredning with assessmentId '" + utredningsId + "' does not exist."));
 
@@ -121,10 +122,10 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
         }
 
         if (utredning.getBetalning() != null) {
-            utredning.getBetalning().setFakturaId(request.getFakturaId());
+            utredning.getBetalning().setFakturaVeId(request.getFakturaVeId());
         } else {
             Betalning betalning = Betalning.BetalningBuilder.aBetalning()
-                    .withFakturaId(request.getFakturaId())
+                    .withFakturaVeId(request.getFakturaVeId())
                     .build();
             utredning.setBetalning(betalning);
         }

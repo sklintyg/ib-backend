@@ -59,5 +59,5 @@ public interface BestallningService {
      */
     GetBestallningResponse getBestallning(Long utredningId, String vardenhetHsaId);
 
-    void saveFakturaIdForUtredning(Long utredningsId, SaveFakturaForUtredningRequest request, String fakturaId);
+    void saveFakturaVeIdForUtredning(Long utredningsId, SaveFakturaForUtredningRequest request, String fakturaVeId);
 }

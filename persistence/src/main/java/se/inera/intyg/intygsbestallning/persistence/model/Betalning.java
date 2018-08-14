@@ -36,14 +36,17 @@ public final class Betalning {
     @Column(name = "ID", nullable = false)
     private Long id;
 
-    @Column(name = "FAKTURA_ID")
-    private String fakturaId;
+    @Column(name = "FAKTURA_VE_ID")
+    private String fakturaVeId;
 
-    @Column(name = "UTBETALNINGS_ID")
-    private String utbetalningsId;
+    @Column(name = "FAKTURA_FK_ID")
+    private String fakturaFkId;
 
-    @Column(name = "BETALNINGS_ID")
-    private String betalningsId;
+    @Column(name = "BETALD_FK_ID")
+    private String betaldFkId;
+
+    @Column(name = "BETALD_VE_ID")
+    private String betaldVeId;
 
     @Column(name = "BETALNINGS_DATUM")
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
@@ -57,28 +60,36 @@ public final class Betalning {
         this.id = id;
     }
 
-    public String getFakturaId() {
-        return fakturaId;
+    public String getFakturaFkId() {
+        return fakturaFkId;
     }
 
-    public void setFakturaId(String fakturaId) {
-        this.fakturaId = fakturaId;
+    public void setFakturaFkId(String fakturaFkId) {
+        this.fakturaFkId = fakturaFkId;
     }
 
-    public String getUtbetalningsId() {
-        return utbetalningsId;
+    public String getFakturaVeId() {
+        return fakturaVeId;
     }
 
-    public void setUtbetalningsId(String utbetalningsId) {
-        this.utbetalningsId = utbetalningsId;
+    public void setFakturaVeId(String fakturaVeId) {
+        this.fakturaVeId = fakturaVeId;
     }
 
-    public String getBetalningsId() {
-        return betalningsId;
+    public String getBetaldFkId() {
+        return betaldFkId;
     }
 
-    public void setBetalningsId(String betalningsId) {
-        this.betalningsId = betalningsId;
+    public void setBetaldFkId(String betaldFkId) {
+        this.betaldFkId = betaldFkId;
+    }
+
+    public String getBetaldVeId() {
+        return betaldVeId;
+    }
+
+    public void setBetaldVeId(String betaldVeId) {
+        this.betaldVeId = betaldVeId;
     }
 
     public LocalDateTime getBetalningsDatum() {
@@ -92,9 +103,10 @@ public final class Betalning {
 
     public static final class BetalningBuilder {
         private Long id;
-        private String fakturaId;
-        private String utbetalningsId;
-        private String betalningsId;
+        private String fakturaFkId;
+        private String fakturaVeId;
+        private String betaldFkId;
+        private String betaldVeId;
         private LocalDateTime betalningsDatum;
 
         private BetalningBuilder() {
@@ -109,18 +121,23 @@ public final class Betalning {
             return this;
         }
 
-        public BetalningBuilder withFakturaId(String fakturaId) {
-            this.fakturaId = fakturaId;
+        public BetalningBuilder withFakturaVeId(String fakturaVeId) {
+            this.fakturaVeId = fakturaVeId;
             return this;
         }
 
-        public BetalningBuilder withUtbetalningsId(String utbetalningsId) {
-            this.utbetalningsId = utbetalningsId;
+        public BetalningBuilder withFakturaFkId(String fakturaFkId) {
+            this.fakturaFkId = fakturaFkId;
             return this;
         }
 
-        public BetalningBuilder withBetalningsId(String betalningsId) {
-            this.betalningsId = betalningsId;
+        public BetalningBuilder withBetaldFkId(String betaldFkId) {
+            this.betaldFkId = betaldFkId;
+            return this;
+        }
+
+        public BetalningBuilder withBetaldVeId(String betaldVeId) {
+            this.betaldVeId = betaldVeId;
             return this;
         }
 
@@ -132,9 +149,10 @@ public final class Betalning {
         public Betalning build() {
             Betalning betalning = new Betalning();
             betalning.setId(id);
-            betalning.setFakturaId(fakturaId);
-            betalning.setUtbetalningsId(utbetalningsId);
-            betalning.setBetalningsId(betalningsId);
+            betalning.setFakturaFkId(fakturaFkId);
+            betalning.setFakturaVeId(fakturaVeId);
+            betalning.setBetaldFkId(betaldFkId);
+            betalning.setBetaldVeId(betaldVeId);
             betalning.setBetalningsDatum(betalningsDatum);
             return betalning;
         }

@@ -900,4 +900,30 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="alter-betalnings-table" author="af">
+        <renameColumn
+            columnDataType="varchar(255)"
+            newColumnName="BETALD_FK_ID"
+            oldColumnName="UTBETALNINGS_ID"
+            tableName="BETALNING" />
+
+        <renameColumn
+            columnDataType="varchar(255)"
+            newColumnName="FAKTURA_VE_ID"
+            oldColumnName="FAKTURA_ID"
+            tableName="BETALNING" />
+
+        <renameColumn
+            columnDataType="varchar(255)"
+            newColumnName="BETALD_VE_ID"
+            oldColumnName="BETALNINGS_ID"
+            tableName="BETALNING" />
+
+        <addColumn tableName="BETALNING">
+            <column name="FAKTURA_FK_ID" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

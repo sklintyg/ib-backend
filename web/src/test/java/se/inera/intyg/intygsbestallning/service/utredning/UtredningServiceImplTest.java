@@ -1073,12 +1073,12 @@ public class UtredningServiceImplTest {
 
         SaveBetalningForUtredningRequest request = new SaveBetalningForUtredningRequest();
         request.setBetalningId("testBetalningId");
-        utredningService.saveBetalningsIdForUtredning(TestDataGen.getUtredningId(), request, TestDataGen.getLandstingId());
+        utredningService.saveBetaldVeIdForUtredning(TestDataGen.getUtredningId(), request, TestDataGen.getLandstingId());
 
         ArgumentCaptor<Utredning> utredingCaptor = ArgumentCaptor.forClass(Utredning.class);
         verify(utredningRepository, times(1)).saveUtredning(utredingCaptor.capture());
 
-        assertEquals("testBetalningId", utredingCaptor.getValue().getBetalning().getBetalningsId());
+        assertEquals("testBetalningId", utredingCaptor.getValue().getBetalning().getBetaldVeId());
     }
 
     @Test(expected = IbNotFoundException.class)
@@ -1087,7 +1087,7 @@ public class UtredningServiceImplTest {
 
         SaveBetalningForUtredningRequest request = new SaveBetalningForUtredningRequest();
         request.setBetalningId("testBetalningId");
-        utredningService.saveBetalningsIdForUtredning(TestDataGen.getUtredningId(), request, TestDataGen.getLandstingId());
+        utredningService.saveBetaldVeIdForUtredning(TestDataGen.getUtredningId(), request, TestDataGen.getLandstingId());
     }
 
     @Test(expected = IbAuthorizationException.class)
@@ -1096,7 +1096,7 @@ public class UtredningServiceImplTest {
 
         SaveBetalningForUtredningRequest request = new SaveBetalningForUtredningRequest();
         request.setBetalningId("testBetalningId");
-        utredningService.saveBetalningsIdForUtredning(TestDataGen.getUtredningId(), request, "AnnatLandsting");
+        utredningService.saveBetaldVeIdForUtredning(TestDataGen.getUtredningId(), request, "AnnatLandsting");
     }
 
     @Test
@@ -1105,12 +1105,12 @@ public class UtredningServiceImplTest {
 
         SaveUtbetalningForUtredningRequest request = new SaveUtbetalningForUtredningRequest();
         request.setUtbetalningId("testUtbetalningId");
-        utredningService.saveUtbetalningsIdForUtredning(TestDataGen.getUtredningId(), request, TestDataGen.getLandstingId());
+        utredningService.saveBetaldFkIdForUtredning(TestDataGen.getUtredningId(), request, TestDataGen.getLandstingId());
 
         ArgumentCaptor<Utredning> utredingCaptor = ArgumentCaptor.forClass(Utredning.class);
         verify(utredningRepository, times(1)).saveUtredning(utredingCaptor.capture());
 
-        assertEquals("testUtbetalningId", utredingCaptor.getValue().getBetalning().getUtbetalningsId());
+        assertEquals("testUtbetalningId", utredingCaptor.getValue().getBetalning().getBetaldFkId());
     }
 
     @Test(expected = IbNotFoundException.class)
@@ -1119,7 +1119,7 @@ public class UtredningServiceImplTest {
 
         SaveUtbetalningForUtredningRequest request = new SaveUtbetalningForUtredningRequest();
         request.setUtbetalningId("testUtbetalningId");
-        utredningService.saveUtbetalningsIdForUtredning(TestDataGen.getUtredningId(), request, TestDataGen.getLandstingId());
+        utredningService.saveBetaldFkIdForUtredning(TestDataGen.getUtredningId(), request, TestDataGen.getLandstingId());
     }
 
     @Test(expected = IbAuthorizationException.class)
@@ -1128,6 +1128,6 @@ public class UtredningServiceImplTest {
 
         SaveUtbetalningForUtredningRequest request = new SaveUtbetalningForUtredningRequest();
         request.setUtbetalningId("testUtbetalningId");
-        utredningService.saveUtbetalningsIdForUtredning(TestDataGen.getUtredningId(), request, "AnnatLandsting");
+        utredningService.saveBetaldFkIdForUtredning(TestDataGen.getUtredningId(), request, "AnnatLandsting");
     }
 }

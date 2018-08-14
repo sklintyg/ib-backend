@@ -20,13 +20,13 @@ package se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning;
 
 public class SaveFakturaForUtredningRequest {
 
-    private String fakturaId;
+    private String fakturaVeId;
 
-    public String getFakturaId() {
-        return fakturaId;
+    public String getFakturaVeId() {
+        return fakturaVeId;
     }
 
-    public void setFakturaId(String fakturaId) {
-        this.fakturaId = fakturaId;
+    public void setFakturaVeId(String fakturaVeId) {
+        this.fakturaVeId = fakturaVeId;
     }
 }

@@ -233,9 +233,10 @@ public final class TestDataFactory {
     public static Betalning buildBetalning() {
         return aBetalning()
                 .withBetalningsDatum(LocalDateTime.now())
-                .withBetalningsId("betalnings-id")
-                .withFakturaId("faktura-id")
-                .withUtbetalningsId("utbetalnings-id")
+                .withBetaldVeId("betald-ve-id")
+                .withFakturaVeId("faktura-ve-id")
+                .withBetaldFkId("betald-fk-id")
+                .withFakturaFkId("faktura-fk-id")
                 .build();
     }
 }

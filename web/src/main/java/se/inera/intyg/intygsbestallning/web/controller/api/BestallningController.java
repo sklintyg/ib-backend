@@ -153,13 +153,13 @@ public class BestallningController {
 
     @PrometheusTimeMethod
     @PostMapping(path = "/{utredningsId}/faktura", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> saveFakturaIdForUtredning(@PathVariable("utredningsId") Long utredningsId,
+    public ResponseEntity<Void> saveFakturaVeIdForUtredning(@PathVariable("utredningsId") Long utredningsId,
             @RequestBody SaveFakturaForUtredningRequest request) {
         IbUser user = userService.getUser();
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_BESTALLNINGAR)
                 .orThrow(new IbAuthorizationException("User does not have required privilege PRIVILEGE_LISTA_BESTALLNINGAR"));
 
-        bestallningService.saveFakturaIdForUtredning(utredningsId, request, user.getCurrentlyLoggedInAt().getId());
+        bestallningService.saveFakturaVeIdForUtredning(utredningsId, request, user.getCurrentlyLoggedInAt().getId());
         return ResponseEntity.ok().build();
     }
 

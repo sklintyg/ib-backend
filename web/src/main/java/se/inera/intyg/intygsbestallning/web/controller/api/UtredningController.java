@@ -132,25 +132,25 @@ public class UtredningController {
 
     @PrometheusTimeMethod
     @PostMapping(path = "/{utredningsId}/betald", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> saveBetalningsIdForUtredning(@PathVariable("utredningsId") Long utredningsId,
+    public ResponseEntity<Void> saveBetaldVeIdForUtredning(@PathVariable("utredningsId") Long utredningsId,
                                                          @RequestBody SaveBetalningForUtredningRequest request) {
         IbUser user = userService.getUser();
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_UTREDNINGAR)
                 .orThrow(new IbAuthorizationException("User does not have required privilege PRIVILEGE_LISTA_UTREDNINGAR"));
 
-        utredningService.saveBetalningsIdForUtredning(utredningsId, request, user.getCurrentlyLoggedInAt().getId());
+        utredningService.saveBetaldVeIdForUtredning(utredningsId, request, user.getCurrentlyLoggedInAt().getId());
         return ResponseEntity.ok().build();
     }
 
     @PrometheusTimeMethod
     @PostMapping(path = "/{utredningsId}/utbetald", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> saveUtbetalningsIdForUtredning(@PathVariable("utredningsId") Long utredningsId,
+    public ResponseEntity<Void> saveBetaldFkIdForUtredning(@PathVariable("utredningsId") Long utredningsId,
                                                                @RequestBody SaveUtbetalningForUtredningRequest request) {
         IbUser user = userService.getUser();
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_UTREDNINGAR)
                 .orThrow(new IbAuthorizationException("User does not have required privilege PRIVILEGE_LISTA_UTREDNINGAR"));
 
-        utredningService.saveUtbetalningsIdForUtredning(utredningsId, request, user.getCurrentlyLoggedInAt().getId());
+        utredningService.saveBetaldFkIdForUtredning(utredningsId, request, user.getCurrentlyLoggedInAt().getId());
         return ResponseEntity.ok().build();
     }
 

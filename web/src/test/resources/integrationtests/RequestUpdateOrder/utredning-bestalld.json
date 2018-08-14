@@ -65,8 +65,10 @@
     "kommentar": "Detta är faktiskt testdata..."
   },
   "betalning": {
-    "fakturaId": "faktura-123",
-    "betalningsId": "betalning-123"
+    "fakturaFkId": "faktura-fk-123",
+    "betaldFkId": "betalning-fk-123",
+    "fakturaVeId": "faktura-ve-123",
+    "betaldVeId": "betalning-ve-123"
   },
   "handlingList": [
     {
