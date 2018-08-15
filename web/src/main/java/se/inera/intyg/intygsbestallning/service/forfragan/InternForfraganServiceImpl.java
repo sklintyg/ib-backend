@@ -55,7 +55,6 @@ import se.inera.intyg.intygsbestallning.persistence.model.status.InternForfragan
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
-import se.inera.intyg.intygsbestallning.persistence.repository.InternForfraganRepository;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
 import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
@@ -89,8 +88,6 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
     protected ExternForfraganService externForfraganService;
     @Autowired
     private BusinessDaysBean businessDays;
-    @Autowired
-    private InternForfraganRepository internForfraganRepository;
     @Autowired
     private InternForfraganListItemFactory internForfraganListItemFactory;
     @Autowired
@@ -245,6 +242,7 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
     }
 
     @Override
+    @Transactional
     public InternForfraganSvarItem besvaraInternForfragan(Long utredningId, ForfraganSvarRequest svar) {
 
         // Sanity check of input
