@@ -93,12 +93,14 @@ public class InternForfraganListItemFactory {
             return null;
         }
 
-        LocalDate startDatum = LocalDate.now();
-        LocalDate planeringsDatum = LocalDate.from(startDatum);
-        int total = postgangArbetsdagar + afuUtredningArbetsdagar + postgangArbetsdagar;
-        while (businessDays.daysBetween(startDatum, planeringsDatum) < total) {
-            planeringsDatum = planeringsDatum.plusDays(1);
-        }
+        LocalDate planeringsDatum = LocalDate.now();
+
+        // semesterdagar ska ej hoppas över för postgång
+        // semesterdagar ska hoppas över för utredningsdagar
+        planeringsDatum = businessDays.addBusinessDays(planeringsDatum, postgangArbetsdagar, false);
+        planeringsDatum = businessDays.addBusinessDays(planeringsDatum, afuUtredningArbetsdagar, true);
+        planeringsDatum = businessDays.addBusinessDays(planeringsDatum, postgangArbetsdagar, false);
+
         return planeringsDatum.format(FORMATTER);
     }
 
