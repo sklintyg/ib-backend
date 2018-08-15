@@ -28,13 +28,13 @@ import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import se.inera.intyg.intygsbestallning.common.integration.json.CustomObjectMapper;
 
 @Service
 @Transactional
@@ -44,8 +44,7 @@ public class EntityTxMapper {
 
     public static final Map<String, String> OK = Collections.singletonMap("status", "ok");
 
-    @Autowired
-    ObjectMapper mapper;
+    private ObjectMapper mapper = new CustomObjectMapper();
 
     public <E> ResponseEntity<String> jsonResponseEntity(final Supplier<E> supplier) {
         return ResponseEntity.ok(map(supplier.get()));
