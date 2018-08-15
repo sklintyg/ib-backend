@@ -47,6 +47,7 @@
           var rdUrl = '/services/report-deviation-interaction-responder';
           var rcrUrl = '/services/report-certificate-receival-responder';
           var uoUrl = '/services/update-order-responder';
+          var rsUrl = '/services/request-supplement-responder';
 
           $scope.rpfa = {
               certificateType: 'AFU',
@@ -604,6 +605,54 @@
               sendSoap(rcrUrl, msg);
           };
 
+          $scope.rs = {
+              assessmentId: null,
+              assessmentIdOptions: [],
+              lastDateForSupplementReceival: moment().add(14, 'days').format('YYYYMMDD')
+          };
+
+          $scope.refreshRsAssessmentIdOptions = function() {
+              $scope.rs.assessmentIdOptions = [];
+              $http.get('/api/test/utredningar/withstatus/UTLATANDE_MOTTAGET').then(function(response1){
+                  $http.get('/api/test/utredningar/withstatus/KOMPLETTERING_MOTTAGEN').then(function(response2) {
+                      $scope.rs.assessmentId = null;
+                      angular.forEach(response1.data, function(utredning) {
+                          $scope.rs.assessmentIdOptions.push(utredning.utredningId);
+                      });
+                      angular.forEach(response2.data, function(utredning) {
+                          $scope.rs.assessmentIdOptions.push(utredning.utredningId);
+                      });
+                      if ($scope.rs.assessmentIdOptions.length > 0) {
+                          $scope.rs.assessmentId = $scope.rs.assessmentIdOptions[0];
+                      }
+                  });
+              });
+          };
+
+          $scope.refreshRsAssessmentIdOptions();
+
+          $scope.sendRs = function() {
+              var msg = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:itintegration:registry:1" xmlns:urn1="urn:riv-application:intygsbestallning:certificate:order:RequestSupplementResponder:1" xmlns:urn2="urn:riv-application:intygsbestallning:certificate:order:1">' +
+                  '<soapenv:Header>' +
+                  '<urn:LogicalAddress>?</urn:LogicalAddress>' +
+                  '</soapenv:Header>' +
+                  '<soapenv:Body>' +
+                  '<urn1:RequestSupplement>' +
+                  '<urn1:assessmentId>' +
+                  '<urn2:root>utredningsId</urn2:root>' +
+                  '<urn2:extension>' + $scope.rs.assessmentId + '</urn2:extension>' +
+                  '<!--You may enter ANY elements at this point-->' +
+                  '</urn1:assessmentId>' +
+                  '<!--Optional:-->' +
+                  '<urn1:lastDateForSupplementReceival>' + $scope.rs.lastDateForSupplementReceival + '</urn1:lastDateForSupplementReceival>' +
+                  '<!--You may enter ANY elements at this point-->' +
+                  '</urn1:RequestSupplement>' +
+                  '</soapenv:Body>' +
+                  '</soapenv:Envelope>';
+
+              sendSoap(rsUrl, msg);
+          };
+
           function sendSoap(url, msg) {
 
               $log.info(msg);
@@ -798,6 +847,26 @@
 
         <div>
           <button class="btn btn-primary" ng-click="sendRcr()">Skicka</button>
+        </div>
+
+      </uib-tab>
+
+      <uib-tab heading="Begär komplettering">
+        <h2>RequestSupplement</h2>
+        <div class="row">
+          <label class="col-sm-3 control-label">assessmentId</label>
+          <div class="col-sm-6">
+            <select class="form-control" ng-model="rs.assessmentId" ng-options="item for item in rs.assessmentIdOptions"></select>
+          </div>
+          <div class="col-sm-3">
+            <button class="btn btn-default" ng-click="refreshRsAssessmentIdOptions()">Uppdatera listan</button>
+          </div>
+        </div>
+
+        <div class="row"><label class="col-sm-3 control-label">lastDateForSupplementReceival</label><div class="col-sm-9"><input class="form-control" ng-model="rs.lastDateForSupplementReceival"></div></div>
+
+        <div>
+          <button class="btn btn-primary" ng-click="sendRs()">Skicka</button>
         </div>
 
       </uib-tab>
