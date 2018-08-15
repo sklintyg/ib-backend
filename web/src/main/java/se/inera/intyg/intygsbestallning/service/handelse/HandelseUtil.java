@@ -118,7 +118,7 @@ public final class HandelseUtil {
 
         textBuilder.append(request.getTidpunkt().format(formatter));
         textBuilder.append(". ");
-        textBuilder.append(MessageFormat.format("Orsakad av {0}.", request.getOrsakatAv().name()));
+        textBuilder.append(MessageFormat.format("Orsakad av {0}.", request.getOrsakatAv().getLabel()));
 
         if (BooleanUtils.toBoolean(request.getInvanareUteblev())) {
             textBuilder.append(" Invånaren uteblev");

@@ -317,7 +317,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                     .build();
             utredning.getHandlingList().add(handling);
         }
-        utredning.getHandelseList().add(HandelseUtil.createOrderReceived(order.getBestallare().getMyndighet(), order.getLastDateIntyg()));
+        utredning.getHandelseList().add(HandelseUtil.createOrderReceived(MyndighetTyp.of(order.getBestallare().getMyndighet()).getDescription(), order.getLastDateIntyg()));
 
         utredningRepository.saveUtredning(utredning);
         notifieringSendService.notifieraVardenhetNyBestallning(utredning);
@@ -365,7 +365,8 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .withTolkSprak(order.getTolkSprak())
                 .withBestallning(createBestallning(order))
                 .withHandlaggare(createHandlaggare(order.getBestallare()))
-                .withHandelseList(Collections.singletonList(HandelseUtil.createOrderReceived(order.getBestallare().getMyndighet(), null)))
+                .withHandelseList(Collections.singletonList(HandelseUtil
+                        .createOrderReceived(MyndighetTyp.of(order.getBestallare().getMyndighet()).getDescription(), null)))
                 .withIntygList(Collections.singletonList(anIntyg()
                         .withKomplettering(false)
                         .withSistaDatum(Optional.ofNullable(order.getLastDateIntyg()).map(LocalDate::atStartOfDay).orElse(null))
