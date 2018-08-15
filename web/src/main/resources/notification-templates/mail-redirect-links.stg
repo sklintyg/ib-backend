@@ -1,0 +1,17 @@
+delimiters "$", "$"
+
+internforfragan(internforfraganId) ::= <<
+redirect:/#app/vardadmin/listaForfragningar/visaInternForfragan/$internforfraganId$
+>>
+
+bestallning(utredningId) ::= <<
+redirect:/#app/vardadmin/pagaendeBestallningar/visaBestallning/$utredningId$/0
+>>
+
+samordnareutredning(utredningId) ::= <<
+redirect:/#app/samordnare/listaUtredningar/visaUtredning/$utredningId$
+>>
+
+errorview(reason) ::= <<
+redirect:/index.html?reason=$reason$
+>>

@@ -65,7 +65,8 @@ angular
                 _redirect($state, toState.name, event, 'app.login', {}, {
                     location: 'replace'
                 });
-            } else if (UserModel.get().loggedIn && UserModel.get().currentRole === null && toState.name !== 'app.selectunit') {
+            } else if (UserModel.get().loggedIn && UserModel.get().currentRole === null &&
+                toState.name !== 'app.selectunit' && toState.name !== 'app.exit') {
                 // app.selectunit is the only valid route when no vardenhet selected
                 _redirect($state, toState.name, event, 'app.selectunit', {}, {
                     location: false

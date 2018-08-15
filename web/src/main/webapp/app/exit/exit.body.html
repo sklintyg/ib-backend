@@ -48,12 +48,22 @@
 
 
       <div ng-switch-when="login.no-hsa-ib-systemrole">
-        <h2>Inloggning misslyckades</h2>
+       <h2>Inloggning misslyckades</h2>
         <p>Du saknar behörighet. För att få åtkomst till Försäkringsmedicinska utredningar krävs<br>
           att du har har minst en giltig individuell egenskap för it-tjänster i HSA (hsaSystemRole).<br>
           För åtkomst till utredningar som tillhör en vårdenhet krävs dessutom ett giltigt medarbetaruppdrag.</p>
       </div>
 
+      <!-- mail link errors -->
+      <div ng-switch-when="mail.link.entity.not.found">
+        <h2>Ogiltig länk</h2>
+        <p>Gå tillbaka till <a href="/">startsidan</a></p>
+      </div>
+
+      <div ng-switch-when="mail.no.hsa.auth">
+        <h2>Du saknar behörighet för att använda denna länk.</h2>
+        <p>Gå tillbaka till <a href="/">startsidan</a></p>
+      </div>
 
       <!-- catch all other / undefined reasons-->
       <div ng-switch-default>
