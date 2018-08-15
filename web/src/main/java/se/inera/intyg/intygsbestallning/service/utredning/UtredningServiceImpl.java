@@ -317,7 +317,8 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                     .build();
             utredning.getHandlingList().add(handling);
         }
-        utredning.getHandelseList().add(HandelseUtil.createOrderReceived(MyndighetTyp.of(order.getBestallare().getMyndighet()).getDescription(), order.getLastDateIntyg()));
+        utredning.getHandelseList().add(HandelseUtil
+                .createOrderReceived(MyndighetTyp.of(order.getBestallare().getMyndighet()).getDescription(), order.getLastDateIntyg()));
 
         utredningRepository.saveUtredning(utredning);
         notifieringSendService.notifieraVardenhetNyBestallning(utredning);
