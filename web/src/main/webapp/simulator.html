@@ -28,6 +28,9 @@
   body > div {
     background-color: #FFFFFF;
   }
+  .nav-tabs > li {
+    width: auto;
+  }
   .tab-content {
     margin: 20px;
   }
@@ -48,6 +51,7 @@
           var rcrUrl = '/services/report-certificate-receival-responder';
           var uoUrl = '/services/update-order-responder';
           var rsUrl = '/services/request-supplement-responder';
+          var rsrUrl = '/services/report-supplement-receival-responder';
 
           $scope.rpfa = {
               certificateType: 'AFU',
@@ -653,6 +657,82 @@
               sendSoap(rsUrl, msg);
           };
 
+          $scope.rsr = {
+              assessmentId: null,
+              assessmentIdOptions: [],
+              supplementRequestId: null,
+              supplementRequestIdOptions: [],
+              supplementRequestIdOptionsByAssessment: {},
+              receivedDate: moment().format('YYYYMMDD'),
+              lastDateForSupplementRequest: moment().add(14, 'days').format('YYYYMMDD')
+          };
+
+          $scope.refreshRsrAssessmentIdOptions = function() {
+              $scope.rsr.assessmentIdOptions = [];
+              $scope.rsr.supplementRequestIdOptionsByAssessment = {};
+              $http.get('/api/test/utredningar/withstatus/KOMPLETTERING_SKICKAD').then(function(response){
+                  $scope.rsr.assessmentId = null;
+                  angular.forEach(response.data, function(utredning){
+                      $scope.rsr.assessmentIdOptions.push(utredning.utredningId);
+                      angular.forEach(utredning.intygList, function(intyg) {
+                          if (intyg.komplettering && intyg.skickatDatum !== null && intyg.mottagetDatum === null) {
+                              if (!$scope.rsr.supplementRequestIdOptionsByAssessment[utredning.utredningId]) {
+                                  $scope.rsr.supplementRequestIdOptionsByAssessment[utredning.utredningId] = [];
+                              }
+                              $scope.rsr.supplementRequestIdOptionsByAssessment[utredning.utredningId].push(intyg.id);
+                          }
+                      });
+                  });
+                  if (response.data && response.data.length > 0) {
+                      $scope.rsr.assessmentId = response.data[0].utredningId;
+                      $scope.onChangeRsrAssessment();
+                  }
+              });
+          };
+
+          $scope.onChangeRsrAssessment = function() {
+              $scope.rsr.supplementRequestId = null;
+              if ($scope.rsr.assessmentId) {
+                  $scope.rsr.supplementRequestIdOptions = $scope.rsr.supplementRequestIdOptionsByAssessment[$scope.rsr.assessmentId];
+                  if ($scope.rsr.supplementRequestIdOptions && $scope.rsr.supplementRequestIdOptions.length > 0) {
+                      $scope.rsr.supplementRequestId = $scope.rsr.supplementRequestIdOptions[0];
+                  }
+              }
+              else {
+                  $scope.rsr.supplementRequestIdOptions = [];
+              }
+          };
+
+          $scope.refreshRsrAssessmentIdOptions();
+
+          $scope.sendRsr = function() {
+              var msg = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:itintegration:registry:1" xmlns:urn1="urn:riv-application:intygsbestallning:certificate:order:ReportSupplementReceivalResponder:1" xmlns:urn2="urn:riv-application:intygsbestallning:certificate:order:1">' +
+                  '<soapenv:Header>' +
+                  '<urn:LogicalAddress>?</urn:LogicalAddress>' +
+                  '</soapenv:Header>' +
+                  '<soapenv:Body>' +
+                  '<urn1:ReportSupplementReceival>' +
+                  '<urn1:assessmentId>' +
+                  '<urn2:root>utredningsId</urn2:root>' +
+                  '<urn2:extension>' + $scope.rsr.assessmentId + '</urn2:extension>' +
+                  '<!--You may enter ANY elements at this point-->' +
+                  '</urn1:assessmentId>' +
+                  '<urn1:receivedDate>' + $scope.rsr.receivedDate + '</urn1:receivedDate>' +
+                  '<!--Optional:-->' +
+                  '<urn1:supplementRequestId>' +
+                  '<urn2:root>?</urn2:root>' +
+                  '<urn2:extension>' + $scope.rsr.supplementRequestId + '</urn2:extension>' +
+                  '<!--You may enter ANY elements at this point-->' +
+                  '</urn1:supplementRequestId>' +
+                  '<urn1:lastDateForSupplementRequest>' + $scope.rsr.lastDateForSupplementRequest + '</urn1:lastDateForSupplementRequest>' +
+                  '<!--You may enter ANY elements at this point-->' +
+                  '</urn1:ReportSupplementReceival>' +
+                  '</soapenv:Body>' +
+                  '</soapenv:Envelope>';
+
+              sendSoap(rsrUrl, msg);
+          };
+
           function sendSoap(url, msg) {
 
               $log.info(msg);
@@ -868,7 +948,34 @@
         <div>
           <button class="btn btn-primary" ng-click="sendRs()">Skicka</button>
         </div>
+      </uib-tab>
 
+      <uib-tab heading="Komplettering mottagen">
+        <h2>ReportSupplementReceival</h2>
+        <div class="row">
+          <label class="col-sm-3 control-label">assessmentId</label>
+          <div class="col-sm-6">
+            <select class="form-control" ng-model="rsr.assessmentId" ng-options="item for item in rsr.assessmentIdOptions" ng-change="onChangeRsrAssessment()"></select>
+          </div>
+          <div class="col-sm-3">
+            <button class="btn btn-default" ng-click="refreshRsrAssessmentIdOptions()">Uppdatera listan</button>
+          </div>
+        </div>
+
+        <div class="row"><label class="col-sm-3 control-label">receivedDate</label><div class="col-sm-9"><input class="form-control" ng-model="rsr.receivedDate"></div></div>
+
+        <div class="row">
+          <label class="col-sm-3 control-label">supplementRequestId</label>
+          <div class="col-sm-6">
+            <select class="form-control" ng-model="rsr.supplementRequestId" ng-options="item for item in rsr.supplementRequestIdOptions"></select>
+          </div>
+        </div>
+
+        <div class="row"><label class="col-sm-3 control-label">lastDateForSupplementRequest</label><div class="col-sm-9"><input class="form-control" ng-model="rsr.lastDateForSupplementRequest"></div></div>
+
+        <div>
+          <button class="btn btn-primary" ng-click="sendRsr()">Skicka</button>
+        </div>
       </uib-tab>
 
     </uib-tabset>
