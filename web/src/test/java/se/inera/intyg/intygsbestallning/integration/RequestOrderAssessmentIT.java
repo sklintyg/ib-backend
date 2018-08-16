@@ -70,7 +70,7 @@ public class RequestOrderAssessmentIT extends BaseRestIntegrationTest {
                         SchemaDateUtil.toDateStringFromLocalDate(LocalDate.now().plusDays(25)), false,
                         "Bli frisk", "Bowla", SchemaDateUtil.toDateStringFromLocalDate(LocalDate.now()),
                         "Hanna Handläggare", "123-123123", "handlaggare@ineratestar.se",
-                        "19121212-1212", "Tolvan", "Tolvansson", "Rullator",
+                        "191212121212", "Tolvan", "Tolvansson", "Rullator",
                         "Kommer från Tolvmåla"));
 
 
@@ -87,7 +87,7 @@ public class RequestOrderAssessmentIT extends BaseRestIntegrationTest {
                 .statusCode(200)
                 .body("utredningsId", is(utredningId))
                 .body("status.id", is(UtredningStatus.BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR.getId()))
-                .body("invanare.personId", is("19121212-1212"))
+                .body("invanare.personId", is("191212121212"))
                 .body("tolkSprak", is("sv"))
                 .body("handlaggareNamn", is("Hanna Handläggare"))
                 .body("handlaggareTelefonnummer", is("123-123123"))
