@@ -42,17 +42,18 @@ public class MaillinkRedirectUrlBuilder {
         templateGroup = new STGroupFile("notification-templates/mail-redirect-links.stg");
     }
 
-    public String buildVardadminInternForfraganUrl(Long internforfraganId) {
+    public String buildVardadminInternForfraganUrl(Long utredningId, Long internforfraganId) {
         ST internforfraganTemplate = templateGroup.getInstanceOf("internforfragan_url");
         internforfraganTemplate.add("host", hostUrl);
+        internforfraganTemplate.add("utredningId", utredningId);
         internforfraganTemplate.add("internforfraganId", internforfraganId);
 
         return internforfraganTemplate.render();
     }
 
-    public String buildVardadminInternforfraganRedirect(String internforfraganId) {
+    public String buildVardadminInternforfraganRedirect(String utredningId) {
         ST internforfraganTemplate = templateGroup.getInstanceOf("internforfragan_redirect");
-        internforfraganTemplate.add("internforfraganId", internforfraganId);
+        internforfraganTemplate.add("utredningId", utredningId);
 
         return internforfraganTemplate.render();
     }

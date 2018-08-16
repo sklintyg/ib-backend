@@ -59,9 +59,10 @@ public class MailIntegrationController {
     @Autowired
     private UtredningRepository utredningRepository;
 
-    @GetMapping(path = "/internforfragan/{internforfraganId}")
-    public String vardadminInternforfraganRedirect(@PathVariable("internforfraganId") String internforfraganId) {
-        LOG.debug("ENTER - vardadminInternforfraganRedirect for internforfraganId " + internforfraganId);
+    @GetMapping(path = "/internforfragan/{utredningId}/{internforfraganId}")
+    public String vardadminInternforfraganRedirect(@PathVariable("utredningId") String utredningId,
+            @PathVariable("internforfraganId") String internforfraganId) {
+        LOG.debug("ENTER - vardadminInternforfraganRedirect for utredningId" + utredningId + " / internforfraganId " + internforfraganId);
         final IbUser user = userService.getUser();
 
         // 1. An internforfragan should exist for the given internforfraganId
@@ -75,7 +76,7 @@ public class MailIntegrationController {
             return errorViewRedirect(user, ERROR_NO_HSA_AUTH);
         }
 
-        return maillinkRedirectUrlBuilder.buildVardadminInternforfraganRedirect(internforfraganId);
+        return maillinkRedirectUrlBuilder.buildVardadminInternforfraganRedirect(utredningId);
     }
 
     @GetMapping(path = "/bestallning/{utredningId}")

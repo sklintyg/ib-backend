@@ -174,7 +174,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
             epostResolver.resolveVardenhetNotifieringEpost(internForfragan.getVardenhetHsaId(), utredning).ifPresent(email -> {
                 final String body = notifieringMailBodyFactory.buildBodyForUtredning(
                         vardenhetNyInternforfraganMessage(internForfragan),
-                        maillinkRedirectUrlBuilder.buildVardadminInternForfraganUrl(internForfragan.getId()));
+                        maillinkRedirectUrlBuilder.buildVardadminInternForfraganUrl(utredning.getUtredningId(), internForfragan.getId()));
                 sendNotifiering(email, SUBJECT_NY_FMU_INTERN_FORFRAGAN, body, utredning.getUtredningId());
                 saveNotifiering(utredning, NY_INTERNFORFRAGAN, VARDENHET);
             });
@@ -209,7 +209,8 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
             epostResolver.resolveVardenhetNotifieringEpost(tillDeladInternForfragan.getVardenhetHsaId(), utredning).ifPresent(email -> {
                 final String body = notifieringMailBodyFactory.buildBodyForUtredning(
                         vardenhetTilldeladUtredning(utredning, landstingNamn),
-                        maillinkRedirectUrlBuilder.buildVardadminInternForfraganUrl(tillDeladInternForfragan.getId()));
+                        maillinkRedirectUrlBuilder.buildVardadminInternForfraganUrl(utredning.getUtredningId(),
+                                tillDeladInternForfragan.getId()));
 
                 sendNotifiering(email, SUBJECT_FMU_UTREDNING_TILLDELAD_VARDENHETEN, body, utredning.getUtredningId());
                 saveNotifiering(utredning, UTREDNING_TILLDELAD, VARDENHET);
@@ -268,7 +269,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
             epostResolver.resolveVardenhetNotifieringEpost(internForfragan.getVardenhetHsaId(), utredning).ifPresent(email -> {
                 String body = notifieringMailBodyFactory.buildBodyForUtredning(
                         ingenBestallningMessage(utredning),
-                        maillinkRedirectUrlBuilder.buildVardadminInternForfraganUrl(internForfragan.getId()));
+                        maillinkRedirectUrlBuilder.buildVardadminInternForfraganUrl(utredning.getUtredningId(), internForfragan.getId()));
 
                 sendNotifiering(email, SUBJECT_INGEN_BESTALLNING, body, utredning.getUtredningId());
                 saveNotifiering(utredning, INGEN_BESTALLNING, VARDENHET);

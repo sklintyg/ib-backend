@@ -128,15 +128,14 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
 
         utredning.getExternForfragan()
                 .map(ExternForfragan::getInternForfraganList)
-                .orElse(Lists.newArrayList()).addAll(
-                newVardenheter.stream()
-                        .map(vardenhetHsaId -> anInternForfragan()
-                                .withVardenhetHsaId(vardenhetHsaId)
-                                .withSkapadDatum(now)
-                                .withKommentar(request.getKommentar())
-                                .withBesvarasSenastDatum(besvarasSenastDatum)
-                                .build())
-                        .collect(toList()));
+                .orElse(Lists.newArrayList()).addAll(newVardenheter.stream()
+                .map(vardenhetHsaId -> anInternForfragan()
+                        .withVardenhetHsaId(vardenhetHsaId)
+                        .withSkapadDatum(now)
+                        .withKommentar(request.getKommentar())
+                        .withBesvarasSenastDatum(besvarasSenastDatum)
+                        .build())
+                .collect(toList()));
 
         utredning.getHandelseList().addAll(
                 newVardenheter.stream()
@@ -144,7 +143,14 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
                                 hsaOrganizationsService.getVardenhet(vardenhetHsaId).getNamn()))
                         .collect(toList()));
 
-        utredningRepository.saveUtredning(utredning);
+        Utredning sparadUtredning = utredningRepository.saveUtredning(utredning);
+        final List<InternForfragan> toBeNotified = sparadUtredning.getExternForfragan().get()
+                .getInternForfraganList()
+                .stream()
+                .filter(internForfragan -> newVardenheter.contains(internForfragan.getVardenhetHsaId())).collect(toList());
+
+        toBeNotified
+                .forEach(internForfragan -> notifieringSendService.notifieraVardenhetNyInternforfragan(sparadUtredning, internForfragan));
 
         return createGetUtredningResponse(utredning);
     }

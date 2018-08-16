@@ -55,9 +55,12 @@ public class MailIntegrationControllerIT extends BaseRestIntegrationTest {
         Integer internforfraganId = body.jsonPath().get("entity.externForfragan.internForfraganList[0].id");
 
         // Perform test
-        given().redirects().follow(false).and().pathParam("id", internforfraganId).expect()
-                .statusCode(HttpServletResponse.SC_FOUND).when().get("maillink/internforfragan/{id}")
-                .then().header(HttpHeaders.LOCATION, containsString("visaInternForfragan/" + internforfraganId));
+        given().redirects().follow(false).and()
+                .pathParam("utredningId", utredningId)
+                .pathParam("internforfraganId", internforfraganId)
+                .expect()
+                .statusCode(HttpServletResponse.SC_FOUND).when().get("maillink/internforfragan/{utredningId}/{internforfraganId}")
+                .then().header(HttpHeaders.LOCATION, containsString("visaInternForfragan/" + utredningId));
 
         // Clean up
         deleteUtredning(utredningId);
@@ -78,10 +81,12 @@ public class MailIntegrationControllerIT extends BaseRestIntegrationTest {
         Integer internforfraganId = body.jsonPath().get("entity.externForfragan.internForfraganList[0].id");
 
         // Perform test
-        given().redirects().follow(false).and().pathParam("id", internforfraganId).expect()
-                .statusCode(HttpServletResponse.SC_FOUND).when().get("maillink/internforfragan/{id}")
+        given().redirects().follow(false).and()
+                .pathParam("utredningId", utredningId)
+                .pathParam("internforfraganId", internforfraganId)
+                .expect()
+                .statusCode(HttpServletResponse.SC_FOUND).when().get("maillink/internforfragan/{utredningId}/{internforfraganId}")
                 .then().header(HttpHeaders.LOCATION, containsString(ERROR_NO_HSA_AUTH));
-
         // Clean up
         deleteUtredning(utredningId);
     }
@@ -91,8 +96,11 @@ public class MailIntegrationControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_VARDADMIN);
 
         // Perform test
-        given().redirects().follow(false).and().pathParam("id", "99999991").expect()
-                .statusCode(HttpServletResponse.SC_FOUND).when().get("maillink/internforfragan/{id}")
+        given().redirects().follow(false).and()
+                .pathParam("utredningId", "999999")
+                .pathParam("internforfraganId", "9999999")
+                .expect()
+                .statusCode(HttpServletResponse.SC_FOUND).when().get("maillink/internforfragan/{utredningId}/{internforfraganId}")
                 .then().header(HttpHeaders.LOCATION, containsString(ERROR_LINK_ENITY_NOT_FOUND));
 
     }

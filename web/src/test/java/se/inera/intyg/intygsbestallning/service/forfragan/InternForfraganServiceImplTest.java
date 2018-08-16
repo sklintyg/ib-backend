@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -63,6 +64,7 @@ import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationExceptio
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.integration.myndighet.service.MyndighetIntegrationService;
+import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.status.InternForfraganStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
@@ -142,8 +144,7 @@ public class InternForfraganServiceImplTest {
         final String vardenhetNamn1 = "vardenhetId1";
         final String vardenhetNamn2 = "vardenhetId2";
         final String userName = "TestUser";
-
-        when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
+        Utredning utredning = anUtredning()
                 .withUtredningId(utredningId)
                 .withUtredningsTyp(AFU)
                 .withExternForfragan(anExternForfragan()
@@ -156,7 +157,8 @@ public class InternForfraganServiceImplTest {
                         .build())
                 .withHandlaggare(aHandlaggare()
                         .build())
-                .build()));
+                .build();
+        when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(utredning));
 
         when(userService.getUser()).thenReturn(new IbUser("", userName));
 
@@ -166,8 +168,11 @@ public class InternForfraganServiceImplTest {
         CreateInternForfraganRequest request = new CreateInternForfraganRequest();
         request.setVardenheter(ImmutableList.of(vardenhetId1, vardenhetId2));
         request.setKommentar(kommentar);
+        doReturn(utredning).when(utredningRepository).saveUtredning(any(Utredning.class));
 
         GetUtredningResponse response = internForfraganService.createInternForfragan(utredningId, landstingHsaId, request);
+
+
         assertEquals(UtredningStatus.VANTAR_PA_SVAR, response.getStatus());
         assertEquals(vardenhetId1, response.getInternForfraganList().get(0).getVardenhetHsaId());
         assertEquals(vardenhetNamn1, response.getInternForfraganList().get(0).getVardenhetNamn());
@@ -179,7 +184,6 @@ public class InternForfraganServiceImplTest {
         ArgumentCaptor<Utredning> utredningArgument = ArgumentCaptor.forClass(Utredning.class);
         verify(utredningRepository).saveUtredning(utredningArgument.capture());
 
-        Utredning utredning = utredningArgument.getValue();
         assertEquals(kommentar, utredning.getExternForfragan().get().getInternForfraganList().get(0).getKommentar());
         assertEquals(kommentar, utredning.getExternForfragan().get().getInternForfraganList().get(1).getKommentar());
 
@@ -194,6 +198,7 @@ public class InternForfraganServiceImplTest {
         assertEquals(HandelseTyp.INTERNFORFRAGAN_SKICKAD, utredning.getHandelseList().get(1).getHandelseTyp());
         assertEquals(userName, utredning.getHandelseList().get(1).getAnvandare());
         assertEquals("Förfrågan skickades till " + vardenhetNamn2, utredning.getHandelseList().get(1).getHandelseText());
+        verify(notifieringSendService, times(2)).notifieraVardenhetNyInternforfragan(any(Utredning.class), any(InternForfragan.class));
     }
 
     @Test(expected = IbNotFoundException.class)

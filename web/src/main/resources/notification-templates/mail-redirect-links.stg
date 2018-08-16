@@ -1,11 +1,11 @@
 delimiters "$", "$"
 
-internforfragan_url(host, internforfraganId) ::= <<
-$host$/maillink/internforfragan/$internforfraganId$
+internforfragan_url(host, utredningId, internforfraganId) ::= <<
+$host$/maillink/internforfragan/$utredningId$/$internforfraganId$
 >>
 
-internforfragan_redirect(internforfraganId) ::= <<
-redirect:/#app/vardadmin/listaForfragningar/visaInternForfragan/$internforfraganId$
+internforfragan_redirect(utredningId) ::= <<
+redirect:/#app/vardadmin/listaForfragningar/visaInternForfragan/$utredningId$
 >>
 
 bestallning_url(host, utredningId) ::= <<
