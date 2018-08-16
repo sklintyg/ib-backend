@@ -37,7 +37,6 @@ import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
-import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.service.patient.Gender;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
@@ -81,7 +80,7 @@ public class GetBestallningResponse implements PDLLoggable {
 
     private String avbrutenDatum;
 
-    private AvslutOrsak avbrutenAnledning;
+    private String avbrutenAnledning;
 
     private String meddelandeFromHandlaggare;
 
@@ -135,7 +134,9 @@ public class GetBestallningResponse implements PDLLoggable {
                 .withAvbrutenDatum(!isNull(utredning.getAvbrutenDatum())
                         ? utredning.getAvbrutenDatum().format(formatter)
                         : null)
-                .withAvbrutenAnledning(utredning.getAvbrutenOrsak())
+                .withAvbrutenAnledning(nonNull(utredning.getAvbrutenOrsak())
+                        ? utredning.getAvbrutenOrsak().getLabel()
+                        : null)
                 .withMeddelandeFromHandlaggare(utredning.getBestallning()
                         .map(Bestallning::getKommentar)
                         .orElse(null))
@@ -287,11 +288,11 @@ public class GetBestallningResponse implements PDLLoggable {
         this.avbrutenDatum = avbrutenDatum;
     }
 
-    public AvslutOrsak getAvbrutenAnledning() {
+    public String getAvbrutenAnledning() {
         return avbrutenAnledning;
     }
 
-    public void setAvbrutenAnledning(AvslutOrsak avbrutenAnledning) {
+    public void setAvbrutenAnledning(String avbrutenAnledning) {
         this.avbrutenAnledning = avbrutenAnledning;
     }
 
@@ -354,7 +355,7 @@ public class GetBestallningResponse implements PDLLoggable {
         private String intygSistaDatum;
         private String intygSistaDatumKomplettering;
         private String avbrutenDatum;
-        private AvslutOrsak avbrutenAnledning;
+        private String avbrutenAnledning;
         private String meddelandeFromHandlaggare;
         private List<BesokListItem> besokList;
         private List<HandelseListItem> handelseList;
@@ -448,7 +449,7 @@ public class GetBestallningResponse implements PDLLoggable {
             return this;
         }
 
-        public GetBestallningResponseBuilder withAvbrutenAnledning(AvslutOrsak avbrutenAnledning) {
+        public GetBestallningResponseBuilder withAvbrutenAnledning(String avbrutenAnledning) {
             this.avbrutenAnledning = avbrutenAnledning;
             return this;
         }
