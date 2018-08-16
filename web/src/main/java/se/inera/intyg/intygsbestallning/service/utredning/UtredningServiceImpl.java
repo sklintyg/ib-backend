@@ -56,6 +56,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
@@ -451,7 +452,17 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
             notifieringSendService.notifieraVardenhetNyInternforfragan(sparadUtredning, internForfragan);
         } else {
             //FMU-004: Normalflöde 1 - Landstinget tar emot externförfrågan
-            handelse = HandelseUtil.createExternForfraganMottagen(request.getLandstingHsaId());
+            String vardgivare = request.getLandstingHsaId();
+            try {
+                Vardgivare vardgivareInfo = hsaOrganizationsService.getVardgivareInfo(vardgivare);
+                if (vardgivareInfo != null) {
+                    vardgivare = vardgivareInfo.getNamn();
+                }
+            } catch (Exception e) {
+                LOG.error(MessageFormat.format("Fel vid uppslagning av hsaid {0}", request.getLandstingHsaId(), e));
+            }
+
+            handelse = HandelseUtil.createExternForfraganMottagen(vardgivare);
             utredningBuilder
                     .withExternForfragan(externForfragan.build())
                     .withHandelseList(Collections.singletonList(handelse));

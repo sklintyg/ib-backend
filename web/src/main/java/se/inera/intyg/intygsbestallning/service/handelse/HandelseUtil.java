@@ -345,12 +345,12 @@ public final class HandelseUtil {
                 .build();
     }
 
-    public static Handelse createExternForfraganMottagen(final String landstingHsaId) {
+    public static Handelse createExternForfraganMottagen(final String vardenhetNamn) {
 
         return aHandelse()
                 .withSkapad(LocalDateTime.now())
                 .withHandelseTyp(HandelseTyp.EXTERNFORFRAGAN_MOTTAGEN)
-                .withHandelseText(MessageFormat.format("Förfrågan mottagen av {0}", landstingHsaId))
+                .withHandelseText(MessageFormat.format("Förfrågan mottagen av {0}", vardenhetNamn))
                 .build();
     }
 
