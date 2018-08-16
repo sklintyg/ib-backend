@@ -41,7 +41,9 @@ angular.module('ibApp').directive('ibTextarea', [ function() {
 
             //return errors for just this specific form element
             $scope.componentErrors = function() {
-                return $scope.form[$scope.inputId].$error;
+                if ($scope.required && $scope.form[$scope.inputId]) {
+                    return $scope.form[$scope.inputId].$error;
+                }
             };
 
             if (!$scope.colSize) {
