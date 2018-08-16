@@ -1,37 +1,28 @@
 <div class="ib-reject-internforfragan-dialog-template">
 
   <form name="forfraganSvarForm" novalidate autocomplete="off">
+
     <div class="modal-header">
       <button type="button" class="close" data-ng-click="$dismiss()">×</button>
       <h3><span message key="internforfragan.besvara.form.avvisa.title"></span></h3>
     </div>
 
-      <div class="modal-body">
-
-
-            <ib-textarea
-                id="kommentar"
-                form="forfraganSvarForm"
-                label-key="internforfragan.besvara.form.kommentar.label"
-                help-key="internforfragan.besvara.reject.form.label.help"
-                model="vm.model.kommentar"
-                placeholder-text="Beskriv varför förfrågan avvisas"
-                required="true"
-                required-error="Fyll i ett meddelande"
-                max-length="255">
-
-            </ib-textarea>
-
-      </div>
-
-
+    <div class="modal-body">
+      <ib-textarea id="kommentar"
+                   form="forfraganSvarForm"
+                   label-key="internforfragan.besvara.form.kommentar.label"
+                   help-key="internforfragan.besvara.reject.form.label.help"
+                   model="vm.model.kommentar"
+                   placeholder-text="Beskriv varför förfrågan avvisas"
+                   required="true"
+                   required-error="Fyll i ett meddelande"
+                   max-length="255">
+      </ib-textarea>
+    </div>
 
     <div class="modal-footer">
-      <ib-button btn-id="reject-internforfragan-btn"
-                 btn-class="btn-primary"
-                 btn-disabled="!rejectButtonEnabled()"
-                 busy="vm.busy"
-                 btn-click="onConfirmReject()">
+      <ib-button btn-id="reject-internforfragan-btn" btn-class="btn-primary" btn-disabled="!vm.model.kommentar || !rejectButtonEnabled()"
+                 busy="vm.busy" btn-click="onConfirmReject()">
         <span message key="internforfragan.besvara.rejectbtn.send.label"></span>
       </ib-button>
 
@@ -40,4 +31,5 @@
       </ib-button>
     </div>
   </form>
+
 </div>

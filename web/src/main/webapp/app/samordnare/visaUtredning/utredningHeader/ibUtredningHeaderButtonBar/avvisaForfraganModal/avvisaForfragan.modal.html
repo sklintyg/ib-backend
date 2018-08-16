@@ -1,33 +1,42 @@
 <div id="avvisa-forfragan-modal">
-  <div class="modal-header">
-    <button class="close" data-dismiss="modal" data-ng-click="$dismiss()">×</button>
-    <h4 class="modal-title">Avvisa förfrågan</h4>
-  </div>
-  <div class="modal-body">
+  <form name="forfraganSvarForm" novalidate autocomplete="off">
 
-    <div ng-class="{ 'validation-error' : vm.kommentarValidationError }">
-        <ib-textarea id="avvisa-forfragan-modal-kommentar"
-                     class="form-group"
-                     required="true"
-                     label-key="avvisa.forfragan.kommentar.label"
-                     placeholder-text="{{'avvisa.forfragan.kommentar.placeholder' | message}}"
-                     model="vm.kommentar"></ib-textarea>
+    <div class="modal-header">
+      <button class="close" data-dismiss="modal" data-ng-click="$dismiss()">×</button>
+      <h4 class="modal-title">Avvisa förfrågan</h4>
+    </div>
+    <div class="modal-body">
+
+      <div ng-class="{ 'validation-error' : vm.kommentarValidationError }">
+          <ib-textarea id="avvisa-forfragan-modal-kommentar"
+                       class="form-group"
+                       form="forfraganSvarForm"
+                       label-key="avvisa.forfragan.kommentar.label"
+                       model="vm.kommentar"
+                       placeholder-text="{{'avvisa.forfragan.kommentar.placeholder' | message}}"
+                       required="true"
+                       required-error="Fyll i ett meddelande"
+                       max-length="255"></ib-textarea>
+      </div>
+
+      <div class="validation-error-message" id="avvisa-forfragan-validation" ng-if="vm.kommentarValidationError">
+        <message key="avvisa.forfragan.kommentar.validation"></message>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <ib-button btn-id="skicka-forfragan-modal-skicka"
+                 btn-class="btn btn-primary"
+                 btn-click="avvisa()"
+                 btn-disabled="!vm.kommentar"
+                 busy="vm.inProgress">
+        Skicka
+      </ib-button>
+      <button type="button" id="skicka-forfragan-modal-cancel" class="btn btn-default" ng-click="$dismiss()">
+        <span message key="common.cancel"></span>
+      </button>
     </div>
 
-    <div class="validation-error-message" id="avvisa-forfragan-validation" ng-if="vm.kommentarValidationError">
-      <message key="avvisa.forfragan.kommentar.validation"></message>
-    </div>
+  </form>
 
-  </div>
-  <div class="modal-footer">
-    <ib-button btn-id="skicka-forfragan-modal-skicka"
-               btn-class="btn btn-primary"
-               btn-click="avvisa()"
-               busy="vm.inProgress">
-      Skicka
-    </ib-button>
-    <button type="button" id="skicka-forfragan-modal-cancel" class="btn btn-default" ng-click="$dismiss()">
-      <span message key="common.cancel"></span>
-    </button>
-  </div>
 </div>

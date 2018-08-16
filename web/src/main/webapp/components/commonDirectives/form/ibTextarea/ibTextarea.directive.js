@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-angular.module('ibApp').directive('ibTextarea', [ '$parse', function($parse) {
+angular.module('ibApp').directive('ibTextarea', [ function() {
     'use strict';
 
     return {
@@ -41,7 +41,7 @@ angular.module('ibApp').directive('ibTextarea', [ '$parse', function($parse) {
 
             //return errors for just this specific form element
             $scope.componentErrors = function() {
-                return $parse('form.' + $scope.inputId + '.$error')($scope);
+                return $scope.form[$scope.inputId].$error;
             };
 
             if (!$scope.colSize) {
