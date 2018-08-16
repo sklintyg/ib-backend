@@ -61,7 +61,7 @@ angular.module('ibApp').directive('ibUtredningButtonBar',
                     vardenhetHsaId = findDirektTilldeladInternForfragan()[0].vardenhetHsaId;
                 }
                 ExternForfraganProxy.acceptExternForfragan($scope.utredning.utredningsId, vardenhetHsaId)
-                    .then(function(data) {
+                    .then(function() {
                         $state.reload();
                     }).finally(function() { // jshint ignore:line
                         $scope.vm.acceptInProgress = false;
