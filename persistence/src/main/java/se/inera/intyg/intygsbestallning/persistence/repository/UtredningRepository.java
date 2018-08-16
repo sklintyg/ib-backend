@@ -96,6 +96,12 @@ public interface UtredningRepository extends UtredningRepositoryCustom, JpaRepos
     @Query("SELECT u FROM Utredning u JOIN u.intygList i JOIN u.bestallning b WHERE b.tilldeladVardenhetHsaId is not null AND u.arkiverad = false AND i.mottagetDatum is null AND i.komplettering = false AND i.sistaDatum is not null AND i.sistaDatum < :now AND u.utredningId NOT IN (SELECT u.utredningId FROM Utredning u JOIN u.skickadNotifieringList n WHERE n.typ = :typ AND n.mottagare = :mottagare)")
     List<Utredning> findNonNotifiedSlutDatumBefore(@Param("now") LocalDateTime now, @Param("typ") NotifieringTyp typ, @Param("mottagare") NotifieringMottagarTyp mottagare);
 
+    /**
+     * Alla utredningar med externförfrågan som har besvarassenast inom intervall och som ej har notifiering av angiven typ.
+     */
+    @Query("SELECT u FROM Utredning u JOIN u.externForfragan e WHERE u.arkiverad = false AND e.besvarasSenastDatum >= :fromDate  AND e.besvarasSenastDatum <= :toDate AND u.utredningId NOT IN (SELECT u.utredningId FROM Utredning u JOIN u.skickadNotifieringList n WHERE n.typ = :typ AND n.mottagare = :mottagare)")
+    List<Utredning> findNonNotifiedExternforfraganBesvarasSenastBetween(@Param("fromDate") LocalDateTime fromDate, @Param("toDate") LocalDateTime toDate, @Param("typ") NotifieringTyp typ, @Param("mottagare") NotifieringMottagarTyp mottagare);
+
     @Query("SELECT DISTINCT u FROM Utredning u " +
            "JOIN u.intygList i " +
            "JOIN u.bestallning b " +

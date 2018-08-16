@@ -34,6 +34,7 @@ import static se.inera.intyg.intygsbestallning.persistence.model.type.Notifierin
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.NY_INTERNFORFRAGAN;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.PAMINNELSEDATUM_KOMPLETTERING_PASSERAS;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.PAMINNELSE_REDOVISA_BESOK;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.PAMINNELSE_SLUTDATUM_EXTERNFORFRAGAN_PASSERAS;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.SAMTLIGA_INTERNFORFRAGAN_BESVARATS;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.SLUTDATUM_UTREDNING_PASSERAT;
@@ -53,6 +54,7 @@ import static se.inera.intyg.intygsbestallning.service.notifiering.util.Notifier
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.paminnelseRedovisaBesok;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.paminnelseSlutDatumKomplettering;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.paminnelseSlutdatumUtredningMessage;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.paminnelseSvaraExternforfraganMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.slutdatumPasseratUtredningMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.uppdateradBestallningMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.vardenhetAvslutadUtredningMessage;
@@ -71,6 +73,7 @@ import static se.inera.intyg.intygsbestallning.service.notifiering.util.Notifier
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_NY_FMU_EXTERN_FORFRAGAN;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_NY_FMU_INTERN_FORFRAGAN;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_PAMINNELSE_SLUTDATUM_KOMPLETTERING;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_PAMINNELSE_SVARA_EXTERNFORFRAGAN;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_REDOVISA_BESOK;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_SAMTLIGA_INTERNFORFRAGAN_BESVARATS;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_UTREDNING_SLUTDATUM_PAMINNELSE;
@@ -221,7 +224,20 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
     @Override
     public void notifieraLandstingPaminnelseSvaraExternforfragan(Utredning utredning) {
-        throw new NotImplementedException();
+
+        final String vardgivareHsaId = utredning.getExternForfragan().get().getLandstingHsaId();
+
+        final GetNotificationPreferenceResponse preferens =
+                notifieringPreferenceService.getNotificationPreference(vardgivareHsaId, VG);
+
+        if (preferens.isEnabled(PAMINNELSE_SLUTDATUM_EXTERNFORFRAGAN_PASSERAS, LANDSTING)) {
+            String email = preferens.getLandstingEpost();
+            String body = notifieringMailBodyFactory.buildBodyForUtredning(
+                    paminnelseSvaraExternforfraganMessage(utredning),
+                    maillinkRedirectUrlBuilder.buildSamordnareUtredningUrl(utredning.getUtredningId()));
+            sendNotifiering(email, SUBJECT_PAMINNELSE_SVARA_EXTERNFORFRAGAN, body, utredning.getUtredningId());
+            saveNotifiering(utredning, PAMINNELSE_SLUTDATUM_EXTERNFORFRAGAN_PASSERAS, LANDSTING);
+        }
     }
 
     @Override

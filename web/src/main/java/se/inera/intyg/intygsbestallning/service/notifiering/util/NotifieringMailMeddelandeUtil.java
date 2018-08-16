@@ -166,4 +166,11 @@ public final class NotifieringMailMeddelandeUtil {
         return MessageFormat.format("Försäkringskassan har begärt komplettering av utlåtandet i utredning {0}.",
                 utredning.getUtredningId());
     }
+
+    public static String paminnelseSvaraExternforfraganMessage(final Utredning utredning) {
+        return MessageFormat.format("Förfrågan {0} om försäkringsmedicinska utredning (FMU) har ännu inte besvarats av landstinget. "
+                + "Vänligen besvara förfrågan senast {1}.",
+                utredning.getUtredningId(),
+                utredning.getExternForfragan().get().getBesvarasSenastDatum().format(DateTimeFormatter.ISO_DATE));
+    }
 }

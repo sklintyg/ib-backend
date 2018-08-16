@@ -42,6 +42,7 @@ public final class NotifieringMailSubjectConstants {
     public static final String SUBJECT_AVSLUTAD_UTREDNING = "Försäkringskassan har avbrutit utredningen";
     public static final String SUBJECT_REDOVISA_BESOK = "Redovisa besök";
     public static final String SUBJECT_KOMPLETTERING_BEGARD = "Försäkringskassan har begärt komplettering";
+    public static final String SUBJECT_PAMINNELSE_SVARA_EXTERNFORFRAGAN = "Påminnelse: Svarsdatum för en FMU förfrågan är på väg att passeras";
 
     //CHECKSTYLE:ON LineLength
 }
