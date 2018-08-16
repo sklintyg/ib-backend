@@ -18,46 +18,6 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
-import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
-import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
-import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handelse.HandelseBuilder.aHandelse;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
-import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
-import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
-import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
-import static se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp.BESTALLNING;
-import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU;
-import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU_UTVIDGAD;
-import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.LIAG;
-import static se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest.AssessmentRequestBuilder.anAssessmentRequest;
-import static se.inera.intyg.intygsbestallning.service.utredning.dto.AvslutaUtredningRequest.EndUtredningRequestBuilder.anEndUtredningRequest;
-import static se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare.BestallareBuilder.aBestallare;
-import static se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest.OrderRequestBuilder.anOrderRequest;
-import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.DATE_TIME;
-import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createBestallning;
-import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createExternForfragan;
-import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createHandlaggare;
-import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createUpdateOrderType;
-import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createUtredning;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.junit.Before;
@@ -71,17 +31,6 @@ import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
-import se.riv.infrastructure.directory.organization.getunitresponder.v1.UnitType;
-import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
-import se.riv.intygsbestallning.certificate.order.v1.AuthorityAdministrativeOfficialType;
-import javax.xml.ws.WebServiceException;
-import java.text.MessageFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 import se.inera.intyg.infra.integration.hsa.client.OrganizationUnitService;
 import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
@@ -118,6 +67,59 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtre
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveBetalningForUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveUtbetalningForUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItemFactory;
+import se.riv.infrastructure.directory.organization.getunitresponder.v1.UnitType;
+import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
+import se.riv.intygsbestallning.certificate.order.v1.AuthorityAdministrativeOfficialType;
+
+import javax.xml.ws.WebServiceException;
+import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
+import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
+import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
+import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handelse.HandelseBuilder.aHandelse;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
+import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
+import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
+import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp.BESTALLNING;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU_UTVIDGAD;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.LIAG;
+import static se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest.AssessmentRequestBuilder.anAssessmentRequest;
+import static se.inera.intyg.intygsbestallning.service.utredning.dto.AvslutaUtredningRequest.EndUtredningRequestBuilder.anEndUtredningRequest;
+import static se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare.BestallareBuilder.aBestallare;
+import static se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest.OrderRequestBuilder.anOrderRequest;
+import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.DATE_TIME;
+import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createBestallning;
+import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createExternForfragan;
+import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createHandlaggare;
+import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createUpdateOrderType;
+import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createUtredning;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtredningServiceImplTest {
@@ -865,6 +867,19 @@ public class UtredningServiceImplTest {
 
         final Utredning utredning = anUtredning()
                 .withUtredningId(utredningId)
+                .withBestallning(aBestallning()
+                        .withId(1L)
+                        .build())
+                .withBesokList(Lists.newArrayList(
+                        aBesok()
+                                .withTolkStatus(TolkStatusTyp.DELTAGIT)
+                                .withBesokStatus(BesokStatusTyp.AVSLUTAD_VARDKONTAKT)
+                                .withHandelseList(Lists.newArrayList(
+                                        aHandelse()
+                                                .withHandelseTyp(HandelseTyp.AVVIKELSE_RAPPORTERAD)
+                                                .build()))
+                                .build()
+                ))
                 .withStatus(UtredningStatus.UTREDNING_PAGAR)
                 .withExternForfragan(anExternForfragan()
                         .withInternForfraganList(Lists.newArrayList(
@@ -876,6 +891,11 @@ public class UtredningServiceImplTest {
                                                 .build())
                                         .build()))
                         .build())
+                .withIntygList(ImmutableList.of(anIntyg()
+                        .withFragestallningMottagenDatum(DATE_TIME.plusMonths(2))
+                        .withSistaDatum(DATE_TIME.plusMonths(2).plusWeeks(2))
+                        .build()
+                ))
                 .build();
 
         Utredning uppdateradUtredning = Utredning.copyFrom(utredning);
@@ -942,7 +962,7 @@ public class UtredningServiceImplTest {
                 .withBesokList(Lists.newArrayList(
                         aBesok()
                                 .withTolkStatus(TolkStatusTyp.DELTAGIT)
-                                .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
+                                .withBesokStatus(BesokStatusTyp.AVSLUTAD_VARDKONTAKT)
                                 .withHandelseList(Lists.newArrayList(
                                         aHandelse()
                                                 .withHandelseTyp(HandelseTyp.AVVIKELSE_RAPPORTERAD)
@@ -967,6 +987,13 @@ public class UtredningServiceImplTest {
                                                 .build())
                                         .build()))
                         .build())
+                .withIntygList(ImmutableList.of(anIntyg()
+                        .withFragestallningMottagenDatum(DATE_TIME.plusMonths(2))
+                        .withSistaDatum(DATE_TIME.plusMonths(2).plusWeeks(2))
+                        .withSkickatDatum(DATE_TIME.plusMonths(2))
+                        .withMottagetDatum(DATE_TIME.plusMinutes(2).plusDays(3))
+                        .build()
+                ))
                 .build();
 
         Utredning uppdateradUtredning = Utredning.copyFrom(utredning);

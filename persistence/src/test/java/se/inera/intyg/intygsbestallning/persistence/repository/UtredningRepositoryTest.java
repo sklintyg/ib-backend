@@ -324,6 +324,7 @@ public class UtredningRepositoryTest {
     @Test
     public void testFindUtredningByBesokId() {
         Utredning utredning = buildUtredning();
+        utredning.setBestallning(buildBestallning());
 
         utredning.setBesokList(ImmutableList.of(buildBesok()));
 
