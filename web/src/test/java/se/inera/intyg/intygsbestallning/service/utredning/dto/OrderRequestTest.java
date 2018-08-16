@@ -146,6 +146,18 @@ public class OrderRequestTest {
                 .hasMessage("Invalid Personal Identity Format for Citizen");
     }
 
+    @Test
+    public void testConvertFailCitizenPersonalIdWithDash() {
+        OrderAssessmentType request = createFullRequest();
+        request.getCitizen().setPersonalIdentity(anII(null, "19121212-1212"));
+
+        assertThatThrownBy(() -> OrderRequest.from(request))
+                .isExactlyInstanceOf(IbServiceException.class)
+                .hasFieldOrPropertyWithValue("errorCode", BAD_REQUEST)
+                .hasMessage("Invalid Personal Identity Format for Citizen");
+    }
+
+
     @NotNull
     private OrderAssessmentType createFullRequest() {
         OrderAssessmentType request = new OrderAssessmentType();

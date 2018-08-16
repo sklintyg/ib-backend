@@ -129,8 +129,12 @@ public final class OrderRequest {
                     Personnummer.createPersonnummer(source.getCitizen().getPersonalIdentity().getExtension());
             if (!pIdentity.isPresent()) {
                 errors.add("Invalid Personal Identity Format for Citizen");
+            } else {
+                // Since createPersonnummer is lax by design, also check that input matches NORMALIZED personnummer.
+                if (!pIdentity.get().getPersonnummer().equals(source.getCitizen().getPersonalIdentity().getExtension())) {
+                    errors.add("Invalid Personal Identity Format for Citizen");
+                }
             }
-
         } catch (Exception e) {
             errors.add("Invalid Personal Identity Format for Citizen");
         }
