@@ -446,7 +446,9 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
             utredning = utredningBuilder.build();
             checkState(Objects.equals(UtredningStatus.VANTAR_PA_SVAR, UtredningStatusResolver.resolveStaticStatus(utredning)));
             sparadUtredning = utredningRepository.saveUtredning(utredning);
-            notifieringSendService.notifieraVardenhetNyInternforfragan(utredning);
+            //In this case we know that this is the only internforfragan
+            InternForfragan internForfragan = sparadUtredning.getExternForfragan().get().getInternForfraganList().get(0);
+            notifieringSendService.notifieraVardenhetNyInternforfragan(sparadUtredning, internForfragan);
         } else {
             //FMU-004: Normalflöde 1 - Landstinget tar emot externförfrågan
             handelse = HandelseUtil.createExternForfraganMottagen(request.getLandstingHsaId());

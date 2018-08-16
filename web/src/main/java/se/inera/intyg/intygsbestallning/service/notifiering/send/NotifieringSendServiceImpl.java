@@ -19,7 +19,6 @@
 package se.inera.intyg.intygsbestallning.service.notifiering.send;
 
 import static com.google.common.base.Preconditions.checkState;
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType.VE;
 import static se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType.VG;
@@ -44,9 +43,7 @@ import static se.inera.intyg.intygsbestallning.persistence.model.type.Notifierin
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.UTREDNING_TILLDELAD;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.avslutadPgaJavMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.avvikelseRapporteradAvVardenMessage;
-import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.externForfraganUrl;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.ingenBestallningMessage;
-import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.internForfraganUrl;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.kompletteringBegard;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.landstingAvslutadUtredningMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.landstingAvvikelseRapporteradAvFKMessage;
@@ -58,7 +55,6 @@ import static se.inera.intyg.intygsbestallning.service.notifiering.util.Notifier
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.paminnelseSlutdatumUtredningMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.slutdatumPasseratUtredningMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.uppdateradBestallningMessage;
-import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.utredningUrl;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.vardenhetAvslutadUtredningMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.vardenhetAvvikelseRapporteradAvFKMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.vardenhetNyInternforfraganMessage;
@@ -80,18 +76,22 @@ import static se.inera.intyg.intygsbestallning.service.notifiering.util.Notifier
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_UTREDNING_SLUTDATUM_PAMINNELSE;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_UTREDNING_SLUTDATUM_PASSERAT;
 
-import com.google.common.base.Strings;
+import java.lang.invoke.MethodHandles;
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import javax.mail.MessagingException;
+
 import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import javax.mail.MessagingException;
-import java.lang.invoke.MethodHandles;
-import java.text.MessageFormat;
-import java.time.LocalDateTime;
-import java.util.List;
+
+import com.google.common.base.Strings;
+
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
@@ -109,6 +109,7 @@ import se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringEpos
 import se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailBodyFactory;
 import se.inera.intyg.intygsbestallning.service.vardenhet.VardenhetService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.notification.GetNotificationPreferenceResponse;
+import se.inera.intyg.intygsbestallning.web.controller.integration.MaillinkRedirectUrlBuilder;
 
 @Service
 @Transactional
@@ -137,6 +138,9 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
     @Autowired
     private NotifieringEpostResolver epostResolver;
 
+    @Autowired
+    private MaillinkRedirectUrlBuilder maillinkRedirectUrlBuilder;
+
     @Override
     public void notifieraLandstingNyExternforfragan(Utredning utredning) {
         checkState(utredning.getExternForfragan().isPresent());
@@ -146,11 +150,12 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
         final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VG);
 
         if (preferens.isEnabled(NY_EXTERNFORFRAGAN, LANDSTING)) {
+           //skall väl använda landstingets epost?
             final String email = vardenhetService.getVardEnhetPreference(id).getEpost();
             if (isNotEmpty(email)) {
                 final String body = notifieringMailBodyFactory.buildBodyForUtredning(
                         landstingNyExternforfraganMessage(),
-                        externForfraganUrl(utredning));
+                        maillinkRedirectUrlBuilder.buildSamordnareUtredningUrl(utredning.getUtredningId()));
                 sendNotifiering(email, SUBJECT_NY_FMU_EXTERN_FORFRAGAN, body, utredning.getUtredningId());
                 saveNotifiering(utredning, NY_EXTERNFORFRAGAN, LANDSTING);
             }
@@ -158,22 +163,15 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
     }
 
     @Override
-    public void notifieraVardenhetNyInternforfragan(Utredning utredning) {
-        checkState(utredning.getExternForfragan().isPresent());
-        checkState(isNotEmpty(utredning.getExternForfragan().get().getInternForfraganList()));
-        checkState(utredning.getExternForfragan().map(ExternForfragan::getLandstingHsaId).isPresent());
-
-        String landstingsHsaId = utredning.getExternForfragan().map(ExternForfragan::getLandstingHsaId).get();
-
-        final InternForfragan internForfragan = utredning.getExternForfragan().get().getInternForfraganList().get(0);
-        final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(landstingsHsaId, VG);
+    public void notifieraVardenhetNyInternforfragan(Utredning utredning, InternForfragan internForfragan) {
+        final GetNotificationPreferenceResponse preferens = notifieringPreferenceService
+                .getNotificationPreference(internForfragan.getVardenhetHsaId(), VE);
 
         if (preferens.isEnabled(NY_INTERNFORFRAGAN, VARDENHET)) {
-            epostResolver.resolveVardenhetNotifieringEpost(landstingsHsaId, utredning).ifPresent(email -> {
+            epostResolver.resolveVardenhetNotifieringEpost(internForfragan.getVardenhetHsaId(), utredning).ifPresent(email -> {
                 final String body = notifieringMailBodyFactory.buildBodyForUtredning(
                         vardenhetNyInternforfraganMessage(internForfragan),
-                        internForfraganUrl(utredning));
-
+                        maillinkRedirectUrlBuilder.buildVardadminInternForfraganUrl(internForfragan.getId()));
                 sendNotifiering(email, SUBJECT_NY_FMU_INTERN_FORFRAGAN, body, utredning.getUtredningId());
                 saveNotifiering(utredning, NY_INTERNFORFRAGAN, VARDENHET);
             });
@@ -191,7 +189,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
             final String email = preferens.getLandstingEpost();
             final String body = notifieringMailBodyFactory.buildBodyForUtredning(
                     landstingSamtligaInternForfraganBesvaradeforfraganMessage(utredning),
-                    utredningUrl(utredning));
+                    maillinkRedirectUrlBuilder.buildSamordnareUtredningUrl(utredning.getUtredningId()));
 
             sendNotifiering(email, SUBJECT_SAMTLIGA_INTERNFORFRAGAN_BESVARATS, body, utredning.getUtredningId());
             saveNotifiering(utredning, SAMTLIGA_INTERNFORFRAGAN_BESVARATS, LANDSTING);
@@ -208,7 +206,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
             epostResolver.resolveVardenhetNotifieringEpost(tillDeladInternForfragan.getVardenhetHsaId(), utredning).ifPresent(email -> {
                 final String body = notifieringMailBodyFactory.buildBodyForUtredning(
                         vardenhetTilldeladUtredning(utredning, landstingNamn),
-                        utredningUrl(utredning));
+                        maillinkRedirectUrlBuilder.buildVardadminInternForfraganUrl(tillDeladInternForfragan.getId()));
 
                 sendNotifiering(email, SUBJECT_FMU_UTREDNING_TILLDELAD_VARDENHETEN, body, utredning.getUtredningId());
                 saveNotifiering(utredning, UTREDNING_TILLDELAD, VARDENHET);
@@ -239,7 +237,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
             String email = preferens.getLandstingEpost();
             String body = notifieringMailBodyFactory.buildBodyForUtredning(
                     ingenBestallningMessage(utredning),
-                    utredningUrl(utredning));
+                    maillinkRedirectUrlBuilder.buildSamordnareUtredningUrl(utredning.getUtredningId()));
             sendNotifiering(email, SUBJECT_INGEN_BESTALLNING, body, utredning.getUtredningId());
             saveNotifiering(utredning, INGEN_BESTALLNING, LANDSTING);
         }
@@ -254,7 +252,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
             epostResolver.resolveVardenhetNotifieringEpost(internForfragan.getVardenhetHsaId(), utredning).ifPresent(email -> {
                 String body = notifieringMailBodyFactory.buildBodyForUtredning(
                         ingenBestallningMessage(utredning),
-                        internForfraganUrl(utredning));
+                        maillinkRedirectUrlBuilder.buildVardadminInternForfraganUrl(internForfragan.getId()));
 
                 sendNotifiering(email, SUBJECT_INGEN_BESTALLNING, body, utredning.getUtredningId());
                 saveNotifiering(utredning, INGEN_BESTALLNING, VARDENHET);
@@ -272,7 +270,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
             epostResolver.resolveVardenhetNotifieringEpost(id, utredning).ifPresent(email -> {
                 String body = notifieringMailBodyFactory.buildBodyForUtredning(
                         nyBestallningMessage(utredning),
-                        utredningUrl(utredning));
+                        maillinkRedirectUrlBuilder.buildVardadminBestallningUrl(utredning.getUtredningId()));
 
                 sendNotifiering(email, SUBJECT_BESTALLNING_AV_FRORSAKRINGSMEDICINSK_UTREDNING, body, utredning.getUtredningId());
                 saveNotifiering(utredning, NY_BESTALLNING, VARDENHET);
@@ -292,7 +290,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
             String email = preferens.getLandstingEpost();
             String body = notifieringMailBodyFactory.buildBodyForUtredning(
                     avslutadPgaJavMessage(utredning),
-                    utredningUrl(utredning));
+                    maillinkRedirectUrlBuilder.buildSamordnareUtredningUrl(utredning.getUtredningId()));
             sendNotifiering(email, SUBJECT_AVSLUTAD_PGA_JAV, body, utredning.getUtredningId());
             saveNotifiering(utredning, UTREDNING_AVSLUTAD_PGA_JAV, LANDSTING);
         }
@@ -308,7 +306,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
             epostResolver.resolveVardenhetNotifieringEpost(id, utredning).ifPresent(email -> {
                 String body = notifieringMailBodyFactory.buildBodyForUtredning(
                         avslutadPgaJavMessage(utredning),
-                        utredningUrl(utredning));
+                        maillinkRedirectUrlBuilder.buildVardadminBestallningUrl(utredning.getUtredningId()));
                 sendNotifiering(email, SUBJECT_AVSLUTAD_PGA_JAV, body, utredning.getUtredningId());
                 saveNotifiering(utredning, UTREDNING_AVSLUTAD_PGA_JAV, VARDENHET);
             });
@@ -325,7 +323,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
             epostResolver.resolveVardenhetNotifieringEpost(id, utredning).ifPresent(email -> {
                 String body = notifieringMailBodyFactory.buildBodyForUtredning(
                         uppdateradBestallningMessage(utredning),
-                        utredningUrl(utredning));
+                        maillinkRedirectUrlBuilder.buildVardadminBestallningUrl(utredning.getUtredningId()));
 
                 sendNotifiering(email, SUBJECT_BESTALLNING_UPPDATERAD, body, utredning.getUtredningId());
                 saveNotifiering(utredning, UPPDATERAD_BESTALLNING, VARDENHET);
@@ -344,7 +342,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
             final String email = preferens.getLandstingEpost();
             final String body = notifieringMailBodyFactory.buildBodyForUtredning(
                     avvikelseRapporteradAvVardenMessage(utredning, besok),
-                    utredningUrl(utredning));
+                    maillinkRedirectUrlBuilder.buildSamordnareUtredningUrl(utredning.getUtredningId()));
 
             sendNotifiering(email, SUBJECT_AVVIKELSE_RAPPORTERAD_AV_VARDEN, body, utredning.getUtredningId());
             saveNotifiering(utredning, AVVIKELSE_RAPPORTERAD_AV_VARDEN, LANDSTING);
@@ -361,7 +359,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
             epostResolver.resolveVardenhetNotifieringEpost(id, utredning).ifPresent(email -> {
                 final String body = notifieringMailBodyFactory.buildBodyForUtredning(
                         vardenhetAvvikelseRapporteradAvFKMessage(utredning, besok),
-                        utredningUrl(utredning));
+                        maillinkRedirectUrlBuilder.buildVardadminBestallningUrl(utredning.getUtredningId()));
 
                 sendNotifiering(email, SUBJECT_AVVIKELSE_MOTTAGEN_FRAN_FK, body, utredning.getUtredningId());
                 saveNotifiering(utredning, AVVIKELSE_MOTTAGEN_AV_FK, VARDENHET);
@@ -380,7 +378,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
             final String email = preferens.getLandstingEpost();
             final String body = notifieringMailBodyFactory.buildBodyForUtredning(
                     landstingAvvikelseRapporteradAvFKMessage(utredning, besok),
-                    utredningUrl(utredning));
+                    maillinkRedirectUrlBuilder.buildSamordnareUtredningUrl(utredning.getUtredningId()));
 
             sendNotifiering(email, SUBJECT_AVVIKELSE_MOTTAGEN_FRAN_FK, body, utredning.getUtredningId());
             saveNotifiering(utredning, AVVIKELSE_MOTTAGEN_AV_FK, LANDSTING);
@@ -397,7 +395,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
             epostResolver.resolveVardenhetNotifieringEpost(id, utredning).ifPresent(email -> {
                 final String body = notifieringMailBodyFactory.buildBodyForUtredning(
                         vardenhetAvslutadUtredningMessage(utredning),
-                        utredningUrl(utredning));
+                        maillinkRedirectUrlBuilder.buildVardadminBestallningUrl(utredning.getUtredningId()));
 
                 sendNotifiering(email, SUBJECT_AVSLUTAD_UTREDNING, body, utredning.getUtredningId());
                 saveNotifiering(utredning, UTREDNING_AVSLUTAD_PGA_AVBRUTEN, VARDENHET);
@@ -416,7 +414,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
             final String email = preferens.getLandstingEpost();
             final String body = notifieringMailBodyFactory.buildBodyForUtredning(
                     landstingAvslutadUtredningMessage(utredning),
-                    utredningUrl(utredning));
+                    maillinkRedirectUrlBuilder.buildSamordnareUtredningUrl(utredning.getUtredningId()));
 
             sendNotifiering(email, SUBJECT_AVSLUTAD_UTREDNING, body, utredning.getUtredningId());
             saveNotifiering(utredning, UTREDNING_AVSLUTAD_PGA_AVBRUTEN, LANDSTING);
@@ -433,7 +431,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
             epostResolver.resolveVardenhetNotifieringEpost(id, utredning).ifPresent(email -> {
                 String body = notifieringMailBodyFactory.buildBodyForUtredning(
                         paminnelseSlutdatumUtredningMessage(utredning),
-                        utredningUrl(utredning));
+                        maillinkRedirectUrlBuilder.buildVardadminBestallningUrl(utredning.getUtredningId()));
 
                 sendNotifiering(email, SUBJECT_UTREDNING_SLUTDATUM_PAMINNELSE, body, utredning.getUtredningId());
                 saveNotifiering(utredning, PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS, VARDENHET);
@@ -451,7 +449,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
             epostResolver.resolveVardenhetNotifieringEpost(id, utredning).ifPresent(email -> {
                 String body = notifieringMailBodyFactory.buildBodyForUtredning(
                         slutdatumPasseratUtredningMessage(utredning),
-                        utredningUrl(utredning));
+                        maillinkRedirectUrlBuilder.buildVardadminBestallningUrl(utredning.getUtredningId()));
 
                 sendNotifiering(email, SUBJECT_UTREDNING_SLUTDATUM_PASSERAT, body, utredning.getUtredningId());
                 saveNotifiering(utredning, SLUTDATUM_UTREDNING_PASSERAT, VARDENHET);
@@ -472,7 +470,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
             String body = notifieringMailBodyFactory.buildBodyForUtredning(
                     slutdatumPasseratUtredningMessage(utredning),
-                    utredningUrl(utredning));
+                    maillinkRedirectUrlBuilder.buildSamordnareUtredningUrl(utredning.getUtredningId()));
 
             sendNotifiering(email, SUBJECT_UTREDNING_SLUTDATUM_PASSERAT, body, utredning.getUtredningId());
             saveNotifiering(utredning, SLUTDATUM_UTREDNING_PASSERAT, LANDSTING);
@@ -489,7 +487,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
             epostResolver.resolveVardenhetNotifieringEpost(id, utredning).ifPresent(email -> {
                 final String body = notifieringMailBodyFactory.buildBodyForUtredning(
                         kompletteringBegard(utredning),
-                        utredningUrl(utredning));
+                        maillinkRedirectUrlBuilder.buildVardadminBestallningUrl(utredning.getUtredningId()));
 
                 sendNotifiering(email, SUBJECT_KOMPLETTERING_BEGARD, body, utredning.getUtredningId());
                 saveNotifiering(utredning, KOMPLETTERING_BEGARD, VARDENHET);
@@ -514,7 +512,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
                         final String body = notifieringMailBodyFactory.buildBodyForUtredning(
                                 paminnelseSlutDatumKomplettering(utredning, intyg),
-                                utredningUrl(utredning));
+                                maillinkRedirectUrlBuilder.buildVardadminBestallningUrl(utredning.getUtredningId()));
                         sendNotifiering(email, SUBJECT_PAMINNELSE_SLUTDATUM_KOMPLETTERING, body, utredning.getUtredningId());
                         updateUtredningWithNotifiering(utredning, intyg.getId(), PAMINNELSEDATUM_KOMPLETTERING_PASSERAS, VARDENHET);
                     }));
@@ -543,7 +541,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
             if (isNotEmpty(email)) {
                 final String body = notifieringMailBodyFactory.buildBodyForUtredning(
                         paminnelseRedovisaBesok(utredning),
-                        utredningUrl(utredning));
+                        maillinkRedirectUrlBuilder.buildVardadminBestallningUrl(utredning.getUtredningId()));
 
                 sendNotifiering(email, SUBJECT_REDOVISA_BESOK, body, utredning.getUtredningId());
                 saveNotifiering(utredning, PAMINNELSE_REDOVISA_BESOK, VARDENHET);

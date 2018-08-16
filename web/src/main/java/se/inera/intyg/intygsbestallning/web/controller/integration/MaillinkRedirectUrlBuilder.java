@@ -20,6 +20,7 @@ package se.inera.intyg.intygsbestallning.web.controller.integration;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
@@ -33,34 +34,61 @@ import org.stringtemplate.v4.STGroupFile;
 public class MaillinkRedirectUrlBuilder {
     private STGroup templateGroup;
 
+    @Value("${mail.ib.host.url}")
+    private String hostUrl;
+
     @PostConstruct
     public void initTemplates() {
         templateGroup = new STGroupFile("notification-templates/mail-redirect-links.stg");
     }
 
-    public String buildVardadminInternforfraganRedirect(String internforfraganId) {
-        ST internforfraganTemplate = templateGroup.getInstanceOf("internforfragan");
+    public String buildVardadminInternForfraganUrl(Long internforfraganId) {
+        ST internforfraganTemplate = templateGroup.getInstanceOf("internforfragan_url");
+        internforfraganTemplate.add("host", hostUrl);
         internforfraganTemplate.add("internforfraganId", internforfraganId);
 
         return internforfraganTemplate.render();
     }
 
+    public String buildVardadminInternforfraganRedirect(String internforfraganId) {
+        ST internforfraganTemplate = templateGroup.getInstanceOf("internforfragan_redirect");
+        internforfraganTemplate.add("internforfraganId", internforfraganId);
+
+        return internforfraganTemplate.render();
+    }
+
+    public String buildVardadminBestallningUrl(Long utredningId) {
+        ST externForfragan = templateGroup.getInstanceOf("bestallning_url");
+        externForfragan.add("host", hostUrl);
+        externForfragan.add("utredningId", utredningId);
+
+        return externForfragan.render();
+    }
+
     public String buildVardadminBestallningRedirect(String utredningId) {
-        ST bestallningTemplate = templateGroup.getInstanceOf("bestallning");
+        ST bestallningTemplate = templateGroup.getInstanceOf("bestallning_redirect");
         bestallningTemplate.add("utredningId", utredningId);
 
         return bestallningTemplate.render();
     }
 
+    public String buildSamordnareUtredningUrl(Long utredningId) {
+        ST externForfragan = templateGroup.getInstanceOf("samordnareutredning_url");
+        externForfragan.add("host", hostUrl);
+        externForfragan.add("utredningId", utredningId);
+
+        return externForfragan.render();
+    }
+
     public String buildSamordnareUtredningRedirect(String utredningId) {
-        ST utredningTemplate = templateGroup.getInstanceOf("samordnareutredning");
+        ST utredningTemplate = templateGroup.getInstanceOf("samordnareutredning_redirect");
         utredningTemplate.add("utredningId", utredningId);
 
         return utredningTemplate.render();
     }
 
     public String buildErrorRedirect(String reason) {
-        ST errorTemplate = templateGroup.getInstanceOf("errorview");
+        ST errorTemplate = templateGroup.getInstanceOf("errorview_redirect");
         errorTemplate.add("reason", reason);
 
         return errorTemplate.render();

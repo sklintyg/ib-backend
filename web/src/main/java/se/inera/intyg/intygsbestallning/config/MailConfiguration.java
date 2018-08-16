@@ -41,6 +41,9 @@ public class MailConfiguration {
     @Value("${mail.smtps.auth}")
     private String mailSmtpsAuth;
 
+    @Value("${mail.protocol}")
+    private String mailProtocol;
+
     @Value("${mail.smtps.starttls.enable}")
     private String mailSmtpsStarttlsEnable;
 
@@ -54,7 +57,7 @@ public class MailConfiguration {
         mailSender.setHost(mailHost);
         mailSender.setUsername(mailUsername);
         mailSender.setPassword(mailPassword);
-        mailSender.setProtocol("stmps");
+        mailSender.setProtocol(mailProtocol);
         Properties props = new Properties();
         props.setProperty("mail.smtps.auth", mailSmtpsAuth);
         props.setProperty("mail.smtps.starttls.enable", mailSmtpsStarttlsEnable);

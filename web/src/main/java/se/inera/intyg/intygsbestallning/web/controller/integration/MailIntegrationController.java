@@ -46,6 +46,7 @@ public class MailIntegrationController {
     public static final String ERROR_LINK_ENITY_NOT_FOUND = "mail.link.entity.not.found";
     public static final String ERROR_NO_HSA_AUTH = "mail.no.hsa.auth";
     private static final Logger LOG = LoggerFactory.getLogger(MailIntegrationController.class);
+
     @Autowired
     private MaillinkRedirectUrlBuilder maillinkRedirectUrlBuilder;
 

@@ -27,7 +27,7 @@ public interface NotifieringSendService {
 
     void notifieraLandstingNyExternforfragan(Utredning utredning);
 
-    void notifieraVardenhetNyInternforfragan(Utredning utredning);
+    void notifieraVardenhetNyInternforfragan(Utredning utredning, InternForfragan internForfragan);
 
     void notifieraLandstingSamtligaVardenheterHarSvaratPaInternforfragan(Utredning utredning);
 

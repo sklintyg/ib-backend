@@ -1,17 +1,29 @@
 delimiters "$", "$"
 
-internforfragan(internforfraganId) ::= <<
+internforfragan_url(host, internforfraganId) ::= <<
+$host$/maillink/internforfragan/$internforfraganId$
+>>
+
+internforfragan_redirect(internforfraganId) ::= <<
 redirect:/#app/vardadmin/listaForfragningar/visaInternForfragan/$internforfraganId$
 >>
 
-bestallning(utredningId) ::= <<
+bestallning_url(host, utredningId) ::= <<
+$host$/maillink/bestallning/$utredningId$
+>>
+
+bestallning_redirect(utredningId) ::= <<
 redirect:/#app/vardadmin/pagaendeBestallningar/visaBestallning/$utredningId$/0
 >>
 
-samordnareutredning(utredningId) ::= <<
+samordnareutredning_url(host, utredningId) ::= <<
+$host$/maillink/externforfragan/$utredningId$
+>>
+
+samordnareutredning_redirect(utredningId) ::= <<
 redirect:/#app/samordnare/listaUtredningar/visaUtredning/$utredningId$
 >>
 
-errorview(reason) ::= <<
+errorview_redirect(reason) ::= <<
 redirect:/index.html?reason=$reason$
 >>

@@ -79,6 +79,7 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import se.inera.intyg.infra.integration.hsa.client.OrganizationUnitService;
@@ -409,6 +410,12 @@ public class UtredningServiceImplTest {
                         .withInkomDatum(LocalDateTime.now())
                         .withBesvarasSenastDatum(dateTime)
                         .withKommentar("kommentar")
+                        .withInternForfraganList(
+                                Collections.singletonList(anInternForfragan()
+                                        .withVardenhetHsaId("ve1")
+                                        .withSkapadDatum(LocalDateTime.now())
+                                        .withKommentar("kommentar")
+                                        .build()))
                         .build())
                 .withHandlaggare(aHandlaggare()
                         .withAdress("address")
@@ -461,7 +468,7 @@ public class UtredningServiceImplTest {
         final Utredning sparadUtredning = utredningService.registerNewUtredning(request);
 
         assertEquals(utredning, sparadUtredning);
-        verify(notifieringSendService, times(1)).notifieraVardenhetNyInternforfragan(any(Utredning.class));
+        verify(notifieringSendService, times(1)).notifieraVardenhetNyInternforfragan(any(Utredning.class), any(InternForfragan.class));
     }
 
     @Test

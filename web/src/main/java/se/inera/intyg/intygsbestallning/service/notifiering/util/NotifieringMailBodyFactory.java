@@ -28,23 +28,21 @@ import javax.annotation.PostConstruct;
 @Component
 public class NotifieringMailBodyFactory {
 
-    private ST utredningTemplate;
-    private ST forfraganTemplate;
     private STGroup templateGroup;
 
     @PostConstruct
     public void initTemplates() {
         templateGroup = new STGroupFile("notification-templates/notifications.stg");
-        utredningTemplate = templateGroup.getInstanceOf("utredning");
-        forfraganTemplate = templateGroup.getInstanceOf("forfragan");
     }
 
     public String buildBodyForUtredning(String message, String url) {
+        ST utredningTemplate = templateGroup.getInstanceOf("utredning");
         utredningTemplate.add("data", new MailContent(message, url));
         return utredningTemplate.render();
     }
 
     public String buildBodyForForfragan(String message, String url) {
+        ST forfraganTemplate = templateGroup.getInstanceOf("forfragan");
         forfraganTemplate.add("data", new MailContent(message, url));
         return forfraganTemplate.render();
     }

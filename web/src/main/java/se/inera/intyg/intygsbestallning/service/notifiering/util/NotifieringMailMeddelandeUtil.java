@@ -32,18 +32,6 @@ public final class NotifieringMailMeddelandeUtil {
     private NotifieringMailMeddelandeUtil() {
     }
 
-    public static String externForfraganUrl(final Utredning utredning) {
-        return "<URL to EXTERNFORFRAGAN>";
-    }
-
-    public static String internForfraganUrl(final Utredning utredning) {
-        return "<URL to INTERNFORFRAGAN>";
-    }
-
-    public static String utredningUrl(final Utredning utredning) {
-        return "<URL to UTREDNING>";
-    }
-
     public static String landstingNyExternforfraganMessage() {
         return "Det har inkommit en ny förfrågan om en försäkringsmedicinsk utredning (FMU) från Försäkringskassan.";
     }
