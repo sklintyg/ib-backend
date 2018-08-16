@@ -16,7 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-angular.module('ibApp').directive('ibInternForfraganHeader', function($window, $state, $uibModal, InternForfraganSvarViewState, messageService) {
+angular.module('ibApp').directive('ibInternForfraganHeader', function($window, $state, $uibModal,
+    InternForfraganSvarViewState, messageService) {
     'use strict';
 
     return {
@@ -82,8 +83,15 @@ angular.module('ibApp').directive('ibInternForfraganHeader', function($window, $
                     keyboard: true,
                     windowClass: 'ib-acceptera-internforfragan-dialog-window-class'
                 });
-                //angular > 1.5 warns if promise rejection is not handled (e.g backdrop-click == rejection)
+
+                // angular > 1.5 warns if promise rejection is not handled (e.g backdrop-click == rejection)
                 dlgInstance.result.catch(function () {}); //jshint ignore:line
+
+                // wait for animation before reloading state to prevent artifacts if state is reloaded before modal is invisible
+                dlgInstance.closed.then(function() {
+                    //Things in related utredningsstate could have changed - reload state to make sure we show correct state of everything
+                    $state.reload();
+                });
 
             };
         }

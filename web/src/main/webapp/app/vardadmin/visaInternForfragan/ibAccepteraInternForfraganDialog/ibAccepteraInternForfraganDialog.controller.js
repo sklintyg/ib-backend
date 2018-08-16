@@ -72,9 +72,8 @@ angular.module('ibApp').controller('ibAccepteraInternForfraganDlgController',
             model.utforareTelefon = model.utforareTelefon.replace(/\s/g, '');
 
             $scope.vm.busy = true;
-           InternForfraganProxy.accepteraInternForfragan($stateParams.utredningsId, model).then(function() {
-                //Things in related utredningsstate could have changed - reload state to make sure we show correct state of everything
-                $state.reload();
+            InternForfraganProxy.accepteraInternForfragan($stateParams.utredningsId, model).then(function() {
+                $scope.$close();
             }, function(error) {}).finally(function() { // jshint ignore:line
                 $scope.vm.busy = false;
             });
