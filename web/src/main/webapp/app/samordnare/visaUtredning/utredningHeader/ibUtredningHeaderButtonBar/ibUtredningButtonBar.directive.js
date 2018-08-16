@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 angular.module('ibApp').directive('ibUtredningButtonBar',
-    function($uibModal, ExternForfraganProxy) {
+    function($uibModal, ExternForfraganProxy, $state) {
     'use strict';
 
     return {
@@ -62,7 +62,7 @@ angular.module('ibApp').directive('ibUtredningButtonBar',
                 }
                 ExternForfraganProxy.acceptExternForfragan($scope.utredning.utredningsId, vardenhetHsaId)
                     .then(function(data) {
-                        angular.copy(data, $scope.utredning);
+                        $state.reload();
                     }).finally(function() { // jshint ignore:line
                         $scope.vm.acceptInProgress = false;
                     });
