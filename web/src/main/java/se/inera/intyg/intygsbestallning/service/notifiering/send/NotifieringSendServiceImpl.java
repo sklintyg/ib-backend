@@ -169,7 +169,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
         if (preferens.isEnabled(NY_INTERNFORFRAGAN, VARDENHET)) {
             epostResolver.resolveVardenhetNotifieringEpost(internForfragan.getVardenhetHsaId(), utredning).ifPresent(email -> {
-                final String body = notifieringMailBodyFactory.buildBodyForUtredning(
+                final String body = notifieringMailBodyFactory.buildBodyForForfragan(
                         vardenhetNyInternforfraganMessage(landstingsNamn),
                         maillinkRedirectUrlBuilder.buildVardadminInternForfraganUrl(utredning.getUtredningId(), internForfragan.getId()));
                 sendNotifiering(email, SUBJECT_NY_FMU_INTERN_FORFRAGAN, body, utredning.getUtredningId());
@@ -204,7 +204,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
         if (preferens.isEnabled(UTREDNING_TILLDELAD, NotifieringMottagarTyp.VARDENHET)) {
             epostResolver.resolveVardenhetNotifieringEpost(tillDeladInternForfragan.getVardenhetHsaId(), utredning).ifPresent(email -> {
-                final String body = notifieringMailBodyFactory.buildBodyForUtredning(
+                final String body = notifieringMailBodyFactory.buildBodyForForfragan(
                         vardenhetTilldeladUtredning(utredning, landstingNamn),
                         maillinkRedirectUrlBuilder.buildVardadminInternForfraganUrl(utredning.getUtredningId(),
                                 tillDeladInternForfragan.getId()));
@@ -264,7 +264,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
         if (preferens.isEnabled(INGEN_BESTALLNING, VARDENHET)) {
             epostResolver.resolveVardenhetNotifieringEpost(internForfragan.getVardenhetHsaId(), utredning).ifPresent(email -> {
-                String body = notifieringMailBodyFactory.buildBodyForUtredning(
+                String body = notifieringMailBodyFactory.buildBodyForForfragan(
                         ingenBestallningMessage(utredning),
                         maillinkRedirectUrlBuilder.buildVardadminInternForfraganUrl(utredning.getUtredningId(), internForfragan.getId()));
 

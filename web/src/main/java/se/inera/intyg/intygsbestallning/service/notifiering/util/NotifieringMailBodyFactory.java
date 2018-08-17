@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.service.notifiering.util;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
@@ -28,6 +29,9 @@ import javax.annotation.PostConstruct;
 @Component
 public class NotifieringMailBodyFactory {
 
+    @Value("${mail.ib.host.url}")
+    private String hostUrl;
+
     private STGroup templateGroup;
 
     @PostConstruct
@@ -36,23 +40,27 @@ public class NotifieringMailBodyFactory {
     }
 
     public String buildBodyForUtredning(String message, String url) {
-        ST utredningTemplate = templateGroup.getInstanceOf("utredning");
-        utredningTemplate.add("data", new MailContent(message, url));
+        ST utredningTemplate = templateGroup.getInstanceOf("mail");
+        utredningTemplate.add("data", new MailContent(hostUrl, message, "utredningen",  url));
         return utredningTemplate.render();
     }
 
     public String buildBodyForForfragan(String message, String url) {
-        ST forfraganTemplate = templateGroup.getInstanceOf("forfragan");
-        forfraganTemplate.add("data", new MailContent(message, url));
+        ST forfraganTemplate = templateGroup.getInstanceOf("mail");
+        forfraganTemplate.add("data", new MailContent(hostUrl, message, "förfrågan", url));
         return forfraganTemplate.render();
     }
 
     private static final class MailContent {
+        public String hostUrl;
         public String message;
+        public String linkType;
         public String url;
 
-        MailContent(String message, String url) {
+        MailContent(String hostUrl, String message, String linkType, String url) {
+            this.hostUrl = hostUrl;
             this.message = message;
+            this.linkType = linkType;
             this.url = url;
         }
     }
