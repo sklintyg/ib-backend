@@ -60,9 +60,13 @@
         <p>Gå tillbaka till <a href="/">startsidan</a></p>
       </div>
 
-      <div ng-switch-when="mail.no.hsa.auth">
-        <h2>Du saknar behörighet för att använda denna länk.</h2>
-        <p>Gå tillbaka till <a href="/">startsidan</a></p>
+      <div ng-switch-when="mail.utredning.no.hsa.auth">
+        <h2>Åtkomst nekas</h2>
+        <p>Du saknar behörighet för att se den valda utredningen.<br> Det kan bero på att du inte har rätt systemroll eller saknar ett medarbetaruppdrag</p>
+      </div>
+      <div ng-switch-when="mail.forfragan.no.hsa.auth">
+        <h2>Åtkomst nekas</h2>
+        <p>Du saknar behörighet för att se den valda förfrågan.<br> Det kan bero på att du inte har rätt systemroll eller saknar ett medarbetaruppdrag</p>
       </div>
 
       <!-- catch all other / undefined reasons-->

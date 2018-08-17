@@ -44,7 +44,8 @@ import se.inera.intyg.intygsbestallning.service.user.UserService;
 public class MailIntegrationController {
 
     public static final String ERROR_LINK_ENITY_NOT_FOUND = "mail.link.entity.not.found";
-    public static final String ERROR_NO_HSA_AUTH = "mail.no.hsa.auth";
+    public static final String ERROR_UTREDNING_NO_HSA_AUTH = "mail.utredning.no.hsa.auth";
+    public static final String ERROR_FORFRAGAN_NO_HSA_AUTH = "mail.forfragan.no.hsa.auth";
     private static final Logger LOG = LoggerFactory.getLogger(MailIntegrationController.class);
 
     @Autowired
@@ -73,7 +74,7 @@ public class MailIntegrationController {
 
         // 2. Must be able to select internforfragan vardenhet hsaId as current enhet, i.e is authorized to view this vardenhet.
         if (!user.changeValdVardenhet(internForfragan.getVardenhetHsaId())) {
-            return errorViewRedirect(user, ERROR_NO_HSA_AUTH);
+            return errorViewRedirect(user, ERROR_FORFRAGAN_NO_HSA_AUTH);
         }
 
         return maillinkRedirectUrlBuilder.buildVardadminInternforfraganRedirect(utredningId);
@@ -93,7 +94,7 @@ public class MailIntegrationController {
 
         // 2. Must be able to select tilldelad vardenhet hsaId as current enhet, i.e is authorized to view this.
         if (!user.changeValdVardenhet(utredning.getBestallning().get().getTilldeladVardenhetHsaId())) {
-            return errorViewRedirect(user, ERROR_NO_HSA_AUTH);
+            return errorViewRedirect(user, ERROR_UTREDNING_NO_HSA_AUTH);
         }
 
         return maillinkRedirectUrlBuilder.buildVardadminBestallningRedirect(utredningId);
@@ -122,7 +123,7 @@ public class MailIntegrationController {
 
         // 2. Must be able to select externforfragans landstinghsaId as current enhet, i.e is authorized to view this.
         if (!user.changeValdVardenhet(utredning.getExternForfragan().get().getLandstingHsaId())) {
-            return errorViewRedirect(user, ERROR_NO_HSA_AUTH);
+            return errorViewRedirect(user, ERROR_UTREDNING_NO_HSA_AUTH);
         }
         return maillinkRedirectUrlBuilder.buildSamordnareUtredningRedirect(utredningId);
     }

@@ -20,8 +20,9 @@ package se.inera.intyg.intygsbestallning.web.controllers.integration;
 
 import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.containsString;
+import static se.inera.intyg.intygsbestallning.web.controller.integration.MailIntegrationController.ERROR_FORFRAGAN_NO_HSA_AUTH;
 import static se.inera.intyg.intygsbestallning.web.controller.integration.MailIntegrationController.ERROR_LINK_ENITY_NOT_FOUND;
-import static se.inera.intyg.intygsbestallning.web.controller.integration.MailIntegrationController.ERROR_NO_HSA_AUTH;
+import static se.inera.intyg.intygsbestallning.web.controller.integration.MailIntegrationController.ERROR_UTREDNING_NO_HSA_AUTH;
 
 import java.io.IOException;
 
@@ -86,7 +87,7 @@ public class MailIntegrationControllerIT extends BaseRestIntegrationTest {
                 .pathParam("internforfraganId", internforfraganId)
                 .expect()
                 .statusCode(HttpServletResponse.SC_FOUND).when().get("maillink/internforfragan/{utredningId}/{internforfraganId}")
-                .then().header(HttpHeaders.LOCATION, containsString(ERROR_NO_HSA_AUTH));
+                .then().header(HttpHeaders.LOCATION, containsString(ERROR_FORFRAGAN_NO_HSA_AUTH));
         // Clean up
         deleteUtredning(utredningId);
     }
@@ -143,7 +144,7 @@ public class MailIntegrationControllerIT extends BaseRestIntegrationTest {
         // Perform test
         given().redirects().follow(false).and().pathParam("id", utredningId).expect()
                 .statusCode(HttpServletResponse.SC_FOUND).when().get("maillink/bestallning/{id}")
-                .then().header(HttpHeaders.LOCATION, containsString(ERROR_NO_HSA_AUTH));
+                .then().header(HttpHeaders.LOCATION, containsString(ERROR_UTREDNING_NO_HSA_AUTH));
 
         // Clean up
         deleteUtredning(utredningId);
@@ -198,7 +199,7 @@ public class MailIntegrationControllerIT extends BaseRestIntegrationTest {
         // Perform test
         given().redirects().follow(false).and().pathParam("id", utredningId).expect()
                 .statusCode(HttpServletResponse.SC_FOUND).when().get("maillink/externforfragan/{id}")
-                .then().header(HttpHeaders.LOCATION, containsString(ERROR_NO_HSA_AUTH));
+                .then().header(HttpHeaders.LOCATION, containsString(ERROR_UTREDNING_NO_HSA_AUTH));
 
         // Clean up
         deleteUtredning(utredningId);
@@ -253,7 +254,7 @@ public class MailIntegrationControllerIT extends BaseRestIntegrationTest {
         // Perform test
         given().redirects().follow(false).and().pathParam("id", utredningId).expect()
                 .statusCode(HttpServletResponse.SC_FOUND).when().get("maillink/utredning/{id}")
-                .then().header(HttpHeaders.LOCATION, containsString(ERROR_NO_HSA_AUTH));
+                .then().header(HttpHeaders.LOCATION, containsString(ERROR_UTREDNING_NO_HSA_AUTH));
 
         // Clean up
         deleteUtredning(utredningId);
