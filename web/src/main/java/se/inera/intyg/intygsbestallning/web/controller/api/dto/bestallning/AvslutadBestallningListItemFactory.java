@@ -49,8 +49,8 @@ public class AvslutadBestallningListItemFactory {
                 .withVardgivareNamn("Enriched later")
                 .withAvslutsDatum(resolveAvslutsDatum(utredning))
                 .withErsatts(ErsattsResolver.resolveUtredningErsatts(utredning, businessDays))
-                .withFakturerad(nonNull(utredning.getBetalning()) ? utredning.getBetalning().getFakturaVeId() : null)
-                .withUtbetald(nonNull(utredning.getBetalning()) ? utredning.getBetalning().getBetaldVeId() : null)
+                .withFakturaVeid(nonNull(utredning.getBetalning()) ? utredning.getBetalning().getFakturaVeId() : null)
+                .withBetaldVeId(nonNull(utredning.getBetalning()) ? utredning.getBetalning().getBetaldVeId() : null)
                 .withUtredning(utredning) // Is used in xlsx export
                 .build();
     }

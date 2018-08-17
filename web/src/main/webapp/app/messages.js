@@ -280,9 +280,10 @@ var ibMessages = {
         'avslutade.utredningar.filter.avslutsdatum.label': 'Avslutsdatum',
         'avslutade.utredningar.filter.avslutsdatum.placeholder': 'Alla valda',
         'avslutade.utredningar.filter.ersatts.label': 'Ersätts',
-        'avslutade.utredningar.filter.fakturerad.label': 'Fakturerat',
-        'avslutade.utredningar.filter.betald.label': 'Betald',
-        'avslutade.utredningar.filter.utbetaldfk.label': 'Utbetald FK',
+        'avslutade.utredningar.filter.fakturerad.ve.label': 'Fakturerad VE',
+        'avslutade.utredningar.filter.betald.ve.label': 'Betald VE',
+        'avslutade.utredningar.filter.fakturerad.fk.label': 'Fakturerad FK',
+        'avslutade.utredningar.filter.betald.fk.label': 'Betald FK',
         'avslutade.utredningar.filter.status.label': 'Status',
         'avslutade.utredningar.filter.resetfilter.label': 'Återställ sökfilter',
 
@@ -294,9 +295,10 @@ var ibMessages = {
         'label.table.avslutade.utredningar.column.status': 'Status',
         'label.table.avslutade.utredningar.column.avslutsdatum': 'Avslutsdatum',
         'label.table.avslutade.utredningar.column.ersatts': 'Ersätts',
-        'label.table.avslutade.utredningar.column.fakturerad': 'Fakturerad',
-        'label.table.avslutade.utredningar.column.betald': 'Betald',
-        'label.table.avslutade.utredningar.column.utbetaldfk': 'Utbetald FK',
+        'label.table.avslutade.utredningar.column.faktura.ve': 'Faktura VE',
+        'label.table.avslutade.utredningar.column.betald.ve': 'Betald VE',
+        'label.table.avslutade.utredningar.column.faktura.fk': 'Faktura FK',
+        'label.table.avslutade.utredningar.column.betald.fk': 'Betald FK',
 
         // Lista avslutade bestallningar filter
         'avslutade.bestallningar.filter.fritext.label': 'Fritextsökning',

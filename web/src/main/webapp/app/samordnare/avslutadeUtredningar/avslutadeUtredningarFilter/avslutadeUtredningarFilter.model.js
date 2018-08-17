@@ -43,9 +43,10 @@ angular.module('ibApp').factory('ibAvslutadeUtredningarFilterModel',
                 to: moment().format('YYYY-MM-DD')
             },
             ersatts: 'ALL',
-            fakturerad: 'ALL',
-            betald: 'ALL',
-            utbetaldFk: 'ALL',
+            fakturaVeId: 'ALL',
+            betaldVeId: 'ALL',
+            fakturaFkId: 'ALL',
+            betaldFkId: 'ALL',
             orderBy: 'avslutsDatum',
             orderByAsc: false
         };
@@ -57,9 +58,10 @@ angular.module('ibApp').factory('ibAvslutadeUtredningarFilterModel',
             this.vardgivareNamn = defaultFilter.vardgivareNamn;
             this.avslutsDatum = angular.copy(defaultFilter.avslutsDatum);
             this.ersatts = defaultFilter.ersatts;
-            this.fakturerad = defaultFilter.fakturerad;
-            this.betald = defaultFilter.betald;
-            this.utbetaldFk = defaultFilter.utbetaldFk;
+            this.fakturaVeId = defaultFilter.fakturaVeId;
+            this.betaldVeId = defaultFilter.betaldVeId;
+            this.fakturaFkId = defaultFilter.fakturaFkId;
+            this.betaldFkId = defaultFilter.betaldFkId;
             this.orderBy = defaultFilter.orderBy;
             this.orderByAsc = defaultFilter.orderByAsc;
         };
@@ -71,9 +73,10 @@ angular.module('ibApp').factory('ibAvslutadeUtredningarFilterModel',
                 this.vardgivareNamn === defaultFilter.vardgivareNamn &&
                 angular.equals(this.avslutsDatum, defaultFilter.avslutsDatum) &&
                 angular.equals(this.ersatts, defaultFilter.ersatts) &&
-                angular.equals(this.fakturerad, defaultFilter.fakturerad) &&
-                angular.equals(this.betald, defaultFilter.betald) &&
-                angular.equals(this.utbetaldFk, defaultFilter.utbetaldFk) &&
+                angular.equals(this.fakturaVeId, defaultFilter.fakturaVeId) &&
+                angular.equals(this.betaldVeId, defaultFilter.betaldVeId) &&
+                angular.equals(this.fakturaFkId, defaultFilter.fakturaFkId) &&
+                angular.equals(this.betaldFkId, defaultFilter.betaldFkId) &&
                 this.orderBy === defaultFilter.orderBy &&
                 this.orderByAsc === defaultFilter.orderByAsc;
         };
@@ -88,9 +91,10 @@ angular.module('ibApp').factory('ibAvslutadeUtredningarFilterModel',
                 avslutsDatumFromDate: this.avslutsDatum.from,
                 avslutsDatumToDate: this.avslutsDatum.to,
                 ersatts: this.ersatts,
-                fakturerad: this.fakturerad,
-                betald: this.betald,
-                utbetaldFk: this.utbetaldFk,
+                fakturaVeId: this.fakturaVeId,
+                betaldVeId: this.betaldVeId,
+                fakturaFkId: this.fakturaFkId,
+                betaldFkId: this.betaldFkId,
 
                 // Sort
                 orderBy: this.orderBy,

@@ -226,9 +226,10 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                         request.getAvslutsDatumToDate()))
                 .filter(uli -> buildFreeTextPredicate(uli, request.getFreeText()))
                 .filter(uli -> buildYesNoAllPredicate(uli.getErsatts(), request.getErsatts()))
-                .filter(uli -> buildYesNoAllPredicate(uli.getFakturerad(), request.getFakturerad()))
-                .filter(uli -> buildYesNoAllPredicate(uli.getUtbetaldFk(), request.getUtbetaldFk()))
-                .filter(uli -> buildYesNoAllPredicate(uli.getBetald(), request.getBetald()))
+                .filter(uli -> buildYesNoAllPredicate(uli.getFakturaVeId(), request.getFakturaVeId()))
+                .filter(uli -> buildYesNoAllPredicate(uli.getBetaldVeId(), request.getBetaldVeId()))
+                .filter(uli -> buildYesNoAllPredicate(uli.getFakturaFkId(), request.getFakturaFkId()))
+                .filter(uli -> buildYesNoAllPredicate(uli.getBetaldFkId(), request.getBetaldFkId()))
 
                 .sorted((o1, o2) -> GenericComparator.compare(AvslutadUtredningListItem.class, o1, o2, request.getOrderBy(),
                         request.isOrderByAsc()))

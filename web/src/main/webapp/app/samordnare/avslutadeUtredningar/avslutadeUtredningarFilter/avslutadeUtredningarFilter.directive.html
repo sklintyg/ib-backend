@@ -21,25 +21,32 @@
     items="filter.yesNoOptions">
 </ib-dropdown>
 <ib-dropdown
-        id="filterFakturerad"
-        ng-model="filter.fakturerad"
-        ng-change="onChange()"
-        label-key="avslutade.utredningar.filter.fakturerad.label"
-        items="filter.yesNoOptions">
-</ib-dropdown>
-<ib-dropdown
-    id="filterUtbetald"
-    ng-model="filter.betald"
+    id="filterFakturaVeId"
+    ng-model="filter.fakturaVeId"
     ng-change="onChange()"
-    label-key="avslutade.utredningar.filter.betald.label"
+    label-key="avslutade.utredningar.filter.fakturerad.ve.label"
     items="filter.yesNoOptions">
 </ib-dropdown>
 <ib-dropdown
-        id="filterUtbetaldFk"
-        ng-model="filter.utbetaldFk"
-        ng-change="onChange()"
-        label-key="avslutade.utredningar.filter.utbetaldfk.label"
-        items="filter.yesNoOptions">
+    id="filterBetaldVeId"
+    ng-model="filter.betaldVeId"
+    ng-change="onChange()"
+    label-key="avslutade.utredningar.filter.betald.ve.label"
+    items="filter.yesNoOptions">
+</ib-dropdown>
+<ib-dropdown
+    id="filterFakturaFkId"
+    ng-model="filter.fakturaFkId"
+    ng-change="onChange()"
+    label-key="avslutade.utredningar.filter.fakturerad.fk.label"
+    items="filter.yesNoOptions">
+</ib-dropdown>
+<ib-dropdown
+    id="filterBetaldFkId"
+    ng-model="filter.betaldFkId"
+    ng-change="onChange()"
+    label-key="avslutade.utredningar.filter.betald.fk.label"
+    items="filter.yesNoOptions">
 </ib-dropdown>
 <button class="btn btn-primary" ng-click="resetFilter()" ng-disabled="filter.isDefault()">
   <message key="avslutade.utredningar.filter.resetfilter.label"></message>

@@ -27,8 +27,8 @@ public class ListAvslutadeBestallningarRequest extends ListRequest {
     private String avslutsDatumFromDate;
     private String avslutsDatumToDate;
     private String ersatts;
-    private String fakturerad;
-    private String utbetald;
+    private String fakturaVeId;
+    private String betaldVeId;
 
     public String getFreeText() {
         return freeText;
@@ -70,19 +70,19 @@ public class ListAvslutadeBestallningarRequest extends ListRequest {
         this.ersatts = ersatts;
     }
 
-    public String getFakturerad() {
-        return fakturerad;
+    public String getFakturaVeId() {
+        return fakturaVeId;
     }
 
-    public void setFakturerad(String fakturerad) {
-        this.fakturerad = fakturerad;
+    public void setFakturaVeId(String fakturaVeId) {
+        this.fakturaVeId = fakturaVeId;
     }
 
-    public String getUtbetald() {
-        return utbetald;
+    public String getBetaldVeId() {
+        return betaldVeId;
     }
 
-    public void setUtbetald(String utbetald) {
-        this.utbetald = utbetald;
+    public void setBetaldVeId(String betaldVeId) {
+        this.betaldVeId = betaldVeId;
     }
 }

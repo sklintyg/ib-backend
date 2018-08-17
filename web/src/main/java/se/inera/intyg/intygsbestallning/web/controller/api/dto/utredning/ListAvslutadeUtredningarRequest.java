@@ -27,9 +27,10 @@ public class ListAvslutadeUtredningarRequest extends ListRequest {
     private String avslutsDatumFromDate;
     private String avslutsDatumToDate;
     private YesNoAllFilter ersatts;
-    private YesNoAllFilter fakturerad;
-    private YesNoAllFilter betald;
-    private YesNoAllFilter utbetaldFk;
+    private YesNoAllFilter fakturaVeId;
+    private YesNoAllFilter fakturaFkId;
+    private YesNoAllFilter betaldVeId;
+    private YesNoAllFilter betaldFkId;
 
     public String getFreeText() {
         return freeText;
@@ -63,27 +64,35 @@ public class ListAvslutadeUtredningarRequest extends ListRequest {
         this.ersatts = ersatts;
     }
 
-    public YesNoAllFilter getFakturerad() {
-        return fakturerad;
+    public YesNoAllFilter getFakturaVeId() {
+        return fakturaVeId;
     }
 
-    public void setFakturerad(YesNoAllFilter fakturerad) {
-        this.fakturerad = fakturerad;
+    public void setFakturaVeId(YesNoAllFilter fakturaVeId) {
+        this.fakturaVeId = fakturaVeId;
     }
 
-    public YesNoAllFilter getBetald() {
-        return betald;
+    public YesNoAllFilter getFakturaFkId() {
+        return fakturaFkId;
     }
 
-    public void setBetald(YesNoAllFilter betald) {
-        this.betald = betald;
+    public void setFakturaFkId(YesNoAllFilter fakturaFkId) {
+        this.fakturaFkId = fakturaFkId;
     }
 
-    public YesNoAllFilter getUtbetaldFk() {
-        return utbetaldFk;
+    public YesNoAllFilter getBetaldVeId() {
+        return betaldVeId;
     }
 
-    public void setUtbetaldFk(YesNoAllFilter utbetaldFk) {
-        this.utbetaldFk = utbetaldFk;
+    public void setBetaldVeId(YesNoAllFilter betaldVeId) {
+        this.betaldVeId = betaldVeId;
+    }
+
+    public YesNoAllFilter getBetaldFkId() {
+        return betaldFkId;
+    }
+
+    public void setBetaldFkId(YesNoAllFilter betaldFkId) {
+        this.betaldFkId = betaldFkId;
     }
 }

@@ -44,8 +44,8 @@ angular.module('ibApp').factory('ibAvslutadeBestallningarFilterModel',
                 to: moment().format('YYYY-MM-DD')
             },
             ersatts: 'ALL',
-            fakturerad: 'ALL',
-            utbetald: 'ALL',
+            fakturaVeId: 'ALL',
+            betaldVeId: 'ALL',
             orderBy: 'avslutsDatum',
             orderByAsc: false
         };
@@ -57,8 +57,8 @@ angular.module('ibApp').factory('ibAvslutadeBestallningarFilterModel',
             this.vardgivareHsaId = defaultFilter.vardgivareHsaId;
             this.avslutsDatum = angular.copy(defaultFilter.avslutsDatum);
             this.ersatts = defaultFilter.ersatts;
-            this.fakturerad = defaultFilter.fakturerad;
-            this.utbetald = defaultFilter.utbetald;
+            this.fakturaVeId = defaultFilter.fakturaVeId;
+            this.betaldVeId = defaultFilter.betaldVeId;
             this.orderBy = defaultFilter.orderBy;
             this.orderByAsc = defaultFilter.orderByAsc;
         };
@@ -70,8 +70,8 @@ angular.module('ibApp').factory('ibAvslutadeBestallningarFilterModel',
                 this.vardgivareHsaId === defaultFilter.vardgivareHsaId &&
                 angular.equals(this.avslutsDatum, defaultFilter.avslutsDatum) &&
                 angular.equals(this.ersatts, defaultFilter.ersatts) &&
-                angular.equals(this.fakturerad, defaultFilter.fakturerad) &&
-                angular.equals(this.utbetald, defaultFilter.utbetald) &&
+                angular.equals(this.fakturaVeId, defaultFilter.fakturaVeId) &&
+                angular.equals(this.betaldVeId, defaultFilter.betaldVeId) &&
                 this.orderBy === defaultFilter.orderBy &&
                 this.orderByAsc === defaultFilter.orderByAsc;
         };
@@ -87,8 +87,8 @@ angular.module('ibApp').factory('ibAvslutadeBestallningarFilterModel',
                 avslutsDatumFromDate: this.avslutsDatum.from,
                 avslutsDatumToDate: this.avslutsDatum.to,
                 ersatts: this.ersatts,
-                fakturerad: this.fakturerad,
-                utbetald: this.utbetald,
+                fakturaVeId: this.fakturaVeId,
+                betaldVeId: this.betaldVeId,
 
                 // Sort
                 orderBy: this.orderBy,
@@ -99,8 +99,8 @@ angular.module('ibApp').factory('ibAvslutadeBestallningarFilterModel',
         AvslutadeBestallningarFilterModel.prototype.populateFilter = function (data) {
             // this.statusOptions = data.statuses;
             this.ersatts = this.yesNoOptions[0].id;
-            this.fakturerad = this.yesNoOptions[0].id;
-            this.utbetald = this.yesNoOptions[0].id;
+            this.fakturaVeId = this.yesNoOptions[0].id;
+            this.betaldVeId = this.yesNoOptions[0].id;
             this.vardgivareNamnOptions = data.vardgivare;
             this.vardgivareNamnOptions.unshift({'id': undefined, 'label': 'Visa alla'});
         };

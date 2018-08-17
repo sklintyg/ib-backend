@@ -12,8 +12,8 @@
       <th ib-table-head filter="filter" filter-changed="getAvslutadeBestallningarFiltered()" order-by-key="status" label-key="label.table.avslutade.bestallningar.column.status"></th>
       <th ib-table-head filter="filter" filter-changed="getAvslutadeBestallningarFiltered()" order-by-key="avslutsDatum" label-key="label.table.avslutade.bestallningar.column.avslutsdatum"></th>
       <th ib-table-head filter="filter" filter-changed="getAvslutadeBestallningarFiltered()" order-by-key="ersatts" label-key="label.table.avslutade.bestallningar.column.ersatts"></th>
-      <th ib-table-head filter="filter" filter-changed="getAvslutadeBestallningarFiltered()" order-by-key="fakturerad" label-key="label.table.avslutade.bestallningar.column.fakturerad"></th>
-      <th ib-table-head filter="filter" filter-changed="getAvslutadeBestallningarFiltered()" order-by-key="utbetald" label-key="label.table.avslutade.bestallningar.column.utbetald"></th>
+      <th ib-table-head filter="filter" filter-changed="getAvslutadeBestallningarFiltered()" order-by-key="fakturaVeId" label-key="label.table.avslutade.bestallningar.column.fakturerad"></th>
+      <th ib-table-head filter="filter" filter-changed="getAvslutadeBestallningarFiltered()" order-by-key="betaldVeId" label-key="label.table.avslutade.bestallningar.column.utbetald"></th>
       <th></th>
     </tr>
     </thead>
@@ -25,8 +25,8 @@
       <td>{{::row.status.label}}</td>
       <td>{{::row.avslutsDatum}}</td>
       <td><ib-yes-no value="::row.ersatts"></ib-yes-no></td>
-      <td><ib-inline-edit editable="true" model="::row.fakturerad" save-method="saveFakturerad(row, model)" busy="row.faktureradBusy"></ib-inline-edit></td>
-      <td><ib-inline-edit editable="false" model="::row.utbetald"></ib-inline-edit></td>
+      <td><ib-inline-edit editable="true" model="::row.fakturaVeId" save-method="saveFakturerad(row, model)" busy="row.faktureradBusy"></ib-inline-edit></td>
+      <td><ib-inline-edit editable="false" model="::row.betaldVeId"></ib-inline-edit></td>
       <td><button class="btn btn-primary" ng-click="visaBestallning(row.utredningsId)"><span message key="common.show"></span></button></td>
     </tr>
     </tbody>

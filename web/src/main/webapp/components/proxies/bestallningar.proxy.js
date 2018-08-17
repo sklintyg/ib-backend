@@ -64,7 +64,7 @@ angular.module('ibApp').factory('BestallningarProxy',
             var restPath = basePath + '/' + utredningId + '/faktura';
 
             var request = {
-                fakturaId: fakturaId
+                fakturaVeId: fakturaId
             };
 
             return ProxyTemplate.postTemplate(restPath, request, {

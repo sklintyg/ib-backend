@@ -30,9 +30,10 @@ public class AvslutadUtredningListItem extends BaseUtredningListItem implements 
 
     private String avslutsDatum;
     private boolean ersatts;
-    private String fakturerad;
-    private String betald;
-    private String utbetaldFk;
+    private String fakturaVeId;
+    private String betaldVeId;
+    private String betaldFkId;
+    private String fakturaFkId;
 
     public UtredningStatus getStatus() {
         return status;
@@ -58,28 +59,36 @@ public class AvslutadUtredningListItem extends BaseUtredningListItem implements 
         this.ersatts = ersatts;
     }
 
-    public String getFakturerad() {
-        return fakturerad;
+    public String getFakturaVeId() {
+        return fakturaVeId;
     }
 
-    public void setFakturerad(String fakturerad) {
-        this.fakturerad = fakturerad;
+    public void setFakturaVeId(String fakturaVeId) {
+        this.fakturaVeId = fakturaVeId;
     }
 
-    public String getBetald() {
-        return betald;
+    public String getFakturaFkId() {
+        return fakturaFkId;
     }
 
-    public void setBetald(String betald) {
-        this.betald = betald;
+    public void setFakturaFkId(String fakturaFkId) {
+        this.fakturaFkId = fakturaFkId;
     }
 
-    public String getUtbetaldFk() {
-        return utbetaldFk;
+    public String getBetaldVeId() {
+        return betaldVeId;
     }
 
-    public void setUtbetaldFk(String utbetaldFk) {
-        this.utbetaldFk = utbetaldFk;
+    public void setBetaldVeId(String betaldVeId) {
+        this.betaldVeId = betaldVeId;
+    }
+
+    public String getBetaldFkId() {
+        return betaldFkId;
+    }
+
+    public void setBetaldFkId(String betaldFkId) {
+        this.betaldFkId = betaldFkId;
     }
 
     @Override
@@ -91,9 +100,10 @@ public class AvslutadUtredningListItem extends BaseUtredningListItem implements 
                 + status.getLabel() + " "
                 + avslutsDatum + " "
                 + (ersatts ? "Ja" : "Nej") + " "
-                + fakturerad + " "
-                + betald + " "
-                + utbetaldFk;
+                + fakturaVeId + " "
+                + betaldVeId + " "
+                + fakturaFkId + " "
+                + betaldFkId;
     }
 
     public static final class AvslutadUtredningListItemBuilder {
@@ -104,9 +114,10 @@ public class AvslutadUtredningListItem extends BaseUtredningListItem implements 
         private UtredningStatus status;
         private String avslutsDatum;
         private boolean ersatts;
-        private String fakturerad;
-        private String betald;
-        private String utbetaldFk;
+        private String fakturaVeId;
+        private String fakturaFkId;
+        private String betaldVeId;
+        private String betaldFkId;
         private Utredning utredning;
 
         private AvslutadUtredningListItemBuilder() {
@@ -151,18 +162,23 @@ public class AvslutadUtredningListItem extends BaseUtredningListItem implements 
             return this;
         }
 
-        public AvslutadUtredningListItemBuilder withFakturerad(String fakturerad) {
-            this.fakturerad = fakturerad;
+        public AvslutadUtredningListItemBuilder withFakturaVeId(String fakturaVeId) {
+            this.fakturaVeId = fakturaVeId;
             return this;
         }
 
-        public AvslutadUtredningListItemBuilder withBetald(String betald) {
-            this.betald = betald;
+        public AvslutadUtredningListItemBuilder withFakturaFkId(String fakturaFkId) {
+            this.fakturaFkId = fakturaFkId;
             return this;
         }
 
-        public AvslutadUtredningListItemBuilder withUtbetaldFk(String utbetaldFk) {
-            this.utbetaldFk = utbetaldFk;
+        public AvslutadUtredningListItemBuilder withBetaldVeId(String betaldVeId) {
+            this.betaldVeId = betaldVeId;
+            return this;
+        }
+
+        public AvslutadUtredningListItemBuilder withBetaldFkId(String betaldFkId) {
+            this.betaldFkId = betaldFkId;
             return this;
         }
 
@@ -180,9 +196,10 @@ public class AvslutadUtredningListItem extends BaseUtredningListItem implements 
             avslutadUtredningListItem.setStatus(status);
             avslutadUtredningListItem.setAvslutsDatum(avslutsDatum);
             avslutadUtredningListItem.setErsatts(ersatts);
-            avslutadUtredningListItem.setFakturerad(fakturerad);
-            avslutadUtredningListItem.setBetald(betald);
-            avslutadUtredningListItem.setUtbetaldFk(utbetaldFk);
+            avslutadUtredningListItem.setFakturaVeId(fakturaVeId);
+            avslutadUtredningListItem.setFakturaFkId(fakturaFkId);
+            avslutadUtredningListItem.setBetaldVeId(betaldVeId);
+            avslutadUtredningListItem.setBetaldFkId(betaldFkId);
             avslutadUtredningListItem.setUtredning(utredning);
             return avslutadUtredningListItem;
         }

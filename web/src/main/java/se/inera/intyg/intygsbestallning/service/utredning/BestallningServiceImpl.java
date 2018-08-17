@@ -167,8 +167,8 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
                         requestFilter.getAvslutsDatumToDate()))
                 .filter(bli -> buildFreeTextPredicate(bli, requestFilter.getFreeText()))
                 .filter(bli -> buildErsattsPredicate(bli, requestFilter.getErsatts()))
-                .filter(bli -> buildFaktureradPredicate(bli, requestFilter.getFakturerad()))
-                .filter(bli -> buildBetaldPredicate(bli, requestFilter.getUtbetald()))
+                .filter(bli -> buildFaktureradPredicate(bli, requestFilter.getFakturaVeId()))
+                .filter(bli -> buildBetaldPredicate(bli, requestFilter.getBetaldVeId()))
 
                 .sorted((o1, o2) -> GenericComparator.compare(AvslutadBestallningListItem.class, o1, o2, requestFilter.getOrderBy(),
                         requestFilter.isOrderByAsc()))
@@ -203,10 +203,10 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
                 return true;
             }
             if (filterVal == YesNoAllFilter.YES) {
-                return !Strings.isNullOrEmpty(bli.getUtbetald());
+                return !Strings.isNullOrEmpty(bli.getBetaldVeId());
             }
             if (filterVal == YesNoAllFilter.NO) {
-                return Strings.isNullOrEmpty(bli.getUtbetald());
+                return Strings.isNullOrEmpty(bli.getBetaldVeId());
             }
         } catch (IllegalArgumentException e) {
             throw new IbServiceException(IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Unknown enum value for YesNoAll: '" + enumValue + "'");
@@ -224,10 +224,10 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
                 return true;
             }
             if (filterVal == YesNoAllFilter.YES) {
-                return !Strings.isNullOrEmpty(bli.getFakturerad());
+                return !Strings.isNullOrEmpty(bli.getFakturaVeId());
             }
             if (filterVal == YesNoAllFilter.NO) {
-                return Strings.isNullOrEmpty(bli.getFakturerad());
+                return Strings.isNullOrEmpty(bli.getFakturaVeId());
             }
         } catch (IllegalArgumentException e) {
             throw new IbServiceException(IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Unknown enum value for YesNoAll: '" + enumValue + "'");
