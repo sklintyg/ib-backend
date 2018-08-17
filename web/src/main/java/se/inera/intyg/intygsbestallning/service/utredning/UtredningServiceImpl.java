@@ -489,7 +489,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
     @Override
     @Transactional
-    public void saveBetaldVeIdForUtredning(Long utredningsId, SaveBetalningForUtredningRequest request, String loggedInAtLandstingHsaId) {
+    public void saveBetaldVeIdForUtredning(Long utredningsId, SaveBetaldVeIdForUtredningRequest request, String loggedInAtLandstingHsaId) {
         Utredning utredning = utredningRepository.findById(utredningsId).orElseThrow(
                 () -> new IbNotFoundException("Utredning with assessmentId '" + utredningsId + "' does not exist."));
 
@@ -505,10 +505,10 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         }
 
         if (utredning.getBetalning() != null) {
-            utredning.getBetalning().setBetaldVeId(request.getBetalningId());
+            utredning.getBetalning().setBetaldVeId(request.getBetaldVeId());
         } else {
             Betalning betalning = Betalning.BetalningBuilder.aBetalning()
-                    .withBetaldVeId(request.getBetalningId())
+                    .withBetaldVeId(request.getBetaldVeId())
                     .build();
             utredning.setBetalning(betalning);
         }
@@ -517,7 +517,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
     @Override
     @Transactional
-    public void saveBetaldFkIdForUtredning(Long utredningsId, SaveUtbetalningForUtredningRequest request,
+    public void saveBetaldFkIdForUtredning(Long utredningsId, SaveBetaldFkIdForUtredningRequest request,
                                                String loggedInAtLandstingHsaId) {
         Utredning utredning = utredningRepository.findById(utredningsId).orElseThrow(
                 () -> new IbNotFoundException("Utredning with assessmentId '" + utredningsId + "' does not exist."));
@@ -534,10 +534,10 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         }
 
         if (utredning.getBetalning() != null) {
-            utredning.getBetalning().setBetaldFkId(request.getUtbetalningId());
+            utredning.getBetalning().setBetaldFkId(request.getBetaldFkId());
         } else {
             Betalning betalning = Betalning.BetalningBuilder.aBetalning()
-                    .withBetaldFkId(request.getUtbetalningId())
+                    .withBetaldFkId(request.getBetaldFkId())
                     .build();
             utredning.setBetalning(betalning);
         }

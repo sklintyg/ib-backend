@@ -60,11 +60,11 @@ angular.module('ibApp').factory('BestallningarProxy',
             return ProxyTemplate.getTemplate(restPath, {});
         }
 
-        function _saveFakturerad(utredningId, fakturaId) {
-            var restPath = basePath + '/' + utredningId + '/faktura';
+        function _saveFakturaVeId(utredningId, fakturaVeId) {
+            var restPath = basePath + '/' + utredningId + '/faktura-ve-id';
 
             var request = {
-                fakturaVeId: fakturaId
+                fakturaVeId: fakturaVeId
             };
 
             return ProxyTemplate.postTemplate(restPath, request, {
@@ -115,7 +115,7 @@ angular.module('ibApp').factory('BestallningarProxy',
             getBestallningarFilterValues : _getBestallningarFilterValues,
             getAvslutadeBestallningarWithFilter: _getAvslutadeBestallningarWithFilter,
             getAvslutadeBestallningarFilterValues : _getAvslutadeBestallningarFilterValues,
-            saveFakturerad: _saveFakturerad,
+            saveFakturaVeId: _saveFakturaVeId,
             excelReport: _excelReport,
             excelReportAvslutade: _excelReportAvslutade
         };

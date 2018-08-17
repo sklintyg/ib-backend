@@ -61,9 +61,9 @@ angular.module('ibApp')
                 $scope.getAvslutadeUtredningarFiltered(true);
             };
 
-            $scope.saveBetald = function(row, betald) {
+            $scope.saveBetaldVeId = function(row, betald) {
                 row.betaldBusy = true;
-                UtredningarProxy.saveBetald(row.utredningsId, betald)
+                UtredningarProxy.saveBetaldVeId(row.utredningsId, betald)
                     .then(function() {}, function(error) {
                         $log.error('Error saving betald ' + error);
                     })
@@ -72,9 +72,9 @@ angular.module('ibApp')
                     });
             };
 
-            $scope.saveUtbetald = function(row, utbetald) {
+            $scope.saveBetaldFkId = function(row, utbetald) {
                 row.utbetaldBusy = true;
-                UtredningarProxy.saveUtbetald(row.utredningsId, utbetald)
+                UtredningarProxy.saveBetaldFkId(row.utredningsId, utbetald)
                     .then(function() {}, function(error) {
                         $log.error('Error saving utbetald ' + error);
                     })

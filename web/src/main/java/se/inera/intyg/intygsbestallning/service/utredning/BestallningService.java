@@ -23,7 +23,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.GetBe
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.GetBestallningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.ListAvslutadeBestallningarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.ListBestallningRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.SaveFakturaForUtredningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.SaveFakturaVeIdForUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListAvslutadeBestallningarFilter;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListBestallningFilter;
 
@@ -59,5 +59,5 @@ public interface BestallningService {
      */
     GetBestallningResponse getBestallning(Long utredningId, String vardenhetHsaId);
 
-    void saveFakturaVeIdForUtredning(Long utredningsId, SaveFakturaForUtredningRequest request, String fakturaVeId);
+    void saveFakturaVeIdForUtredning(Long utredningsId, SaveFakturaVeIdForUtredningRequest request, String fakturaVeId);
 }

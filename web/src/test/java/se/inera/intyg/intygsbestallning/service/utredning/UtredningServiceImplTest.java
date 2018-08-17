@@ -64,8 +64,8 @@ import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest
 import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.InternForfraganListItemFactory;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveBetalningForUtredningRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveUtbetalningForUtredningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveBetaldVeIdForUtredningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveBetaldFkIdForUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItemFactory;
 import se.riv.infrastructure.directory.organization.getunitresponder.v1.UnitType;
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
@@ -1071,8 +1071,8 @@ public class UtredningServiceImplTest {
     public void testSaveBetalningForUtredningSuccess() {
         doReturn(Optional.of(TestDataGen.createUtredning())).when(utredningRepository).findById(TestDataGen.getUtredningId());
 
-        SaveBetalningForUtredningRequest request = new SaveBetalningForUtredningRequest();
-        request.setBetalningId("testBetalningId");
+        SaveBetaldVeIdForUtredningRequest request = new SaveBetaldVeIdForUtredningRequest();
+        request.setBetaldVeId("testBetalningId");
         utredningService.saveBetaldVeIdForUtredning(TestDataGen.getUtredningId(), request, TestDataGen.getLandstingId());
 
         ArgumentCaptor<Utredning> utredingCaptor = ArgumentCaptor.forClass(Utredning.class);
@@ -1085,8 +1085,8 @@ public class UtredningServiceImplTest {
     public void testSaveBetalningForUtredningFailNotFound() {
         doReturn(Optional.empty()).when(utredningRepository).findById(TestDataGen.getUtredningId());
 
-        SaveBetalningForUtredningRequest request = new SaveBetalningForUtredningRequest();
-        request.setBetalningId("testBetalningId");
+        SaveBetaldVeIdForUtredningRequest request = new SaveBetaldVeIdForUtredningRequest();
+        request.setBetaldVeId("testBetalningId");
         utredningService.saveBetaldVeIdForUtredning(TestDataGen.getUtredningId(), request, TestDataGen.getLandstingId());
     }
 
@@ -1094,8 +1094,8 @@ public class UtredningServiceImplTest {
     public void testSaveBetalningForUtredningFailDifferentLandsting() {
         doReturn(Optional.of(TestDataGen.createUtredning())).when(utredningRepository).findById(TestDataGen.getUtredningId());
 
-        SaveBetalningForUtredningRequest request = new SaveBetalningForUtredningRequest();
-        request.setBetalningId("testBetalningId");
+        SaveBetaldVeIdForUtredningRequest request = new SaveBetaldVeIdForUtredningRequest();
+        request.setBetaldVeId("testBetalningId");
         utredningService.saveBetaldVeIdForUtredning(TestDataGen.getUtredningId(), request, "AnnatLandsting");
     }
 
@@ -1103,8 +1103,8 @@ public class UtredningServiceImplTest {
     public void testSaveUtbetalningForUtredningSuccess() {
         doReturn(Optional.of(TestDataGen.createUtredning())).when(utredningRepository).findById(TestDataGen.getUtredningId());
 
-        SaveUtbetalningForUtredningRequest request = new SaveUtbetalningForUtredningRequest();
-        request.setUtbetalningId("testUtbetalningId");
+        SaveBetaldFkIdForUtredningRequest request = new SaveBetaldFkIdForUtredningRequest();
+        request.setBetaldFkId("testUtbetalningId");
         utredningService.saveBetaldFkIdForUtredning(TestDataGen.getUtredningId(), request, TestDataGen.getLandstingId());
 
         ArgumentCaptor<Utredning> utredingCaptor = ArgumentCaptor.forClass(Utredning.class);
@@ -1117,8 +1117,8 @@ public class UtredningServiceImplTest {
     public void testSaveUtbetalningForUtredningFailNotFound() {
         doReturn(Optional.empty()).when(utredningRepository).findById(TestDataGen.getUtredningId());
 
-        SaveUtbetalningForUtredningRequest request = new SaveUtbetalningForUtredningRequest();
-        request.setUtbetalningId("testUtbetalningId");
+        SaveBetaldFkIdForUtredningRequest request = new SaveBetaldFkIdForUtredningRequest();
+        request.setBetaldFkId("testUtbetalningId");
         utredningService.saveBetaldFkIdForUtredning(TestDataGen.getUtredningId(), request, TestDataGen.getLandstingId());
     }
 
@@ -1126,8 +1126,8 @@ public class UtredningServiceImplTest {
     public void testSaveUtbetalningForUtredningFailDifferentLandsting() {
         doReturn(Optional.of(TestDataGen.createUtredning())).when(utredningRepository).findById(TestDataGen.getUtredningId());
 
-        SaveUtbetalningForUtredningRequest request = new SaveUtbetalningForUtredningRequest();
-        request.setUtbetalningId("testUtbetalningId");
+        SaveBetaldFkIdForUtredningRequest request = new SaveBetaldFkIdForUtredningRequest();
+        request.setBetaldFkId("testUtbetalningId");
         utredningService.saveBetaldFkIdForUtredning(TestDataGen.getUtredningId(), request, "AnnatLandsting");
     }
 }

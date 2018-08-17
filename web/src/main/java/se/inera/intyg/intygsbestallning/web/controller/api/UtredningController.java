@@ -126,9 +126,9 @@ public class UtredningController {
     }
 
     @PrometheusTimeMethod
-    @PostMapping(path = "/{utredningsId}/betald", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/{utredningsId}/betald-ve-id", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> saveBetaldVeIdForUtredning(@PathVariable("utredningsId") Long utredningsId,
-                                                         @RequestBody SaveBetalningForUtredningRequest request) {
+                                                         @RequestBody SaveBetaldVeIdForUtredningRequest request) {
         IbUser user = userService.getUser();
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_UTREDNINGAR)
                 .orThrow(new IbAuthorizationException("User does not have required privilege PRIVILEGE_LISTA_UTREDNINGAR"));
@@ -138,9 +138,9 @@ public class UtredningController {
     }
 
     @PrometheusTimeMethod
-    @PostMapping(path = "/{utredningsId}/utbetald", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/{utredningsId}/betald-fk-id", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> saveBetaldFkIdForUtredning(@PathVariable("utredningsId") Long utredningsId,
-                                                               @RequestBody SaveUtbetalningForUtredningRequest request) {
+                                                               @RequestBody SaveBetaldFkIdForUtredningRequest request) {
         IbUser user = userService.getUser();
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_UTREDNINGAR)
                 .orThrow(new IbAuthorizationException("User does not have required privilege PRIVILEGE_LISTA_UTREDNINGAR"));
@@ -150,7 +150,7 @@ public class UtredningController {
     }
 
     @PrometheusTimeMethod
-    @PostMapping(path = "/{utredningsId}/fakturafkid", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/{utredningsId}/faktura-fk-id", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> saveFakturaFkIdForUtredning(@PathVariable("utredningsId") Long utredningsId,
                                                            @RequestBody SaveFakturaFkIdForUtredningRequest request) {
         IbUser user = userService.getUser();

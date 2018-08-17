@@ -105,9 +105,9 @@ public interface UtredningService {
      */
     void updateStatusToRedovisaBesok(Utredning utredning);
 
-    void saveBetaldVeIdForUtredning(Long utredningsId, SaveBetalningForUtredningRequest request, String loggedInAtLandstingHsaId);
+    void saveBetaldVeIdForUtredning(Long utredningsId, SaveBetaldVeIdForUtredningRequest request, String loggedInAtLandstingHsaId);
 
-    void saveBetaldFkIdForUtredning(Long utredningsId, SaveUtbetalningForUtredningRequest request, String loggedInAtLandstingHsaId);
+    void saveBetaldFkIdForUtredning(Long utredningsId, SaveBetaldFkIdForUtredningRequest request, String loggedInAtLandstingHsaId);
 
     void saveFakturaFkIdForUtredning(Long utredningsId, SaveFakturaFkIdForUtredningRequest request, String loggedInAtLandstingHsaId);
 }

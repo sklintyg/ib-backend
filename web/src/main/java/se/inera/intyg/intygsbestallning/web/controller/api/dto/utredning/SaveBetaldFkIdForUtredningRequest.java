@@ -18,15 +18,15 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning;
 
-public class SaveBetalningForUtredningRequest {
+public class SaveBetaldFkIdForUtredningRequest {
 
-    private String betalningId;
+    private String betaldFkId;
 
-    public String getBetalningId() {
-        return betalningId;
+    public String getBetaldFkId() {
+        return betaldFkId;
     }
 
-    public void setBetalningId(String betalningId) {
-        this.betalningId = betalningId;
+    public void setBetaldFkId(String betaldFkId) {
+        this.betaldFkId = betaldFkId;
     }
 }

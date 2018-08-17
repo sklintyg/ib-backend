@@ -58,9 +58,9 @@ angular.module('ibApp')
                 $scope.getAvslutadeBestallningarFiltered(true);
             };
 
-            $scope.saveFakturerad = function(row, fakturerad) {
+            $scope.saveFakturaVeId = function(row, fakturerad) {
                 row.faktureradBusy = true;
-                BestallningarProxy.saveFakturerad(row.utredningsId, fakturerad)
+                BestallningarProxy.saveFakturaVeId(row.utredningsId, fakturerad)
                     .then(function() {}, function(error) {
                         $log.error('Error saving fakturerad ' + error);
                     })

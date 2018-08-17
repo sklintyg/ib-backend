@@ -85,11 +85,11 @@ angular.module('ibApp').factory('UtredningarProxy',
             return ProxyTemplate.postTemplate(restPath, requestBody, config);
         }
 
-        function _saveBetald(utredningId, betalningId) {
-            var restPath = basePath + '/' + utredningId + '/betald';
+        function _saveBetaldVeId(utredningId, betaldVeId) {
+            var restPath = basePath + '/' + utredningId + '/betald-ve-id';
 
             var request = {
-                betalningId: betalningId
+                betalningId: betaldVeId
             };
 
             return ProxyTemplate.postTemplate(restPath, request, {
@@ -100,7 +100,7 @@ angular.module('ibApp').factory('UtredningarProxy',
         }
 
         function _saveFakturaFkId(utredningId, fakturaFkId) {
-            var restPath = basePath + '/' + utredningId + '/fakturafkid';
+            var restPath = basePath + '/' + utredningId + '/faktura-fk-id';
 
             var request = {
                 fakturaFkId: fakturaFkId
@@ -108,22 +108,22 @@ angular.module('ibApp').factory('UtredningarProxy',
 
             return ProxyTemplate.postTemplate(restPath, request, {
                 errorMessageConfig: {
-                    errorTitleKey: 'server.error.fakturaFkId.title',
-                    errorTextKey: 'server.error.fakturaFkId.text'
+                    errorTitleKey: 'server.error.savefaktura.title',
+                    errorTextKey: 'server.error.savefaktura.text'
                 }});
         }
 
-        function _saveUtbetald(utredningId, utbetalningId) {
-            var restPath = basePath + '/' + utredningId + '/utbetald';
+        function _saveBetaldFkId(utredningId, betaldFkId) {
+            var restPath = basePath + '/' + utredningId + '/betald-fk-id';
 
             var request = {
-                utbetalningId: utbetalningId
+                utbetalningId: betaldFkId
             };
 
             return ProxyTemplate.postTemplate(restPath, request, {
                 errorMessageConfig: {
-                    errorTitleKey: 'server.error.saveutbetald.title',
-                    errorTextKey: 'server.error.saveutbetald.text'
+                    errorTitleKey: 'server.error.savebetald.title',
+                    errorTextKey: 'server.error.savebetald.text'
                 }});
         }
 
@@ -169,8 +169,8 @@ angular.module('ibApp').factory('UtredningarProxy',
             getAvslutadeUtredningarWithFilter: _getAvslutadeUtredningarWithFilter,
             createInternForfragan: _createInternForfragan,
             tilldelaDirekt: _tillDelaDirekt,
-            saveBetald: _saveBetald,
-            saveUtbetald: _saveUtbetald,
+            saveBetaldVeId: _saveBetaldVeId,
+            saveBetaldFkId: _saveBetaldFkId,
             saveFakturaFkId: _saveFakturaFkId,
             excelReport: _excelReport,
             excelReportAvslutade: _excelReportAvslutade

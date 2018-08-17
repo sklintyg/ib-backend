@@ -50,7 +50,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.GetBe
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.GetBestallningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.ListAvslutadeBestallningarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.ListBestallningRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.SaveFakturaForUtredningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.SaveFakturaVeIdForUtredningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utlatande.SendUtlatandeRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListAvslutadeBestallningarFilter;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListBestallningFilter;
@@ -152,9 +152,9 @@ public class BestallningController {
     }
 
     @PrometheusTimeMethod
-    @PostMapping(path = "/{utredningsId}/faktura", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/{utredningsId}/faktura-ve-id", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> saveFakturaVeIdForUtredning(@PathVariable("utredningsId") Long utredningsId,
-            @RequestBody SaveFakturaForUtredningRequest request) {
+            @RequestBody SaveFakturaVeIdForUtredningRequest request) {
         IbUser user = userService.getUser();
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_BESTALLNINGAR)
                 .orThrow(new IbAuthorizationException("User does not have required privilege PRIVILEGE_LISTA_BESTALLNINGAR"));

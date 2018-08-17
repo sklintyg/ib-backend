@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning;
 
-public class SaveFakturaForUtredningRequest {
+public class SaveFakturaVeIdForUtredningRequest {
 
     private String fakturaVeId;
 

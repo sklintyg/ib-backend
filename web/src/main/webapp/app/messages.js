@@ -398,8 +398,6 @@ var ibMessages = {
         'server.error.savefaktura.text': 'Försök igen eller kontakta support',
         'server.error.savebetald.title': 'Kunde inte spara betalning',
         'server.error.savebetald.text': 'Försök igen eller kontakta support',
-        'server.error.saveutbetald.title': 'Kunde inte spara utbetalning',
-        'server.error.saveutbetald.text': 'Försök igen eller kontakta support',
         'server.error.saveanteckning.title': 'Kunde inte spara anteckning',
         'server.error.saveanteckning.text': 'Försök igen eller kontakta support',
         'server.error.abortutredning.title': 'Kunde inte avsluta utredningen',
