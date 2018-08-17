@@ -42,12 +42,7 @@ import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.CreateInternForfraganRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.forfragan.TilldelaDirektRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningListResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListAvslutadeUtredningarRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListUtredningRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveBetalningForUtredningRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveUtbetalningForUtredningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.*;
 import se.inera.intyg.intygsbestallning.web.controller.api.helper.ControllerHelper;
 
 @RestController
@@ -151,6 +146,18 @@ public class UtredningController {
                 .orThrow(new IbAuthorizationException("User does not have required privilege PRIVILEGE_LISTA_UTREDNINGAR"));
 
         utredningService.saveBetaldFkIdForUtredning(utredningsId, request, user.getCurrentlyLoggedInAt().getId());
+        return ResponseEntity.ok().build();
+    }
+
+    @PrometheusTimeMethod
+    @PostMapping(path = "/{utredningsId}/fakturafkid", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> saveFakturaFkIdForUtredning(@PathVariable("utredningsId") Long utredningsId,
+                                                           @RequestBody SaveFakturaFkIdForUtredningRequest request) {
+        IbUser user = userService.getUser();
+        authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_UTREDNINGAR)
+                .orThrow(new IbAuthorizationException("User does not have required privilege PRIVILEGE_LISTA_UTREDNINGAR"));
+
+        utredningService.saveFakturaFkIdForUtredning(utredningsId, request, user.getCurrentlyLoggedInAt().getId());
         return ResponseEntity.ok().build();
     }
 

@@ -83,6 +83,17 @@ angular.module('ibApp')
                     });
             };
 
+            $scope.saveFakturaFkId = function(row, utbetald) {
+                row.fakturaFkIdBusy = true;
+                UtredningarProxy.saveFakturaFkId(row.utredningsId, utbetald)
+                    .then(function() {}, function(error) {
+                        $log.error('Error saving utbetald ' + error);
+                    })
+                    .finally(function() { //jshint ignore:line
+                        row.fakturaFkIdBusy = false;
+                    });
+            };
+
             $scope.getAvslutadeUtredningarFiltered();
         }
     );

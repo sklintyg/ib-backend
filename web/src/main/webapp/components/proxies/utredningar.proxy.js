@@ -99,6 +99,20 @@ angular.module('ibApp').factory('UtredningarProxy',
                 }});
         }
 
+        function _saveFakturaFkId(utredningId, fakturaFkId) {
+            var restPath = basePath + '/' + utredningId + '/fakturafkid';
+
+            var request = {
+                fakturaFkId: fakturaFkId
+            };
+
+            return ProxyTemplate.postTemplate(restPath, request, {
+                errorMessageConfig: {
+                    errorTitleKey: 'server.error.fakturaFkId.title',
+                    errorTextKey: 'server.error.fakturaFkId.text'
+                }});
+        }
+
         function _saveUtbetald(utredningId, utbetalningId) {
             var restPath = basePath + '/' + utredningId + '/utbetald';
 
@@ -157,6 +171,7 @@ angular.module('ibApp').factory('UtredningarProxy',
             tilldelaDirekt: _tillDelaDirekt,
             saveBetald: _saveBetald,
             saveUtbetald: _saveUtbetald,
+            saveFakturaFkId: _saveFakturaFkId,
             excelReport: _excelReport,
             excelReportAvslutade: _excelReportAvslutade
         };

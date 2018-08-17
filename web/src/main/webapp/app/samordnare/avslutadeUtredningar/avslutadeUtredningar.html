@@ -32,7 +32,7 @@
         <td><ib-yes-no value="::row.ersatts"></ib-yes-no></td>
         <td><ib-inline-edit editable="false" model="::row.fakturaVeId"></ib-inline-edit></td>
         <td><ib-inline-edit editable="true" model="::row.betaldVeId" save-method="saveBetald(row, model)" busy="row.betaldBusy"></ib-inline-edit></td>
-        <td><ib-inline-edit editable="false" model="::row.fakturaFkId"></ib-inline-edit></td>
+        <td><ib-inline-edit editable="true" model="::row.fakturaFkId" save-method="saveFakturaFkId(row, model)" busy="row.fakturaFkIdBusy"></ib-inline-edit></td>
         <td><ib-inline-edit editable="true" model="::row.betaldFkId" save-method="saveUtbetald(row, model)" busy="row.utbetaldBusy"></ib-inline-edit></td>
         <td><button class="btn btn-primary" ng-click="visaUtredning(row.utredningsId)"><span message key="common.show"></span></button></td>
       </tr>

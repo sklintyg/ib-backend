@@ -99,16 +99,7 @@ import se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.AvslutadUtredningListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.AvslutadUtredningListItemFactory;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningListResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListAvslutadeUtredningarRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListUtredningRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveBetalningForUtredningRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveUtbetalningForUtredningRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItemFactory;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.*;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
 
 @Service
@@ -547,6 +538,35 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         } else {
             Betalning betalning = Betalning.BetalningBuilder.aBetalning()
                     .withBetaldFkId(request.getUtbetalningId())
+                    .build();
+            utredning.setBetalning(betalning);
+        }
+        utredningRepository.saveUtredning(utredning);
+    }
+
+    @Override
+    @Transactional
+    public void saveFakturaFkIdForUtredning(Long utredningsId, SaveFakturaFkIdForUtredningRequest request,
+                                           String loggedInAtLandstingHsaId) {
+        Utredning utredning = utredningRepository.findById(utredningsId).orElseThrow(
+                () -> new IbNotFoundException("Utredning with assessmentId '" + utredningsId + "' does not exist."));
+
+        // Verify that the current vardenhet has a Bestallning.
+        if (!utredning.getExternForfragan().isPresent()) {
+            throw new IbServiceException(IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
+                    "Utredning with assessmentId '" + utredningsId + "' does not have a ExternForfragan.");
+        }
+
+        if (!utredning.getExternForfragan().get().getLandstingHsaId().equals(loggedInAtLandstingHsaId)) {
+            throw new IbAuthorizationException("The current user cannot mark Utredning with assessmentId '" + utredningsId
+                    + "' as betald, ExternForfragan is for another landsting");
+        }
+
+        if (utredning.getBetalning() != null) {
+            utredning.getBetalning().setFakturaFkId(request.getFakturaFkId());
+        } else {
+            Betalning betalning = Betalning.BetalningBuilder.aBetalning()
+                    .withFakturaFkId(request.getFakturaFkId())
                     .build();
             utredning.setBetalning(betalning);
         }

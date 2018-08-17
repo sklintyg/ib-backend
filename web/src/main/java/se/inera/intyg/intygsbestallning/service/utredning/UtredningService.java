@@ -23,12 +23,7 @@ import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AvslutaUtredningRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningListResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListAvslutadeUtredningarRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListUtredningRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveBetalningForUtredningRequest;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveUtbetalningForUtredningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.*;
 
 public interface UtredningService {
 
@@ -113,4 +108,6 @@ public interface UtredningService {
     void saveBetaldVeIdForUtredning(Long utredningsId, SaveBetalningForUtredningRequest request, String loggedInAtLandstingHsaId);
 
     void saveBetaldFkIdForUtredning(Long utredningsId, SaveUtbetalningForUtredningRequest request, String loggedInAtLandstingHsaId);
+
+    void saveFakturaFkIdForUtredning(Long utredningsId, SaveFakturaFkIdForUtredningRequest request, String loggedInAtLandstingHsaId);
 }
