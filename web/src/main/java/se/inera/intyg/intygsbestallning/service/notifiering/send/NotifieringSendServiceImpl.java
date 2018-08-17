@@ -153,27 +153,24 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
         final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VG);
 
         if (preferens.isEnabled(NY_EXTERNFORFRAGAN, LANDSTING)) {
-           //skall väl använda landstingets epost?
-            final String email = vardenhetService.getVardEnhetPreference(id).getEpost();
-            if (isNotEmpty(email)) {
-                final String body = notifieringMailBodyFactory.buildBodyForUtredning(
-                        landstingNyExternforfraganMessage(),
-                        maillinkRedirectUrlBuilder.buildSamordnareUtredningUrl(utredning.getUtredningId()));
-                sendNotifiering(email, SUBJECT_NY_FMU_EXTERN_FORFRAGAN, body, utredning.getUtredningId());
-                saveNotifiering(utredning, NY_EXTERNFORFRAGAN, LANDSTING);
-            }
+            final String body = notifieringMailBodyFactory.buildBodyForUtredning(
+                    landstingNyExternforfraganMessage(),
+                    maillinkRedirectUrlBuilder.buildSamordnareUtredningUrl(utredning.getUtredningId()));
+            sendNotifiering(preferens.getLandstingEpost(), SUBJECT_NY_FMU_EXTERN_FORFRAGAN, body, utredning.getUtredningId());
+            saveNotifiering(utredning, NY_EXTERNFORFRAGAN, LANDSTING);
+
         }
     }
 
     @Override
-    public void notifieraVardenhetNyInternforfragan(Utredning utredning, InternForfragan internForfragan) {
+    public void notifieraVardenhetNyInternforfragan(Utredning utredning, InternForfragan internForfragan, String landstingsNamn) {
         final GetNotificationPreferenceResponse preferens = notifieringPreferenceService
                 .getNotificationPreference(internForfragan.getVardenhetHsaId(), VE);
 
         if (preferens.isEnabled(NY_INTERNFORFRAGAN, VARDENHET)) {
             epostResolver.resolveVardenhetNotifieringEpost(internForfragan.getVardenhetHsaId(), utredning).ifPresent(email -> {
                 final String body = notifieringMailBodyFactory.buildBodyForUtredning(
-                        vardenhetNyInternforfraganMessage(internForfragan),
+                        vardenhetNyInternforfraganMessage(landstingsNamn),
                         maillinkRedirectUrlBuilder.buildVardadminInternForfraganUrl(utredning.getUtredningId(), internForfragan.getId()));
                 sendNotifiering(email, SUBJECT_NY_FMU_INTERN_FORFRAGAN, body, utredning.getUtredningId());
                 saveNotifiering(utredning, NY_INTERNFORFRAGAN, VARDENHET);

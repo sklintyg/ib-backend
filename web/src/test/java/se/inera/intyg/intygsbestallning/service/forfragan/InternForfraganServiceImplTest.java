@@ -198,7 +198,7 @@ public class InternForfraganServiceImplTest {
         assertEquals(HandelseTyp.INTERNFORFRAGAN_SKICKAD, utredning.getHandelseList().get(1).getHandelseTyp());
         assertEquals(userName, utredning.getHandelseList().get(1).getAnvandare());
         assertEquals("Förfrågan skickades till " + vardenhetNamn2, utredning.getHandelseList().get(1).getHandelseText());
-        verify(notifieringSendService, times(2)).notifieraVardenhetNyInternforfragan(any(Utredning.class), any(InternForfragan.class));
+        verify(notifieringSendService, times(2)).notifieraVardenhetNyInternforfragan(any(Utredning.class), any(InternForfragan.class), any(String.class));
     }
 
     @Test(expected = IbNotFoundException.class)

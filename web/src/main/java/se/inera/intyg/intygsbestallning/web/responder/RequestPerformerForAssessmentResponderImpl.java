@@ -71,6 +71,7 @@ public class RequestPerformerForAssessmentResponderImpl implements RequestPerfor
             response.setAssessmentId(anII(sourceSystemHsaId, sparadUtredning.getUtredningId().toString()));
             return response;
         } catch (final Exception e) {
+            log.error("Error in requestPerformerForAssessment", e);
             RequestPerformerForAssessmentResponseType response = new RequestPerformerForAssessmentResponseType();
             response.setAssessmentId(anII(sourceSystemHsaId, ""));
             response.setResult(toResultTypeError(e));

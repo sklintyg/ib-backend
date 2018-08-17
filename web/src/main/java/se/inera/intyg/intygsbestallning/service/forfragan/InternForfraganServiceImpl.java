@@ -149,8 +149,10 @@ public class InternForfraganServiceImpl extends BaseUtredningService implements 
                 .stream()
                 .filter(internForfragan -> newVardenheter.contains(internForfragan.getVardenhetHsaId())).collect(toList());
 
+        String landstingsNamn = getLandstingNameOrHsaId(landstingHsaId);
         toBeNotified
-                .forEach(internForfragan -> notifieringSendService.notifieraVardenhetNyInternforfragan(sparadUtredning, internForfragan));
+                .forEach(internForfragan -> notifieringSendService.notifieraVardenhetNyInternforfragan(sparadUtredning, internForfragan,
+                        landstingsNamn));
 
         return createGetUtredningResponse(utredning);
     }

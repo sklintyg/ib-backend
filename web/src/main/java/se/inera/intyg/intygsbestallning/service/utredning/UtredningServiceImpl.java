@@ -18,8 +18,34 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.base.Strings.emptyToNull;
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static com.google.common.collect.MoreCollectors.toOptional;
+import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toList;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
+import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
+import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder;
+import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
+import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
+import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
+import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
+import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
+
+import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
@@ -28,7 +54,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
@@ -81,35 +110,6 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveUtb
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItemFactory;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
-
-import java.text.MessageFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkState;
-import static com.google.common.base.Strings.emptyToNull;
-import static com.google.common.base.Strings.isNullOrEmpty;
-import static com.google.common.collect.MoreCollectors.toOptional;
-import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toList;
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
-import static org.apache.commons.lang3.BooleanUtils.isFalse;
-import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
-import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder;
-import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
-import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
-import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
-import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
-import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 
 @Service
 @Transactional
@@ -368,9 +368,9 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .withTolkSprak(order.getTolkSprak())
                 .withBestallning(createBestallning(order))
                 .withHandlaggare(createHandlaggare(order.getBestallare()))
-                .withHandelseList(Collections.singletonList(HandelseUtil
+                .withHandelseList(Lists.newArrayList(HandelseUtil
                         .createOrderReceived(MyndighetTyp.of(order.getBestallare().getMyndighet()).getDescription(), null)))
-                .withIntygList(Collections.singletonList(anIntyg()
+                .withIntygList(Lists.newArrayList(anIntyg()
                         .withKomplettering(false)
                         .withSistaDatum(Optional.ofNullable(order.getLastDateIntyg()).map(LocalDate::atStartOfDay).orElse(null))
                         .build()))
@@ -431,10 +431,11 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         final Utredning utredning;
         final Utredning sparadUtredning;
 
+
         //FMU-004: Alternativflöde 1 - Internförfrågan skickas direkt till (enda) vårdenhet i egen regi
         if (byVardgivareHsaId.size() == 1 && RegiFormTyp.EGET_LANDSTING.equals(byVardgivareHsaId.get(0).getVardenhetRegiForm())) {
             final String vardenhetHsaId = byVardgivareHsaId.iterator().next().getVardenhetHsaId();
-            externForfragan.withInternForfraganList(Collections.singletonList(anInternForfragan()
+            externForfragan.withInternForfraganList(Lists.newArrayList(anInternForfragan()
                     .withVardenhetHsaId(vardenhetHsaId)
                     .withBesvarasSenastDatum(request.getBesvaraSenastDatum())
                     .withSkapadDatum(LocalDateTime.now())
@@ -444,33 +445,25 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
             handelse = HandelseUtil.createInternForfraganSkickad(request.getLandstingHsaId(), vardenhetHsaId);
             utredningBuilder
                     .withExternForfragan(externForfragan.build())
-                    .withHandelseList(Collections.singletonList(handelse));
+                    .withHandelseList(Lists.newArrayList(handelse));
             utredning = utredningBuilder.build();
             checkState(Objects.equals(UtredningStatus.VANTAR_PA_SVAR, UtredningStatusResolver.resolveStaticStatus(utredning)));
             sparadUtredning = utredningRepository.saveUtredning(utredning);
             //In this case we know that this is the only internforfragan
             InternForfragan internForfragan = sparadUtredning.getExternForfragan().get().getInternForfraganList().get(0);
-            notifieringSendService.notifieraVardenhetNyInternforfragan(sparadUtredning, internForfragan);
+            notifieringSendService.notifieraVardenhetNyInternforfragan(sparadUtredning, internForfragan,
+                    getLandstingNameOrHsaId(request.getLandstingHsaId()));
         } else {
             //FMU-004: Normalflöde 1 - Landstinget tar emot externförfrågan
-            String vardgivare = request.getLandstingHsaId();
-            try {
-                Vardgivare vardgivareInfo = hsaOrganizationsService.getVardgivareInfo(vardgivare);
-                if (vardgivareInfo != null) {
-                    vardgivare = vardgivareInfo.getNamn();
-                }
-            } catch (Exception e) {
-                LOG.error(MessageFormat.format("Fel vid uppslagning av hsaid {0}", request.getLandstingHsaId(), e));
-            }
 
-            handelse = HandelseUtil.createExternForfraganMottagen(vardgivare);
+            handelse = HandelseUtil.createExternForfraganMottagen(request.getLandstingHsaId());
             utredningBuilder
                     .withExternForfragan(externForfragan.build())
-                    .withHandelseList(Collections.singletonList(handelse));
+                    .withHandelseList(Lists.newArrayList(handelse));
             utredning = utredningBuilder.build();
             checkState(Objects.equals(UtredningStatus.FORFRAGAN_INKOMMEN, UtredningStatusResolver.resolveStaticStatus(utredning)));
             sparadUtredning = utredningRepository.saveUtredning(utredning);
-            notifieringSendService.notifieraLandstingNyExternforfragan(utredning);
+            notifieringSendService.notifieraLandstingNyExternforfragan(sparadUtredning);
         }
         return sparadUtredning;
     }

@@ -470,7 +470,8 @@ public class UtredningServiceImplTest {
         final Utredning sparadUtredning = utredningService.registerNewUtredning(request);
 
         assertEquals(utredning, sparadUtredning);
-        verify(notifieringSendService, times(1)).notifieraVardenhetNyInternforfragan(any(Utredning.class), any(InternForfragan.class));
+        verify(notifieringSendService, times(1)).notifieraVardenhetNyInternforfragan(any(Utredning.class), any(InternForfragan.class),
+                any(String.class));
     }
 
     @Test

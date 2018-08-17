@@ -36,6 +36,7 @@ import com.google.common.base.Strings;
 
 import se.inera.intyg.infra.integration.hsa.client.OrganizationUnitService;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
+import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
@@ -100,6 +101,28 @@ public abstract class BaseUtredningService {
         enrichWithVardenhetNames(getUtredningResponse.getTidigareEnheter());
 
         return getUtredningResponse;
+    }
+
+    /**
+     * Lenient retrival of landstings name. If an exception occurs or no name returned, an error is logged and the given
+     * hsaId is echoed back.
+     *
+     * @param vardgivarHsaId
+     * @return
+     */
+    protected String getLandstingNameOrHsaId(final String vardgivarHsaId) {
+        try {
+            Vardgivare vardgivareInfo = hsaOrganizationsService.getVardgivareInfo(vardgivarHsaId);
+            if (vardgivareInfo != null) {
+                return vardgivareInfo.getNamn();
+            } else {
+                LOG.warn(MessageFormat.format("getVardgivareInfo for hsaid {0} returned null", vardgivarHsaId));
+                return vardgivarHsaId;
+            }
+        } catch (Exception e) {
+            LOG.error(MessageFormat.format("Exception in hsaOrganizationsService.getVardgivareInfo for hsaid {0}", vardgivarHsaId, e));
+            return vardgivarHsaId;
+        }
     }
 
     protected void enrichWithVardenhetNames(List<? extends VardenhetEnrichable> items) {

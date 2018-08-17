@@ -22,8 +22,8 @@ import java.text.MessageFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.Optional;
+
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
-import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 
@@ -36,10 +36,10 @@ public final class NotifieringMailMeddelandeUtil {
         return "Det har inkommit en ny förfrågan om en försäkringsmedicinsk utredning (FMU) från Försäkringskassan.";
     }
 
-    public static String vardenhetNyInternforfraganMessage(final InternForfragan internForfragan) {
+    public static String vardenhetNyInternforfraganMessage(final String landstingsnamn) {
         return MessageFormat.format(
                 "Det har inkommit en ny förfrågan om en försäkringsmedicinsk utredning (FMU) från {0}.",
-                internForfragan.getVardenhetHsaId());
+                landstingsnamn);
     }
 
     public static String landstingSamtligaInternForfraganBesvaradeforfraganMessage(final Utredning utredning) {
@@ -94,7 +94,7 @@ public final class NotifieringMailMeddelandeUtil {
 
         return MessageFormat.format("Slutdatum {0} för utredning {1} har "
                         + "passerats. Utredningen kommer därför inte ersättas av Försäkringskassan.",
-                sistaDatumOpt,
+                sistaDatumOpt.get().getSistaDatum().format(DateTimeFormatter.ISO_DATE),
                 utredning.getUtredningId());
     }
 
