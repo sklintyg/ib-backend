@@ -320,7 +320,7 @@ var ibMessages = {
         'label.table.avslutade.bestallningar.column.avslutsdatum': 'Avslutsdatum',
         'label.table.avslutade.bestallningar.column.ersatts': 'Ersätts',
         'label.table.avslutade.bestallningar.column.fakturerad': 'Fakturerad',
-        'label.table.avslutade.bestallningar.column.utbetald': 'Utbetald',
+        'label.table.avslutade.bestallningar.column.utbetald': 'Betald',
 
         //Internförfrågningar
         'internforfragan.besvara.form.acceptera.title': 'Acceptera förfrågan',
