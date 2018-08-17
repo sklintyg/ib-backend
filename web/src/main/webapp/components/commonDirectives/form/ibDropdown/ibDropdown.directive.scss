@@ -65,6 +65,10 @@ ib-dropdown {
     }
   }
 
+  &.thin{
+    width: 120px;
+  }
+
   &[disabled] .dropdown-label, fieldset[disabled] & .dropdown-label {
     cursor: not-allowed;
     color: $ib-color-09;
