@@ -315,6 +315,30 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
     }
 
     @Test
+    public void testResolvesUtlatandeSkickatSistaDatumPassed() {
+        // intyg sista datum should not affect utredningstatus
+        Utredning utr = buildBaseUtredning();
+        utr.getExternForfragan()
+                .map(ExternForfragan::getInternForfraganList)
+                .map(iff -> iff.add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now())));
+        utr.setBestallning(buildBestallning(null));
+        Intyg intyg = buildBestalltIntyg();
+        intyg.setSkickatDatum(LocalDateTime.now());
+        intyg.setSistaDatum(LocalDateTime.now().minusDays(1));
+        utr.getIntygList().add(intyg);
+        utr.getHandlingList().add(buildHandling(LocalDateTime.now(), null));
+        utr.getBesokList().add(aBesok()
+                .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
+                .withDeltagareProfession(DeltagarProfessionTyp.FT)
+                .build());
+
+        UtredningStatus status = testee.resolveStatus(utr);
+        assertEquals(UtredningStatus.UTLATANDE_SKICKAT, status);
+        assertEquals(UtredningFas.UTREDNING, status.getUtredningFas());
+        assertEquals(Actor.FK, status.getNextActor());
+    }
+
+    @Test
     public void testResolvesUtlatandeMottaget() {
         Utredning utr = buildBaseUtredning();
         utr.getExternForfragan()

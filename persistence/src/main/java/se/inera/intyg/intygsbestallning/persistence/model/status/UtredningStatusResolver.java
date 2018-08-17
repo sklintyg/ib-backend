@@ -74,26 +74,25 @@ public class UtredningStatusResolver {
 
         // Slutfas. Denna kontroll måste ske före vi tittar detaljerat på kompletteringar.
 
-        if (utredning.getIntygList().stream().allMatch(intyg -> intyg.getMottagetDatum() != null)
-                && utredning.getBesokList().stream()
-                .noneMatch(besok -> besok.getBesokStatus() == BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
-                && isAvslutadByCronJob(utredning)) {
-            // Finns det bokade besök som inte är redovisade? Har cronjobbet avslutat utredningen?
-            return UtredningStatus.AVSLUTAD;
-        } else if (utredning.getIntygList().stream().allMatch(intyg -> intyg.getMottagetDatum() != null
-                && utredning.getBesokList().stream()
-                .anyMatch(besok -> besok.getBesokStatus() == BesokStatusTyp.TIDBOKAD_VARDKONTAKT))) {
-            // Alla besok måste redovisas som genomförda eller vara avbokade.
-            // BesokStatusTyp.TIDBOKAD_VARDKONTAKT blir antingen BesokStatusTyp.AVSLUTAD_VARDKONTAKT eller
-            // BesokStatusTyp.INSTALLD_VARDKONTAKT
-            return UtredningStatus.REDOVISA_BESOK;
-        } else if (utredning.getIntygList().stream().allMatch(intyg -> intyg.getMottagetDatum() != null)) {
-
-            // Om det funnits någon komplettering...
-            if (utredning.getIntygList().stream().anyMatch(Intyg::isKomplettering)) {
-                return UtredningStatus.KOMPLETTERING_MOTTAGEN;
+        // Om alla intyg är mottagna
+        if (utredning.getIntygList().stream().allMatch(intyg -> intyg.getMottagetDatum() != null)) {
+            if (utredning.getBesokList().stream().noneMatch(besok -> besok.getBesokStatus() == BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
+                    && isAvslutadByCronJob(utredning)) {
+                // Finns det bokade besök som inte är redovisade? Har cronjobbet avslutat utredningen?
+                return UtredningStatus.AVSLUTAD;
+            } else if (utredning.getBesokList().stream()
+                    .anyMatch(besok -> besok.getBesokStatus() == BesokStatusTyp.TIDBOKAD_VARDKONTAKT)) {
+                // Alla besok måste redovisas som genomförda eller vara avbokade.
+                // BesokStatusTyp.TIDBOKAD_VARDKONTAKT blir antingen BesokStatusTyp.AVSLUTAD_VARDKONTAKT eller
+                // BesokStatusTyp.INSTALLD_VARDKONTAKT
+                return UtredningStatus.REDOVISA_BESOK;
             } else {
-                return UtredningStatus.UTLATANDE_MOTTAGET;
+                // Om det funnits någon komplettering...
+                if (utredning.getIntygList().stream().anyMatch(Intyg::isKomplettering)) {
+                    return UtredningStatus.KOMPLETTERING_MOTTAGEN;
+                } else {
+                    return UtredningStatus.UTLATANDE_MOTTAGET;
+                }
             }
         }
 
@@ -140,8 +139,7 @@ public class UtredningStatusResolver {
         Intyg intyg = utredning.getIntygList().stream().collect(MoreCollectors.onlyElement());
 
         // Skickat - ursprungsintyget är skickat.
-        if (intyg.getSkickatDatum() != null && intyg.getMottagetDatum() == null
-                && (intyg.getSistaDatum() == null || intyg.getSistaDatum().isAfter(LocalDateTime.now()))) {
+        if (intyg.getSkickatDatum() != null && intyg.getMottagetDatum() == null) {
             return Optional.of(UtredningStatus.UTLATANDE_SKICKAT);
         }
 

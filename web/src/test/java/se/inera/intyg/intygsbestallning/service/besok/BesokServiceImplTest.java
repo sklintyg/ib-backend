@@ -529,8 +529,8 @@ public class BesokServiceImplTest {
                 .findByBesokList_Id(eq(BESOK_ID));
 
         assertThatThrownBy(() -> besokService.reportBesokAvvikelse(request))
-                .isExactlyInstanceOf(IllegalStateException.class)
-                .hasMessage(MessageFormat.format("Invalid state in Utredning {0}", utredning.getUtredningId()));
+                .isExactlyInstanceOf(IbServiceException.class)
+                .hasMessage(MessageFormat.format("Utredning with id {0} is in an incorrect state.", utredning.getUtredningId()));
     }
 
     @Test
