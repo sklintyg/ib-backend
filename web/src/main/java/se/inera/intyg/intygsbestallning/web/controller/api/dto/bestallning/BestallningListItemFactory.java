@@ -25,8 +25,9 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
+
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
-import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
@@ -46,18 +47,15 @@ public class BestallningListItemFactory {
 
         UtredningStatus utredningStatus = utredning.getStatus();
 
+        Optional<LocalDateTime> slutdatumFas = SlutDatumFasResolver.resolveSlutDatumFas(utredning, utredningStatus);
+
         return BestallningListItem.BestallningListItemBuilder.anBestallningListItem()
                 .withFas(utredningStatus.getUtredningFas())
                 .withPatientId(utredning.getInvanare().getPersonId())
                 .withPatientNamn(null)
-                .withSlutdatumFas(SlutDatumFasResolver.resolveSlutDatumFas(utredning, utredningStatus)
-                        .map(DateTimeFormatter.ISO_DATE::format).orElse(null))
-                .withSlutdatumPasserat(LocalDateTime.now().isAfter(utredning.getIntygList().stream()
-                        .filter(i -> !i.isKomplettering())
-                        .findFirst()
-                        .map(Intyg::getSistaDatum)
-                        .orElseThrow(IllegalStateException::new)))
-                .withSlutdatumPaVagPasseras(resolveSlutDatumPaVagPasseras(utredning, utredningStatus))
+                .withSlutdatumFas(slutdatumFas.map(DateTimeFormatter.ISO_DATE::format).orElse(null))
+                .withSlutdatumPasserat(slutdatumFas.map(date -> LocalDate.now().isAfter(date.toLocalDate())).orElse(false))
+                .withSlutdatumPaVagPasseras(resolveSlutDatumPaVagPasseras(slutdatumFas))
                 .withStatus(utredningStatus)
                 .withNextActor(utredningStatus.getNextActor().name())
                 .withKraverAtgard(actorInThisContext == utredningStatus.getNextActor())
@@ -83,27 +81,12 @@ public class BestallningListItemFactory {
      * där slutdatum avser slutdatum för utredningen (intyg.sista datum för mottagning) om ingen kompletteringsbegäran har
      * mottagits, annars slutdatum för kompletteringsbegäran (komplettering.sista datum för mottagning)
      */
-    private boolean resolveSlutDatumPaVagPasseras(Utredning utredning, UtredningStatus utredningStatus) {
-        LocalDateTime timestamp;
-        switch (utredningStatus.getUtredningFas()) {
-            case KOMPLETTERING:
-                timestamp = utredning.getIntygList().stream()
-                        .filter(Intyg::isKomplettering)
-                        .map(Intyg::getSistaDatum)
-                        .max(LocalDateTime::compareTo)
-                        .orElseThrow(IllegalStateException::new);
-                break;
-            case UTREDNING:
-                timestamp = utredning.getIntygList().stream()
-                        .filter(i -> !i.isKomplettering())
-                        .map(Intyg::getSistaDatum)
-                        .findAny()
-                        .orElseThrow(IllegalStateException::new);
-                break;
-            default:
-                return false;
+    private boolean resolveSlutDatumPaVagPasseras(Optional<LocalDateTime> slutdatumFas) {
+        if (!slutdatumFas.isPresent()) {
+            return false;
         }
-        return LocalDate.now().isBefore(timestamp.toLocalDate())
-                && LocalDate.now().isAfter(businessDays.minusBusinessDays(timestamp.toLocalDate(), paminnelseDagar));
+        LocalDate date = slutdatumFas.get().toLocalDate();
+        return (LocalDate.now().isBefore(date) || LocalDate.now().isEqual(date))
+                && LocalDate.now().isAfter(businessDays.minusBusinessDays(date, paminnelseDagar));
     }
 }

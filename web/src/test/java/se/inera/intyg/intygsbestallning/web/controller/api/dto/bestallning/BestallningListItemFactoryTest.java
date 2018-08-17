@@ -19,6 +19,7 @@
 
 package se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -38,6 +39,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
+import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
 import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
 import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
@@ -80,6 +82,12 @@ public class BestallningListItemFactoryTest {
                         .withLandstingHsaId("landstingHsaId")
                         .withBesvarasSenastDatum(LocalDateTime.now())
                         .build())
+                .withBestallning(aBestallning()
+                        .build())
+                .withHandlingList(ImmutableList.of(aHandling()
+                        .withSkickatDatum(LocalDateTime.now())
+                        .withInkomDatum(LocalDateTime.now())
+                        .build()))
                 .withIntygList(Collections.singletonList(anIntyg()
                         .withSistaDatum(LocalDateTime.now().minusDays(2))
                         .withKomplettering(false)
@@ -87,7 +95,7 @@ public class BestallningListItemFactoryTest {
                 .build();
 // use the resolver to set status even in the test...
         utredning.setStatus(utredningStatusResolver.resolveStatus(utredning));
-        BestallningListItem bestallningListItem = testee.from(utredning, Actor.SAMORDNARE);
+        BestallningListItem bestallningListItem = testee.from(utredning, Actor.VARDADMIN);
 
         assertNotNull(bestallningListItem);
         assertTrue(bestallningListItem.getSlutdatumPasserat());
@@ -114,7 +122,7 @@ public class BestallningListItemFactoryTest {
                 .withBestallning(aBestallning().build())
                 .build();
         utredning.setStatus(utredningStatusResolver.resolveStatus(utredning));
-        BestallningListItem bestallningListItem = testee.from(utredning, Actor.UTREDARE);
+        BestallningListItem bestallningListItem = testee.from(utredning, Actor.VARDADMIN);
 
         assertNotNull(bestallningListItem);
         assertFalse(bestallningListItem.getSlutdatumPasserat());

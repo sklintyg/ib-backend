@@ -24,6 +24,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp;
@@ -101,6 +102,25 @@ public interface UtredningRepository extends UtredningRepositoryCustom, JpaRepos
      */
     @Query("SELECT u FROM Utredning u JOIN u.externForfragan e WHERE u.arkiverad = false AND e.besvarasSenastDatum >= :fromDate  AND e.besvarasSenastDatum <= :toDate AND u.utredningId NOT IN (SELECT u.utredningId FROM Utredning u JOIN u.skickadNotifieringList n WHERE n.typ = :typ AND n.mottagare = :mottagare)")
     List<Utredning> findNonNotifiedExternforfraganBesvarasSenastBetween(@Param("fromDate") LocalDateTime fromDate, @Param("toDate") LocalDateTime toDate, @Param("typ") NotifieringTyp typ, @Param("mottagare") NotifieringMottagarTyp mottagare);
+
+    /**
+     * Alla utredningar med intyg som är kompletteringar med slutdatum som passerats och som ej har notifiering av angiven typ.
+     */
+    @Query("SELECT u,i FROM Utredning u " +
+            "JOIN u.intygList i " +
+            "JOIN u.bestallning b " +
+            "WHERE b.tilldeladVardenhetHsaId is not null " +
+            "AND u.arkiverad = false " +
+            "AND i.komplettering = true " +
+            "AND i.skickatDatum is null " +
+            "AND i.sistaDatum is not null " +
+            "AND i.sistaDatum < :date " +
+            "AND i.id NOT IN (" +
+            "SELECT n.intygId FROM SkickadNotifiering n " +
+            "WHERE n.typ = :typ AND n.mottagare = :mottagare" +
+            ")"
+    )
+    List<Object[]> findNonNotifiedSistadatumKompletteringBefore(@Param("date") LocalDateTime date, @Param("typ") NotifieringTyp typ, @Param("mottagare") NotifieringMottagarTyp mottagare);
 
     @Query("SELECT DISTINCT u FROM Utredning u " +
            "JOIN u.intygList i " +

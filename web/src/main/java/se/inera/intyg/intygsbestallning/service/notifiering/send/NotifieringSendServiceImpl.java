@@ -37,6 +37,7 @@ import static se.inera.intyg.intygsbestallning.persistence.model.type.Notifierin
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.PAMINNELSE_SLUTDATUM_EXTERNFORFRAGAN_PASSERAS;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.SAMTLIGA_INTERNFORFRAGAN_BESVARATS;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.SLUTDATUM_KOMPLETTERING_PASSERAT;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.SLUTDATUM_UTREDNING_PASSERAT;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.UPPDATERAD_BESTALLNING;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.UTREDNING_AVSLUTAD_PGA_AVBRUTEN;
@@ -55,6 +56,7 @@ import static se.inera.intyg.intygsbestallning.service.notifiering.util.Notifier
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.paminnelseSlutDatumKomplettering;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.paminnelseSlutdatumUtredningMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.paminnelseSvaraExternforfraganMessage;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.slutdatumPasseratKompletteringMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.slutdatumPasseratUtredningMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.uppdateradBestallningMessage;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailMeddelandeUtil.vardenhetAvslutadUtredningMessage;
@@ -70,9 +72,10 @@ import static se.inera.intyg.intygsbestallning.service.notifiering.util.Notifier
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_FMU_UTREDNING_TILLDELAD_VARDENHETEN;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_INGEN_BESTALLNING;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_KOMPLETTERING_BEGARD;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_KOMPLETTERING_SLUTDATUM_PASSERAT;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_NY_FMU_EXTERN_FORFRAGAN;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_NY_FMU_INTERN_FORFRAGAN;
-import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_PAMINNELSE_SLUTDATUM_KOMPLETTERING;
+import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_KOMPLETTERING_SLUTDATUM_PAMINNELSE;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_PAMINNELSE_SVARA_EXTERNFORFRAGAN;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_REDOVISA_BESOK;
 import static se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailSubjectConstants.SUBJECT_SAMTLIGA_INTERNFORFRAGAN_BESVARATS;
@@ -101,6 +104,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
+import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp;
@@ -527,7 +531,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                         final String body = notifieringMailBodyFactory.buildBodyForUtredning(
                                 paminnelseSlutDatumKomplettering(utredning, intyg),
                                 maillinkRedirectUrlBuilder.buildVardadminBestallningUrl(utredning.getUtredningId()));
-                        sendNotifiering(email, SUBJECT_PAMINNELSE_SLUTDATUM_KOMPLETTERING, body, utredning.getUtredningId());
+                        sendNotifiering(email, SUBJECT_KOMPLETTERING_SLUTDATUM_PAMINNELSE, body, utredning.getUtredningId());
                         updateUtredningWithNotifiering(utredning, intyg.getId(), PAMINNELSEDATUM_KOMPLETTERING_PASSERAS, VARDENHET);
                     }));
             utredningRepository.saveUtredning(utredning);
@@ -535,13 +539,40 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
     }
 
     @Override
-    public void notifieraVardenhetSlutdatumPasseratKomplettering(Utredning utredning) {
-        throw new NotImplementedException();
+    public void notifieraVardenhetSlutdatumPasseratKomplettering(Utredning utredning, Intyg intyg) {
+        final Bestallning bestallning = verifyHasBestallningAndGet(utredning, SLUTDATUM_UTREDNING_PASSERAT);
+        final String id = bestallning.getTilldeladVardenhetHsaId();
+        final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VE);
+
+        if (preferens.isEnabled(SLUTDATUM_KOMPLETTERING_PASSERAT, NotifieringMottagarTyp.VARDENHET)) {
+            epostResolver.resolveVardenhetNotifieringEpost(id, utredning).ifPresent(email -> {
+                String body = notifieringMailBodyFactory.buildBodyForUtredning(
+                        slutdatumPasseratKompletteringMessage(utredning, intyg),
+                        maillinkRedirectUrlBuilder.buildVardadminBestallningUrl(utredning.getUtredningId()));
+
+                sendNotifiering(email, SUBJECT_KOMPLETTERING_SLUTDATUM_PASSERAT, body, utredning.getUtredningId());
+                saveNotifiering(utredning, SLUTDATUM_KOMPLETTERING_PASSERAT, VARDENHET);
+            });
+        }
     }
 
     @Override
-    public void notifieraLandstingSlutdatumPasseratKomplettering(Utredning utredning) {
-        throw new NotImplementedException();
+    public void notifieraLandstingSlutdatumPasseratKomplettering(Utredning utredning, Intyg intyg) {
+        String vardgivareHsaId = utredning.getExternForfragan().get().getLandstingHsaId();
+        final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(vardgivareHsaId, VG);
+
+        if (preferens.isEnabled(SLUTDATUM_KOMPLETTERING_PASSERAT, NotifieringMottagarTyp.LANDSTING)) {
+            String email = preferens.getLandstingEpost();
+            if (Strings.isNullOrEmpty(email)) {
+                return;
+            }
+            String body = notifieringMailBodyFactory.buildBodyForUtredning(
+                    slutdatumPasseratKompletteringMessage(utredning, intyg),
+                    maillinkRedirectUrlBuilder.buildSamordnareUtredningUrl(utredning.getUtredningId()));
+
+            sendNotifiering(email, SUBJECT_KOMPLETTERING_SLUTDATUM_PASSERAT, body, utredning.getUtredningId());
+            saveNotifiering(utredning, SLUTDATUM_KOMPLETTERING_PASSERAT, LANDSTING);
+        }
     }
 
     @Override

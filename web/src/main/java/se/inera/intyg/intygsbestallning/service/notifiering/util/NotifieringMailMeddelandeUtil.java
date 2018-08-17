@@ -162,6 +162,14 @@ public final class NotifieringMailMeddelandeUtil {
                 utredning.getUtredningId());
     }
 
+    public static String slutdatumPasseratKompletteringMessage(final Utredning utredning, final Intyg intyg) {
+
+        return MessageFormat.format("Slutdatum {0} för utredning {1} har passerats. "
+                        + "Utredningen kommer därför inte ersättas av Försäkringskassan.",
+                intyg.getSistaDatum().format(DateTimeFormatter.ISO_DATE),
+                utredning.getUtredningId());
+    }
+
     public static String kompletteringBegard(final Utredning utredning) {
         return MessageFormat.format("Försäkringskassan har begärt komplettering av utlåtandet i utredning {0}.",
                 utredning.getUtredningId());
