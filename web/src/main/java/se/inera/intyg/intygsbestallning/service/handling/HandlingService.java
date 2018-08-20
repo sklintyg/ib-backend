@@ -22,5 +22,5 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.handling.Register
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.handling.RegisterHandlingResponse;
 
 public interface HandlingService {
-    RegisterHandlingResponse registerNewHandling(Long utredningId, RegisterHandlingRequest request);
+    RegisterHandlingResponse registerHandlingMottagen(Long utredningId, RegisterHandlingRequest request);
 }

@@ -18,29 +18,27 @@
  */
 package se.inera.intyg.intygsbestallning.service.handling;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.Optional;
-import se.inera.intyg.intygsbestallning.auth.IbUser;
+
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
-import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
-import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
-import se.inera.intyg.intygsbestallning.service.pdl.LogService;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
+import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
+import se.inera.intyg.intygsbestallning.service.pdl.LogService;
 import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.handling.RegisterHandlingRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.handling.RegisterHandlingResponse;
@@ -53,12 +51,9 @@ public class HandlingServiceImpl extends BaseUtredningService implements Handlin
     @Autowired
     private LogService logService;
 
-    @Autowired
-    private NotifieringSendService notifieringSendService;
-
     @Override
     @Transactional
-    public RegisterHandlingResponse registerNewHandling(Long utredningId, RegisterHandlingRequest request) {
+    public RegisterHandlingResponse registerHandlingMottagen(Long utredningId, RegisterHandlingRequest request) {
 
         LocalDate mottagenDatum = parseDate(request);
 
@@ -68,36 +63,46 @@ public class HandlingServiceImpl extends BaseUtredningService implements Handlin
         }
 
         Utredning utredning = utredningOptional.get();
-        UtredningStatus status = utredningStatusResolver.resolveStatus(utredning);
+
+        checkUserVardenhetTilldeladToBestallning(utredning);
+
+        Handling vantandeHandling = getVantandeHandling(utredning);
+
+        // Mark as "mottagen" by setting the inkomDatum
+        vantandeHandling.setInkomDatum(mottagenDatum.atStartOfDay());
+
+        // Store handelse.
+        Handelse handelse = HandelseUtil.createHandlingMottagen(userService.getUser().getNamn(), request.getHandlingarMottogsDatum());
+        utredning.getHandelseList().add(handelse);
+
+        utredningRepository.saveUtredning(utredning);
+
+        // PDL log.
+        logService.logHandlingMottagen(utredning);
+
+        return new RegisterHandlingResponse();
+    }
+
+    /**
+     * Tries to find a handling waiting to be marked as 'mottagen' and verify that the utredning itself is in a state when
+     * handlingar can be received.
+     *
+     * @param utredning
+     * @return Handling waiting to be marked as 'Mottagen'
+     */
+    private Handling getVantandeHandling(Utredning utredning) {
+        UtredningStatus status = utredning.getStatus();
         // Check state - can this utredning really register handlingar?
         if (status.getUtredningFas() == UtredningFas.FORFRAGAN || status.getUtredningFas() == UtredningFas.AVSLUTAD) {
             throw new IbServiceException(IbErrorCodeEnum.BAD_STATE,
                     "This utredning is in phase " + status.getUtredningFas().getLabel() + " and cannot accept new Handlingar.");
         }
 
-        checkUserVardenhetTilldeladToBestallning(utredning);
-
-        Handling handling = Handling.HandlingBuilder.aHandling()
-                .withInkomDatum(mottagenDatum.atStartOfDay())
-                .withSkickatDatum(LocalDateTime.now())
-                .withUrsprung(HandlingUrsprungTyp.UPPDATERING)
-                .build();
-        utredning.getHandlingList().add(handling);
-        utredningRepository.saveUtredning(utredning);
-
-        IbUser user = userService.getUser();
-
-        // Store handelse.
-        Handelse handelse = HandelseUtil.createHandlingMottagen(user.getNamn(), request.getHandlingarMottogsDatum());
-        utredning.getHandelseList().add(handelse);
-
-        // PDL log.
-        logService.logHandlingMottagen(utredning);
-
-        // Notify by email.
-        notifieringSendService.notifieraVardenhetNyBestallning(utredning);
-
-        return new RegisterHandlingResponse();
+        // Must have a waiting handling
+        return utredning.getHandlingList().stream()
+                .filter(h -> h.getInkomDatum() == null)
+                .findFirst().orElseThrow(() -> new IbServiceException(IbErrorCodeEnum.BAD_STATE,
+                        "No handling in utredning " + utredning.getUtredningId() + " was waiting to marked as received."));
     }
 
     private LocalDate parseDate(RegisterHandlingRequest request) {

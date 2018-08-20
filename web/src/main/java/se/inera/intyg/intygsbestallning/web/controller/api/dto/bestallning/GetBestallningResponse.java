@@ -91,6 +91,8 @@ public class GetBestallningResponse implements PDLLoggable {
 
     private List<AnteckningListItem> anteckningList;
 
+    private boolean vantandeHandlingar;
+
     public static GetBestallningResponse from(Utredning utredning, UtredningStatus utredningStatus, BusinessDaysBean businessDays) {
 
         return GetBestallningResponseBuilder.agetBestallningResponse()
@@ -152,6 +154,8 @@ public class GetBestallningResponse implements PDLLoggable {
                 .withAnteckningList(utredning.getAnteckningList().stream()
                         .map(AnteckningListItem::from)
                         .collect(Collectors.toList()))
+                .withVantandeHandlingar(utredning.getHandlingList().stream()
+                        .anyMatch(h -> h.getInkomDatum() == null))
                 .build();
 
     }
@@ -342,6 +346,14 @@ public class GetBestallningResponse implements PDLLoggable {
         return utredningsId.toString();
     }
 
+    public boolean isVantandeHandlingar() {
+        return vantandeHandlingar;
+    }
+
+    public void setVantandeHandlingar(boolean vantandeHandlingar) {
+        this.vantandeHandlingar = vantandeHandlingar;
+    }
+
     public static final class GetBestallningResponseBuilder {
         private Long utredningsId;
         private UtredningsTyp utredningsTyp;
@@ -364,6 +376,7 @@ public class GetBestallningResponse implements PDLLoggable {
         private List<BesokListItem> besokList;
         private List<HandelseListItem> handelseList;
         private List<AnteckningListItem> anteckningList;
+        private boolean vantandeHandlingar;
         private Actor kraverAtgardAv;
 
         private GetBestallningResponseBuilder() {
@@ -425,6 +438,11 @@ public class GetBestallningResponse implements PDLLoggable {
 
         public GetBestallningResponseBuilder withTolkSprak(String tolkSprak) {
             this.tolkSprak = tolkSprak;
+            return this;
+        }
+
+        public GetBestallningResponseBuilder withVantandeHandlingar(boolean vantandeHandlingar) {
+            this.vantandeHandlingar = vantandeHandlingar;
             return this;
         }
 
@@ -508,6 +526,7 @@ public class GetBestallningResponse implements PDLLoggable {
             getBestallningResponse.setBesokList(besokList);
             getBestallningResponse.setHandelseList(handelseList);
             getBestallningResponse.setAnteckningList(anteckningList);
+            getBestallningResponse.setVantandeHandlingar(vantandeHandlingar);
             return getBestallningResponse;
         }
 

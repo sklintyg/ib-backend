@@ -54,7 +54,7 @@ public class HandlingController {
         authoritiesValidator.given(user)
                 .privilege(AuthoritiesConstants.PRIVILEGE_VISA_BESTALLNING);
 
-        handlingService.registerNewHandling(utredningId, request);
+        handlingService.registerHandlingMottagen(utredningId, request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

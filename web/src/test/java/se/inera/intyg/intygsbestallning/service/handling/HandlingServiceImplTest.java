@@ -22,25 +22,24 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
-import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
 import se.inera.intyg.intygsbestallning.service.pdl.LogService;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.utredning.ServiceTestUtil;
@@ -59,23 +58,20 @@ public class HandlingServiceImplTest {
     @Mock
     private LogService logService;
 
-    @Mock
-    private NotifieringSendService notifieringSendService;
-
     @InjectMocks
     private HandlingServiceImpl testee;
 
     @Test
     public void testOk() {
         Utredning utredning = TestDataGen.createUtredning();
+        utredning.setHandlingList(TestDataGen.createHandling());
         when(utredningRepository.findById(anyLong())).thenReturn(Optional.of(utredning));
 
         when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
 
-        testee.registerNewHandling(1L, buildRequest());
+        testee.registerHandlingMottagen(1L, buildRequest());
         verify(utredningRepository, times(1)).saveUtredning(any());
         verify(logService, times(1)).logHandlingMottagen(any(Utredning.class));
-        verify(notifieringSendService, times(1)).notifieraVardenhetNyBestallning(any(Utredning.class));
     }
 
     @Test(expected = IbServiceException.class)
@@ -83,11 +79,11 @@ public class HandlingServiceImplTest {
         Utredning utredning = TestDataGen.createUtredning();
         utredning.setAvbrutenDatum(LocalDateTime.now());
         utredning.setAvbrutenOrsak(AvslutOrsak.JAV);
+        when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
         when(utredningRepository.findById(anyLong())).thenReturn(Optional.of(utredning));
         try {
-            testee.registerNewHandling(1L, buildRequest());
+            testee.registerHandlingMottagen(1L, buildRequest());
         } catch (Exception e) {
-            verifyZeroInteractions(notifieringSendService);
             throw e;
         }
 
@@ -96,14 +92,14 @@ public class HandlingServiceImplTest {
     @Test(expected = IbServiceException.class)
     public void testNoUtredningExists() {
         when(utredningRepository.findById(anyLong())).thenReturn(Optional.empty());
-        testee.registerNewHandling(1L, buildRequest());
+        testee.registerHandlingMottagen(1L, buildRequest());
     }
 
     @Test(expected = IbServiceException.class)
     public void testInvalidDate() {
         RegisterHandlingRequest req = buildRequest();
         req.setHandlingarMottogsDatum("2013-14-12");
-        testee.registerNewHandling(1L, req);
+        testee.registerHandlingMottagen(1L, req);
     }
 
     @Test(expected = IbAuthorizationException.class)
@@ -113,7 +109,16 @@ public class HandlingServiceImplTest {
         utredning.getBestallning().get().setTilldeladVardenhetHsaId("AnnanVardenhet");
         when(utredningRepository.findById(anyLong())).thenReturn(Optional.of(utredning));
         RegisterHandlingRequest req = buildRequest();
-        testee.registerNewHandling(1L, req);
+        testee.registerHandlingMottagen(1L, req);
+    }
+
+    @Test(expected = IbServiceException.class)
+    public void testNoWaitingHandling() {
+        Utredning utredning = TestDataGen.createUtredning();
+        when(utredningRepository.findById(anyLong())).thenReturn(Optional.of(utredning));
+        when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
+
+        testee.registerHandlingMottagen(1L, buildRequest());
     }
 
     private RegisterHandlingRequest buildRequest() {
