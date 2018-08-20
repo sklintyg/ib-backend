@@ -33,7 +33,7 @@ public interface NotifieringSendService {
 
     void notifieraVardenhetTilldeladUtredning(Utredning utredning, InternForfragan tillDeladInternForfragan, String landstingNamn);
 
-    void notifieraVardenhetPaminnelseSvaraInternforfragan(Utredning utredning);
+    void notifieraVardenhetPaminnelseSvaraInternforfragan(Utredning utredning, InternForfragan internForfragan);
 
     void notifieraLandstingPaminnelseSvaraExternforfragan(Utredning utredning);
 

@@ -19,11 +19,11 @@
 package se.inera.intyg.intygsbestallning.service.notifiering.util;
 
 import java.text.MessageFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.Optional;
-
+import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
+import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 
@@ -71,7 +71,7 @@ public final class NotifieringMailMeddelandeUtil {
             throw new IllegalStateException("Unable to send slutdatum på väg passeras notification, no intyg on Utredning "
                     + "has a sista datum.");
         }
-        String sistaDatumForMottagning = sistaDatumOpt.get().getSistaDatum().format(DateTimeFormatter.ISO_DATE);
+        String sistaDatumForMottagning = SchemaDateUtil.toIsoDateStringFromLocalDateTime(sistaDatumOpt.get().getSistaDatum());
 
         return MessageFormat.format(
                 "Slutdatum {0} för utredning {1} kommer snart att passeras. Om utlåtandet inte är mottaget av Försäkringskassan "
@@ -94,14 +94,14 @@ public final class NotifieringMailMeddelandeUtil {
 
         return MessageFormat.format("Slutdatum {0} för utredning {1} har "
                         + "passerats. Utredningen kommer därför inte ersättas av Försäkringskassan.",
-                sistaDatumOpt.get().getSistaDatum().format(DateTimeFormatter.ISO_DATE),
+                SchemaDateUtil.toIsoDateStringFromLocalDateTime(sistaDatumOpt.get().getSistaDatum()),
                 utredning.getUtredningId());
     }
 
     public static String avvikelseRapporteradAvVardenMessage(final Utredning utredning, final Besok besok) {
         return MessageFormat.format(
                 "En vårdenhet har rapporterat en avvikelse för ett besök som var inbokat {0} i utredning {1}",
-                besok.getBesokStartTid().format(DateTimeFormatter.ISO_DATE),
+                SchemaDateUtil.toIsoDateStringFromLocalDateTime(besok.getBesokStartTid()),
                 utredning.getUtredningId());
     }
 
@@ -109,14 +109,14 @@ public final class NotifieringMailMeddelandeUtil {
         return MessageFormat.format(
                 "Försäkringskassan har rapporterat en avvikelse för besöket som är inbokat {0} i utredning {1}. "
                         + "Tillse att besöket avbokas.",
-                besok.getBesokStartTid().format(DateTimeFormatter.ISO_DATE),
+                SchemaDateUtil.toIsoDateStringFromLocalDateTime(besok.getBesokStartTid()),
                 utredning.getUtredningId());
     }
 
     public static String landstingAvvikelseRapporteradAvFKMessage(final Utredning utredning, final Besok besok) {
         return MessageFormat.format(
                 "Försäkringskassan har rapporterat en avvikelse för besöket som är inbokat {0} i utredning {1}.",
-                besok.getBesokStartTid().format(DateTimeFormatter.ISO_DATE),
+                SchemaDateUtil.toIsoDateStringFromLocalDateTime(besok.getBesokStartTid()),
                 utredning.getUtredningId());
     }
 
@@ -158,16 +158,22 @@ public final class NotifieringMailMeddelandeUtil {
         return MessageFormat.format("Slutdatum {0} för utredning {1} kommer snart att passeras. "
                         + "Om kompletteringen inte är mottagen av Försäkringskassan innan "
                         + "angivet slutdatum så kommer utredningen inte att ersättas.",
-                intyg.getSistaDatum().format(DateTimeFormatter.ISO_DATE),
+                SchemaDateUtil.toIsoDateStringFromLocalDateTime(intyg.getSistaDatum()),
                 utredning.getUtredningId());
     }
 
     public static String slutdatumPasseratKompletteringMessage(final Utredning utredning, final Intyg intyg) {
-
         return MessageFormat.format("Slutdatum {0} för utredning {1} har passerats. "
                         + "Utredningen kommer därför inte ersättas av Försäkringskassan.",
-                intyg.getSistaDatum().format(DateTimeFormatter.ISO_DATE),
+                SchemaDateUtil.toIsoDateStringFromLocalDateTime(intyg.getSistaDatum()),
                 utredning.getUtredningId());
+    }
+
+    public static String paminnelseSvaraInternforfraganMessage(final Utredning utredning, final InternForfragan internForfragan) {
+        return MessageFormat.format("Förfrågan {0} om försäkringsmedicinska utredning (FMU) har ännu inte besvarats "
+                        + "av vårdenheten. Vänligen besvara förfrågan senast {1}",
+                utredning.getUtredningId(),
+                SchemaDateUtil.toIsoDateStringFromLocalDateTime(internForfragan.getBesvarasSenastDatum()));
     }
 
     public static String kompletteringBegardMessage(final Utredning utredning) {
@@ -179,6 +185,6 @@ public final class NotifieringMailMeddelandeUtil {
         return MessageFormat.format("Förfrågan {0} om försäkringsmedicinska utredning (FMU) har ännu inte besvarats av landstinget. "
                         + "Vänligen besvara förfrågan senast {1}.",
                 utredning.getUtredningId(),
-                utredning.getExternForfragan().get().getBesvarasSenastDatum().format(DateTimeFormatter.ISO_DATE));
+                SchemaDateUtil.toIsoDateStringFromLocalDateTime(utredning.getExternForfragan().get().getBesvarasSenastDatum()));
     }
 }

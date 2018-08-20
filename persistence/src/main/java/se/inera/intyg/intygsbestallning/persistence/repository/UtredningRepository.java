@@ -24,8 +24,9 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-
+import java.util.Set;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
+import se.inera.intyg.intygsbestallning.persistence.model.status.InternForfraganStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp;
@@ -42,6 +43,21 @@ public interface UtredningRepository extends UtredningRepositoryCustom, JpaRepos
      */
     List<Utredning> findAllByExternForfragan_InternForfraganList_VardenhetHsaId_AndArkiveradFalse(String vardenhetHsaId);
 
+    @Query("SELECT u FROM Utredning u " +
+           "JOIN u.externForfragan ex " +
+           "JOIN ex.internForfraganList if " +
+           "WHERE if.besvarasSenastDatum IS NOT NULL " +
+           "AND if.besvarasSenastDatum < :besvarasSenastDatum " +
+           "AND if.status in :statusar " +
+           "AND u.utredningId NOT IN (SELECT u.utredningId FROM Utredning u " +
+               "JOIN u.skickadNotifieringList n WHERE n.typ = :typ " +
+               "AND n.mottagare = :mottagare)"
+    )
+    List<Utredning> findNonNotifiedInternforfraganSlutDatumBefore(
+            @Param("besvarasSenastDatum") LocalDateTime besvarasSenastDatum,
+            @Param("statusar") Set<InternForfraganStatus> statusar,
+            @Param("typ") NotifieringTyp typ,
+            @Param("mottagare") NotifieringMottagarTyp mottagare);
     /**
      * Returns utredningar tilldelad to vardenhet in archived state.
      *
