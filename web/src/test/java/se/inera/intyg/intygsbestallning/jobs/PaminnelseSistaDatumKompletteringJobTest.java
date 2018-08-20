@@ -48,7 +48,7 @@ import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.testutil.TestDataGen;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PaminnelseSistaDatumKompletteringsBegaranJobTest {
+public class PaminnelseSistaDatumKompletteringJobTest {
 
     @Mock
     private UtredningRepository utredningRepository;
@@ -60,10 +60,10 @@ public class PaminnelseSistaDatumKompletteringsBegaranJobTest {
     private BusinessDaysBean businessDaysBean;
 
     @InjectMocks
-    private PaminnelseSistaDatumKompletteringsBegaranJob job;
+    private PaminnelseSistaDatumKompletteringJob job;
 
     @Test
-    public void testPaminnelseSistaDatumKompletteringsBegaranJobOk() {
+    public void testPaminnelseSistaDatumKompletteringJobOk() {
 
         final LocalDateTime localDateTime = LocalDateTime.of(2018, 9, 9, 9, 9, 9, 9);
 
@@ -72,37 +72,29 @@ public class PaminnelseSistaDatumKompletteringsBegaranJobTest {
         utredning.setIntygList(Lists.newArrayList(
                 anIntyg()
                         .withKomplettering(false)
-                        .withSistaDatumKompletteringsbegaran(localDateTime.minusDays(3))
+                        .withSistaDatum(localDateTime.minusDays(3))
                         .build(),
                 anIntyg()
                         .withKomplettering(true)
-                        .withSistaDatumKompletteringsbegaran(localDateTime.minusDays(2))
+                        .withSistaDatum(localDateTime.minusDays(2))
                         .build(),
                 anIntyg()
                         .withKomplettering(true)
-                        .withSistaDatumKompletteringsbegaran(localDateTime.minusDays(1))
+                        .withSistaDatum(localDateTime.minusDays(1))
                         .build(),
                 anIntyg()
                         .withKomplettering(true)
-                        .withSistaDatumKompletteringsbegaran(localDateTime.plusDays(10))
+                        .withSistaDatum(localDateTime.plusDays(10))
                         .build()
         ));
 
-        utredning.setSkickadNotifieringList(Lists.newArrayList(
-                aSkickadNotifiering()
-                        .withIntygId(2L)
-                        .withMottagare(NotifieringMottagarTyp.VARDENHET)
-                        .withSkickad(localDateTime.minusDays(2))
-                        .withTyp(NotifieringTyp.PAMINNELSEDATUM_KOMPLETTERING_PASSERAS)
-                        .build()
-        ));
 
-        doReturn(ImmutableList.of(utredning))
+        doReturn(ImmutableList.of(new Object[]{utredning, utredning.getIntygList().get(3)}))
                 .when(utredningRepository)
-                .findNonNotifiedSistaDatumKompletteringsBegaranBefore(any(LocalDateTime.class), eq(NotifieringTyp.PAMINNELSEDATUM_KOMPLETTERING_PASSERAS));
+                .findNonNotifiedSistadatumKompletteringBefore(any(LocalDateTime.class), eq(NotifieringTyp.PAMINNELSEDATUM_KOMPLETTERING_PASSERAS), eq(NotifieringMottagarTyp.VARDENHET));
 
-        //hack to set @Value annotated field paminnelseArbetsdagar in PaminnelseSistaDatumKompletteringsBegaranJob
-        Field field = ReflectionUtils.findField(PaminnelseSistaDatumKompletteringsBegaranJob.class, "paminnelseArbetsdagar");
+        //hack to set @Value annotated field paminnelseArbetsdagar in PaminnelseSistaDatumKompletteringJob
+        Field field = ReflectionUtils.findField(PaminnelseSistaDatumKompletteringJob.class, "paminnelseArbetsdagar");
         ReflectionUtils.makeAccessible(field);
         ReflectionUtils.setField(field, job, 2);
 
@@ -113,10 +105,10 @@ public class PaminnelseSistaDatumKompletteringsBegaranJobTest {
         job.executeJob();
 
         verify(utredningRepository, times(1))
-                .findNonNotifiedSistaDatumKompletteringsBegaranBefore(
-                        any(LocalDateTime.class), eq(NotifieringTyp.PAMINNELSEDATUM_KOMPLETTERING_PASSERAS));
+                .findNonNotifiedSistadatumKompletteringBefore(
+                        any(LocalDateTime.class), eq(NotifieringTyp.PAMINNELSEDATUM_KOMPLETTERING_PASSERAS), eq(NotifieringMottagarTyp.VARDENHET));
 
         verify(notifieringSendService, times(1))
-                .notifieraVardenhetPaminnelseSlutdatumKomplettering(eq(utredning), anyList());
+                .notifieraVardenhetPaminnelseSlutdatumKomplettering(eq(utredning), eq(utredning.getIntygList().get(3)));
     }
 }

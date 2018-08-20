@@ -85,7 +85,6 @@ import static se.inera.intyg.intygsbestallning.service.notifiering.util.Notifier
 import java.lang.invoke.MethodHandles;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import javax.mail.MessagingException;
 
@@ -514,26 +513,24 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
     }
 
     @Override
-    public void notifieraVardenhetPaminnelseSlutdatumKomplettering(Utredning utredning, List<Long> intygIds) {
+    public void notifieraVardenhetPaminnelseSlutdatumKomplettering(Utredning utredning, Intyg intyg) {
         final Bestallning bestallning = verifyHasBestallningAndGet(utredning, SLUTDATUM_UTREDNING_PASSERAT);
         final String id = bestallning.getTilldeladVardenhetHsaId();
         final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(id, VE);
 
         if (preferens.isEnabled(PAMINNELSEDATUM_KOMPLETTERING_PASSERAS, NotifieringMottagarTyp.VARDENHET)) {
-            epostResolver.resolveVardenhetNotifieringEpost(id, utredning).ifPresent(email -> utredning.getIntygList().stream()
-                    .filter(intyg -> intygIds.contains(intyg.getId()))
-                    .forEach(intyg -> {
-                        LOG.debug(MessageFormat.format(
-                                "Sending notification: {0} for intyg: {1}",
-                                PAMINNELSEDATUM_KOMPLETTERING_PASSERAS,
-                                intyg.getId()));
+            epostResolver.resolveVardenhetNotifieringEpost(id, utredning).ifPresent(email -> {
+                LOG.debug(MessageFormat.format(
+                        "Sending notification: {0} for intyg: {1}",
+                        PAMINNELSEDATUM_KOMPLETTERING_PASSERAS,
+                        intyg.getId()));
 
-                        final String body = notifieringMailBodyFactory.buildBodyForUtredning(
-                                paminnelseSlutDatumKomplettering(utredning, intyg),
-                                maillinkRedirectUrlBuilder.buildVardadminBestallningUrl(utredning.getUtredningId()));
-                        sendNotifiering(email, SUBJECT_KOMPLETTERING_SLUTDATUM_PAMINNELSE, body, utredning.getUtredningId());
-                        updateUtredningWithNotifiering(utredning, intyg.getId(), PAMINNELSEDATUM_KOMPLETTERING_PASSERAS, VARDENHET);
-                    }));
+                final String body = notifieringMailBodyFactory.buildBodyForUtredning(
+                        paminnelseSlutDatumKomplettering(utredning, intyg),
+                        maillinkRedirectUrlBuilder.buildVardadminBestallningUrl(utredning.getUtredningId()));
+                sendNotifiering(email, SUBJECT_KOMPLETTERING_SLUTDATUM_PAMINNELSE, body, utredning.getUtredningId());
+                updateUtredningWithNotifiering(utredning, intyg.getId(), PAMINNELSEDATUM_KOMPLETTERING_PASSERAS, VARDENHET);
+            });
             utredningRepository.saveUtredning(utredning);
         }
     }
@@ -551,7 +548,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                         maillinkRedirectUrlBuilder.buildVardadminBestallningUrl(utredning.getUtredningId()));
 
                 sendNotifiering(email, SUBJECT_KOMPLETTERING_SLUTDATUM_PASSERAT, body, utredning.getUtredningId());
-                saveNotifiering(utredning, SLUTDATUM_KOMPLETTERING_PASSERAT, VARDENHET);
+                updateUtredningWithNotifiering(utredning, intyg.getId(), SLUTDATUM_KOMPLETTERING_PASSERAT, VARDENHET);
             });
         }
     }
@@ -571,7 +568,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                     maillinkRedirectUrlBuilder.buildSamordnareUtredningUrl(utredning.getUtredningId()));
 
             sendNotifiering(email, SUBJECT_KOMPLETTERING_SLUTDATUM_PASSERAT, body, utredning.getUtredningId());
-            saveNotifiering(utredning, SLUTDATUM_KOMPLETTERING_PASSERAT, LANDSTING);
+            updateUtredningWithNotifiering(utredning, intyg.getId(), SLUTDATUM_KOMPLETTERING_PASSERAT, LANDSTING);
         }
     }
 

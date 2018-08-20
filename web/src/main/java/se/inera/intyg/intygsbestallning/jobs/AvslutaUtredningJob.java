@@ -20,7 +20,6 @@ package se.inera.intyg.intygsbestallning.jobs;
 
 import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.KOMPLETTERING_MOTTAGEN;
 import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.UTLATANDE_MOTTAGET;
-import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.SLUTDATUM_KOMPLETTERING_PASSERAT;
 
 import com.google.common.collect.ImmutableList;
 import net.javacrumbs.shedlock.core.SchedulerLock;
@@ -33,12 +32,14 @@ import java.lang.invoke.MethodHandles;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
@@ -49,11 +50,11 @@ import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AvslutaUtredningRequest;
 
 @Component
-public class SistaDatumKompletteringsbegaranJob {
+public class AvslutaUtredningJob {
 
     private static final long LOCK_AT_LEAST = 1000 * 15L;
     private static final long LOCK_AT_MOST = 1000 * 30L;
-    private static final String JOB_NAME = "sistaDatumKompletteringsbegaranJob";
+    private static final String JOB_NAME = "avslutaUtredningJob";
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -63,7 +64,7 @@ public class SistaDatumKompletteringsbegaranJob {
     @Autowired
     private UtredningService utredningService;
 
-    @Scheduled(cron = "${job.sista.datum.kompletteringsbegaran.cron}")
+    @Scheduled(cron = "${job.avsluta.utredning.cron}")
     @SchedulerLock(name = JOB_NAME, lockAtLeastFor = LOCK_AT_LEAST, lockAtMostFor = LOCK_AT_MOST)
     @PrometheusTimeMethod
     @Transactional
@@ -73,8 +74,9 @@ public class SistaDatumKompletteringsbegaranJob {
 
         final LocalDateTime tidpunkt = LocalDate.now().atStartOfDay();
 
-        utredningRepository.findNonNotifiedSistaDatumKompletteringsBegaranBefore(tidpunkt, SLUTDATUM_KOMPLETTERING_PASSERAT).stream()
+        utredningRepository.findSistaDatumKompletteringsBegaranBefore(tidpunkt).stream()
                 .filter(isKorrektStatus())
+                .filter(isSistaDatumKompletteringsbegaranPasserat(tidpunkt))
                 .forEach(avslutaUtredningOrRedovisaBesok);
     }
 
@@ -82,6 +84,20 @@ public class SistaDatumKompletteringsbegaranJob {
         final List<UtredningStatus> godkandaStatusar = ImmutableList.of(UTLATANDE_MOTTAGET, KOMPLETTERING_MOTTAGEN);
         return utr -> godkandaStatusar.contains(utr.getStatus());
     }
+
+    private Predicate<Utredning> isSistaDatumKompletteringsbegaranPasserat(LocalDateTime tidpunkt) {
+        return utredning -> {
+            Optional<LocalDateTime> sistaDatumKompletteringsbegaran = utredning.getIntygList().stream()
+                    .filter(intyg -> intyg.getSistaDatumKompletteringsbegaran() != null)
+                    .max(Comparator.comparing(Intyg::getSistaDatumKompletteringsbegaran))
+                    .map(Intyg::getSistaDatumKompletteringsbegaran);
+            if (sistaDatumKompletteringsbegaran.isPresent()) {
+                return sistaDatumKompletteringsbegaran.get().isBefore(tidpunkt);
+            }
+            return false;
+        };
+    }
+
 
     private Predicate<Utredning> isQualifiedForAvslutaUtredning() {
         return utr -> utr.getBesokList().stream()

@@ -122,22 +122,15 @@ public interface UtredningRepository extends UtredningRepositoryCustom, JpaRepos
     )
     List<Object[]> findNonNotifiedSistadatumKompletteringBefore(@Param("date") LocalDateTime date, @Param("typ") NotifieringTyp typ, @Param("mottagare") NotifieringMottagarTyp mottagare);
 
+
     @Query("SELECT DISTINCT u FROM Utredning u " +
-           "JOIN u.intygList i " +
-           "JOIN u.bestallning b " +
-           "WHERE b.tilldeladVardenhetHsaId is not null " +
-           "AND u.arkiverad = false " +
-           "AND ((i.komplettering = true AND i.mottagetDatum is null) OR (i.komplettering = false AND i.mottagetDatum is not null))" +
-           "AND i.sistaDatumKompletteringsbegaran is not null " +
-           "AND i.sistaDatumKompletteringsbegaran < :now " +
-           "AND i.id NOT IN (" +
-           "SELECT n.intygId FROM SkickadNotifiering n " +
-           "WHERE n.typ = :typ" +
-           ")"
+            "JOIN u.intygList i " +
+            "WHERE u.arkiverad = false " +
+            "AND i.sistaDatumKompletteringsbegaran is not null " +
+            "AND i.sistaDatumKompletteringsbegaran < :now"
     )
-    List<Utredning> findNonNotifiedSistaDatumKompletteringsBegaranBefore(
-            @Param("now") LocalDateTime now,
-            @Param("typ") NotifieringTyp typ);
+    List<Utredning> findSistaDatumKompletteringsBegaranBefore(
+            @Param("now") LocalDateTime now);
 
     List<Utredning> findByStatus(UtredningStatus status);
     List<Utredning> findByStatusIn(List<UtredningStatus> status);

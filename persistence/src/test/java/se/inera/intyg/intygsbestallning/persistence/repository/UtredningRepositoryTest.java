@@ -446,19 +446,19 @@ public class UtredningRepositoryTest {
         utredning.setIntygList(Lists.newArrayList(
                 anIntyg()
                         .withKomplettering(false)
-                        .withSistaDatumKompletteringsbegaran(localDateTime.minusDays(3))
+                        .withSistaDatum(localDateTime.minusDays(3))
                         .build(),
                 anIntyg()
                         .withKomplettering(true)
-                        .withSistaDatumKompletteringsbegaran(localDateTime.minusDays(2))
+                        .withSistaDatum(localDateTime.minusDays(2))
                         .build(),
                 anIntyg()
                         .withKomplettering(true)
-                        .withSistaDatumKompletteringsbegaran(localDateTime.minusDays(1))
+                        .withSistaDatum(localDateTime.minusDays(1))
                         .build(),
                 anIntyg()
                         .withKomplettering(true)
-                        .withSistaDatumKompletteringsbegaran(localDateTime.plusDays(10))
+                        .withSistaDatum(localDateTime.plusDays(10))
                         .build()
         ));
 
@@ -473,8 +473,8 @@ public class UtredningRepositoryTest {
 
         utredningRepository.saveUtredning(utredning);
 
-        final List<Utredning> utredningList = utredningRepository.findNonNotifiedSistaDatumKompletteringsBegaranBefore(localDateTime, NotifieringTyp.PAMINNELSEDATUM_KOMPLETTERING_PASSERAS);String test = "hej";
+        final List<Object[]> utredningList = utredningRepository.findNonNotifiedSistadatumKompletteringBefore(localDateTime, NotifieringTyp.PAMINNELSEDATUM_KOMPLETTERING_PASSERAS, NotifieringMottagarTyp.VARDENHET);
         assertThat(utredningList.size()).isEqualTo(1);
-        assertThat(utredningList.get(0)).isEqualTo(utredning);
+        assertThat(utredningList.get(0)[0]).isEqualTo(utredning);
     }
 }

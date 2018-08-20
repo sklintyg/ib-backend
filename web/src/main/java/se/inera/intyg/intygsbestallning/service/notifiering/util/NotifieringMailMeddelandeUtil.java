@@ -158,7 +158,7 @@ public final class NotifieringMailMeddelandeUtil {
         return MessageFormat.format("Slutdatum {0} för utredning {1} kommer snart att passeras. "
                         + "Om kompletteringen inte är mottagen av Försäkringskassan innan "
                         + "angivet slutdatum så kommer utredningen inte att ersättas.",
-                intyg.getSistaDatumKompletteringsbegaran().format(DateTimeFormatter.ISO_DATE),
+                intyg.getSistaDatum().format(DateTimeFormatter.ISO_DATE),
                 utredning.getUtredningId());
     }
 
