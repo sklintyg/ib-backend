@@ -52,6 +52,7 @@
           var uoUrl = '/services/update-order-responder';
           var rsUrl = '/services/request-supplement-responder';
           var rsrUrl = '/services/report-supplement-receival-responder';
+          var eaUrl = '/services/end-assessment-responder';
 
           $scope.rpfa = {
               certificateType: 'AFU',
@@ -733,6 +734,36 @@
               sendSoap(rsrUrl, msg);
           };
 
+          $scope.ea = {
+              assessmentId: null,
+              endingCondition: null,
+              endingConditionOptions: ['INGEN_BESTALLNING', 'JAV', 'UTREDNING_AVBRUTEN']
+          };
+
+          $scope.sendEa = function() {
+              var msg = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:itintegration:registry:1" xmlns:urn1="urn:riv-application:intygsbestallning:certificate:order:EndAssessmentResponder:1" xmlns:urn2="urn:riv-application:intygsbestallning:certificate:order:1">' +
+                  '<soapenv:Header>' +
+                  '<urn:LogicalAddress>?</urn:LogicalAddress>' +
+                  '</soapenv:Header>' +
+                  '<soapenv:Body>' +
+                  '<urn1:EndAssessment>' +
+                  '<urn1:assessmentId>' +
+                  '<urn2:root>?</urn2:root>' +
+                  '<urn2:extension>' + $scope.ea.assessmentId + '</urn2:extension>' +
+                  '<!--You may enter ANY elements at this point-->' +
+                  '</urn1:assessmentId>' +
+                  '<!--Optional:-->' +
+                  '<urn1:endingCondition>' +
+                  '<urn2:code>' + $scope.ea.endingCondition + '</urn2:code>' +
+                  '<urn2:codeSystem>c9017f72-4231-40b7-8999-a3a3c09a6780</urn2:codeSystem>' +
+                  '</urn1:endingCondition>' +
+                  '</urn1:EndAssessment>' +
+                  '</soapenv:Body>' +
+                  '</soapenv:Envelope>';
+
+              sendSoap(eaUrl, msg);
+          };
+
           function sendSoap(url, msg) {
 
               $log.info(msg);
@@ -975,6 +1006,18 @@
 
         <div>
           <button class="btn btn-primary" ng-click="sendRsr()">Skicka</button>
+        </div>
+      </uib-tab>
+
+      <uib-tab heading="Avsluta utredning">
+        <h2>EndAssessment</h2>
+        <div class="row"><label class="col-sm-3 control-label">assessmentId</label><div class="col-sm-9"><input type="text" class="form-control" ng-model="ea.assessmentId"></div></div>
+        <div class="row"><label class="col-sm-3 control-label">endingCondition</label><div class="col-sm-9">
+          <select class="form-control" ng-model="ea.endingCondition" ng-options="item for item in ea.endingConditionOptions"></select>
+        </div></div>
+
+        <div>
+          <button class="btn btn-primary" ng-click="sendEa()">Skicka</button>
         </div>
       </uib-tab>
 
