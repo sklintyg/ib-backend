@@ -31,6 +31,7 @@ import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.util.SystemRolesParser;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
+import se.inera.intyg.intygsbestallning.persistence.model.BestallningHistorik;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
@@ -69,7 +70,7 @@ import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuil
 import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU_UTVIDGAD;
-
+import static se.inera.intyg.intygsbestallning.persistence.model.BestallningHistorik.BestallningHistorikBuilder.aBestallningHistorik;
 /**
  * Helper base class, provides data setup for tests.
  */
@@ -319,7 +320,10 @@ public final class TestDataGen {
 
     public static Bestallning createBestallning() {
         return aBestallning()
-                .withKommentar("2")
+                .withBestallningHistorik(Lists.newArrayList(aBestallningHistorik()
+                        .withDatum(LocalDateTime.now())
+                        .withKommentar("2")
+                        .build()))
                 .withTilldeladVardenhetHsaId(getCareunitId())
                 .build();
     }

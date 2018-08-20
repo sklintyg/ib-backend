@@ -22,14 +22,21 @@ import static java.util.Objects.isNull;
 import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
 
 import com.google.common.base.MoreObjects;
+import org.apache.commons.collections4.ListUtils;
 import org.hibernate.annotations.Type;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -58,8 +65,9 @@ public final class Bestallning {
     @Column(name = "PLANERADE_AKTIVITETER")
     private String planeradeAktiviteter;
 
-    @Column(name = "KOMMENTAR")
-    private String kommentar;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "BESTALLNING_ID", referencedColumnName = "ID", nullable = false)
+    private List<BestallningHistorik> bestallningHistorikList = new ArrayList<>();
 
     public Bestallning() {
     }
@@ -77,7 +85,7 @@ public final class Bestallning {
                 .withUppdateradDatum(bestallning.getUppdateradDatum())
                 .withSyfte(bestallning.getSyfte())
                 .withPlaneradeAktiviteter(bestallning.getPlaneradeAktiviteter())
-                .withKommentar(bestallning.getKommentar())
+                .withBestallningHistorik(bestallning.getBestallningHistorikList())
                 .build();
     }
 
@@ -129,12 +137,12 @@ public final class Bestallning {
         this.planeradeAktiviteter = planeradeAktiviteter;
     }
 
-    public String getKommentar() {
-        return kommentar;
+    public List<BestallningHistorik> getBestallningHistorikList() {
+        return bestallningHistorikList;
     }
 
-    public void setKommentar(String kommentar) {
-        this.kommentar = kommentar;
+    public void setBestallningHistorikList(List<BestallningHistorik> bestallningHistorikList) {
+        this.bestallningHistorikList = bestallningHistorikList;
     }
 
     public static final class BestallningBuilder {
@@ -144,7 +152,7 @@ public final class Bestallning {
         private LocalDateTime uppdateradDatum;
         private String syfte;
         private String planeradeAktiviteter;
-        private String kommentar;
+        private List<BestallningHistorik> bestallningHistorikList = new ArrayList<>();
 
         private BestallningBuilder() {
         }
@@ -183,8 +191,8 @@ public final class Bestallning {
             return this;
         }
 
-        public BestallningBuilder withKommentar(String kommentar) {
-            this.kommentar = kommentar;
+        public BestallningBuilder withBestallningHistorik(List<BestallningHistorik> bestallningHistorikList) {
+            this.bestallningHistorikList = bestallningHistorikList;
             return this;
         }
 
@@ -196,7 +204,7 @@ public final class Bestallning {
             bestallning.setUppdateradDatum(uppdateradDatum);
             bestallning.setSyfte(syfte);
             bestallning.setPlaneradeAktiviteter(planeradeAktiviteter);
-            bestallning.setKommentar(kommentar);
+            bestallning.setBestallningHistorikList(bestallningHistorikList);
             return bestallning;
         }
     }
@@ -216,13 +224,13 @@ public final class Bestallning {
                 && Objects.equals(uppdateradDatum, that.uppdateradDatum)
                 && Objects.equals(syfte, that.syfte)
                 && Objects.equals(planeradeAktiviteter, that.planeradeAktiviteter)
-                && Objects.equals(kommentar, that.kommentar);
+                && ListUtils.isEqualList(bestallningHistorikList, that.bestallningHistorikList);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, tilldeladVardenhetHsaId, orderDatum, uppdateradDatum, syfte, planeradeAktiviteter, kommentar);
+        return Objects.hash(id, tilldeladVardenhetHsaId, orderDatum, uppdateradDatum, syfte, planeradeAktiviteter, bestallningHistorikList);
     }
 
     @Override
@@ -234,7 +242,6 @@ public final class Bestallning {
                 .add("uppdateradDatum", uppdateradDatum)
                 .add("syfte", syfte)
                 .add("planeradeAktiviteter", planeradeAktiviteter)
-                .add("kommentar", kommentar)
                 .toString();
     }
 }

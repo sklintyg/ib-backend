@@ -89,10 +89,14 @@
                             <th>Datum</th>
                             <th>Meddelande</th>
                           </tr>
-                          <tr>
+                          <tr ng-if="bestallning.meddelandeFromHandlaggareList.length > 0" ng-repeat="meddelandeHistorik in bestallning.meddelandeFromHandlaggareList">
+                            <td>{{meddelandeHistorik.datum}}</td>
+                            <td ng-if="meddelandeHistorik.kommentar">{{meddelandeHistorik.kommentar}}</td>
+                            <td ng-if="!meddelandeHistorik.kommentar"><i>Inga kommentarer från handläggaren</i></td>
+                          </tr>
+                          <tr ng-if="bestallning.meddelandeFromHandlaggareList.length < 1">
                             <td>{{bestallning.inkomDatum}}</td>
-                            <td ng-if="bestallning.meddelandeFromHandlaggare">{{bestallning.meddelandeFromHandlaggare}}</td>
-                            <td ng-if="!bestallning.meddelandeFromHandlaggare"><i>Inga kommentarer från handläggaren</i></td>
+                            <td><i>Inga kommentarer från handläggaren</i></td>
                           </tr>
                           <!-- TODO: rows for history of comments originating from updateorder -->
                         </table>

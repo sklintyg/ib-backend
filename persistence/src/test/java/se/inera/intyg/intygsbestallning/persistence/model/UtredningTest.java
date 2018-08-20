@@ -19,11 +19,11 @@
 package se.inera.intyg.intygsbestallning.persistence.model;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static se.inera.intyg.intygsbestallning.persistence.model.Anteckning.AnteckningBuilder.anAnteckning;
 import static se.inera.intyg.intygsbestallning.persistence.model.Avvikelse.AvvikelseBuilder.anAvvikelse;
 import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
 import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
+import static se.inera.intyg.intygsbestallning.persistence.model.BestallningHistorik.BestallningHistorikBuilder.aBestallningHistorik;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
 import static se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar;
 import static se.inera.intyg.intygsbestallning.persistence.model.Handelse.HandelseBuilder.aHandelse;
@@ -36,6 +36,7 @@ import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforar
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
 import se.inera.intyg.intygsbestallning.persistence.model.type.AvvikelseOrsak;
@@ -73,7 +74,13 @@ public class UtredningTest {
                         .withUppdateradDatum(datum.plusDays(2))
                         .withSyfte("syfte")
                         .withPlaneradeAktiviteter("pingis")
-                        .withKommentar("kommentar")
+                        .withBestallningHistorik(
+                                Lists.newArrayList(
+                                        aBestallningHistorik()
+                                                .withDatum(datum)
+                                                .withKommentar("kommentar")
+                                                .build()))
+
                         .build())
                 .withTolkBehov(true)
                 .withTolkSprak("sv")

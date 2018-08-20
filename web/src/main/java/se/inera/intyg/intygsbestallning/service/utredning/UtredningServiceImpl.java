@@ -37,6 +37,7 @@ import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuil
 import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
 import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
+import static se.inera.intyg.intygsbestallning.persistence.model.BestallningHistorik.BestallningHistorikBuilder.aBestallningHistorik;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
@@ -64,6 +65,7 @@ import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
+import se.inera.intyg.intygsbestallning.persistence.model.BestallningHistorik;
 import se.inera.intyg.intygsbestallning.persistence.model.Betalning;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
@@ -389,7 +391,6 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         ExternForfraganBuilder externForfragan = anExternForfragan()
                 .withInkomDatum(LocalDateTime.now())
                 .withBesvarasSenastDatum(request.getBesvaraSenastDatum())
-                .withKommentar(request.getKommentar())
                 .withLandstingHsaId(request.getLandstingHsaId());
 
         List<TidigareUtforare> tidigareUtforareList = Lists.newArrayList();
@@ -704,9 +705,6 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                         .findFirst()
                         .ifPresent(i -> i.setSistaDatum(sistaDatum)));
 
-        final String kommentarOriginal = utredning.getBestallning().get().getKommentar();
-        update.getKommentar().ifPresent(kommentar -> utredning.getBestallning().get().setKommentar(kommentar));
-
         final Optional<Handlaggare> optionalHandlaggare = Optional.ofNullable(utredning.getHandlaggare());
 
         final Handlaggare handlaggareOriginal;
@@ -753,7 +751,6 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 ImmutablePair.of(tolkBehovOriginal, utredning.getTolkBehov()),
                 ImmutablePair.of(tolkSprakOriginal, utredning.getTolkSprak()),
                 ImmutablePair.of(handlaggareOriginal, utredning.getHandlaggare()),
-                ImmutablePair.of(kommentarOriginal, utredning.getBestallning().get().getKommentar()),
                 ImmutablePair.of(
                         sistaDatumOriginal,
                         utredning.getIntygList().stream()
@@ -785,8 +782,20 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         // Lägg till händelse, handläggare, sistadatum och markera beställningen som uppdaterad.
         final LocalDate nyttSistaDatum = update.getLastDateIntyg().isPresent() ? update.getLastDateIntyg().get().toLocalDate() : null;
         final String nyHandlaggare = update.getBestallare().isPresent() ? update.getBestallare().get().getFullstandigtNamn() : null;
+        final LocalDateTime uppdateradDatum = LocalDateTime.now();
         utredning.getHandelseList().add(HandelseUtil.createOrderUpdated(nyttSistaDatum, nyHandlaggare, update.getHandling().isPresent()));
-        utredning.getBestallning().ifPresent(bestallning -> bestallning.setUppdateradDatum(LocalDateTime.now()));
+        utredning.getBestallning().ifPresent(bestallning -> bestallning.setUppdateradDatum(uppdateradDatum));
+
+        // Lägg till en BestallningHistorik om det finns en kommentar i UpdateRequestet
+        update.getKommentar().ifPresent(kommentar -> {
+            BestallningHistorik historik = aBestallningHistorik()
+                    .withDatum(uppdateradDatum)
+                    .withKommentar(kommentar)
+                    .build();
+            utredning.getBestallning().ifPresent(bestallning -> bestallning.getBestallningHistorikList().add(historik));
+        });
+
+
     }
 
     private Invanare updateInvanareFromOrder(final Invanare invanare, OrderRequest order) {
@@ -814,12 +823,17 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     }
 
     private Bestallning createBestallning(OrderRequest order) {
+        LocalDateTime orderDate = LocalDateTime.now();
         return aBestallning()
                 .withTilldeladVardenhetHsaId(order.getEnhetId())
                 .withSyfte(order.getSyfte())
                 .withPlaneradeAktiviteter(order.getAtgarder())
-                .withOrderDatum(LocalDateTime.now())
-                .withKommentar(order.getKommentar())
+                .withOrderDatum(orderDate)
+                .withBestallningHistorik(Lists.newArrayList(
+                        aBestallningHistorik()
+                                .withDatum(orderDate)
+                                .withKommentar(order.getKommentar())
+                                .build()))
                 .build();
     }
 

@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 
 import com.google.common.base.Joiner;
 import org.apache.commons.lang3.BooleanUtils;
-import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
@@ -82,7 +81,7 @@ public class GetBestallningResponse implements PDLLoggable {
 
     private String avbrutenAnledning;
 
-    private String meddelandeFromHandlaggare;
+    private List<MeddelandeFromHandlaggareListItem> meddelandeFromHandlaggareList;
 
     private List<BesokListItem> besokList;
 
@@ -137,9 +136,12 @@ public class GetBestallningResponse implements PDLLoggable {
                 .withAvbrutenAnledning(nonNull(utredning.getAvbrutenOrsak())
                         ? utredning.getAvbrutenOrsak().getLabel()
                         : null)
-                .withMeddelandeFromHandlaggare(utredning.getBestallning()
-                        .map(Bestallning::getKommentar)
-                        .orElse(null))
+                .withMeddelandeFromHandlaggareList(utredning.getBestallning().isPresent() ?
+                        utredning.getBestallning().get().getBestallningHistorikList()
+                                .stream()
+                                .map(MeddelandeFromHandlaggareListItem::from)
+                                .collect(Collectors.toList())
+                        : null)
                 .withBesokList(utredning.getBesokList().stream()
                         .map(BesokListItem::from)
                         .collect(Collectors.toList()))
@@ -296,12 +298,12 @@ public class GetBestallningResponse implements PDLLoggable {
         this.avbrutenAnledning = avbrutenAnledning;
     }
 
-    public String getMeddelandeFromHandlaggare() {
-        return meddelandeFromHandlaggare;
+    public List<MeddelandeFromHandlaggareListItem> getMeddelandeFromHandlaggareList() {
+        return meddelandeFromHandlaggareList;
     }
 
-    public void setMeddelandeFromHandlaggare(String meddelandeFromHandlaggare) {
-        this.meddelandeFromHandlaggare = meddelandeFromHandlaggare;
+    public void setMeddelandeFromHandlaggareList(List<MeddelandeFromHandlaggareListItem> meddelandeFromHandlaggareList) {
+        this.meddelandeFromHandlaggareList = meddelandeFromHandlaggareList;
     }
 
     public List<BesokListItem> getBesokList() {
@@ -356,7 +358,7 @@ public class GetBestallningResponse implements PDLLoggable {
         private String intygSistaDatumKomplettering;
         private String avbrutenDatum;
         private String avbrutenAnledning;
-        private String meddelandeFromHandlaggare;
+        private List<MeddelandeFromHandlaggareListItem> meddelandeFromHandlaggareList;
         private List<BesokListItem> besokList;
         private List<HandelseListItem> handelseList;
         private List<AnteckningListItem> anteckningList;
@@ -454,8 +456,9 @@ public class GetBestallningResponse implements PDLLoggable {
             return this;
         }
 
-        public GetBestallningResponseBuilder withMeddelandeFromHandlaggare(String meddelandeFromHandlaggare) {
-            this.meddelandeFromHandlaggare = meddelandeFromHandlaggare;
+        public GetBestallningResponseBuilder withMeddelandeFromHandlaggareList(List<MeddelandeFromHandlaggareListItem>
+                                                                                       meddelandeFromHandlaggareList) {
+            this.meddelandeFromHandlaggareList = meddelandeFromHandlaggareList;
             return this;
         }
 
@@ -499,7 +502,7 @@ public class GetBestallningResponse implements PDLLoggable {
             getBestallningResponse.setIntygSistaDatumKomplettering(intygSistaDatumKomplettering);
             getBestallningResponse.setAvbrutenDatum(avbrutenDatum);
             getBestallningResponse.setAvbrutenAnledning(avbrutenAnledning);
-            getBestallningResponse.setMeddelandeFromHandlaggare(meddelandeFromHandlaggare);
+            getBestallningResponse.setMeddelandeFromHandlaggareList(meddelandeFromHandlaggareList);
             getBestallningResponse.setBesokList(besokList);
             getBestallningResponse.setHandelseList(handelseList);
             getBestallningResponse.setAnteckningList(anteckningList);

@@ -143,7 +143,7 @@ public class UtredningRepositoryTest {
 
         Bestallning bestallning = utredning.getBestallning().orElse(null);
         assertNotNull(bestallning);
-        assertEquals("kommentar", bestallning.getKommentar());
+        assertEquals("kommentar", bestallning.getBestallningHistorikList().get(0).getKommentar());
         assertEquals("aktiviteter", bestallning.getPlaneradeAktiviteter());
         assertEquals("syfte", bestallning.getSyfte());
         assertEquals(VE_HSA_ID, bestallning.getTilldeladVardenhetHsaId());

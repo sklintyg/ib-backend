@@ -212,7 +212,7 @@ public class UtredningServiceImplTest {
         assertTrue(response.getTolkBehov());
         assertEquals("sv", response.getTolkSprak());
         assertEquals(AFU, response.getUtredningsTyp());
-        assertEquals("kommentar", response.getBestallning().get().getKommentar());
+        assertEquals("kommentar", response.getBestallning().get().getBestallningHistorikList().get(0).getKommentar());
         assertEquals("atgarder", response.getBestallning().get().getPlaneradeAktiviteter());
         assertEquals("syfte", response.getBestallning().get().getSyfte());
         assertEquals("enhet", response.getBestallning().get().getTilldeladVardenhetHsaId());
@@ -303,7 +303,7 @@ public class UtredningServiceImplTest {
         assertTrue(captured.getTolkBehov());
         assertEquals("sv", captured.getTolkSprak());
         assertEquals(LIAG, captured.getUtredningsTyp());
-        assertEquals("kommentar", captured.getBestallning().get().getKommentar());
+        assertEquals("kommentar", captured.getBestallning().get().getBestallningHistorikList().get(0).getKommentar());
         assertEquals("atgarder", captured.getBestallning().get().getPlaneradeAktiviteter());
         assertEquals("syfte", captured.getBestallning().get().getSyfte());
         assertEquals("enhet", captured.getBestallning().get().getTilldeladVardenhetHsaId());

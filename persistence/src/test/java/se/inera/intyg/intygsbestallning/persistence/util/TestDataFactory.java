@@ -21,6 +21,7 @@ package se.inera.intyg.intygsbestallning.persistence.util;
 import static se.inera.intyg.intygsbestallning.persistence.model.Anteckning.AnteckningBuilder.anAnteckning;
 import static se.inera.intyg.intygsbestallning.persistence.model.Avvikelse.AvvikelseBuilder.anAvvikelse;
 import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
+import static se.inera.intyg.intygsbestallning.persistence.model.BestallningHistorik.BestallningHistorikBuilder.aBestallningHistorik;
 import static se.inera.intyg.intygsbestallning.persistence.model.Betalning.BetalningBuilder.aBetalning;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
 import static se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar;
@@ -138,9 +139,15 @@ public final class TestDataFactory {
     }
 
     public static Bestallning buildBestallning() {
+        LocalDateTime orderDate = LocalDateTime.now();
         return aBestallning()
-                .withKommentar("kommentar")
-                .withOrderDatum(LocalDateTime.now())
+                .withBestallningHistorik(
+                        Lists.newArrayList(
+                                aBestallningHistorik()
+                                        .withDatum(orderDate)
+                                        .withKommentar("kommentar")
+                                        .build()))
+                .withOrderDatum(orderDate)
                 .withPlaneradeAktiviteter("aktiviteter")
                 .withSyfte("syfte")
                 .withTilldeladVardenhetHsaId(VE_HSA_ID)
