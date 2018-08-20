@@ -104,7 +104,6 @@ import se.inera.intyg.intygsbestallning.service.mail.MailService;
 import se.inera.intyg.intygsbestallning.service.notifiering.preferens.NotifieringPreferenceService;
 import se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringEpostResolver;
 import se.inera.intyg.intygsbestallning.service.notifiering.util.NotifieringMailBodyFactory;
-import se.inera.intyg.intygsbestallning.service.vardenhet.VardenhetService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.notification.GetNotificationPreferenceResponse;
 import se.inera.intyg.intygsbestallning.web.controller.integration.MaillinkRedirectUrlBuilder;
 
@@ -115,7 +114,6 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final MailService mailService;
-    private final VardenhetService vardenhetService;
     private final NotifieringPreferenceService notifieringPreferenceService;
     private final NotifieringMailBodyFactory notifieringMailBodyFactory;
     private final UtredningRepository utredningRepository;
@@ -124,14 +122,12 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
 
     public NotifieringSendServiceImpl(
             MailService mailService,
-            VardenhetService vardenhetService,
             NotifieringPreferenceService notifieringPreferenceService,
             NotifieringMailBodyFactory notifieringMailBodyFactory,
             UtredningRepository utredningRepository,
             NotifieringEpostResolver epostResolver,
             MaillinkRedirectUrlBuilder maillinkRedirectUrlBuilder) {
         this.mailService = mailService;
-        this.vardenhetService = vardenhetService;
         this.notifieringPreferenceService = notifieringPreferenceService;
         this.notifieringMailBodyFactory = notifieringMailBodyFactory;
         this.utredningRepository = utredningRepository;
