@@ -47,7 +47,7 @@ public class BesokListItem {
     private List<HandelseListItem> handelseList;
     private Boolean ersatts;
 
-    public static BesokListItem from(Besok besok) {
+    public static BesokListItem from(Besok besok, boolean ersatts) {
         return BesokListItemBuilder.aBesokListItem()
                 .withBesokId(besok.getId())
                 .withBesokStatus(BesokStatusResolver.resolveStaticStatus(besok))
@@ -62,7 +62,7 @@ public class BesokListItem {
                 .withHandelseList(besok.getHandelseList().stream()
                         .map(handelse ->  HandelseListItem.from(handelse, true))
                         .collect(Collectors.toList()))
-                .withErsatts(besok.getErsatts())
+                .withErsatts(ersatts)
                 .build();
     }
 

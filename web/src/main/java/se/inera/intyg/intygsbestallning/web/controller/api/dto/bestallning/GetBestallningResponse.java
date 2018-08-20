@@ -39,6 +39,8 @@ import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.inera.intyg.intygsbestallning.service.patient.Gender;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
+import se.inera.intyg.intygsbestallning.service.stateresolver.ErsattsResolver;
+import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.HandelseListItem;
 import se.inera.intyg.schemas.contract.Personnummer;
 
@@ -89,7 +91,7 @@ public class GetBestallningResponse implements PDLLoggable {
 
     private List<AnteckningListItem> anteckningList;
 
-    public static GetBestallningResponse from(Utredning utredning, UtredningStatus utredningStatus) {
+    public static GetBestallningResponse from(Utredning utredning, UtredningStatus utredningStatus, BusinessDaysBean businessDays) {
 
         return GetBestallningResponseBuilder.agetBestallningResponse()
                 .withUtredningsId(utredning.getUtredningId())
@@ -143,7 +145,7 @@ public class GetBestallningResponse implements PDLLoggable {
                                 .collect(Collectors.toList())
                         : null)
                 .withBesokList(utredning.getBesokList().stream()
-                        .map(BesokListItem::from)
+                        .map(besok -> BesokListItem.from(besok, ErsattsResolver.resolveBesokErsatts(utredning, besok, businessDays)))
                         .collect(Collectors.toList()))
                 .withHandelseList(utredning.getHandelseList().stream()
                         .map(handelse -> HandelseListItem.from(handelse, true)).collect(Collectors.toList()))

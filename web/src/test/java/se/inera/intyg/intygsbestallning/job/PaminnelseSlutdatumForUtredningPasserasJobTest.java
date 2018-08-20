@@ -107,7 +107,6 @@ public class PaminnelseSlutdatumForUtredningPasserasJobTest {
 
         utredning.getBesokList().add(Besok.BesokBuilder.aBesok()
                 .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
-                .withErsatts(true)
                 .withTolkStatus(TolkStatusTyp.BOKAT)
                 .build());
         utredning.getIntygList().get(0).setSistaDatum(LocalDateTime.now().plusDays(3L));

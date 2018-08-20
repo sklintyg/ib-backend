@@ -405,7 +405,6 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
                 .withBesokStatus(BesokStatusTyp.AVSLUTAD_VARDKONTAKT)
                 .withDeltagareProfession(DeltagarProfessionTyp.FT)
                 .withTolkStatus(TolkStatusTyp.DELTAGIT)
-                .withErsatts(true)
                 .build());
 
         UtredningStatus status = testee.resolveStatus(utr);
@@ -540,7 +539,6 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
                 .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
                 .withTolkStatus(TolkStatusTyp.EJ_BOKAT)
                 .withDeltagareProfession(DeltagarProfessionTyp.LK)
-                .withErsatts(null)
                 .withAvvikelse(Avvikelse.AvvikelseBuilder.anAvvikelse()
                         .withAvvikelseId(1L)
                         .withOrsakatAv(AvvikelseOrsak.VARDEN)
@@ -592,7 +590,6 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
                 .withBesokStatus(BesokStatusTyp.INSTALLD_VARDKONTAKT)
                 .withTolkStatus(TolkStatusTyp.EJ_BOKAT)
                 .withDeltagareProfession(DeltagarProfessionTyp.LK)
-                .withErsatts(null)
                 .withAvvikelse(anAvvikelse()
                         .withAvvikelseId(1L)
                         .withOrsakatAv(AvvikelseOrsak.VARDEN)
@@ -638,7 +635,6 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
                 .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
                 .withDeltagareProfession(DeltagarProfessionTyp.FT)
                 .withTolkStatus(TolkStatusTyp.BOKAT)
-                .withErsatts(true)
                 .build());
         return utr;
     }

@@ -43,6 +43,7 @@ import se.inera.intyg.intygsbestallning.service.pdl.dto.PDLLoggable;
 import se.inera.intyg.intygsbestallning.service.pdl.dto.PdlLogType;
 import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
+import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.util.GenericComparator;
 import se.inera.intyg.intygsbestallning.service.util.PagingUtil;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
@@ -89,6 +90,9 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
     @Autowired
     private AvslutadBestallningListItemFactory avslutadBestallningListItemFactory;
 
+    @Autowired
+    private BusinessDaysBean businessDays;
+
     @Override
     public GetBestallningResponse getBestallning(Long utredningId, String vardenhetHsaId) {
         Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
@@ -97,7 +101,7 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
         checkUserVardenhetTilldeladToBestallning(utredning);
 
         GetBestallningResponse getBestallningResponse = GetBestallningResponse.from(utredning,
-                utredningStatusResolver.resolveStatus(utredning));
+                utredningStatusResolver.resolveStatus(utredning), businessDays);
 
         logService.log(getBestallningResponse, PdlLogType.UTREDNING_LAST);
 

@@ -41,6 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
@@ -78,6 +79,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional(readOnly = true)
 public class XlsxExportServiceImpl extends BaseUtredningService implements XlsxExportService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -627,7 +629,7 @@ public class XlsxExportServiceImpl extends BaseUtredningService implements XlsxE
         cell.setCellStyle(valueStyle);
 
         cell = row.createCell(localCellIndex++);
-        cell.setCellValue(BooleanUtils.toBoolean(besok.getErsatts()) ? JA : NEJ);
+        cell.setCellValue(ErsattsResolver.resolveBesokErsatts(utredning, besok, businessDays) ? JA : NEJ);
         cell.setCellStyle(valueStyle);
 
         if (besok.getAvvikelse() != null) {

@@ -954,4 +954,9 @@
             referencedColumnNames="ID"/>
 
     </changeSet>
+
+    <changeSet id="5" author="pb">
+        <dropColumn tableName="BESOK" columnName="ERSATTS"></dropColumn>
+    </changeSet>
+
 </databaseChangeLog>

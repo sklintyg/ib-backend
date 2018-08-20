@@ -139,7 +139,6 @@ public class UtredningTest {
                         .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
                         .withTolkStatus(TolkStatusTyp.BOKAT)
                         .withKallelseForm(KallelseFormTyp.BREVKONTAKT)
-                        .withErsatts(true)
                         .withDeltagareProfession(DeltagarProfessionTyp.AT)
                         .withDeltagareFullstandigtNamn("namn")
                         .withAvvikelse(anAvvikelse()

@@ -79,9 +79,6 @@ public final class Besok {
     @Enumerated(value = EnumType.STRING)
     private KallelseFormTyp kallelseForm;
 
-    @Column(name = "ERSATTS")
-    private Boolean ersatts;
-
     @Column(name = "DELTAGARE_PROFESSION")
     @Enumerated(value = EnumType.STRING)
     private DeltagarProfessionTyp deltagareProfession;
@@ -153,14 +150,6 @@ public final class Besok {
         this.kallelseForm = kallelseForm;
     }
 
-    public Boolean getErsatts() {
-        return ersatts;
-    }
-
-    public void setErsatts(Boolean ersatts) {
-        this.ersatts = ersatts;
-    }
-
     public DeltagarProfessionTyp getDeltagareProfession() {
         return deltagareProfession;
     }
@@ -207,7 +196,6 @@ public final class Besok {
                 .withBesokStatus(besok.getBesokStatus())
                 .withTolkStatus(besok.getTolkStatus())
                 .withKallelseForm(besok.getKallelseForm())
-                .withErsatts(besok.getErsatts())
                 .withDeltagareProfession(besok.getDeltagareProfession())
                 .withDeltagareFullstandigtNamn(besok.getDeltagareFullstandigtNamn())
                 .withAvvikelse(Avvikelse.copyFrom(besok.getAvvikelse()))
@@ -226,7 +214,6 @@ public final class Besok {
         private BesokStatusTyp besokStatus;
         private TolkStatusTyp tolkStatus;
         private KallelseFormTyp kallelseForm;
-        private Boolean ersatts;
         private DeltagarProfessionTyp deltagareProfession;
         private String deltagareFullstandigtNamn;
         private Avvikelse avvikelse;
@@ -274,11 +261,6 @@ public final class Besok {
             return this;
         }
 
-        public BesokBuilder withErsatts(Boolean ersatts) {
-            this.ersatts = ersatts;
-            return this;
-        }
-
         public BesokBuilder withDeltagareProfession(DeltagarProfessionTyp deltagareProfession) {
             this.deltagareProfession = deltagareProfession;
             return this;
@@ -308,7 +290,6 @@ public final class Besok {
             besok.setBesokStatus(besokStatus);
             besok.setTolkStatus(tolkStatus);
             besok.setKallelseForm(kallelseForm);
-            besok.setErsatts(ersatts);
             besok.setDeltagareProfession(deltagareProfession);
             besok.setDeltagareFullstandigtNamn(deltagareFullstandigtNamn);
             besok.setAvvikelse(avvikelse);
@@ -333,7 +314,6 @@ public final class Besok {
                 && besokStatus == besok.besokStatus
                 && tolkStatus == besok.tolkStatus
                 && kallelseForm == besok.kallelseForm
-                && Objects.equals(ersatts, besok.ersatts)
                 && deltagareProfession == besok.deltagareProfession
                 && Objects.equals(deltagareFullstandigtNamn, besok.deltagareFullstandigtNamn)
                 && Objects.equals(avvikelse, besok.avvikelse)
@@ -350,7 +330,6 @@ public final class Besok {
                 besokStatus,
                 tolkStatus,
                 kallelseForm,
-                ersatts,
                 deltagareProfession,
                 deltagareFullstandigtNamn,
                 avvikelse,
@@ -367,7 +346,6 @@ public final class Besok {
                 .add("besokStatus", besokStatus)
                 .add("tolkStatus", tolkStatus)
                 .add("kallelseForm", kallelseForm)
-                .add("ersatts", ersatts)
                 .add("deltagareProfession", deltagareProfession)
                 .add("deltagareFullstandigtNamn", deltagareFullstandigtNamn)
                 .add("avvikelse", avvikelse)
