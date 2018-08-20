@@ -48,16 +48,12 @@ angular.module('ibApp').directive('ibNumber', ['ObjectHelper',
                         var lookingLikeNr = /^[0-9\s]*$/i;
 
                         // if new value is longer than older we care, otherwise something that we already approved was removed
-                        if (!oldValue || (newValue.length > oldValue.length)) {
+                        if (!oldValue || (newValue !== oldValue)) {
                             if (!newValue.match(lookingLikeNr)) {
                                 // remove last addition if it doesn't match the pnr pattern or if dash was added prematurely/late
                                 newValue = oldValue;
                                 updateViewValue(newValue);
                             }
-                        }
-                        if (newValue.length === 1 && !newValue.match(lookingLikeNr)) {
-                            newValue = '';
-                            updateViewValue(newValue);
                         }
                     }
 
