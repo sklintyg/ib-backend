@@ -136,8 +136,8 @@ public class GetBestallningResponse implements PDLLoggable {
                 .withAvbrutenAnledning(nonNull(utredning.getAvbrutenOrsak())
                         ? utredning.getAvbrutenOrsak().getLabel()
                         : null)
-                .withMeddelandeFromHandlaggareList(utredning.getBestallning().isPresent() ?
-                        utredning.getBestallning().get().getBestallningHistorikList()
+                .withMeddelandeFromHandlaggareList(utredning.getBestallning().isPresent()
+                        ? utredning.getBestallning().get().getBestallningHistorikList()
                                 .stream()
                                 .map(MeddelandeFromHandlaggareListItem::from)
                                 .collect(Collectors.toList())
