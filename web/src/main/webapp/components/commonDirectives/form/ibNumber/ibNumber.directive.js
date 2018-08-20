@@ -34,7 +34,6 @@ angular.module('ibApp').directive('ibNumber', ['ObjectHelper',
                 }
 
                 function handleViewValueUpdate(newValue, oldValue) {
-
                     if(!newValue) {
                         return;
                     }
@@ -55,6 +54,10 @@ angular.module('ibApp').directive('ibNumber', ['ObjectHelper',
                                 newValue = oldValue;
                                 updateViewValue(newValue);
                             }
+                        }
+                        if (newValue.length === 1 && !newValue.match(lookingLikeNr)) {
+                            newValue = '';
+                            updateViewValue(newValue);
                         }
                     }
 
