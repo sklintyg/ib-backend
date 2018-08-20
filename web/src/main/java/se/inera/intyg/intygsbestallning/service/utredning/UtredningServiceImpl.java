@@ -669,7 +669,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
         if (orsak == AvslutOrsak.INGEN_BESTALLNING) {
             notifieringSendService.notifieraVardenhetIngenBestallning(utredning, internForfragan);
-            notifieringSendService.notifieraLandstingIngenBestallning(utredning, internForfragan);
+            notifieringSendService.notifieraLandstingIngenBestallning(utredning);
         } else if (orsak == AvslutOrsak.JAV) {
             notifieringSendService.notifieraLandstingAvslutadPgaJav(utredning);
             notifieringSendService.notifieraVardenhetAvslutadPgaJav(utredning);

@@ -37,7 +37,7 @@ public interface NotifieringSendService {
 
     void notifieraLandstingPaminnelseSvaraExternforfragan(Utredning utredning);
 
-    void notifieraLandstingIngenBestallning(Utredning utredning, InternForfragan internForfragan);
+    void notifieraLandstingIngenBestallning(Utredning utredning);
 
     void notifieraVardenhetIngenBestallning(Utredning utredning, InternForfragan internForfragan);
 

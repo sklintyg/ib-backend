@@ -20,7 +20,6 @@ package se.inera.intyg.intygsbestallning.service.notifiering.util;
 
 import static java.util.Objects.nonNull;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.util.Optional;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
@@ -33,8 +32,11 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.vardenhet.Vardenh
 @Component
 public class NotifieringEpostResolver {
 
-    @Autowired
-    private VardenhetService vardenhetService;
+    private final VardenhetService vardenhetService;
+
+    public NotifieringEpostResolver(VardenhetService vardenhetService) {
+        this.vardenhetService = vardenhetService;
+    }
 
     public Optional<String> resolveVardenhetNotifieringEpost(final String hsaId, final Utredning utredning) {
         Optional<String> epost = Optional.of(utredning)
