@@ -377,6 +377,8 @@ public class UtredningRepositoryTest {
                 .withTyp(NotifieringTyp.PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS)
                 .withMottagare(NotifieringTyp.PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS.getNotifieringMottagarTyp())
                 .withSkickad(LocalDateTime.now())
+                .withMottagareHsaId("hsa-id")
+                .withErsatts(false)
                 .build());
         utr.setBestallning(buildBestallning());
         Intyg intyg = buildIntyg();
@@ -419,6 +421,8 @@ public class UtredningRepositoryTest {
                 .withTyp(NotifieringTyp.SLUTDATUM_UTREDNING_PASSERAT)
                 .withMottagare(NotifieringMottagarTyp.VARDENHET)
                 .withSkickad(LocalDateTime.now())
+                .withMottagareHsaId("hsa-id")
+                .withErsatts(false)
                 .build());
         Intyg intyg = buildIntyg();
         intyg.setKomplettering(false);
@@ -465,6 +469,16 @@ public class UtredningRepositoryTest {
                 aSkickadNotifiering()
                         .withIntygId(2L)
                         .withMottagare(NotifieringMottagarTyp.VARDENHET)
+                        .withMottagareHsaId("hsa-id")
+                        .withErsatts(false)
+                        .withSkickad(localDateTime.minusDays(2))
+                        .withTyp(NotifieringTyp.PAMINNELSEDATUM_KOMPLETTERING_PASSERAS)
+                        .build(),
+                aSkickadNotifiering()
+                        .withIntygId(2L)
+                        .withMottagare(NotifieringMottagarTyp.VARDENHET)
+                        .withMottagareHsaId("hsa-id")
+                        .withErsatts(true)
                         .withSkickad(localDateTime.minusDays(2))
                         .withTyp(NotifieringTyp.PAMINNELSEDATUM_KOMPLETTERING_PASSERAS)
                         .build()
@@ -472,8 +486,10 @@ public class UtredningRepositoryTest {
 
         utredningRepository.saveUtredning(utredning);
 
-        final List<Object[]> utredningList = utredningRepository.findNonNotifiedSistadatumKompletteringBefore(localDateTime, NotifieringTyp.PAMINNELSEDATUM_KOMPLETTERING_PASSERAS, NotifieringMottagarTyp.VARDENHET);
+        final List<UtredningAndIntyg> utredningList = utredningRepository.findNonNotifiedSistadatumKompletteringBefore(
+                localDateTime, NotifieringTyp.PAMINNELSEDATUM_KOMPLETTERING_PASSERAS, NotifieringMottagarTyp.VARDENHET);
+
         assertThat(utredningList.size()).isEqualTo(1);
-        assertThat(utredningList.get(0)[0]).isEqualTo(utredning);
+        assertThat(utredningList.get(0).getUtredning()).isEqualTo(utredning);
     }
 }

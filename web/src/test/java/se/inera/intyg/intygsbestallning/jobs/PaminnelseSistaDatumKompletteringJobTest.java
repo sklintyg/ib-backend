@@ -20,13 +20,11 @@ package se.inera.intyg.intygsbestallning.jobs;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
-import static se.inera.intyg.intygsbestallning.persistence.model.SkickadNotifiering.SkickadNotifieringBuilder.aSkickadNotifiering;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -42,6 +40,7 @@ import java.time.LocalDateTime;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp;
+import se.inera.intyg.intygsbestallning.persistence.repository.UtredningAndIntyg;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
@@ -89,7 +88,7 @@ public class PaminnelseSistaDatumKompletteringJobTest {
         ));
 
 
-        doReturn(ImmutableList.of(new Object[]{utredning, utredning.getIntygList().get(3)}))
+        doReturn(ImmutableList.of(new UtredningAndIntyg(utredning, utredning.getIntygList().get(3))))
                 .when(utredningRepository)
                 .findNonNotifiedSistadatumKompletteringBefore(any(LocalDateTime.class), eq(NotifieringTyp.PAMINNELSEDATUM_KOMPLETTERING_PASSERAS), eq(NotifieringMottagarTyp.VARDENHET));
 

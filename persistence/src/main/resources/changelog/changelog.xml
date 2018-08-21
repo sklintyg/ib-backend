@@ -959,4 +959,17 @@
         <dropColumn tableName="BESOK" columnName="ERSATTS"></dropColumn>
     </changeSet>
 
+    <changeSet id="6" author="ja">
+        <addColumn tableName="SKICKAD_NOTIFIERING">
+            <column name="MOTTAGARE_HSA_ID" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="SKICKAD_NOTIFIERING">
+            <column name="ERSATTS" type="tinyint(1)" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

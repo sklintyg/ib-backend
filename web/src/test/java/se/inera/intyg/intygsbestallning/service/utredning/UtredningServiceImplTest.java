@@ -18,7 +18,9 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
+import static com.google.common.collect.MoreCollectors.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.not;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -42,6 +44,7 @@ import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.Han
 import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
 import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
 import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
+import static se.inera.intyg.intygsbestallning.persistence.model.SkickadNotifiering.SkickadNotifieringBuilder.aSkickadNotifiering;
 import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp.BESTALLNING;
@@ -61,6 +64,7 @@ import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createUtredn
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.MoreCollectors;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -92,6 +96,8 @@ import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationExceptio
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
+import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.RegistreradVardenhet;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
@@ -100,6 +106,8 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.MyndighetTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp;
+import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.RegiFormTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
@@ -488,6 +496,7 @@ public class UtredningServiceImplTest {
         admin.setOfficeName("uppdatera");
 
         updateOrderType.setUpdatedAuthorityAdministrativeOfficial(admin);
+        updateOrderType.setComment("ny-kommentar");
 
         final UpdateOrderRequest updateOrderRequest = UpdateOrderRequest.from(updateOrderType);
 
@@ -504,8 +513,40 @@ public class UtredningServiceImplTest {
         assertThat(uppdateradUtredning.getExternForfragan()).isPresent().isEqualTo(Optional.of(createExternForfragan()));
         assertThat(uppdateradUtredning.getTolkBehov()).isTrue();
         assertThat(uppdateradUtredning.getTolkSprak()).isEqualTo(tolkSprak);
+        assertThat(uppdateradUtredning.getBestallning()
+                .map(bestallning -> bestallning.getBestallningHistorikList().stream()
+                        .filter(hist -> hist.getKommentar().equals("ny-kommentar"))
+                        .collect(toOptional()))).isPresent();
 
         verify(notifieringSendService, times(1)).notifieraVardenhetUppdateradBestallning(any(Utredning.class));
+    }
+
+    @Test
+    public void uppdateraOrderNyttSistaDatumWhenNotifieringIsSent() {
+        final Long notifieringId = 1L;
+        final String hsaId = "hsa-id";
+
+        Utredning utredning = createUtredning();
+        utredning.getSkickadNotifieringList().add(aSkickadNotifiering()
+                .withId(notifieringId)
+                .withIntygId(utredning.getIntygList().get(0).getId())
+                .withTyp(NotifieringTyp.PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS)
+                .withMottagare(NotifieringMottagarTyp.VARDENHET)
+                .withMottagareHsaId(hsaId)
+                .withErsatts(false)
+                .withSkickad(DATE_TIME)
+                .build());
+
+        doReturn(Optional.of(utredning))
+                .when(utredningRepository)
+                .findById(utredning.getUtredningId());
+
+        final UpdateOrderType updateOrderType = createUpdateOrderType();
+        updateOrderType.setLastDateForCertificateReceival(SchemaDateUtil.toDateStringFromLocalDateTime(DATE_TIME.plusMonths(4)));
+
+        final Utredning updated = utredningService.updateOrder(UpdateOrderRequest.from(updateOrderType));
+
+        assertThat(updated.getSkickadNotifieringList().stream().collect(onlyElement()).getErsatts()).isTrue();
     }
 
     @Test

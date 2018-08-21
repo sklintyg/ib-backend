@@ -19,7 +19,7 @@
 package se.inera.intyg.intygsbestallning.jobs;
 
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp.VARDENHET;
-import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.*;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.PAMINNELSE_SLUTDATUM_INTERNFORFRAGAN_PASSERAS;
 
 import com.google.common.collect.Sets;
 import net.javacrumbs.shedlock.core.SchedulerLock;
@@ -42,8 +42,6 @@ import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.status.InternForfraganFas;
 import se.inera.intyg.intygsbestallning.persistence.model.status.InternForfraganStatus;
-import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;

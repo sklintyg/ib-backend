@@ -20,13 +20,7 @@ package se.inera.intyg.intygsbestallning.jobs;
 
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.PAMINNELSEDATUM_KOMPLETTERING_PASSERAS;
 
-
-import java.lang.invoke.MethodHandles;
-import java.text.MessageFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-
+import net.javacrumbs.shedlock.core.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,11 +28,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import net.javacrumbs.shedlock.core.SchedulerLock;
+import java.lang.invoke.MethodHandles;
+import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
-import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
-import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
@@ -73,14 +67,10 @@ public class PaminnelseSistaDatumKompletteringJob {
         LOG.info(MessageFormat.format("Starting: {0} from Scheduled Cron Expression", JOB_NAME));
 
         final LocalDateTime paminnelseDatum = businessDaysBean.addBusinessDays(LocalDate.now(), paminnelseArbetsdagar).atStartOfDay();
-        final List<Object[]> utredningList = utredningRepository.findNonNotifiedSistadatumKompletteringBefore(
-                paminnelseDatum, PAMINNELSEDATUM_KOMPLETTERING_PASSERAS, NotifieringMottagarTyp.VARDENHET);
-
-        utredningList.forEach(utredningIntyg -> {
-            Utredning utredning = (Utredning) utredningIntyg[0];
-            Intyg intyg = (Intyg) utredningIntyg[1];
-            LOG.debug(MessageFormat.format("Starting {0} for utredning with id {1}", JOB_NAME, utredning.getUtredningId()));
-            notifieringSendService.notifieraVardenhetPaminnelseSlutdatumKomplettering(utredning, intyg);
+        utredningRepository.findNonNotifiedSistadatumKompletteringBefore(
+                paminnelseDatum, PAMINNELSEDATUM_KOMPLETTERING_PASSERAS, NotifieringMottagarTyp.VARDENHET).forEach(object -> {
+            LOG.debug(MessageFormat.format("Starting {0} for utredning with id {1}", JOB_NAME, object.getUtredning().getUtredningId()));
+            notifieringSendService.notifieraVardenhetPaminnelseSlutdatumKomplettering(object.getUtredning(), object.getIntyg());
         });
     }
 }

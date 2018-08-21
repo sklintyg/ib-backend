@@ -22,6 +22,7 @@ package se.inera.intyg.intygsbestallning.persistence.model;
 import static java.util.Objects.isNull;
 import static se.inera.intyg.intygsbestallning.persistence.model.SkickadNotifiering.SkickadNotifieringBuilder.aSkickadNotifiering;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -57,6 +58,12 @@ public final class SkickadNotifiering {
     @Column(name = "MOTTAGARE", nullable = false)
     private NotifieringMottagarTyp mottagare;
 
+    @Column(name = "MOTTAGARE_HSA_ID", nullable = false)
+    private String mottagareHsaId;
+
+    @Column(name = "ERSATTS", nullable = false, columnDefinition = "tinyint(1) default 0")
+    private Boolean ersatts;
+
     @Column(name = "SKICKAD")
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime skickad;
@@ -68,6 +75,7 @@ public final class SkickadNotifiering {
     public void setId(Long id) {
         this.id = id;
     }
+
     public Long getIntygId() {
         return intygId;
     }
@@ -100,6 +108,26 @@ public final class SkickadNotifiering {
         this.skickad = skickad;
     }
 
+    public String getMottagareHsaId() {
+        return mottagareHsaId;
+    }
+
+    public void setMottagareHsaId(String mottagareHsaId) {
+        this.mottagareHsaId = mottagareHsaId;
+    }
+
+    public Boolean getErsatts() {
+        return ersatts;
+    }
+
+    public void ersatts() {
+        this.ersatts = true;
+    }
+
+    public void setErsatts(Boolean ersatts) {
+        this.ersatts = ersatts;
+    }
+
     public static SkickadNotifiering copyFrom(final SkickadNotifiering skickadNotifiering) {
         if (isNull(skickadNotifiering)) {
             return null;
@@ -110,10 +138,13 @@ public final class SkickadNotifiering {
                 .withIntygId(skickadNotifiering.getIntygId())
                 .withTyp(skickadNotifiering.getTyp())
                 .withMottagare(skickadNotifiering.getMottagare())
+                .withMottagareHsaId(skickadNotifiering.getMottagareHsaId())
+                .withErsatts(BooleanUtils.toBoolean(skickadNotifiering.getErsatts()))
                 .withSkickad(skickadNotifiering.getSkickad())
                 .build();
     }
     // CHECKSTYLE:OFF MagicNumber
+
 
     @Override
     public boolean equals(Object o) {
@@ -132,6 +163,8 @@ public final class SkickadNotifiering {
                 .append(intygId, that.intygId)
                 .append(typ, that.typ)
                 .append(mottagare, that.mottagare)
+                .append(mottagareHsaId, that.mottagareHsaId)
+                .append(ersatts, that.ersatts)
                 .append(skickad, that.skickad)
                 .isEquals();
     }
@@ -143,6 +176,8 @@ public final class SkickadNotifiering {
                 .append(intygId)
                 .append(typ)
                 .append(mottagare)
+                .append(mottagareHsaId)
+                .append(ersatts)
                 .append(skickad)
                 .toHashCode();
     }
@@ -154,16 +189,19 @@ public final class SkickadNotifiering {
                 .append("intygId", intygId)
                 .append("typ", typ)
                 .append("mottagare", mottagare)
+                .append("mottagareHsaId", mottagareHsaId)
+                .append("ersatts", ersatts)
                 .append("skickad", skickad)
                 .toString();
     }
-
 
     public static final class SkickadNotifieringBuilder {
         private Long id;
         private Long intygId;
         private NotifieringTyp typ;
         private NotifieringMottagarTyp mottagare;
+        private String mottagareHsaId;
+        private Boolean ersatts;
         private LocalDateTime skickad;
 
         private SkickadNotifieringBuilder() {
@@ -193,6 +231,16 @@ public final class SkickadNotifiering {
             return this;
         }
 
+        public SkickadNotifieringBuilder withMottagareHsaId(String mottagareHsaId) {
+            this.mottagareHsaId = mottagareHsaId;
+            return this;
+        }
+
+        public SkickadNotifieringBuilder withErsatts(Boolean ersatts) {
+            this.ersatts = ersatts;
+            return this;
+        }
+
         public SkickadNotifieringBuilder withSkickad(LocalDateTime skickad) {
             this.skickad = skickad;
             return this;
@@ -204,7 +252,9 @@ public final class SkickadNotifiering {
             skickadNotifiering.setIntygId(intygId);
             skickadNotifiering.setTyp(typ);
             skickadNotifiering.setMottagare(mottagare);
-            skickadNotifiering.skickad = this.skickad;
+            skickadNotifiering.setMottagareHsaId(mottagareHsaId);
+            skickadNotifiering.setErsatts(ersatts);
+            skickadNotifiering.setSkickad(skickad);
             return skickadNotifiering;
         }
     }

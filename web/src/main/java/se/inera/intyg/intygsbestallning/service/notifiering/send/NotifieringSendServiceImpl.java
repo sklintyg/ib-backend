@@ -147,7 +147,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                     landstingNyExternforfraganMessage(),
                     maillinkRedirectUrlBuilder.buildSamordnareUtredningUrl(utredning.getUtredningId()));
             sendNotifiering(preferens.getLandstingEpost(), SUBJECT_NY_FMU_EXTERN_FORFRAGAN, body, utredning.getUtredningId());
-            saveNotifiering(utredning, NY_EXTERNFORFRAGAN, LANDSTING);
+            saveNotifiering(utredning, landstingsHsaId, NY_EXTERNFORFRAGAN, LANDSTING);
         }
     }
 
@@ -162,7 +162,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                         vardenhetNyInternforfraganMessage(landstingsNamn),
                         maillinkRedirectUrlBuilder.buildVardadminInternForfraganUrl(utredning.getUtredningId(), internForfragan.getId()));
                 sendNotifiering(email, SUBJECT_NY_FMU_INTERN_FORFRAGAN, body, utredning.getUtredningId());
-                saveNotifiering(utredning, NY_INTERNFORFRAGAN, VARDENHET);
+                saveNotifiering(utredning, vardenhetsHsaId, NY_INTERNFORFRAGAN, VARDENHET);
             });
         }
     }
@@ -178,7 +178,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                     landstingSamtligaInternForfraganBesvaradeforfraganMessage(utredning),
                     maillinkRedirectUrlBuilder.buildSamordnareUtredningUrl(utredning.getUtredningId()));
             sendNotifiering(email, SUBJECT_SAMTLIGA_INTERNFORFRAGAN_BESVARATS, body, utredning.getUtredningId());
-            saveNotifiering(utredning, SAMTLIGA_INTERNFORFRAGAN_BESVARATS, LANDSTING);
+            saveNotifiering(utredning, landstingsHsaId, SAMTLIGA_INTERNFORFRAGAN_BESVARATS, LANDSTING);
         }
     }
 
@@ -194,7 +194,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                         maillinkRedirectUrlBuilder.buildVardadminInternForfraganUrl(utredning.getUtredningId(),
                                 tillDeladInternForfragan.getId()));
                 sendNotifiering(email, SUBJECT_FMU_UTREDNING_TILLDELAD_VARDENHETEN, body, utredning.getUtredningId());
-                saveNotifiering(utredning, UTREDNING_TILLDELAD, VARDENHET);
+                saveNotifiering(utredning, vardenhetsHsaId, UTREDNING_TILLDELAD, VARDENHET);
             });
         }
     }
@@ -211,7 +211,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                         maillinkRedirectUrlBuilder.buildVardadminInternForfraganUrl(utredning.getUtredningId(),
                                 internForfragan.getId()));
                 sendNotifiering(email, SUBJECT_PAMINNELSE_SVARA_INTERNFORFRAGAN, body, utredning.getUtredningId());
-                saveNotifiering(utredning, PAMINNELSE_SLUTDATUM_INTERNFORFRAGAN_PASSERAS, VARDENHET);
+                saveNotifiering(utredning, vardenhetsHsaId, PAMINNELSE_SLUTDATUM_INTERNFORFRAGAN_PASSERAS, VARDENHET);
             });
         }
     }
@@ -227,7 +227,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                     paminnelseSvaraExternforfraganMessage(utredning),
                     maillinkRedirectUrlBuilder.buildSamordnareUtredningUrl(utredning.getUtredningId()));
             sendNotifiering(email, SUBJECT_PAMINNELSE_SVARA_EXTERNFORFRAGAN, body, utredning.getUtredningId());
-            saveNotifiering(utredning, PAMINNELSE_SLUTDATUM_EXTERNFORFRAGAN_PASSERAS, LANDSTING);
+            saveNotifiering(utredning, landstingsHsaId, PAMINNELSE_SLUTDATUM_EXTERNFORFRAGAN_PASSERAS, LANDSTING);
         }
     }
 
@@ -242,7 +242,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                     ingenBestallningMessage(utredning),
                     maillinkRedirectUrlBuilder.buildSamordnareUtredningUrl(utredning.getUtredningId()));
             sendNotifiering(email, SUBJECT_INGEN_BESTALLNING, body, utredning.getUtredningId());
-            saveNotifiering(utredning, INGEN_BESTALLNING, LANDSTING);
+            saveNotifiering(utredning, landstingsHsaId, INGEN_BESTALLNING, LANDSTING);
         }
     }
 
@@ -257,7 +257,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                         ingenBestallningMessage(utredning),
                         maillinkRedirectUrlBuilder.buildVardadminInternForfraganUrl(utredning.getUtredningId(), internForfragan.getId()));
                 sendNotifiering(email, SUBJECT_INGEN_BESTALLNING, body, utredning.getUtredningId());
-                saveNotifiering(utredning, INGEN_BESTALLNING, VARDENHET);
+                saveNotifiering(utredning, vardenhetsHsaId, INGEN_BESTALLNING, VARDENHET);
             });
         }
     }
@@ -273,7 +273,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                         nyBestallningMessage(utredning),
                         maillinkRedirectUrlBuilder.buildVardadminBestallningUrl(utredning.getUtredningId()));
                 sendNotifiering(email, SUBJECT_BESTALLNING_AV_FRORSAKRINGSMEDICINSK_UTREDNING, body, utredning.getUtredningId());
-                saveNotifiering(utredning, NY_BESTALLNING, VARDENHET);
+                saveNotifiering(utredning, vardenhetsHsaId, NY_BESTALLNING, VARDENHET);
             });
         }
     }
@@ -289,7 +289,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                     avslutadPgaJavMessage(utredning),
                     maillinkRedirectUrlBuilder.buildSamordnareUtredningUrl(utredning.getUtredningId()));
             sendNotifiering(email, SUBJECT_AVSLUTAD_PGA_JAV, body, utredning.getUtredningId());
-            saveNotifiering(utredning, UTREDNING_AVSLUTAD_PGA_JAV, LANDSTING);
+            saveNotifiering(utredning, landstingsHsaId, UTREDNING_AVSLUTAD_PGA_JAV, LANDSTING);
         }
     }
 
@@ -304,7 +304,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                         avslutadPgaJavMessage(utredning),
                         maillinkRedirectUrlBuilder.buildVardadminBestallningUrl(utredning.getUtredningId()));
                 sendNotifiering(email, SUBJECT_AVSLUTAD_PGA_JAV, body, utredning.getUtredningId());
-                saveNotifiering(utredning, UTREDNING_AVSLUTAD_PGA_JAV, VARDENHET);
+                saveNotifiering(utredning, vardenhetsHsaId, UTREDNING_AVSLUTAD_PGA_JAV, VARDENHET);
             });
         }
     }
@@ -320,15 +320,15 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                         uppdateradBestallningMessage(utredning),
                         maillinkRedirectUrlBuilder.buildVardadminBestallningUrl(utredning.getUtredningId()));
                 sendNotifiering(email, SUBJECT_BESTALLNING_UPPDATERAD, body, utredning.getUtredningId());
-                saveNotifiering(utredning, UPPDATERAD_BESTALLNING, VARDENHET);
+                saveNotifiering(utredning, vardenhetsHsaId, UPPDATERAD_BESTALLNING, VARDENHET);
             });
         }
     }
 
     @Override
     public void notifieraLandstingAvvikelseRapporteradAvVarden(Utredning utredning, Besok besok) {
-        final String vardgivareHsaId = getHsaIdFromExternforfragan(utredning);
-        final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(vardgivareHsaId, VG);
+        final String landstingsHsaId = getHsaIdFromExternforfragan(utredning);
+        final GetNotificationPreferenceResponse preferens = notifieringPreferenceService.getNotificationPreference(landstingsHsaId, VG);
 
         if (preferens.isEnabled(AVVIKELSE_RAPPORTERAD_AV_VARDEN, LANDSTING)) {
             final String email = preferens.getLandstingEpost();
@@ -336,7 +336,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                     avvikelseRapporteradAvVardenMessage(utredning, besok),
                     maillinkRedirectUrlBuilder.buildSamordnareUtredningUrl(utredning.getUtredningId()));
             sendNotifiering(email, SUBJECT_AVVIKELSE_RAPPORTERAD_AV_VARDEN, body, utredning.getUtredningId());
-            saveNotifiering(utredning, AVVIKELSE_RAPPORTERAD_AV_VARDEN, LANDSTING);
+            saveNotifiering(utredning, landstingsHsaId, AVVIKELSE_RAPPORTERAD_AV_VARDEN, LANDSTING);
         }
     }
 
@@ -351,7 +351,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                         vardenhetAvvikelseRapporteradAvFKMessage(utredning, besok),
                         maillinkRedirectUrlBuilder.buildVardadminBestallningUrl(utredning.getUtredningId()));
                 sendNotifiering(email, SUBJECT_AVVIKELSE_MOTTAGEN_FRAN_FK, body, utredning.getUtredningId());
-                saveNotifiering(utredning, AVVIKELSE_MOTTAGEN_AV_FK, VARDENHET);
+                saveNotifiering(utredning, vardenhetsHsaId, AVVIKELSE_MOTTAGEN_AV_FK, VARDENHET);
             });
         }
     }
@@ -367,7 +367,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                     landstingAvvikelseRapporteradAvFKMessage(utredning, besok),
                     maillinkRedirectUrlBuilder.buildSamordnareUtredningUrl(utredning.getUtredningId()));
             sendNotifiering(email, SUBJECT_AVVIKELSE_MOTTAGEN_FRAN_FK, body, utredning.getUtredningId());
-            saveNotifiering(utredning, AVVIKELSE_MOTTAGEN_AV_FK, LANDSTING);
+            saveNotifiering(utredning, landstingsHsaId, AVVIKELSE_MOTTAGEN_AV_FK, LANDSTING);
         }
     }
 
@@ -382,7 +382,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                         vardenhetAvslutadUtredningMessage(utredning),
                         maillinkRedirectUrlBuilder.buildVardadminBestallningUrl(utredning.getUtredningId()));
                 sendNotifiering(email, SUBJECT_AVSLUTAD_UTREDNING, body, utredning.getUtredningId());
-                saveNotifiering(utredning, UTREDNING_AVSLUTAD_PGA_AVBRUTEN, VARDENHET);
+                saveNotifiering(utredning, vardenhetsHsaId, UTREDNING_AVSLUTAD_PGA_AVBRUTEN, VARDENHET);
             });
         }
     }
@@ -398,7 +398,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                     landstingAvslutadUtredningMessage(utredning),
                     maillinkRedirectUrlBuilder.buildSamordnareUtredningUrl(utredning.getUtredningId()));
             sendNotifiering(email, SUBJECT_AVSLUTAD_UTREDNING, body, utredning.getUtredningId());
-            saveNotifiering(utredning, UTREDNING_AVSLUTAD_PGA_AVBRUTEN, LANDSTING);
+            saveNotifiering(utredning, landstingsHsaId, UTREDNING_AVSLUTAD_PGA_AVBRUTEN, LANDSTING);
         }
     }
 
@@ -413,7 +413,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                         paminnelseSlutdatumUtredningMessage(utredning),
                         maillinkRedirectUrlBuilder.buildVardadminBestallningUrl(utredning.getUtredningId()));
                 sendNotifiering(email, SUBJECT_UTREDNING_SLUTDATUM_PAMINNELSE, body, utredning.getUtredningId());
-                saveNotifiering(utredning, PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS, VARDENHET);
+                saveNotifiering(utredning, vardenhetsHsaId, PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS, VARDENHET);
             });
         }
     }
@@ -430,7 +430,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                         maillinkRedirectUrlBuilder.buildVardadminBestallningUrl(utredning.getUtredningId()));
 
                 sendNotifiering(email, SUBJECT_UTREDNING_SLUTDATUM_PASSERAT, body, utredning.getUtredningId());
-                saveNotifiering(utredning, SLUTDATUM_UTREDNING_PASSERAT, VARDENHET);
+                saveNotifiering(utredning, vardenhetsHsaId, SLUTDATUM_UTREDNING_PASSERAT, VARDENHET);
             });
         }
     }
@@ -446,7 +446,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                     slutdatumPasseratUtredningMessage(utredning),
                     maillinkRedirectUrlBuilder.buildSamordnareUtredningUrl(utredning.getUtredningId()));
             sendNotifiering(email, SUBJECT_UTREDNING_SLUTDATUM_PASSERAT, body, utredning.getUtredningId());
-            saveNotifiering(utredning, SLUTDATUM_UTREDNING_PASSERAT, LANDSTING);
+            saveNotifiering(utredning, landstingsHsaId, SLUTDATUM_UTREDNING_PASSERAT, LANDSTING);
         }
     }
 
@@ -461,7 +461,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                         kompletteringBegardMessage(utredning),
                         maillinkRedirectUrlBuilder.buildVardadminBestallningUrl(utredning.getUtredningId()));
                 sendNotifiering(email, SUBJECT_KOMPLETTERING_BEGARD, body, utredning.getUtredningId());
-                saveNotifiering(utredning, KOMPLETTERING_BEGARD, VARDENHET);
+                saveNotifiering(utredning, vardenhetsHsaId, KOMPLETTERING_BEGARD, VARDENHET);
             });
         }
     }
@@ -477,7 +477,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                         paminnelseSlutDatumKomplettering(utredning, intyg),
                         maillinkRedirectUrlBuilder.buildVardadminBestallningUrl(utredning.getUtredningId()));
                 sendNotifiering(email, SUBJECT_KOMPLETTERING_SLUTDATUM_PAMINNELSE, body, utredning.getUtredningId());
-                updateUtredningWithNotifiering(utredning, intyg.getId(), PAMINNELSEDATUM_KOMPLETTERING_PASSERAS, VARDENHET);
+                saveNotifiering(utredning, intyg.getId(), vardenhetsHsaId, PAMINNELSEDATUM_KOMPLETTERING_PASSERAS, VARDENHET);
             });
         }
     }
@@ -494,7 +494,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                         maillinkRedirectUrlBuilder.buildVardadminBestallningUrl(utredning.getUtredningId()));
 
                 sendNotifiering(email, SUBJECT_KOMPLETTERING_SLUTDATUM_PASSERAT, body, utredning.getUtredningId());
-                saveNotifiering(utredning, intyg.getId(), SLUTDATUM_KOMPLETTERING_PASSERAT, VARDENHET);
+                saveNotifiering(utredning, intyg.getId(), vardenhetsHsaId, SLUTDATUM_KOMPLETTERING_PASSERAT, VARDENHET);
             });
         }
     }
@@ -510,7 +510,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                     slutdatumPasseratKompletteringMessage(utredning, intyg),
                     maillinkRedirectUrlBuilder.buildSamordnareUtredningUrl(utredning.getUtredningId()));
             sendNotifiering(email, SUBJECT_KOMPLETTERING_SLUTDATUM_PASSERAT, body, utredning.getUtredningId());
-            saveNotifiering(utredning, intyg.getId(), SLUTDATUM_KOMPLETTERING_PASSERAT, LANDSTING);
+            saveNotifiering(utredning, intyg.getId(), landstingsHsaId, SLUTDATUM_KOMPLETTERING_PASSERAT, LANDSTING);
         }
     }
 
@@ -525,7 +525,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                         paminnelseRedovisaBesok(utredning),
                         maillinkRedirectUrlBuilder.buildVardadminBestallningUrl(utredning.getUtredningId()));
                 sendNotifiering(email, SUBJECT_REDOVISA_BESOK, body, utredning.getUtredningId());
-                saveNotifiering(utredning, PAMINNELSE_REDOVISA_BESOK, VARDENHET);
+                saveNotifiering(utredning, vardenhetsHsaId, PAMINNELSE_REDOVISA_BESOK, VARDENHET);
             });
         }
     }
@@ -533,6 +533,7 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
     public void updateUtredningWithNotifiering(
             final Utredning utredning,
             final Long intygId,
+            final String hsaId,
             final NotifieringTyp typ,
             final NotifieringMottagarTyp mottagare) {
 
@@ -545,25 +546,29 @@ public class NotifieringSendServiceImpl implements NotifieringSendService {
                 .withTyp(typ)
                 .withIntygId(intygId)
                 .withMottagare(mottagare)
+                .withMottagareHsaId(hsaId)
+                .withErsatts(false)
                 .build());
     }
 
     private void saveNotifiering(
             final Utredning utredning,
+            final String hsaId,
             final NotifieringTyp typ,
             final NotifieringMottagarTyp mottagare) {
 
-        updateUtredningWithNotifiering(utredning, null, typ, mottagare);
+        updateUtredningWithNotifiering(utredning, null, hsaId, typ, mottagare);
         utredningRepository.saveUtredning(utredning);
     }
 
     private void saveNotifiering(
             final Utredning utredning,
             final Long intygId,
+            final String hsaId,
             final NotifieringTyp typ,
             final NotifieringMottagarTyp mottagare) {
 
-        updateUtredningWithNotifiering(utredning, intygId, typ, mottagare);
+        updateUtredningWithNotifiering(utredning, intygId, hsaId, typ, mottagare);
         utredningRepository.saveUtredning(utredning);
     }
 

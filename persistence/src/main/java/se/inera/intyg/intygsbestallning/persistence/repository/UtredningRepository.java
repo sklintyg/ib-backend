@@ -51,7 +51,8 @@ public interface UtredningRepository extends UtredningRepositoryCustom, JpaRepos
            "AND if.status in :statusar " +
            "AND u.utredningId NOT IN (SELECT u.utredningId FROM Utredning u " +
                "JOIN u.skickadNotifieringList n WHERE n.typ = :typ " +
-               "AND n.mottagare = :mottagare)"
+               "AND n.mottagare = :mottagare " +
+               "AND n.ersatts = false)"
     )
     List<Utredning> findNonNotifiedInternforfraganSlutDatumBefore(
             @Param("besvarasSenastDatum") LocalDateTime besvarasSenastDatum,
@@ -104,46 +105,107 @@ public interface UtredningRepository extends UtredningRepositoryCustom, JpaRepos
     /**
      * Alla utredningar med intyg med slutdatum inom intervall och som ej har notifiering av angiven typ.
      */
-    @Query("SELECT u FROM Utredning u JOIN u.intygList i JOIN u.bestallning b WHERE b.tilldeladVardenhetHsaId is not null AND u.arkiverad = false AND i.komplettering = false AND i.sistaDatum is not null AND i.sistaDatum >= :fromDate AND i.sistaDatum <= :toDate AND u.utredningId NOT IN (SELECT u.utredningId FROM Utredning u JOIN u.skickadNotifieringList n WHERE n.typ = :typ AND n.mottagare = :mottagare)")
+    @Query("SELECT u FROM Utredning u " +
+           "JOIN u.intygList i " +
+           "JOIN u.bestallning b " +
+           "WHERE b.tilldeladVardenhetHsaId is not null " +
+           "AND u.arkiverad = false " +
+           "AND i.komplettering = false " +
+           "AND i.sistaDatum is not null " +
+           "AND i.sistaDatum >= :fromDate " +
+           "AND i.sistaDatum <= :toDate " +
+           "AND u.utredningId NOT IN (" +
+               "SELECT u.utredningId FROM Utredning u " +
+               "JOIN u.skickadNotifieringList n " +
+               "WHERE n.typ = :typ " +
+               "AND n.mottagare = :mottagare)"
+    )
     List<Utredning> findNonNotifiedIntygSlutDatumBetween(@Param("fromDate") LocalDateTime fromDate, @Param("toDate") LocalDateTime toDate, @Param("typ") NotifieringTyp typ, @Param("mottagare") NotifieringMottagarTyp mottagare);
 
     /**
      * Alla utredningar med intyg med slutdatum som passerats och som ej har notifiering av angiven typ.
      */
-    @Query("SELECT u FROM Utredning u JOIN u.intygList i JOIN u.bestallning b WHERE b.tilldeladVardenhetHsaId is not null AND u.arkiverad = false AND i.mottagetDatum is null AND i.komplettering = false AND i.sistaDatum is not null AND i.sistaDatum < :now AND u.utredningId NOT IN (SELECT u.utredningId FROM Utredning u JOIN u.skickadNotifieringList n WHERE n.typ = :typ AND n.mottagare = :mottagare)")
+    @Query("SELECT u FROM Utredning u " +
+           "JOIN u.intygList i " +
+           "JOIN u.bestallning b " +
+           "WHERE b.tilldeladVardenhetHsaId is not null " +
+           "AND u.arkiverad = false " +
+           "AND i.mottagetDatum is null " +
+           "AND i.komplettering = false " +
+           "AND i.sistaDatum is not null " +
+           "AND i.sistaDatum < :now " +
+           "AND u.utredningId NOT IN (" +
+               "SELECT u.utredningId FROM Utredning u " +
+               "JOIN u.skickadNotifieringList n " +
+               "WHERE n.typ = :typ " +
+               "AND n.mottagare = :mottagare " +
+               "AND n.ersatts = false)"
+    )
     List<Utredning> findNonNotifiedSlutDatumBefore(@Param("now") LocalDateTime now, @Param("typ") NotifieringTyp typ, @Param("mottagare") NotifieringMottagarTyp mottagare);
 
     /**
      * Alla utredningar med externförfrågan som har besvarassenast inom intervall och som ej har notifiering av angiven typ.
      */
-    @Query("SELECT u FROM Utredning u JOIN u.externForfragan e WHERE u.arkiverad = false AND e.besvarasSenastDatum >= :fromDate  AND e.besvarasSenastDatum <= :toDate AND u.utredningId NOT IN (SELECT u.utredningId FROM Utredning u JOIN u.skickadNotifieringList n WHERE n.typ = :typ AND n.mottagare = :mottagare)")
+    @Query("SELECT u FROM Utredning u " +
+           "JOIN u.externForfragan e " +
+           "WHERE u.arkiverad = false " +
+           "AND e.besvarasSenastDatum >= :fromDate  " +
+           "AND e.besvarasSenastDatum <= :toDate " +
+           "AND u.utredningId NOT IN (" +
+               "SELECT u.utredningId FROM Utredning u " +
+               "JOIN u.skickadNotifieringList n WHERE n.typ = :typ " +
+               "AND n.mottagare = :mottagare " +
+               "AND n.ersatts = false)"
+    )
     List<Utredning> findNonNotifiedExternforfraganBesvarasSenastBetween(@Param("fromDate") LocalDateTime fromDate, @Param("toDate") LocalDateTime toDate, @Param("typ") NotifieringTyp typ, @Param("mottagare") NotifieringMottagarTyp mottagare);
 
     /**
      * Alla utredningar med intyg som är kompletteringar med slutdatum som passerats och som ej har notifiering av angiven typ.
      */
-    @Query("SELECT u,i FROM Utredning u " +
-            "JOIN u.intygList i " +
-            "JOIN u.bestallning b " +
-            "WHERE b.tilldeladVardenhetHsaId is not null " +
-            "AND u.arkiverad = false " +
-            "AND i.komplettering = true " +
-            "AND i.skickatDatum is null " +
-            "AND i.sistaDatum is not null " +
-            "AND i.sistaDatum < :date " +
-            "AND i.id NOT IN (" +
-            "SELECT n.intygId FROM SkickadNotifiering n " +
-            "WHERE n.typ = :typ AND n.mottagare = :mottagare" +
-            ")"
-    )
-    List<Object[]> findNonNotifiedSistadatumKompletteringBefore(@Param("date") LocalDateTime date, @Param("typ") NotifieringTyp typ, @Param("mottagare") NotifieringMottagarTyp mottagare);
+//    @Query("SELECT u,i FROM Utredning u " +
+//           "JOIN u.intygList i " +
+//           "JOIN u.bestallning b " +
+//           "WHERE b.tilldeladVardenhetHsaId is not null " +
+//           "AND u.arkiverad = false " +
+//           "AND i.komplettering = true " +
+//           "AND i.skickatDatum is null " +
+//           "AND i.sistaDatum is not null " +
+//           "AND i.sistaDatum < :date " +
+//           "AND i.id NOT IN (" +
+//               "SELECT n.intygId FROM SkickadNotifiering n " +
+//               "WHERE n.typ = :typ " +
+//               "AND n.mottagare = :mottagare " +
+//               "AND n.ersatts = false)"
+//    )
+//    List<Object[]> findNonNotifiedSistadatumKompletteringBefore(@Param("date") LocalDateTime date, @Param("typ") NotifieringTyp typ, @Param("mottagare") NotifieringMottagarTyp mottagare);
+//
+//
 
+    @Query("SELECT new se.inera.intyg.intygsbestallning.persistence.repository.UtredningAndIntyg(u, i) FROM Utredning u " +
+           "JOIN u.intygList i " +
+           "JOIN u.bestallning b " +
+           "WHERE b.tilldeladVardenhetHsaId is not null " +
+           "AND u.arkiverad = false " +
+           "AND i.komplettering = true " +
+           "AND i.skickatDatum is null " +
+           "AND i.sistaDatum is not null " +
+           "AND i.sistaDatum < :date " +
+           "AND i.id NOT IN (" +
+               "SELECT n.intygId FROM SkickadNotifiering n " +
+               "WHERE n.typ = :typ " +
+               "AND n.mottagare = :mottagare " +
+               "AND n.ersatts = false)"
+    )
+    List<UtredningAndIntyg> findNonNotifiedSistadatumKompletteringBefore(
+            @Param("date") LocalDateTime date,
+            @Param("typ") NotifieringTyp typ,
+            @Param("mottagare") NotifieringMottagarTyp mottagare);
 
     @Query("SELECT DISTINCT u FROM Utredning u " +
-            "JOIN u.intygList i " +
-            "WHERE u.arkiverad = false " +
-            "AND i.sistaDatumKompletteringsbegaran is not null " +
-            "AND i.sistaDatumKompletteringsbegaran < :now"
+           "JOIN u.intygList i " +
+           "WHERE u.arkiverad = false " +
+           "AND i.sistaDatumKompletteringsbegaran is not null " +
+           "AND i.sistaDatumKompletteringsbegaran < :now"
     )
     List<Utredning> findSistaDatumKompletteringsBegaranBefore(
             @Param("now") LocalDateTime now);

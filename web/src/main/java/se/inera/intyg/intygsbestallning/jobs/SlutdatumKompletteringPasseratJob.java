@@ -20,20 +20,15 @@ package se.inera.intyg.intygsbestallning.jobs;
 
 import static se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp.SLUTDATUM_KOMPLETTERING_PASSERAT;
 
-import java.time.LocalDate;
-import java.util.List;
-
+import net.javacrumbs.shedlock.core.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import net.javacrumbs.shedlock.core.SchedulerLock;
+import java.time.LocalDate;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
-import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
-import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
@@ -61,24 +56,13 @@ public class SlutdatumKompletteringPasseratJob {
     public void executeJob() {
 
         // To vardenhet
-        List<Object[]> nonNotifiedForVardenhet = utredningRepository.findNonNotifiedSistadatumKompletteringBefore(
-                LocalDate.now().atStartOfDay(), SLUTDATUM_KOMPLETTERING_PASSERAT, NotifieringMottagarTyp.VARDENHET);
-
-        for (Object[] utredningIntyg : nonNotifiedForVardenhet) {
-            Utredning utredning = (Utredning) utredningIntyg[0];
-            Intyg intyg = (Intyg) utredningIntyg[1];
-            notifieringSendService.notifieraVardenhetSlutdatumPasseratKomplettering(utredning, intyg);
-        }
+        utredningRepository.findNonNotifiedSistadatumKompletteringBefore(
+                LocalDate.now().atStartOfDay(), SLUTDATUM_KOMPLETTERING_PASSERAT, NotifieringMottagarTyp.VARDENHET).forEach(object ->
+                notifieringSendService.notifieraVardenhetSlutdatumPasseratKomplettering(object.getUtredning(), object.getIntyg()));
 
         // To landsting
-        List<Object[]> nonNotifiedForLandsting = utredningRepository.findNonNotifiedSistadatumKompletteringBefore(
-                LocalDate.now().atStartOfDay(), SLUTDATUM_KOMPLETTERING_PASSERAT, NotifieringMottagarTyp.LANDSTING);
-
-        for (Object[] utredningIntyg : nonNotifiedForLandsting) {
-            Utredning utredning = (Utredning) utredningIntyg[0];
-            Intyg intyg = (Intyg) utredningIntyg[1];
-            notifieringSendService.notifieraLandstingSlutdatumPasseratKomplettering(utredning, intyg);
-        }
+        utredningRepository.findNonNotifiedSistadatumKompletteringBefore(
+                LocalDate.now().atStartOfDay(), SLUTDATUM_KOMPLETTERING_PASSERAT, NotifieringMottagarTyp.LANDSTING).forEach(object ->
+                notifieringSendService.notifieraLandstingSlutdatumPasseratKomplettering(object.getUtredning(), object.getIntyg()));
     }
-
 }

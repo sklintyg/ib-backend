@@ -28,6 +28,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
+import static se.inera.intyg.intygsbestallning.persistence.model.BestallningHistorik.BestallningHistorikBuilder.aBestallningHistorik;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder;
 import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
 import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
@@ -37,16 +38,9 @@ import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuil
 import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
 import static se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare.TidigareUtforareBuilder.aTidigareUtforare;
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
-import static se.inera.intyg.intygsbestallning.persistence.model.BestallningHistorik.BestallningHistorikBuilder.aBestallningHistorik;
 
-import java.text.MessageFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
@@ -55,10 +49,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-
+import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
@@ -75,6 +73,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
 import se.inera.intyg.intygsbestallning.persistence.model.RegistreradVardenhet;
+import se.inera.intyg.intygsbestallning.persistence.model.SkickadNotifiering;
 import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder;
@@ -101,7 +100,17 @@ import se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
-import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.*;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.AvslutadUtredningListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.AvslutadUtredningListItemFactory;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningListResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.GetUtredningResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListAvslutadeUtredningarRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListUtredningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveBetaldFkIdForUtredningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveBetaldVeIdForUtredningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveFakturaFkIdForUtredningRequest;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItem;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItemFactory;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
 
 @Service
@@ -693,9 +702,14 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         final String tolkSprakOriginal = utredning.getTolkSprak();
         update.getTolkSprak().ifPresent(utredning::setTolkSprak);
 
+        AtomicLong intygsId = new AtomicLong();
         final LocalDateTime sistaDatumOriginal = utredning.getIntygList().stream()
                 .filter(i -> !i.isKomplettering())
                 .findFirst()
+                .map(intyg -> {
+                    intygsId.set(intyg.getId());
+                    return intyg;
+                })
                 .map(Intyg::getSistaDatum)
                 .orElse(null);
 
@@ -780,7 +794,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         }
 
         // Lägg till händelse, handläggare, sistadatum och markera beställningen som uppdaterad.
-        final LocalDate nyttSistaDatum = update.getLastDateIntyg().isPresent() ? update.getLastDateIntyg().get().toLocalDate() : null;
+        final Optional<LocalDate> nyttSistaDatum = update.getLastDateIntyg().map(LocalDateTime::toLocalDate);
         final String nyHandlaggare = update.getBestallare().isPresent() ? update.getBestallare().get().getFullstandigtNamn() : null;
         final LocalDateTime uppdateradDatum = LocalDateTime.now();
         utredning.getHandelseList().add(HandelseUtil.createOrderUpdated(nyttSistaDatum, nyHandlaggare, update.getHandling().isPresent()));
@@ -795,7 +809,11 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
             utredning.getBestallning().ifPresent(bestallning -> bestallning.getBestallningHistorikList().add(historik));
         });
 
-
+        // Om nytt sista datum är satt i requestet -> markera eventuellt skickad notifiering gällande som ERSATTS = true
+        nyttSistaDatum.ifPresent(localDate -> utredning.getSkickadNotifieringList().stream()
+                .filter(isSkickadPaminnelseNotifiering(intygsId.get()))
+                .collect(toOptional())
+                .ifPresent(SkickadNotifiering::ersatts));
     }
 
     private Invanare updateInvanareFromOrder(final Invanare invanare, OrderRequest order) {
@@ -862,5 +880,4 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         UtredningFas utredningFas = UtredningFas.valueOf(fas);
         return uli.getFas() == utredningFas;
     }
-
 }

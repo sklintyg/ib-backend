@@ -23,9 +23,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 import javax.xml.ws.WebServiceException;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,10 +45,12 @@ import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
+import se.inera.intyg.intygsbestallning.persistence.model.SkickadNotifiering;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
+import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
@@ -234,4 +238,11 @@ public abstract class BaseUtredningService {
                     userLoggedInAtHsaId, utredning.getUtredningId()));
         }
     }
+
+    protected Predicate<SkickadNotifiering> isSkickadPaminnelseNotifiering(Long id) {
+        return notifiering -> notifiering.getId().equals(id)
+                && notifiering.getTyp() == NotifieringTyp.PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS
+                && BooleanUtils.isFalse(notifiering.getErsatts());
+    }
+
 }

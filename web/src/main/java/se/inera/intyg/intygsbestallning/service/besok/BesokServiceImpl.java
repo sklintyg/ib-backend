@@ -20,6 +20,7 @@ package se.inera.intyg.intygsbestallning.service.besok;
 
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.MoreCollectors.onlyElement;
+import static com.google.common.collect.MoreCollectors.toOptional;
 import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportDeviationRequestDto.ReportDeviationRequestDtoBuilder.aReportDeviationRequestDto;
 import static se.inera.intyg.intygsbestallning.persistence.model.Avvikelse.AvvikelseBuilder.anAvvikelse;
 import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
@@ -54,6 +55,8 @@ import se.inera.intyg.intygsbestallning.integration.myndighet.service.MyndighetI
 import se.inera.intyg.intygsbestallning.persistence.model.Avvikelse;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
+import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
+import se.inera.intyg.intygsbestallning.persistence.model.SkickadNotifiering;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
@@ -294,7 +297,15 @@ public class BesokServiceImpl extends BaseBesokService implements BesokService {
         final LocalDateTime nyttSistaDatum = myndighetIntegrationService
                 .updateAssessment(utredning.getUtredningId(), UtredningsTyp.AFU_UTVIDGAD.name());
         if (utredning.getIntygList().size() == 1 && !utredning.getIntygList().get(0).isKomplettering()) {
-            utredning.getIntygList().get(0).setSistaDatum(nyttSistaDatum);
+
+            final Intyg intyg = utredning.getIntygList().get(0);
+            intyg.setSistaDatum(nyttSistaDatum);
+
+            utredning.getSkickadNotifieringList().stream()
+                    .filter(isSkickadPaminnelseNotifiering(intyg.getId()))
+                    .collect(toOptional())
+                    .ifPresent(SkickadNotifiering::ersatts);
+
             return nyttSistaDatum;
         }
         throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, MessageFormat.format(

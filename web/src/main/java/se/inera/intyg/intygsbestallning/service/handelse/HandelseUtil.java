@@ -200,11 +200,12 @@ public final class HandelseUtil {
                 .build();
     }
 
-    public static Handelse createOrderUpdated(final LocalDate nyttSlutDatum, final String nyHandlaggare, final boolean documentsSent) {
+    public static Handelse createOrderUpdated(
+            final Optional<LocalDate> nyttSlutDatum, final String nyHandlaggare, final boolean documentsSent) {
+
         StringBuilder text = new StringBuilder().append("Beställning uppdaterad av Försäkringskassan. ");
-        if (nyttSlutDatum != null) {
-            text.append(MessageFormat.format("Nytt slutdatum: {0}. ", nyttSlutDatum.format(formatter)));
-        }
+        nyttSlutDatum.ifPresent(localDate -> text.append(MessageFormat.format("Nytt slutdatum: {0}. ", localDate.format(formatter))));
+
         if (nyHandlaggare != null) {
             text.append((MessageFormat.format("Ny handläggare: {0}.", nyHandlaggare)));
         }
