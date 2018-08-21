@@ -319,7 +319,7 @@ var ibMessages = {
         'label.table.avslutade.bestallningar.column.status': 'Status',
         'label.table.avslutade.bestallningar.column.avslutsdatum': 'Avslutsdatum',
         'label.table.avslutade.bestallningar.column.ersatts': 'Ersätts',
-        'label.table.avslutade.bestallningar.column.fakturerad': 'Fakturerad',
+        'label.table.avslutade.bestallningar.column.faktura': 'Faktura',
         'label.table.avslutade.bestallningar.column.utbetald': 'Betald',
 
         //Internförfrågningar
