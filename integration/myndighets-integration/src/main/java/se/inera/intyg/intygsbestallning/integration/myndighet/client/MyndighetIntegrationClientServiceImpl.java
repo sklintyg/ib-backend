@@ -18,14 +18,15 @@
  */
 package se.inera.intyg.intygsbestallning.integration.myndighet.client;
 
+import static se.inera.intyg.intygsbestallning.integration.myndighet.service.TjanstekontraktUtils.aReportCareContact;
+import static se.inera.intyg.intygsbestallning.integration.myndighet.service.TjanstekontraktUtils.aReportDeviation;
+import static se.inera.intyg.intygsbestallning.integration.myndighet.service.TjanstekontraktUtils.aRespondToPerformerRequest;
+import static se.inera.intyg.intygsbestallning.integration.myndighet.service.TjanstekontraktUtils.anUpdateAssessmentType;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto;
-import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportDeviationRequestDto;
-import se.inera.intyg.intygsbestallning.integration.myndighet.dto.RespondToPerformerRequestDto;
-import se.inera.intyg.intygsbestallning.integration.myndighet.service.TjanstekontraktUtils;
 import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.ReportCareContactResponseType;
 import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.rivtabp21.ReportCareContactResponderInterface;
 import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.ReportDeviationResponseType;
@@ -33,12 +34,10 @@ import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.rivtabp21.R
 import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.RespondToPerformerRequestResponseType;
 import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.rivtabp21.RespondToPerformerRequestResponderInterface;
 import se.riv.intygsbestallning.certificate.order.updateassessment.v1.UpdateAssessmentResponseType;
-import se.riv.intygsbestallning.certificate.order.updateassessment.v1.UpdateAssessmentType;
 import se.riv.intygsbestallning.certificate.order.updateassessment.v1.rivtabp21.UpdateAssessmentResponderInterface;
-import se.riv.intygsbestallning.certificate.order.v1.CVType;
-import se.riv.intygsbestallning.certificate.order.v1.IIType;
-
-import static se.inera.intyg.intygsbestallning.integration.myndighet.service.TjanstekontraktUtils.*;
+import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto;
+import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportDeviationRequestDto;
+import se.inera.intyg.intygsbestallning.integration.myndighet.dto.RespondToPerformerRequestDto;
 
 @Service
 public class MyndighetIntegrationClientServiceImpl implements MyndighetIntegrationClientService {
@@ -61,33 +60,25 @@ public class MyndighetIntegrationClientServiceImpl implements MyndighetIntegrati
 
     @Override
     public RespondToPerformerRequestResponseType respondToPerformerRequest(final RespondToPerformerRequestDto request) {
-        return respondToPerformerRequestResponder.respondToPerformerRequest(sourceSystemHsaId, aRespondToPerformerRequest(sourceSystemHsaId,
-                request));
+        return respondToPerformerRequestResponder.respondToPerformerRequest(
+                sourceSystemHsaId, aRespondToPerformerRequest(sourceSystemHsaId, request));
     }
 
     @Override
     public ReportCareContactResponseType reportCareContact(final ReportCareContactRequestDto request) {
-        return reportCareContactResponder.reportCareContact(sourceSystemHsaId, aReportCareContact(sourceSystemHsaId, request));
+        return reportCareContactResponder.reportCareContact(
+                sourceSystemHsaId, aReportCareContact(sourceSystemHsaId, request));
     }
 
     @Override
     public ReportDeviationResponseType reportDeviation(final ReportDeviationRequestDto request) {
-        return reportDeviationResponder.reportDeviation(sourceSystemHsaId, aReportDeviation(sourceSystemHsaId, request));
+        return reportDeviationResponder.reportDeviation(
+                sourceSystemHsaId, aReportDeviation(sourceSystemHsaId, request));
     }
 
     @Override
-    public UpdateAssessmentResponseType updateAssessment(Long assessmentId, String certificateType) {
-        UpdateAssessmentType request = new UpdateAssessmentType();
-        IIType assID = new IIType();
-        assID.setExtension(assessmentId.toString());
-        assID.setRoot(sourceSystemHsaId);
-        request.setAssessmentId(assID);
-
-        CVType certType = new CVType();
-        certType.setCode(certificateType);
-        certType.setCodeSystem(TjanstekontraktUtils.KV_INTYGSTYP);
-        request.setCertificateType(certType);
-
-        return updateAssessmentResponder.updateAssessment(sourceSystemHsaId, request);
+    public UpdateAssessmentResponseType updateAssessment(final Long assessmentId, final String certificateType) {
+        return updateAssessmentResponder.updateAssessment(
+                sourceSystemHsaId, anUpdateAssessmentType(sourceSystemHsaId, assessmentId, certificateType));
     }
 }

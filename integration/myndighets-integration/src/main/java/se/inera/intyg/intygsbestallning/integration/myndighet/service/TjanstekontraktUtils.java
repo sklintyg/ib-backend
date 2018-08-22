@@ -24,6 +24,7 @@ import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
 import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.ReportCareContactType;
 import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.ReportDeviationType;
 import se.riv.intygsbestallning.certificate.order.respondtoperformerrequest.v1.RespondToPerformerRequestType;
+import se.riv.intygsbestallning.certificate.order.updateassessment.v1.UpdateAssessmentType;
 import se.riv.intygsbestallning.certificate.order.v1.AddressType;
 import se.riv.intygsbestallning.certificate.order.v1.CareUnitType;
 import se.riv.intygsbestallning.certificate.order.v1.PerformerRequestResponseType;
@@ -43,8 +44,7 @@ public final class TjanstekontraktUtils {
     private static final String KV_TOLK_STATUS = "c074d6f5-fc15-4c10-bdd5-115e29888ff5";
     private static final String KV_DELTAGANDE_PROFESSION = "1.2.752.129.2.2.1.4";
     private static final String KV_SNOMED_CT = "1.2.752.116.2.1.1";
-
-    public static final String KV_INTYGSTYP = "b64ea353-e8f6-4832-b563-fc7d46f29548";
+    private static final String KV_INTYGSTYP = "b64ea353-e8f6-4832-b563-fc7d46f29548";
 
     private TjanstekontraktUtils() {
     }
@@ -96,7 +96,15 @@ public final class TjanstekontraktUtils {
         return request;
     }
 
-    public static AddressType anAddressType(final String postalAddress, final String postalCity, final String postalCode) {
+    public static UpdateAssessmentType anUpdateAssessmentType(
+            final String sourceSystemHsaId, final Long assessmentId, final String certificateType) {
+        UpdateAssessmentType request = new UpdateAssessmentType();
+        request.setAssessmentId(anII(sourceSystemHsaId, assessmentId.toString()));
+        request.setCertificateType(aCv(certificateType, KV_INTYGSTYP, null));
+        return request;
+    }
+
+    private static AddressType anAddressType(final String postalAddress, final String postalCity, final String postalCode) {
         AddressType adressType = new AddressType();
         adressType.setPostalAddress(postalAddress);
         adressType.setPostalCity(postalCity);
@@ -104,7 +112,7 @@ public final class TjanstekontraktUtils {
         return adressType;
     }
 
-    public static TimePeriodType aTimePeriod(final LocalDateTime start, final LocalDateTime end) {
+    private static TimePeriodType aTimePeriod(final LocalDateTime start, final LocalDateTime end) {
         TimePeriodType period = new TimePeriodType();
         period.setStart(SchemaDateUtil.toDateTimeStringFromLocalDateTime(start));
         period.setEnd(SchemaDateUtil.toDateTimeStringFromLocalDateTime(end));
