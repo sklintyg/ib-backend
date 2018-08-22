@@ -4,8 +4,8 @@
 $ib-header-unit-min-width: 120px;
 
 ib-header-unit {
-  //default is to act as a non-growing, shrinkable flex-item
-  flex: 0 1 auto;
+
+  flex: 1 1 auto;
   @media (max-width: $ib-header-collapse-breakpoint-width) {
     //but in compact mode, let it grow
     flex-grow: 1;
@@ -18,6 +18,10 @@ ib-header-unit {
 
   // but NOT a flex-container, bacause we want to be able to relativly position the menu below it when it expands..
   display: block;
+  position: relative;
+
+  // entire outer div i actually clickable, indicate that..
+  cursor: pointer;
 
   //base text color for this component
   color: $ib-color-20;
@@ -33,11 +37,27 @@ ib-header-unit {
     color: $ib-color-03;
   }
 
+  img.row-icon {
+    padding-right: 10px;
+  }
+  a.expand-settings-link {
+    text-align: left;
+
+  }
+
+  .dropdown {
+    position: absolute;
+    width: 100%;
+  }
+  .dropdown-menu > li > a {
+    padding-right: 0px;
+  }
+
 }
 
 .ib-header-unit-settings-dialog-window-class {
 
-    .modal-dialog {
+  .modal-dialog {
     width: 650px;
   }
   .modal-body {

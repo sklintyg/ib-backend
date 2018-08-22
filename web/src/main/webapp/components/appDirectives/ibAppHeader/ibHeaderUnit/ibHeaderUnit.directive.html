@@ -1,29 +1,29 @@
-<div class="ib-header-directive-container last" ng-class="{'expanded' : menu.expanded}">
+<div class="ib-header-directive-container last" ng-class="{'expanded' : menu.expanded}" ng-click="toggleMenu($event)">
 
-  <i class="header-icon icon-ib-ikon-14 icon-ib-32"></i>
-  <div class="vertical-container">
+  <img class="row-icon" src="/assets/images/icon-wc-ikon-14.png">
+  <div class="vertical-container dark">
     <!-- first item in vertical container -->
     <div class="single-text-row-container">
       <div class="text-nowrap vg-name" ng-if="getUser().currentlyLoggedInAt.parentName" ng-attr-id="ib-header-unit-parent-name">{{getUser().currentlyLoggedInAt.parentName}}&nbsp;-&nbsp;</div>
       <div class="truncate-when-needed ve-name" ng-attr-id="ib-header-unit-name">{{getUser().currentlyLoggedInAt.name}}</div>
     </div>
+    <!-- second item in vertical container -->
+    <a id="expand-unitmenu-btn" class="btn-link expand-settings-link" href="" ng-click="toggleMenu($event)">
+      Inställningar <i class="material-icons md-18">{{menu.expanded ? 'expand_less': 'expand_more'}}</i>
+    </a>
   </div>
-
-  <button type="button" id="expand-unitmenu-btn" class="btn btn-link" ng-click="toggleMenu($event)">
-    <i class="material-icons md-24">{{menu.expanded ? 'expand_less': 'expand_more'}}</i>
-  </button>
 </div>
 
 <!-- must be outside flex container to be able to relatively position it -->
 
 <div uib-dropdown is-open="menu.expanded">
   <ul uib-dropdown-menu ng-if="getUser().currentlyLoggedInAt.type ==='VE'">
-    <li><a href="" id="unitmenu-ve-notification-settings-link" ng-click="onEditNotifieringSettingsClick()">Notifieringsinställningar för vårdenheten</a></li>
-    <li><a href="" id="unitmenu-ve-contact-settings-link" ng-click="onVEContactSettingsClick('ENHET')">Kontaktuppgifter till vårdenheten</a></li>
-    <li><a href="" id="unitmenu-ul-contact-settings-link" ng-click="onVEContactSettingsClick('UNDERLEVERANTOR')">Kontaktuppgifter till underleverantör</a></li>
-    <li><a href="" id="unitmenu-ve-standardsvar-settings-link" ng-click="onVESvarSettingsClick()">Standardsvar för vårdenheten</a></li>
+    <li><a href="" class="truncate-when-needed" id="unitmenu-ve-notification-settings-link" ng-click="onEditNotifieringSettingsClick()">Notifieringsinställningar för vårdenheten</a></li>
+    <li><a href="" class="truncate-when-needed" id="unitmenu-ve-contact-settings-link" ng-click="onVEContactSettingsClick('ENHET')">Kontaktuppgifter till vårdenheten</a></li>
+    <li><a href="" class="truncate-when-needed" id="unitmenu-ul-contact-settings-link" ng-click="onVEContactSettingsClick('UNDERLEVERANTOR')">Kontaktuppgifter till underleverantör</a></li>
+    <li><a href="" class="truncate-when-needed" id="unitmenu-ve-standardsvar-settings-link" ng-click="onVESvarSettingsClick()">Standardsvar för vårdenheten</a></li>
   </ul>
   <ul uib-dropdown-menu ng-if="getUser().currentlyLoggedInAt.type ==='VG'">
-    <li><a href="" id="unitmenu-vg-notification-settings-link" ng-click="onEditNotifieringSettingsClick()">Notifieringsinställningar för landstinget</a></li>
+    <li><a href="" class="truncate-when-needed" id="unitmenu-vg-notification-settings-link" ng-click="onEditNotifieringSettingsClick()">Notifieringsinställningar för landstinget</a></li>
   </ul>
 </div>

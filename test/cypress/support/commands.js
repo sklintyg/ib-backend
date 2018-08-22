@@ -59,7 +59,7 @@ Cypress.Commands.add("visaVEKontaktInstallningModal", () => {
 Cypress.Commands.add("visaVEUnderleverantorKontaktInstallningModal", () => {
     cy.get('#expand-unitmenu-btn').click();
 cy.get('#unitmenu-ul-contact-settings-link').click();
-cy.get('#save-unit-settings-btn').should('be.visible');
+cy.get('#cancel-unit-settings-btn').should('be.visible');
 });
 
 Cypress.Commands.add("visaVESvarInstallningModal", () => {

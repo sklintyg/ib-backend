@@ -6,7 +6,7 @@ $ib-header-hamburger-width: 50px;
 ib-header-actions {
 
   //default is to act as a growing, shrinkable flex-item, taking excessive widths
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   justify-content: flex-end;
 
   @media (max-width: $ib-header-collapse-breakpoint-width) {
