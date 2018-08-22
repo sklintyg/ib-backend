@@ -88,8 +88,7 @@ public class XlsxExportServiceImpl extends BaseUtredningService implements XlsxE
     private static final String SHEET_TITLE_UTREDNINGAR = "Utredningar";
     private static final String JA = "Ja";
     private static final String NEJ = "Nej";
-    private static final String ROBOTO = "Roboto";
-    private static final String ROBOTO_MEDIUM = "Roboto Medium";
+    private static final String FONT_REGULAR = "Arial";
     private static final int PERSONID_YEAR_END_INDEX = 4;
     private static final int WARNING_FONT_SIZE = 12;
     private static final int MAINHEADER_FONT_SIZE = 12;
@@ -653,10 +652,10 @@ public class XlsxExportServiceImpl extends BaseUtredningService implements XlsxE
     }
 
     private void setupStyles(XSSFWorkbook wb) {
-        warningFont = buildFont(wb, WARNING_FONT_SIZE, ROBOTO_MEDIUM, WC_COLOR_11, false, false);
-        mainHeaderFont = buildFont(wb, MAINHEADER_FONT_SIZE, ROBOTO_MEDIUM, WC_COLOR_07, false, false);
-        subHeaderFont = buildFont(wb, SUBHEADER_FONT_SIZE, ROBOTO_MEDIUM, WC_COLOR_00, false, false);
-        valueFont = buildFont(wb, VALUE_FONT_SIZE, ROBOTO, WC_COLOR_07, false, false);
+        warningFont = buildFont(wb, WARNING_FONT_SIZE, FONT_REGULAR, WC_COLOR_11, false, false);
+        mainHeaderFont = buildFont(wb, MAINHEADER_FONT_SIZE, FONT_REGULAR, WC_COLOR_07, false, false);
+        subHeaderFont = buildFont(wb, SUBHEADER_FONT_SIZE, FONT_REGULAR, WC_COLOR_00, false, false);
+        valueFont = buildFont(wb, VALUE_FONT_SIZE, FONT_REGULAR, WC_COLOR_07, false, false);
 
         warningStyle = wb.createCellStyle();
         warningStyle.setFont(warningFont);
