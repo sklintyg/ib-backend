@@ -185,7 +185,11 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
         assertEquals(UtredningFas.UTREDNING, status.getUtredningFas());
         assertEquals(Actor.FK, status.getNextActor());
     }
-
+    /**
+     * Om man står i utredningsfasen får uppdatering beställning MED handlingar, skall man efter det vara i UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR,
+     * även om man tidigare var i UTREDNING_PAGAR.
+     * Se INTYG-6747.
+     */
     @Test
     public void testResolvesUppdateradBestallningVantarPaHandlingarWhenIngaUppdateradeHandlingarMottagna() {
         Utredning utr = buildBaseUtredning();
@@ -199,12 +203,43 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
                 .withUrsprung(HandlingUrsprungTyp.UPPDATERING)
                 .withInkomDatum(null)
                 .build());
-
+        utr.getBesokList().add(aBesok()
+                .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
+                .withDeltagareProfession(DeltagarProfessionTyp.FT)
+                .build());
         UtredningStatus status = testee.resolveStatus(utr);
         assertEquals(UtredningStatus.UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR, status);
         assertEquals(UtredningFas.UTREDNING, status.getUtredningFas());
         assertEquals(Actor.FK, status.getNextActor());
     }
+
+    /**
+     * Om man står i UTREDNING_PAGAR och gör en uppdatering UTAN handlingar, skall man även efter det vara kvar i UTREDNING_PAGAR.
+     * Se INTYG-6747.
+     */
+    @Test
+    public void testResolvesUtredningPagarWhenInUtredningPagarAndUppdateringUtanHandlingar() {
+        Utredning utr = buildBaseUtredning();
+        utr.getExternForfragan().map(ExternForfragan::getInternForfraganList)
+                .map(iff -> iff.add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now())));
+        utr.setBestallning(buildBestallning(LocalDateTime.now()));
+        utr.getIntygList().add(buildBestalltIntyg());
+        utr.getHandlingList().clear();
+        utr.getHandlingList().add(aHandling().withUrsprung(HandlingUrsprungTyp.BESTALLNING).build());
+        utr.getHandlingList().add(aHandling()
+                .withUrsprung(HandlingUrsprungTyp.UPPDATERING)
+                .withInkomDatum(LocalDateTime.now())
+                .build());
+        utr.getBesokList().add(aBesok()
+                .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
+                .withDeltagareProfession(DeltagarProfessionTyp.FT)
+                .build());
+        UtredningStatus status = testee.resolveStatus(utr);
+        assertEquals(UtredningStatus.UTREDNING_PAGAR, status);
+        assertEquals(UtredningFas.UTREDNING, status.getUtredningFas());
+        assertEquals(Actor.UTREDARE, status.getNextActor());
+    }
+
 
     @Test
     public void testResolvesBokaBesokWhenUppdateringHandlingIsInkommen() {

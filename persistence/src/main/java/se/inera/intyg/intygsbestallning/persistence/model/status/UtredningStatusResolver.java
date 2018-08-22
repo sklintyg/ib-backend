@@ -138,6 +138,8 @@ public class UtredningStatusResolver {
     private static Optional<UtredningStatus> handleUtredningFas(Utredning utredning) {
         Intyg intyg = utredning.getIntygList().stream().collect(MoreCollectors.onlyElement());
 
+        //Vi har alltid beställning i denna fas
+        Bestallning bestallning = utredning.getBestallning().get();
         // Skickat - ursprungsintyget är skickat.
         if (intyg.getSkickatDatum() != null && intyg.getMottagetDatum() == null) {
             return Optional.of(UtredningStatus.UTLATANDE_SKICKAT);
@@ -160,7 +162,7 @@ public class UtredningStatusResolver {
         // Om det INTE finns några besök bokade...
         if (utredning.getBesokList().size() == 0) {
             // BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR
-            Bestallning bestallning = utredning.getBestallning().get();
+
             if (utredning.getHandlingList().size() == 0 && bestallning.getUppdateradDatum() == null) {
                 return Optional.of(UtredningStatus.BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR);
             }
@@ -209,6 +211,12 @@ public class UtredningStatusResolver {
             }
         }
 
+        // Vi har en uppdaterad beställning, och väntar på handlingar för uppdateringen (INTYG-6747).
+        // Detta kan tex ske om vi får en updateOrder (med handlingar) när vi redan var i UTREDNING_PAGAR
+        if (vantarPaUppdateradeHandlingar(utredning)) {
+            return Optional.of(UtredningStatus.UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR);
+        }
+
         // UTREDNING_PAGAR innan något intyg has skickats.
         if (utredning.getBesokList().size() > 0
                 && intyg.getSkickatDatum() == null) {
@@ -252,6 +260,15 @@ public class UtredningStatusResolver {
         throw new IllegalStateException(MessageFormat.format("Invalid sub-state in phase FORFRAGAN! {0}", utredning));
     }
 
+    private static boolean vantarPaUppdateradeHandlingar(Utredning utredning) {
+        if (!utredning.getBestallning().isPresent()) {
+            return false;
+        }
+
+        return (utredning.getBestallning().get().getUppdateradDatum() != null
+                && utredning.getHandlingList().stream().anyMatch(
+                handling -> handling.getInkomDatum() == null && handling.getUrsprung().equals(HandlingUrsprungTyp.UPPDATERING)));
+    }
     private static boolean isAccepteradAndTilldelad(List<InternForfragan> internForfraganList) {
         return internForfraganList.stream().anyMatch(internForfragan -> internForfragan.getTilldeladDatum() != null
                 && internForfragan.getForfraganSvar().getSvarTyp() == SvarTyp.ACCEPTERA);
