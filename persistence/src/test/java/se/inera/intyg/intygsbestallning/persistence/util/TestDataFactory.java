@@ -69,6 +69,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 public final class TestDataFactory {
 
     public static final String VE_HSA_ID = "enhet-1";
+    public static final String VE_ORGNR = "orgnr-1";
     public static final String VG_HSA_ID = "vg-1";
 
     private TestDataFactory() {
@@ -151,6 +152,7 @@ public final class TestDataFactory {
                 .withPlaneradeAktiviteter("aktiviteter")
                 .withSyfte("syfte")
                 .withTilldeladVardenhetHsaId(VE_HSA_ID)
+                .withTilldeladVardenhetOrgNr(VE_ORGNR)
                 .build();
     }
 

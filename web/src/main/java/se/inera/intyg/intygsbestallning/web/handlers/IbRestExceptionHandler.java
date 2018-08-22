@@ -45,7 +45,8 @@ public class IbRestExceptionHandler {
         LOG.warn("Authorization exception occured! Internal error code: {} Error message: {}", e.getErrorCode(),
                 e.getMessage());
         IbRestExceptionResponse response =
-                new IbRestExceptionResponse(e.getErrorCode(), e.getMessage(), e.getErrorEntityId());
+                new IbAuthorizationRestExceptionResponse(e.getErrorCode(), e.getMessage(), e.getErrorEntityId(),
+                        e.getAuthorizationErrorCode());
         return response;
     }
 

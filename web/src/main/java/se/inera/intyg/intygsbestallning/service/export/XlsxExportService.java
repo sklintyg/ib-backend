@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.service.export;
 
+import se.inera.intyg.intygsbestallning.auth.model.IbVardenhet;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.ListAvslutadeBestallningarRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.ListBestallningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListAvslutadeUtredningarRequest;
@@ -26,6 +27,6 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.ListUtr
 public interface XlsxExportService {
     byte[] export(String loggedInAtHsaId, ListUtredningRequest request);
     byte[] export(String loggedInAtHsaId, ListAvslutadeUtredningarRequest request);
-    byte[] export(String loggedInAtHsaId, ListBestallningRequest request);
-    byte[] export(String loggedInAtHsaId, ListAvslutadeBestallningarRequest request);
+    byte[] export(IbVardenhet loggedInAt, ListBestallningRequest request);
+    byte[] export(IbVardenhet loggedInAt, ListAvslutadeBestallningarRequest request);
 }

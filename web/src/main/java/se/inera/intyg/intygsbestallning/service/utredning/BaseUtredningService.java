@@ -40,6 +40,9 @@ import se.inera.intyg.infra.integration.hsa.client.OrganizationUnitService;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
+import se.inera.intyg.intygsbestallning.auth.model.IbVardenhet;
+import se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType;
+import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
@@ -231,11 +234,36 @@ public abstract class BaseUtredningService {
     }
 
     protected void checkUserVardenhetTilldeladToBestallning(Utredning utredning) {
-        String userLoggedInAtHsaId = userService.getUser().getCurrentlyLoggedInAt().getId();
-        if (!utredning.getBestallning().get().getTilldeladVardenhetHsaId().equals(userLoggedInAtHsaId)) {
-            throw new IbAuthorizationException(MessageFormat.format(
+
+        // Verify that the current vardenhet has a Bestallning.
+        if (!utredning.getBestallning().isPresent()) {
+            throw new IbServiceException(IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
+                    "Utredning with assessmentId '" + utredning.getUtredningId() + "' does not have a Beställning.");
+        }
+
+        if (userService.getUser().getCurrentlyLoggedInAt().getType() != SelectableHsaEntityType.VE) {
+            String errorMsg = MessageFormat.format(
+                    "User is currently logged in at {0} of type {1} which is not VE",
+                    userService.getUser().getCurrentlyLoggedInAt().getId(), userService.getUser().getCurrentlyLoggedInAt().getId());
+            throw new IbAuthorizationException(IbAuthorizationErrorCodeEnum.VARDENHET_MISMATCH, errorMsg);
+        }
+
+        // UTRVE.FEL01 - Användaren är inte behörig att se utredningen utifrån vald systemroll
+        IbVardenhet userLoggedInAtVardenhet = (IbVardenhet) userService.getUser().getCurrentlyLoggedInAt();
+        if (!utredning.getBestallning().get().getTilldeladVardenhetHsaId().equals(userLoggedInAtVardenhet.getId())) {
+            String errorMsg = MessageFormat.format(
                     "User is currently logged in at {0} and is not tilldelad to bestallning for utredning with id {1}",
-                    userLoggedInAtHsaId, utredning.getUtredningId()));
+                    userLoggedInAtVardenhet.getId(), utredning.getUtredningId());
+            throw new IbAuthorizationException(IbAuthorizationErrorCodeEnum.VARDENHET_MISMATCH, errorMsg);
+        }
+
+        // UTRVE.FEL02 - Utredningens organisationsnummer matchar inte organisationsnumret för den vårdgivare som vårdenheten tillhör
+        if (!utredning.getBestallning().get().getTilldeladVardenhetOrgNr().equals(userLoggedInAtVardenhet.getVardgivareOrgnr())) {
+            String errorMsg = MessageFormat.format(
+                    "Access denied to utredning {0} tilldelad orgnr {1}. User is currently logged in with orgnr {2}",
+                    utredning.getUtredningId(), utredning.getBestallning().get().getTilldeladVardenhetOrgNr(),
+                    userLoggedInAtVardenhet.getVardgivareOrgnr());
+            throw new IbAuthorizationException(IbAuthorizationErrorCodeEnum.VARDGIVARE_ORGNR_MISMATCH, errorMsg);
         }
     }
 

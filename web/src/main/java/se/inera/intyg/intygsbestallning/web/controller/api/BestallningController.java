@@ -36,6 +36,7 @@ import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.intygsbestallning.auth.model.IbVardenhet;
 import se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
@@ -90,7 +91,7 @@ public class BestallningController {
         }
 
         GetBestallningListResponse bestallningar = bestallningService
-                .findOngoingBestallningarForVardenhet(user.getCurrentlyLoggedInAt().getId(), requestFilter);
+                .findOngoingBestallningarForVardenhet((IbVardenhet) user.getCurrentlyLoggedInAt(), requestFilter);
 
         return ResponseEntity.ok(bestallningar);
     }
@@ -105,7 +106,12 @@ public class BestallningController {
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_BESTALLNINGAR)
                 .orThrow(new IbAuthorizationException(MISSING_PRIVILEGE_LISTA_BESTALLNINGAR));
 
-        ListBestallningFilter listBestallningFilter = bestallningService.buildListBestallningFilter(user.getCurrentlyLoggedInAt().getId());
+        if (user.getCurrentlyLoggedInAt().getType() != SelectableHsaEntityType.VE) {
+            throw new IbAuthorizationException("User is not logged in at a Vårdenhet");
+        }
+
+        ListBestallningFilter listBestallningFilter = bestallningService.buildListBestallningFilter((IbVardenhet)
+                user.getCurrentlyLoggedInAt());
         return ResponseEntity.ok(listBestallningFilter);
     }
 
@@ -122,7 +128,7 @@ public class BestallningController {
         }
 
         GetAvslutadeBestallningarListResponse bestallningar = bestallningService
-                .findAvslutadeBestallningarForVardenhet(user.getCurrentlyLoggedInAt().getId(), request);
+                .findAvslutadeBestallningarForVardenhet((IbVardenhet) user.getCurrentlyLoggedInAt(), request);
 
         return ResponseEntity.ok(bestallningar);
     }
@@ -137,8 +143,12 @@ public class BestallningController {
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_BESTALLNINGAR)
                 .orThrow(new IbAuthorizationException(MISSING_PRIVILEGE_LISTA_BESTALLNINGAR));
 
+        if (user.getCurrentlyLoggedInAt().getType() != SelectableHsaEntityType.VE) {
+            throw new IbAuthorizationException("User is not logged in at a Vårdenhet");
+        }
+
         ListAvslutadeBestallningarFilter listAvslutadeBestallningarFilter = bestallningService
-                .buildListAvslutadeBestallningarFilter(user.getCurrentlyLoggedInAt().getId());
+                .buildListAvslutadeBestallningarFilter((IbVardenhet) user.getCurrentlyLoggedInAt());
         return ResponseEntity.ok(listAvslutadeBestallningarFilter);
     }
 
@@ -148,7 +158,7 @@ public class BestallningController {
         IbUser user = userService.getUser();
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_VISA_BESTALLNING)
                 .orThrow(new IbAuthorizationException("User does not have required privilege VISA_BESTALLNING"));
-        return ResponseEntity.ok(bestallningService.getBestallning(utredningsId, user.getCurrentlyLoggedInAt().getId()));
+        return ResponseEntity.ok(bestallningService.getBestallning(utredningsId, user.getCurrentlyLoggedInAt()));
     }
 
     @PrometheusTimeMethod
@@ -159,7 +169,7 @@ public class BestallningController {
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_BESTALLNINGAR)
                 .orThrow(new IbAuthorizationException("User does not have required privilege PRIVILEGE_LISTA_BESTALLNINGAR"));
 
-        bestallningService.saveFakturaVeIdForUtredning(utredningsId, request, user.getCurrentlyLoggedInAt().getId());
+        bestallningService.saveFakturaVeIdForUtredning(utredningsId, request, user.getCurrentlyLoggedInAt());
         return ResponseEntity.ok().build();
     }
 
@@ -196,7 +206,11 @@ public class BestallningController {
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_BESTALLNINGAR)
                 .orThrow(new IbAuthorizationException(MISSING_PRIVILEGE_LISTA_BESTALLNINGAR));
 
-        byte[] data = xlsxExportService.export(user.getCurrentlyLoggedInAt().getId(), req);
+        if (user.getCurrentlyLoggedInAt().getType() != SelectableHsaEntityType.VE) {
+            throw new IbAuthorizationException("User is not logged in at a Vårdenhet");
+        }
+
+        byte[] data = xlsxExportService.export((IbVardenhet) user.getCurrentlyLoggedInAt(), req);
 
         HttpHeaders respHeaders = ControllerHelper.getHttpHeaders("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 data.length, "bestallningar", ".xlsx", user);
@@ -211,7 +225,11 @@ public class BestallningController {
         authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_LISTA_BESTALLNINGAR)
                 .orThrow(new IbAuthorizationException(MISSING_PRIVILEGE_LISTA_BESTALLNINGAR));
 
-        byte[] data = xlsxExportService.export(user.getCurrentlyLoggedInAt().getId(), req);
+        if (user.getCurrentlyLoggedInAt().getType() != SelectableHsaEntityType.VE) {
+            throw new IbAuthorizationException("User is not logged in at a Vårdenhet");
+        }
+
+        byte[] data = xlsxExportService.export((IbVardenhet) user.getCurrentlyLoggedInAt(), req);
 
         HttpHeaders respHeaders = ControllerHelper.getHttpHeaders("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 data.length, "bestallningar", ".xlsx", user);

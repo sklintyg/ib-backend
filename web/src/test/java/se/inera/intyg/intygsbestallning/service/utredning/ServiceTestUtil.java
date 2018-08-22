@@ -45,8 +45,12 @@ public final class ServiceTestUtil {
     private static UtredningStatusResolver utredningStatusResolver = new UtredningStatusResolver();
 
     public static IbUser buildUser() {
+        return buildUser("careunit-1", "testorgnr");
+    }
+
+    public static IbUser buildUser(String enhetId, String vardenhetOrgnr) {
         IbUser user = new IbUser("user-1", "username");
-        user.setCurrentlyLoggedInAt(new IbVardenhet("careunit-1", "namnet", new IbVardgivare("vg", "namn", false)));
+        user.setCurrentlyLoggedInAt(new IbVardenhet(enhetId, "namnet", new IbVardgivare("vg", "namn", false), vardenhetOrgnr));
         return user;
     }
 
@@ -64,7 +68,8 @@ public final class ServiceTestUtil {
                             .withLandstingHsaId("vg-id")
                             .build())
                     .withBestallning(aBestallning()
-                            .withTilldeladVardenhetHsaId("enhet")
+                            .withTilldeladVardenhetHsaId("careunit-1")
+                            .withTilldeladVardenhetOrgNr("testorgnr")
                             .build())
                     .withInvanare(anInvanare().withPersonId("19121212-121" + a).build())
                     .withIntygList(Collections.singletonList(anIntyg()

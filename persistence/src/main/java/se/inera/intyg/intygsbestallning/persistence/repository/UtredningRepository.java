@@ -73,9 +73,9 @@ public interface UtredningRepository extends UtredningRepositoryCustom, JpaRepos
         "LEFT JOIN FETCH u.handlaggare h " +
         "LEFT JOIN FETCH u.betalning bet " +
         "WHERE u.arkiverad = true " +
-        "AND ( b.tilldeladVardenhetHsaId = :vardenhetHsaId " +
+        "AND ( (b.tilldeladVardenhetHsaId = :vardenhetHsaId AND b.tilldeladVardenhetOrgNr = :vardgivareOrgnr) " +
             "OR (iff.vardenhetHsaId = :vardenhetHsaId AND u.bestallning IS NULL))")
-    List<Utredning> findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradTrue(@Param("vardenhetHsaId") String vardenhetHsaId);
+    List<Utredning> findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradTrue(@Param("vardenhetHsaId") String vardenhetHsaId, @Param("vardgivareOrgnr") String vardgivareOrgnr);
 
     List<Utredning> findAllByExternForfragan_LandstingHsaId(String landstingHsaId);
 
@@ -88,14 +88,14 @@ public interface UtredningRepository extends UtredningRepositoryCustom, JpaRepos
      * @param vardenhetHsaId
      * @return
      */
-    @Query("SELECT u FROM Utredning u JOIN FETCH u.bestallning b LEFT JOIN FETCH u.invanare inv LEFT JOIN FETCH u.handlaggare h LEFT JOIN FETCH u.betalning bet WHERE u.arkiverad = false AND b.tilldeladVardenhetHsaId = :vardenhetHsaId")
-    List<Utredning> findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(@Param("vardenhetHsaId") String vardenhetHsaId);
+    @Query("SELECT u FROM Utredning u JOIN FETCH u.bestallning b LEFT JOIN FETCH u.invanare inv LEFT JOIN FETCH u.handlaggare h LEFT JOIN FETCH u.betalning bet WHERE u.arkiverad = false AND b.tilldeladVardenhetHsaId = :vardenhetHsaId AND b.tilldeladVardenhetOrgNr = :vardgivareOrgnr")
+    List<Utredning> findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(@Param("vardenhetHsaId") String vardenhetHsaId, @Param("vardgivareOrgnr") String vardgivareOrgnr);
 
-    @Query("SELECT ef.landstingHsaId FROM Utredning u JOIN u.bestallning b JOIN u.externForfragan ef WHERE b.tilldeladVardenhetHsaId = :vardenhetHsaId")
-    List<String> findDistinctLandstingHsaIdByVardenhetHsaIdHavingBestallning(@Param("vardenhetHsaId") String vardenhetHsaId);
+    @Query("SELECT ef.landstingHsaId FROM Utredning u JOIN u.bestallning b JOIN u.externForfragan ef WHERE b.tilldeladVardenhetHsaId = :vardenhetHsaId AND b.tilldeladVardenhetOrgNr = :vardgivareOrgnr")
+    List<String> findDistinctLandstingHsaIdByVardenhetHsaIdHavingBestallning(@Param("vardenhetHsaId") String vardenhetHsaId, @Param("vardgivareOrgnr") String vardgivareOrgnr);
 
-    @Query("SELECT ef.landstingHsaId FROM Utredning u JOIN u.bestallning b JOIN u.externForfragan ef WHERE b.tilldeladVardenhetHsaId = :vardenhetHsaId AND u.arkiverad = true")
-    List<String> findDistinctLandstingHsaIdByVardenhetHsaIdHavingBestallningAndIsArkiverad(@Param("vardenhetHsaId") String vardenhetHsaId);
+    @Query("SELECT ef.landstingHsaId FROM Utredning u JOIN u.bestallning b JOIN u.externForfragan ef WHERE b.tilldeladVardenhetHsaId = :vardenhetHsaId AND b.tilldeladVardenhetOrgNr = :vardgivareOrgnr AND u.arkiverad = true")
+    List<String> findDistinctLandstingHsaIdByVardenhetHsaIdHavingBestallningAndIsArkiverad(@Param("vardenhetHsaId") String vardenhetHsaId, @Param("vardgivareOrgnr") String vardgivareOrgnr);
 
     @Query("SELECT MAX(il.id) FROM Utredning u JOIN u.intygList il WHERE il.komplettering = true")
     Optional<Long> findNewestKompletteringOnUtredning(Long utredningId);

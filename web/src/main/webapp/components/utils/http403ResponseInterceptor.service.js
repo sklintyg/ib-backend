@@ -60,8 +60,14 @@ angular.module('ibApp').provider('http403ResponseInterceptor',
                 // for 403 responses - redirect browser to configured redirect url
                 if (rejection.status === 403) {
 
-                    UserModel.get().loggedIn = false;
-                    $window.location.href = config.redirectUrl;
+                    if (angular.isObject(rejection.data) && rejection.data.authorizationErrorCode === 'VARDENHET_MISMATCH') {
+                        $window.location.href = '/?reason=denied-vardenhet';
+                    } else if (angular.isObject(rejection.data) && rejection.data.authorizationErrorCode === 'VARDGIVARE_ORGNR_MISMATCH') {
+                        $window.location.href = '/?reason=denied-vardgivare-orgnr';
+                    } else {
+                        UserModel.get().loggedIn = false;
+                        $window.location.href = config.redirectUrl;
+                    }
                 }
                 // signal rejection (arguably not meaningful here since we just
                 // issued a redirect)

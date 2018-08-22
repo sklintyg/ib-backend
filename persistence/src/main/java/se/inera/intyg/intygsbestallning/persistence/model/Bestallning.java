@@ -51,6 +51,9 @@ public final class Bestallning {
     @Column(name = "TILLDELAD_VARDENHET_HSA_ID", nullable = false)
     private String tilldeladVardenhetHsaId;
 
+    @Column(name = "TILLDELAD_VARDENHET_ORG_NR", nullable = false)
+    private String tilldeladVardenhetOrgNr;
+
     @Column(name = "ORDER_DATUM")
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime orderDatum;
@@ -81,6 +84,7 @@ public final class Bestallning {
         return aBestallning()
                 .withId(bestallning.getId())
                 .withTilldeladVardenhetHsaId(bestallning.getTilldeladVardenhetHsaId())
+                .withTilldeladVardenhetOrgNr(bestallning.getTilldeladVardenhetOrgNr())
                 .withOrderDatum(bestallning.getOrderDatum())
                 .withUppdateradDatum(bestallning.getUppdateradDatum())
                 .withSyfte(bestallning.getSyfte())
@@ -103,6 +107,14 @@ public final class Bestallning {
 
     public void setTilldeladVardenhetHsaId(String tilldeladVardenhetHsaId) {
         this.tilldeladVardenhetHsaId = tilldeladVardenhetHsaId;
+    }
+
+    public String getTilldeladVardenhetOrgNr() {
+        return tilldeladVardenhetOrgNr;
+    }
+
+    public void setTilldeladVardenhetOrgNr(String tilldeladVardenhetOrgNr) {
+        this.tilldeladVardenhetOrgNr = tilldeladVardenhetOrgNr;
     }
 
     public LocalDateTime getOrderDatum() {
@@ -148,6 +160,7 @@ public final class Bestallning {
     public static final class BestallningBuilder {
         private Long id;
         private String tilldeladVardenhetHsaId;
+        private String tilldeladVardenhetOrgNr;
         private LocalDateTime orderDatum;
         private LocalDateTime uppdateradDatum;
         private String syfte;
@@ -168,6 +181,11 @@ public final class Bestallning {
 
         public BestallningBuilder withTilldeladVardenhetHsaId(String tilldeladVardenhetHsaId) {
             this.tilldeladVardenhetHsaId = tilldeladVardenhetHsaId;
+            return this;
+        }
+
+        public BestallningBuilder withTilldeladVardenhetOrgNr(String tilldeladVardenhetOrgNr) {
+            this.tilldeladVardenhetOrgNr = tilldeladVardenhetOrgNr;
             return this;
         }
 
@@ -200,6 +218,7 @@ public final class Bestallning {
             Bestallning bestallning = new Bestallning();
             bestallning.setId(id);
             bestallning.setTilldeladVardenhetHsaId(tilldeladVardenhetHsaId);
+            bestallning.setTilldeladVardenhetOrgNr(tilldeladVardenhetOrgNr);
             bestallning.setOrderDatum(orderDatum);
             bestallning.setUppdateradDatum(uppdateradDatum);
             bestallning.setSyfte(syfte);
@@ -220,6 +239,7 @@ public final class Bestallning {
         final Bestallning that = (Bestallning) o;
         return Objects.equals(id, that.id)
                 && Objects.equals(tilldeladVardenhetHsaId, that.tilldeladVardenhetHsaId)
+                && Objects.equals(tilldeladVardenhetOrgNr, that.tilldeladVardenhetOrgNr)
                 && Objects.equals(orderDatum, that.orderDatum)
                 && Objects.equals(uppdateradDatum, that.uppdateradDatum)
                 && Objects.equals(syfte, that.syfte)
@@ -230,7 +250,8 @@ public final class Bestallning {
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, tilldeladVardenhetHsaId, orderDatum, uppdateradDatum, syfte, planeradeAktiviteter, bestallningHistorikList);
+        return Objects.hash(id, tilldeladVardenhetHsaId, tilldeladVardenhetOrgNr, orderDatum, uppdateradDatum, syfte, planeradeAktiviteter,
+                bestallningHistorikList);
     }
 
     @Override
@@ -238,6 +259,7 @@ public final class Bestallning {
         return MoreObjects.toStringHelper(this)
                 .add("id", id)
                 .add("tilldeladVardenhetHsaId", tilldeladVardenhetHsaId)
+                .add("tilldeladVardenhetOrgNr", tilldeladVardenhetOrgNr)
                 .add("orderDatum", orderDatum)
                 .add("uppdateradDatum", uppdateradDatum)
                 .add("syfte", syfte)

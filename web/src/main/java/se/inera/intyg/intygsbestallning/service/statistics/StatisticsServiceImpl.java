@@ -21,6 +21,7 @@ package se.inera.intyg.intygsbestallning.service.statistics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import se.inera.intyg.intygsbestallning.auth.model.IbVardenhet;
 import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
@@ -65,20 +66,20 @@ public class StatisticsServiceImpl implements StatisticsService {
     }
 
     @Override
-    public VardadminStatisticsResponse getStatsForVardadmin(String enhetsHsaId) {
+    public VardadminStatisticsResponse getStatsForVardadmin(IbVardenhet enhet) {
 
         // Calculate nr of forfragningar for this vardenhet where next actor is VARDADMIN
         long forfraganRequiringActionCount = utredningRepository
-                .findAllByExternForfragan_InternForfraganList_VardenhetHsaId_AndArkiveradFalse(enhetsHsaId)
+                .findAllByExternForfragan_InternForfraganList_VardenhetHsaId_AndArkiveradFalse(enhet.getId())
                 .stream()
-                .map(utr -> internForfraganListItemFactory.from(utr, enhetsHsaId))
+                .map(utr -> internForfraganListItemFactory.from(utr, enhet.getId()))
                 .filter(ffli -> ffli.getStatus().getNextActor().equals(Actor.VARDADMIN))
                 .count();
 
         // Calculate nr of bestallningar for this vardenhet where action is required from actor VARDADMIN and not in AVSLUTAD or
         // FORFRAGAN fas.
         long bestallningarRequiringActionCount = utredningRepository
-                .findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(enhetsHsaId)
+                .findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(enhet.getId(), enhet.getVardgivareOrgnr())
                 .stream()
                 .map(u -> bestallningListItemFactory.from(u, Actor.VARDADMIN))
                 .filter(bli -> bli.getKraverAtgard() && !bli.getFas().equals(UtredningFas.AVSLUTAD)

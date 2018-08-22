@@ -42,6 +42,7 @@ import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.Utred
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,9 +58,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
+import se.inera.intyg.intygsbestallning.common.exception.IbExternalServiceException;
+import se.inera.intyg.intygsbestallning.common.exception.IbExternalSystemEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
@@ -112,6 +116,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.SaveFak
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.UtredningListItemFactory;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
+import se.riv.infrastructure.directory.organization.gethealthcareunitresponder.v1.HealthCareUnitType;
 
 @Service
 @Transactional
@@ -312,6 +317,8 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .withKomplettering(false)
                 .withSistaDatum(order.getLastDateIntyg().atStartOfDay())
                 .build());
+
+        updateOrgNrFromVardenhetHsaId(utredning.getBestallning().get());
 
         updateInvanareFromOrder(utredning.getInvanare(), order);
 
@@ -814,6 +821,27 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .filter(isSkickadPaminnelseNotifiering(intygsId.get()))
                 .collect(toOptional())
                 .ifPresent(SkickadNotifiering::ersatts));
+    }
+
+    private void updateOrgNrFromVardenhetHsaId(Bestallning bestallning) {
+        try {
+            HealthCareUnitType vardenhet = organizationUnitService.getHealthCareUnit(bestallning.getTilldeladVardenhetHsaId());
+            if (vardenhet == null || StringUtils.isBlank(vardenhet.getHealthCareProviderOrgNo())) {
+                LOG.error("Failed to lookup orgnr for vardenhet " + bestallning.getTilldeladVardenhetHsaId());
+                throw new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.HSA,
+                        "Det uppstod ett fel när HSA Katalogen anropades. Beställningen kunde därför inte tas emot.", null);
+            }
+            bestallning.setTilldeladVardenhetOrgNr(vardenhet.getHealthCareProviderOrgNo());
+        } catch (HsaServiceCallException e) {
+            LOG.error("Failed to lookup orgnr for vardenhet " + bestallning.getTilldeladVardenhetHsaId(), e);
+            if (e.getErroIdEnum() == HsaServiceCallException.ErrorIdEnum.APPLICATION_ERROR) {
+                throw new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.HSA,
+                        "Det uppstod ett fel när HSA Katalogen anropades. Beställningen kunde därför inte tas emot.", null);
+            } else {
+                throw new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.HSA,
+                        "Received technical error from HSA", null);
+            }
+        }
     }
 
     private Invanare updateInvanareFromOrder(final Invanare invanare, OrderRequest order) {

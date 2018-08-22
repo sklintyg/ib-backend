@@ -93,6 +93,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 public class UtredningRepositoryTest {
 
     private static final String VE_HSA_ID = "enhet-1";
+    private static final String VE_ORGNR = "orgnr-1";
     private static final String VG_HSA_ID = "vg-1";
 
     @Autowired
@@ -297,13 +298,13 @@ public class UtredningRepositoryTest {
         utr.setArkiverad(true);
         utredningRepository.save(utr);
 
-        List<Utredning> resultList = utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(VE_HSA_ID);
+        List<Utredning> resultList = utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(VE_HSA_ID, VE_ORGNR);
         assertNotNull(resultList);
         assertTrue(resultList.isEmpty());
 
         utr.setArkiverad(false);
         utredningRepository.save(utr);
-        resultList = utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(VE_HSA_ID);
+        resultList = utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(VE_HSA_ID, VE_ORGNR);
         assertEquals(1, resultList.size());
         assertNotNull(resultList.get(0).getBestallning());
 
@@ -315,7 +316,7 @@ public class UtredningRepositoryTest {
         utr.setBestallning(buildBestallning());
         utredningRepository.save(utr);
 
-        List<Utredning> resultList = utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(VE_HSA_ID);
+        List<Utredning> resultList = utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(VE_HSA_ID, VE_ORGNR);
         assertEquals(1, resultList.size());
         assertNotNull(resultList.get(0).getBestallning());
     }

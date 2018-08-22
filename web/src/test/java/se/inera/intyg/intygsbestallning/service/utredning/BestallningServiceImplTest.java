@@ -27,6 +27,14 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
+import se.inera.intyg.intygsbestallning.auth.IbUser;
+import se.inera.intyg.intygsbestallning.auth.model.IbVardenhet;
+import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationErrorCodeEnum;
+import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
+import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
+import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
+import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.patient.PatientNameEnricher;
 import se.inera.intyg.intygsbestallning.service.pdl.LogService;
@@ -36,17 +44,22 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.Avslu
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.BestallningListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.BestallningListItemFactory;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.GetBestallningListResponse;
+import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.GetBestallningResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.ListBestallningRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.filter.ListFilterStatus;
 
 import java.util.List;
+import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+import static se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus.FORFRAGAN_INKOMMEN;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BestallningServiceImplTest {
@@ -91,8 +104,8 @@ public class BestallningServiceImplTest {
     @Test
     public void testFilterListBestallningar() {
         when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
-        when(utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(anyString())).thenReturn(ServiceTestUtil.buildBestallningar(7));
-        GetBestallningListResponse response = bestallningService.findOngoingBestallningarForVardenhet("enhet",
+        when(utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(anyString(), anyString())).thenReturn(ServiceTestUtil.buildBestallningar(7));
+        GetBestallningListResponse response = bestallningService.findOngoingBestallningarForVardenhet((IbVardenhet) ServiceTestUtil.buildUser().getCurrentlyLoggedInAt(),
                 buildFilter(ListFilterStatus.ALL));
         assertEquals(7, response.getTotalCount());
     }
@@ -100,8 +113,8 @@ public class BestallningServiceImplTest {
     @Test
     public void testFilterListBestallningarOrderByDesc() {
         when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
-        when(utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(anyString())).thenReturn(ServiceTestUtil.buildBestallningar(7));
-        GetBestallningListResponse response = bestallningService.findOngoingBestallningarForVardenhet("enhet",
+        when(utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(anyString(), anyString())).thenReturn(ServiceTestUtil.buildBestallningar(7));
+        GetBestallningListResponse response = bestallningService.findOngoingBestallningarForVardenhet((IbVardenhet) ServiceTestUtil.buildUser().getCurrentlyLoggedInAt(),
                 buildFilter(ListFilterStatus.ALL, null, null, "patientId", false));
         assertEquals(7, response.getTotalCount());
 
@@ -116,18 +129,53 @@ public class BestallningServiceImplTest {
     @Test
     public void testFilterListBestallningarWithFreeTextMatchingSingleBestallningInvanarId() {
         when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
-        when(utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(anyString())).thenReturn(ServiceTestUtil.buildBestallningar(7));
-        GetBestallningListResponse response = bestallningService.findOngoingBestallningarForVardenhet("enhet",
+        when(utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(anyString(), anyString())).thenReturn(ServiceTestUtil.buildBestallningar(7));
+        GetBestallningListResponse response = bestallningService.findOngoingBestallningarForVardenhet((IbVardenhet) ServiceTestUtil.buildUser().getCurrentlyLoggedInAt(),
                 buildFilter(ListFilterStatus.ALL, "19121212-1216"));
         assertEquals(1, response.getTotalCount());
     }
 
     @Test
     public void testFilterListBestallningarWithUnknownVg() {
-        when(utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(anyString())).thenReturn(ServiceTestUtil.buildBestallningar(7));
-        GetBestallningListResponse response = bestallningService.findOngoingBestallningarForVardenhet("enhet",
+        when(utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(anyString(), anyString())).thenReturn(ServiceTestUtil.buildBestallningar(7));
+        GetBestallningListResponse response = bestallningService.findOngoingBestallningarForVardenhet((IbVardenhet) ServiceTestUtil.buildUser().getCurrentlyLoggedInAt(),
                 buildFilter(ListFilterStatus.ALL, null, "vg-other"));
         assertEquals(0, response.getTotalCount());
+    }
+
+    @Test
+    public void testGetBestallning() {
+        when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
+        when(utredningRepository.findById(anyLong())).thenReturn(Optional.of(ServiceTestUtil.buildBestallningar(1).get(0)));
+
+        GetBestallningResponse response = bestallningService.getBestallning(0L, ServiceTestUtil.buildUser().getCurrentlyLoggedInAt());
+    }
+
+    @Test(expected = IbNotFoundException.class)
+    public void testGetBestallninNotFound() {
+        GetBestallningResponse response = bestallningService.getBestallning(0L, ServiceTestUtil.buildUser().getCurrentlyLoggedInAt());
+    }
+
+    @Test
+    public void testGetBestallningDifferentVE() {
+        IbUser user = ServiceTestUtil.buildUser("another-ve", "");
+        when(userService.getUser()).thenReturn(user);
+        when(utredningRepository.findById(anyLong())).thenReturn(Optional.of(ServiceTestUtil.buildBestallningar(1).get(0)));
+
+        assertThatThrownBy(() -> bestallningService.getBestallning(0L, user.getCurrentlyLoggedInAt()))
+                .isExactlyInstanceOf(IbAuthorizationException.class)
+                .hasFieldOrPropertyWithValue("authorizationErrorCode", IbAuthorizationErrorCodeEnum.VARDENHET_MISMATCH);
+    }
+
+    @Test
+    public void testGetBestallningOrgnrChanged() {
+        IbUser user = ServiceTestUtil.buildUser("careunit-1", "another-orgnr");
+        when(userService.getUser()).thenReturn(user);
+        when(utredningRepository.findById(anyLong())).thenReturn(Optional.of(ServiceTestUtil.buildBestallningar(1).get(0)));
+
+        assertThatThrownBy(() -> bestallningService.getBestallning(0L, user.getCurrentlyLoggedInAt()))
+                .isExactlyInstanceOf(IbAuthorizationException.class)
+                .hasFieldOrPropertyWithValue("authorizationErrorCode", IbAuthorizationErrorCodeEnum.VARDGIVARE_ORGNR_MISMATCH);
     }
 
     private ListBestallningRequest buildFilter(ListFilterStatus status, String freeText, String vgId, String orderBy, boolean isAsc) {

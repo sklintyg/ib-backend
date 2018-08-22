@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import se.inera.intyg.intygsbestallning.auth.model.IbVardenhet;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
@@ -203,10 +204,10 @@ public class XlsxExportServiceImpl extends BaseUtredningService implements XlsxE
     }
 
     @Override
-    public byte[] export(String loggedInAtHsaId, ListBestallningRequest request) {
+    public byte[] export(IbVardenhet loggedInAt, ListBestallningRequest request) {
         request.setPerformPaging(false);
         List<BestallningListItem> bestallningar = bestallningService
-                .findOngoingBestallningarForVardenhet(loggedInAtHsaId, request)
+                .findOngoingBestallningarForVardenhet(loggedInAt, request)
                 .getBestallningar();
         // findOngoingBestallningarForVardenhet doesn't set vardenhet, so we need to do that here
         setVardenhetOnUtredningList(bestallningar);
@@ -214,10 +215,10 @@ public class XlsxExportServiceImpl extends BaseUtredningService implements XlsxE
     }
 
     @Override
-    public byte[] export(String loggedInAtHsaId, ListAvslutadeBestallningarRequest request) {
+    public byte[] export(IbVardenhet loggedInAt, ListAvslutadeBestallningarRequest request) {
         request.setPerformPaging(false);
         List<AvslutadBestallningListItem> bestallningar = bestallningService
-                .findAvslutadeBestallningarForVardenhet(loggedInAtHsaId, request)
+                .findAvslutadeBestallningarForVardenhet(loggedInAt, request)
                 .getBestallningar();
         // findAvslutadeBestallningarForVardenhet doesn't set vardenhet, so we need to do that here
         setVardenhetOnUtredningList(bestallningar);

@@ -27,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
+import se.inera.intyg.intygsbestallning.auth.model.IbVardenhet;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
@@ -63,6 +64,7 @@ public class StatisticsServiceImplTest {
 
     private static final String VG_ID = "VG-HsaId1";
     private static final String VE_ID = "VE-HsaId1";
+    private static final String VE_ORGNR = "VE-OrgNr1";
 
     private static final UtredningStatusResolver utredningStatusResolver = new UtredningStatusResolver();
 
@@ -162,9 +164,9 @@ public class StatisticsServiceImplTest {
         List<Utredning> bestallningsUtredningar = buildBestallningar(4, true);
         // Add one that will resolve to the an irrelevant status
         bestallningsUtredningar.addAll(buildBestallningar(1, false));
-        when(utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(VE_ID)).thenReturn(bestallningsUtredningar);
+        when(utredningRepository.findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(VE_ID, VE_ORGNR)).thenReturn(bestallningsUtredningar);
 
-        final VardadminStatisticsResponse statsForVardadmin = testee.getStatsForVardadmin(VE_ID);
+        final VardadminStatisticsResponse statsForVardadmin = testee.getStatsForVardadmin(new IbVardenhet(VE_ID, "", null, VE_ORGNR));
 
         assertNotNull(statsForVardadmin);
         assertEquals(3, statsForVardadmin.getForfraganRequiringActionCount());

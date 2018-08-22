@@ -29,6 +29,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -76,6 +77,7 @@ import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
+import se.riv.infrastructure.directory.organization.gethealthcareunitresponder.v1.HealthCareUnitType;
 import se.riv.infrastructure.directory.organization.getunitresponder.v1.UnitType;
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
 import se.riv.intygsbestallning.certificate.order.v1.AuthorityAdministrativeOfficialType;
@@ -173,7 +175,7 @@ public class UtredningServiceImplTest {
     }
 
     @Test
-    public void registerOrder() {
+    public void registerOrder() throws HsaServiceCallException {
         final Long utredningId = 1L;
 
         when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
@@ -184,6 +186,10 @@ public class UtredningServiceImplTest {
                         .build())
                 .withExternForfragan(anExternForfragan().build())
                 .build()));
+
+        HealthCareUnitType healthCareUnitType = new HealthCareUnitType();
+        healthCareUnitType.setHealthCareProviderOrgNo("testorgnr");
+        when(organizationUnitService.getHealthCareUnit(anyString())).thenReturn(healthCareUnitType);
 
         OrderRequest order = anOrderRequest()
                 .withUtredningsTyp(AFU)

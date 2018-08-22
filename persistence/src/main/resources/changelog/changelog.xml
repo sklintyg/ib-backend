@@ -972,4 +972,12 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="7" author="pb">
+        <addColumn tableName="BESTALLNING">
+            <column name="TILLDELAD_VARDENHET_ORG_NR" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

@@ -16,22 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.common.exception;
+package se.inera.intyg.intygsbestallning.web.handlers;
 
-public class IbAuthorizationException extends IbServiceException {
+import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationErrorCodeEnum;
+import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
+
+public class IbAuthorizationRestExceptionResponse extends IbRestExceptionResponse {
 
     private IbAuthorizationErrorCodeEnum authorizationErrorCode;
 
-    public IbAuthorizationException(String message) {
-        super(IbErrorCodeEnum.UNAUTHORIZED, message);
-        this.authorizationErrorCode = IbAuthorizationErrorCodeEnum.GENERAL;
-    }
-    public IbAuthorizationException(IbAuthorizationErrorCodeEnum authorizationErrorCode, String message) {
-        super(IbErrorCodeEnum.UNAUTHORIZED, message);
-        this.authorizationErrorCode = authorizationErrorCode;
-    }
-    public IbAuthorizationException(IbAuthorizationErrorCodeEnum authorizationErrorCode, String message, Long errorEntityId) {
-        super(IbErrorCodeEnum.UNAUTHORIZED, message, errorEntityId);
+    public IbAuthorizationRestExceptionResponse(IbErrorCodeEnum errorCode, String message, Long errorEntityId,
+                                                IbAuthorizationErrorCodeEnum authorizationErrorCode) {
+        super(errorCode, message, errorEntityId);
         this.authorizationErrorCode = authorizationErrorCode;
     }
 

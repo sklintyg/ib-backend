@@ -24,6 +24,18 @@
         <p>Gå tillbaka till <a href="/">startsidan</a></p>
       </div>
 
+      <div ng-switch-when="denied-vardenhet">
+        <h2>Åtkomst nekas</h2>
+        <p>	Du saknar behörighet för att se den valda utredningen. Det kan bero på att du inte har rätt systemroll eller saknar ett medarbetaruppdrag.</p>
+        <p>Gå tillbaka till <a href="/">startsidan</a></p>
+      </div>
+
+      <div ng-switch-when="denied-vardgivare-orgnr">
+        <h2>Åtkomst nekas</h2>
+        <p>Utredningen tillhör en annan vårdgivare. Det beror troligen på att vårdenheten har bytt vårdgivare efter det att utredningen tilldelades.</p>
+        <p>Gå tillbaka till <a href="/">startsidan</a></p>
+      </div>
+
 
       <div ng-switch-when="notfound">
         <h2>Sidan finns inte</h2>

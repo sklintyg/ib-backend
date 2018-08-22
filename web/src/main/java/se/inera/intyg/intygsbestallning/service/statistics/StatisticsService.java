@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.service.statistics;
 
+import se.inera.intyg.intygsbestallning.auth.model.IbVardenhet;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.statistics.SamordnarStatisticsResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.statistics.VardadminStatisticsResponse;
 
@@ -42,5 +43,5 @@ public interface StatisticsService {
      * @param enhetsHsaId
      * @return
      */
-    VardadminStatisticsResponse getStatsForVardadmin(String enhetsHsaId);
+    VardadminStatisticsResponse getStatsForVardadmin(IbVardenhet vardenhet);
 }

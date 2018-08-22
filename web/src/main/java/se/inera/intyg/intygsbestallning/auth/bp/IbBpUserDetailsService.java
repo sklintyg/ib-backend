@@ -64,7 +64,7 @@ public class IbBpUserDetailsService extends IbUserDetailsService {
         for (Vardgivare vg : user.getVardgivare()) {
             IbVardgivare ibVardgivare = new IbVardgivare(vg.getId(), vg.getNamn(), false);
             for (Vardenhet ve : vg.getVardenheter()) {
-                ibVardgivare.getVardenheter().add(new IbVardenhet(ve.getId(), ve.getNamn(), ibVardgivare));
+                ibVardgivare.getVardenheter().add(new IbVardenhet(ve.getId(), ve.getNamn(), ibVardgivare, ve.getVardgivareOrgnr()));
             }
             authSystemTree.add(ibVardgivare);
         }

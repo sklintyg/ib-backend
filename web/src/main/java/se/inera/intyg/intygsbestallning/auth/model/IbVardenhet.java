@@ -28,14 +28,16 @@ public class IbVardenhet implements IbSelectableHsaEntity {
     private String name;
 
     private IbVardgivare parent;
+    private String vardgivareOrgnr;
 
     private IbVardenhet() {
     }
 
-    public IbVardenhet(String id, String name, IbVardgivare parent) {
+    public IbVardenhet(String id, String name, IbVardgivare parent, String vardgivareOrgnr) {
         this.id = id;
         this.name = name;
         this.parent = parent;
+        this.vardgivareOrgnr = vardgivareOrgnr;
     }
 
     @Override
@@ -70,7 +72,13 @@ public class IbVardenhet implements IbSelectableHsaEntity {
         this.parent = parent;
     }
 
+    public String getVardgivareOrgnr() {
+        return vardgivareOrgnr;
+    }
 
+    public void setVardgivareOrgnr(String vardgivareOrgnr) {
+        this.vardgivareOrgnr = vardgivareOrgnr;
+    }
 
     @Override
     public boolean equals(Object o) {

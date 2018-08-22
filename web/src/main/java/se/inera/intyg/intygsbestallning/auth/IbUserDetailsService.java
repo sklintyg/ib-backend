@@ -189,14 +189,16 @@ public class IbUserDetailsService extends BaseUserDetailsService implements SAML
                     if (!authSystemTree.contains(ibVardgivareForVardadmin)) {
                         // Add the VE...
 
-                        ibVardgivareForVardadmin.getVardenheter().add(new IbVardenhet(ve.getId(), ve.getNamn(), ibVardgivareForVardadmin));
+                        ibVardgivareForVardadmin.getVardenheter().add(new IbVardenhet(ve.getId(), ve.getNamn(), ibVardgivareForVardadmin,
+                                ve.getVardgivareOrgnr()));
 
                         authSystemTree.add(ibVardgivareForVardadmin);
                     } else {
                         // Find the existing entry.
                         for (IbVardgivare existingIbVardgivare : authSystemTree) {
                             if (existingIbVardgivare.getId().equalsIgnoreCase(vg.getId())) {
-                                existingIbVardgivare.getVardenheter().add(new IbVardenhet(ve.getId(), ve.getNamn(), existingIbVardgivare));
+                                existingIbVardgivare.getVardenheter().add(new IbVardenhet(ve.getId(), ve.getNamn(), existingIbVardgivare,
+                                        ve.getVardgivareOrgnr()));
                             }
                         }
                     }

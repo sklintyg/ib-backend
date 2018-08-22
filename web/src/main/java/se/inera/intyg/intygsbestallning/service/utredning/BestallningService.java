@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
+import se.inera.intyg.intygsbestallning.auth.model.IbSelectableHsaEntity;
+import se.inera.intyg.intygsbestallning.auth.model.IbVardenhet;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.GetAvslutadeBestallningarListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.GetBestallningListResponse;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.bestallning.GetBestallningResponse;
@@ -35,7 +37,7 @@ public interface BestallningService {
      * @param requestFilter
      * @return
      */
-    GetBestallningListResponse findOngoingBestallningarForVardenhet(String vardenhetHsaId, ListBestallningRequest requestFilter);
+    GetBestallningListResponse findOngoingBestallningarForVardenhet(IbVardenhet vardenhet, ListBestallningRequest requestFilter);
 
     /**
      * Ends the utredning with the reason if available.
@@ -43,21 +45,21 @@ public interface BestallningService {
      * @param vardenhetHsaId
      * @return
      */
-    ListBestallningFilter buildListBestallningFilter(String vardenhetHsaId);
+    ListBestallningFilter buildListBestallningFilter(IbVardenhet vardenhet);
 
-    GetAvslutadeBestallningarListResponse findAvslutadeBestallningarForVardenhet(String vardenhetHsaId,
+    GetAvslutadeBestallningarListResponse findAvslutadeBestallningarForVardenhet(IbVardenhet vardenhet,
                                                                                  ListAvslutadeBestallningarRequest request);
 
-    ListAvslutadeBestallningarFilter buildListAvslutadeBestallningarFilter(String vardenhetHsaId);
+    ListAvslutadeBestallningarFilter buildListAvslutadeBestallningarFilter(IbVardenhet vardenhet);
 
     /**
      * Retrieves the {@link se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan} for a specific UtredningId.
      *
      * @param utredningId
-     * @param vardenhetHsaId
+     * @param vardenhet
      * @return
      */
-    GetBestallningResponse getBestallning(Long utredningId, String vardenhetHsaId);
+    GetBestallningResponse getBestallning(Long utredningId, IbSelectableHsaEntity vardenhet);
 
-    void saveFakturaVeIdForUtredning(Long utredningsId, SaveFakturaVeIdForUtredningRequest request, String fakturaVeId);
+    void saveFakturaVeIdForUtredning(Long utredningsId, SaveFakturaVeIdForUtredningRequest request, IbSelectableHsaEntity vardenhet);
 }

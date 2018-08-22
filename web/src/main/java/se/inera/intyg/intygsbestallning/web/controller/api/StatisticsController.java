@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
+import se.inera.intyg.intygsbestallning.auth.model.IbVardenhet;
 import se.inera.intyg.intygsbestallning.auth.model.SelectableHsaEntityType;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.service.statistics.StatisticsService;
@@ -64,7 +65,7 @@ public class StatisticsController {
 
         validateCorrectLoginContext(user, SelectableHsaEntityType.VE);
 
-        return ResponseEntity.ok(statisticsService.getStatsForVardadmin(user.getCurrentlyLoggedInAt().getId()));
+        return ResponseEntity.ok(statisticsService.getStatsForVardadmin((IbVardenhet) user.getCurrentlyLoggedInAt()));
     }
 
     private void validateCorrectLoginContext(IbUser user, SelectableHsaEntityType selectedEntityType) {

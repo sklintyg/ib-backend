@@ -29,8 +29,9 @@ import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.infra.logmessages.ResourceType;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
+import se.inera.intyg.intygsbestallning.auth.model.IbSelectableHsaEntity;
+import se.inera.intyg.intygsbestallning.auth.model.IbVardenhet;
 import se.inera.intyg.intygsbestallning.auth.pdl.PDLActivityStore;
-import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
@@ -94,7 +95,7 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
     private BusinessDaysBean businessDays;
 
     @Override
-    public GetBestallningResponse getBestallning(Long utredningId, String vardenhetHsaId) {
+    public GetBestallningResponse getBestallning(Long utredningId, IbSelectableHsaEntity vardenhet) {
         Utredning utredning = utredningRepository.findById(utredningId).orElseThrow(
                 () -> new IbNotFoundException("Utredning with assessmentId '" + utredningId + "' does not exist."));
 
@@ -111,20 +112,11 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
     @Override
     @Transactional
     public void saveFakturaVeIdForUtredning(Long utredningsId, SaveFakturaVeIdForUtredningRequest request,
-                                            String loggedInAtVardenhetHsaId) {
+                                            IbSelectableHsaEntity loggedInAtVardenhet) {
         Utredning utredning = utredningRepository.findById(utredningsId).orElseThrow(
                 () -> new IbNotFoundException("Utredning with assessmentId '" + utredningsId + "' does not exist."));
 
-        // Verify that the current vardenhet has a Bestallning.
-        if (!utredning.getBestallning().isPresent()) {
-            throw new IbServiceException(IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
-                    "Utredning with assessmentId '" + utredningsId + "' does not have a Beställning.");
-        }
-
-        if (!utredning.getBestallning().get().getTilldeladVardenhetHsaId().equals(loggedInAtVardenhetHsaId)) {
-            throw new IbAuthorizationException("The current user cannot mark Utredning with assessmentId '" + utredningsId
-                    + "' as fakturerad, the Beställning is for another vardenhet");
-        }
+        checkUserVardenhetTilldeladToBestallning(utredning);
 
         if (utredning.getBetalning() != null) {
             utredning.getBetalning().setFakturaVeId(request.getFakturaVeId());
@@ -138,9 +130,9 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
     }
 
     @Override
-    public ListBestallningFilter buildListBestallningFilter(String vardenhetHsaId) {
+    public ListBestallningFilter buildListBestallningFilter(IbVardenhet vardenhet) {
         List<SelectItem> distinctVardgivare = utredningRepository
-                .findDistinctLandstingHsaIdByVardenhetHsaIdHavingBestallning(vardenhetHsaId)
+                .findDistinctLandstingHsaIdByVardenhetHsaIdHavingBestallning(vardenhet.getId(), vardenhet.getVardgivareOrgnr())
                 .stream()
                 .map(vgHsaId -> new SelectItem(vgHsaId, hsaOrganizationsService.getVardgivareInfo(vgHsaId).getNamn()))
                 .distinct()
@@ -153,10 +145,10 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
     }
 
     @Override
-    public GetAvslutadeBestallningarListResponse findAvslutadeBestallningarForVardenhet(String vardenhetHsaId,
+    public GetAvslutadeBestallningarListResponse findAvslutadeBestallningarForVardenhet(IbVardenhet vardenhet,
                                                                                         ListAvslutadeBestallningarRequest requestFilter) {
         List<AvslutadBestallningListItem> avslutadeBestallningar = utredningRepository
-                .findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradTrue(vardenhetHsaId)
+                .findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradTrue(vardenhet.getId(), vardenhet.getVardgivareOrgnr())
                 .stream().map(utr -> avslutadBestallningListItemFactory.from(utr))
                 .collect(Collectors.toList());
 
@@ -263,9 +255,10 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
     }
 
     @Override
-    public ListAvslutadeBestallningarFilter buildListAvslutadeBestallningarFilter(String vardenhetHsaId) {
+    public ListAvslutadeBestallningarFilter buildListAvslutadeBestallningarFilter(IbVardenhet vardenhet) {
         List<SelectItem> distinctVardgivare = utredningRepository
-                .findDistinctLandstingHsaIdByVardenhetHsaIdHavingBestallningAndIsArkiverad(vardenhetHsaId)
+                .findDistinctLandstingHsaIdByVardenhetHsaIdHavingBestallningAndIsArkiverad(vardenhet.getId(),
+                        vardenhet.getVardgivareOrgnr())
                 .stream()
                 .map(vgHsaId -> new SelectItem(vgHsaId, hsaOrganizationsService.getVardgivareInfo(vgHsaId).getNamn()))
                 .distinct()
@@ -277,10 +270,10 @@ public class BestallningServiceImpl extends BaseUtredningService implements Best
     }
 
     @Override
-    public GetBestallningListResponse findOngoingBestallningarForVardenhet(String vardenhetHsaId, ListBestallningRequest requestFilter) {
+    public GetBestallningListResponse findOngoingBestallningarForVardenhet(IbVardenhet vardenhet, ListBestallningRequest requestFilter) {
         long start = System.currentTimeMillis();
         List<Utredning> jpaList = utredningRepository
-                .findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(vardenhetHsaId);
+                .findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse(vardenhet.getId(), vardenhet.getVardgivareOrgnr());
         LOG.info("Loading findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradFalse took {} ms", (System.currentTimeMillis() - start));
 
         start = System.currentTimeMillis();

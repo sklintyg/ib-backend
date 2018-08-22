@@ -83,6 +83,7 @@ public final class TestDataGen {
     private static final String USER_NAME = "Läkar Läkarsson";
     private static final String CAREUNIT_ID = "careunit-1";
     private static final String CAREUNIT_NAME = "Vårdenhet 1";
+    private static final String CAREUNIT_ORGNR = "testorgnr";
     private static final String LANDSTING_ID = "landsting-1";
     private static final Long UTREDNING_ID = 1L;
     private static final String PERSON_ID = "19121212-1212";
@@ -325,6 +326,7 @@ public final class TestDataGen {
                         .withKommentar("2")
                         .build()))
                 .withTilldeladVardenhetHsaId(getCareunitId())
+                .withTilldeladVardenhetOrgNr(CAREUNIT_ORGNR)
                 .build();
     }
 
