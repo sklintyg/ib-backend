@@ -31,7 +31,6 @@ import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.util.SystemRolesParser;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
-import se.inera.intyg.intygsbestallning.persistence.model.BestallningHistorik;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
@@ -301,7 +300,7 @@ public final class TestDataGen {
                 .withKallelseDatum(DATE_TIME)
                 .withKallelseForm(KallelseFormTyp.BREVKONTAKT)
                 .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
-                .withTolkStatus(TolkStatusTyp.BOKAT)
+                .withTolkStatus(TolkStatusTyp.BOKAD)
                 .build();
     }
 

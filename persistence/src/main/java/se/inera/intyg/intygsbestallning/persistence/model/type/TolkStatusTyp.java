@@ -23,7 +23,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum TolkStatusTyp {
 
-    BOKAT("Bokat"), EJ_BOKAT("Ej bokat"), DELTAGIT("Deltagit"), EJ_DELTAGIT("Ej deltagit");
+    BOKAD("Bokad"),
+    EJBOKAD("Ej bokad"),
+    DELTAGIT("Deltagit"),
+    EJDELTAGIT("Ej deltagit");
 
     private final String id;
     private final String label;

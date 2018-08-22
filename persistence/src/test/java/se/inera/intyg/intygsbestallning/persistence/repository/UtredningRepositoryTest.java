@@ -222,7 +222,7 @@ public class UtredningRepositoryTest {
         assertEquals(DeltagarProfessionTyp.FT, besok.getDeltagareProfession());
         assertEquals(KallelseFormTyp.TELEFONKONTAKT, besok.getKallelseForm());
         assertNotNull(besok.getBesokStartTid());
-        assertEquals(TolkStatusTyp.EJ_BOKAT, besok.getTolkStatus());
+        assertEquals(TolkStatusTyp.EJBOKAD, besok.getTolkStatus());
 
         Avvikelse avvikelse = besok.getAvvikelse();
         assertNotNull(avvikelse);

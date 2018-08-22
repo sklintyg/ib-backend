@@ -68,11 +68,11 @@ public class BesokReportServiceImpl extends BaseBesokService implements BesokRep
             besok.setTolkStatus(besokRequest.getTolkStatus());
 
             if (besokRequest.isGenomfort()) {
-                // If tolk was BOKAT for this besok it must be redovisat as DELTAGIT or EJ_DELTAGIT
-                if (besok.getTolkStatus() == TolkStatusTyp.BOKAT && besokRequest.getTolkStatus() != TolkStatusTyp.DELTAGIT
-                        &&  besokRequest.getTolkStatus() != TolkStatusTyp.EJ_DELTAGIT) {
+                // If tolk was BOKAD for this besok it must be redovisat as DELTAGIT or EJDELTAGIT
+                if (besok.getTolkStatus() == TolkStatusTyp.BOKAD && besokRequest.getTolkStatus() != TolkStatusTyp.DELTAGIT
+                        &&  besokRequest.getTolkStatus() != TolkStatusTyp.EJDELTAGIT) {
                     throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, MessageFormat.format(
-                            "Besok {0} in utredning {1} has TolkStatus BOKAT, request needs to set DELTAGIT or EJ_DELTAGIT",
+                            "Besok {0} in utredning {1} has TolkStatus BOKAD, request needs to set DELTAGIT or EJDELTAGIT",
                             besokRequest.getBesokId(), utredning.getUtredningId()), besokRequest.getBesokId());
                 }
 

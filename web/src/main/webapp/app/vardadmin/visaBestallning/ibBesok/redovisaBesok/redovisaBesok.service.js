@@ -30,6 +30,6 @@ angular.module('ibApp')
         
         this.isBesokRedovisningValid = function(besok){
             return besok.genomfort &&
-                (besok.tolkStatus === 'EJ_BOKAT' || besok.tolkStatus === 'DELTAGIT' || besok.tolkStatus === 'EJ_DELTAGIT');
+                (besok.tolkStatus === 'EJBOKAD' || besok.tolkStatus === 'DELTAGIT' || besok.tolkStatus === 'EJDELTAGIT');
         };
     });

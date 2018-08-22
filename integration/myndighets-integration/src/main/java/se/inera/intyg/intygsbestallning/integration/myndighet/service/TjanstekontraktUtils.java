@@ -77,9 +77,7 @@ public final class TjanstekontraktUtils {
         request.setAssessmentId(anII(sourceSystemHsaId, dto.getAssessmentId().toString()));
         request.setAssessmentCareContactId(anII(sourceSystemHsaId, dto.getAssessmentCareContactId()));
         request.setParticipatingProfession(aCv(dto.getParticipatingProfession(), KV_DELTAGANDE_PROFESSION, null));
-        if (dto.getInterpreterStatus() != null) {
-            request.setInterpreterStatus(aCv(dto.getInterpreterStatus(), KV_TOLK_STATUS, null));
-        }
+        request.setInterpreterStatus(aCv(dto.getInterpreterStatus(), KV_TOLK_STATUS, null));
         request.setInvitationDate(dto.getInvitationDate());
         request.setInvitationChannel(aCv(dto.getInvitationChannel(), KV_SNOMED_CT, null));
         request.setTime(aTimePeriod(dto.getStartTime(), dto.getEndTime()));

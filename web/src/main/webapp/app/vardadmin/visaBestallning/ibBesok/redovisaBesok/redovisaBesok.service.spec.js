@@ -49,7 +49,7 @@ describe('Service: RedovisaBesok', function() {
 
         // Invalid statuses aren't allowed
         testBesok = angular.copy(besokTemplate);
-        testBesok.besokStatus.id = 'EJ_BOKAT';
+        testBesok.besokStatus.id = 'EJBOKAD';
         expect(redovisaBesokService.shouldBesokBeRedovisat(testBesok)).toBeFalsy();
     });
 
@@ -64,11 +64,11 @@ describe('Service: RedovisaBesok', function() {
         expect(redovisaBesokService.isBesokRedovisningValid(testBesok)).toBeTruthy();
 
         testBesok = angular.copy(besokTemplate);
-        testBesok.tolkStatus = 'EJ_DELTAGIT';
+        testBesok.tolkStatus = 'EJDELTAGIT';
         expect(redovisaBesokService.isBesokRedovisningValid(testBesok)).toBeTruthy();
 
         testBesok = angular.copy(besokTemplate);
-        testBesok.tolkStatus = 'EJ_BOKAT';
+        testBesok.tolkStatus = 'EJBOKAD';
         expect(redovisaBesokService.isBesokRedovisningValid(testBesok)).toBeTruthy();
 
         // BOKAT not valid status for tolk

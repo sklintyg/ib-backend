@@ -19,12 +19,10 @@
 package se.inera.intyg.intygsbestallning.jobs;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
-import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.DATE_TIME;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
@@ -77,7 +75,7 @@ public class AvslutaUtredningJobTest {
         utredning4.setStatus(UtredningStatus.UTLATANDE_MOTTAGET);
         utredning4.getIntygList().get(0).setSistaDatumKompletteringsbegaran(LocalDateTime.now().minusDays(1));
         utredning4.getBesokList().add(aBesok()
-                .withTolkStatus(TolkStatusTyp.BOKAT)
+                .withTolkStatus(TolkStatusTyp.BOKAD)
                 .build());
 
         doReturn(ImmutableList.of(utredning1, utredning2, utredning3, utredning4))

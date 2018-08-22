@@ -137,7 +137,7 @@ public class UtredningTest {
                         .withBesokSlutTid(datum.plusHours(1))
                         .withKallelseDatum(datum)
                         .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
-                        .withTolkStatus(TolkStatusTyp.BOKAT)
+                        .withTolkStatus(TolkStatusTyp.BOKAD)
                         .withKallelseForm(KallelseFormTyp.BREVKONTAKT)
                         .withDeltagareProfession(DeltagarProfessionTyp.AT)
                         .withDeltagareFullstandigtNamn("namn")

@@ -32,7 +32,7 @@ angular.module('ibApp')
                         label: 'Deltog'
                     },
                     {
-                        id: 'EJ_DELTAGIT',
+                        id: 'EJDELTAGIT',
                         label: 'Deltog ej'
                     }
                 ],
@@ -49,7 +49,7 @@ angular.module('ibApp')
 
                     var disabledDeltarItems = {
                         'DELTAGIT': genomfort,
-                        'EJ_DELTAGIT': genomfort
+                        'EJDELTAGIT': genomfort
                     };
 
                     return {

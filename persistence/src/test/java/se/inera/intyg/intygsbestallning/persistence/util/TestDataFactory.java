@@ -200,7 +200,7 @@ public final class TestDataFactory {
                 .withKallelseDatum(LocalDateTime.now())
                 .withDeltagareProfession(DeltagarProfessionTyp.FT)
                 .withDeltagareFullstandigtNamn("Håkan Fysiosson")
-                .withTolkStatus(TolkStatusTyp.EJ_BOKAT)
+                .withTolkStatus(TolkStatusTyp.EJBOKAD)
                 .withAvvikelse(anAvvikelse()
                         .withTidpunkt(LocalDateTime.now())
                         .withOrsakatAv(AvvikelseOrsak.PATIENT)

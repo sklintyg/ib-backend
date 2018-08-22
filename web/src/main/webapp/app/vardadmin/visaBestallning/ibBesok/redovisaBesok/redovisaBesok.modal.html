@@ -24,8 +24,8 @@
               {{::besok.professionLabel}}
             </td>
             <td>
-              <div ng-if="besok.tolkStatus.selected !== 'EJ_BOKAT'" class="tolk-status">
-                <span ng-if="besok.genomfort && besok.tolkStatus.selected !== 'EJ_DELTAGIT' && besok.tolkStatus.selected !== 'DELTAGIT'" class="asterisk">*</span>
+              <div ng-if="besok.tolkStatus.selected !== 'EJBOKAD'" class="tolk-status">
+                <span ng-if="besok.genomfort && besok.tolkStatus.selected !== 'EJDELTAGIT' && besok.tolkStatus.selected !== 'DELTAGIT'" class="asterisk">*</span>
                 <ib-radiogroup id="redovisa-besok-modal-{{$index}}"
                                model="besok.tolkStatus"
                                on-change="validate()"

@@ -53,7 +53,7 @@ angular.module('ibApp')
             $scope.besok = {
                 utredandeVardPersonalNamn: besok.namn ? besok.namn : '',
                 profession: besok.profession && besok.profession.id ? besok.profession.id : 'LK',
-                tolkStatus: besok.tolkStatus ? besok.tolkStatus.id : 'EJ_BOKAT',
+                tolkStatus: besok.tolkStatus ? besok.tolkStatus.id : 'EJBOKAD',
                 kallelseForm: besok.kallelseForm && besok.kallelseForm.id ? besok.kallelseForm.id : 'BREVKONTAKT',
                 kallelseDatum: besok.kallelseDatum ? besok.kallelseDatum : undefined,
                 besokDatum: besok.besokDatum ? besok.besokDatum : undefined,

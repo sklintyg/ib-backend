@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.intygsbestallning.service.besok;
 
+import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto.ReportCareContactRequestDtoBuilder.aReportCareContactRequestDto;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto;
@@ -25,9 +27,6 @@ import se.inera.intyg.intygsbestallning.integration.myndighet.service.MyndighetI
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.utredning.BaseUtredningService;
-
-import static java.util.Objects.nonNull;
-import static se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportCareContactRequestDto.ReportCareContactRequestDtoBuilder.aReportCareContactRequestDto;
 
 public class BaseBesokService extends BaseUtredningService {
 
@@ -43,7 +42,7 @@ public class BaseBesokService extends BaseUtredningService {
                 .withAssessmentId(utredning.getUtredningId())
                 .withAssessmentCareContactId(besok.getId().toString())
                 .withParticipatingProfession(besok.getDeltagareProfession().name())
-                .withInterpreterStatus(nonNull(besok.getTolkStatus()) ? besok.getTolkStatus().getId() : null)
+                .withInterpreterStatus(besok.getTolkStatus().getId())
                 .withInvitationDate(SchemaDateUtil.toDateStringFromLocalDateTime(besok.getKallelseDatum()))
                 .withInvitationChannel(besok.getKallelseForm().getCvValue())
                 .withStartTime(besok.getBesokStartTid())

@@ -18,10 +18,11 @@
  */
 package se.inera.intyg.intygsbestallning.integration.myndighet.stubs;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static java.lang.invoke.MethodHandles.lookup;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.ReportCareContactResponseType;
@@ -29,8 +30,6 @@ import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.ReportCar
 import se.riv.intygsbestallning.certificate.order.reportcarecontact.v1.rivtabp21.ReportCareContactResponderInterface;
 import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
 import se.riv.intygsbestallning.certificate.order.v1.ResultType;
-
-import java.util.Objects;
 
 public class ReportCareContactInteractionStub implements ReportCareContactResponderInterface {
 
@@ -41,8 +40,8 @@ public class ReportCareContactInteractionStub implements ReportCareContactRespon
 
         LOG.info("ReportCareContactInteractionStub received request");
 
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(logicalAddress), "logicalAddress may not be null or empty");
-        Preconditions.checkArgument(!Objects.isNull(request), "request may not be null");
+        checkArgument(isNotEmpty(logicalAddress), "logicalAddress may not be null or empty");
+        checkArgument(nonNull(request), "request may not be null");
 
         return createDummyResponse();
     }

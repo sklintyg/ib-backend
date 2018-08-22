@@ -172,7 +172,7 @@ public class BesokReportServiceImplTest {
                 TestDataGen.createBesok(2L),
                 TestDataGen.createBesok(3L)));
 
-        RedovisaBesokRequest.RedovisaBesokListItem besokRequest = new RedovisaBesokRequest.RedovisaBesokListItem(1L, TolkStatusTyp.BOKAT, true);
+        RedovisaBesokRequest.RedovisaBesokListItem besokRequest = new RedovisaBesokRequest.RedovisaBesokListItem(1L, TolkStatusTyp.BOKAD, true);
 
         assertThatThrownBy(() -> besokReportService.redovisaBesok(utredning, besokRequest))
                 .isExactlyInstanceOf(IbServiceException.class)

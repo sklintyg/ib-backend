@@ -107,7 +107,7 @@ public class AvslutaUtredningJob {
 
     private Predicate<Utredning> isQualifiedForRedovisaBesok() {
         return utr -> utr.getBesokList().stream()
-                .anyMatch(besok -> besok.getTolkStatus() == TolkStatusTyp.BOKAT);
+                .anyMatch(besok -> besok.getTolkStatus() == TolkStatusTyp.BOKAD);
     }
 
     private final Consumer<Utredning> avslutaUtredningOrRedovisaBesok = utr -> {

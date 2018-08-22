@@ -132,7 +132,7 @@ public class BesokServiceImplTest {
         RegisterBesokRequest request = new RegisterBesokRequest();
         request.setUtredandeVardPersonalNamn("utredandeVardPersonalNamn");
         request.setProfession(DeltagarProfessionTyp.LK);
-        request.setTolkStatus(TolkStatusTyp.BOKAT);
+        request.setTolkStatus(TolkStatusTyp.BOKAD);
         request.setKallelseForm(KallelseFormTyp.TELEFONKONTAKT);
         request.setKallelseDatum(DATE_TIME);
         request.setBesokDatum(DATE_TIME.plusMonths(1).toLocalDate());
@@ -178,7 +178,7 @@ public class BesokServiceImplTest {
         RegisterBesokRequest request = new RegisterBesokRequest();
         request.setUtredandeVardPersonalNamn("utredandeVardPersonalNamn");
         request.setProfession(DeltagarProfessionTyp.PS);
-        request.setTolkStatus(TolkStatusTyp.BOKAT);
+        request.setTolkStatus(TolkStatusTyp.BOKAD);
         request.setKallelseForm(KallelseFormTyp.TELEFONKONTAKT);
         request.setKallelseDatum(DATE_TIME);
         request.setBesokDatum(DATE_TIME.plusMonths(1).toLocalDate());
@@ -221,7 +221,7 @@ public class BesokServiceImplTest {
         RegisterBesokRequest request = new RegisterBesokRequest();
         request.setUtredandeVardPersonalNamn("utredandeVardPersonalNamn");
         request.setProfession(DeltagarProfessionTyp.PS);
-        request.setTolkStatus(TolkStatusTyp.BOKAT);
+        request.setTolkStatus(TolkStatusTyp.BOKAD);
         request.setKallelseForm(KallelseFormTyp.TELEFONKONTAKT);
         request.setKallelseDatum(DATE_TIME);
         request.setBesokDatum(DATE_TIME.plusMonths(1).toLocalDate());
@@ -248,7 +248,7 @@ public class BesokServiceImplTest {
         RegisterBesokRequest request = new RegisterBesokRequest();
         request.setUtredandeVardPersonalNamn("utredandeVardPersonalNamn");
         request.setProfession(DeltagarProfessionTyp.LK);
-        request.setTolkStatus(TolkStatusTyp.BOKAT);
+        request.setTolkStatus(TolkStatusTyp.BOKAD);
         request.setKallelseForm(KallelseFormTyp.TELEFONKONTAKT);
         request.setKallelseDatum(DATE_TIME);
         request.setBesokDatum(DATE_TIME.plusMonths(1).toLocalDate());
@@ -287,7 +287,7 @@ public class BesokServiceImplTest {
         RegisterBesokRequest request = new RegisterBesokRequest();
         request.setUtredandeVardPersonalNamn("changed");
         request.setProfession(DeltagarProfessionTyp.LK);
-        request.setTolkStatus(TolkStatusTyp.BOKAT);
+        request.setTolkStatus(TolkStatusTyp.BOKAD);
         request.setKallelseForm(KallelseFormTyp.TELEFONKONTAKT);
         request.setKallelseDatum(DATE_TIME);
         request.setBesokDatum(DATE_TIME.plusMonths(1).toLocalDate());
@@ -345,7 +345,7 @@ public class BesokServiceImplTest {
         RegisterBesokRequest request = new RegisterBesokRequest();
         request.setUtredandeVardPersonalNamn("changed");
         request.setProfession(DeltagarProfessionTyp.AT);
-        request.setTolkStatus(TolkStatusTyp.BOKAT);
+        request.setTolkStatus(TolkStatusTyp.BOKAD);
         request.setKallelseForm(KallelseFormTyp.TELEFONKONTAKT);
         request.setKallelseDatum(DATE_TIME);
         request.setBesokDatum(DATE_TIME.plusMonths(1).toLocalDate());
@@ -403,7 +403,7 @@ public class BesokServiceImplTest {
         RegisterBesokRequest request = new RegisterBesokRequest();
         request.setUtredandeVardPersonalNamn("changed");
         request.setProfession(DeltagarProfessionTyp.AT);
-        request.setTolkStatus(TolkStatusTyp.BOKAT);
+        request.setTolkStatus(TolkStatusTyp.BOKAD);
         request.setKallelseForm(KallelseFormTyp.TELEFONKONTAKT);
         request.setKallelseDatum(DATE_TIME);
         request.setBesokDatum(DATE_TIME.plusMonths(1).toLocalDate());
@@ -648,7 +648,7 @@ public class BesokServiceImplTest {
 
         RedovisaBesokRequest request = new RedovisaBesokRequest();
         RedovisaBesokRequest.RedovisaBesokListItem besokRequest1 = new RedovisaBesokRequest.RedovisaBesokListItem(1L, TolkStatusTyp.DELTAGIT, false);
-        RedovisaBesokRequest.RedovisaBesokListItem besokRequest2 = new RedovisaBesokRequest.RedovisaBesokListItem(2L, TolkStatusTyp.EJ_DELTAGIT, false);
+        RedovisaBesokRequest.RedovisaBesokListItem besokRequest2 = new RedovisaBesokRequest.RedovisaBesokListItem(2L, TolkStatusTyp.EJDELTAGIT, false);
         RedovisaBesokRequest.RedovisaBesokListItem besokRequest3 = new RedovisaBesokRequest.RedovisaBesokListItem(3L, TolkStatusTyp.DELTAGIT, true);
         request.setRedovisaBesokList(ImmutableList.of(besokRequest1, besokRequest2, besokRequest3));
         besokService.redovisaBesok(UTREDNING_ID, request);
@@ -746,7 +746,7 @@ public class BesokServiceImplTest {
                 .withBesokStartTid(LocalDateTime.of(DATE_TIME.toLocalDate(), DATE_TIME.toLocalTime().plusHours(1)))
                 .withBesokSlutTid(LocalDateTime.of(DATE_TIME.toLocalDate(), DATE_TIME.toLocalTime().plusHours(2)))
                 .withDeltagareProfession(DeltagarProfessionTyp.LK)
-                .withTolkStatus(TolkStatusTyp.BOKAT)
+                .withTolkStatus(TolkStatusTyp.BOKAD)
                 .withDeltagareFullstandigtNamn("Delta Gare")
                 .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
                 .build()));

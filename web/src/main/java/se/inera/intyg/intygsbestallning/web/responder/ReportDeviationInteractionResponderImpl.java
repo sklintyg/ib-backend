@@ -21,18 +21,18 @@ package se.inera.intyg.intygsbestallning.web.responder;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.lang.invoke.MethodHandles.lookup;
 import static java.util.Objects.nonNull;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.ReportDeviationResponseType;
 import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.ReportDeviationType;
 import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.rivtabp21.ReportDeviationResponderInterface;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.persistence.model.Avvikelse;
 import se.inera.intyg.intygsbestallning.service.besok.BesokService;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
@@ -61,7 +61,7 @@ public class ReportDeviationInteractionResponderImpl implements ReportDeviationR
         log.info("Received ReportDeviationInteraction request");
 
         try {
-            checkArgument(StringUtils.isNotEmpty(logicalAddress), LOGICAL_ADDRESS);
+            checkArgument(isNotEmpty(logicalAddress), LOGICAL_ADDRESS);
             checkArgument(nonNull(request), REQUEST);
 
             final Avvikelse avvikelse = besokService.reportBesokAvvikelse(ReportBesokAvvikelseRequest.from(request));

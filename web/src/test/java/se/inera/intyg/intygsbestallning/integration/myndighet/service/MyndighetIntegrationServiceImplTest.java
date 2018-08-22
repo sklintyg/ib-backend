@@ -59,7 +59,7 @@ public class MyndighetIntegrationServiceImplTest {
                 .withAssessmentId(1L)
                 .withAssessmentCareContactId("assessment-care-contact-id")
                 .withParticipatingProfession(DeltagarProfessionTyp.LK.getLabel())
-                .withInterpreterStatus(TolkStatusTyp.BOKAT.getLabel())
+                .withInterpreterStatus(TolkStatusTyp.BOKAD.getLabel())
                 .withInvitationDate(DATE_TIME.toString())
                 .withInvitationChannel(KallelseFormTyp.TELEFONKONTAKT.getCvValue())
                 .withStartTime(DATE_TIME)

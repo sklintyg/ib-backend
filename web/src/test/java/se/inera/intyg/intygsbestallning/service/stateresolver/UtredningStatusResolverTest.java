@@ -23,23 +23,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
-import se.inera.intyg.intygsbestallning.persistence.model.Anteckning;
 import se.inera.intyg.intygsbestallning.persistence.model.Avvikelse;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
-import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan;
-import se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar;
-import se.inera.intyg.intygsbestallning.persistence.model.Handlaggare;
 import se.inera.intyg.intygsbestallning.persistence.model.Handling;
-import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
-import se.inera.intyg.intygsbestallning.persistence.model.Invanare;
-import se.inera.intyg.intygsbestallning.persistence.model.SkickadNotifiering;
-import se.inera.intyg.intygsbestallning.persistence.model.TidigareUtforare;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.status.Actor;
-import se.inera.intyg.intygsbestallning.persistence.model.status.InternForfraganStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
@@ -48,31 +38,18 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.AvvikelseOrsak;
 import se.inera.intyg.intygsbestallning.persistence.model.type.BesokStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.DeltagarProfessionTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.type.KallelseFormTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringMottagarTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.model.type.HandelseTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.type.UtforareTyp;
-import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 
 import java.time.LocalDateTime;
 
 import static org.junit.Assert.assertEquals;
 import static se.inera.intyg.intygsbestallning.persistence.model.Avvikelse.AvvikelseBuilder.anAvvikelse;
 import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
-import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
-import static se.inera.intyg.intygsbestallning.persistence.model.ExternForfragan.ExternForfraganBuilder.anExternForfragan;
-import static se.inera.intyg.intygsbestallning.persistence.model.ForfraganSvar.ForfraganSvarBuilder.aForfraganSvar;
 import static se.inera.intyg.intygsbestallning.persistence.model.Handelse.HandelseBuilder.aHandelse;
-import static se.inera.intyg.intygsbestallning.persistence.model.Handlaggare.HandlaggareBuilder.aHandlaggare;
 import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
-import static se.inera.intyg.intygsbestallning.persistence.model.InternForfragan.InternForfraganBuilder.anInternForfragan;
 import static se.inera.intyg.intygsbestallning.persistence.model.Intyg.IntygBuilder.anIntyg;
-import static se.inera.intyg.intygsbestallning.persistence.model.Invanare.InvanareBuilder.anInvanare;
-import static se.inera.intyg.intygsbestallning.persistence.model.SkickadNotifiering.SkickadNotifieringBuilder.aSkickadNotifiering;
-import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtredningStatusResolverTest extends BaseResolverTest {
@@ -650,7 +627,7 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
                 .withBesokStartTid(LocalDateTime.parse("2018-07-09T16:02"))
                 .withBesokSlutTid(LocalDateTime.parse("2018-08-09T17:02"))
                 .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
-                .withTolkStatus(TolkStatusTyp.EJ_BOKAT)
+                .withTolkStatus(TolkStatusTyp.EJBOKAD)
                 .withDeltagareProfession(DeltagarProfessionTyp.LK)
                 .withAvvikelse(Avvikelse.AvvikelseBuilder.anAvvikelse()
                         .withAvvikelseId(1L)
@@ -701,7 +678,7 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
                 .withBesokStartTid(LocalDateTime.parse("2018-07-09T16:02"))
                 .withBesokSlutTid(LocalDateTime.parse("2018-08-09T17:02"))
                 .withBesokStatus(BesokStatusTyp.INSTALLD_VARDKONTAKT)
-                .withTolkStatus(TolkStatusTyp.EJ_BOKAT)
+                .withTolkStatus(TolkStatusTyp.EJBOKAD)
                 .withDeltagareProfession(DeltagarProfessionTyp.LK)
                 .withAvvikelse(anAvvikelse()
                         .withAvvikelseId(1L)
@@ -747,7 +724,7 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
         utr.getBesokList().add(aBesok()
                 .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
                 .withDeltagareProfession(DeltagarProfessionTyp.FT)
-                .withTolkStatus(TolkStatusTyp.BOKAT)
+                .withTolkStatus(TolkStatusTyp.BOKAD)
                 .build());
         return utr;
     }
