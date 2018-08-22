@@ -1,11 +1,12 @@
 {
   "devDependencies": {
-    "cypress": "^2.1.0",
+    "cypress": "^3.1.0",
     "mocha": "^3.5.0",
     "mochawesome": "^1.5.3",
     "moment": "^2.20.1",
     "xml2js": "^0.4.19",
-    "cypress-cucumber-preprocessor": "0.2.0"
+    "cypress-cucumber-preprocessor": "0.2.0",
+	"mocha-multi-reporters": "1.1.7"
   },
   "scripts": {
     "cypress:open": "cypress open",

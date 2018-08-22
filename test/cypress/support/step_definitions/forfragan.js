@@ -1,5 +1,5 @@
 /* global then, when, given */
-let moment = require('moment');
+const moment = require('moment');
 let utredningsId;
 let landstingHsaId = 'IFV1239877878-1041';
 let enhetsHsaId;
@@ -59,8 +59,8 @@ when('samordnare tilldelar förfrågan till enhet {string}', (enhetsNamn) => {
     
     goToUtredning('samordnare', landstingHsaId, enhetsHsaId, utredningsId)
     cy.get('#skicka-forfragan-button').click();
-    cy.get('#skicka-forfragan-modal-vardenheter-eget-landsting-input-IFV1239877878-1042').click();
-    cy.get('#skicka-forfragan-modal-meddelande_textarea').type('Skickar förfrågan den långa vägen.');
+	cy.get('#skicka-forfragan-modal-vardenheter-privat-input-IFV1239877878-1042').click();
+	cy.get('#skicka-forfragan-modal-meddelande_textarea').type('Skickar förfrågan den långa vägen.');
     cy.get('#skicka-forfragan-modal-skicka > span').click();
     cy.get("#utredning-header-status").should("contain", "Väntar på svar");
 })
