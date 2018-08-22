@@ -74,7 +74,6 @@ public class OrderAssessmentResponderImplTest {
         citizen.setLastName("lastname");
         request.setCitizen(citizen);
         request.setLastDateForCertificateReceival("20180101");
-        request.setOrderDate("20180101");
         OrderAssessmentResponseType response = responder.orderAssessment("address", request);
 
         assertNotNull(response);

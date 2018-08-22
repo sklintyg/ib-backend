@@ -73,7 +73,6 @@ public class OrderRequestTest {
     public void testFromRequestAf() {
         OrderAssessmentType request = createFullRequest();
         request.setAssessmentId(null);
-        request.setOrderDate(null);
         request.setLastDateForCertificateReceival(null);
 
         OrderRequest result = OrderRequest.from(request);
@@ -162,7 +161,6 @@ public class OrderRequestTest {
     private OrderAssessmentType createFullRequest() {
         OrderAssessmentType request = new OrderAssessmentType();
         request.setCertificateType(aCv(AFU.name(), null, null));
-        request.setOrderDate("20180101");
         request.setLastDateForCertificateReceival("20190101");
         CitizenType citizen = new CitizenType();
         citizen.setPersonalIdentity(anII(null, "191212121212"));
