@@ -804,7 +804,12 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         final Optional<LocalDate> nyttSistaDatum = update.getLastDateIntyg().map(LocalDateTime::toLocalDate);
         final String nyHandlaggare = update.getBestallare().isPresent() ? update.getBestallare().get().getFullstandigtNamn() : null;
         final LocalDateTime uppdateradDatum = LocalDateTime.now();
-        utredning.getHandelseList().add(HandelseUtil.createOrderUpdated(nyttSistaDatum, nyHandlaggare, update.getHandling().isPresent()));
+
+        boolean hasHandling = update.getHandling()
+                .filter(BooleanUtils::isTrue)
+                .isPresent();
+
+        utredning.getHandelseList().add(HandelseUtil.createOrderUpdated(nyttSistaDatum, nyHandlaggare, hasHandling));
         utredning.getBestallning().ifPresent(bestallning -> bestallning.setUppdateradDatum(uppdateradDatum));
 
         // Lägg till en BestallningHistorik om det finns en kommentar i UpdateRequestet

@@ -435,11 +435,10 @@
                       '</urn1:lastDateForCertificateReceival>';
               }
 
-              var documentsByPost = '';
-              if ($scope.uo.documentsByPost) {
-                  documentsByPost = '<urn1:documentsByPost>' + $scope.uo.documentsByPost + '</urn1:documentsByPost>';
 
-              }
+              var documentsByPost = '<urn1:documentsByPost>' + $scope.uo.documentsByPost + '</urn1:documentsByPost>';
+
+
 
 
               var msg = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" ' +

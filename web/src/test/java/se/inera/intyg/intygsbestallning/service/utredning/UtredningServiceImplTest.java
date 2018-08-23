@@ -523,8 +523,47 @@ public class UtredningServiceImplTest {
                 .map(bestallning -> bestallning.getBestallningHistorikList().stream()
                         .filter(hist -> hist.getKommentar().equals("ny-kommentar"))
                         .collect(toOptional()))).isPresent();
+        assertThat(uppdateradUtredning.getHandelseList().size()).isEqualTo(1);
+        assertThat(uppdateradUtredning.getHandelseList().get(0).getKommentar()).isNullOrEmpty();
 
         verify(notifieringSendService, times(1)).notifieraVardenhetUppdateradBestallning(any(Utredning.class));
+    }
+
+    private Utredning runUpdateOrderTest(UpdateOrderType updateOrderType) {
+        Utredning utredning = createUtredning();
+
+        doReturn(Optional.of(utredning))
+                .when(utredningRepository)
+                .findById(utredning.getUtredningId());
+
+        return utredningService.updateOrder(UpdateOrderRequest.from(updateOrderType));
+    }
+
+    @Test
+    public void uppdateraOrderMedNullHandlingSaknarHandelseKommentar() {
+
+        Utredning updated = runUpdateOrderTest(createUpdateOrderType(true, "SV", null));
+
+        assertThat(updated.getHandelseList().size()).isEqualTo(1);
+        assertThat(updated.getHandelseList().get(0).getKommentar()).isNullOrEmpty();
+    }
+
+    @Test
+    public void uppdateraOrderMedFalseHandlingSaknarHandelseKommentar() {
+
+        Utredning updated = runUpdateOrderTest(createUpdateOrderType(true, "SV", false));
+
+        assertThat(updated.getHandelseList().size()).isEqualTo(1);
+        assertThat(updated.getHandelseList().get(0).getKommentar()).isNullOrEmpty();
+    }
+
+    @Test
+    public void uppdateraOrderMedHandlingHarHandelseMedKommentar() {
+
+        Utredning updated = runUpdateOrderTest(createUpdateOrderType(true, "SV", true));
+
+        assertThat(updated.getHandelseList().size()).isEqualTo(1);
+        assertThat(updated.getHandelseList().get(0).getKommentar()).contains("Handlingar");
     }
 
     @Test
