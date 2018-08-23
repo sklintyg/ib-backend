@@ -354,7 +354,7 @@ var ibMessages = {
         'server.error.ge.02.title': 'Tekniskt fel',
         'server.error.ge.02.text': 'Prova igen om en stund. Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraNationellKundservice> och uppge då följande logg id: ${logId}',
         'server.error.vardenhet.hsa.text': 'Ett tekniskt fel uppstod när vårdenheten skulle hämtas. Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraNationellKundservice>',
-        'server.error.myndighet.text': 'Det uppstod ett fel vid anropet till Försäkringskassan. Dina ändringar har inte sparats. Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraNationellKundservice>.',
+        'server.error.myndighet.text': 'Det uppstod ett fel vid anropet till Försäkringskassan. Dina ändringar har inte sparats. Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraNationellKundservice>.'
     },
     'en': {
         'common.ok': 'OK',
