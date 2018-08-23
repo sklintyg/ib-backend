@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.service.handling;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
@@ -27,6 +28,7 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Optional;
 
 import org.junit.Test;
@@ -37,6 +39,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.persistence.model.Handling;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
@@ -72,6 +75,37 @@ public class HandlingServiceImplTest {
         testee.registerHandlingMottagen(1L, buildRequest());
         verify(utredningRepository, times(1)).saveUtredning(any());
         verify(logService, times(1)).logHandlingMottagen(any(Utredning.class));
+    }
+
+    @Test
+    public void testGetVantandeHandlingGetOldestFirst() {
+        Handling first = Handling.HandlingBuilder.aHandling().withSkickatDatum(LocalDateTime.parse("2018-01-01T10:15:30")).build();
+        Handling second = Handling.HandlingBuilder.aHandling().withSkickatDatum(LocalDateTime.parse("2018-02-01T10:15:30")).build();
+        Handling third = Handling.HandlingBuilder.aHandling().withSkickatDatum(LocalDateTime.parse("2018-03-01T10:15:30")).build();
+
+        Utredning utredning = TestDataGen.createUtredning();
+
+        utredning.setHandlingList(Arrays.asList(third, second, first));
+        assertEquals(first, testee.getVantandeHandling(utredning));
+
+        utredning.setHandlingList(Arrays.asList(first, second, third));
+        assertEquals(first, testee.getVantandeHandling(utredning));
+
+        first.setInkomDatum(LocalDateTime.now());
+        utredning.setHandlingList(Arrays.asList(first, second, third));
+        assertEquals(second, testee.getVantandeHandling(utredning));
+
+    }
+
+    @Test(expected = IbServiceException.class)
+    public void testGetVantandeHandlingFailsIfNoneExist() {
+        Handling first = Handling.HandlingBuilder.aHandling().withSkickatDatum(LocalDateTime.parse("2018-01-01T10:15:30"))
+                .withInkomDatum(LocalDateTime.now()).build();
+
+        Utredning utredning = TestDataGen.createUtredning();
+        utredning.setHandlingList(Arrays.asList(first));
+
+        testee.getVantandeHandling(utredning);
     }
 
     @Test(expected = IbServiceException.class)

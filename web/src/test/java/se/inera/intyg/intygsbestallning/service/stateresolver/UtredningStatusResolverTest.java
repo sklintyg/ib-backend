@@ -214,6 +214,64 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
     }
 
     /**
+     * Ett lite längre testflöde som verifiera att man hamnar i UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR om man står i
+     * HANDLINGAR_MOTTAGNA_BOKA_BESOK och får en uppdaterad beställning MED handlingar.
+     * När man sedan sedan markerar handlingarna som mottagna, skall man backa tillbaka till HANDLINGAR_MOTTAGNA_BOKA_BESOK,
+     * tills besök bokas. Då skall man vidare till UTREDNING_PAGAR.
+     *
+     * Se INTYG-6747.
+     */
+    @Test
+    public void testUppdateradBestallningMedHandlingarMedOchUtanBesok() {
+        Utredning utr = buildBaseUtredning();
+        utr.getExternForfragan().map(ExternForfragan::getInternForfraganList)
+                .map(iff -> iff.add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now())));
+        utr.setBestallning(buildBestallning(LocalDateTime.now()));
+        utr.getIntygList().add(buildBestalltIntyg());
+        utr.getHandlingList().clear();
+        utr.getHandlingList().add(aHandling().withInkomDatum(LocalDateTime.now()).withUrsprung(HandlingUrsprungTyp.BESTALLNING).build());
+
+        UtredningStatus status = testee.resolveStatus(utr);
+        assertEquals(UtredningStatus.HANDLINGAR_MOTTAGNA_BOKA_BESOK, status);
+        assertEquals(UtredningFas.UTREDNING, status.getUtredningFas());
+        assertEquals(Actor.VARDADMIN, status.getNextActor());
+
+        // Uppdatera beställning (med handlingar)
+        utr.getBestallning().get().setUppdateradDatum(LocalDateTime.now());
+        utr.getHandlingList().add(aHandling()
+                .withUrsprung(HandlingUrsprungTyp.UPPDATERING)
+                .withInkomDatum(null)
+                .build());
+
+        status = testee.resolveStatus(utr);
+        assertEquals(UtredningStatus.UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR, status);
+        assertEquals(UtredningFas.UTREDNING, status.getUtredningFas());
+        assertEquals(Actor.FK, status.getNextActor());
+
+        // Markera alla handlingar mottagna...
+        utr.getHandlingList().stream().forEach(handling -> handling.setInkomDatum(LocalDateTime.now()));
+
+        // Skall vara tillbaka till HANDLINGAR_MOTTAGNA_BOKA_BESOK
+        status = testee.resolveStatus(utr);
+        assertEquals(UtredningStatus.HANDLINGAR_MOTTAGNA_BOKA_BESOK, status);
+        assertEquals(UtredningFas.UTREDNING, status.getUtredningFas());
+        assertEquals(Actor.VARDADMIN, status.getNextActor());
+
+        // Lägg till ett besök...
+        utr.getBesokList().add(aBesok()
+                .withBesokStatus(BesokStatusTyp.TIDBOKAD_VARDKONTAKT)
+                .withDeltagareProfession(DeltagarProfessionTyp.FT)
+                .build());
+
+        // Skall nu hoppa vidare till UTREDNING_PAGAR
+        status = testee.resolveStatus(utr);
+        assertEquals(UtredningStatus.UTREDNING_PAGAR, status);
+        assertEquals(UtredningFas.UTREDNING, status.getUtredningFas());
+        assertEquals(Actor.UTREDARE, status.getNextActor());
+
+    }
+
+    /**
      * Om man står i UTREDNING_PAGAR och gör en uppdatering UTAN handlingar, skall man även efter det vara kvar i UTREDNING_PAGAR.
      * Se INTYG-6747.
      */

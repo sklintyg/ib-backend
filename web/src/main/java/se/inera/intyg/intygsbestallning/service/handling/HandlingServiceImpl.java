@@ -21,6 +21,7 @@ package se.inera.intyg.intygsbestallning.service.handling;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Comparator;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -90,7 +91,7 @@ public class HandlingServiceImpl extends BaseUtredningService implements Handlin
      * @param utredning
      * @return Handling waiting to be marked as 'Mottagen'
      */
-    private Handling getVantandeHandling(Utredning utredning) {
+    protected Handling getVantandeHandling(Utredning utredning) {
         UtredningStatus status = utredning.getStatus();
         // Check state - can this utredning really register handlingar?
         if (status.getUtredningFas() == UtredningFas.FORFRAGAN || status.getUtredningFas() == UtredningFas.AVSLUTAD) {
@@ -98,8 +99,9 @@ public class HandlingServiceImpl extends BaseUtredningService implements Handlin
                     "This utredning is in phase " + status.getUtredningFas().getLabel() + " and cannot accept new Handlingar.");
         }
 
-        // Must have a waiting handling
+        // Must have a waiting handling - since we don't have any id we just take the first one.
         return utredning.getHandlingList().stream()
+                .sorted(Comparator.comparing(Handling::getSkickatDatum))
                 .filter(h -> h.getInkomDatum() == null)
                 .findFirst().orElseThrow(() -> new IbServiceException(IbErrorCodeEnum.BAD_STATE,
                         "No handling in utredning " + utredning.getUtredningId() + " was waiting to marked as received."));

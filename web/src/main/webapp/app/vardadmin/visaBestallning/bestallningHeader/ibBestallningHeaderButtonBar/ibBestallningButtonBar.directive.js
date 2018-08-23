@@ -52,13 +52,7 @@ angular.module('ibApp').directive('ibBestallningButtonBar',
                 };
 
                 $scope.registerReceivedHandlingDisabled = function () {
-                    if (($scope.bestallning.status.id === 'BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR' ||
-                        $scope.bestallning.status.id === 'UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR' ||
-                        $scope.bestallning.status.id === 'UTREDNING_PAGAR') &&
-                        ($scope.bestallning.vantandeHandlingar === true)) {
-                        return false;
-                    }
-                    return true;
+                    return $scope.bestallning.vantandeHandlingar === false;
                 };
 
                 $scope.registerSentUtlatandeDisabled = function () {

@@ -174,7 +174,7 @@ public class UtredningStatusResolver {
                     return Optional.of(UtredningStatus.BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR);
                 }
 
-                // BESTALLNING_MOTTAGEN_VANTAR_PA_HANDLINGAR
+                // UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR
                 if (bestallning.getUppdateradDatum() != null) {
                     return Optional.of(UtredningStatus.UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR);
                 }
@@ -186,11 +186,8 @@ public class UtredningStatusResolver {
                 return Optional.of(UtredningStatus.HANDLINGAR_MOTTAGNA_BOKA_BESOK);
             }
 
-            // Om det inte finns någon handling taggad UPPDATERING och inga besök MEN vi har uppdaterad-stämpel så väntar vi på fler
-            // handlingar.
-            if (bestallning.getUppdateradDatum() != null && utredning.getHandlingList().stream()
-                    .noneMatch(handling -> handling.getUrsprung() == HandlingUrsprungTyp.UPPDATERING
-                            && handling.getInkomDatum() != null)) {
+            // Inga besök, men väntar på uppdaterade handlingar.
+            if (vantarPaUppdateradeHandlingar(utredning)) {
                 return Optional.of(UtredningStatus.UPPDATERAD_BESTALLNING_VANTAR_PA_HANDLINGAR);
             }
 
