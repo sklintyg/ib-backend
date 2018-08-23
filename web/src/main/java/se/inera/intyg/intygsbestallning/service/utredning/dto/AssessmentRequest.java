@@ -28,6 +28,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.BooleanUtils;
+import se.inera.intyg.intygsbestallning.integration.myndighet.service.TjanstekontraktUtils;
 import se.riv.intygsbestallning.certificate.order.requestperformerforassessment.v1.RequestPerformerForAssessmentType;
 import se.riv.intygsbestallning.certificate.order.v1.AddressType;
 import se.riv.intygsbestallning.certificate.order.v1.AuthorityAdministrativeOfficialType;
@@ -162,15 +163,14 @@ public class AssessmentRequest {
             boolean korrektTyp = godkandaUtredningsTyper.contains(utredningsTyp);
             if (!korrektTyp) {
                 errors.add(MessageFormat.format(
-                        "CertificateType: {0} is not a valid a valid type. Use one of the following types: {1})",
-                        utredningsTyp,
-                        godkandaUtredningsTyper));
+                        "Unknown code: {0} for codeSystem: {1}",
+                        source.getCertificateType().getCode(), TjanstekontraktUtils.KV_INTYGSTYP));
             }
         } catch (IllegalArgumentException iae) {
 
             errors.add(MessageFormat.format(
-                    "CertificateType: {0} is not of a known type",
-                    source.getCertificateType().getCode()));
+                    "Unknown code: {0} for codeSystem: {1}",
+                    source.getCertificateType().getCode(), TjanstekontraktUtils.KV_INTYGSTYP));
         }
 
         if (!errors.isEmpty()) {

@@ -32,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.intygsbestallning.integration.myndighet.service.TjanstekontraktUtils;
 import se.riv.intygsbestallning.certificate.order.requestperformerforassessment.v1.RequestPerformerForAssessmentResponseType;
 import se.riv.intygsbestallning.certificate.order.requestperformerforassessment.v1.RequestPerformerForAssessmentType;
 import se.riv.intygsbestallning.certificate.order.v1.AuthorityAdministrativeOfficialType;
@@ -90,7 +91,9 @@ public class RequestPerformerForAssessmentResponderImplTest {
 
         final RequestPerformerForAssessmentResponseType response = assessmentResponder.requestPerformerForAssessment(LOGICAL_ADDRESS, request);
         assertThat(response.getResult().getResultCode()).isEqualTo(ResultCodeType.ERROR);
-        assertThat(response.getResult().getResultText()).isEqualTo("CertificateType: okand-typ is not of a known type");
+        assertThat(response.getResult().getResultText()).isEqualTo(MessageFormat.format("Unknown code: {0} for codeSystem: {1}",
+                "okand-typ", TjanstekontraktUtils.KV_INTYGSTYP));
+        ;
     }
 
     @Test
@@ -104,9 +107,9 @@ public class RequestPerformerForAssessmentResponderImplTest {
 
         assertThat(response.getResult().getResultCode()).isEqualTo(ResultCodeType.ERROR);
         assertThat(response.getResult().getResultText()).isEqualTo(
-                MessageFormat.format("CertificateType: {0} is not a valid a valid type. Use one of the following types: {1})",
-                        felakrigUtredningsTyp,
-                        ImmutableList.of(UtredningsTyp.AFU, UtredningsTyp.AFU_UTVIDGAD)));
+                MessageFormat.format("Unknown code: {0} for codeSystem: {1}",
+                        felakrigUtredningsTyp, TjanstekontraktUtils.KV_INTYGSTYP));
+
 
     }
 }
