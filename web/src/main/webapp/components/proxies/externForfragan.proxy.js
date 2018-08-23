@@ -28,10 +28,8 @@ angular.module('ibApp').factory('ExternForfraganProxy',
 
             var config = {
                 errorMessageConfig: {
-                    errorTitleKey: 'server.error.acceptexternforfragan.title',
-                    errorTextKey: 'server.error.acceptexternforfragan.text',
-                    errorHsaTextKey: 'server.error.acceptexternforfragan.hsa.text',
-                    errorMyndighetTextKey: 'server.error.acceptexternforfragan.myndighet.text'
+                    errorHsaTextKey: 'server.error.vardenhet.hsa.text',
+                    errorMyndighetTextKey: 'server.error.myndighet.text'
                 }
             };
 
@@ -43,9 +41,7 @@ angular.module('ibApp').factory('ExternForfraganProxy',
 
             var config = {
                 errorMessageConfig: {
-                    errorTitleKey: 'server.error.acceptexternforfragan.title',
-                    errorTextKey: 'server.error.acceptexternforfragan.text',
-                    errorMyndighetTextKey: 'server.error.acceptexternforfragan.myndighet.text'
+                    errorMyndighetTextKey: 'server.error.myndighet.text'
                 }
             };
 

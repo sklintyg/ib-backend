@@ -105,17 +105,13 @@ angular.module('ibApp').factory('messageService',
         }
 
         function _buildDynamicLink(linkKey) {
-            var dynamicLink = '<a class="external-link" href="' + _links[linkKey].url + '"';
+            var dynamicLink = '';
+            dynamicLink += _links[linkKey].target ? '<span class="unbreakable">' : '';
+            dynamicLink += '<a href="' + _links[linkKey].url + '" class="external-link"';
             dynamicLink += _links[linkKey].tooltip ? ' title="' + _links[linkKey].tooltip + '"' : '';
             dynamicLink += _links[linkKey].target ? ' target="' + _links[linkKey].target + '">' : '>';
-            dynamicLink += _links[linkKey].text;
-
-            if (_links[linkKey].target) {
-                dynamicLink += ' <i class="glyphicon glyphicon-new-window"></i></a>';
-            }
-
-            dynamicLink += '</a>';
-
+            dynamicLink += _links[linkKey].text + '</a>';
+            dynamicLink += _links[linkKey].target ? ' <i ng-show="target" class="external-link-icon material-icons">launch</i></span>' : '';
             return dynamicLink;
         }
 

@@ -26,8 +26,8 @@ public class IbAuthorizationRestExceptionResponse extends IbRestExceptionRespons
     private IbAuthorizationErrorCodeEnum authorizationErrorCode;
 
     public IbAuthorizationRestExceptionResponse(IbErrorCodeEnum errorCode, String message, Long errorEntityId,
-                                                IbAuthorizationErrorCodeEnum authorizationErrorCode) {
-        super(errorCode, message, errorEntityId);
+                                                IbAuthorizationErrorCodeEnum authorizationErrorCode, String logId) {
+        super(errorCode, message, errorEntityId, logId);
         this.authorizationErrorCode = authorizationErrorCode;
     }
 

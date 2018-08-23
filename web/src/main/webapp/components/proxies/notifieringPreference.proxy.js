@@ -23,28 +23,11 @@ angular.module('ibApp').factory('NotifieringPreferenceProxy',
         var restPath = '/api/notifiering/preference';
 
         function _getNotifieringPreference() {
-
-
-            var config =  {
-                errorMessageConfig: {
-                    errorTitleKey: 'server.error.getnotifieringpreference.title',
-                    errorTextKey: 'server.error.getnotifieringpreference.text'
-                }
-            };
-
-            return ProxyTemplate.getTemplate(restPath, config);
+            return ProxyTemplate.getTemplate(restPath);
         }
 
         function _setNotifieringPreference(notifieringPreference) {
-
-            var config =  {
-                errorMessageConfig: {
-                    errorTitleKey: 'server.error.setnotifieringpreference.title',
-                    errorTextKey: 'server.error.setnotifieringpreference.text'
-                }
-            };
-
-            return ProxyTemplate.putTemplate(restPath, notifieringPreference, config);
+            return ProxyTemplate.putTemplate(restPath, notifieringPreference);
         }
 
 

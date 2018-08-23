@@ -26,14 +26,7 @@ angular.module('ibApp').factory('BestallningarProxy',
         function _getBestallning(utredningsId) {
             var restPath = basePath + '/' + utredningsId;
 
-            var config =  {
-                errorMessageConfig: {
-                    errorTitleKey: 'server.error.getbestallning.title',
-                    errorTextKey: 'server.error.getbestallning.text'
-                }
-            };
-
-            return ProxyTemplate.getTemplate(restPath, config);
+            return ProxyTemplate.getTemplate(restPath);
         }
 
         function _getBestallningarWithFilter(query) {

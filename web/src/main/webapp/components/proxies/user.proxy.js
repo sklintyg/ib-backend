@@ -31,15 +31,9 @@ angular.module('ibApp').factory('UserProxy',
             var dto = {
                 id: newUnitId
             };
-            var config =  {
-                errorMessageConfig: {
-                    errorTitleKey: 'server.error.changeunit.title',
-                    errorTextKey: 'server.error.changeunit.text'
-                }
-            };
             $log.debug('REST call: _changeSelectedUnit ' + restPath);
 
-            return ProxyTemplate.postTemplate(restPath, dto, config);
+            return ProxyTemplate.postTemplate(restPath, dto);
         }
 
 

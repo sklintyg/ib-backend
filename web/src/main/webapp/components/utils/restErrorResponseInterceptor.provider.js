@@ -34,13 +34,56 @@ angular.module('ibApp').provider('restErrorResponseInterceptor',
          * Mandatory provider $get function. here we can inject the dependencies the
          * actual implementation needs.
          */
-        this.$get = ['$q', '$rootScope', function($q, $rootScope) {
+        this.$get = function($q, $rootScope, ObjectHelper) {
+
+            function checkReturnErrorKey(value, defaultErrorKey) {
+                if(!ObjectHelper.isDefined(value)) {
+                    return defaultErrorKey;
+                }
+
+                return value;
+            }
 
             function responseError(rejection) {
-                if (rejection.status === 500 || rejection.status === -1) {
-                    if (rejection.config.errorMessageConfig) {
-                        $rootScope.$emit('ib.rest.exception', rejection.config.errorMessageConfig, rejection.data);
+
+                if (rejection.status !== 403 && (rejection.status >= 400 || rejection.status === -1)) {
+
+                    // If nothing else matches, use this config
+                    var backupConfig = {
+                        errorMessageConfig: {
+                            errorTitleKey: 'server.error.ge.02.title',
+                            errorTextKey: 'server.error.ge.02.text'
+                        }
+                    };
+
+                    // check and fall back to generic messages if none are provided
+                    if(rejection && rejection.config) {
+                        if(rejection.config.errorMessageConfig) {
+
+                            if(rejection.data.errorCode === 'BAD_STATE') {
+                                rejection.config.errorMessageConfig.errorTitleKey =
+                                    checkReturnErrorKey(rejection.config.errorMessageConfig.errorTitleKey,
+                                        'server.error.ge.01.title');
+                                rejection.config.errorMessageConfig.errorTextKey =
+                                    checkReturnErrorKey(rejection.config.errorMessageConfig.errorTextKey,
+                                        'server.error.ge.01.text');
+                            } else {
+                                rejection.config.errorMessageConfig.errorTitleKey =
+                                    checkReturnErrorKey(rejection.config.errorMessageConfig.errorTitleKey,
+                                        'server.error.ge.02.title');
+                                rejection.config.errorMessageConfig.errorTextKey =
+                                    checkReturnErrorKey(rejection.config.errorMessageConfig.errorTextKey,
+                                        'server.error.ge.02.text');
+                            }
+
+                        } else {
+                            rejection.config.errorMessageConfig = backupConfig.errorMessageConfig;
+                        }
+                    } else {
+                        rejection.config = backupConfig;
                     }
+
+                    $rootScope.$emit('ib.rest.exception', rejection.config.errorMessageConfig, rejection.data);
                 }
 
                 return $q.reject(rejection);
@@ -49,5 +92,5 @@ angular.module('ibApp').provider('restErrorResponseInterceptor',
             return {
                 'responseError': responseError
             };
-        }];
+        };
     });

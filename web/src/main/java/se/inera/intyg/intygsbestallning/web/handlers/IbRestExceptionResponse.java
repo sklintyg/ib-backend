@@ -29,17 +29,21 @@ public class IbRestExceptionResponse {
 
     private String message;
 
+    private String logId;
+
     private Long errorEntityId;
 
-    public IbRestExceptionResponse(IbErrorCodeEnum errorCode, String message) {
+    public IbRestExceptionResponse(IbErrorCodeEnum errorCode, String message, String logId) {
         this.errorCode = errorCode;
         this.message = message;
+        this.logId = logId;
     }
 
-    public IbRestExceptionResponse(IbErrorCodeEnum errorCode, String message, Long errorEntityId) {
+    public IbRestExceptionResponse(IbErrorCodeEnum errorCode, String message, Long errorEntityId, String logId) {
         this.errorCode = errorCode;
         this.message = message;
         this.errorEntityId = errorEntityId;
+        this.logId = logId;
     }
 
     public IbRestExceptionResponse(IbErrorCodeEnum errorCode, IbExternalSystemEnum externalSystem, String message) {
@@ -48,11 +52,16 @@ public class IbRestExceptionResponse {
         this.message = message;
     }
 
-    public IbRestExceptionResponse(IbErrorCodeEnum errorCode, IbExternalSystemEnum externalSystem, String message, Long errorEntityId) {
+    public IbRestExceptionResponse(IbErrorCodeEnum errorCode,
+                                   IbExternalSystemEnum externalSystem,
+                                   String message,
+                                   Long errorEntityId,
+                                   String logId) {
         this.errorCode = errorCode;
         this.externalSystem = externalSystem;
         this.message = message;
         this.errorEntityId = errorEntityId;
+        this.logId = logId;
     }
 
     public IbErrorCodeEnum getErrorCode() {
@@ -85,5 +94,13 @@ public class IbRestExceptionResponse {
 
     public void setErrorEntityId(Long errorEntityId) {
         this.errorEntityId = errorEntityId;
+    }
+
+    public String getLogId() {
+        return logId;
+    }
+
+    public void setLogId(String logId) {
+        this.logId = logId;
     }
 }

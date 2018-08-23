@@ -21,15 +21,10 @@ angular.module('ibApp').factory('RegistreraStatusProxy',
     function(ProxyTemplate) {
         'use strict';
 
-        function registerStatusProxy(restPath, requestData, utredningsId, errorMessageKey) {
+        function registerStatusProxy(restPath, requestData, utredningsId) {
             restPath = restPath.replace('{utredningsId}', utredningsId);
 
-            return ProxyTemplate.putTemplate(restPath, requestData, {
-                errorMessageConfig: {
-                    errorTitleKey: 'server.error.' + errorMessageKey + '.title',
-                    errorTextKey: 'server.error.' + errorMessageKey + '.text'
-                }
-            });
+            return ProxyTemplate.putTemplate(restPath, requestData);
         }
 
         function registerReceivedKomplettering(date, utredningsId) {
@@ -38,8 +33,7 @@ angular.module('ibApp').factory('RegistreraStatusProxy',
                 {
                     fragestallningMottagenDatum: date
                 },
-                utredningsId,
-                'registerkompletteringreceived'
+                utredningsId
             );
         }
 
@@ -49,8 +43,7 @@ angular.module('ibApp').factory('RegistreraStatusProxy',
                 {
                     utlatandeSentDate: date
                 },
-                utredningsId,
-                'registersentutlatande'
+                utredningsId
             );
         }
 
@@ -60,8 +53,7 @@ angular.module('ibApp').factory('RegistreraStatusProxy',
                 {
                     handlingarMottogsDatum: date
                 },
-                utredningsId,
-                'registerreceived'
+                utredningsId
             );
         }
 
@@ -71,8 +63,7 @@ angular.module('ibApp').factory('RegistreraStatusProxy',
                 {
                     kompletteringSkickadDatum: date
                 },
-                utredningsId,
-                'registerkompletteringreceived'
+                utredningsId
             );
         }
 
@@ -80,8 +71,7 @@ angular.module('ibApp').factory('RegistreraStatusProxy',
             return registerStatusProxy(
                 '/api/vardadmin/bestallningar/{utredningsId}/avsluta',
                 {},
-                utredningsId,
-                'abortutredning'
+                utredningsId
             );
         }
 

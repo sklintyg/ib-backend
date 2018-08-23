@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,20 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package se.inera.intyg.intygsbestallning.common.util;
 
-angular.module('ibApp').factory('SkapaAnteckningProxy',
-    function(ProxyTemplate) {
-        'use strict';
-        
-        var restPath = '/api/vardadmin/bestallningar/{utredningId}/anteckning';
-        
-        function skapaAnteckning(utredningId, data) {
-            var url = restPath.replace('{utredningId}', utredningId);
-            return ProxyTemplate.postTemplate(url, data);
-        }
+import org.apache.commons.lang3.RandomStringUtils;
 
-        // Return public API for the service
-        return {
-            skapaAnteckning: skapaAnteckning
-        };
-    });
+/**
+ * Generates IDs used for tracing log entries from support
+ *
+ * Created by bennysce on 2016-09-02.
+ */
+public final class LogIdGenerator {
+
+    private static final int ID_LENGTH = 6;
+
+    private LogIdGenerator() {
+
+    }
+
+    public static String generate() {
+        return RandomStringUtils.randomAlphanumeric(ID_LENGTH);
+    }
+}

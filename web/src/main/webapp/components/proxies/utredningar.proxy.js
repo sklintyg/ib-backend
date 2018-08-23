@@ -25,64 +25,37 @@ angular.module('ibApp').factory('UtredningarProxy',
 
         function _getUtredning(utredningsId) {
             var restPath = basePath + '/' + utredningsId;
-
-            var config =  {
-                errorMessageConfig: {
-                    errorTitleKey: 'server.error.getutredning.title',
-                    errorTextKey: 'server.error.getutredning.text'
-                }
-            };
-
-            return ProxyTemplate.getTemplate(restPath, config);
+            return ProxyTemplate.getTemplate(restPath);
         }
 
         function _getUtredningar() {
             var restPath = basePath;
 
-            return ProxyTemplate.getTemplate(restPath, {});
+            return ProxyTemplate.getTemplate(restPath);
         }
 
         function _getUtredningarWithFilter(query) {
             var restPath = basePath;
 
-            return ProxyTemplate.postTemplate(restPath, query, {});
+            return ProxyTemplate.postTemplate(restPath, query);
         }
 
         function _getAvslutadeUtredningarWithFilter(query) {
             var restPath = basePath + '/avslutade';
 
-            return ProxyTemplate.postTemplate(restPath, query, {
-                errorMessageConfig: {
-                    errorTitleKey: 'server.error.listavslutadeutredningar.title',
-                    errorTextKey: 'server.error.listavslutadeutredningar.text'
-                }
-            });
+            return ProxyTemplate.postTemplate(restPath, query);
         }
 
         function _createInternForfragan(utredningsId, requestBody) {
             var restPath = basePath + '/' + utredningsId + '/createinternforfragan';
 
-            var config =  {
-                errorMessageConfig: {
-                    errorTitleKey: 'server.error.createinternforfragan.title',
-                    errorTextKey: 'server.error.createinternforfragan.text'
-                }
-            };
-
-            return ProxyTemplate.postTemplate(restPath, requestBody, config);
+            return ProxyTemplate.postTemplate(restPath, requestBody);
         }
 
         function _tillDelaDirekt(utredningsId, requestBody) {
             var restPath = basePath + '/' + utredningsId + '/tilldeladirekt';
 
-            var config = {
-                errorMessageConfig: {
-                    errorTitleKey: 'server.error.tilldeladirekt.title',
-                    errorTextKey: 'server.error.tilldeladirekt.text'
-                }
-            };
-
-            return ProxyTemplate.postTemplate(restPath, requestBody, config);
+            return ProxyTemplate.postTemplate(restPath, requestBody);
         }
 
         function _saveBetaldVeId(utredningId, betaldVeId) {
@@ -92,11 +65,7 @@ angular.module('ibApp').factory('UtredningarProxy',
                 betalningId: betaldVeId
             };
 
-            return ProxyTemplate.postTemplate(restPath, request, {
-                errorMessageConfig: {
-                    errorTitleKey: 'server.error.savebetald.title',
-                    errorTextKey: 'server.error.savebetald.text'
-                }});
+            return ProxyTemplate.postTemplate(restPath, request);
         }
 
         function _saveFakturaFkId(utredningId, fakturaFkId) {
@@ -106,11 +75,7 @@ angular.module('ibApp').factory('UtredningarProxy',
                 fakturaFkId: fakturaFkId
             };
 
-            return ProxyTemplate.postTemplate(restPath, request, {
-                errorMessageConfig: {
-                    errorTitleKey: 'server.error.savefaktura.title',
-                    errorTextKey: 'server.error.savefaktura.text'
-                }});
+            return ProxyTemplate.postTemplate(restPath, request);
         }
 
         function _saveBetaldFkId(utredningId, betaldFkId) {
@@ -120,11 +85,7 @@ angular.module('ibApp').factory('UtredningarProxy',
                 utbetalningId: betaldFkId
             };
 
-            return ProxyTemplate.postTemplate(restPath, request, {
-                errorMessageConfig: {
-                    errorTitleKey: 'server.error.savebetald.title',
-                    errorTextKey: 'server.error.savebetald.text'
-                }});
+            return ProxyTemplate.postTemplate(restPath, request);
         }
 
         function _excelReport(query) {

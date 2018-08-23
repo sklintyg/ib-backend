@@ -18,20 +18,25 @@
  */
 package se.inera.intyg.intygsbestallning.common.exception;
 
+import se.inera.intyg.intygsbestallning.common.util.LogIdGenerator;
+
 public class IbServiceException extends RuntimeException {
     private final IbErrorCodeEnum errorCode;
     private Long errorEntityId;
+    private String logId;
 
     public IbServiceException(IbErrorCodeEnum errorCode, String message) {
         super(message);
         this.errorCode = errorCode;
         this.errorEntityId = null;
+        this.setLogId(LogIdGenerator.generate());
     }
 
     public IbServiceException(IbErrorCodeEnum errorCode, String message, Long errorEntityId) {
         super(message);
         this.errorCode = errorCode;
         this.errorEntityId = errorEntityId;
+        this.setLogId(LogIdGenerator.generate());
     }
 
     public IbErrorCodeEnum getErrorCode() {
@@ -44,5 +49,13 @@ public class IbServiceException extends RuntimeException {
 
     public void setErrorEntityId(Long errorEntityId) {
         this.errorEntityId = errorEntityId;
+    }
+
+    public String getLogId() {
+        return logId;
+    }
+
+    public void setLogId(String logId) {
+        this.logId = logId;
     }
 }

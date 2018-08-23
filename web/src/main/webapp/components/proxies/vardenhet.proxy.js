@@ -25,54 +25,22 @@ angular.module('ibApp').factory('VardenhetProxy',
         
         function _getVardenhetKontaktPreference(utforareTyp) {
             var restPath = basePath + '/preference/' + utforareTyp;
-
-            var config =  {
-                errorMessageConfig: {
-                    errorTitleKey: 'server.error.getvardenhetpreference.title',
-                    errorTextKey: 'server.error.getvardenhetpreference.text'
-                }
-            };
-
-            return ProxyTemplate.getTemplate(restPath, config);
+            return ProxyTemplate.getTemplate(restPath);
         }
 
         function _setVardenhetKontaktPreference(vardenhetPreferenceRequest) {
             var restPath = basePath + '/preference';
-
-            var config =  {
-                errorMessageConfig: {
-                    errorTitleKey: 'server.error.setvardenhetpreference.title',
-                    errorTextKey: 'server.error.setvardenhetpreference.text'
-                }
-            };
-
-            return ProxyTemplate.putTemplate(restPath, vardenhetPreferenceRequest, config);
+            return ProxyTemplate.putTemplate(restPath, vardenhetPreferenceRequest);
         }
 
         function _getVardenhetSvarPreference() {
             var restPath = basePath + '/preference/svar';
-
-            var config =  {
-                errorMessageConfig: {
-                    errorTitleKey: 'server.error.getvardenhetpreference.title',
-                    errorTextKey: 'server.error.getvardenhetpreference.text'
-                }
-            };
-
-            return ProxyTemplate.getTemplate(restPath, config);
+            return ProxyTemplate.getTemplate(restPath);
         }
 
         function _setVardenhetSvarPreference(vardenhetSvarPreferenceRequest) {
             var restPath = basePath + '/preference/svar';
-
-            var config =  {
-                errorMessageConfig: {
-                    errorTitleKey: 'server.error.setvardenhetpreference.title',
-                    errorTextKey: 'server.error.setvardenhetpreference.text'
-                }
-            };
-
-            return ProxyTemplate.putTemplate(restPath, vardenhetSvarPreferenceRequest, config);
+            return ProxyTemplate.putTemplate(restPath, vardenhetSvarPreferenceRequest);
         }
 
         function _getHsaInfo() {

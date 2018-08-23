@@ -32,6 +32,9 @@ import se.inera.intyg.intygsbestallning.common.exception.IbExternalServiceExcept
 import se.inera.intyg.intygsbestallning.common.exception.IbJMSException;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.common.util.LogIdGenerator;
+
+import java.text.MessageFormat;
 
 @ControllerAdvice
 public class IbRestExceptionHandler {
@@ -42,11 +45,11 @@ public class IbRestExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ResponseBody
     public IbRestExceptionResponse authorizationExceptionHandler(HttpServletRequest request, IbAuthorizationException e) {
-        LOG.warn("Authorization exception occured! Internal error code: {} Error message: {}", e.getErrorCode(),
-                e.getMessage());
+        LOG.warn("IbAuthorizationException occurred! Internal error code: {}, Log ID: {}, Error message: {}",
+                e.getLogId(), e.getErrorCode(), e.getMessage());
         IbRestExceptionResponse response =
                 new IbAuthorizationRestExceptionResponse(e.getErrorCode(), e.getMessage(), e.getErrorEntityId(),
-                        e.getAuthorizationErrorCode());
+                        e.getAuthorizationErrorCode(), e.getLogId());
         return response;
     }
 
@@ -54,10 +57,10 @@ public class IbRestExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
     public IbRestExceptionResponse notFoundExceptionHandler(HttpServletRequest request, IbNotFoundException e) {
-        LOG.warn("Not found exception occured! Internal error code: {} Error message: {}", e.getErrorCode(),
-                e.getMessage());
+        LOG.warn("IbNotFoundException occurred! Internal error code: {}, Log ID: {}, Error message: {}",
+                e.getLogId(), e.getErrorCode(), e.getMessage());
         IbRestExceptionResponse response =
-                new IbRestExceptionResponse(e.getErrorCode(), e.getMessage(), e.getErrorEntityId());
+                new IbRestExceptionResponse(e.getErrorCode(), e.getMessage(), e.getErrorEntityId(), e.getLogId());
         return response;
     }
 
@@ -65,26 +68,29 @@ public class IbRestExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public IbRestExceptionResponse serviceExceptionHandler(HttpServletRequest request, IllegalArgumentException iae) {
-        LOG.warn("Illegal Argument Exception occured! Error message: {}", iae.getMessage());
-        return new IbRestExceptionResponse(IbErrorCodeEnum.BAD_REQUEST, iae.getMessage());
+        String logId = LogIdGenerator.generate();
+        LOG.warn("IllegalArgumentException occurred! Error message: {}", logId, iae.getMessage());
+        return new IbRestExceptionResponse(IbErrorCodeEnum.BAD_REQUEST, iae.getMessage(), logId);
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public IbRestExceptionResponse serviceExceptionHandler(HttpServletRequest request, IllegalStateException ise) {
-        LOG.warn("Illegal State Exception occured! Error message: {}", ise.getMessage());
-        return new IbRestExceptionResponse(IbErrorCodeEnum.BAD_REQUEST, ise.getMessage());
+        String logId = LogIdGenerator.generate();
+        LOG.warn("IllegalStateException occurred! Log ID: {}, Error message: {}", logId, ise.getMessage());
+        return new IbRestExceptionResponse(IbErrorCodeEnum.BAD_REQUEST, ise.getMessage(), logId);
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public IbRestExceptionResponse serviceExceptionHandler(HttpServletRequest request, IbServiceException e) {
-        LOG.warn("Internal exception occured! Internal error code: {} Error message: {}", e.getErrorCode(),
-                e.getMessage());
+        String logId = LogIdGenerator.generate();
+        LOG.warn("IbServiceException occurred! Internal error code: {}, Error message: {}",
+                logId, e.getErrorCode(), e.getMessage());
         IbRestExceptionResponse response =
-                new IbRestExceptionResponse(e.getErrorCode(), e.getMessage(), e.getErrorEntityId());
+                new IbRestExceptionResponse(e.getErrorCode(), e.getMessage(), e.getErrorEntityId(), e.getLogId());
         return response;
     }
 
@@ -92,9 +98,10 @@ public class IbRestExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public IbRestExceptionResponse serviceExceptionHandler(HttpServletRequest request, IbJMSException re) {
-        LOG.error("Unhandled IbJMSException occured!", re);
+        String logId = LogIdGenerator.generate();
+        LOG.error(MessageFormat.format("IbJMSException occurred! Log ID: {}", logId), re);
         IbRestExceptionResponse response = new IbRestExceptionResponse(
-                IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, re.getMessage(), re.getErrorEntityId());
+                IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, re.getMessage(), re.getErrorEntityId(), re.getLogId());
         return response;
     }
 
@@ -102,9 +109,10 @@ public class IbRestExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public IbRestExceptionResponse serviceExceptionHandler(HttpServletRequest request, IbExternalServiceException e) {
-        LOG.error("External service exception occured!", e);
+        String logId = LogIdGenerator.generate();
+        LOG.error(MessageFormat.format("IbExternalServiceException occurred! Log ID: {}", logId), e);
         IbRestExceptionResponse response = new IbRestExceptionResponse(
-                IbErrorCodeEnum.EXTERNAL_ERROR, e.getExternalSystem(), e.getMessage(), e.getErrorEntityId());
+                IbErrorCodeEnum.EXTERNAL_ERROR, e.getExternalSystem(), e.getMessage(), e.getErrorEntityId(), e.getLogId());
         return response;
     }
 
@@ -112,9 +120,10 @@ public class IbRestExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public IbRestExceptionResponse serviceExceptionHandler(HttpServletRequest request, RuntimeException re) {
-        LOG.error("Unhandled RuntimeException occured!", re);
+        String logId = LogIdGenerator.generate();
+        LOG.error(MessageFormat.format("RuntimeException occurred! Log ID: {}", logId), re);
         IbRestExceptionResponse response = new IbRestExceptionResponse(
-                IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Unhandled runtime exception");
+                IbErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Unhandled runtime exception", logId);
         return response;
     }
 

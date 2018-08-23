@@ -39,7 +39,7 @@ angular.module('ibApp')
             var unregisterFn = $rootScope.$on('ib.rest.exception', function(event, msgConfig, response) {
                 var texts = {
                     title: messageService.getProperty(msgConfig.errorTitleKey),
-                    body: messageService.getProperty(msgConfig.errorTextKey)
+                    body: messageService.getProperty(msgConfig.errorTextKey, {logId: response.logId})
                 };
                 if (response.externalSystemId === 'HSA' && msgConfig.errorHsaTextKey) {
                     texts.body = messageService.getProperty(msgConfig.errorHsaTextKey);

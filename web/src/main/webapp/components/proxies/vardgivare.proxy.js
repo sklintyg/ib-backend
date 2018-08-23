@@ -36,25 +36,11 @@ angular.module('ibApp').factory('VardgivareProxy',
                 regiForm: regiForm
             };
 
-            var config =  {
-                errorMessageConfig: {
-                    errorTitleKey: 'server.error.updateregiform.title',
-                    errorTextKey: 'server.error.updateregiform.text'
-                }
-            };
-
-            return ProxyTemplate.putTemplate(endpointBaseUrl + '/' + vardenhetHsaId, payload, config);
+            return ProxyTemplate.putTemplate(endpointBaseUrl + '/' + vardenhetHsaId, payload);
         }
 
         function _deleteVardenhet(vardenhetHsaId) {
-            var config =  {
-                errorMessageConfig: {
-                    errorTitleKey: 'server.error.deletevardenhet.title',
-                    errorTextKey: 'server.error.deletevardenhet.text'
-                }
-            };
-
-            return ProxyTemplate.deleteTemplate(endpointBaseUrl + '/' + vardenhetHsaId, config);
+            return ProxyTemplate.deleteTemplate(endpointBaseUrl + '/' + vardenhetHsaId);
         }
 
         function _findVardenhetByHsaId(vardenhetHsaId) {
@@ -66,14 +52,7 @@ angular.module('ibApp').factory('VardgivareProxy',
                 regiForm: regiForm
             };
 
-            var config =  {
-                errorMessageConfig: {
-                    errorTitleKey: 'server.error.addvardenhet.title',
-                    errorTextKey: 'server.error.addvardenhet.text'
-                }
-            };
-
-            return ProxyTemplate.postTemplate(endpointBaseUrl + '/' + vardenhetHsaId, payload, config);
+            return ProxyTemplate.postTemplate(endpointBaseUrl + '/' + vardenhetHsaId, payload);
 
         }
 
