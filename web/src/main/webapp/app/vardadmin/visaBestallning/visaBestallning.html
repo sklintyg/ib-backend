@@ -38,21 +38,23 @@
                           </tr>
                         </table>
                       </card-table>
-                      <h4>Avslutsvillkor</h4>
-                      <card-table>
-                        <table class="table table-striped ib-table-striped">
-                          <tr>
-                            <th>Avslutsdatum</th>
-                            <th>Ersätts</th>
-                            <th>Orsak</th>
-                          </tr>
-                          <tr>
-                            <td>{{bestallning.avbrutenDatum}}</td>
-                            <td>{{bestallning.ersatts}}</td>
-                            <td>{{bestallning.avbrutenAnledning}}</td>
-                          </tr>
-                        </table>
-                      </card-table>
+                      <div ng-if="bestallning.fas.id === 'AVSLUTAD'">
+                        <h4>Avslutsvillkor</h4>
+                        <card-table>
+                          <table class="table table-striped ib-table-striped">
+                            <tr>
+                              <th>Avslutsdatum</th>
+                              <th>Ersätts</th>
+                              <th>Orsak</th>
+                            </tr>
+                            <tr>
+                              <td>{{bestallning.avbrutenDatum}}</td>
+                              <td>{{bestallning.ersatts}}</td>
+                              <td>{{bestallning.avbrutenAnledning}}</td>
+                            </tr>
+                          </table>
+                        </card-table>
+                      </div>
                     </card-body>
                   </card>
                   <card>
