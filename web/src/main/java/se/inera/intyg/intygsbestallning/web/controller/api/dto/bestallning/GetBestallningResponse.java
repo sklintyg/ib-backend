@@ -81,6 +81,8 @@ public class GetBestallningResponse implements PDLLoggable {
 
     private String avbrutenDatum;
 
+    private boolean ersatts;
+
     private String avbrutenAnledning;
 
     private List<MeddelandeFromHandlaggareListItem> meddelandeFromHandlaggareList;
@@ -137,6 +139,7 @@ public class GetBestallningResponse implements PDLLoggable {
                 .withAvbrutenDatum(!isNull(utredning.getAvbrutenDatum())
                         ? utredning.getAvbrutenDatum().format(formatter)
                         : null)
+                .withErsatts(ErsattsResolver.resolveUtredningErsatts(utredning, businessDays))
                 .withAvbrutenAnledning(nonNull(utredning.getAvbrutenOrsak())
                         ? utredning.getAvbrutenOrsak().getLabel()
                         : null)
@@ -296,6 +299,14 @@ public class GetBestallningResponse implements PDLLoggable {
         this.avbrutenDatum = avbrutenDatum;
     }
 
+    public boolean isErsatts() {
+        return ersatts;
+    }
+
+    public void setErsatts(boolean ersatts) {
+        this.ersatts = ersatts;
+    }
+
     public String getAvbrutenAnledning() {
         return avbrutenAnledning;
     }
@@ -371,6 +382,7 @@ public class GetBestallningResponse implements PDLLoggable {
         private String intygSistaDatum;
         private String intygSistaDatumKomplettering;
         private String avbrutenDatum;
+        private boolean ersatts;
         private String avbrutenAnledning;
         private List<MeddelandeFromHandlaggareListItem> meddelandeFromHandlaggareList;
         private List<BesokListItem> besokList;
@@ -471,6 +483,11 @@ public class GetBestallningResponse implements PDLLoggable {
             return this;
         }
 
+        public GetBestallningResponseBuilder withErsatts(boolean ersatts) {
+            this.ersatts = ersatts;
+            return this;
+        }
+
         public GetBestallningResponseBuilder withAvbrutenAnledning(String avbrutenAnledning) {
             this.avbrutenAnledning = avbrutenAnledning;
             return this;
@@ -521,6 +538,7 @@ public class GetBestallningResponse implements PDLLoggable {
             getBestallningResponse.setIntygSistaDatum(intygSistaDatum);
             getBestallningResponse.setIntygSistaDatumKomplettering(intygSistaDatumKomplettering);
             getBestallningResponse.setAvbrutenDatum(avbrutenDatum);
+            getBestallningResponse.setErsatts(ersatts);
             getBestallningResponse.setAvbrutenAnledning(avbrutenAnledning);
             getBestallningResponse.setMeddelandeFromHandlaggareList(meddelandeFromHandlaggareList);
             getBestallningResponse.setBesokList(besokList);
