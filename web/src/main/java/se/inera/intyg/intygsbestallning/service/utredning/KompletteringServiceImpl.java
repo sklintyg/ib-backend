@@ -35,7 +35,6 @@ import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
-import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
@@ -62,6 +61,10 @@ public class KompletteringServiceImpl extends BaseUtredningService implements Ko
     private static final ImmutableList<UtredningStatus> GODKANDA_STATUSAR_REQUEST_SUPPLEMENT = ImmutableList.of(
             UtredningStatus.UTLATANDE_MOTTAGET,
             UtredningStatus.KOMPLETTERING_MOTTAGEN);
+
+    private static final ImmutableList<UtredningStatus> GODKANDA_STATUSAR_KOMPLETTERING_SKICKAD = ImmutableList.of(
+            UtredningStatus.KOMPLETTERINGSBEGARAN_MOTTAGEN_VANTAR_PA_FRAGESTALLNING,
+            UtredningStatus.KOMPLETTERANDE_FRAGESTALLNING_MOTTAGEN);
 
     @Autowired
     private NotifieringSendService notifieringSendService;
@@ -197,9 +200,7 @@ public class KompletteringServiceImpl extends BaseUtredningService implements Ko
         final Utredning utredning = utredningRepository.findById(utredningId)
                 .orElseThrow(() -> new IbNotFoundException("Utredning with id '" + utredningId + "' does not exist."));
 
-        if (utredning.getStatus().getUtredningFas() != UtredningFas.KOMPLETTERING
-                || utredning.getStatus() == UtredningStatus.KOMPLETTERING_MOTTAGEN
-                || utredning.getStatus() == UtredningStatus.KOMPLETTERING_SKICKAD) {
+        if (!GODKANDA_STATUSAR_KOMPLETTERING_SKICKAD.contains(utredning.getStatus())) {
             throw new IbServiceException(IbErrorCodeEnum.BAD_STATE, MessageFormat.format(
                     "Utredning with id {0} is in an incorrect state {1}", utredning.getUtredningId(), utredning.getStatus().getId()));
         }
