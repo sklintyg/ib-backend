@@ -59,22 +59,14 @@ public interface UtredningRepository extends UtredningRepositoryCustom, JpaRepos
             @Param("statusar") Set<InternForfraganStatus> statusar,
             @Param("typ") NotifieringTyp typ,
             @Param("mottagare") NotifieringMottagarTyp mottagare);
+
     /**
      * Returns utredningar tilldelad to vardenhet in archived state.
      *
      * @param vardenhetHsaId
      * @return
      */
-    @Query("SELECT u FROM Utredning u " +
-        "LEFT OUTER JOIN u.externForfragan e " +
-        "LEFT OUTER JOIN u.bestallning b " +
-        "LEFT OUTER JOIN e.internForfraganList iff " +
-        "LEFT JOIN FETCH u.invanare inv " +
-        "LEFT JOIN FETCH u.handlaggare h " +
-        "LEFT JOIN FETCH u.betalning bet " +
-        "WHERE u.arkiverad = true " +
-        "AND ( (b.tilldeladVardenhetHsaId = :vardenhetHsaId AND b.tilldeladVardenhetOrgNr = :vardgivareOrgnr) " +
-            "OR (iff.vardenhetHsaId = :vardenhetHsaId AND u.bestallning IS NULL))")
+    @Query("SELECT u FROM Utredning u JOIN FETCH u.bestallning b LEFT JOIN FETCH u.invanare inv LEFT JOIN FETCH u.handlaggare h LEFT JOIN FETCH u.betalning bet WHERE u.arkiverad = true AND b.tilldeladVardenhetHsaId = :vardenhetHsaId AND b.tilldeladVardenhetOrgNr = :vardgivareOrgnr")
     List<Utredning> findAllByBestallning_TilldeladVardenhetHsaId_AndArkiveradTrue(@Param("vardenhetHsaId") String vardenhetHsaId, @Param("vardgivareOrgnr") String vardgivareOrgnr);
 
     List<Utredning> findAllByExternForfragan_LandstingHsaId(String landstingHsaId);

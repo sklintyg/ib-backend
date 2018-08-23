@@ -127,7 +127,7 @@ public class ExternForfraganServiceImplTest {
 
     @Test
     public void testListForfragningar() {
-        when(externForfraganRepository.findByExternForfraganAndVardenhetHsaIdAndArkiveradFalse("ve-1")).thenReturn(buildUtredningar());
+        when(externForfraganRepository.findByExternForfraganAndVardenhetHsaIdAndArkiveradFalseOrIngenBestallning("ve-1")).thenReturn(buildUtredningar());
 
         ListForfraganRequest request = buildListForfraganRequest();
         GetForfraganListResponse response = testee.findForfragningarForVardenhetHsaIdWithFilter("ve-1", request);
@@ -138,7 +138,7 @@ public class ExternForfraganServiceImplTest {
 
     @Test
     public void testListForfragningarWithVardgivareFilter() {
-        when(externForfraganRepository.findByExternForfraganAndVardenhetHsaIdAndArkiveradFalse("ve-1")).thenReturn(buildUtredningar());
+        when(externForfraganRepository.findByExternForfraganAndVardenhetHsaIdAndArkiveradFalseOrIngenBestallning("ve-1")).thenReturn(buildUtredningar());
 
         ListForfraganRequest request = buildListForfraganRequest();
         request.setVardgivareHsaId("vg-1");

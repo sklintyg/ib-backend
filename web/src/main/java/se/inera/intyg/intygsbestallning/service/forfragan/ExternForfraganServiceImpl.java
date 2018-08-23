@@ -103,7 +103,7 @@ public class ExternForfraganServiceImpl extends BaseUtredningService implements 
     public GetForfraganListResponse findForfragningarForVardenhetHsaIdWithFilter(String vardenhetHsaId, ListForfraganRequest request) {
         long start = System.currentTimeMillis();
         List<Utredning> jpaList = externForfraganRepository
-                .findByExternForfraganAndVardenhetHsaIdAndArkiveradFalse(vardenhetHsaId);
+                .findByExternForfraganAndVardenhetHsaIdAndArkiveradFalseOrIngenBestallning(vardenhetHsaId);
         LOG.info("Loading findByExternForfraganAndVardenhetHsaIdAndArkiveradFalse took {} ms", (System.currentTimeMillis() - start));
         start = System.currentTimeMillis();
 

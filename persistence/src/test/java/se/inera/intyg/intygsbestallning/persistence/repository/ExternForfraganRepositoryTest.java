@@ -55,7 +55,7 @@ public class ExternForfraganRepositoryTest {
         saved.setExternForfragan(externForfragan);
         saved = utredningRepository.saveUtredning(saved);
 
-        List<Utredning> list = externForfraganRepository.findByExternForfraganAndVardenhetHsaIdAndArkiveradFalse(TestDataFactory.VE_HSA_ID);
+        List<Utredning> list = externForfraganRepository.findByExternForfraganAndVardenhetHsaIdAndArkiveradFalseOrIngenBestallning(TestDataFactory.VE_HSA_ID);
         assertEquals(1, list.size());
     }
 }

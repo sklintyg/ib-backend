@@ -30,8 +30,8 @@ import java.util.List;
 //CHECKSTYLE:OFF LineLength
 public interface ExternForfraganRepository extends JpaRepository<ExternForfragan, Long> {
 
-    @Query("SELECT u FROM Utredning u JOIN FETCH u.externForfragan ef JOIN FETCH ef.internForfraganList intf LEFT JOIN FETCH intf.forfraganSvar ffs LEFT JOIN FETCH u.invanare inv LEFT JOIN FETCH u.handlaggare h LEFT JOIN FETCH u.bestallning b LEFT JOIN FETCH u.betalning bet WHERE u.arkiverad = false AND intf.vardenhetHsaId = :vardenhetHsaId")
-    List<Utredning> findByExternForfraganAndVardenhetHsaIdAndArkiveradFalse(@Param("vardenhetHsaId") String vardenhetHsaId);
+    @Query("SELECT u FROM Utredning u JOIN FETCH u.externForfragan ef JOIN FETCH ef.internForfraganList intf LEFT JOIN FETCH intf.forfraganSvar ffs LEFT JOIN FETCH u.invanare inv LEFT JOIN FETCH u.handlaggare h LEFT JOIN FETCH u.bestallning b LEFT JOIN FETCH u.betalning bet WHERE (u.arkiverad = false OR u.avbrutenOrsak = 'INGEN_BESTALLNING') AND intf.vardenhetHsaId = :vardenhetHsaId")
+    List<Utredning> findByExternForfraganAndVardenhetHsaIdAndArkiveradFalseOrIngenBestallning(@Param("vardenhetHsaId") String vardenhetHsaId);
 }
 //CHECKSTYLE:ON MethodName
 //CHECKSTYLE:ON LineLength
