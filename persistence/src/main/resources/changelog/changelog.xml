@@ -931,7 +931,7 @@
             <column name="BESTALLNING_ID" type="bigint">
                 <constraints nullable="false"/>
             </column>
-            <column name="KOMMENTAR" type="varchar(255)">
+            <column name="KOMMENTAR" type="text">
                 <constraints nullable="true"/>
             </column>
 
