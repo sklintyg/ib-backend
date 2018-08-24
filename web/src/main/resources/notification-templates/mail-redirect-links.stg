@@ -4,26 +4,26 @@ internforfragan_url(host, utredningId, internforfraganId) ::= <<
 $host$/maillink/internforfragan/$utredningId$/$internforfraganId$
 >>
 
-internforfragan_redirect(utredningId) ::= <<
-redirect:/#app/vardadmin/listaForfragningar/visaInternForfragan/$utredningId$
+internforfragan_redirect(host, utredningId) ::= <<
+redirect:$host$/#app/vardadmin/listaForfragningar/visaInternForfragan/$utredningId$
 >>
 
 bestallning_url(host, utredningId) ::= <<
 $host$/maillink/bestallning/$utredningId$
 >>
 
-bestallning_redirect(utredningId) ::= <<
-redirect:/#app/vardadmin/pagaendeBestallningar/visaBestallning/$utredningId$/0
+bestallning_redirect(host, utredningId) ::= <<
+redirect:$host$/#app/vardadmin/pagaendeBestallningar/visaBestallning/$utredningId$/0
 >>
 
 samordnareutredning_url(host, utredningId) ::= <<
 $host$/maillink/externforfragan/$utredningId$
 >>
 
-samordnareutredning_redirect(utredningId) ::= <<
-redirect:/#app/samordnare/listaUtredningar/visaUtredning/$utredningId$
+samordnareutredning_redirect(host, utredningId) ::= <<
+redirect:$host$/#app/samordnare/listaUtredningar/visaUtredning/$utredningId$
 >>
 
-errorview_redirect(reason) ::= <<
-redirect:/index.html?reason=$reason$
+errorview_redirect(host, reason) ::= <<
+redirect:$host$/index.html?reason=$reason$
 >>

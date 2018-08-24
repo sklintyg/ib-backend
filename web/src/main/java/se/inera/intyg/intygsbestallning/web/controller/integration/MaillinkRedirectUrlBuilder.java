@@ -53,6 +53,7 @@ public class MaillinkRedirectUrlBuilder {
 
     public String buildVardadminInternforfraganRedirect(String utredningId) {
         ST internforfraganTemplate = templateGroup.getInstanceOf("internforfragan_redirect");
+        internforfraganTemplate.add("host", hostUrl);
         internforfraganTemplate.add("utredningId", utredningId);
 
         return internforfraganTemplate.render();
@@ -68,6 +69,7 @@ public class MaillinkRedirectUrlBuilder {
 
     public String buildVardadminBestallningRedirect(String utredningId) {
         ST bestallningTemplate = templateGroup.getInstanceOf("bestallning_redirect");
+        bestallningTemplate.add("host", hostUrl);
         bestallningTemplate.add("utredningId", utredningId);
 
         return bestallningTemplate.render();
@@ -83,6 +85,7 @@ public class MaillinkRedirectUrlBuilder {
 
     public String buildSamordnareUtredningRedirect(String utredningId) {
         ST utredningTemplate = templateGroup.getInstanceOf("samordnareutredning_redirect");
+        utredningTemplate.add("host", hostUrl);
         utredningTemplate.add("utredningId", utredningId);
 
         return utredningTemplate.render();
@@ -90,6 +93,7 @@ public class MaillinkRedirectUrlBuilder {
 
     public String buildErrorRedirect(String reason) {
         ST errorTemplate = templateGroup.getInstanceOf("errorview_redirect");
+        errorTemplate.add("host", hostUrl);
         errorTemplate.add("reason", reason);
 
         return errorTemplate.render();
