@@ -19,6 +19,7 @@
 package se.inera.intyg.intygsbestallning.service.utredning;
 
 import static com.google.common.collect.MoreCollectors.*;
+import static junit.framework.TestCase.fail;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.not;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -86,6 +87,7 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -178,13 +180,21 @@ public class UtredningServiceImplTest {
     public void registerOrder() throws HsaServiceCallException {
         final Long utredningId = 1L;
 
+        String tillDeladEnhetHsaId = "enhet";
         when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
                 .withUtredningId(utredningId)
+                .withStatus(UtredningStatus.TILLDELAD_VANTAR_PA_BESTALLNING)
+                .withExternForfragan(anExternForfragan()
+                        .withInternForfraganList(Arrays.asList(
+                                anInternForfragan()
+                                        .withVardenhetHsaId(tillDeladEnhetHsaId)
+                                        .withTilldeladDatum(LocalDateTime.now())
+                                        .build()))
+                        .build())
                 .withUtredningsTyp(AFU)
                 .withInvanare(anInvanare()
                         .withPostort("invanarePostort")
                         .build())
-                .withExternForfragan(anExternForfragan().build())
                 .build()));
 
         HealthCareUnitType healthCareUnitType = new HealthCareUnitType();
@@ -203,7 +213,7 @@ public class UtredningServiceImplTest {
                 .withInvanareBehov("behov")
                 .withInvanareBakgrund("bakgrund")
                 .withHandling(true)
-                .withEnhetId("enhet")
+                .withEnhetId(tillDeladEnhetHsaId)
                 .withAtgarder("atgarder")
                 .withBestallare(aBestallare()
                         .withEmail("email")
@@ -228,7 +238,7 @@ public class UtredningServiceImplTest {
         assertEquals("kommentar", response.getBestallning().get().getBestallningHistorikList().get(0).getKommentar());
         assertEquals("atgarder", response.getBestallning().get().getPlaneradeAktiviteter());
         assertEquals("syfte", response.getBestallning().get().getSyfte());
-        assertEquals("enhet", response.getBestallning().get().getTilldeladVardenhetHsaId());
+        assertEquals(tillDeladEnhetHsaId, response.getBestallning().get().getTilldeladVardenhetHsaId());
         assertFalse(response.getIntygList().isEmpty());
         assertEquals(LocalDate.of(2019, 1, 1).atStartOfDay(), response.getIntygList().get(0).getSistaDatum());
         assertNull(response.getBestallning().get().getUppdateradDatum());
@@ -252,7 +262,7 @@ public class UtredningServiceImplTest {
         assertEquals("telefonnummer", response.getHandlaggare().getTelefonnummer());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IbServiceException.class)
     public void registerOrderNoForfragan() {
         final Long utredningId = 1L;
 
@@ -278,6 +288,53 @@ public class UtredningServiceImplTest {
         OrderRequest order = anOrderRequest().withUtredningId(utredningId).build();
 
         utredningService.registerOrder(order);
+    }
+
+    @Test
+    public void registerOrderInvalidUtredningsStatus() {
+        final Long utredningId = 1L;
+
+        when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
+                .withUtredningId(utredningId)
+                .withStatus(UtredningStatus.FORFRAGAN_INKOMMEN)
+                .withUtredningsTyp(AFU)
+                .withInvanare(anInvanare()
+                        .withPostort("invanarePostort")
+                        .build())
+                .build()));
+
+        OrderRequest order = anOrderRequest().withUtredningId(utredningId).build();
+        try {
+            utredningService.registerOrder(order);
+            fail("Expected an IbServiceException to be thrown");
+        } catch (IbServiceException ibs) {
+            assertEquals(IbErrorCodeEnum.BAD_STATE, ibs.getErrorCode());
+            assertEquals("Utredningen har redan blivit beställd eller är avbruten", ibs.getMessage());
+        }
+    }
+
+    @Test
+    public void registerOrderFailsWhenNotSameTilldeladEnhet() {
+        final Long utredningId = 1L;
+        final String bestalldEnhet = "fk1";
+
+        when(utredningRepository.findById(utredningId)).thenReturn(Optional.of(anUtredning()
+                .withUtredningId(utredningId)
+                .withStatus(UtredningStatus.TILLDELAD_VANTAR_PA_BESTALLNING)
+                .withUtredningsTyp(AFU)
+                .withInvanare(anInvanare()
+                        .withPostort("invanarePostort")
+                        .build())
+                .build()));
+
+        OrderRequest order = anOrderRequest().withUtredningId(utredningId).withEnhetId(bestalldEnhet).build();
+        try {
+            utredningService.registerOrder(order);
+            fail("Expected an IbServiceException to be thrown");
+        } catch (IbServiceException ibs) {
+            assertEquals(IbErrorCodeEnum.BAD_STATE, ibs.getErrorCode());
+            assertEquals("Utredning " + utredningId + " tillhör inte vårdenhet " + bestalldEnhet, ibs.getMessage());
+        }
     }
 
     @Test

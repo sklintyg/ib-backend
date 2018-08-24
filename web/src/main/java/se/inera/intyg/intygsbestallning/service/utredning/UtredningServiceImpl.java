@@ -281,23 +281,12 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
     @Override
     public Utredning registerOrder(OrderRequest order) {
+        // TA.FEL06: Angivet utrednings id existerar inte
         Utredning utredning = utredningRepository.findById(order.getUtredningId()).orElseThrow(
                 () -> new IbNotFoundException(
                         MessageFormat.format("Felaktig utredningsid: {0}. Utredningen existerar inte.", order.getUtredningId())));
 
-        // Validate the state
-        if (utredning.getBestallning().isPresent()) {
-            LOG.warn("Assessment '{}' already have a bestallning", utredning.getUtredningId());
-            throw new IllegalArgumentException(
-                    "Cannot create a order when one already exists for assessmentId " + order.getUtredningId());
-        }
-
-        // Utredning must have an ExternForfragan.
-        if (!utredning.getExternForfragan().isPresent()) {
-            final String message = "Utredning with assessmentId '" + utredning.getUtredningId() + "' does not have an Förfrågan";
-            LOG.error(message);
-            throw new IllegalArgumentException(message);
-        }
+        validateCorrectUtredningStateForOrderAssessment(order, utredning);
 
         LOG.info("Saving new order for request '{}' with type '{}'", utredning.getUtredningId(), utredning.getUtredningsTyp());
 
@@ -335,6 +324,27 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         utredningRepository.saveUtredning(utredning);
         notifieringSendService.notifieraVardenhetNyBestallning(utredning);
         return utredning;
+    }
+
+
+    private void validateCorrectUtredningStateForOrderAssessment(OrderRequest order, Utredning utredning) {
+
+
+        // TA.FEL13 - Utredningen är inte i status Tilldelad, väntar på beställning
+        if (utredning.getBestallning().isPresent() || !UtredningStatus.TILLDELAD_VANTAR_PA_BESTALLNING.equals(utredning.getStatus())) {
+            throw new IbServiceException(
+                    IbErrorCodeEnum.BAD_STATE,
+                    "Utredningen har redan blivit beställd eller är avbruten");
+        }
+
+        // TA.FEL04 - Beställningens enhet måste vara samma som tilldelad enhet
+        if (isNullOrEmpty(order.getEnhetId()) || !utredning.getExternForfragan().isPresent()
+                || utredning.getExternForfragan().get().getInternForfraganList().stream()
+                        .noneMatch(iff -> iff.getTilldeladDatum() != null && order.getEnhetId().equals(iff.getVardenhetHsaId()))) {
+            throw new IbServiceException(IbErrorCodeEnum.BAD_STATE,
+                    MessageFormat.format("Utredning {0} tillhör inte vårdenhet {1}",
+                            order.getUtredningId(), order.getEnhetId()));
+        }
     }
 
     @Override

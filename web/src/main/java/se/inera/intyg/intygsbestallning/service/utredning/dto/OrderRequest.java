@@ -145,6 +145,7 @@ public final class OrderRequest {
                 errors.add("AssessmentId is not parseable as a Long");
             }
             if (isNull(source.getLastDateForCertificateReceival())) {
+                //TA.FEL07
                 errors.add("LastDateForCertificateReceival is required when assessmentId is present");
             }
             if (isNull(source.getCitizen().getFirstName())
