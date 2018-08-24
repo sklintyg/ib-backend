@@ -34,7 +34,6 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
