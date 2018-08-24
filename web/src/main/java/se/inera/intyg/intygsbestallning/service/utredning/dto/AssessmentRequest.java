@@ -45,7 +45,7 @@ import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 
-public class AssessmentRequest {
+public class AssessmentRequest implements TolkRequest {
 
     private UtredningsTyp utredningsTyp;
     private LocalDateTime besvaraSenastDatum;
@@ -70,12 +70,24 @@ public class AssessmentRequest {
         return kommentar;
     }
 
+    @Override
     public boolean isTolkBehov() {
         return tolkBehov;
     }
 
+    @Override
+    public void setTolkBehov(boolean tolkBehov) {
+        this.tolkBehov = tolkBehov;
+    }
+
+    @Override
     public String getTolkSprak() {
         return tolkSprak;
+    }
+
+    @Override
+    public void setTolkSprak(String tolkSprak) {
+        this.tolkSprak = tolkSprak;
     }
 
     public Bestallare getBestallare() {

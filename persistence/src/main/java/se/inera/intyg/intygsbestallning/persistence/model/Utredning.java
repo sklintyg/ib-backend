@@ -18,14 +18,13 @@
  */
 package se.inera.intyg.intygsbestallning.persistence.model;
 
+import static java.util.Objects.isNull;
+import static java.util.stream.Collectors.toList;
+import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
+
 import com.google.common.base.MoreObjects;
 import org.apache.commons.collections4.ListUtils;
 import org.hibernate.annotations.Type;
-import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
-import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
-import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
-import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -46,10 +45,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
-import static java.util.Objects.isNull;
-import static java.util.stream.Collectors.toList;
-import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus;
+import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
+import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
+import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 
 @Entity
 @Table(name = "UTREDNING")
@@ -73,6 +72,9 @@ public final class Utredning {
 
     @Column(name = "TOLK_SPRAK")
     private String tolkSprak;
+
+    @Column(name = "TOLK_SPRAK_BESKRIVNING")
+    private String tolkSprakBeskrivning;
 
     @Column(name = "AVBRUTEN_DATUM")
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
@@ -145,6 +147,7 @@ public final class Utredning {
                 .withBestallning(Bestallning.copyFrom(utredning.getBestallning().orElse(null)))
                 .withTolkBehov(utredning.getTolkBehov())
                 .withTolkSprak(utredning.getTolkSprak())
+                .withTolkSprakBeskrivning(utredning.getTolkSprakBeskrivning())
                 .withExternForfragan(ExternForfragan.copyFrom(utredning.getExternForfragan().orElse(null)))
                 .withHandelseList(utredning.getHandelseList().stream()
                         .map(Handelse::copyFrom)
@@ -211,6 +214,14 @@ public final class Utredning {
 
     public void setTolkSprak(final String tolkSprak) {
         this.tolkSprak = tolkSprak;
+    }
+
+    public String getTolkSprakBeskrivning() {
+        return tolkSprakBeskrivning;
+    }
+
+    public void setTolkSprakBeskrivning(final String tolkSprakBeskrivning) {
+        this.tolkSprakBeskrivning = tolkSprakBeskrivning;
     }
 
     public Boolean getArkiverad() {
@@ -357,6 +368,11 @@ public final class Utredning {
         if (tolkSprak != null ? !tolkSprak.equals(utredning.tolkSprak) : utredning.tolkSprak != null) {
             return false;
         }
+        if (tolkSprakBeskrivning != null
+                ? !tolkSprakBeskrivning.equals(utredning.tolkSprakBeskrivning)
+                : utredning.tolkSprakBeskrivning != null) {
+            return false;
+        }
         if (avbrutenDatum != null ? !avbrutenDatum.equals(utredning.avbrutenDatum) : utredning.avbrutenDatum != null) {
             return false;
         }
@@ -407,6 +423,7 @@ public final class Utredning {
                 bestallning,
                 tolkBehov,
                 tolkSprak,
+                tolkSprakBeskrivning,
                 avbrutenDatum,
                 avbrutenOrsak,
                 arkiverad,
@@ -431,6 +448,7 @@ public final class Utredning {
                 .add("bestallning", bestallning)
                 .add("tolkBehov", tolkBehov)
                 .add("tolkSprak", tolkSprak)
+                .add("tolkSprakBeskrivning", tolkSprakBeskrivning)
                 .add("avbrutenDatum", avbrutenDatum)
                 .add("avbrutenOrsak", avbrutenOrsak)
                 .add("arkiverad", arkiverad)
@@ -454,6 +472,7 @@ public final class Utredning {
         private Bestallning bestallning;
         private Boolean tolkBehov;
         private String tolkSprak;
+        private String tolkSprakBeskrivning;
         private LocalDateTime avbrutenDatum;
         private AvslutOrsak avbrutenOrsak;
         private Boolean arkiverad = false;
@@ -498,6 +517,11 @@ public final class Utredning {
 
         public UtredningBuilder withTolkSprak(String tolkSprak) {
             this.tolkSprak = tolkSprak;
+            return this;
+        }
+
+        public UtredningBuilder withTolkSprakBeskrivning(String tolkSprakBeskrivning) {
+            this.tolkSprakBeskrivning = tolkSprakBeskrivning;
             return this;
         }
 
@@ -578,6 +602,7 @@ public final class Utredning {
             utredning.setBestallning(bestallning);
             utredning.setTolkBehov(tolkBehov);
             utredning.setTolkSprak(tolkSprak);
+            utredning.setTolkSprakBeskrivning(tolkSprakBeskrivning);
             utredning.setAvbrutenDatum(avbrutenDatum);
             utredning.setAvbrutenOrsak(avbrutenOrsak);
             utredning.setArkiverad(arkiverad);

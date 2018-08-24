@@ -18,24 +18,25 @@
  */
 package se.inera.intyg.intygsbestallning.service.utredning;
 
-import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Predicate;
 
-import javax.xml.ws.WebServiceException;
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
+import com.google.common.base.Strings;
 import org.apache.commons.lang3.BooleanUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.base.Strings;
-
+import javax.xml.ws.WebServiceException;
+import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Predicate;
 import se.inera.intyg.infra.integration.hsa.client.OrganizationUnitService;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
@@ -55,7 +56,10 @@ import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatus
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.persistence.model.type.NotifieringTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
+import se.inera.intyg.intygsbestallning.service.sprak.TolkSprakLookup;
+import se.inera.intyg.intygsbestallning.service.sprak.dto.TolkSprak;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
+import se.inera.intyg.intygsbestallning.service.utredning.dto.TolkRequest;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FilterableListItem;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.FreeTextSearchable;
 import se.inera.intyg.intygsbestallning.web.controller.api.dto.VardenhetEnrichable;
@@ -65,6 +69,7 @@ import se.inera.intyg.intygsbestallning.web.controller.api.filter.YesNoAllFilter
 
 public abstract class BaseUtredningService {
     private static final Logger LOG = LoggerFactory.getLogger(UtredningService.class);
+    protected static final String INTERPRETER_ERROR_TEXT = "May not set interpreter language if there is no need for interpreter";
 
     @Autowired
     protected UtredningRepository utredningRepository;
@@ -77,6 +82,9 @@ public abstract class BaseUtredningService {
 
     @Autowired
     protected OrganizationUnitService organizationUnitService;
+
+    @Autowired
+    protected TolkSprakLookup tolkSprakLookup;
 
     protected UtredningStatusResolver utredningStatusResolver = new UtredningStatusResolver();
 
@@ -267,10 +275,26 @@ public abstract class BaseUtredningService {
         }
     }
 
+
     protected Predicate<SkickadNotifiering> isSkickadPaminnelseNotifiering(Long id) {
         return notifiering -> notifiering.getId().equals(id)
                 && notifiering.getTyp() == NotifieringTyp.PAMINNELSE_SLUTDATUM_UTREDNING_PASSERAS
                 && BooleanUtils.isFalse(notifiering.getErsatts());
+    }
+
+    protected TolkSprak getTolkSprak(TolkRequest order) {
+        TolkSprak tolkSprak;
+        if (nonNull(order.getTolkSprak())) {
+            if (isFalse(order.isTolkBehov()) && !isNullOrEmpty(order.getTolkSprak())) {
+                throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, INTERPRETER_ERROR_TEXT);
+            } else if (isFalse(order.isTolkBehov())) {
+                order.setTolkSprak(null);
+            }
+            tolkSprak = tolkSprakLookup.lookupTolkSprak(order.getTolkSprak());
+        } else {
+            tolkSprak = null;
+        }
+        return tolkSprak;
     }
 
 }

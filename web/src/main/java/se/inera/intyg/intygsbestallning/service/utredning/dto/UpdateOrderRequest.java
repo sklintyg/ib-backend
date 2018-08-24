@@ -29,7 +29,7 @@ import static se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare.
 import static se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare.BestallareBuilder.aBestallare;
 import static se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest.UpdateOrderRequestBuilder.anUpdateOrderRequest;
 
-public class UpdateOrderRequest {
+public class UpdateOrderRequest implements TolkRequest {
 
     private Long utredningId;
     private String kommentar;
@@ -90,8 +90,28 @@ public class UpdateOrderRequest {
         return Optional.ofNullable(tolkBehov);
     }
 
-    public Optional<String> getTolkSprak() {
+    @Override
+    public boolean isTolkBehov() {
+        return tolkBehov;
+    }
+
+    @Override
+    public void setTolkBehov(boolean tolkBehov) {
+        this.tolkBehov = tolkBehov;
+    }
+
+    public Optional<String> getOptionalTolkSprak() {
         return Optional.ofNullable(tolkSprak);
+    }
+
+    @Override
+    public void setTolkSprak(String tolkSprak) {
+        this.tolkSprak = tolkSprak;
+    }
+
+    @Override
+    public String getTolkSprak() {
+        return tolkSprak;
     }
 
     public Optional<LocalDateTime> getLastDateIntyg() {

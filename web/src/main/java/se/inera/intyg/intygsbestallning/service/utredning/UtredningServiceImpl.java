@@ -59,6 +59,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
+
+
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
@@ -94,6 +96,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.RegiFormTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
 import se.inera.intyg.intygsbestallning.service.handelse.HandelseUtil;
 import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
+import se.inera.intyg.intygsbestallning.service.sprak.dto.TolkSprak;
 import se.inera.intyg.intygsbestallning.service.stateresolver.BesokStatus;
 import se.inera.intyg.intygsbestallning.service.stateresolver.BesokStatusResolver;
 import se.inera.intyg.intygsbestallning.service.util.GenericComparator;
@@ -122,7 +125,6 @@ import se.riv.infrastructure.directory.organization.gethealthcareunitresponder.v
 @Transactional
 public class UtredningServiceImpl extends BaseUtredningService implements UtredningService {
 
-    private static final String INTERPRETER_ERROR_TEXT = "May not set interpreter language if there is no need for interpreter";
     private static final Logger LOG = LoggerFactory.getLogger(UtredningService.class);
 
     @Autowired
@@ -281,6 +283,9 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
     @Override
     public Utredning registerOrder(OrderRequest order) {
+
+        final TolkSprak tolkSprak = getTolkSprak(order);
+
         // TA.FEL06: Angivet utrednings id existerar inte
         Utredning utredning = utredningRepository.findById(order.getUtredningId()).orElseThrow(
                 () -> new IbNotFoundException(
@@ -292,7 +297,8 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
         // Update old information (last wins!)
         utredning.setTolkBehov(order.isTolkBehov());
-        utredning.setTolkSprak(order.getTolkSprak());
+        utredning.setTolkSprak(tolkSprak != null ? tolkSprak.getId() : null);
+        utredning.setTolkSprakBeskrivning(tolkSprak != null ? tolkSprak.getRefName() : null);
         if (order.getUtredningsTyp() != utredning.getUtredningsTyp()) {
             LOG.warn("Different utredningstyp for bestallning and externForfragan for assessment '{}', old type was '{}' and new is '{}'",
                     utredning.getUtredningId(), utredning.getUtredningsTyp(), order.getUtredningsTyp());
@@ -350,6 +356,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     @Override
     public Utredning updateOrder(final UpdateOrderRequest update) {
 
+        final TolkSprak tolkSprak = getTolkSprak(update);
         final Utredning utredning = utredningRepository.findById(update.getUtredningId())
                 .orElseThrow(() -> new IbServiceException(
                         IbErrorCodeEnum.NOT_FOUND, MessageFormat.format("Assessment with id: {0} was not found", update.getUtredningId())));
@@ -364,7 +371,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
             throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, "Assessment does not have a Bestallning");
         }
 
-        qualifyForUppdatering(update, utredning);
+        qualifyForUppdatering(update, utredning, tolkSprak);
 
         utredningRepository.saveUtredning(utredning);
         notifieringSendService.notifieraVardenhetUppdateradBestallning(utredning);
@@ -381,11 +388,15 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
     @Override
     public Utredning registerNewUtredning(OrderRequest order) {
+
+        final TolkSprak tolkSprak = getTolkSprak(order);
+
         Utredning utredning = anUtredning()
                 .withUtredningsTyp(order.getUtredningsTyp())
                 .withInvanare(updateInvanareFromOrder(new Invanare(), order))
                 .withTolkBehov(order.isTolkBehov())
-                .withTolkSprak(order.getTolkSprak())
+                .withTolkSprak(tolkSprak != null ? tolkSprak.getId() : null)
+                .withTolkSprakBeskrivning(tolkSprak != null ? tolkSprak.getRefName() : null)
                 .withBestallning(createBestallning(order))
                 .withHandlaggare(createHandlaggare(order.getBestallare()))
                 .withHandelseList(Lists.newArrayList(HandelseUtil
@@ -414,6 +425,8 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     @Override
     public Utredning registerNewUtredning(final AssessmentRequest request) {
 
+        final TolkSprak tolkSprak = getTolkSprak(request);
+
         ExternForfraganBuilder externForfragan = anExternForfragan()
                 .withInkomDatum(LocalDateTime.now())
                 .withBesvarasSenastDatum(request.getBesvaraSenastDatum())
@@ -440,7 +453,8 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
                 .withInvanare(invanare)
                 .withHandlaggare(createHandlaggare(request.getBestallare()))
                 .withTolkBehov(request.isTolkBehov())
-                .withTolkSprak(request.getTolkSprak())
+                .withTolkSprak(tolkSprak != null ? tolkSprak.getId() : null)
+                .withTolkSprakBeskrivning(tolkSprak != null ? tolkSprak.getRefName() : null)
                 .withArkiverad(false);
 
         final List<RegistreradVardenhet> byVardgivareHsaId = registreradVardenhetRepository
@@ -545,7 +559,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     @Override
     @Transactional
     public void saveBetaldFkIdForUtredning(Long utredningsId, SaveBetaldFkIdForUtredningRequest request,
-                                               String loggedInAtLandstingHsaId) {
+                                           String loggedInAtLandstingHsaId) {
         Utredning utredning = utredningRepository.findById(utredningsId).orElseThrow(
                 () -> new IbNotFoundException("Utredning with assessmentId '" + utredningsId + "' does not exist."));
 
@@ -574,7 +588,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     @Override
     @Transactional
     public void saveFakturaFkIdForUtredning(Long utredningsId, SaveFakturaFkIdForUtredningRequest request,
-                                           String loggedInAtLandstingHsaId) {
+                                            String loggedInAtLandstingHsaId) {
         Utredning utredning = utredningRepository.findById(utredningsId).orElseThrow(
                 () -> new IbNotFoundException("Utredning with assessmentId '" + utredningsId + "' does not exist."));
 
@@ -707,7 +721,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         }
     }
 
-    private void qualifyForUppdatering(final UpdateOrderRequest update, final Utredning utredning) {
+    private void qualifyForUppdatering(final UpdateOrderRequest update, final Utredning utredning, final TolkSprak tolkSprak) {
 
         checkArgument(nonNull(update));
         checkArgument(nonNull(utredning));
@@ -717,7 +731,10 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
         update.getTolkBehov().ifPresent(utredning::setTolkBehov);
 
         final String tolkSprakOriginal = utredning.getTolkSprak();
-        update.getTolkSprak().ifPresent(utredning::setTolkSprak);
+        update.getOptionalTolkSprak().ifPresent(ts -> {
+            utredning.setTolkSprak(tolkSprak.getId());
+            utredning.setTolkSprakBeskrivning(tolkSprak.getRefName());
+        });
 
         AtomicLong intygsId = new AtomicLong();
         final LocalDateTime sistaDatumOriginal = utredning.getIntygList().stream()

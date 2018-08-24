@@ -39,7 +39,7 @@ import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.inera.intyg.schemas.contract.Personnummer;
 
-public final class OrderRequest {
+public final class OrderRequest implements TolkRequest {
     private Long utredningId;
     private String enhetId;
     private UtredningsTyp utredningsTyp;
@@ -224,18 +224,22 @@ public final class OrderRequest {
         this.syfte = syfte;
     }
 
+    @Override
     public boolean isTolkBehov() {
         return tolkBehov;
     }
 
+    @Override
     public void setTolkBehov(final boolean tolkBehov) {
         this.tolkBehov = tolkBehov;
     }
 
+    @Override
     public String getTolkSprak() {
         return tolkSprak;
     }
 
+    @Override
     public void setTolkSprak(final String tolkSprak) {
         this.tolkSprak = tolkSprak;
     }

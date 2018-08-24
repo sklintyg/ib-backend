@@ -88,7 +88,6 @@ public class MailSenderIntegrationTest {
                 .withBody("Body").build();
     }
 
-
     private void sendMessage(final NotificationEmail message) {
         jmsTemplate.send(session -> {
             try {

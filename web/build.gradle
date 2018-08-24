@@ -132,6 +132,9 @@ dependencies {
     compile "org.apache.activemq:activemq-spring:${activemqVersion}"
     compile "mysql:mysql-connector-java:${mysqlVersion}"
 
+    compile "net.sf.jsefa:jsefa:${jsefaVersion}"
+    compile "org.codehaus.guessencoding:guessencoding:${guessEncodingVersion}"
+    compile "io.vavr:vavr:${vavrVersion}"
 
     compile "org.antlr:ST4:${stAntlr4Version}"
 

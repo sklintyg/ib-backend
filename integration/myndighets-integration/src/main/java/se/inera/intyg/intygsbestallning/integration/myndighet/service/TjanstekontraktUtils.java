@@ -44,7 +44,7 @@ public final class TjanstekontraktUtils {
     private static final String KV_TOLK_STATUS = "c074d6f5-fc15-4c10-bdd5-115e29888ff5";
     private static final String KV_DELTAGANDE_PROFESSION = "1.2.752.129.2.2.1.4";
     private static final String KV_SNOMED_CT = "1.2.752.116.2.1.1";
-    private static final String KV_INTYGSTYP = "b64ea353-e8f6-4832-b563-fc7d46f29548";
+    public static final String KV_INTYGSTYP = "b64ea353-e8f6-4832-b563-fc7d46f29548";
 
     private TjanstekontraktUtils() {
     }

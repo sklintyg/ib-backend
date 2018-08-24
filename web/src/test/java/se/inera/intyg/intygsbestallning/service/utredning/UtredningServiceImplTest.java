@@ -118,6 +118,8 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.TolkStatusTyp;
 import se.inera.intyg.intygsbestallning.persistence.repository.RegistreradVardenhetRepository;
 import se.inera.intyg.intygsbestallning.persistence.repository.UtredningRepository;
 import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
+import se.inera.intyg.intygsbestallning.service.sprak.TolkSprakLookup;
+import se.inera.intyg.intygsbestallning.service.sprak.dto.TolkSprak;
 import se.inera.intyg.intygsbestallning.service.user.UserService;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysBean;
 import se.inera.intyg.intygsbestallning.service.util.BusinessDaysStub;
@@ -153,6 +155,9 @@ public class UtredningServiceImplTest {
     @Mock
     private RegistreradVardenhetRepository registreradVardenhetRepository;
 
+    @Mock
+    private TolkSprakLookup tolkSprakLookup;
+
     @Spy
     private BusinessDaysBean businessDays = new BusinessDaysStub();
 
@@ -174,6 +179,12 @@ public class UtredningServiceImplTest {
         // DP inject/Autowire manually.
         ReflectionTestUtils.setField(utredningListItemFactory, "businessDays", businessDays);
         ReflectionTestUtils.setField(internForfraganListItemFactory, "businessDays", businessDays);
+
+        TolkSprak tolkSprak = new TolkSprak();
+        ReflectionTestUtils.setField(tolkSprak, "id", "swe");
+        ReflectionTestUtils.setField(tolkSprak, "refName", "Swedish");
+
+        doReturn(tolkSprak).when(tolkSprakLookup).lookupTolkSprak(anyString());
     }
 
     @Test
@@ -205,7 +216,7 @@ public class UtredningServiceImplTest {
                 .withUtredningsTyp(AFU)
                 .withUtredningId(utredningId)
                 .withTolkBehov(true)
-                .withTolkSprak("sv")
+                .withTolkSprak("swe")
                 .withSyfte("syfte")
                 .withLastDateIntyg(LocalDate.of(2019, 1, 1))
                 .withKommentar("kommentar")
@@ -233,7 +244,7 @@ public class UtredningServiceImplTest {
         assertNotNull(response);
         assertEquals(utredningId, response.getUtredningId());
         assertTrue(response.getTolkBehov());
-        assertEquals("sv", response.getTolkSprak());
+        assertEquals("swe", response.getTolkSprak());
         assertEquals(AFU, response.getUtredningsTyp());
         assertEquals("kommentar", response.getBestallning().get().getBestallningHistorikList().get(0).getKommentar());
         assertEquals("atgarder", response.getBestallning().get().getPlaneradeAktiviteter());
@@ -342,7 +353,7 @@ public class UtredningServiceImplTest {
         final OrderRequest order = anOrderRequest()
                 .withUtredningsTyp(LIAG)
                 .withTolkBehov(true)
-                .withTolkSprak("sv")
+                .withTolkSprak("swe")
                 .withSyfte("syfte")
                 .withLastDateIntyg(LocalDate.of(2019, 1, 1))
                 .withKommentar("kommentar")
@@ -371,7 +382,7 @@ public class UtredningServiceImplTest {
         final Utredning captured = argumentCaptor.getValue();
         assertNotNull(captured);
         assertTrue(captured.getTolkBehov());
-        assertEquals("sv", captured.getTolkSprak());
+        assertEquals("swe", captured.getTolkSprak());
         assertEquals(LIAG, captured.getUtredningsTyp());
         assertEquals("kommentar", captured.getBestallning().get().getBestallningHistorikList().get(0).getKommentar());
         assertEquals("atgarder", captured.getBestallning().get().getPlaneradeAktiviteter());
@@ -547,11 +558,11 @@ public class UtredningServiceImplTest {
     @Test
     public void uppdateraOrderOk() {
 
-        final String tolkSprak = "SV";
+        final String tolkSprak = "swe";
 
         Utredning utredning = createUtredning();
 
-        UpdateOrderType updateOrderType = createUpdateOrderType(true, "SV", null);
+        UpdateOrderType updateOrderType = createUpdateOrderType(true, "swe", null);
 
         AuthorityAdministrativeOfficialType admin = new AuthorityAdministrativeOfficialType();
         admin.setEmail("uppdatera");

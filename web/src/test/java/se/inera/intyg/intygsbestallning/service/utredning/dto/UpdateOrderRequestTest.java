@@ -38,7 +38,7 @@ public class UpdateOrderRequestTest {
         assertEquals("kommentar", request.getKommentar().get());
 
         assertTrue(request.getTolkBehov().get());
-        assertEquals("sv", request.getTolkSprak().get());
+        assertEquals("sv", request.getOptionalTolkSprak().get());
 
         assertEquals(DATE_TIME, request.getLastDateIntyg().get());
         assertFalse(request.getHandling().get());
@@ -63,7 +63,7 @@ public class UpdateOrderRequestTest {
         assertEquals("kommentar", request.getKommentar().get());
 
         assertTrue(request.getTolkBehov().get());
-        assertEquals(Optional.empty(), request.getTolkSprak());
+        assertEquals(Optional.empty(), request.getOptionalTolkSprak());
 
         assertEquals(DATE_TIME, request.getLastDateIntyg().get());
         assertFalse(request.getHandling().get());
@@ -88,7 +88,7 @@ public class UpdateOrderRequestTest {
         assertEquals("kommentar", request.getKommentar().get());
 
         assertFalse(request.getTolkBehov().get());
-        assertEquals(Optional.empty(), request.getTolkSprak());
+        assertEquals(Optional.empty(), request.getOptionalTolkSprak());
 
         assertEquals(DATE_TIME, request.getLastDateIntyg().get());
         assertFalse(request.getHandling().get());

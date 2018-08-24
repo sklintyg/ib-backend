@@ -69,6 +69,8 @@ public class GetBestallningResponse implements PDLLoggable {
 
     private String tolkSprak;
 
+    private String tolkSprakBeskrivning;
+
     private UtredningStatus status;
 
     private Actor kraverAtgardAv;
@@ -123,6 +125,7 @@ public class GetBestallningResponse implements PDLLoggable {
                         : null)
                 .withBehovTolk(BooleanUtils.toBoolean(utredning.getTolkBehov()))
                 .withTolkSprak(utredning.getTolkSprak())
+                .withTolkSprakBeskrivning(utredning.getTolkSprakBeskrivning())
                 .withStatus(utredningStatus)
                 .withFas(utredningStatus.getUtredningFas())
                 .withKraverAtgardAv(utredningStatus.getNextActor())
@@ -251,6 +254,14 @@ public class GetBestallningResponse implements PDLLoggable {
         this.tolkSprak = tolkSprak;
     }
 
+    public String getTolkSprakBeskrivning() {
+        return tolkSprakBeskrivning;
+    }
+
+    public void setTolkSprakBeskrivning(String tolkSprakBeskrivning) {
+        this.tolkSprakBeskrivning = tolkSprakBeskrivning;
+    }
+
     public UtredningStatus getStatus() {
         return status;
     }
@@ -377,6 +388,7 @@ public class GetBestallningResponse implements PDLLoggable {
         private String handlaggareEpost;
         private boolean behovTolk;
         private String tolkSprak;
+        private String tolkSprakBeskrivning;
         private UtredningStatus status;
         private UtredningFas fas;
         private String intygSistaDatum;
@@ -450,6 +462,11 @@ public class GetBestallningResponse implements PDLLoggable {
 
         public GetBestallningResponseBuilder withTolkSprak(String tolkSprak) {
             this.tolkSprak = tolkSprak;
+            return this;
+        }
+
+        public GetBestallningResponseBuilder withTolkSprakBeskrivning(String tolkSprakBeskrivning) {
+            this.tolkSprakBeskrivning = tolkSprakBeskrivning;
             return this;
         }
 
@@ -532,6 +549,7 @@ public class GetBestallningResponse implements PDLLoggable {
             getBestallningResponse.setHandlaggareEpost(handlaggareEpost);
             getBestallningResponse.setBehovTolk(behovTolk);
             getBestallningResponse.setTolkSprak(tolkSprak);
+            getBestallningResponse.setTolkSprakBeskrivning(tolkSprakBeskrivning);
             getBestallningResponse.setStatus(status);
             getBestallningResponse.setFas(fas);
             getBestallningResponse.setKraverAtgardAv(kraverAtgardAv);
