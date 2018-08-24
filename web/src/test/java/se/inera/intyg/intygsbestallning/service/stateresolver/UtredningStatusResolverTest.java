@@ -456,6 +456,26 @@ public class UtredningStatusResolverTest extends BaseResolverTest {
     }
 
     @Test
+    public void testResolvesUtlatandeMottagetSistaDatumKompletteringsbegaranToday() {
+        Utredning utr = buildBaseUtredning();
+        utr.getExternForfragan()
+                .map(ExternForfragan::getInternForfraganList)
+                .map(iff -> iff.add(buildInternForfragan(buildForfraganSvar(SvarTyp.ACCEPTERA), LocalDateTime.now())));
+        utr.setBestallning(buildBestallning(null));
+        Intyg intyg = buildBestalltIntyg();
+        intyg.setSkickatDatum(LocalDateTime.now());
+        intyg.setMottagetDatum(LocalDateTime.now());
+        intyg.setSistaDatumKompletteringsbegaran(LocalDateTime.now());
+        utr.getIntygList().add(intyg);
+        utr.getHandlingList().add(buildHandling(null, LocalDateTime.now()));
+
+        UtredningStatus status = testee.resolveStatus(utr);
+        assertEquals(UtredningStatus.UTLATANDE_MOTTAGET, status);
+        assertEquals(UtredningFas.UTREDNING, status.getUtredningFas());
+        assertEquals(Actor.FK, status.getNextActor());
+    }
+
+    @Test
     public void testResolveAvslutadBesokRedovisadeEjTolkEjKomplt() {
         Utredning utr = buildBaseUtredning();
         utr.getExternForfragan()

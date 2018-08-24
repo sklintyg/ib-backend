@@ -33,6 +33,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.HandlingUrsprungT
 import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -148,7 +149,7 @@ public class UtredningStatusResolver {
         // Skickat - ursprungsintyget är mottaget.
         if (intyg.getSkickatDatum() != null && intyg.getMottagetDatum() != null
                 && (intyg.getSistaDatumKompletteringsbegaran() != null
-                && intyg.getSistaDatumKompletteringsbegaran().isAfter(LocalDateTime.now()))) {
+                && !intyg.getSistaDatumKompletteringsbegaran().toLocalDate().isBefore(LocalDate.now()))) {
             return Optional.of(UtredningStatus.UTLATANDE_MOTTAGET);
         }
 
