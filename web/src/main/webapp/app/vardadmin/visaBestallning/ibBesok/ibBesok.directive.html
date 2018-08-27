@@ -54,8 +54,8 @@
           </button>
           <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="hantera-button">
             <li role="menuitem" ng-if="!isAvvikelseMottagen(row.besokStatus)"><a ng-click="openAndraModal(row)">Ändra</a></li>
-            <li role="menuitem" ng-if="isAvvikelseMottagen(row.besokStatus)"><a ng-click="openAvbokaModal(row.besokId)">Avboka</a></li>
-            <li role="menuitem" ng-if="!isAvvikelseMottagen(row.besokStatus)"><a ng-click="openAvvikelseModal(row.besokId)">Avvikelse</a></li>
+            <li role="menuitem" ng-if="!isAvvikelseMottagen(row.besokStatus)"><a ng-click="openAvbokaModal(row.besokId)">Avboka</a></li>
+            <li role="menuitem" ng-if="showAvbokaBesokModal(row.besokStatus)"><a ng-click="openAvvikelseModal(row.besokId)">Avvikelse</a></li>
           </ul>
         </div>
       </td>

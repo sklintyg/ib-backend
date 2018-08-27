@@ -41,7 +41,6 @@ public class TolkSprakLookupTest {
     @Mock
     private ResourceLoader resourceLoader;
 
-
     @InjectMocks
     private TolkSprakLookup tolkSprakLookup;
 

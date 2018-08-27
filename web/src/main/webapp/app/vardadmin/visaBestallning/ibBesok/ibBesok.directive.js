@@ -45,6 +45,10 @@ angular.module('ibApp').directive('ibBesok', function($log, $state, ibDialog, Be
                 return besokStatus.id === 'AVVIKELSE_MOTTAGEN';
             };
 
+            $scope.showAvbokaBesokModal = function(besokStatus) {
+                return besokStatus.id !== 'AVBOKAT' || besokStatus.id !== 'GENOMFORT';
+            };
+
             $scope.oppnaLaggTillBesok = function() {
                 openModal('laggTillBesok.modal.html', 'LaggTillBesokModalCtrl',
                         {utredningsId: $scope.bestallning.utredningsId, besok: undefined}).then(function(result) {

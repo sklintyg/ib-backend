@@ -612,7 +612,7 @@ public class BesokServiceImplTest {
     public void testAvbokaBesokInvalidState() {
         when(userService.getUser()).thenReturn(ServiceTestUtil.buildUser());
 
-        Utredning utredning = createUtredningForBesokTest();
+        Utredning utredning = createUtredningForAvbokaBesokTestFail();
         doReturn(Optional.of(utredning))
                 .when(utredningRepository)
                 .findByBesokList_Id(eq(BESOK_ID));
@@ -725,6 +725,31 @@ public class BesokServiceImplTest {
         besok.getHandelseList().add(aHandelse()
             .withHandelseTyp(HandelseTyp.AVVIKELSE_MOTTAGEN)
             .build());
+        return utredning;
+    }
+
+    private Utredning createUtredningForAvbokaBesokTestFail() {
+        Utredning utredning = TestDataGen.createUtredning();
+        utredning.setUtredningsTyp(UtredningsTyp.AFU);
+        utredning.setHandlingList(ImmutableList.of(aHandling()
+                .withId(1L)
+                .build()));
+        utredning.setIntygList(ImmutableList.of(anIntyg()
+                .withId(1L)
+                .withSistaDatum(DATE_TIME)
+                .withSistaDatumKompletteringsbegaran(DATE_TIME.plusMonths(6))
+                .build()));
+        utredning.setBesokList(ImmutableList.of(aBesok()
+                .withId(1L)
+                .withKallelseDatum(DATE_TIME)
+                .withKallelseForm(KallelseFormTyp.BREVKONTAKT)
+                .withBesokStartTid(LocalDateTime.of(DATE_TIME.toLocalDate(), DATE_TIME.toLocalTime().plusHours(1)))
+                .withBesokSlutTid(LocalDateTime.of(DATE_TIME.toLocalDate(), DATE_TIME.toLocalTime().plusHours(2)))
+                .withDeltagareProfession(DeltagarProfessionTyp.LK)
+                .withTolkStatus(TolkStatusTyp.BOKAD)
+                .withDeltagareFullstandigtNamn("Delta Gare")
+                .withBesokStatus(BesokStatusTyp.AVSLUTAD_VARDKONTAKT)
+                .build()));
         return utredning;
     }
 

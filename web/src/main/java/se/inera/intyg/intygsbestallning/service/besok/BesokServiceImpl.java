@@ -233,7 +233,7 @@ public class BesokServiceImpl extends BaseBesokService implements BesokService {
 
     @Override
     @Transactional
-    public void avbokaBesok(Long besokId) {
+    public void avbokaBesok(final Long besokId) {
         Utredning utredning = utredningRepository.findByBesokList_Id(besokId)
                 .orElseThrow(() -> new IbNotFoundException(MessageFormat.format("Besok with id {0} was not found.", besokId)));
 
@@ -244,7 +244,7 @@ public class BesokServiceImpl extends BaseBesokService implements BesokService {
                 .collect(onlyElement());
 
         BesokStatus besokStatus = BesokStatusResolver.resolveStaticStatus(besokToUpdate);
-        if (besokStatus != BesokStatus.AVVIKELSE_MOTTAGEN) {
+        if (besokStatus == BesokStatus.AVBOKAT || besokStatus == BesokStatus.GENOMFORT) {
             throw new IbServiceException(IbErrorCodeEnum.BAD_STATE,
                     MessageFormat.format("Besok with id {0} is in an incorrect state {1}.", besokId, besokStatus));
         }
