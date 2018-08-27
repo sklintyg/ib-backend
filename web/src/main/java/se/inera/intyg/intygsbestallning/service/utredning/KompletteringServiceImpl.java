@@ -177,8 +177,7 @@ public class KompletteringServiceImpl extends BaseUtredningService implements Ko
         Intyg intyg = utredning.getIntygList().stream()
                 .filter(i -> i.isKomplettering()
                         && i.getFragestallningMottagenDatum() == null
-                        && i.getSkickatDatum() == null
-                        && i.getSistaDatum().isAfter(LocalDateTime.now()))
+                        && i.getSkickatDatum() == null)
                 .max(Comparator.comparing(Intyg::getId))
                 .orElseThrow(() -> new IbServiceException(IbErrorCodeEnum.BAD_STATE, MessageFormat.format(
                         "Utredning with id {0} is missing a kompletterande intyg waiting for fragestallning", utredningId)));
@@ -209,8 +208,7 @@ public class KompletteringServiceImpl extends BaseUtredningService implements Ko
 
         Intyg intyg = utredning.getIntygList().stream()
                 .filter(i -> i.isKomplettering()
-                        && i.getSkickatDatum() == null
-                        && i.getSistaDatum().isAfter(LocalDateTime.now()))
+                        && i.getSkickatDatum() == null)
                 .max(Comparator.comparing(Intyg::getId))
                 .orElseThrow(() -> new IbServiceException(IbErrorCodeEnum.BAD_STATE, MessageFormat.format(
                         "Utredning with id {0} is missing a kompletterande intyg ready to be sent", utredningId)));
