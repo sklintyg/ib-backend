@@ -980,4 +980,12 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="8" author="cf">
+        <addColumn tableName="UTREDNING">
+            <column name="REDOVISA_BESOK_DATUM">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

@@ -82,7 +82,7 @@ public class UtredningStatusResolver {
                     && isAvslutadByCronJob(utredning)) {
                 // Finns det bokade besök som inte är redovisade? Har cronjobbet avslutat utredningen?
                 return UtredningStatus.AVSLUTAD;
-            } else if (hasBeenInRedovisaBesokStateBefore(utredning) || utredning.getBesokList().stream()
+            } else if (isMarkedToStateRedovisaBesokByCronJob(utredning) || utredning.getBesokList().stream()
                     .anyMatch(besok -> besok.getBesokStatus() == BesokStatusTyp.TIDBOKAD_VARDKONTAKT)) {
                 // Alla besok måste redovisas som genomförda eller vara avbokade.
                 // BesokStatusTyp.TIDBOKAD_VARDKONTAKT blir antingen BesokStatusTyp.AVSLUTAD_VARDKONTAKT eller
@@ -137,7 +137,7 @@ public class UtredningStatusResolver {
         return !(utredning.getAvbrutenDatum() == null && utredning.getAvbrutenOrsak() == null);
     }
 
-    private static boolean hasBeenInRedovisaBesokStateBefore(Utredning utredning) {
+    private static boolean isMarkedToStateRedovisaBesokByCronJob(Utredning utredning) {
         if (utredning.getIntygList().size() == 0) {
             return false;
         }
