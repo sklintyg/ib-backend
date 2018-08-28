@@ -23,6 +23,7 @@ import com.google.common.collect.MoreCollectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
+import se.inera.intyg.intygsbestallning.persistence.model.Handelse;
 import se.inera.intyg.intygsbestallning.persistence.model.InternForfragan;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
@@ -34,6 +35,7 @@ import se.inera.intyg.intygsbestallning.persistence.model.type.SvarTyp;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -80,7 +82,7 @@ public class UtredningStatusResolver {
                     && isAvslutadByCronJob(utredning)) {
                 // Finns det bokade besök som inte är redovisade? Har cronjobbet avslutat utredningen?
                 return UtredningStatus.AVSLUTAD;
-            } else if (utredning.getBesokList().stream()
+            } else if (hasBeenInRedovisaBesokStateBefore(utredning) || utredning.getBesokList().stream()
                     .anyMatch(besok -> besok.getBesokStatus() == BesokStatusTyp.TIDBOKAD_VARDKONTAKT)) {
                 // Alla besok måste redovisas som genomförda eller vara avbokade.
                 // BesokStatusTyp.TIDBOKAD_VARDKONTAKT blir antingen BesokStatusTyp.AVSLUTAD_VARDKONTAKT eller
@@ -133,6 +135,37 @@ public class UtredningStatusResolver {
 
     private static boolean isAvslutadByCronJob(Utredning utredning) {
         return !(utredning.getAvbrutenDatum() == null && utredning.getAvbrutenOrsak() == null);
+    }
+
+    private static boolean hasBeenInRedovisaBesokStateBefore(Utredning utredning) {
+        if (utredning.getIntygList().size() == 0) {
+            return false;
+        }
+
+        // Sista kompletteringsdatum för det nuvarande 'aktiva' intyget (fortfarande kompletterbart), dvs är sist i intygskedjan.
+        LocalDate latestKompletteringBegaranDate;
+        if (utredning.getIntygList().size() == 1) {
+            latestKompletteringBegaranDate = utredning.getIntygList().get(0).getSkickatDatum().toLocalDate();
+        } else {
+            latestKompletteringBegaranDate = utredning.getIntygList().stream()
+                    .filter(Intyg::isKomplettering)
+                    .max(Comparator.comparing(Intyg::getSkickatDatum))
+                    .map(Intyg::getSistaDatumKompletteringsbegaran)
+                    .orElseThrow(NullPointerException::new)
+                    .toLocalDate();
+
+        }
+
+        Optional<Handelse> lastRedovisning = utredning.getBesokList().stream()
+                .flatMap(besok -> besok.getHandelseList().stream())
+                .filter(handelse -> handelse.getHandelseTyp() == HandelseTyp.REDOVISAT_BESOK)
+                .max(Comparator.comparing(Handelse::getSkapad));
+
+        if (!lastRedovisning.isPresent()) {
+            return false;
+        } else {
+            return latestKompletteringBegaranDate.compareTo(lastRedovisning.get().getSkapad().toLocalDate()) < 0;
+        }
     }
 
     private static Optional<UtredningStatus> handleUtredningFas(Utredning utredning) {

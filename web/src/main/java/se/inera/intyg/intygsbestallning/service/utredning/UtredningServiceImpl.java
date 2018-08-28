@@ -617,7 +617,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     private void isKorrektStatusForIngenKompletteringBegard(final Utredning utredning) {
         UtredningStatus status = UtredningStatusResolver.resolveStaticStatus(utredning);
         List<UtredningStatus> statesAllowedToTransitionToAvslutad = ImmutableList.of(UtredningStatus.UTLATANDE_MOTTAGET,
-                UtredningStatus.KOMPLETTERING_MOTTAGEN, UtredningStatus.REDOVISA_BESOK);
+                UtredningStatus.KOMPLETTERING_MOTTAGEN);
 
         checkState(statesAllowedToTransitionToAvslutad.contains(status),
                 MessageFormat.format("Utredning with id {0} is in an incorrect state", utredning.getUtredningId()));
