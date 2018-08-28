@@ -47,8 +47,9 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
+import se.inera.intyg.intygsbestallning.common.exception.IbResponderValidationErrorCode;
+import se.inera.intyg.intygsbestallning.common.exception.IbResponderValidationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
-import se.inera.intyg.intygsbestallning.common.exception.NotFoundType;
 import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
 import se.inera.intyg.intygsbestallning.integration.myndighet.dto.ReportDeviationRequestDto;
 import se.inera.intyg.intygsbestallning.integration.myndighet.service.MyndighetIntegrationService;
@@ -181,10 +182,8 @@ public class BesokServiceImpl extends BaseBesokService implements BesokService {
     public Avvikelse reportBesokAvvikelse(final ReportBesokAvvikelseRequest request) {
 
         Optional<Utredning> optionalUtredning = utredningRepository.findByBesokList_Id(request.getBesokId());
-        optionalUtredning.orElseThrow(() -> new IbNotFoundException(
-                MessageFormat.format("Besok with id {0} was not found.", request.getBesokId()),
-                request.getBesokId(),
-                NotFoundType.BESOK));
+        optionalUtredning.orElseThrow(() -> new IbResponderValidationException(IbResponderValidationErrorCode.TA_FEL05,
+                request.getBesokId()));
 
         optionalUtredning.filter(isKorrektStatusForBesokAvvikelseMottagen())
                 .orElseThrow(() -> new IbServiceException(

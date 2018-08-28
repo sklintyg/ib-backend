@@ -28,6 +28,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.support.ServletContextAttributeExporter;
 import java.util.HashMap;
 import java.util.Map;
+
+import se.inera.intyg.intygsbestallning.config.interceptor.SoapFaultToSoapResponseTransformerInterceptor;
 import se.inera.intyg.intygsbestallning.service.monitoring.HealthCheckService;
 import se.inera.intyg.intygsbestallning.service.monitoring.InternalPingForConfigurationResponderImpl;
 import se.inera.intyg.intygsbestallning.web.responder.EndAssessmentResponderImpl;
@@ -104,6 +106,8 @@ public class ServiceConfig {
     public EndpointImpl requestPerformerForAssessmentResponderEndpoint() {
         EndpointImpl endpoint = new EndpointImpl(bus, requestPerformerForAssessmentResponder);
         endpoint.publish("/request-performer-for-assessment-responder");
+        endpoint.getOutFaultInterceptors().add(new SoapFaultToSoapResponseTransformerInterceptor(
+                "transform/request-performer-for-assessment.xslt"));
         return endpoint;
     }
 
@@ -111,6 +115,7 @@ public class ServiceConfig {
     public EndpointImpl updateOrderResponderEndpoint() {
         EndpointImpl endpoint = new EndpointImpl(bus, updateOrderResponder);
         endpoint.publish("/update-order-responder");
+        endpoint.getOutFaultInterceptors().add(new SoapFaultToSoapResponseTransformerInterceptor("transform/update-order.xslt"));
         return endpoint;
     }
 
@@ -118,6 +123,7 @@ public class ServiceConfig {
     public EndpointImpl requestCertificateSupplementEndpoint() {
         EndpointImpl endpoint = new EndpointImpl(bus, requestSupplementResponder);
         endpoint.publish("/request-supplement-responder");
+        endpoint.getOutFaultInterceptors().add(new SoapFaultToSoapResponseTransformerInterceptor("transform/request-supplement.xslt"));
         return endpoint;
     }
 
@@ -125,6 +131,8 @@ public class ServiceConfig {
     public EndpointImpl reportSupplementReceivalResponderEndpoint() {
         EndpointImpl endpoint = new EndpointImpl(bus, reportSupplementReceivalResponder);
         endpoint.publish("/report-supplement-receival-responder");
+        endpoint.getOutFaultInterceptors().add(new SoapFaultToSoapResponseTransformerInterceptor(
+                "transform/report-supplement-receival.xslt"));
         return endpoint;
     }
 
@@ -132,6 +140,8 @@ public class ServiceConfig {
     public EndpointImpl reportCertificateReceivalResponderEndpoint() {
         EndpointImpl endpoint = new EndpointImpl(bus, reportCertificateReceivalResponder);
         endpoint.publish("/report-certificate-receival-responder");
+        endpoint.getOutFaultInterceptors().add(new SoapFaultToSoapResponseTransformerInterceptor(
+                "transform/report-certificate-receival.xslt"));
         return endpoint;
     }
 
@@ -139,6 +149,7 @@ public class ServiceConfig {
     public EndpointImpl orderAssessmentResponderEndpoint() {
         EndpointImpl endpoint = new EndpointImpl(bus, orderAssessmentResponder);
         endpoint.publish("/order-assessment-responder");
+        endpoint.getOutFaultInterceptors().add(new SoapFaultToSoapResponseTransformerInterceptor("transform/order-assessment.xslt"));
         return endpoint;
     }
 
@@ -146,6 +157,7 @@ public class ServiceConfig {
     public EndpointImpl reportDeviationInteractionResponderEndpoint() {
         EndpointImpl endpoint = new EndpointImpl(bus, reportDeviationInteractionResponder);
         endpoint.publish("/report-deviation-interaction-responder");
+        endpoint.getOutFaultInterceptors().add(new SoapFaultToSoapResponseTransformerInterceptor("transform/report-deviation.xslt"));
         return endpoint;
     }
 
@@ -153,6 +165,7 @@ public class ServiceConfig {
     public EndpointImpl endAssessmentResponderEndpoint() {
         EndpointImpl endpoint = new EndpointImpl(bus, endAssessmentResponder);
         endpoint.publish("/end-assessment-responder");
+        endpoint.getOutFaultInterceptors().add(new SoapFaultToSoapResponseTransformerInterceptor("transform/end-assessment.xslt"));
         return endpoint;
     }
 }

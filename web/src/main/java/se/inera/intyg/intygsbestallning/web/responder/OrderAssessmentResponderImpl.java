@@ -31,17 +31,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil;
 import se.riv.intygsbestallning.certificate.order.orderassessment.v1.OrderAssessmentResponseType;
 import se.riv.intygsbestallning.certificate.order.orderassessment.v1.OrderAssessmentType;
 import se.riv.intygsbestallning.certificate.order.orderassessment.v1.rivtabp21.OrderAssessmentResponderInterface;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
-import se.inera.intyg.intygsbestallning.web.responder.resulthandler.ResultFactory;
 
 @Service
 @SchemaValidation
-public class OrderAssessmentResponderImpl implements OrderAssessmentResponderInterface, ResultFactory {
+public class OrderAssessmentResponderImpl implements OrderAssessmentResponderInterface {
 
     @Value("${source.system.hsaid:}")
     private String sourceSystemHsaId;
@@ -61,34 +61,26 @@ public class OrderAssessmentResponderImpl implements OrderAssessmentResponderInt
 
         log.info("Received OrderAssessment request");
 
-        try {
-            checkArgument(StringUtils.isNotEmpty(logicalAddress), LOGICAL_ADDRESS);
-            checkArgument(nonNull(request), REQUEST);
+        checkArgument(StringUtils.isNotEmpty(logicalAddress), ResultTypeUtil.LOGICAL_ADDRESS);
+        checkArgument(nonNull(request), ResultTypeUtil.REQUEST);
 
-            final OrderRequest orderRequest = OrderRequest.from(request);
+        final OrderRequest orderRequest = OrderRequest.from(request);
 
-            // IF its AF we create new Utredning entity.
-            Utredning utredning;
-            if (isNull(orderRequest.getUtredningId())) {
-                utredning = utredningService.registerNewUtredning(orderRequest);
-            } else {
-                utredning = utredningService.registerOrder(orderRequest);
-            }
-
-            OrderAssessmentResponseType response = new OrderAssessmentResponseType();
-            response.setAssessmentId(
-                    anII(isNull(request.getAssessmentId())
-                                    ? sourceSystemHsaId
-                                    : request.getAssessmentId().getRoot(),
-                            utredning.getUtredningId().toString()));
-            response.setResult(toResultTypeOK());
-            return response;
-        } catch (final Exception e) {
-            log.error("Error in orderAssessment", e);
-            OrderAssessmentResponseType response = new OrderAssessmentResponseType();
-            response.setAssessmentId(anII(sourceSystemHsaId, ""));
-            response.setResult(toResultTypeError(e));
-            return response;
+        // IF its AF we create new Utredning entity.
+        Utredning utredning;
+        if (isNull(orderRequest.getUtredningId())) {
+            utredning = utredningService.registerNewUtredning(orderRequest);
+        } else {
+            utredning = utredningService.registerOrder(orderRequest);
         }
+
+        OrderAssessmentResponseType response = new OrderAssessmentResponseType();
+        response.setAssessmentId(
+                anII(isNull(request.getAssessmentId())
+                                ? sourceSystemHsaId
+                                : request.getAssessmentId().getRoot(),
+                        utredning.getUtredningId().toString()));
+        response.setResult(ResultTypeUtil.ok());
+        return response;
     }
 }

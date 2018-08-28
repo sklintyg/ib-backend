@@ -16,17 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.intygsbestallning.common.exception;
+package se.inera.intyg.intygsbestallning.config.interceptor;
 
-public class IbNotFoundException extends IbServiceException {
+import org.springframework.core.io.ClassPathResource;
 
-    public IbNotFoundException(String message) {
-        super(IbErrorCodeEnum.NOT_FOUND, message);
+import javax.xml.transform.Source;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.URIResolver;
+import javax.xml.transform.stream.StreamSource;
+import java.io.IOException;
+
+/**
+ * @author andreaskaltenbach
+ */
+public class ClasspathUriResolver implements URIResolver {
+
+    @Override
+    public Source resolve(String href, String base) throws TransformerException {
+        try {
+            return new StreamSource(new ClassPathResource(href).getInputStream());
+        } catch (IOException e) {
+            throw new TransformerException("Failed to load resource " + href + " from classpath.", e);
+        }
     }
-
-    public IbNotFoundException(String message, Long errorEntityId) {
-        super(IbErrorCodeEnum.NOT_FOUND, message, errorEntityId);
-    }
-
 }
-

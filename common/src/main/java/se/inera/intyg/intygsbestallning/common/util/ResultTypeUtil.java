@@ -23,6 +23,9 @@ import se.riv.intygsbestallning.certificate.order.v1.ResultType;
 
 public final class ResultTypeUtil {
 
+    public static final String LOGICAL_ADDRESS = "LogicalAddress need to be defined";
+    public static final String REQUEST = "Request need to be defined";
+
     private ResultTypeUtil() {
     }
 

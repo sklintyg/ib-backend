@@ -23,9 +23,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.UpdateOrderRequest;
-import se.inera.intyg.intygsbestallning.web.responder.resulthandler.ResultFactory;
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderResponseType;
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.rivtabp21.UpdateOrderResponderInterface;
@@ -38,7 +38,7 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 @Service
 @SchemaValidation
-public class UpdateOrderResponderImpl implements UpdateOrderResponderInterface, ResultFactory {
+public class UpdateOrderResponderImpl implements UpdateOrderResponderInterface {
 
     private final UtredningService utredningService;
 
@@ -54,19 +54,13 @@ public class UpdateOrderResponderImpl implements UpdateOrderResponderInterface, 
 
         log.info("UpdateOrder received request");
 
-        try {
-            checkArgument(isNotEmpty(logicalAddress), LOGICAL_ADDRESS);
-            checkArgument(nonNull(request), REQUEST);
+        checkArgument(isNotEmpty(logicalAddress), ResultTypeUtil.LOGICAL_ADDRESS);
+        checkArgument(nonNull(request), ResultTypeUtil.REQUEST);
 
-            utredningService.updateOrder(UpdateOrderRequest.from(request));
+        utredningService.updateOrder(UpdateOrderRequest.from(request));
 
-            UpdateOrderResponseType updateOrderResponseType = new UpdateOrderResponseType();
-            updateOrderResponseType.setResult(toResultTypeOK());
-            return updateOrderResponseType;
-        } catch (final Exception e) {
-            UpdateOrderResponseType updateOrderResponseType = new UpdateOrderResponseType();
-            updateOrderResponseType.setResult(toResultTypeError(e));
-            return updateOrderResponseType;
-        }
+        UpdateOrderResponseType updateOrderResponseType = new UpdateOrderResponseType();
+        updateOrderResponseType.setResult(ResultTypeUtil.ok());
+        return updateOrderResponseType;
     }
 }

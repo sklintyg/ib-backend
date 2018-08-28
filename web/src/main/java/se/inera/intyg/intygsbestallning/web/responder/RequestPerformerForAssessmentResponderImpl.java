@@ -30,17 +30,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil;
 import se.riv.intygsbestallning.certificate.order.requestperformerforassessment.v1.RequestPerformerForAssessmentResponseType;
 import se.riv.intygsbestallning.certificate.order.requestperformerforassessment.v1.RequestPerformerForAssessmentType;
 import se.riv.intygsbestallning.certificate.order.requestperformerforassessment.v1.rivtabp21.RequestPerformerForAssessmentResponderInterface;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest;
-import se.inera.intyg.intygsbestallning.web.responder.resulthandler.ResultFactory;
 
 @Service
 @SchemaValidation
-public class RequestPerformerForAssessmentResponderImpl implements RequestPerformerForAssessmentResponderInterface, ResultFactory {
+public class RequestPerformerForAssessmentResponderImpl implements RequestPerformerForAssessmentResponderInterface {
 
     @Value("${source.system.hsaid:}")
     private String sourceSystemHsaId;
@@ -60,22 +60,14 @@ public class RequestPerformerForAssessmentResponderImpl implements RequestPerfor
 
         log.info("RequestPerformerForAssessment received request");
 
-        try {
-            checkArgument(isNotEmpty(logicalAddress), LOGICAL_ADDRESS);
-            checkArgument(nonNull(request), REQUEST);
+        checkArgument(isNotEmpty(logicalAddress), ResultTypeUtil.LOGICAL_ADDRESS);
+        checkArgument(nonNull(request), ResultTypeUtil.REQUEST);
 
-            final Utredning sparadUtredning = utredningService.registerNewUtredning(AssessmentRequest.from(request));
+        final Utredning sparadUtredning = utredningService.registerNewUtredning(AssessmentRequest.from(request));
 
-            RequestPerformerForAssessmentResponseType response = new RequestPerformerForAssessmentResponseType();
-            response.setResult(toResultTypeOK());
-            response.setAssessmentId(anII(sourceSystemHsaId, sparadUtredning.getUtredningId().toString()));
-            return response;
-        } catch (final Exception e) {
-            log.error("Error in requestPerformerForAssessment", e);
-            RequestPerformerForAssessmentResponseType response = new RequestPerformerForAssessmentResponseType();
-            response.setAssessmentId(anII(sourceSystemHsaId, ""));
-            response.setResult(toResultTypeError(e));
-            return response;
-        }
+        RequestPerformerForAssessmentResponseType response = new RequestPerformerForAssessmentResponseType();
+        response.setResult(ResultTypeUtil.ok());
+        response.setAssessmentId(anII(sourceSystemHsaId, sparadUtredning.getUtredningId().toString()));
+        return response;
     }
 }

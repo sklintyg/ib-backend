@@ -45,6 +45,7 @@ public final class TjanstekontraktUtils {
     private static final String KV_SNOMED_CT = "1.2.752.116.2.1.1";
 
     public static final String KV_INTYGSTYP = "b64ea353-e8f6-4832-b563-fc7d46f29548";
+    public static final String KV_MYNDIGHET = "769bb12b-bd9f-4203-a5cd-fd14f2eb3b80";
 
     private TjanstekontraktUtils() {
     }

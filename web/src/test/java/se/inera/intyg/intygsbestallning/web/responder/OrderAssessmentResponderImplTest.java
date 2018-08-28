@@ -19,6 +19,7 @@
 package se.inera.intyg.intygsbestallning.web.responder;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,6 +27,8 @@ import static org.mockito.Mockito.when;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.aCv;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.MyndighetTyp.AF;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.MyndighetTyp.FKASSA;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.LIAG;
 
@@ -35,12 +38,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.util.ReflectionUtils;
+import se.inera.intyg.intygsbestallning.common.exception.IbResponderValidationException;
+import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.integration.myndighet.service.TjanstekontraktUtils;
 import se.riv.intygsbestallning.certificate.order.orderassessment.v1.OrderAssessmentResponseType;
 import se.riv.intygsbestallning.certificate.order.orderassessment.v1.OrderAssessmentType;
 import se.riv.intygsbestallning.certificate.order.v1.AuthorityAdministrativeOfficialType;
 import se.riv.intygsbestallning.certificate.order.v1.CitizenType;
 import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
 import java.lang.reflect.Field;
+import java.text.MessageFormat;
 import java.util.Objects;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest;
@@ -64,8 +71,10 @@ public class OrderAssessmentResponderImplTest {
 
         OrderAssessmentType request = new OrderAssessmentType();
         request.setAssessmentId(anII(utredningRoot, utredningIdString));
-        request.setCertificateType(aCv(AFU.name(), null, null));
-        request.setAuthorityAdministrativeOfficial(new AuthorityAdministrativeOfficialType());
+        request.setCertificateType(aCv(AFU.name(), TjanstekontraktUtils.KV_INTYGSTYP, null));
+        AuthorityAdministrativeOfficialType authorityAdministrativeOfficialType = new AuthorityAdministrativeOfficialType();
+        authorityAdministrativeOfficialType.setAuthority(aCv(FKASSA.name(), TjanstekontraktUtils.KV_MYNDIGHET, null));
+        request.setAuthorityAdministrativeOfficial(authorityAdministrativeOfficialType);
         request.setCareUnitId(anII(null, "enhet"));
         CitizenType citizen = new CitizenType();
         citizen.setPersonalIdentity(anII(null, "191212121212"));
@@ -94,8 +103,10 @@ public class OrderAssessmentResponderImplTest {
         when(utredningService.registerNewUtredning(any(OrderRequest.class))).thenReturn(anUtredning().withUtredningId(utredningId).build());
 
         OrderAssessmentType request = new OrderAssessmentType();
-        request.setCertificateType(aCv(LIAG.name(), null, null));
-        request.setAuthorityAdministrativeOfficial(new AuthorityAdministrativeOfficialType());
+        request.setCertificateType(aCv(LIAG.name(), TjanstekontraktUtils.KV_INTYGSTYP, null));
+        AuthorityAdministrativeOfficialType authorityAdministrativeOfficialType = new AuthorityAdministrativeOfficialType();
+        authorityAdministrativeOfficialType.setAuthority(aCv(FKASSA.name(), TjanstekontraktUtils.KV_MYNDIGHET, null));
+        request.setAuthorityAdministrativeOfficial(authorityAdministrativeOfficialType);
         request.setCareUnitId(anII(null, "enhet"));
         CitizenType citizen = new CitizenType();
         citizen.setPersonalIdentity(anII(null, "191212121212"));
@@ -112,41 +123,47 @@ public class OrderAssessmentResponderImplTest {
     public void orderAssessmentFailMissingCitizenPersonalIdentity() {
 
         OrderAssessmentType request = new OrderAssessmentType();
-        request.setCertificateType(aCv(LIAG.name(), null, null));
-        final OrderAssessmentResponseType response = responder.orderAssessment("address", request);
+        AuthorityAdministrativeOfficialType authorityAdministrativeOfficialType = new AuthorityAdministrativeOfficialType();
+        authorityAdministrativeOfficialType.setAuthority(aCv(FKASSA.name(), TjanstekontraktUtils.KV_MYNDIGHET, null));
+        request.setAuthorityAdministrativeOfficial(authorityAdministrativeOfficialType);
+        request.setCertificateType(aCv(LIAG.name(), TjanstekontraktUtils.KV_INTYGSTYP, null));
 
-        assertThat(response.getResult().getResultCode()).isEqualTo(ResultCodeType.ERROR);
-        assertThat(response.getResult().getResultText()).isEqualTo("Invalid Personal Identity Format for Citizen");
+        assertThatThrownBy(() -> responder.orderAssessment("address", request))
+                .isExactlyInstanceOf(IbResponderValidationException.class)
+                .hasMessage(MessageFormat.format("{0} does not match expected format YYYYMMDDNNNN", "<null>"));
     }
 
     @Test
     public void orderAssessmentFailIncorrectFormatCitizenPersonalIdentity() {
 
         OrderAssessmentType request = new OrderAssessmentType();
-        request.setCertificateType(aCv(LIAG.name(), null, null));
+        AuthorityAdministrativeOfficialType authorityAdministrativeOfficialType = new AuthorityAdministrativeOfficialType();
+        authorityAdministrativeOfficialType.setAuthority(aCv(FKASSA.name(), TjanstekontraktUtils.KV_MYNDIGHET, null));
+        request.setAuthorityAdministrativeOfficial(authorityAdministrativeOfficialType);
+        request.setCertificateType(aCv(LIAG.name(), TjanstekontraktUtils.KV_INTYGSTYP, null));
 
         CitizenType citizen = new CitizenType();
         citizen.setPersonalIdentity(anII(null, "Very Bad Format"));
         request.setCitizen(citizen);
 
-        final OrderAssessmentResponseType response = responder.orderAssessment("address", request);
-
-        assertThat(response.getResult().getResultCode()).isEqualTo(ResultCodeType.ERROR);
-        assertThat(response.getResult().getResultText()).isEqualTo("Invalid Personal Identity Format for Citizen");
+        assertThatThrownBy(() -> responder.orderAssessment("address", request))
+                .isExactlyInstanceOf(IbResponderValidationException.class)
+                .hasMessage(MessageFormat.format("{0} does not match expected format YYYYMMDDNNNN", "Very Bad Format"));
     }
 
     @Test
     public void orderAssessmentFailIncorrectCertificateType() {
 
         OrderAssessmentType request = new OrderAssessmentType();
-        request.setCertificateType(aCv("NonExistingCode", null, null));
+        request.setCertificateType(aCv("NonExistingCode", TjanstekontraktUtils.KV_INTYGSTYP, null));
 
         CitizenType citizen = new CitizenType();
         citizen.setPersonalIdentity(anII(null, "191212121212"));
         request.setCitizen(citizen);
-        final OrderAssessmentResponseType response = responder.orderAssessment("address", request);
 
-        assertThat(response.getResult().getResultCode()).isEqualTo(ResultCodeType.ERROR);
-        assertThat(response.getResult().getResultText()).isEqualTo("CertificateType is not of a known type");
+        assertThatThrownBy(() -> responder.orderAssessment("address", request))
+                .isExactlyInstanceOf(IbResponderValidationException.class)
+                .hasMessage(MessageFormat.format("Unknown code: {0} for codeSystem: {1}", "NonExistingCode",
+                        TjanstekontraktUtils.KV_INTYGSTYP));
     }
 }

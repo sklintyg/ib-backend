@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.intygsbestallning.web.responder;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.aCv;
@@ -29,15 +29,16 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil;
 import se.riv.intygsbestallning.certificate.order.endassessment.v1.EndAssessmentResponseType;
 import se.riv.intygsbestallning.certificate.order.endassessment.v1.EndAssessmentType;
 import se.riv.intygsbestallning.certificate.order.v1.ResultCodeType;
 import se.inera.intyg.intygsbestallning.persistence.model.type.AvslutOrsak;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
-import se.inera.intyg.intygsbestallning.web.responder.resulthandler.ResultFactory;
 
 @RunWith(MockitoJUnitRunner.class)
-public class EndAssessmentResponderImplTest implements ResultFactory {
+public class EndAssessmentResponderImplTest {
 
     @Mock
     private UtredningService utredningService;
@@ -60,27 +61,26 @@ public class EndAssessmentResponderImplTest implements ResultFactory {
 
     @Test
     public void testEndAssessmentFailPreconditionLogicalAddress() {
-        final EndAssessmentResponseType response = responder.endAssessment(null, new EndAssessmentType());
-        assertThat(response.getResult().getResultCode()).isEqualTo(ResultCodeType.ERROR);
-        assertThat(response.getResult().getResultText()).isEqualTo(LOGICAL_ADDRESS);
+        assertThatThrownBy(() -> responder.endAssessment(null, new EndAssessmentType()))
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessage(ResultTypeUtil.LOGICAL_ADDRESS);
     }
 
     @Test
     public void testEndAssessmentFailPreconditionRequest() {
-        final EndAssessmentResponseType response = responder.endAssessment("logicalAddress", null);
-        assertThat(response.getResult().getResultCode()).isEqualTo(ResultCodeType.ERROR);
-        assertThat(response.getResult().getResultText()).isEqualTo(REQUEST);
+        assertThatThrownBy(() -> responder.endAssessment("logicalAddress", null))
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessage(ResultTypeUtil.REQUEST);
     }
 
     @Test
     public void testEndAssessmentFailConvert() {
         EndAssessmentType request = new EndAssessmentType();
         request.setAssessmentId(anII(null, "utredningId"));
-        request.setEndingCondition(aCv("nonExistingCode", null, null));
+        request.setEndingCondition(aCv("nonExistingCode", null, null));;
 
-        final EndAssessmentResponseType response = responder.endAssessment("logicalAdress", request);
-
-        assertThat(response.getResult().getResultCode()).isEqualTo(ResultCodeType.ERROR);
-        assertThat(response.getResult().getResultText()).isEqualTo("EndingCondition is not of a known type");
+        assertThatThrownBy(() -> responder.endAssessment("logicalAdress", request))
+                .isExactlyInstanceOf(IbServiceException.class)
+                .hasMessage("EndingCondition is not of a known type");
     }
 }

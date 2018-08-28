@@ -75,6 +75,30 @@ public class RequestSupplementIT extends BaseRestIntegrationTest {
         deleteUtredning(utredningId);
     }
 
+    @Test
+    public void requestRequestSupplementError() {
+        // First, utilize testability API to inject an Utredning ready to be supplemented.
+        String json = loadJson("integrationtests/RequestSupplement/utredning.json");
+
+        ResponseBodyExtractionOptions body = given().body(json).when().contentType("application/json")
+                .post("/api/test/utredningar").then()
+                .statusCode(200).extract().body();
+
+
+        Integer utredningId = body.jsonPath().get("entity.utredningId");
+
+        requestTemplate.add("data",
+                new RequestSupplement("" + utredningId, null));
+
+        given().body(requestTemplate.render()).when().post("/services/request-supplement-responder").then()
+                .statusCode(200).rootPath(BASE)
+                .body("result.resultCode", is("ERROR"))
+                .body("assessmentId.extension", Matchers.notNullValue());
+
+        // Delete it.
+        deleteUtredning(utredningId);
+    }
+
     @SuppressWarnings("unused")
     private static class RequestSupplement {
         public final String assessmentId;

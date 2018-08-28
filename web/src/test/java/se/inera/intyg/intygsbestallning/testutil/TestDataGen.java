@@ -29,6 +29,7 @@ import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.auth.IbUserDetailsService;
 import se.inera.intyg.intygsbestallning.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.intygsbestallning.auth.util.SystemRolesParser;
+import se.inera.intyg.intygsbestallning.integration.myndighet.service.TjanstekontraktUtils;
 import se.inera.intyg.intygsbestallning.persistence.model.Besok;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.BestallningHistorik;
@@ -153,13 +154,13 @@ public final class TestDataGen {
         authorityAdmin.setFullName("fullName");
         authorityAdmin.setPhoneNumber("phoneNumber");
         authorityAdmin.setEmail("email");
-        authorityAdmin.setAuthority(aCv(MyndighetTyp.FKASSA.name(), null, null));
+        authorityAdmin.setAuthority(aCv(MyndighetTyp.FKASSA.name(), TjanstekontraktUtils.KV_MYNDIGHET, null));
         authorityAdmin.setOfficeName("officeName");
         authorityAdmin.setOfficeCostCenter("officeCostCenter");
         authorityAdmin.setOfficeAddress(address);
 
         RequestPerformerForAssessmentType request = new RequestPerformerForAssessmentType();
-        request.setCertificateType(aCv("AFU", null, null));
+        request.setCertificateType(aCv("AFU", TjanstekontraktUtils.KV_INTYGSTYP, null));
         request.setLastResponseDate("20181010");
         request.setCoordinatingCountyCouncilId(anII("root", "coordinatingCountyCouncilId"));
         request.setComment("comment");

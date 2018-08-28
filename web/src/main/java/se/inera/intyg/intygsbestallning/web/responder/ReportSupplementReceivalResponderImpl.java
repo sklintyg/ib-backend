@@ -28,16 +28,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil;
 import se.riv.intygsbestallning.certificate.order.reportsupplementreceival.v1.ReportSupplementReceivalResponseType;
 import se.riv.intygsbestallning.certificate.order.reportsupplementreceival.v1.ReportSupplementReceivalType;
 import se.riv.intygsbestallning.certificate.order.reportsupplementreceival.v1.rivtabp21.ReportSupplementReceivalResponderInterface;
 import se.inera.intyg.intygsbestallning.service.utredning.KompletteringService;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportKompletteringMottagenRequest;
-import se.inera.intyg.intygsbestallning.web.responder.resulthandler.ResultFactory;
 
 @Service
 @SchemaValidation
-public class ReportSupplementReceivalResponderImpl implements ReportSupplementReceivalResponderInterface, ResultFactory {
+public class ReportSupplementReceivalResponderImpl implements ReportSupplementReceivalResponderInterface {
 
     private final KompletteringService kompletteringService;
 
@@ -54,19 +54,13 @@ public class ReportSupplementReceivalResponderImpl implements ReportSupplementRe
 
         log.info("Received ReportSupplementReceival request");
 
-        try {
-            checkArgument(isNotEmpty(logicalAddress), LOGICAL_ADDRESS);
-            checkArgument(nonNull(request), REQUEST);
+        checkArgument(isNotEmpty(logicalAddress), ResultTypeUtil.LOGICAL_ADDRESS);
+        checkArgument(nonNull(request), ResultTypeUtil.REQUEST);
 
-            kompletteringService.reportKompletteringMottagen(ReportKompletteringMottagenRequest.from(request));
+        kompletteringService.reportKompletteringMottagen(ReportKompletteringMottagenRequest.from(request));
 
-            ReportSupplementReceivalResponseType response = new ReportSupplementReceivalResponseType();
-            response.setResult(toResultTypeOK());
-            return response;
-        } catch (final Exception e) {
-            ReportSupplementReceivalResponseType response = new ReportSupplementReceivalResponseType();
-            response.setResult(toResultTypeError(e));
-            return response;
-        }
+        ReportSupplementReceivalResponseType response = new ReportSupplementReceivalResponseType();
+        response.setResult(ResultTypeUtil.ok());
+        return response;
     }
 }

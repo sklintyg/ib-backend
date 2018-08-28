@@ -47,6 +47,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,9 +63,9 @@ import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.common.exception.IbAuthorizationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
-import se.inera.intyg.intygsbestallning.common.exception.IbExternalServiceException;
-import se.inera.intyg.intygsbestallning.common.exception.IbExternalSystemEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
+import se.inera.intyg.intygsbestallning.common.exception.IbResponderValidationErrorCode;
+import se.inera.intyg.intygsbestallning.common.exception.IbResponderValidationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.persistence.model.Bestallning;
 import se.inera.intyg.intygsbestallning.persistence.model.BestallningHistorik;
@@ -136,6 +137,9 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
     @Autowired
     private NotifieringSendService notifieringSendService;
+
+    @Value("#{'${landsting.list}'.split(',')}")
+    private List<String> landstingHsaIdList;
 
     @Override
     @Transactional(readOnly = true)
@@ -283,8 +287,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     public Utredning registerOrder(OrderRequest order) {
         // TA.FEL06: Angivet utrednings id existerar inte
         Utredning utredning = utredningRepository.findById(order.getUtredningId()).orElseThrow(
-                () -> new IbNotFoundException(
-                        MessageFormat.format("Felaktig utredningsid: {0}. Utredningen existerar inte.", order.getUtredningId())));
+                () -> new IbResponderValidationException(IbResponderValidationErrorCode.TA_FEL06, order.getUtredningId()));
 
         validateCorrectUtredningStateForOrderAssessment(order, utredning);
 
@@ -332,18 +335,14 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
         // TA.FEL13 - Utredningen är inte i status Tilldelad, väntar på beställning
         if (utredning.getBestallning().isPresent() || !UtredningStatus.TILLDELAD_VANTAR_PA_BESTALLNING.equals(utredning.getStatus())) {
-            throw new IbServiceException(
-                    IbErrorCodeEnum.BAD_STATE,
-                    "Utredningen har redan blivit beställd eller är avbruten");
+            throw new IbResponderValidationException(IbResponderValidationErrorCode.TA_FEL13);
         }
 
         // TA.FEL04 - Beställningens enhet måste vara samma som tilldelad enhet
         if (isNullOrEmpty(order.getEnhetId()) || !utredning.getExternForfragan().isPresent()
                 || utredning.getExternForfragan().get().getInternForfraganList().stream()
                         .noneMatch(iff -> iff.getTilldeladDatum() != null && order.getEnhetId().equals(iff.getVardenhetHsaId()))) {
-            throw new IbServiceException(IbErrorCodeEnum.BAD_STATE,
-                    MessageFormat.format("Utredning {0} tillhör inte vårdenhet {1}",
-                            order.getUtredningId(), order.getEnhetId()));
+            throw new IbResponderValidationException(IbResponderValidationErrorCode.TA_FEL04, order.getUtredningId(), order.getEnhetId());
         }
     }
 
@@ -413,6 +412,11 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
 
     @Override
     public Utredning registerNewUtredning(final AssessmentRequest request) {
+
+        if (!landstingHsaIdList.contains(request.getLandstingHsaId())) {
+            throw new IbResponderValidationException(IbResponderValidationErrorCode.TA_FEL01,
+                    ImmutableList.of(request.getLandstingHsaId()));
+        }
 
         ExternForfraganBuilder externForfragan = anExternForfragan()
                 .withInkomDatum(LocalDateTime.now())
@@ -490,7 +494,7 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
     @Override
     public void avslutaUtredning(final AvslutaUtredningRequest request) {
         final Utredning utredning = utredningRepository.findById(request.getUtredningId())
-                .orElseThrow(() -> new IbNotFoundException("Angivet utredningsid existerar inte"));
+                .orElseThrow(() -> new IbResponderValidationException(IbResponderValidationErrorCode.TA_FEL06, request.getUtredningId()));
 
         if (nonNull(utredning.getAvbrutenDatum()) || nonNull(utredning.getAvbrutenOrsak())) {
             throw new IbServiceException(IbErrorCodeEnum.ALREADY_EXISTS,
@@ -843,18 +847,15 @@ public class UtredningServiceImpl extends BaseUtredningService implements Utredn
             HealthCareUnitType vardenhet = organizationUnitService.getHealthCareUnit(bestallning.getTilldeladVardenhetHsaId());
             if (vardenhet == null || StringUtils.isBlank(vardenhet.getHealthCareProviderOrgNo())) {
                 LOG.error("Failed to lookup orgnr for vardenhet " + bestallning.getTilldeladVardenhetHsaId());
-                throw new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.HSA,
-                        "Det uppstod ett fel när HSA Katalogen anropades. Beställningen kunde därför inte tas emot.", null);
+                throw new IbResponderValidationException(IbResponderValidationErrorCode.GTA_FEL06);
             }
             bestallning.setTilldeladVardenhetOrgNr(vardenhet.getHealthCareProviderOrgNo());
         } catch (HsaServiceCallException e) {
             LOG.error("Failed to lookup orgnr for vardenhet " + bestallning.getTilldeladVardenhetHsaId(), e);
             if (e.getErroIdEnum() == HsaServiceCallException.ErrorIdEnum.APPLICATION_ERROR) {
-                throw new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.HSA,
-                        "Det uppstod ett fel när HSA Katalogen anropades. Beställningen kunde därför inte tas emot.", null);
+                throw new IbResponderValidationException(IbResponderValidationErrorCode.GTA_FEL04);
             } else {
-                throw new IbExternalServiceException(IbErrorCodeEnum.EXTERNAL_ERROR, IbExternalSystemEnum.HSA,
-                        "Received technical error from HSA", null);
+                throw new IbResponderValidationException(IbResponderValidationErrorCode.GTA_FEL03);
             }
         }
     }

@@ -27,6 +27,7 @@ import static se.inera.intyg.intygsbestallning.testutil.TestDataGen.createFullRe
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
+import se.inera.intyg.intygsbestallning.common.exception.IbResponderValidationException;
 import se.inera.intyg.intygsbestallning.integration.myndighet.service.TjanstekontraktUtils;
 import se.riv.intygsbestallning.certificate.order.requestperformerforassessment.v1.RequestPerformerForAssessmentType;
 import java.text.MessageFormat;
@@ -71,10 +72,10 @@ public class AssessmentRequestTest {
         final String okandUtredningsTyp = "okand-typ";
 
         RequestPerformerForAssessmentType request = createFullRequest();
-        request.setCertificateType(aCv(okandUtredningsTyp, null, null));
+        request.setCertificateType(aCv(okandUtredningsTyp, TjanstekontraktUtils.KV_INTYGSTYP, null));
 
         assertThatThrownBy(() -> AssessmentRequest.from(request))
-                .isExactlyInstanceOf(IbServiceException.class)
+                .isExactlyInstanceOf(IbResponderValidationException.class)
                 .hasMessage(MessageFormat.format(
                         "Unknown code: {0} for codeSystem: {1}",
                 okandUtredningsTyp, TjanstekontraktUtils.KV_INTYGSTYP));
@@ -83,15 +84,15 @@ public class AssessmentRequestTest {
     @Test
     public void testToConvertFromRequestFelaktigUtredningsTyp() {
 
-        final UtredningsTyp felakrigUtredningsTyp = UtredningsTyp.LIAG;
+        final UtredningsTyp felaktigUtredningsTyp = UtredningsTyp.LIAG;
 
         RequestPerformerForAssessmentType request = createFullRequest();
-        request.setCertificateType(aCv(felakrigUtredningsTyp.name(), null, null));
+        request.setCertificateType(aCv(felaktigUtredningsTyp.name(), TjanstekontraktUtils.KV_INTYGSTYP, null));
 
         assertThatThrownBy(() -> AssessmentRequest.from(request))
-                .isExactlyInstanceOf(IbServiceException.class)
+                .isExactlyInstanceOf(IbResponderValidationException.class)
                 .hasMessage(MessageFormat.format(
-                        "Unknown code: {0} for codeSystem: {1}", felakrigUtredningsTyp,
+                        "Unknown code: {0} for codeSystem: {1}", felaktigUtredningsTyp,
                         TjanstekontraktUtils.KV_INTYGSTYP));
 
     }

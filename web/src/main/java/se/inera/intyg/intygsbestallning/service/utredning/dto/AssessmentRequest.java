@@ -24,24 +24,24 @@ import static se.inera.intyg.intygsbestallning.persistence.model.type.Utrednings
 import static se.inera.intyg.intygsbestallning.service.utredning.dto.AssessmentRequest.AssessmentRequestBuilder.anAssessmentRequest;
 import static se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare.BestallareBuilder.aBestallare;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.apache.commons.lang3.BooleanUtils;
+import se.inera.intyg.intygsbestallning.common.exception.IbResponderValidationErrorCode;
+import se.inera.intyg.intygsbestallning.common.exception.IbResponderValidationException;
 import se.inera.intyg.intygsbestallning.integration.myndighet.service.TjanstekontraktUtils;
+import se.inera.intyg.intygsbestallning.persistence.model.type.MyndighetTyp;
 import se.riv.intygsbestallning.certificate.order.requestperformerforassessment.v1.RequestPerformerForAssessmentType;
 import se.riv.intygsbestallning.certificate.order.v1.AddressType;
 import se.riv.intygsbestallning.certificate.order.v1.AuthorityAdministrativeOfficialType;
 import se.riv.intygsbestallning.certificate.order.v1.CVType;
 import se.riv.intygsbestallning.certificate.order.v1.CitizenLimitedType;
 import se.riv.intygsbestallning.certificate.order.v1.IIType;
-import java.text.MessageFormat;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
-import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+
 import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 
@@ -154,27 +154,39 @@ public class AssessmentRequest {
     }
 
     private static void validate(final RequestPerformerForAssessmentType source) {
-        List<String> errors = Lists.newArrayList();
         final List<UtredningsTyp> godkandaUtredningsTyper = ImmutableList.of(AFU, AFU_UTVIDGAD);
 
+        if (!source.getCertificateType().getCodeSystem().equals(TjanstekontraktUtils.KV_INTYGSTYP)) {
+            throw new IbResponderValidationException(IbResponderValidationErrorCode.GTA_FEL01, source.getCertificateType().getCodeSystem());
+        }
+
         try {
-            final UtredningsTyp utredningsTyp = valueOf(source.getCertificateType().getCode());
+            final UtredningsTyp utredningsTyp = UtredningsTyp.valueOf(source.getCertificateType().getCode());
 
             boolean korrektTyp = godkandaUtredningsTyper.contains(utredningsTyp);
             if (!korrektTyp) {
-                errors.add(MessageFormat.format(
-                        "Unknown code: {0} for codeSystem: {1}",
-                        source.getCertificateType().getCode(), TjanstekontraktUtils.KV_INTYGSTYP));
+                throw new IbResponderValidationException(IbResponderValidationErrorCode.GTA_FEL02, utredningsTyp,
+                        TjanstekontraktUtils.KV_INTYGSTYP);
             }
         } catch (IllegalArgumentException iae) {
-
-            errors.add(MessageFormat.format(
-                    "Unknown code: {0} for codeSystem: {1}",
-                    source.getCertificateType().getCode(), TjanstekontraktUtils.KV_INTYGSTYP));
+            throw new IbResponderValidationException(IbResponderValidationErrorCode.GTA_FEL02, source.getCertificateType().getCode(),
+                    TjanstekontraktUtils.KV_INTYGSTYP);
         }
 
-        if (!errors.isEmpty()) {
-            throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, Joiner.on(", ").join(errors));
+        if (!source.getAuthorityAdministrativeOfficial().getAuthority().getCodeSystem().equals(TjanstekontraktUtils.KV_MYNDIGHET)) {
+            throw new IbResponderValidationException(IbResponderValidationErrorCode.GTA_FEL01,
+                    source.getAuthorityAdministrativeOfficial().getAuthority().getCodeSystem());
+        }
+        try {
+            final MyndighetTyp myndighetTyp = MyndighetTyp.valueOf(source.getAuthorityAdministrativeOfficial().getAuthority().getCode());
+
+            if (!myndighetTyp.isActive()) {
+                throw new IbResponderValidationException(IbResponderValidationErrorCode.GTA_FEL02, myndighetTyp,
+                        TjanstekontraktUtils.KV_MYNDIGHET);
+            }
+        } catch (IllegalArgumentException iae) {
+            throw new IbResponderValidationException(IbResponderValidationErrorCode.GTA_FEL02,
+                    source.getAuthorityAdministrativeOfficial().getAuthority().getCode(), TjanstekontraktUtils.KV_MYNDIGHET);
         }
     }
     //CHECKSTYLE:OFF OperatorWrap

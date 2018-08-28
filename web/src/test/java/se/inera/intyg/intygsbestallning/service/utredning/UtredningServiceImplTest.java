@@ -36,6 +36,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
+import static se.inera.intyg.intygsbestallning.common.exception.IbResponderValidationErrorCode.TA_FEL04;
+import static se.inera.intyg.intygsbestallning.common.exception.IbResponderValidationErrorCode.TA_FEL06;
+import static se.inera.intyg.intygsbestallning.common.exception.IbResponderValidationErrorCode.TA_FEL13;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
 import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
 import static se.inera.intyg.intygsbestallning.persistence.model.Bestallning.BestallningBuilder.aBestallning;
@@ -78,6 +81,7 @@ import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
+import se.inera.intyg.intygsbestallning.common.exception.IbResponderValidationException;
 import se.riv.infrastructure.directory.organization.gethealthcareunitresponder.v1.HealthCareUnitType;
 import se.riv.infrastructure.directory.organization.getunitresponder.v1.UnitType;
 import se.riv.intygsbestallning.certificate.order.updateorder.v1.UpdateOrderType;
@@ -135,6 +139,8 @@ import se.inera.intyg.intygsbestallning.web.controller.api.dto.utredning.Utredni
 @RunWith(MockitoJUnitRunner.class)
 public class UtredningServiceImplTest {
 
+    private static final String LANDSTING_1 = "landsting-1";
+
     @Mock
     private UtredningRepository utredningRepository;
 
@@ -174,6 +180,8 @@ public class UtredningServiceImplTest {
         // DP inject/Autowire manually.
         ReflectionTestUtils.setField(utredningListItemFactory, "businessDays", businessDays);
         ReflectionTestUtils.setField(internForfraganListItemFactory, "businessDays", businessDays);
+
+        ReflectionTestUtils.setField(utredningService, "landstingHsaIdList", ImmutableList.of(LANDSTING_1));
     }
 
     @Test
@@ -262,7 +270,7 @@ public class UtredningServiceImplTest {
         assertEquals("telefonnummer", response.getHandlaggare().getTelefonnummer());
     }
 
-    @Test(expected = IbServiceException.class)
+    @Test(expected = IbResponderValidationException.class)
     public void registerOrderNoForfragan() {
         final Long utredningId = 1L;
 
@@ -279,7 +287,7 @@ public class UtredningServiceImplTest {
         utredningService.registerOrder(order);
     }
 
-    @Test(expected = IbNotFoundException.class)
+    @Test(expected = IbResponderValidationException.class)
     public void registerOrderNoPreviousUtredning() {
         final Long utredningId = 1L;
 
@@ -306,10 +314,10 @@ public class UtredningServiceImplTest {
         OrderRequest order = anOrderRequest().withUtredningId(utredningId).build();
         try {
             utredningService.registerOrder(order);
-            fail("Expected an IbServiceException to be thrown");
-        } catch (IbServiceException ibs) {
-            assertEquals(IbErrorCodeEnum.BAD_STATE, ibs.getErrorCode());
-            assertEquals("Utredningen har redan blivit beställd eller är avbruten", ibs.getMessage());
+            fail("Expected an IbResponderValidationException to be thrown");
+        } catch (IbResponderValidationException irve) {
+            assertEquals(TA_FEL13, irve.getErrorCode());
+            assertEquals("Utredningen har redan blivit beställd eller är avbruten", irve.getMessage());
         }
     }
 
@@ -330,10 +338,10 @@ public class UtredningServiceImplTest {
         OrderRequest order = anOrderRequest().withUtredningId(utredningId).withEnhetId(bestalldEnhet).build();
         try {
             utredningService.registerOrder(order);
-            fail("Expected an IbServiceException to be thrown");
-        } catch (IbServiceException ibs) {
-            assertEquals(IbErrorCodeEnum.BAD_STATE, ibs.getErrorCode());
-            assertEquals("Utredning " + utredningId + " tillhör inte vårdenhet " + bestalldEnhet, ibs.getMessage());
+            fail("Expected an IbResponderValidationException to be thrown");
+        } catch (IbResponderValidationException irve) {
+            assertEquals(TA_FEL04, irve.getErrorCode());
+            assertEquals("Utredning " + utredningId + " tillhör inte vårdenhet " + bestalldEnhet, irve.getMessage());
         }
     }
 
@@ -409,7 +417,7 @@ public class UtredningServiceImplTest {
                 .withUtredningId(1L)
                 .withUtredningsTyp(AFU_UTVIDGAD)
                 .withExternForfragan(anExternForfragan()
-                        .withLandstingHsaId("id")
+                        .withLandstingHsaId(LANDSTING_1)
                         .withInkomDatum(LocalDateTime.now())
                         .withBesvarasSenastDatum(dateTime)
                         .withKommentar("kommentar")
@@ -433,7 +441,7 @@ public class UtredningServiceImplTest {
 
         final AssessmentRequest request = anAssessmentRequest()
                 .withUtredningsTyp(AFU_UTVIDGAD)
-                .withLandstingHsaId("id")
+                .withLandstingHsaId(LANDSTING_1)
                 .withInvanareTidigareUtforare(ImmutableList.of("1", "2", "3"))
                 .withInvanareSarskildaBehov("sarskiltBehov")
                 .withInvanarePostort("postort")
@@ -478,7 +486,7 @@ public class UtredningServiceImplTest {
                 .withUtredningId(1L)
                 .withUtredningsTyp(AFU_UTVIDGAD)
                 .withExternForfragan(anExternForfragan()
-                        .withLandstingHsaId("id")
+                        .withLandstingHsaId(LANDSTING_1)
                         .withInkomDatum(LocalDateTime.now())
                         .withBesvarasSenastDatum(dateTime)
                         .withKommentar("kommentar")
@@ -512,11 +520,11 @@ public class UtredningServiceImplTest {
                 .withVardenhetRegiForm(RegiFormTyp.EGET_LANDSTING).build());
         doReturn(vardenheter)
                 .when(registreradVardenhetRepository)
-                .findByVardgivareHsaId("id");
+                .findByVardgivareHsaId(LANDSTING_1);
 
         final AssessmentRequest request = anAssessmentRequest()
                 .withUtredningsTyp(AFU_UTVIDGAD)
-                .withLandstingHsaId("id")
+                .withLandstingHsaId(LANDSTING_1)
                 .withInvanareTidigareUtforare(ImmutableList.of("1", "2", "3"))
                 .withInvanareSarskildaBehov("sarskiltBehov")
                 .withInvanarePostort("postort")
@@ -1184,9 +1192,9 @@ public class UtredningServiceImplTest {
                 .build();
 
         assertThatThrownBy(() -> utredningService.avslutaUtredning(request))
-                .isExactlyInstanceOf(IbNotFoundException.class)
-                .hasMessage("Angivet utredningsid existerar inte")
-                .hasFieldOrPropertyWithValue("errorCode", IbErrorCodeEnum.NOT_FOUND);
+                .isExactlyInstanceOf(IbResponderValidationException.class)
+                .hasMessage(MessageFormat.format("Felaktig utredningsid: {0}. Utredningen existerar inte.", utredningId))
+                .hasFieldOrPropertyWithValue("errorCode", TA_FEL06);
     }
 
     @Test

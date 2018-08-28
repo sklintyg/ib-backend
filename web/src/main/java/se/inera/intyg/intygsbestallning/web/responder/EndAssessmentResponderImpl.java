@@ -23,9 +23,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil;
 import se.inera.intyg.intygsbestallning.service.utredning.UtredningService;
 import se.inera.intyg.intygsbestallning.service.utredning.dto.AvslutaUtredningRequest;
-import se.inera.intyg.intygsbestallning.web.responder.resulthandler.ResultFactory;
 import se.riv.intygsbestallning.certificate.order.endassessment.v1.EndAssessmentResponseType;
 import se.riv.intygsbestallning.certificate.order.endassessment.v1.EndAssessmentType;
 import se.riv.intygsbestallning.certificate.order.endassessment.v1.rivtabp21.EndAssessmentResponderInterface;
@@ -38,7 +38,7 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 @Service
 @SchemaValidation
-public class EndAssessmentResponderImpl implements EndAssessmentResponderInterface, ResultFactory {
+public class EndAssessmentResponderImpl implements EndAssessmentResponderInterface {
 
     private final UtredningService utredningService;
 
@@ -55,19 +55,13 @@ public class EndAssessmentResponderImpl implements EndAssessmentResponderInterfa
 
         log.info("Received EndAssessment request");
 
-        try {
-            checkArgument(isNotEmpty(logicalAddress), LOGICAL_ADDRESS);
-            checkArgument(nonNull(request), REQUEST);
+        checkArgument(isNotEmpty(logicalAddress), ResultTypeUtil.LOGICAL_ADDRESS);
+        checkArgument(nonNull(request), ResultTypeUtil.REQUEST);
 
-            utredningService.avslutaUtredning(AvslutaUtredningRequest.from(request));
+        utredningService.avslutaUtredning(AvslutaUtredningRequest.from(request));
 
-            EndAssessmentResponseType response = new EndAssessmentResponseType();
-            response.setResult(toResultTypeOK());
-            return response;
-        } catch (final Exception e) {
-            EndAssessmentResponseType response = new EndAssessmentResponseType();
-            response.setResult(toResultTypeError(e));
-            return response;
-        }
+        EndAssessmentResponseType response = new EndAssessmentResponseType();
+        response.setResult(ResultTypeUtil.ok());
+        return response;
     }
 }

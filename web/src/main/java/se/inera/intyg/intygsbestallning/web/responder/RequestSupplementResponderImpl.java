@@ -33,15 +33,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil;
 import se.riv.intygsbestallning.certificate.order.requestsupplement.v1.RequestSupplementResponseType;
 import se.riv.intygsbestallning.certificate.order.requestsupplement.v1.RequestSupplementType;
 import se.riv.intygsbestallning.certificate.order.requestsupplement.v1.rivtabp21.RequestSupplementResponderInterface;
 import se.inera.intyg.intygsbestallning.service.utredning.KompletteringService;
-import se.inera.intyg.intygsbestallning.web.responder.resulthandler.ResultFactory;
 
 @Service
 @SchemaValidation
-public class RequestSupplementResponderImpl implements RequestSupplementResponderInterface, ResultFactory {
+public class RequestSupplementResponderImpl implements RequestSupplementResponderInterface {
 
     @Value("${source.system.hsaid:}")
     private String sourceSystemHsaId;
@@ -61,31 +61,23 @@ public class RequestSupplementResponderImpl implements RequestSupplementResponde
 
         log.info("RequestSupplement received request");
 
-        try {
+        checkArgument(isNotEmpty(logicalAddress), ResultTypeUtil.LOGICAL_ADDRESS);
+        checkArgument(nonNull(request), ResultTypeUtil.REQUEST);
 
-            checkArgument(isNotEmpty(logicalAddress), LOGICAL_ADDRESS);
-            checkArgument(nonNull(request), REQUEST);
-
-            if (isNull(request.getAssessmentId()) || isNull(request.getAssessmentId().getExtension())) {
-                return createErrorResponse("Request is missing required field assessmentId");
-            }
-
-            // Not required in schema but required in användningsfall FMU-F011: Huvudflöde 1
-            if (StringUtils.isBlank(request.getLastDateForSupplementReceival())) {
-                return createErrorResponse("Request is missing required field lastDateForSupplementReceival");
-            }
-
-            long kompletteringsId = kompletteringService.registerNewKomplettering(request);
-            RequestSupplementResponseType response = new RequestSupplementResponseType();
-            response.setResult(toResultTypeOK());
-            response.setSupplementRequestId(anII(sourceSystemHsaId, String.valueOf(kompletteringsId)));
-            return response;
-        } catch (Exception e) {
-            RequestSupplementResponseType response = new RequestSupplementResponseType();
-            response.setSupplementRequestId(anII(sourceSystemHsaId, ""));
-            response.setResult(toResultTypeError(e));
-            return response;
+        if (isNull(request.getAssessmentId()) || isNull(request.getAssessmentId().getExtension())) {
+            return createErrorResponse("Request is missing required field assessmentId");
         }
+
+        // Not required in schema but required in användningsfall FMU-F011: Huvudflöde 1
+        if (StringUtils.isBlank(request.getLastDateForSupplementReceival())) {
+            return createErrorResponse("Request is missing required field lastDateForSupplementReceival");
+        }
+
+        long kompletteringsId = kompletteringService.registerNewKomplettering(request);
+        RequestSupplementResponseType response = new RequestSupplementResponseType();
+        response.setResult(ResultTypeUtil.ok());
+        response.setSupplementRequestId(anII(sourceSystemHsaId, String.valueOf(kompletteringsId)));
+        return response;
     }
 
 

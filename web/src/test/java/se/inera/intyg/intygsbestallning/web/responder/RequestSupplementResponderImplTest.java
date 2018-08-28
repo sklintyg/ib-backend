@@ -63,26 +63,6 @@ public class RequestSupplementResponderImplTest {
         assertEquals("Request is missing required field lastDateForSupplementReceival", response.getResult().getResultText());
     }
 
-    @Test
-    public void testExceptionsAreMappedOntoError() {
-        when(kompletteringService.registerNewKomplettering(any(RequestSupplementType.class))).thenThrow(new IllegalStateException(ERROR_MESSAGE));
-        RequestSupplementResponseType response = testee.requestSupplement("address", buildRequest());
-        assertEquals(ERROR_MESSAGE, response.getResult().getResultText());
-        assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
-    }
-
-    @Test
-    public void testExceptionsWhenLastDateForSupplementReceivalIsNotParsable() {
-        when(kompletteringService.registerNewKomplettering(any(RequestSupplementType.class))).thenThrow(new IllegalStateException(ERROR_MESSAGE));
-
-        RequestSupplementType request = buildRequest();
-        buildRequest().setLastDateForSupplementReceival("2018-06-aa"); // bad date
-
-        RequestSupplementResponseType response = testee.requestSupplement("address", request);
-        assertEquals(ERROR_MESSAGE, response.getResult().getResultText());
-        assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
-    }
-
     private RequestSupplementType buildRequest() {
         RequestSupplementType req = new RequestSupplementType();
         IIType id = new IIType();

@@ -20,6 +20,7 @@ package se.inera.intyg.intygsbestallning.service.utredning.dto;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static se.inera.intyg.intygsbestallning.common.exception.IbResponderValidationErrorCode.GTA_FEL05;
 import static se.inera.intyg.intygsbestallning.service.utredning.dto.Bestallare.BestallareBuilder.aBestallare;
 import static se.inera.intyg.intygsbestallning.service.utredning.dto.OrderRequest.OrderRequestBuilder.anOrderRequest;
 
@@ -27,14 +28,19 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Longs;
 import org.apache.commons.lang3.BooleanUtils;
+import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
+import se.inera.intyg.intygsbestallning.common.exception.IbResponderValidationErrorCode;
+import se.inera.intyg.intygsbestallning.common.exception.IbResponderValidationException;
+import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+import se.inera.intyg.intygsbestallning.integration.myndighet.service.TjanstekontraktUtils;
+import se.inera.intyg.intygsbestallning.persistence.model.type.MyndighetTyp;
 import se.riv.intygsbestallning.certificate.order.orderassessment.v1.OrderAssessmentType;
 import se.riv.intygsbestallning.certificate.order.v1.AuthorityAdministrativeOfficialType;
 import se.riv.intygsbestallning.certificate.order.v1.CitizenType;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
-import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
+
 import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
 import se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -113,30 +119,53 @@ public final class OrderRequest {
     }
 
     private static void validate(OrderAssessmentType source) {
-        List<String> errors = Lists.newArrayList();
+
+        if (!source.getCertificateType().getCodeSystem().equals(TjanstekontraktUtils.KV_INTYGSTYP)) {
+            throw new IbResponderValidationException(IbResponderValidationErrorCode.GTA_FEL01, source.getCertificateType().getCodeSystem());
+        }
+
         try {
             UtredningsTyp.valueOf(source.getCertificateType().getCode());
         } catch (IllegalArgumentException iae) {
-            errors.add("CertificateType is not of a known type");
-        }
-        if (nonNull(source.isNeedForInterpreter()) && source.isNeedForInterpreter() && isNull(source.getInterpreterLanguage())) {
-            errors.add("InterpreterLanguage is required when the need is declared");
+            throw new IbResponderValidationException(IbResponderValidationErrorCode.GTA_FEL02, source.getCertificateType().getCode(),
+                    TjanstekontraktUtils.KV_INTYGSTYP);
         }
 
-
+        if (!source.getAuthorityAdministrativeOfficial().getAuthority().getCodeSystem().equals(TjanstekontraktUtils.KV_MYNDIGHET)) {
+            throw new IbResponderValidationException(IbResponderValidationErrorCode.GTA_FEL01,
+                    source.getAuthorityAdministrativeOfficial().getAuthority().getCodeSystem());
+        }
         try {
+            final MyndighetTyp myndighetTyp = MyndighetTyp.valueOf(source.getAuthorityAdministrativeOfficial().getAuthority().getCode());
+
+            if (!myndighetTyp.isActive()) {
+                throw new IbResponderValidationException(IbResponderValidationErrorCode.GTA_FEL02, myndighetTyp,
+                        TjanstekontraktUtils.KV_MYNDIGHET);
+            }
+        } catch (IllegalArgumentException iae) {
+            throw new IbResponderValidationException(IbResponderValidationErrorCode.GTA_FEL02,
+                    source.getAuthorityAdministrativeOfficial().getAuthority().getCode(), TjanstekontraktUtils.KV_MYNDIGHET);
+        }
+
+        String sourcePersonnummerString = "<null>";
+        try {
+            sourcePersonnummerString = source.getCitizen().getPersonalIdentity().getExtension();
             final Optional<Personnummer> pIdentity =
-                    Personnummer.createPersonnummer(source.getCitizen().getPersonalIdentity().getExtension());
-            if (!pIdentity.isPresent()) {
-                errors.add("Invalid Personal Identity Format for Citizen");
-            } else {
-                // Since createPersonnummer is lax by design, also check that input matches NORMALIZED personnummer.
-                if (!pIdentity.get().getPersonnummer().equals(source.getCitizen().getPersonalIdentity().getExtension())) {
-                    errors.add("Invalid Personal Identity Format for Citizen");
-                }
+                    Personnummer.createPersonnummer(sourcePersonnummerString);
+
+            if (!pIdentity.isPresent()
+                    // Since createPersonnummer is lax by design, also check that input matches NORMALIZED personnummer.
+                    || !pIdentity.get().getPersonnummer().equals(sourcePersonnummerString)) {
+                throw new IbResponderValidationException(GTA_FEL05, sourcePersonnummerString);
             }
         } catch (Exception e) {
-            errors.add("Invalid Personal Identity Format for Citizen");
+            throw new IbResponderValidationException(GTA_FEL05, sourcePersonnummerString);
+        }
+
+        List<String> errors = Lists.newArrayList();
+
+        if (nonNull(source.isNeedForInterpreter()) && source.isNeedForInterpreter() && isNull(source.getInterpreterLanguage())) {
+            errors.add("InterpreterLanguage is required when the need is declared");
         }
 
         // if FMU-order
@@ -145,8 +174,7 @@ public final class OrderRequest {
                 errors.add("AssessmentId is not parseable as a Long");
             }
             if (isNull(source.getLastDateForCertificateReceival())) {
-                //TA.FEL07
-                errors.add("LastDateForCertificateReceival is required when assessmentId is present");
+                throw new IbResponderValidationException(IbResponderValidationErrorCode.TA_FEL07);
             }
             if (isNull(source.getCitizen().getFirstName())
                     && isNull(source.getCitizen().getMiddleName())
@@ -154,10 +182,10 @@ public final class OrderRequest {
                 errors.add("Name is required when assessmentId is present");
             }
         }
+
         if (!errors.isEmpty()) {
             throw new IbServiceException(IbErrorCodeEnum.BAD_REQUEST, Joiner.on(", ").join(errors));
         }
-
     }
 
     public Long getUtredningId() {

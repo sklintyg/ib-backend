@@ -22,6 +22,8 @@ import com.google.common.collect.ImmutableList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import se.inera.intyg.intygsbestallning.common.exception.IbResponderValidationErrorCode;
+import se.inera.intyg.intygsbestallning.common.exception.IbResponderValidationException;
 import se.inera.intyg.intygsbestallning.common.util.SchemaDateUtil;
 import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
 import se.riv.intygsbestallning.certificate.order.requestsupplement.v1.RequestSupplementType;
@@ -134,8 +136,7 @@ public class KompletteringServiceImpl extends BaseUtredningService implements Ko
         Optional<Utredning> optionalUtredning = utredningRepository.findById(request.getUtredningId());
 
         optionalUtredning
-                .orElseThrow(() -> new IbNotFoundException(
-                        MessageFormat.format("Utredning with id {0} was not found.", request.getUtredningId())));
+                .orElseThrow(() -> new IbResponderValidationException(IbResponderValidationErrorCode.TA_FEL06, request.getUtredningId()));
 
         optionalUtredning.filter(isKorrektStatusForKompletteringMottagen())
                 .orElseThrow(() -> new IbServiceException(

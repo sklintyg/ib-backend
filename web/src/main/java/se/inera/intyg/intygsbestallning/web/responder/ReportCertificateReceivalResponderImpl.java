@@ -27,17 +27,17 @@ import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil;
 import se.riv.intygsbestallning.certificate.order.reportcertificatereceival.v1.ReportCertificateReceivalResponseType;
 import se.riv.intygsbestallning.certificate.order.reportcertificatereceival.v1.ReportCertificateReceivalType;
 import se.riv.intygsbestallning.certificate.order.reportcertificatereceival.v1.rivtabp21.ReportCertificateReceivalResponderInterface;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.intygsbestallning.service.utlatande.UtlatandeService;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportUtlatandeMottagetRequest;
-import se.inera.intyg.intygsbestallning.web.responder.resulthandler.ResultFactory;
 
 @Service
 @SchemaValidation
-public class ReportCertificateReceivalResponderImpl implements ReportCertificateReceivalResponderInterface, ResultFactory {
+public class ReportCertificateReceivalResponderImpl implements ReportCertificateReceivalResponderInterface {
 
     private final UtlatandeService utlatandeService;
 
@@ -54,19 +54,13 @@ public class ReportCertificateReceivalResponderImpl implements ReportCertificate
 
         log.info("Received ReportCertificateReceival request");
 
-        try {
-            checkArgument(isNotEmpty(logicalAddress), LOGICAL_ADDRESS);
-            checkArgument(nonNull(request), REQUEST);
+        checkArgument(isNotEmpty(logicalAddress), ResultTypeUtil.LOGICAL_ADDRESS);
+        checkArgument(nonNull(request), ResultTypeUtil.REQUEST);
 
-            utlatandeService.reportUtlatandeMottaget(ReportUtlatandeMottagetRequest.from(request));
+        utlatandeService.reportUtlatandeMottaget(ReportUtlatandeMottagetRequest.from(request));
 
-            ReportCertificateReceivalResponseType response = new ReportCertificateReceivalResponseType();
-            response.setResult(toResultTypeOK());
-            return response;
-        } catch (final Exception e) {
-            ReportCertificateReceivalResponseType response = new ReportCertificateReceivalResponseType();
-            response.setResult(toResultTypeError(e));
-            return response;
-        }
+        ReportCertificateReceivalResponseType response = new ReportCertificateReceivalResponseType();
+        response.setResult(ResultTypeUtil.ok());
+        return response;
     }
 }

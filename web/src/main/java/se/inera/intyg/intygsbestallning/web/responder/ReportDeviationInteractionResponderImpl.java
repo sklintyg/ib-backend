@@ -30,17 +30,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.intygsbestallning.common.util.ResultTypeUtil;
 import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.ReportDeviationResponseType;
 import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.ReportDeviationType;
 import se.riv.intygsbestallning.certificate.order.reportdeviation.v1.rivtabp21.ReportDeviationResponderInterface;
 import se.inera.intyg.intygsbestallning.persistence.model.Avvikelse;
 import se.inera.intyg.intygsbestallning.service.besok.BesokService;
 import se.inera.intyg.intygsbestallning.web.responder.dto.ReportBesokAvvikelseRequest;
-import se.inera.intyg.intygsbestallning.web.responder.resulthandler.ResultFactory;
 
 @Service
 @SchemaValidation
-public class ReportDeviationInteractionResponderImpl implements ReportDeviationResponderInterface, ResultFactory {
+public class ReportDeviationInteractionResponderImpl implements ReportDeviationResponderInterface {
 
     @Value("${source.system.hsaid:}")
     private String sourceSystemHsaId;
@@ -60,21 +60,14 @@ public class ReportDeviationInteractionResponderImpl implements ReportDeviationR
 
         log.info("Received ReportDeviationInteraction request");
 
-        try {
-            checkArgument(StringUtils.isNotEmpty(logicalAddress), LOGICAL_ADDRESS);
-            checkArgument(nonNull(request), REQUEST);
+        checkArgument(StringUtils.isNotEmpty(logicalAddress), ResultTypeUtil.LOGICAL_ADDRESS);
+        checkArgument(nonNull(request), ResultTypeUtil.REQUEST);
 
-            final Avvikelse avvikelse = besokService.reportBesokAvvikelse(ReportBesokAvvikelseRequest.from(request));
+        final Avvikelse avvikelse = besokService.reportBesokAvvikelse(ReportBesokAvvikelseRequest.from(request));
 
-            ReportDeviationResponseType response = new ReportDeviationResponseType();
-            response.setDeviationId(anII(sourceSystemHsaId, avvikelse.getAvvikelseId().toString()));
-            response.setResult(toResultTypeOK());
-            return response;
-        } catch (final Exception e) {
-            ReportDeviationResponseType response = new ReportDeviationResponseType();
-            response.setDeviationId(anII(sourceSystemHsaId, ""));
-            response.setResult(toResultTypeError(e));
-            return response;
-        }
+        ReportDeviationResponseType response = new ReportDeviationResponseType();
+        response.setDeviationId(anII(sourceSystemHsaId, avvikelse.getAvvikelseId().toString()));
+        response.setResult(ResultTypeUtil.ok());
+        return response;
     }
 }

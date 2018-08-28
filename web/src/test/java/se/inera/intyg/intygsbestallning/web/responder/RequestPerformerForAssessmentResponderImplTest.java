@@ -19,11 +19,13 @@
 package se.inera.intyg.intygsbestallning.web.responder;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.doReturn;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.aCv;
 import static se.inera.intyg.intygsbestallning.persistence.model.Utredning.UtredningBuilder.anUtredning;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.MyndighetTyp.FKASSA;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU;
 
 import com.google.common.collect.ImmutableList;
@@ -32,6 +34,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.intygsbestallning.common.exception.IbResponderValidationException;
+import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 import se.inera.intyg.intygsbestallning.integration.myndighet.service.TjanstekontraktUtils;
 import se.riv.intygsbestallning.certificate.order.requestperformerforassessment.v1.RequestPerformerForAssessmentResponseType;
 import se.riv.intygsbestallning.certificate.order.requestperformerforassessment.v1.RequestPerformerForAssessmentType;
@@ -63,8 +67,10 @@ public class RequestPerformerForAssessmentResponderImplTest {
         citizen.setPostalCity("11111");
 
         RequestPerformerForAssessmentType request = new RequestPerformerForAssessmentType();
-        request.setCertificateType(aCv(AFU.name(), null, null));
-        request.setAuthorityAdministrativeOfficial(new AuthorityAdministrativeOfficialType());
+        request.setCertificateType(aCv(AFU.name(), TjanstekontraktUtils.KV_INTYGSTYP, null));
+        AuthorityAdministrativeOfficialType authorityAdministrativeOfficialType = new AuthorityAdministrativeOfficialType();
+        authorityAdministrativeOfficialType.setAuthority(aCv(FKASSA.name(), TjanstekontraktUtils.KV_MYNDIGHET, null));
+        request.setAuthorityAdministrativeOfficial(authorityAdministrativeOfficialType);
         request.setCitizen(citizen);
 
         doReturn(anUtredning()
@@ -83,33 +89,40 @@ public class RequestPerformerForAssessmentResponderImplTest {
     }
 
     @Test
+    public void requestPerformerForAssessmentFelaktigUtredningstypCodesystemNok() {
+
+        final String felaktigtCodesystem = "felaktig";
+        RequestPerformerForAssessmentType request = new RequestPerformerForAssessmentType();
+        request.setCertificateType(aCv(AFU.name(), felaktigtCodesystem, null));
+
+        assertThatThrownBy(() -> assessmentResponder.requestPerformerForAssessment(LOGICAL_ADDRESS, request))
+                .isExactlyInstanceOf(IbResponderValidationException.class)
+                .hasMessage(MessageFormat.format("Unexpected codeSystem: {0}", felaktigtCodesystem));
+    }
+
+    @Test
     public void requestPerformerForAssessmentOkandUtredningsTypNok() {
 
         final String okandUtredningsTyp = "okand-typ";
         RequestPerformerForAssessmentType request = new RequestPerformerForAssessmentType();
-        request.setCertificateType(aCv(okandUtredningsTyp, null, null));
+        request.setCertificateType(aCv(okandUtredningsTyp, TjanstekontraktUtils.KV_INTYGSTYP, null));
 
-        final RequestPerformerForAssessmentResponseType response = assessmentResponder.requestPerformerForAssessment(LOGICAL_ADDRESS, request);
-        assertThat(response.getResult().getResultCode()).isEqualTo(ResultCodeType.ERROR);
-        assertThat(response.getResult().getResultText()).isEqualTo(MessageFormat.format("Unknown code: {0} for codeSystem: {1}",
-                "okand-typ", TjanstekontraktUtils.KV_INTYGSTYP));
-        ;
+        assertThatThrownBy(() -> assessmentResponder.requestPerformerForAssessment(LOGICAL_ADDRESS, request))
+                .isExactlyInstanceOf(IbResponderValidationException.class)
+                .hasMessage(MessageFormat.format("Unknown code: {0} for codeSystem: {1}",
+                        "okand-typ", TjanstekontraktUtils.KV_INTYGSTYP));
     }
 
     @Test
     public void requestPerformerForAssessmentFelaktigUtredningsTypNok() {
 
-        final String felakrigUtredningsTyp = UtredningsTyp.LIAG.name();
+        final String felaktigUtredningsTyp = UtredningsTyp.LIAG.name();
         RequestPerformerForAssessmentType request = new RequestPerformerForAssessmentType();
-        request.setCertificateType(aCv(felakrigUtredningsTyp, null, null));
+        request.setCertificateType(aCv(felaktigUtredningsTyp, TjanstekontraktUtils.KV_INTYGSTYP, null));
 
-        final RequestPerformerForAssessmentResponseType response = assessmentResponder.requestPerformerForAssessment(LOGICAL_ADDRESS, request);
-
-        assertThat(response.getResult().getResultCode()).isEqualTo(ResultCodeType.ERROR);
-        assertThat(response.getResult().getResultText()).isEqualTo(
-                MessageFormat.format("Unknown code: {0} for codeSystem: {1}",
-                        felakrigUtredningsTyp, TjanstekontraktUtils.KV_INTYGSTYP));
-
-
+        assertThatThrownBy(() -> assessmentResponder.requestPerformerForAssessment(LOGICAL_ADDRESS, request))
+                .isExactlyInstanceOf(IbResponderValidationException.class)
+                .hasMessage(MessageFormat.format("Unknown code: {0} for codeSystem: {1}",
+                        felaktigUtredningsTyp, TjanstekontraktUtils.KV_INTYGSTYP));
     }
 }

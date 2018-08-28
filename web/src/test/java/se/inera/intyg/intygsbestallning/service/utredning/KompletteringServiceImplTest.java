@@ -27,6 +27,7 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.when;
+import static se.inera.intyg.intygsbestallning.common.exception.IbResponderValidationErrorCode.TA_FEL06;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
 import static se.inera.intyg.intygsbestallning.persistence.model.Besok.BesokBuilder.aBesok;
 import static se.inera.intyg.intygsbestallning.persistence.model.Handling.HandlingBuilder.aHandling;
@@ -39,6 +40,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.intygsbestallning.common.exception.IbResponderValidationException;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningStatusResolver;
 import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendService;
 import se.inera.intyg.intygsbestallning.service.notifiering.send.NotifieringSendServiceImpl;
@@ -204,7 +206,8 @@ public class KompletteringServiceImplTest {
                 .findById(Long.valueOf(utredningId));
 
         assertThatThrownBy(() -> kompletteringService.reportKompletteringMottagen(request))
-                .isExactlyInstanceOf(IbNotFoundException.class);
+                .isExactlyInstanceOf(IbResponderValidationException.class)
+                .hasFieldOrPropertyWithValue("errorCode", TA_FEL06);
     }
 
     @Test

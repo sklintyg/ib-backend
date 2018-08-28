@@ -9,7 +9,7 @@ request(data) ::= <<
       <urn1:RequestPerformerForAssessment>
          <urn1:certificateType>
             <urn2:code>AFU</urn2:code>
-            <urn2:codeSystem></urn2:codeSystem>
+            <urn2:codeSystem>b64ea353-e8f6-4832-b563-fc7d46f29548</urn2:codeSystem>
             <urn2:codeSystemName></urn2:codeSystemName>
             <urn2:codeSystemVersion></urn2:codeSystemVersion>
             <urn2:displayName>AFU</urn2:displayName>
@@ -34,7 +34,7 @@ request(data) ::= <<
             <urn2:email>$data.handlaggareEpost$</urn2:email>
             <urn2:authority>
                <urn2:code>FKASSA</urn2:code>
-               <urn2:codeSystem></urn2:codeSystem>
+               <urn2:codeSystem>769bb12b-bd9f-4203-a5cd-fd14f2eb3b80</urn2:codeSystem>
                <urn2:codeSystemName></urn2:codeSystemName>
                <urn2:codeSystemVersion></urn2:codeSystemVersion>
                <urn2:displayName>FK</urn2:displayName>

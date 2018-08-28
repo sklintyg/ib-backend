@@ -34,8 +34,9 @@ import java.util.function.Predicate;
 import se.inera.intyg.intygsbestallning.auth.IbUser;
 import se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum;
 import se.inera.intyg.intygsbestallning.common.exception.IbNotFoundException;
+import se.inera.intyg.intygsbestallning.common.exception.IbResponderValidationErrorCode;
+import se.inera.intyg.intygsbestallning.common.exception.IbResponderValidationException;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
-import se.inera.intyg.intygsbestallning.common.exception.NotFoundType;
 import se.inera.intyg.intygsbestallning.persistence.model.Intyg;
 import se.inera.intyg.intygsbestallning.persistence.model.Utredning;
 import se.inera.intyg.intygsbestallning.persistence.model.status.UtredningFas;
@@ -107,10 +108,7 @@ public class UtlatandeServiceImpl extends BaseUtredningService implements Utlata
         Optional<Utredning> optionalUtredning = utredningRepository.findById(request.getUtredningId());
 
         optionalUtredning
-                .orElseThrow(() -> new IbNotFoundException(
-                        "Utredning with id '" + request.getUtredningId() + "' does not exist.",
-                        request.getUtredningId(),
-                        NotFoundType.UTREDNING));
+                .orElseThrow(() -> new IbResponderValidationException(IbResponderValidationErrorCode.TA_FEL06, request.getUtredningId()));
 
         optionalUtredning.filter(isKorrektStatus())
                 .orElseThrow(() -> new IbServiceException(

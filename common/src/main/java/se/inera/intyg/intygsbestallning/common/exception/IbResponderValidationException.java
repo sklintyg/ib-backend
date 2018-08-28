@@ -18,17 +18,24 @@
  */
 package se.inera.intyg.intygsbestallning.common.exception;
 
-public enum NotFoundType {
-    UTREDNING("Felaktig utredningsid: %s. Utredningen existerar inte."),
-    BESOK("Felaktig beöksid: %s. Besöket existerar inte.");
+import java.text.MessageFormat;
 
-    private final String errorText;
+public class IbResponderValidationException extends RuntimeException {
 
-    NotFoundType(String errorText) {
-        this.errorText = errorText;
+    private IbResponderValidationErrorCode errorCode;
+    private Object[] templateArguments;
+
+    public IbResponderValidationException(IbResponderValidationErrorCode errorCode, Object... templateArguments) {
+        this.errorCode = errorCode;
+        this.templateArguments = templateArguments;
     }
 
-    public String getErrorText() {
-        return errorText;
+    public IbResponderValidationErrorCode getErrorCode() {
+        return errorCode;
+    }
+
+    @Override
+    public String getMessage() {
+        return MessageFormat.format(errorCode.getErrorMsgTemplate(), templateArguments);
     }
 }

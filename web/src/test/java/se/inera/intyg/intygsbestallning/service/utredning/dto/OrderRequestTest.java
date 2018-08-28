@@ -23,16 +23,23 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static se.inera.intyg.intygsbestallning.common.exception.IbErrorCodeEnum.BAD_REQUEST;
+import static se.inera.intyg.intygsbestallning.common.exception.IbResponderValidationErrorCode.GTA_FEL05;
+import static se.inera.intyg.intygsbestallning.common.exception.IbResponderValidationErrorCode.TA_FEL07;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.aCv;
 import static se.inera.intyg.intygsbestallning.common.util.RivtaTypesUtil.anII;
+import static se.inera.intyg.intygsbestallning.persistence.model.type.MyndighetTyp.FKASSA;
 import static se.inera.intyg.intygsbestallning.persistence.model.type.UtredningsTyp.AFU;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
+import se.inera.intyg.intygsbestallning.common.exception.IbResponderValidationException;
+import se.inera.intyg.intygsbestallning.integration.myndighet.service.TjanstekontraktUtils;
 import se.riv.intygsbestallning.certificate.order.orderassessment.v1.OrderAssessmentType;
 import se.riv.intygsbestallning.certificate.order.v1.AddressType;
 import se.riv.intygsbestallning.certificate.order.v1.AuthorityAdministrativeOfficialType;
 import se.riv.intygsbestallning.certificate.order.v1.CitizenType;
+
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import se.inera.intyg.intygsbestallning.common.exception.IbServiceException;
 
@@ -60,7 +67,7 @@ public class OrderRequestTest {
         assertEquals("fullstandigtNamn", result.getBestallare().getFullstandigtNamn());
         assertEquals("kontor", result.getBestallare().getKontor());
         assertEquals("kostnadsstalle", result.getBestallare().getKostnadsstalle());
-        assertEquals("myndighet", result.getBestallare().getMyndighet());
+        assertEquals("FKASSA", result.getBestallare().getMyndighet());
         assertEquals("12345", result.getBestallare().getPostnummer());
         assertEquals("stad", result.getBestallare().getStad());
         assertEquals("telefonnummer", result.getBestallare().getTelefonnummer());
@@ -94,7 +101,7 @@ public class OrderRequestTest {
         assertEquals("fullstandigtNamn", result.getBestallare().getFullstandigtNamn());
         assertEquals("kontor", result.getBestallare().getKontor());
         assertEquals("kostnadsstalle", result.getBestallare().getKostnadsstalle());
-        assertEquals("myndighet", result.getBestallare().getMyndighet());
+        assertEquals("FKASSA", result.getBestallare().getMyndighet());
         assertEquals("12345", result.getBestallare().getPostnummer());
         assertEquals("stad", result.getBestallare().getStad());
         assertEquals("telefonnummer", result.getBestallare().getTelefonnummer());
@@ -103,12 +110,12 @@ public class OrderRequestTest {
     @Test
     public void testConvertFailCertificateType() {
         OrderAssessmentType request = createFullRequest();
-        request.setCertificateType(aCv("notExisting", null, null));
+        request.setCertificateType(aCv("notExisting", TjanstekontraktUtils.KV_INTYGSTYP, null));
 
         assertThatThrownBy(() -> OrderRequest.from(request))
-                .isExactlyInstanceOf(IbServiceException.class)
-                .hasFieldOrPropertyWithValue("errorCode", BAD_REQUEST)
-                .hasMessage("CertificateType is not of a known type");
+                .isExactlyInstanceOf(IbResponderValidationException.class)
+                .hasMessage(MessageFormat.format("Unknown code: {0} for codeSystem: {1}", "notExisting",
+                        TjanstekontraktUtils.KV_INTYGSTYP));
     }
 
     @Test
@@ -130,9 +137,9 @@ public class OrderRequestTest {
         request.setLastDateForCertificateReceival(null);
 
         assertThatThrownBy(() -> OrderRequest.from(request))
-                .isExactlyInstanceOf(IbServiceException.class)
-                .hasFieldOrPropertyWithValue("errorCode", BAD_REQUEST)
-                .hasMessage("LastDateForCertificateReceival is required when assessmentId is present");
+                .isExactlyInstanceOf(IbResponderValidationException.class)
+                .hasFieldOrPropertyWithValue("errorCode", TA_FEL07)
+                .hasMessage("Slutdatum för utredningen måste anges");
     }
 
     @Test
@@ -141,9 +148,9 @@ public class OrderRequestTest {
         request.getCitizen().setPersonalIdentity(anII(null, "Very Bad Format"));
 
         assertThatThrownBy(() -> OrderRequest.from(request))
-                .isExactlyInstanceOf(IbServiceException.class)
-                .hasFieldOrPropertyWithValue("errorCode", BAD_REQUEST)
-                .hasMessage("Invalid Personal Identity Format for Citizen");
+                .isExactlyInstanceOf(IbResponderValidationException.class)
+                .hasFieldOrPropertyWithValue("errorCode", GTA_FEL05)
+                .hasMessage("Very Bad Format does not match expected format YYYYMMDDNNNN");
     }
 
     @Test
@@ -152,16 +159,16 @@ public class OrderRequestTest {
         request.getCitizen().setPersonalIdentity(anII(null, "19121212-1212"));
 
         assertThatThrownBy(() -> OrderRequest.from(request))
-                .isExactlyInstanceOf(IbServiceException.class)
-                .hasFieldOrPropertyWithValue("errorCode", BAD_REQUEST)
-                .hasMessage("Invalid Personal Identity Format for Citizen");
+                .isExactlyInstanceOf(IbResponderValidationException.class)
+                .hasFieldOrPropertyWithValue("errorCode", GTA_FEL05)
+                .hasMessage("19121212-1212 does not match expected format YYYYMMDDNNNN");
     }
 
 
     @NotNull
     private OrderAssessmentType createFullRequest() {
         OrderAssessmentType request = new OrderAssessmentType();
-        request.setCertificateType(aCv(AFU.name(), null, null));
+        request.setCertificateType(aCv(AFU.name(), TjanstekontraktUtils.KV_INTYGSTYP, null));
         request.setOrderDate("20180101");
         request.setLastDateForCertificateReceival("20190101");
         CitizenType citizen = new CitizenType();
@@ -178,7 +185,7 @@ public class OrderRequestTest {
         request.setNeedForInterpreter(true);
         request.setInterpreterLanguage(aCv("sv", null, null));
         AuthorityAdministrativeOfficialType bestallare = new AuthorityAdministrativeOfficialType();
-        bestallare.setAuthority(aCv("myndighet", null, null));
+        bestallare.setAuthority(aCv(FKASSA.name(), TjanstekontraktUtils.KV_MYNDIGHET, null));
         bestallare.setEmail("email");
         bestallare.setFullName("fullstandigtNamn");
         bestallare.setOfficeCostCenter("kostnadsstalle");
