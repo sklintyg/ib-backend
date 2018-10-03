@@ -35,11 +35,14 @@ pipeline {
         }
 
         stage('propagate') {
-            steps {
-                build job: "ib-sandbox-build", wait: false, parameters: [[$class: 'StringParameterValue', name: 'IB_BUILD_VERSION', value: buildVersion]]
+            node {
+                gitRef = "v${buildVersion}"
+                build job: "ib-dintyg-build", wait: false, parameters: [
+                    [$class: 'StringParameterValue', name: 'IB_BUILD_VERSION', value: buildVersion],
+                    [$class: 'StringParameterValue', name: 'INFRA_VERSION', value: infraVersion],
+                    [$class: 'StringParameterValue', name: 'GIT_REF', value: gitRef]
+                ]
             }
         }
-
     }
 }
-
